@@ -36,7 +36,7 @@ param(
     [string]$XmlResponse,
     [string]$FormState,
     [string]$Notes,
-    [ValidateSet('Preliminary','Final')][string]$Tier,
+    [string]$Tier,   # tiers removed 2026-07-01; defaults to 'Full' via Get-ActiveTier
     [switch]$NoCommit,
     [switch]$Negative,
     [switch]$Render

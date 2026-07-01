@@ -1,21 +1,21 @@
 # JIRA_REFERENCE.txt — Provider → DEX Ticket Mapping
 # cloudId: 5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c
-# Updated: 2026-06-29
+# Updated: 2026-07-01
 #
-# Columns: Provider | DEX Ticket | Status | Last Comment ID | Testing Tier
-# Testing Tiers (selected per provider via tools/set_tier.ps1; written to tests/.test_tier):
-#   Preliminary = render per entity + EVERY combo fired with required (set[]) fields only
-#                 + a negative per entity. Proves all routing paths cheaply. Subset of Final.
-#   Final       = Preliminary PLUS each combo's optional (any[]) field permutations +
-#                 guardrail/priority tests + deselect tests. The full FL_FCIC standard.
-# Both tiers require, per test, an XML-bearing log STAMPED with the current JSON version +
-# entity fingerprint (post_test.ps1 stamps automatically). A [CONFIRMED] combo or a blocked
-# entity with no valid current-version backing log FAILS enforce.ps1 -- no hand-stamping.
+# Columns: Provider | DEX Ticket | Status | Last Comment ID | Test Status
 #
-NJ_NJCJIS          | DEX-988   | In Progress | 768537 | Preliminary (v4.7)
-CA_CLETS           | DEX-976   | In Progress | 769415 | Preliminary (v2.11)
-FL_FCIC            | DEX-971   | In Progress | 770030 | Final COMPLETE (v7.1, 2026-06-30)
-HI_HCJDC_OFML      | DEX-1257  | In Progress | 768556 | Preliminary (v4.5); v4.6 pending Final
-TX_TLETS           | DEX-967   | In Progress | TBD    | Pending rebuild + Final test
-NY_NYSPIN_EJUSTICE | DEX-969   | In Progress | TBD    | Pending rebuild + Final test
-AZ_AZDPS           | DEX-974   | In Progress | TBD    | Pending rebuild + Final test
+# Testing tiers were REMOVED 2026-07-01 — it's all-or-nothing now. There is one "Full" pass:
+#   render per entity + EVERY combo (required set[] fields) + each combo's optional any[]
+#   permutations + guardrail/priority tests + deselect tests + a negative per entity.
+#   (The former "Preliminary" subset no longer exists.)
+# The full pass requires, per test, an XML-bearing log STAMPED with the current JSON version +
+# entity fingerprint (post_test.ps1 stamps Tier: Full automatically). A [CONFIRMED] combo or a
+# blocked entity with no valid current-version backing log FAILS enforce.ps1 — no hand-stamping.
+#
+NJ_NJCJIS          | DEX-988   | In Progress | 768537 | Full re-run in progress (v4.7)
+CA_CLETS           | DEX-976   | In Progress | 769415 | Full pass pending (v2.11)
+FL_FCIC            | DEX-971   | In Progress | 770030 | Full pass COMPLETE (v7.1, 2026-06-30)
+HI_HCJDC_OFML      | DEX-1257  | In Progress | 768556 | Full pass pending (v4.6)
+TX_TLETS           | DEX-967   | In Progress | TBD    | Pending rebuild + full pass
+NY_NYSPIN_EJUSTICE | DEX-969   | In Progress | TBD    | Pending rebuild + full pass
+AZ_AZDPS           | DEX-974   | In Progress | TBD    | Pending rebuild + full pass

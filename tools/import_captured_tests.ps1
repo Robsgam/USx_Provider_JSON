@@ -107,7 +107,7 @@ if (Test-Path $Path -PathType Container) {
 Write-Host ""
 Write-Host "  Importing captured tests from $($files.Count) file(s)" -ForegroundColor Cyan
 
-$imported = 0; $failed = 0; $skipped = 0
+$imported = 0; $failed = 0; $skipped = 0; $errored = 0
 foreach ($file in $files) {
     $records = @()
     try { $records = @(Get-Content $file.FullName -Raw | ConvertFrom-Json) } catch { Write-Host "  [SKIP] bad JSON: $($file.Name)" -ForegroundColor DarkYellow; $skipped++; continue }
@@ -137,7 +137,8 @@ foreach ($file in $files) {
         $comboLabel = $combo
         if ($testKind -eq 'any-field' -and $testAnyField) { $comboLabel = "${combo}_af_${testAnyField}" }
         elseif ($testKind -eq 'any') { $comboLabel = "${combo}_any" }
-        $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired."
+        $underFilledNote = if ($r.underFilled) { ' UNDER-FILLED (a form field failed to fill on submit -- verify this combo).' } else { '' }
+        $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired.$underFilledNote"
         $desc = "$comboLabel (auto)"
 
         $ptArgs = @{
@@ -149,9 +150,16 @@ foreach ($file in $files) {
         if ($r.tier)      { $ptArgs['Tier'] = $r.tier }
 
         $color = if ($result -eq 'PASS') { 'Green' } else { 'Red' }
+        if ($r.underFilled) { Write-Host "  [under-filled] $($r.provider)/$entity $($r.query) $comboLabel" -ForegroundColor DarkYellow }
         Write-Host "  -> $($r.provider)/$entity $($r.query) $combo => $result" -ForegroundColor $color
-        & (Join-Path $toolDir 'post_test.ps1') @ptArgs | Out-Null
-        if ($result -eq 'PASS') { $imported++ } else { $failed++ }
+        # Guard: one bad record must not abort the whole batch (script runs ErrorAction Stop).
+        try {
+            & (Join-Path $toolDir 'post_test.ps1') @ptArgs | Out-Null
+            if ($result -eq 'PASS') { $imported++ } else { $failed++ }
+        } catch {
+            Write-Host "  [ERROR] post_test failed for ${comboLabel}: $_" -ForegroundColor Red
+            $errored++
+        }
     }
 
     # Archive the raw capture into the repo (timestamped) for traceability; clears Downloads.
@@ -163,7 +171,10 @@ foreach ($file in $files) {
 }
 
 Write-Host ""
-Write-Host "  Imported: $imported PASS / $failed FAIL / $skipped skipped" -ForegroundColor Cyan
+$summary = "  Imported: $imported PASS / $failed FAIL / $skipped skipped"
+if ($errored -gt 0) { $summary += " / $errored errored" }
+Write-Host $summary -ForegroundColor Cyan
+if ($errored -gt 0) { Write-Host "  [WARN] $errored record(s) errored in post_test -- batch continued; re-check those." -ForegroundColor Yellow }
 
 if ($Commit -and ($imported + $failed) -gt 0) {
     Push-Location $repoRoot

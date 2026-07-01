@@ -645,21 +645,18 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
   Markers below are [TOOL] (enforced by a script) or [OP] (operator must do it;
   the tool can only check the artifact after the fact).
 
-  GATE 0 -- CHOOSE THE TIER (BEFORE STARTING A SESSION):
-  [OP]   Pick the USx Tenant Testing tier and set it:
-           powershell.exe -ExecutionPolicy Bypass -File tools/set_tier.ps1 -Provider <NAME> -Tier <Preliminary|Final>
-         PRELIMINARY = render per entity + EVERY combo fired with required (set[])
-           fields only + a negative per entity. All routing paths, cheaply.
-         FINAL = Preliminary PLUS each combo's optional (any[]) permutations +
-           guardrail/priority tests + deselect tests. The full FL_FCIC standard.
-         The tier is written to tests/.test_tier (persists across rebuilds, default
-         Final) and drives: which matrix to run (docs/<P>_TEST_MATRIX_PRELIMINARY.txt
-         vs <P>_TEST_MATRIX.txt), what post_test.ps1 stamps, and what block_entity.ps1
-         requires. Preliminary is a strict subset of Final, so escalating later reuses
-         the base logs and only adds the any[]/guardrail/deselect tests.
+  GATE 0 -- IT'S ALL-OR-NOTHING (TIERS REMOVED 2026-07-01):
+  [OP]   There is no tier choice anymore. Every session runs the single FULL pass:
+         render per entity + EVERY combo (required set[] fields) + each combo's optional
+         any[] permutations + guardrail/priority tests + deselect tests + a negative per
+         entity. The former "Preliminary" subset no longer exists. (set_tier.ps1 is
+         deprecated; Get-ActiveTier always returns 'Full'; the matrix is always
+         docs/<P>_TEST_MATRIX.txt.)
   [TOOL] post_test.ps1 STAMPS every log with JSON Version + Entity Fingerprint +
-         Tier. Never hand-write a [CONFIRMED] marker or a log "PASS" -- a marker with
-         no stamped current-version XML log fails enforce (audit_test_coverage -Gate).
+         Tier (Full). block_entity.ps1 requires, per entity, a valid current-version XML
+         log for every combo, an any[] log per combo with optional fields, and a render +
+         negative log. Never hand-write a [CONFIRMED] marker or a log "PASS" -- a marker
+         with no stamped current-version XML log fails enforce (audit_test_coverage -Gate).
 
   GATE 1 -- REBUILD RESTARTS TESTING (BEFORE STARTING/RESUMING A SESSION):
   [GATE] A JSON rebuild (ANY version bump) restarts the ENTIRE test package

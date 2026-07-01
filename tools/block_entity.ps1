@@ -78,7 +78,7 @@ if (($pending -gt 0 -or $failed -gt 0) -and -not $Force) {
 }
 
 # ── Evidence gate: every combo of this entity must have a VALID current-version XML
-#    backing log (provenance), and -- at Final tier -- an any[] log per combo with
+#    backing log (provenance), plus (full pass, always) an any[] log per combo with
 #    optional fields plus a render and a negative log. This is what makes a "blocked"
 #    entity mean "evidenced": a hand-edited SQVR or a stale pre-rebuild log can no
 #    longer lock an entity (the NJ v4.7 failure mode). Override with -Force.
@@ -107,24 +107,23 @@ foreach ($c in $entityCombos) {
     if (-not $valid) {
         $evidenceGaps += "$($c.KeyReference) ($(Get-ComboShortLabel $c)): $reason"
     }
-    elseif ($activeTier -eq 'Final' -and @($c.Any).Count -gt 0) {
-        # Final tier: optional any[] fields must be exercised -> a valid any[] log.
+    elseif (@($c.Any).Count -gt 0) {
+        # Full pass: optional any[] fields must be exercised -> a valid any[] log.
         $anyLog = $matched | Where-Object {
             ($_.Name -match '(?i)any') -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid
         } | Select-Object -First 1
         if (-not $anyLog) {
-            $evidenceGaps += "$($c.KeyReference) ($(Get-ComboShortLabel $c)): Final tier requires an any[] test log (optional fields untested)"
+            $evidenceGaps += "$($c.KeyReference) ($(Get-ComboShortLabel $c)): full pass requires an any[] test log (optional fields untested)"
         }
     }
 }
 
-if ($activeTier -eq 'Final') {
-    $entEsc = [regex]::Escape($Entity)
-    $renderOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*render" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
-    if (-not $renderOk) { $evidenceGaps += "Final tier requires a render test log for $Entity" }
-    $negOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*negative" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
-    if (-not $negOk) { $evidenceGaps += "Final tier requires a negative test log for $Entity" }
-}
+# Full pass always requires a render and a negative log per entity.
+$entEsc = [regex]::Escape($Entity)
+$renderOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*render" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
+if (-not $renderOk) { $evidenceGaps += "full pass requires a render test log for $Entity" }
+$negOk = @($testLogs | Where-Object { $_.Name -match "(?i)${entEsc}.*negative" -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid }).Count -gt 0
+if (-not $negOk) { $evidenceGaps += "full pass requires a negative test log for $Entity" }
 
 if ($evidenceGaps.Count -gt 0 -and -not $Force) {
     Write-Host "  [BLOCKED] '$Entity' lacks valid current-version evidence (tier: $activeTier, build v$buildVer, fingerprint $($entityFp.Substring(0,12))):" -ForegroundColor Red

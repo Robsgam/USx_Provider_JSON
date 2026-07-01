@@ -51,6 +51,19 @@
     return { fillResults, allFilled, sent };
   };
 
+  // Fill a field; on failure wait a longer settle and retry once (React/autoSelect lag, or a
+  // react-select whose options hadn't populated yet). Logs a clear message if it still fails --
+  // no silent under-fill.
+  async function fillWithRetry(fieldId, value, settle) {
+    let r = await L.fillField(fieldId, value);
+    if (!r || !r.ok) {
+      await L.sleep(settle);
+      r = await L.fillField(fieldId, value);
+      if (!r || !r.ok) console.warn(`[USx-DRV] field "${fieldId}" did not fill (value="${value}") -- react-select may have no matching option, or the field id changed.`);
+    }
+    return r;
+  }
+
   // Submit + clear the form (so the next combo starts clean); fall back to plain Send.
   function clickSendClear() {
     const sc = [...document.querySelectorAll('button')].find((b) => /send\s*&\s*clear/i.test(b.textContent || '') && !b.disabled);
@@ -78,11 +91,13 @@
       const fr = [];
       // Normalize fills: PowerShell ConvertTo-Json collapses single-element arrays to bare objects
       const fills = t.fills ? (Array.isArray(t.fills) ? t.fills : [t.fills]) : [];
-      for (const f of fills) { fr.push(await L.fillField(f.fieldId, f.value)); await L.sleep(dField); }
+      for (const f of fills) { fr.push(await fillWithRetry(f.fieldId, f.value, dSettle)); await L.sleep(dField); }
       await L.sleep(dSettle);
-      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: t.fills, n: t.n });
+      const filled = fr.every((r) => r && r.ok);
+      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: t.fills, underFilled: !filled, n: t.n });
       const sent = clickSendClear();
-      results.push({ n: t.n, combo: t.comboKeyRef, filled: fr.every((r) => r.ok), sent });
+      results.push({ n: t.n, combo: t.comboKeyRef, filled, sent });
+      if (!filled) console.warn(`[USx-DRV] T${t.n} ${t.entity} ${t.comboKeyRef}: submitted UNDER-FILLED (a field failed to fill) -- capture records it, but verify this combo.`);
       console.log('%c[USx-DRV]', 'color:#06c', `T${t.n} ${t.entity} ${t.comboKeyRef}: ${sent.ok ? 'submitted' : 'NOT submitted (' + sent.err + ')'}`);
       await L.sleep(dBetween);
     }

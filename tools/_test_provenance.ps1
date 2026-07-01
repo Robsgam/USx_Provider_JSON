@@ -47,15 +47,14 @@ function Get-BuildVersionForProvider {
     return $null
 }
 
-# Read tests/.test_tier. Default 'Final' when absent (the safe, most-demanding tier).
+# Tiers were removed 2026-07-01 -- testing is a single all-or-nothing "Full" pass
+# (the former "Final": render + every combo + per-field any[] + all-any + guardrails +
+# deselect + negative). There is no longer a "Preliminary" subset. This function is kept
+# for callers but always returns 'Full'; the tier stamp is informational only (log
+# validity = version + fingerprint + XML, never the tier label).
 function Get-ActiveTier {
     param([Parameter(Mandatory)][string]$ProvDir)
-    $f = Join-Path (Join-Path $ProvDir "tests") ".test_tier"
-    if (-not (Test-Path $f)) { return 'Final' }
-    $t = ((Get-Content $f -Raw) -replace "^﻿", '').Trim()
-    if ($t -match '^(?i)prelim') { return 'Preliminary' }
-    if ($t -match '^(?i)final')  { return 'Final' }
-    return 'Final'
+    return 'Full'
 }
 
 # Parse the stamp block from a log file. Returns @{ Version=...; Fingerprint=...; Tier=... }

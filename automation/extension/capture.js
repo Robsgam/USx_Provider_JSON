@@ -263,7 +263,7 @@
     return {
       provider: m.provider || L.providerFromHost(), entity: m.entity, query: m.query || rec.messageType,
       combo: m.comboKeyRef, tier: m.tier, expectedKeyRef: m.expectedKeyRef,
-      kind: m.kind || null, anyField: m.anyField || null,
+      kind: m.kind || null, anyField: m.anyField || null, underFilled: m.underFilled || false,
       messageType: rec.messageType, transactionId: rec.transactionId, requestXml: rec.requestXml,
       formState: rec.fields ? Object.entries(rec.fields).map(([k, v]) => k + '=' + v).join(', ') : null,
       capturedAt: new Date().toISOString(), ok: rec.ok
@@ -453,6 +453,9 @@
       // 1) identifier-field content match (messageType-guarded)
       mi = batch.findIndex((b, idx) => {
         if (usedM.has(idx)) return false;
+        // Never pair when neither side has a messageType/query to anchor on -- a queryless
+        // capture + a queryless manifest entry would "match" on nothing meaningful.
+        if (!mt && !b.query) return false;
         if (b.query && mt && b.query !== mt) return false;
         const ids = idFills(b.fills || []);
         return ids.length && ids.every((f) => item.xml.xml.includes('>' + f.value + '<'));

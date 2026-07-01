@@ -1,23 +1,27 @@
 <#
   emit_test_plan.ps1 -- emit a machine-readable TEST_PLAN.json for the browser driver.
 
-  Turns a provider JSON + tier into the ordered list of tests the driver (__usxRunPlan)
-  executes: per entity, a render marker, then every combo (set[] fields resolved to DOM
-  fieldId + a test value), then a negative marker. FINAL tier additionally emits an any[]
-  test per combo (base set[] + the optional fields). Guardrail/deselect tests are matrix-only
-  for now (multi-field routing) -- noted in the plan meta.
+  Tiers were removed 2026-07-01 -- the plan is always the single all-or-nothing full pass:
+  per entity a render marker, every combo (set[] fields resolved to DOM fieldId + a test
+  value), each combo's individual any[] field tests + an all-any test, guardrail tests, and
+  a negative marker. The -Tier param is accepted for back-compat but ignored.
 
   Mirrors generate_test_matrix.ps1's resolution (combo set[] -> form fieldId via direct match
   or the QIDM attribute sourceField; Get-TestValue for values), but emits JSON the driver eats.
 
+  Trust warnings (non-silent): reports any combo set[]/any[] field it could NOT resolve a test
+  value for (genuinely unmapped -> that combo would fire under-filled), and any entity whose
+  QIDMs carry NOT_EXISTS conditions but produced zero guardrail tests. A non-zero unresolved
+  count is surfaced loudly so the plan is trustworthy before a re-run.
+
   Usage:
-    .\emit_test_plan.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_v4.7.json -Tier Preliminary
-    .\emit_test_plan.ps1 -Path <json> -Tier Final -OutFile <path.plan.json>
+    .\emit_test_plan.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_v4.7.json
+    .\emit_test_plan.ps1 -Path <json> -OutFile <path.plan.json>
 #>
 
 param(
     [Parameter(Mandatory)][string]$Path,
-    [ValidateSet('Preliminary','Final')][string]$Tier = 'Preliminary',
+    [string]$Tier = 'Full',   # accepted for back-compat; ignored (always full pass)
     [string]$OutFile
 )
 
@@ -70,6 +74,17 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^(caRequestPurposeCode|purposeCode)' { return 'C' }
         '(?i)^attention'                   { return 'SMITH J' }
         default                            { return $null }   # unknown -> skip (avoid junk)
+    }
+}
+
+# Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
+# (leave blank = home), and optional name parts. Everything else returning $null is a genuine
+# unmapped field -> the combo would fire under-filled. Track those loudly.
+$script:KnownEmpty = '(?i)^(registrationState|state|nameMiddle|nameSuffix)$'
+$script:Unresolved = New-Object System.Collections.Generic.List[string]
+function Note-IfUnresolved([string]$ctx, [string]$fid, $val) {
+    if (($null -eq $val -or $val -eq '') -and $fid -notmatch $script:KnownEmpty) {
+        $script:Unresolved.Add("${ctx}: '$fid' has no test value (unmapped in Get-TestValue)")
     }
 }
 
@@ -160,7 +175,6 @@ $entityOrder = @('Vehicle','Person','Firearm','Article','Boat')
 $entities = @($qidms | ForEach-Object { $_.targetEntity } | Select-Object -Unique)
 $entities = @($entityOrder | Where-Object { $entities -contains $_ }) + @($entities | Where-Object { $entityOrder -notcontains $_ })
 
-$isFinal = ($Tier -eq 'Final')
 $tests = New-Object System.Collections.Generic.List[object]
 $n = 0
 
@@ -177,46 +191,54 @@ foreach ($ent in $entities) {
             $setNames = @($c.requirements.set)
             $isOOS = [bool]($setNames | Where-Object { $_ -match '(?i)^(registrationState|state)$' })
             $fills = Build-Fills $setNames $q $fieldIds $isOOS
+            # Trust: flag any set[] field we couldn't resolve a value for (under-fill risk).
+            foreach ($sn in $setNames) { Note-IfUnresolved "$ent $kr set[]" (Resolve-FieldId $sn $q $fieldIds) (Get-TestValue (Resolve-FieldId $sn $q $fieldIds) $isOOS) }
             $n++
             $tests.Add([ordered]@{
                 n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
-                expectedKeyRef = $kr; kind = 'combo'; tier = 'Preliminary'; fills = $fills
+                expectedKeyRef = $kr; kind = 'combo'; tier = 'Full'; fills = $fills
             })
-            # FINAL: individual any[] field tests + all-together
-            if ($isFinal) {
-                $anyNames = @($c.requirements.any)
-                if ($anyNames.Count -gt 0) {
-                    # One test per individual any[] field
-                    foreach ($af in $anyNames) {
-                        $ff  = Resolve-FieldId $af $q $fieldIds
-                        $val = Get-TestValue $ff $isOOS
-                        if ($null -ne $val -and $val -ne '') {
-                            $n++
-                            $tests.Add([ordered]@{
-                                n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
-                                expectedKeyRef = $kr; kind = 'any-field'; tier = 'Final'
-                                anyField = $ff
-                                fills = @(@($fills)) + @([ordered]@{ fieldId = $ff; value = "$val" })
-                            })
-                        }
-                    }
-                    # All any[] fields together
-                    $anyFills = Build-Fills ($setNames + $anyNames) $q $fieldIds $true
-                    if (@($anyFills).Count -gt @($fills).Count) {
+            # individual any[] field tests + all-together (full pass)
+            $anyNames = @($c.requirements.any)
+            if ($anyNames.Count -gt 0) {
+                # One test per individual any[] field
+                foreach ($af in $anyNames) {
+                    $ff  = Resolve-FieldId $af $q $fieldIds
+                    $val = Get-TestValue $ff $isOOS
+                    Note-IfUnresolved "$ent $kr any[]" $ff $val
+                    if ($null -ne $val -and $val -ne '') {
                         $n++
                         $tests.Add([ordered]@{
                             n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
-                            expectedKeyRef = $kr; kind = 'any'; tier = 'Final'; fills = $anyFills
+                            expectedKeyRef = $kr; kind = 'any-field'; tier = 'Full'
+                            anyField = $ff
+                            fills = @(@($fills)) + @([ordered]@{ fieldId = $ff; value = "$val" })
                         })
                     }
+                }
+                # All any[] fields together
+                $anyFills = Build-Fills ($setNames + $anyNames) $q $fieldIds $true
+                if (@($anyFills).Count -gt @($fills).Count) {
+                    $n++
+                    $tests.Add([ordered]@{
+                        n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
+                        expectedKeyRef = $kr; kind = 'any'; tier = 'Full'; fills = $anyFills
+                    })
                 }
             }
         }
     }
 
-    # Guardrail tests (Final only) -- after all combos, before negative
-    if ($isFinal) {
-        foreach ($gr in @(Get-GuardrailTests $entQidms $fieldIds)) {
+    # Guardrail tests -- after all combos, before negative. Trust: if this entity's QIDMs
+    # carry NOT_EXISTS conditions but no guardrail test resolved, flag it (silent-gap guard).
+    $entGuardrails = @(Get-GuardrailTests $entQidms $fieldIds)
+    $notExistsCount = 0
+    foreach ($q in $entQidms) { foreach ($c in $q.combinations) { $notExistsCount += @($c.requirements.conditions | Where-Object { $_.operator -eq 'NOT_EXISTS' }).Count } }
+    if ($notExistsCount -gt 0 -and $entGuardrails.Count -eq 0) {
+        $script:Unresolved.Add("${ent}: $notExistsCount NOT_EXISTS condition(s) but 0 guardrail tests emitted (winner combo unresolved)")
+    }
+    if ($true) {
+        foreach ($gr in $entGuardrails) {
             $gFills = @()
             $exFf  = $fieldIds | Where-Object { $_ -ieq $gr.excludedFid } | Select-Object -First 1
             $exVal = Get-TestValue ($exFf ?? $gr.excludedFid) $false
@@ -232,7 +254,7 @@ foreach ($ent in $entities) {
             $tests.Add([ordered]@{
                 n = $n; entity = $ent; query = $gr.loserQidm.query
                 comboKeyRef = $null; expectedKeyRef = $gr.winnerKr
-                kind = 'guardrail'; tier = 'Final'; fills = $gFills
+                kind = 'guardrail'; tier = 'Full'; fills = $gFills
             })
         }
     }
@@ -244,8 +266,8 @@ foreach ($ent in $entities) {
 $plan = [ordered]@{
     provider = $provName
     version  = $version
-    tier     = $Tier
-    note     = if ($isFinal) { 'Final: combos + individual any[] per field + all-any[] together + guardrail tests (kind=guardrail, manual). render/negative/guardrail are markers only — driver auto-submits combo/any-field/any kinds.' } else { 'Preliminary: render + every combo (required fields) + negative.' }
+    tier     = 'Full'
+    note     = 'Full pass (tiers removed 2026-07-01): render + every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative/guardrail are markers only — the driver auto-submits combo/any-field/any kinds.'
     testCount = $tests.Count
     tests    = $tests
 }
@@ -253,8 +275,18 @@ $plan = [ordered]@{
 if (-not $OutFile) {
     $docs = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs'
     if (-not (Test-Path $docs)) { New-Item -ItemType Directory -Path $docs | Out-Null }
-    $OutFile = Join-Path $docs "${provName}_TEST_PLAN_$($Tier).json"
+    $OutFile = Join-Path $docs "${provName}_TEST_PLAN.json"
 }
 [System.IO.File]::WriteAllText($OutFile, ($plan | ConvertTo-Json -Depth 8), (New-Object System.Text.UTF8Encoding($false)))
-Write-Host "[PASS] Test plan written: $OutFile ($($tests.Count) tests, tier $Tier)" -ForegroundColor Green
+Write-Host "[PASS] Test plan written: $OutFile ($($tests.Count) tests, full pass)" -ForegroundColor Green
 $tests | Where-Object { $_.kind -eq 'combo' } | ForEach-Object { "  T$($_.n) $($_.entity) $($_.comboKeyRef): $((@($_.fills | ForEach-Object { $_.fieldId + '=' + $_.value })) -join ', ')" } | Select-Object -First 12 | ForEach-Object { Write-Host $_ -ForegroundColor Gray }
+
+# Trust summary -- surface any unmapped fields / missing guardrails loudly (non-silent).
+if ($script:Unresolved.Count -gt 0) {
+    Write-Host ""
+    Write-Host "[WARN] $($script:Unresolved.Count) trust issue(s) in this plan -- combos may fire under-filled or guardrails are missing:" -ForegroundColor Yellow
+    foreach ($u in ($script:Unresolved | Select-Object -Unique)) { Write-Host "   - $u" -ForegroundColor Yellow }
+    Write-Host "   Resolve (add the field's test value to Get-TestValue, or confirm it's intentionally blank) before the re-run." -ForegroundColor Yellow
+} else {
+    Write-Host "[PASS] Trust check: every combo set[]/any[] field resolved a test value; guardrails present where NOT_EXISTS conditions exist." -ForegroundColor Green
+}

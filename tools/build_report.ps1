@@ -95,7 +95,6 @@ $resolvedStr = $resolved.ToString()
 $providerBase = $jsonName -replace '_(BASE|MC)$', ''
 $matrixFileName = "${providerBase}_TEST_MATRIX.txt"
 $matrixFile = Join-Path (Join-Path $jsonDir "docs") $matrixFileName
-$matrixFilePrelim = Join-Path (Join-Path $jsonDir "docs") "${providerBase}_TEST_MATRIX_PRELIMINARY.txt"
 $cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
 
 # Auto-detect casing convention so verify_build's camelCase check (CHECK 5) actually
@@ -206,14 +205,12 @@ if (Test-Path $cadPath) {
     } -ArgumentList $cadPath, $resolvedStr, $cadVariant
 }
 
-# Step 9: Test Matrix -- generate BOTH tiers (canonical Final + Preliminary subset)
+# Step 9: Test Matrix -- single all-or-nothing full pass (tiers removed 2026-07-01)
 if (Test-Path $testMatrixPath) {
     $jobs[9] = Start-Job -ScriptBlock {
-        param($tool, $json, $outFile, $prelimFile)
-        $f = & powershell -ExecutionPolicy Bypass -File $tool -Path $json -OutFile $outFile -Tier Final 2>&1 | Out-String
-        $p = & powershell -ExecutionPolicy Bypass -File $tool -Path $json -OutFile $prelimFile -Tier Preliminary 2>&1 | Out-String
-        $f + "`n" + $p
-    } -ArgumentList $testMatrixPath, $resolvedStr, $matrixFile, $matrixFilePrelim
+        param($tool, $json, $outFile)
+        & powershell -ExecutionPolicy Bypass -File $tool -Path $json -OutFile $outFile 2>&1 | Out-String
+    } -ArgumentList $testMatrixPath, $resolvedStr, $matrixFile
 }
 
 # Wait for all jobs to complete (5 minute timeout)

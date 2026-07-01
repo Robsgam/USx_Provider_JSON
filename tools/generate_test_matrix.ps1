@@ -6,24 +6,22 @@
   Co-fire QIDMs (VehicleStolenQuery, WantedPersonQuery) are folded as
   annotations on primary QIDM tests, not listed as separate tests.
 
-  Two tiers (the body of the matrix differs; combo COVERAGE is identical):
-    Final (default) -- render + every combo + per-combo any[] + guardrails + deselect
-                       + negative. The full FL_FCIC standard.
-    Preliminary     -- render + every combo fired with required (set[]) fields only +
-                       negative. No any[]/guardrail/deselect rows. A strict subset of Final.
+  Tiers were removed 2026-07-01 -- the matrix is always the single all-or-nothing full
+  pass: render + every combo + per-combo any[] + guardrails + deselect + negative
+  (the full FL_FCIC standard). The -Tier param is accepted for back-compat but ignored.
 
-  Usage: .\generate_test_matrix.ps1 -Path <provider.json> [-OutFile <path>] [-Variant <BASE|MC>] [-Tier <Preliminary|Final>]
+  Usage: .\generate_test_matrix.ps1 -Path <provider.json> [-OutFile <path>] [-Variant <BASE|MC>]
 #>
 
 param(
     [Parameter(Mandatory=$true)][string]$Path,
     [string]$OutFile,
     [ValidateSet('BASE','MC')][string]$Variant = 'MC',
-    [ValidateSet('Preliminary','Final')][string]$Tier = 'Final'
+    [string]$Tier = 'Full'   # accepted for back-compat; ignored (always full pass)
 )
 
 $ErrorActionPreference = "Stop"
-$isPrelim = ($Tier -eq 'Preliminary')
+$isPrelim = $false   # tiers removed; always emit the full matrix
 
 # ── Parse JSON ──
 $raw = [System.IO.File]::ReadAllText((Resolve-Path $Path), [System.Text.UTF8Encoding]::new($false))

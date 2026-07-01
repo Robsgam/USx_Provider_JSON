@@ -398,18 +398,18 @@ TOOLS
 
   tools/emit_test_plan.ps1
     Emits a machine-readable TEST_PLAN.json for the browser driver (__usxRunPlan). Converts
-    a provider JSON + tier into an ordered list of tests: render marker, every combo (set[]
-    fields resolved to form fieldId + test value), negative marker. Final tier adds any[]
-    permutations. Mirrors generate_test_matrix.ps1 logic in JSON format the driver consumes.
-    Usage: .\emit_test_plan.ps1 -Path <json> -Tier Preliminary
-           .\emit_test_plan.ps1 -Path <json> -Tier Final -OutFile <path.plan.json>
+    a provider JSON into the ordered FULL pass: render marker, every combo (set[] fields
+    resolved to form fieldId + test value), each combo's individual any[] tests + all-any,
+    guardrail tests, negative marker. Tiers removed 2026-07-01 (-Tier accepted but ignored).
+    Non-silently WARNs on unmapped combo fields / missing guardrails. Mirrors
+    generate_test_matrix.ps1 logic in JSON the driver consumes.
+    Usage: .\emit_test_plan.ps1 -Path <json> [-OutFile <path.plan.json>]
 
-  tools/set_tier.ps1
-    Sets the active USx Tenant Testing tier for a provider (Preliminary or Final). Writes
-    tests/.test_tier. Preliminary = render + every set[] combo + negative. Final = Preliminary
-    + any[] permutations + guardrail + deselect tests. Drives which matrix is run, what
-    post_test.ps1 stamps, and what block_entity.ps1 requires before blocking.
-    Usage: .\set_tier.ps1 -Provider <name> -Tier Preliminary|Final
+  tools/set_tier.ps1  (DEPRECATED 2026-07-01)
+    Tiers removed — testing is a single all-or-nothing "Full" pass. Retained as a no-op that
+    stamps tests/.test_tier = 'Full' and reports; any -Tier argument is ignored. block_entity.ps1
+    always requires full-pass coverage (every combo's XML log + an any[] log per combo + render
+    + negative). Usage: .\set_tier.ps1 -Provider <name>
 
   tools/compare_captures.ps1
     Validation-only tool (no import). For each record in an automation capture file, finds
