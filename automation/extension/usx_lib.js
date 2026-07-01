@@ -24,6 +24,40 @@
     return v;
   }
 
+  // React-Aria segmented date field (Arc "arc-date-input"): the field id lands on a wrapper
+  // DIV containing 3 contenteditable [role=spinbutton] divs (month/day/year) showing
+  // placeholder text (mm/dd/yyyy) until real input. There is NO <input>/<textarea> and no
+  // .value property -- it only responds to actual keyboard digit presses per segment, the
+  // same way a person types into it (zero-padded: 2 digits month/day, 4 digits year).
+  // Live-confirmed via DOM inspection 2026-07-01 (NJ_NJCJIS Person BirthDate).
+  function pressDigit(el, digit) {
+    const opts = { key: digit, code: 'Digit' + digit, keyCode: digit.charCodeAt(0), which: digit.charCodeAt(0), bubbles: true, cancelable: true };
+    el.dispatchEvent(new KeyboardEvent('keydown', opts));
+    el.dispatchEvent(new KeyboardEvent('keypress', opts));
+    el.dispatchEvent(new KeyboardEvent('keyup', opts));
+  }
+  async function fillDateSegments(fieldId, value) {
+    const wrapperEl = q(fieldId);
+    if (!wrapperEl) return { fieldId, kind: 'date-segments', ok: false, err: 'not found' };
+    const iso = toIsoDate(value);
+    const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return { fieldId, kind: 'date-segments', ok: false, err: 'expected ISO yyyy-MM-dd, got ' + value };
+    const [, yyyy, mm, dd] = m;
+    const segs = [...wrapperEl.querySelectorAll('[role="spinbutton"]')];
+    const findSeg = (re) => segs.find((s) => re.test(s.getAttribute('aria-label') || ''));
+    const monthSeg = findSeg(/month/i), daySeg = findSeg(/day/i), yearSeg = findSeg(/year/i);
+    if (!monthSeg || !daySeg || !yearSeg) return { fieldId, kind: 'date-segments', ok: false, err: 'segments not found (' + segs.length + ' spinbuttons)' };
+    for (const [seg, digits] of [[monthSeg, mm], [daySeg, dd], [yearSeg, yyyy]]) {
+      seg.focus();
+      for (const ch of digits) { pressDigit(seg, ch); await sleep(70); }
+      await sleep(100);
+    }
+    yearSeg.blur();
+    const readVal = (s) => (s.getAttribute('aria-valuetext') || '').trim();
+    const ok = !/empty/i.test(readVal(monthSeg)) && !/empty/i.test(readVal(daySeg)) && !/empty/i.test(readVal(yearSeg));
+    return { fieldId, kind: 'date-segments', ok, value: `${readVal(monthSeg)}/${readVal(daySeg)}/${readVal(yearSeg)}` };
+  }
+
   // Plain Chakra text input: React controlled-input pattern.
   function fillText(fieldId, value) {
     let el = q(fieldId);
@@ -95,12 +129,16 @@
     return { fieldId, kind: 'select', ok: re.test(display), display };
   }
 
-  // Auto-detect: react-select inputs carry class arc-select__input; else plain text.
+  // Auto-detect: react-select inputs carry class arc-select__input; a segmented date field
+  // (FormDate) has [role=spinbutton] children instead of an <input>; else plain text.
   async function fillField(fieldId, value) {
     const el = q(fieldId);
     if (!el) return { fieldId, ok: false, err: 'not found' };
     if ((el.className || '').toString().includes('arc-select__input')) {
       return await selectReactSelect(fieldId, value);
+    }
+    if (el.querySelector && el.querySelector('[role="spinbutton"]')) {
+      return await fillDateSegments(fieldId, value);
     }
     return fillText(fieldId, value);
   }
