@@ -27,14 +27,37 @@
   // React-Aria segmented date field (Arc "arc-date-input"): the field id lands on a wrapper
   // DIV containing 3 contenteditable [role=spinbutton] divs (month/day/year) showing
   // placeholder text (mm/dd/yyyy) until real input. There is NO <input>/<textarea> and no
-  // .value property -- it only responds to actual keyboard digit presses per segment, the
-  // same way a person types into it (zero-padded: 2 digits month/day, 4 digits year).
-  // Live-confirmed via DOM inspection 2026-07-01 (NJ_NJCJIS Person BirthDate).
-  function pressDigit(el, digit) {
-    const opts = { key: digit, code: 'Digit' + digit, keyCode: digit.charCodeAt(0), which: digit.charCodeAt(0), bubbles: true, cancelable: true };
+  // .value property.
+  //
+  // Live-confirmed via DOM experiment 2026-07-01 (NJ_NJCJIS Person BirthDate): dispatching
+  // digit keydown/keypress/keyup does NOTHING, and dispatching beforeinput/input does NOTHING
+  // -- this widget only responds to ArrowUp/ArrowDown. Also confirmed: the FIRST ArrowUp on an
+  // "Empty" segment does not increment by 1 -- it "activates" the segment to its existing
+  // (pre-interaction) aria-valuenow. Only presses after that behave as a true +/-1 step.
+  // So: read the starting aria-valuenow, press ArrowUp once to activate if currently Empty,
+  // then walk from wherever it lands to the target with plain +/-1 presses.
+  function pressArrow(el, up) {
+    const opts = { key: up ? 'ArrowUp' : 'ArrowDown', code: up ? 'ArrowUp' : 'ArrowDown', keyCode: up ? 38 : 40, which: up ? 38 : 40, bubbles: true, cancelable: true };
     el.dispatchEvent(new KeyboardEvent('keydown', opts));
-    el.dispatchEvent(new KeyboardEvent('keypress', opts));
-    el.dispatchEvent(new KeyboardEvent('keyup', opts));
+  }
+  async function stepSegment(seg, targetVal) {
+    const readNow = () => parseInt(seg.getAttribute('aria-valuenow'), 10);
+    const readText = () => (seg.getAttribute('aria-valuetext') || '').trim();
+    seg.focus();
+    await sleep(80);
+    let current = readNow();
+    if (/empty/i.test(readText())) {
+      pressArrow(seg, true);
+      await sleep(90);
+      current = readNow();
+    }
+    const delta = targetVal - current;
+    for (let i = 0; i < Math.abs(delta); i++) {
+      pressArrow(seg, delta >= 0);
+      await sleep(35);
+    }
+    await sleep(80);
+    return { ok: readNow() === targetVal && !/empty/i.test(readText()), value: readText() };
   }
   async function fillDateSegments(fieldId, value) {
     const wrapperEl = q(fieldId);
@@ -47,15 +70,11 @@
     const findSeg = (re) => segs.find((s) => re.test(s.getAttribute('aria-label') || ''));
     const monthSeg = findSeg(/month/i), daySeg = findSeg(/day/i), yearSeg = findSeg(/year/i);
     if (!monthSeg || !daySeg || !yearSeg) return { fieldId, kind: 'date-segments', ok: false, err: 'segments not found (' + segs.length + ' spinbuttons)' };
-    for (const [seg, digits] of [[monthSeg, mm], [daySeg, dd], [yearSeg, yyyy]]) {
-      seg.focus();
-      for (const ch of digits) { pressDigit(seg, ch); await sleep(70); }
-      await sleep(100);
-    }
-    yearSeg.blur();
-    const readVal = (s) => (s.getAttribute('aria-valuetext') || '').trim();
-    const ok = !/empty/i.test(readVal(monthSeg)) && !/empty/i.test(readVal(daySeg)) && !/empty/i.test(readVal(yearSeg));
-    return { fieldId, kind: 'date-segments', ok, value: `${readVal(monthSeg)}/${readVal(daySeg)}/${readVal(yearSeg)}` };
+    const rMonth = await stepSegment(monthSeg, parseInt(mm, 10));
+    const rDay = await stepSegment(daySeg, parseInt(dd, 10));
+    const rYear = await stepSegment(yearSeg, parseInt(yyyy, 10));
+    const ok = rMonth.ok && rDay.ok && rYear.ok;
+    return { fieldId, kind: 'date-segments', ok, value: `${rMonth.value}/${rDay.value}/${rYear.value}` };
   }
 
   // Plain Chakra text input: React controlled-input pattern.
