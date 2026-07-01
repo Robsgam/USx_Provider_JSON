@@ -1,7 +1,7 @@
 NJ_NJCJIS STATUS
 =================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated    : 2026-06-30
+Last updated    : 2026-07-01
 Current version : v4.7
 Import status   : v4.7 rebuilt 2026-06-26 (VehicleMakeName codeType fix); re-import + full re-test from T1 required. v4.6 imported to USx TEST tenant 2026-06-25 -- no import errors.
 
@@ -113,8 +113,8 @@ IMPORT HISTORY:
     T4   Firearm  Render   1 card (NCIC FIREARM QUERY)  PASS
     T5   Article  Render   1 card (NCIC ARTICLE QUERY)  PASS
     Phase 2 - Vehicle combos:
-  ---   2026-06-30 Vehicle    VehReg:RQ            PASS     RQ (auto)
-  ---   2026-06-30 Vehicle    VehReg:RQN           PASS     RQN (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ            PASS     RQ (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQN           PASS     RQN (auto)
     T8   Vehicle  RQ_RAND  VehReg plate RAND            PASS  (plate+state+plateType+year+random=Y)
     T9   Vehicle  RQ       VehReg plate FULL            PASS  (plate+state+plateType+year+random=N)
     T10  Vehicle  QVV      VehStolen VIN                PASS  (VIN+image, queriesToDeselect)
@@ -162,7 +162,7 @@ IMPORT HISTORY:
     T6   Vehicle  QVP    VehStolen plate         PASS  (plate+state+image, queriesToDeselect confirmed)
     T7   Vehicle  QVN    VehStolen NCIC#         PASS  (NCICNumber+image, no State; auto-selected Stolen for exclusive field)
     T8   Vehicle  QVV    VehStolen VIN           PASS  (VIN+image, no State; RMS co-fire vinNumber)
-  ---   2026-06-30 Person     DL:DQN               PASS     DQN (auto)
+  ---   2026-07-01 Person     DL:DQN               PASS     DQN (auto)
     T10  Person   DQ     DL Name+DOB             PASS  (Name=DOE,JOHN+DOB=01151985+state+image=Y, FormatString+ParseDate)
     T11  Firearm  QG     Firearm serial          PASS  (serial+image)
     T12  Article  QA     Article serial+type      PASS  (serial+typeCode+image, both set[] required)
@@ -260,4 +260,25 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
+  ---   2026-07-01 Vehicle    VehReg:RQN_af_RandomRequest PASS     RQN_af_RandomRequest (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQN_af_ImageIndicator PASS     RQN_af_ImageIndicator (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQN_any       PASS     RQN_any (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_RandomRequest PASS     RQ_af_RandomRequest (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_LicensePlateTypeCode PASS     RQ_af_LicensePlateTypeCode (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_ImageIndicator PASS     RQ_af_ImageIndicator (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_LicensePlateYear PASS     RQ_af_LicensePlateYear (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_any        PASS     RQ_any (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQN_af_RandomRequest PASS     RQN_af_RandomRequest (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQN_af_ImageIndicator PASS     RQN_af_ImageIndicator (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQN_any       PASS     RQN_any (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_RandomRequest PASS     RQ_af_RandomRequest (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_LicensePlateTypeCode PASS     RQ_af_LicensePlateTypeCode (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_ImageIndicator PASS     RQ_af_ImageIndicator (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_af_LicensePlateYear PASS     RQ_af_LicensePlateYear (auto)
+  ---   2026-07-01 Vehicle    VehReg:RQ_any        PASS     RQ_any (auto)
+  ---   2026-07-01 Person     DL:DQN_af_ImageIndicator PASS     DQN_af_ImageIndicator (auto)
+  ---   2026-07-01 Person     DL:DQN_any           PASS     DQN_any (auto)
+  ---   2026-07-01 Boat       Boat:QBN_af_ImageIndicator PASS     QBN_af_ImageIndicator (auto)
+  ---   2026-07-01 Boat       Boat:QBN_af_ImageIndicator PASS     QBN_af_ImageIndicator (auto)
+  ---   2026-07-01 Boat       Boat:QB_af_ImageIndicator PASS     QB_af_ImageIndicator (auto)
   (none yet -- v4.7 USx Tenant Testing restarted from Test 1; prior logs archived to tests/_archive_pre_v4.7/)
