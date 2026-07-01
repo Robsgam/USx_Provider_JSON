@@ -117,6 +117,14 @@
     return fn();
   }
 
+  // Close a dropdown left open after a failed fill (Escape, then blur as a fallback) -- live-
+  // confirmed the field is otherwise left in an open dropdown state at Send time, which can
+  // also interfere with subsequent fields' open/scope detection.
+  function closeDropdown(input) {
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, which: 27, bubbles: true, cancelable: true }));
+    input.blur();
+  }
+
   // react-select (Arc): open menu -> filter by CODE -> click matching option.
   // Option labels render as "<CODE> - <Name>"; combo values are CODEs.
   //
@@ -140,7 +148,7 @@
     // 2-3 options) still failing intermittently even with a 2s option-render poll pointed at
     // THIS earlier, unconfirmed step rather than option-render speed.
     let t = Date.now();
-    const opened = await pollFor(() => document.querySelector('[class*="select__menu"], [role=option]'), 1500, 100);
+    const opened = await pollFor(() => document.querySelector('[class*="select__menu"], [class*="select__option"]'), 1500, 100);
     dbg(opened ? `menu opened after ${Date.now() - t}ms` : `menu open NOT confirmed after ${Date.now() - t}ms -- proceeding best-effort`);
 
     Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, value);
@@ -154,21 +162,26 @@
     const ariaControls = input.getAttribute('aria-controls') || (control && control.getAttribute('aria-controls'));
     const scopeRoot = () => (ariaControls && document.getElementById(ariaControls)) || document;
 
-    // STRICTLY [role="option"], not [class*="select__option"]. Live-confirmed root cause
-    // (2026-07-01, full option dump): the class-based selector also matched SUBSTRING-HIGHLIGHT
-    // spans nested inside OTHER (non-matching) options -- e.g. filtering "GA" against
-    // "MI - Michigan" (which contains "ga" in "michiGAn") split that label into 3 child spans
-    // ("MI - Michi" / "ga" / "n") for highlighting, and the isolated "ga" fragment trivially
-    // matched the anchored regex against itself. Same for "M" matching the "m" inside "Female".
-    // A highlight fragment is never itself an ARIA option row, so role=option alone excludes it.
+    // Live-confirmed root cause (2026-07-01, full option dump): the class-based selector also
+    // matches SUBSTRING-HIGHLIGHT spans NESTED INSIDE other (non-matching) options -- e.g.
+    // filtering "GA" against "MI - Michigan" (which contains "ga" in "michiGAn") splits that
+    // label into 3 child spans ("MI - Michi" / "ga" / "n") for highlighting, and the isolated
+    // "ga" fragment trivially matches the anchored regex against itself.
+    // Tried [role="option"] alone to exclude these (previous commit) -- WRONG, this component
+    // doesn't set role=option on the real rows at all, so that matched nothing and broke every
+    // field including the previously-working ImageIndicator. The correct fix: keep the
+    // class-based selector, but discard any matched element that is a DESCENDANT of another
+    // matched element -- a highlight fragment is always nested inside its real parent row, so
+    // this keeps only the outermost (real) rows regardless of what class/role they carry.
     t = Date.now();
     const found = await pollFor(() => {
-      const opts = [...scopeRoot().querySelectorAll('[role="option"]')];
+      const all = [...scopeRoot().querySelectorAll('[class*="select__option"]')];
+      const opts = all.filter((o) => !all.some((other) => other !== o && other.contains(o)));
       if (!opts.length) return null;
       const m = opts.find((o) => re.test((o.textContent || '').trim()));
       return { opt: m || opts[0], matched: !!m, count: opts.length, allTexts: opts.map((o) => (o.textContent || '').trim()) };
     }, 2500, 120);
-    if (!found) { dbg(`no options rendered after ${Date.now() - t}ms (aria-controls=${ariaControls || 'none'}) -- FAIL`); return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value }; }
+    if (!found) { dbg(`no options rendered after ${Date.now() - t}ms (aria-controls=${ariaControls || 'none'}) -- FAIL`); closeDropdown(input); return { fieldId, kind: 'select', ok: false, err: 'no option for ' + value }; }
     const { opt, matched, count, allTexts } = found;
     dbg(`${count} option(s) (aria-controls=${ariaControls || 'none, unscoped'}) after ${Date.now() - t}ms; using ${matched ? 'regex match' : `opts[0] FALLBACK (no regex match for "${value}")`}: "${(opt.textContent || '').trim()}"`);
     // Full option dump whenever the match looks suspicious (anomalously short text, e.g. the
