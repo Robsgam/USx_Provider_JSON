@@ -110,7 +110,12 @@ Current: **v4.6** — 66P/0F/0W/0LIM | live test PENDING (full re-test from T1) 
 
 ## CA_CLETS (CA_CLETS_OFML)
 
-Current: **v2.11** — 75P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.11.json`
+Current: **v2.12** — 77P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.12.json`
+
+### v2.12 (2026-07-01) — Restore in-state DriverLicenseQuery combos (ID.L1 / IN.L1)
+- DL 6 → 8 combos: restored `ID.L1` (in-state OLN) + `IN.L1` (in-state Name), the real devdoc keyRefs v2.11 removed
+- v2.11 dropped them expecting "CommSys auto-dispatches, consistent with Vehicle pattern" — but Vehicle keeps an unconditioned in-state catchall (`IA.QV`/`IA.QVK`) and DL kept none, so a plain in-state driver lookup (OLN-only / name-only, no State) fired nothing
+- Restored as gated catchalls; `IR.QVC.O`/`IR.QVC.N` conditions tightened for mutual exclusion; verify_build CHECK 16 reachability CLEAN. Full re-test from T1
 
 ### v2.10 (2026-06-26) — VehicleMakeName code source corrected (RND-62365)
 - VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present)

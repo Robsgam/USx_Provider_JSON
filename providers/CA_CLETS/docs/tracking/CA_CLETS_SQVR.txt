@@ -1,21 +1,21 @@
-CA_CLETS -- Supported Query Validation Report
+﻿CA_CLETS -- Supported Query Validation Report
 ===============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-01
-JSON version: v2.11
-Validator: 75 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: PENDING -- full re-test from T1 required (2026-07-01: SQVR format normalized to
-  the [PENDING]/[CONFIRMED]/[FAILED] + keyReference: convention post_test.ps1/reset_test_package.ps1
-  expect -- the prior Status: [PASS] format was never actually machine-matchable, so v2.11's
-  "all 5 entities confirmed" claim was never mechanically re-verifiable by the current toolchain).
+JSON version: v2.12
+Validator: 77 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Live test: PENDING -- full re-test from T1 required (v2.12 restored in-state DL combos; SQVR
+  format uses the PENDING / CONFIRMED / FAILED marker + keyReference: convention that
+  post_test.ps1/reset_test_package.ps1 machine-match; the pre-normalization Status marker
+  format was never machine-matchable, so v2.11's "all 5 entities confirmed" claim was never
+  mechanically re-verifiable by the current toolchain).
 
-DRIFT FOUND DURING NORMALIZATION (2026-07-01): the prior SQVR listed 2 DriverLicenseQuery combos
-  -- ID.L1 (in-state OLN) and IN.L1 (in-state Name) -- that do NOT exist in the shipped
-  CA_CLETS_v2.11.json (confirmed directly against the JSON: DriverLicenseQuery ships exactly 6
-  combos -- NLTS.DQ.N, NLTS.DQ, IR.QVC.N/.O/.C/.S -- no ID.L1/IN.L1). Dropped from this SQVR;
-  the JSON is the single source of truth. Whether these were legitimately removed at some past
-  rebuild (SQVR just never updated) or represent a real coverage gap (in-state OLN/Name driver
-  license lookup no longer built) is unresolved -- flag for follow-up, do not silently assume.
+DRIFT RESOLVED (v2.12, 2026-07-01): ID.L1 (in-state OLN) and IN.L1 (in-state Name) were RESTORED
+  to DriverLicenseQuery. They are REAL devdoc keyReferences that v2.11 removed on the theory
+  "CommSys auto-dispatches pure (In) queries, consistent with Vehicle pattern" -- but Vehicle
+  keeps an unconditioned in-state catchall (IA.QV/IA.QVK) and DL kept none, so a plain in-state
+  driver lookup (OLN-only or name-only, no State) fired nothing after v2.11. Restored as gated
+  catchalls (verify_build CHECK 16 reachability CLEAN). DL now ships 8 combos.
 
 NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39/40 matched.
 - 13 IV.4* plate-type conditions combos: covered by T14 log (IV.4_T14_ConditionsRouting_PlateType).
@@ -69,28 +69,31 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
 ================================================================================
 
   Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
-  6 combos: 2 NLTS (OOS), 4 IR.QVC (criminal records)
-  (ID.L1/IN.L1 removed -- see DRIFT note above; not in shipped JSON)
+  8 combos: 2 NLTS (OOS), 4 IR.QVC (criminal records), 2 in-state (ID.L1 OLN, IN.L1 name)
+  OLN cascade:  OLN+State -> NLTS.DQ ; OLN+CII(no State) -> IR.QVC.O ; OLN-only -> ID.L1
+  Name cascade: Name+State -> NLTS.DQ.N ; Name+Sex(no State) -> IR.QVC.N ; Name-only -> IN.L1
+  (OLN>Name priority: all Name combos gated OLN NOT_EXISTS)
 
   NLTS.DQ -- OOS OLN query (Nlets) [PENDING]
     set: PurposeCode, OperatorLicenseNumber, RegistrationState
     any: (none)
+    conditions: RegistrationState EXISTS
     keyReference: NLTS.DQ
 
   NLTS.DQ.N -- OOS Name query (Nlets) [PENDING]
     set: PurposeCode, NameLast, NameFirst, RegistrationState
     any: BirthDate
-    conditions: OLN NOT_EXISTS
+    conditions: OLN NOT_EXISTS, RegistrationState EXISTS
     keyReference: NLTS.DQ.N
 
-  IR.QVC.O -- Criminal records by OLN [PENDING]
-    set: PurposeCode, OperatorLicenseNumber, CriminalIdNumber
+  IR.QVC.O -- Criminal records by OLN+CII [PENDING]
+    set: PurposeCode, OperatorLicenseNumber, criminalIdNumber
     any: socialSecurityNumber, age
-    conditions: RegistrationState NOT_EXISTS
+    conditions: RegistrationState NOT_EXISTS, criminalIdNumber EXISTS
     keyReference: IR.QVC.O
 
   IR.QVC.C -- Criminal records by CII [PENDING]
-    set: PurposeCode, CriminalIdNumber
+    set: PurposeCode, criminalIdNumber
     any: socialSecurityNumber, age
     conditions: OLN NOT_EXISTS
     keyReference: IR.QVC.C
@@ -104,8 +107,20 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   IR.QVC.N -- Criminal records by Name+Sex [PENDING]
     set: PurposeCode, NameLast, NameFirst, SexCode
     any: BirthDate, age, addressCounty, height, raceCode, appsRequestIndicator
-    conditions: OLN NOT_EXISTS
+    conditions: OLN NOT_EXISTS, RegistrationState NOT_EXISTS, SexCode EXISTS
     keyReference: IR.QVC.N
+
+  ID.L1 -- In-state OLN query (catchall) [PENDING]
+    set: PurposeCode, OperatorLicenseNumber
+    any: (none)
+    conditions: RegistrationState NOT_EXISTS, criminalIdNumber NOT_EXISTS
+    keyReference: ID.L1   (real devdoc keyRef; restored v2.12)
+
+  IN.L1 -- In-state Name query (catchall) [PENDING]
+    set: PurposeCode, NameLast, NameFirst
+    any: BirthDate
+    conditions: OLN NOT_EXISTS, RegistrationState NOT_EXISTS, SexCode NOT_EXISTS
+    keyReference: IN.L1   (real devdoc keyRef; restored v2.12)
 
 ================================================================================
 3. DriverHistoryQuery -- Person Entity
@@ -203,15 +218,15 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
 SUMMARY
 ================================================================================
 
-  Total live combos: 23
+  Total live combos: 25
     VehicleRegistrationQuery: 5 (2 NLTS + 2 IA + 1 IN) + 13 DELETED
-    DriverLicenseQuery: 6 (2 NLTS + 4 IR.QVC)
+    DriverLicenseQuery: 8 (2 NLTS + 4 IR.QVC + 2 in-state ID.L1/IN.L1)
     DriverHistoryQuery: 2 (2 NLTS)
     GunQuery: 2 (1 IG serial + 1 IG name)
     ArticleSingleQuery: 2 (1 serial + 1 OAN)
     BoatQuery: 6 (3 NLTS + 3 IA) + 1 DELETED
 
-  CONFIRMED: none -- full re-test from T1 required (SQVR format normalized 2026-07-01)
+  CONFIRMED: none -- full re-test from T1 required (v2.12 restored in-state DL combos)
   PENDING:   NLTS.RQ.P, NLTS.RQ.V, IA.QV, IA.QVK, IN.VP, NLTS.DQ, NLTS.DQ.N, IR.QVC.O, IR.QVC.C,
-             IR.QVC.S, IR.QVC.N, NLTS.KQ.N, NLTS.KQ.O, IG.QGH, IG.QGB, IP.QA.S, IP.QA.O,
-             NLTS.BQ.N, NLTS.BQ.H, NLTS.BQ.R, IA.QB.H, IA.QB.O, IA.QB.R -- 23/23
+             IR.QVC.S, IR.QVC.N, ID.L1, IN.L1, NLTS.KQ.N, NLTS.KQ.O, IG.QGH, IG.QGB, IP.QA.S,
+             IP.QA.O, NLTS.BQ.N, NLTS.BQ.H, NLTS.BQ.R, IA.QB.H, IA.QB.O, IA.QB.R -- 25/25

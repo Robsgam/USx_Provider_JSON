@@ -1,4 +1,12 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.12 (2026-07-01): RESTORED in-state DriverLicenseQuery combos ID.L1 (OLN) + IN.L1 (name),
+#   DL 6 -> 8 combos. v2.11 removed them expecting "CommSys auto-dispatches, consistent with
+#   Vehicle pattern" -- but Vehicle keeps an unconditioned in-state catchall (IA.QV/IA.QVK) and
+#   DL kept none, so a plain in-state driver lookup (OLN-only or name-only, no State) fired
+#   nothing (NLTS gated State EXISTS; IR.QVC needs CII/SSN/Sex). ID.L1/IN.L1 are REAL devdoc
+#   keyRefs, restored as gated catchalls; IR.QVC.O gets CriminalIdNumber EXISTS and IR.QVC.N
+#   gets RegistrationState NOT_EXISTS + SexCode EXISTS so all 8 combos are mutually exclusive
+#   and reachable (verify_build CHECK 16). Full re-test from T1.
 # v2.11 (2026-06-29): RegistrationState EXISTS condition added to all 6 NLTS combos
 #   (NLTS.DQ, NLTS.DQ.N, NLTS.RQ.V, NLTS.BQ.N, NLTS.BQ.H, NLTS.BQ.R). Platform fires
 #   combos on primaryFieldReference presence -- NOT on all-set[] presence. Without this
@@ -18,8 +26,9 @@
 #     wire = MessageType=VehicleRegistrationQuery, keyRef internal) + removed inert State NOT_EQUALS.
 #     v2.6: PascalCase USx fieldIds, identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg),
 #           CAD defaults on all combos (CAD ignores form initialValue; combo defaults[] required).
-#   DriverLicenseQuery         NLTS.DQ(N/O) + IR.QVC(OLN/Name/CriminalId/SSN) = 6 combos
-#     Pure (In) combos IN.L1/ID.L1 removed -- auto-dispatched by CommSys (same as Vehicle (In) combos)
+#   DriverLicenseQuery         NLTS.DQ(N/O) + IR.QVC(OLN/Name/CriminalId/SSN) + ID.L1 + IN.L1 = 8 combos
+#     v2.12: restored in-state ID.L1 (OLN) + IN.L1 (name) catchalls (DL had no in-state backstop
+#     unlike Vehicle IA.QV); real devdoc keyRefs, gated NOT_EXISTS for mutual exclusion.
 #   DriverHistoryQuery         NLTS.KQ(N/O) = 2 combos, DH-suffix fields
 #   GunQuery                   IG.QGH (name) + IG.QGB (serial) = 2 combos
 #   ArticleSingleQuery         IP.QA(S/O) = 2 combos
@@ -29,7 +38,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.11"
+    [string]$Version = "2.12"
 )
 
 $ErrorActionPreference = "Stop"
@@ -181,13 +190,23 @@ $vehRegQuery = [PSCustomObject]@{
     targetEntity       = 'Vehicle'
 }
 
-# --- 2. DriverLicenseQuery -- 6 combos ---
-# NLTS.DQ(N/O) = OOS name/OLN, IR.QVC(OLN/CriminalId/SSN/Name) = criminal records search.
-# Pure (In) combos IN.L1 (name) + ID.L1 (OLN) removed v2.11 -- CommSys auto-dispatches them,
-# consistent with Vehicle pattern (Vehicle (In) combos 1-3 also not built in JSON).
+# --- 2. DriverLicenseQuery -- 8 combos ---
+# NLTS.DQ(N/O) = OOS name/OLN, IR.QVC(OLN/CriminalId/SSN/Name) = criminal records search,
+# ID.L1/IN.L1 = pure in-state OLN/name lookups.
+# v2.12 RESTORE: ID.L1 (OLN) + IN.L1 (name) were removed v2.11 on the theory "CommSys
+# auto-dispatches pure (In) queries, consistent with Vehicle pattern" -- but the Vehicle
+# analogy did NOT hold for DL. Vehicle keeps an unconditioned in-state catchall (IA.QV/IA.QVK)
+# so plate/VIN-only-no-State still fires and the server routes in-state; DL kept NO OLN-only /
+# name-only catchall, so after v2.11 a plain in-state driver lookup (local driver, no State
+# entered -- the common case) fired nothing (NLTS gated State EXISTS, IR.QVC needs CII/SSN/Sex).
+# ID.L1/IN.L1 are REAL devdoc keyReferences (not synthetic), restored as the last (catchall)
+# combos, gated NOT_EXISTS so the OOS + criminal paths win when their discriminators are present.
+# Firing cascade (OLN): OLN+State->NLTS.DQ; OLN+CII(noState)->IR.QVC.O; OLN-only->ID.L1.
+# Firing cascade (Name): Name+State->NLTS.DQ.N; Name+Sex(noState)->IR.QVC.N; Name-only->IN.L1.
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'NLTS.DQ' for OOS combos (synthetic: NLTS.DQ.N=name, NLTS.DQ=OLN)
 # and 'IR.QVC' for criminal records combos (synthetic: IR.QVC.O/.N/.C/.S per field path).
+# ID.L1 + IN.L1 are the metadata's own keyRefs (real CLETS transaction codes, no suffix).
 # See PLATFORM_CONSTRAINTS.txt -- synthetic keyRef naming convention.
 $dlQuery = [PSCustomObject]@{
     attributes = @(
@@ -261,6 +280,11 @@ $dlQuery = [PSCustomObject]@{
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    # v2.12: State NOT_EXISTS (State-present name search routes OOS NLTS.DQ.N) +
+                    # SexCode EXISTS (name-without-Sex routes in-state IN.L1). Keeps IR.QVC.N,
+                    # NLTS.DQ.N, and IN.L1 mutually exclusive on the Name path.
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('SexCode');           operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -278,6 +302,10 @@ $dlQuery = [PSCustomObject]@{
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
+                    # v2.12: criminalIdNumber EXISTS -- OLN-without-CII routes in-state ID.L1;
+                    # OLN+CII fires this criminal super-inquiry. Keeps IR.QVC.O and ID.L1
+                    # mutually exclusive on the OLN path (both State NOT_EXISTS).
+                    [PSCustomObject]@{ field = @('criminalIdNumber');  operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -318,8 +346,49 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IR.QVC.S'
             state                 = 'In/Out'
         }
+        # --- ID.L1: pure in-state OLN lookup (catchall). Real devdoc keyRef. Fires when OLN
+        #     present with no State (OOS NLTS.DQ needs State EXISTS) and no CII (IR.QVC.O needs
+        #     CriminalIdNumber EXISTS) -- i.e. the plain "look up a local driver by OLN" case.
+        #     v2.12 restore: closed the in-state backstop gap left by v2.11's removal. ---
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('purposeCode','OperatorLicenseNumber')
+                any        = @()
+                defaults   = @(
+                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('criminalIdNumber');  operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'ID.L1'
+            state                 = 'In/Out'
+        }
+        # --- IN.L1: pure in-state name lookup (catchall). Real devdoc keyRef. Fires when Name
+        #     present with no OLN (OLN>Name priority), no State (OOS NLTS.DQ.N needs State EXISTS)
+        #     and no SexCode (IR.QVC.N needs SexCode EXISTS) -- the plain "look up a local driver
+        #     by name" case. v2.12 restore. ---
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('purposeCode','NameLast','NameFirst')
+                any        = @('BirthDate')
+                defaults   = @(
+                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('SexCode');               operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IN.L1'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'DriverLicenseQuery -- 6 combos: NLTS.DQ.N/NLTS.DQ (OOS name/OLN), IR.QVC.N/IR.QVC.O/IR.QVC.C/IR.QVC.S (criminal records by name/OLN+CII/CII/SSN). Pure (In) combos IN.L1/ID.L1 removed v2.11 (CommSys auto-dispatches; consistent with Vehicle pattern). OLN cascade: OLN+State->NLTS.DQ, OLN+CII->IR.QVC.O, CII->IR.QVC.C, SSN->IR.QVC.S, Name+Sex->IR.QVC.N.'
+    description     = 'DriverLicenseQuery -- 8 combos: NLTS.DQ.N/NLTS.DQ (OOS name/OLN), IR.QVC.N/IR.QVC.O/IR.QVC.C/IR.QVC.S (criminal records by name/OLN+CII/CII/SSN), ID.L1/IN.L1 (in-state OLN/name). v2.12: restored in-state ID.L1/IN.L1 (real devdoc keyRefs) as catchalls -- v2.11 removal left DL with no OLN-only/name-only backstop (unlike Vehicle IA.QV). OLN cascade: OLN+State->NLTS.DQ, OLN+CII->IR.QVC.O, OLN-only->ID.L1. Name cascade: Name+State->NLTS.DQ.N, Name+Sex->IR.QVC.N, Name-only->IN.L1. CII->IR.QVC.C, SSN->IR.QVC.S.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_DriverLicenseQuery"
     type            = 'QUERYINPUTDATAMAPPING'

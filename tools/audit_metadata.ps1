@@ -375,7 +375,12 @@ function Audit-Provider {
     # Per-provider ACCEPTED-DIVERGENCE registry (learning mechanism). Lines:
     #   query | keyRef | field | rule | reason | source | date    (# = comment)
     $acceptedDiv = @{}
-    $acceptedDivFile = Join-Path $jsonDir ("docs\{0}_ACCEPTED_DIVERGENCES.txt" -f $providerName)
+    # docs/ reorg (2026-07-01): ACCEPTED_DIVERGENCES is a "tracking" category doc for migrated
+    # providers (docs/tracking/), flat docs/ for the rest. Check tracking/ first, then fall back.
+    $acceptedDivFile = Join-Path $jsonDir ("docs\tracking\{0}_ACCEPTED_DIVERGENCES.txt" -f $providerName)
+    if (-not (Test-Path $acceptedDivFile)) {
+        $acceptedDivFile = Join-Path $jsonDir ("docs\{0}_ACCEPTED_DIVERGENCES.txt" -f $providerName)
+    }
     if (Test-Path $acceptedDivFile) {
         foreach ($ln in (Get-Content $acceptedDivFile)) {
             $s = $ln.Trim()

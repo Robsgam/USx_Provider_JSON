@@ -6,15 +6,12 @@ All JSON versions produced for this provider.
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_CLETS_v2.10.json | v2.10 | Current | 77P/0F/0W/0LIM. VehicleMakeName code-source fix (RND-62365). Live test PENDING (full re-test from T1). |
+| CA_CLETS_v2.12.json | v2.12 | Current | 77P/0F/0W/0LIM. Restored in-state DL combos ID.L1/IN.L1 (DL 6->8). Live test PENDING (full re-test from T1). |
 
-## phases/current/
+## phases/
 
-| File | Version | Date | Notes |
-|------|---------|------|-------|
-| CA_CLETS_v2.4_2026-05-21.json | v2.4 | 2026-05-21 | Single JSON merge. 40/40 combos. |
-| CA_CLETS_v2.4_2026-05-20.json | v2.4 | 2026-05-20 | IV.4* conditions routing. |
-| CA_CLETS.json | -- | -- | Unversioned current copy. |
+phases/ retired 2026-07-01 (git history is the version-snapshot authority; build script no longer
+writes phase files). Prior snapshots remain recoverable via `git log`/`git show`.
 
 ## Legacy (deleted, in git history)
 
@@ -28,11 +25,16 @@ All JSON versions produced for this provider.
 
 
 
+## v2.12 (2026-07-01)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_v2.12.json | v2.12 | Current | 77P/0F/0W/0LIM. Restored in-state DL combos ID.L1/IN.L1 (DL 6->8). |
 ## v2.11 (2026-06-29)
 
 | File | Version | Status | Notes |
 |------|---------|--------|-------|
-| CA_CLETS_v2.11.json | v2.11 | Current | 75P/0F/0W/0LIM. |
+| CA_CLETS_v2.11.json | v2.11 | Superseded | 75P/0F/0W/0LIM. |
 ## v2.10 (2026-06-26)
 
 | File | Version | Status | Notes |

@@ -1,14 +1,14 @@
-================================================================
+﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.11.json
-  Generated: 2026-06-29 11:35
+  Source: CA_CLETS_v2.12.json
+  Generated: 2026-07-01 19:30
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_v2.11.json
+  CommSys Query Simulator -- CA_CLETS_v2.12.json
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
@@ -67,7 +67,7 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_CLETS_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 13  |  Combos: 6
+    Query: DriverLicenseQuery  |  Attrs: 13  |  Combos: 8
     [SKIP] NLTS.DQ.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] NLTS.DQ
@@ -80,10 +80,12 @@ QUERY SIMULATION
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
       </Transaction>
-    [SKIP] IR.QVC.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] IR.QVC.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']; RegistrationState NOT_EXISTS [value='NJ']
     [SKIP] IR.QVC.O -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
     [SKIP] IR.QVC.C -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
     [SKIP] IR.QVC.S -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] ID.L1 -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']; criminalIdNumber NOT_EXISTS [value='CA12345678']
+    [SKIP] IN.L1 -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']; RegistrationState NOT_EXISTS [value='NJ']; SexCode NOT_EXISTS [value='M']
 
     >> PLATFORM FIRES: NLTS.DQ (first matching combo)
     >> UNION POOL (platform serializes): CaRequestPurposeCode=D, OperatorLicenseNumber=D123456789, State=NJ

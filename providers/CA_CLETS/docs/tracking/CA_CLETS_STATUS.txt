@@ -1,28 +1,28 @@
-CA_CLETS -- Build Status
+﻿CA_CLETS -- Build Status
 =========================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated    : 2026-07-01
-Current version : v2.11
+Current version : v2.12
 
-Current: v2.11 | 75P/0F/0W/0LIM
+Current: v2.12 | 77P/0F/0W/0LIM
 Provider: CA_CLETS
 
   NOTE (2026-07-01): this file was rebuilt clean. Prior copy had accumulated ~36 duplicate empty
   "LIVE TEST RESULTS" headers + UTF-8 mojibake + dated test rows bled into the architecture
   section (years of the post_test.ps1 append/insert bug family, since fixed). Historical v1.8/v2.4
-  test-matrix detail was dropped here (superseded by the v2.11 reset); the durable platform
-  findings from those runs are preserved under KEY FINDINGS below. Fresh v2.11 full-pass results
-  land in the LIVE TEST RESULTS section at the bottom as testing runs.
+  test-matrix detail was dropped here (superseded by the reset); the durable platform findings
+  from those runs are preserved under KEY FINDINGS below. Fresh v2.12 full-pass results land in
+  the LIVE TEST RESULTS section at the bottom as testing runs.
 
 ARCHITECTURE
 --------------------
 Entities: 5 (Vehicle, Person, Firearm, Article, Boat)
 QIFs:     5 (1 per entity, multi-card layout)
 QIDMs:    6 CommSys + 2 RMS = 8 total
-Combos:   23 live CommSys (single JSON, multi-card) + 14 DELETED (IV.4*/IL.A1/IV.4B poisoned-array)
+Combos:   25 live CommSys (single JSON, multi-card) + 14 DELETED (IV.4*/IL.A1/IV.4B poisoned-array)
 
   VehicleRegistrationQuery -- 5 live: NLTS.RQ.P, NLTS.RQ.V, IA.QV, IA.QVK, IN.VP (+13 IV.4*/IL DELETED)
-  DriverLicenseQuery       -- 6 live: NLTS.DQ, NLTS.DQ.N, IR.QVC.O, IR.QVC.C, IR.QVC.S, IR.QVC.N
+  DriverLicenseQuery       -- 8 live: NLTS.DQ, NLTS.DQ.N, IR.QVC.O, IR.QVC.C, IR.QVC.S, IR.QVC.N, ID.L1, IN.L1
   DriverHistoryQuery       -- 2 live: NLTS.KQ.N, NLTS.KQ.O
   GunQuery                 -- 2 live: IG.QGH, IG.QGB
   ArticleSingleQuery       -- 2 live: IP.QA.S, IP.QA.O
@@ -41,9 +41,11 @@ Criminal records (IR.QVC):
   4 DL combos for criminal records search: by OLN, CII, SSN, Name
   Fields: criminalIdNumber, socialSecurityNumber on Person DL card
 
-DRIFT FLAG (2026-07-01): prior SQVR listed ID.L1 (in-state OLN) + IN.L1 (in-state Name) DL combos
-  that do NOT exist in the shipped v2.11 JSON. Removed from SQVR; unresolved whether they were
-  legitimately dropped at a past rebuild or represent a real coverage gap. Follow up before DONE.
+DRIFT RESOLVED (v2.12, 2026-07-01): ID.L1 (in-state OLN) + IN.L1 (in-state Name) DL combos were
+  RESTORED. Real devdoc keyRefs; v2.11 removed them ("CommSys auto-dispatches, consistent with
+  Vehicle pattern") but DL -- unlike Vehicle (IA.QV/IA.QVK) -- had no in-state catchall, so a
+  plain in-state driver lookup fired nothing. Restored as gated catchalls (CHECK 16 reachability
+  CLEAN). DL 6 -> 8 live combos.
 
 CA-SPECIFIC
 -----------
@@ -74,6 +76,7 @@ VALIDATOR RESULTS
   | MC      | v1.8    | 70P/0F/0W/0LIM       | CLEAN  | 2026-05-12 |
   | BASE    | v2.1    | 70P/0F/0W/0LIM       | CLEAN  | 2026-05-19 |
   | MC      | v2.11   | 75P/0F/0W/0LIM       | CLEAN  | 2026-07-01 |
+  | MC      | v2.12   | 77P/0F/0W/0LIM       | CLEAN  | 2026-07-01 |
 
   MC archived at v1.9 -- all combos now on single-card layout per entity.
 
@@ -94,12 +97,13 @@ KEY FINDINGS (durable platform knowledge, prior live runs)
 
 NEXT STEPS
 ----------
-1. Run the v2.11 full pass end-to-end (combos + any-field + all-any + guardrails), all entities.
-2. Resolve the ID.L1/IN.L1 drift flag above.
-3. block_entity all 5 -> enforce.ps1 -Provider CA_CLETS exit 0 -> DEX-976 update.
+1. Run the v2.12 full pass end-to-end (combos + any-field + all-any + guardrails), all entities.
+   Include the in-state DL probes: OLN-only-no-State (expect ID.L1) and Name-only-no-State
+   (expect IN.L1) -- empirically confirms the restore closed the backstop gap.
+2. block_entity all 5 -> enforce.ps1 -Provider CA_CLETS exit 0 -> DEX-976 update.
 
 LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
-  (none yet -- v2.11 USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v2.11/)
+  (none yet -- v2.12 USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v2.12/)

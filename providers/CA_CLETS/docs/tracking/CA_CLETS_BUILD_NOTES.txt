@@ -1,6 +1,18 @@
 CA_CLETS -- Build Notes
 ========================
 
+v2.12  2026-07-01  Restore in-state DriverLicenseQuery combos (ID.L1 / IN.L1)
+  CHANGED: DL 6 -> 8 combos. Restored ID.L1 (in-state OLN) + IN.L1 (in-state Name), the real
+    devdoc keyRefs v2.11 removed. Added gating conditions so all 8 are mutually exclusive:
+    IR.QVC.O += criminalIdNumber EXISTS; IR.QVC.N += RegistrationState NOT_EXISTS + SexCode EXISTS;
+    ID.L1 = RegistrationState NOT_EXISTS + criminalIdNumber NOT_EXISTS; IN.L1 = OLN NOT_EXISTS +
+    RegistrationState NOT_EXISTS + SexCode NOT_EXISTS. Validator 77P/0F/0W; verify CLEAN (CHECK 16
+    reachability confirms all 8 reachable).
+  REASON: v2.11 removed ID.L1/IN.L1 expecting "CommSys auto-dispatches, consistent with Vehicle
+    pattern" -- but Vehicle keeps an unconditioned in-state catchall (IA.QV/IA.QVK) and DL kept
+    none, so a plain in-state driver lookup (OLN-only or name-only, no State) fired nothing.
+    Full re-test from T1 required.
+
 v2.11  2026-06-29  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
   REASON: Scheduled rebuild
