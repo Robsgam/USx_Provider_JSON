@@ -242,6 +242,23 @@ $queryLogName = "${Provider}_v${buildVersion}_${comboSafe}.txt"
 $queryLogPath = Join-Path $queryLogDir $queryLogName
 $isUpdate = Test-Path $queryLogPath   # re-running the same combo overwrites -- latest evidence wins
 
+# SAFETY: never let a capture with NO formState silently clobber an existing log that HAD
+# real formState content. Found live (NJ v4.8): 3 unlabeled guardrail captures (no formState,
+# popup-capture path doesn't wire it) were combo/kind-inferred from XML alone -- which can't
+# distinguish a guardrail co-entry from a plain any[] submission (CommSys strips the losing
+# field before the wire, and CAD defaults make both look identical) -- and each one landed on
+# an EXISTING good any[]/any-field log slot, overwriting real formState+RMS evidence with
+# "Not captured". Refuse that downgrade; the caller must supply -Combo explicitly (bypassing
+# inference) or FormState to intentionally update this slot.
+if ($isUpdate -and -not $FormState) {
+    $existingText = [System.IO.File]::ReadAllText($queryLogPath)
+    $existingHadFormState = ($existingText -match '(?s)QUERY STRING\r?\n-+\r?\n(?!Not captured)\S')
+    if ($existingHadFormState) {
+        Write-Host "  [REFUSED] $queryLogPath already has real QUERY STRING evidence; this capture has none (formState not captured) -- would downgrade, not update. Skipping write to avoid data loss." -ForegroundColor Red
+        exit 1
+    }
+}
+
 # Build form state section (the dex-log field-map JSON, e.g. {"ImageIndicator":"N",...})
 $formStateContent = if ($FormState) { $FormState } else { "Not captured" }
 

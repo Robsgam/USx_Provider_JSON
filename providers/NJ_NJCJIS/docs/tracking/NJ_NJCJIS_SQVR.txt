@@ -46,6 +46,7 @@ USER-APPROVED SKIPS:
     T4 (2026-06-29, pre-v4.8 as RQN): VIN=1HGCM82633A123456 -- VehicleRegistrationQuery/RQN fired. Plate fields absent (LicensePlateTypeCode/Year correctly not in RQN any[]). Defaults: State=NJ, RandomRequest=N, Image=N.
     T5 (2026-06-29, pre-v4.8 as RQN): any[] -- RandomRequest=Y, Image=Y, State=NJ. All serialize. Plate fields still absent.
     T6 (2026-06-29, pre-v4.8 as RQ/RQN): Guardrail Plate>VIN -- Plate=TEST123 + VIN=1HGCM82633A123456 co-entered. RQ fires, VIN absent from ConnectCIC XML. Plate wins confirmed.
+    T-v4.8 (2026-07-01): Guardrail Plate>VIN re-confirmed under new keyRefs -- Plate=testplate + VIN=testvin co-entered (formState proves co-entry). RANDFULL fires, VIN absent from ConnectCic XML. Plate wins confirmed. Log: logs/Vehicle/NJ_NJCJIS_v4.8_RANDFULL_guardrail.txt (RMS not captured -- popup-capture path used).
 
 ================================================================================
 2. DriverLicenseQuery -- Person Entity
@@ -73,6 +74,7 @@ USER-APPROVED SKIPS:
     T11 (2026-06-29, pre-v4.8 as DQ): Name=DOE/JON + DOB=1985-01-15 -- DriverLicenseQuery/DQ fired. Name=DOE, JON (Last-first comma-space confirmed). BirthDate=01151985 (MMddyyyy conversion confirmed). OLN absent.
     T12 (2026-06-29, pre-v4.8 as DQ): any[] -- added SexCode=Male -> M (reverse-lookup confirmed), ImageIndicator=Y, State=NJ all serialize.
     T13 (2026-06-29, pre-v4.8 as DQN/DQ): Guardrail OLN>Name -- OLN=D999888777 + Name+DOB all filled. DQN fires, Name+BirthDate absent from ConnectCIC XML. OLN wins confirmed.
+    T-v4.8 (2026-07-01): Guardrail OLN>Name re-confirmed under new keyRefs -- OLN=testdl + Name=last/first + DOB=1990-01-01 co-entered (formState proves co-entry). FULLN fires, Name+BirthDate absent from ConnectCic XML. OLN wins confirmed. Log: logs/Person/NJ_NJCJIS_v4.8_FULLN_guardrail.txt (RMS not captured -- popup-capture path used).
 
 ================================================================================
 3. GunQuery -- Firearm Entity

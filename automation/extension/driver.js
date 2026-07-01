@@ -86,6 +86,10 @@
   // (emit_test_plan.ps1); entityFilter = e.g. 'Vehicle'. Fills each combo's fields (auto-selects
   // the query), clicks "Send & Clear Form" (clears for the next), and records a batch manifest in
   // localStorage so the capture page can correlate each dex-log row back to its combo.
+  // guardrail included (2026-07-01): its fills[] already contains BOTH competing identifier
+  // fields (emit_test_plan.ps1's Get-GuardrailTests) -- filling+submitting it the same way as
+  // combo/any/any-field gets formState/RMS captured automatically instead of requiring a manual
+  // popup-capture workaround (which loses formState -- the only proof both fields were entered).
   window.__usxRunPlan = async function (plan, entityFilter, opts) {
     if (!plan || !Array.isArray(plan.tests)) { console.error('[USx-DRV] pass the TEST_PLAN object: __usxRunPlan(plan, "Vehicle")'); return; }
     opts = opts || {};
@@ -93,7 +97,7 @@
     const dField = opts.fieldDelay || 450;   // pause after each field
     const dSettle = opts.settle || 900;      // pause after all fields, before submit (let autoSelect enable)
     const dBetween = opts.between || 1700;    // pause after submit/clear, before next combo
-    const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field') && (!entityFilter || t.entity === entityFilter));
+    const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entityFilter || t.entity === entityFilter));
     if (!tests.length) { console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
     const manifest = []; const results = [];
     for (const t of tests) {

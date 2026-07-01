@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
+Combo: FULLN_guardrail (Guardrail OLN>Name: OperatorLicenseNumber+Name+DOB co-entered, FULLN (OLN) wins, Name+BirthDate absent from ConnectCic XML)
+Date: 2026-07-01 18:20:53
+Result: PASS
+JSON Version: 4.8
+Entity Fingerprint: d77802213c8d360b91019f62375d03e5a168ed45ca3b91c35a8aebae45104add
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-01","ImageIndicator":"Y","NameFirst":"first","NameLast":"last","OperatorLicenseNumber":"testdl","RegistrationState":"New Jersey","SexCode":"Male"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWFTZYA2W9G9NPAYT0PQFN0N">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KWFTZYA2W9G9NPAYT0PQFN0N</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>NJ</State>
+            <OperatorLicenseNumber>TESTDL</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWFTZYA2W9G9NPAYT0PQFN0N
+  ImageIndicator                 Y
+  State                          NJ
+  OperatorLicenseNumber          TESTDL
+
+NOTES
+-----
+RMS QUERY not captured for this submission (popup-capture path used, no rmsRequestJson wired).
+
+RESULT: PASS

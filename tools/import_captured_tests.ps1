@@ -133,10 +133,15 @@ foreach ($file in $files) {
             $ki = Infer-TestKindFromXml $r.provider $r.query $combo $r.requestXml
             if ($ki) { $testKind = $ki.kind; $testAnyField = $ki.anyField }
         }
-        # Unique combo label per test kind so any-field tests don't overwrite the base combo log.
+        # Unique combo label per test kind so any-field/guardrail tests don't overwrite the base
+        # combo log. Guardrail's combo is inferred from the XML (the WINNER fires; combo/comboKeyRef
+        # is null by design in emit_test_plan.ps1 -- expectedKeyRef carries the winner instead), so
+        # without this suffix a guardrail capture lands on the SAME filename as the winner's plain
+        # combo test and silently overwrites it (found live, NJ v4.8 -- 3 logs clobbered this way).
         $comboLabel = $combo
         if ($testKind -eq 'any-field' -and $testAnyField) { $comboLabel = "${combo}_af_${testAnyField}" }
         elseif ($testKind -eq 'any') { $comboLabel = "${combo}_any" }
+        elseif ($testKind -eq 'guardrail') { $comboLabel = "${combo}_guardrail" }
         $underFilledNote = if ($r.underFilled) { ' UNDER-FILLED (a form field failed to fill on submit -- verify this combo).' } else { '' }
         $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired.$underFilledNote"
         $desc = "$comboLabel (auto)"

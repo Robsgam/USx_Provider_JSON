@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: NJ_NJCJIS Boat BoatQuery
+Combo: QBN_guardrail (Guardrail Hull>Reg: BoatHullIdNumber+RegistrationNumber co-entered, QBN (hull) wins, RegistrationNumber absent from ConnectCic XML)
+Date: 2026-07-01 18:20:55
+Result: PASS
+JSON Version: 4.8
+Entity Fingerprint: 6902ecd820e01bd5ebeae1fce1f3487f358b83d0b090cc53e06040d14feba1ba
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"boathull","ImageIndicator":"N","RegistrationNumber":"boatreg"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWFV095WP1AMG6YMA1RDW42R">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KWFV095WP1AMG6YMA1RDW42R</Id>
+            <BoatHullIdNumber>BOATHULL</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWFV095WP1AMG6YMA1RDW42R
+  BoatHullIdNumber               BOATHULL
+  ImageIndicator                 N
+
+NOTES
+-----
+RMS QUERY not captured for this submission (popup-capture path used, no rmsRequestJson wired).
+
+RESULT: PASS
