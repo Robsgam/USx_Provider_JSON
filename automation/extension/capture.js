@@ -630,7 +630,35 @@
     return out;
   };
 
+  // RMS RECON round 5 (2026-07-01, post-first-live-test): the DOM-click RMS pairing in
+  // __usxBulkFetch is confirmed WORKING but INCONSISTENT -- it found Person's RMS row but
+  // missed Vehicle's in the same batch, because it only searches whatever's CURRENTLY rendered
+  // in the dex-log table, and with 30+ rows (2 per query: ConnectCic + RMS) accumulating this
+  // session, older rows scroll off the visible page. A DOM-independent path would be reliable
+  // regardless of page size: IF /queries/search's list items already include RMS-destination
+  // entries (not just ConnectCic ones), we could fetch RMS detail via the SAME network call
+  // __usxBulkFetch already makes for every item, with no DOM dependency at all. This checks that
+  // hypothesis directly instead of guessing.
+  window.__usxRmsNetworkRecon = async function () {
+    const req = window.__usxSearchReq;
+    if (!req) { console.warn('[USx-NET-RECON] no __usxSearchReq captured yet -- load/refresh the dex-log list first.'); return null; }
+    let base = {}; try { base = JSON.parse(req.body || '{}'); } catch (e) {}
+    const j = await (await fetch(req.url, { method: req.method || 'POST', credentials: 'include', headers: { 'content-type': 'application/json', 'accept': 'application/json' }, body: JSON.stringify(base) })).json();
+    const items = (j && j.queries) || [];
+    const sample = items.slice(0, 10).map((q) => ({ id: q.id, keys: Object.keys(q), transaction: q.transaction, destination: q.destination, provider: q.provider, parsedRawQuery: q.parsedRawQuery }));
+    // Try to find one item that LOOKS like an RMS destination (any field mentioning RMS).
+    const rmsLike = items.find((q) => JSON.stringify(q).includes('RMS'));
+    let rmsDetail = null;
+    if (rmsLike) {
+      try { rmsDetail = await (await fetch('/federated-search/api/v2/openapi/queries/' + rmsLike.id, { credentials: 'include', headers: { accept: 'application/json' } })).text(); } catch (e) {}
+    }
+    const out = { totalItems: items.length, sample, rmsLikeItem: rmsLike || null, rmsDetailRaw: rmsDetail ? rmsDetail.slice(0, 3000) : null };
+    console.log('%c[USx-NET-RECON]', 'color:#0cc;font-weight:bold', out);
+    console.log('[USx-NET-RECON] report the full object above -- sample shows the list item shape; rmsLikeItem/rmsDetailRaw show whether RMS is fetchable via network alone (no DOM).');
+    return out;
+  };
+
   if (location.hash.includes('dex-log')) {
-    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage. Run __usxDexTableRecon() to inspect an RMS-destination row, then __usxRmsPopupRecon() to see what its "View request" popup actually shows.');
+    console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage. Run __usxDexTableRecon() to inspect an RMS-destination row, then __usxRmsPopupRecon() to see what its "View request" popup actually shows. Run __usxRmsNetworkRecon() to check if RMS is fetchable via network alone (no DOM dependency).');
   }
 })();
