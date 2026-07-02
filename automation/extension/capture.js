@@ -674,7 +674,12 @@
       (mtGroups[mt] = mtGroups[mt] || []).push(i);
     }
     for (const mt of Object.keys(mtGroups)) {
-      const itemIdx = mtGroups[mt].slice().sort((a, b) => Date.parse(fresh[a].createdAt || 0) - Date.parse(fresh[b].createdAt || 0));
+      // createdDateUtc is SECOND-granular -- adjacent submissions tie and the sort flipped
+      // whole pairs (QB<->QB_af etc., 2026-07-02). Tie-break on qId: ULIDs are
+      // lexicographically time-ordered to the millisecond.
+      const itemIdx = mtGroups[mt].slice().sort((a, b) =>
+        (Date.parse(fresh[a].createdAt || 0) - Date.parse(fresh[b].createdAt || 0)) ||
+        String(fresh[a].qId || '').localeCompare(String(fresh[b].qId || '')));
       const manIdx = batch.map((b, k) => k).filter((k) => batch[k].query === mt);
       manIdx.sort((a, b) => Date.parse(batch[a].submittedAt || 0) - Date.parse(batch[b].submittedAt || 0));
       const haveTimes = itemIdx.every((i) => fresh[i].createdAt) && manIdx.every((k) => batch[k].submittedAt);
