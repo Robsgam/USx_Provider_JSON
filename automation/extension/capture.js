@@ -628,7 +628,10 @@
     // them here (and mark seen) so they can never pair or import again.
     let floorTs = null;
     const subTimes = batch.map((b) => Date.parse(b.submittedAt || '')).filter((t) => t);
-    if (subTimes.length) floorTs = Math.min(...subTimes) - 120000;
+    // 10min tolerance: submittedAt is the CLIENT clock, createdDateUtc the SERVER's --
+    // skew beyond 2min would silently drop the run's own first rows as "backlog". The
+    // floor only needs to exclude same-day rows from EARLIER sessions (hours older).
+    if (subTimes.length) floorTs = Math.min(...subTimes) - 600000;
 
     const out = loadCaptured();
     const have = new Set(out.map((r) => r.transactionId).filter(Boolean).concat(loadSeenIds()));

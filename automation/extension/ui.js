@@ -31,7 +31,9 @@
       fetchBatch.onclick = () => {
         let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch(e) {}
         const today = new Date().toISOString().slice(0,10);
-        const o = { maxPages: 3, since: today }; if (n > 0) o.maxNew = n;
+        // maxPages 10: every query creates TWO rows (ConnectCic + RMS), so a 47-test run
+        // spans ~94 rows -- 3 pages (60) dropped the run's first submissions (2026-07-02).
+        const o = { maxPages: 10, since: today }; if (n > 0) o.maxNew = n;
         window.__usxBulkFetch(o);
       };
       p.appendChild(fetchBatch);

@@ -273,7 +273,7 @@
       while (Date.now() - t0 < 15000 && !(window.__usxBulkFetch && window.__usxSearchReq)) { await L.sleep(400); }
       if (window.__usxBulkFetch) {
         let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch (e) {}
-        const o = { maxPages: 3, since: new Date().toISOString().slice(0, 10) }; if (n > 0) o.maxNew = n;
+        const o = { maxPages: 10, since: new Date().toISOString().slice(0, 10) }; if (n > 0) o.maxNew = n;
         await window.__usxBulkFetch(o);
       } else {
         console.warn('[USx-RUNALL] bulk fetch not ready -- click ⚡ Fetch results on the dex-log panel.');
