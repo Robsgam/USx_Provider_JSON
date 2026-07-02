@@ -55,9 +55,11 @@ function Import-CaptureFile($path, $label) {
     Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
     $summary = $null
     try {
-        $out = if ($NoCommit) { & $importScript -Path $path -NoCommit } else { & $importScript -Path $path -Commit }
+        # *>&1 merges the information stream: import_captured_tests.ps1 reports via Write-Host,
+        # which plain capture misses -- the summary was always null and -Once never exited.
+        $out = if ($NoCommit) { & $importScript -Path $path -NoCommit *>&1 } else { & $importScript -Path $path -Commit *>&1 }
         $out | ForEach-Object { Write-Host $_ }
-        $summary = ($out | Where-Object { $_ -match 'Imported:' } | Select-Object -Last 1)
+        $summary = ($out | Where-Object { "$_" -match 'Imported:' } | Select-Object -Last 1)
     } catch {
         Write-Host "[WATCH] import errored (watcher stays up): $_" -ForegroundColor Red
         return $null

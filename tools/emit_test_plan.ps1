@@ -185,6 +185,20 @@ function Get-QifFieldIds($qif) {
     return $ids
 }
 
+# Hidden field ids (hidden gate-feeders, e.g. automated Attention). The driver cannot type
+# into a hidden input, so the plan must never emit a fill for one -- it submits under-filled
+# (CA NLTS.KQ.O_af_Attention, 2026-07-02). Their coverage rides along on every query via the
+# initialValue + handler; there is nothing for the driver to exercise.
+function Get-QifHiddenFieldIds($qif) {
+    $ids = @()
+    if ($qif -and $qif.layout -and $qif.layout.default) {
+        foreach ($p in $qif.layout.default.PSObject.Properties) {
+            if ($p.Value.props -and $p.Value.props.fieldId -and $p.Value.hidden -eq $true) { $ids += $p.Value.props.fieldId }
+        }
+    }
+    return $ids
+}
+
 # Resolve a combo attribute name -> DOM fieldId (direct match, else QIDM attribute sourceField).
 function Resolve-FieldId([string]$name, $qidm, $fieldIds) {
     $direct = $fieldIds | Where-Object { $_ -ieq $name } | Select-Object -First 1
@@ -201,10 +215,11 @@ function Resolve-FieldId([string]$name, $qidm, $fieldIds) {
     return $name
 }
 
-function Build-Fills($names, $qidm, $fieldIds, $isOOS) {
+function Build-Fills($names, $qidm, $fieldIds, $isOOS, $hiddenIds = @()) {
     $fills = @()
     foreach ($n in @($names)) {
         $fid = Resolve-FieldId $n $qidm $fieldIds
+        if (@($hiddenIds) -icontains $fid) { continue }   # hidden gate-feeder: driver can't type into it
         $val = Get-TestValue $fid $isOOS
         if ($null -ne $val -and $val -ne '') { $fills += [ordered]@{ fieldId = $fid; value = "$val" } }
     }
@@ -266,6 +281,7 @@ $n = 0
 
 foreach ($ent in $entities) {
     $fieldIds = Get-QifFieldIds $qifByEntity[$ent]
+    $hiddenIds = @(Get-QifHiddenFieldIds $qifByEntity[$ent])
     $entQidms = @($qidms | Where-Object { $_.targetEntity -eq $ent })
 
     # render/negative are manual one-time checks done at initial provider build, not part
@@ -276,7 +292,7 @@ foreach ($ent in $entities) {
             $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
             $setNames = @($c.requirements.set)
             $isOOS = [bool]($setNames | Where-Object { $_ -match '(?i)^(registrationState|state)$' })
-            $fills = Build-Fills $setNames $q $fieldIds $isOOS
+            $fills = Build-Fills $setNames $q $fieldIds $isOOS $hiddenIds
             # Trust: flag any set[] field we couldn't resolve a value for (under-fill risk).
             foreach ($sn in $setNames) { Note-IfUnresolved "$ent $kr set[]" (Resolve-FieldId $sn $q $fieldIds) (Get-TestValue (Resolve-FieldId $sn $q $fieldIds) $isOOS) }
             $n++
@@ -290,6 +306,7 @@ foreach ($ent in $entities) {
                 # One test per individual any[] field
                 foreach ($af in $anyNames) {
                     $ff  = Resolve-FieldId $af $q $fieldIds
+                    if (@($hiddenIds) -icontains $ff) { continue }   # hidden gate-feeder (e.g. automated Attention): nothing to type
                     $val = Get-TestValue $ff $isOOS
                     Note-IfUnresolved "$ent $kr any[]" $ff $val
                     if ($null -ne $val -and $val -ne '') {
@@ -303,7 +320,7 @@ foreach ($ent in $entities) {
                     }
                 }
                 # All any[] fields together
-                $anyFills = Build-Fills ($setNames + $anyNames) $q $fieldIds $true
+                $anyFills = Build-Fills ($setNames + $anyNames) $q $fieldIds $true $hiddenIds
                 if (@($anyFills).Count -gt @($fills).Count) {
                     $n++
                     $tests.Add([ordered]@{
@@ -339,6 +356,7 @@ foreach ($ent in $entities) {
             $gFills += [ordered]@{ fieldId = $exFf; value = "$exVal" }
             foreach ($sf in @($gr.loserCombo.requirements.set)) {
                 $ff  = Resolve-FieldId $sf $gr.loserQidm $fieldIds
+                if (@($hiddenIds) -icontains $ff) { continue }   # hidden gate-feeder: driver can't type into it
                 $val = Get-TestValue $ff $false
                 if ($null -ne $val -and $val -ne '') { $gFills += [ordered]@{ fieldId = $ff; value = "$val" } }
             }
