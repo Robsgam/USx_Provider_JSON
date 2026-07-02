@@ -1,73 +1,63 @@
 ================================================================
   Build Report: HI_HCJDC_OFML
-  Source: HI_HCJDC_OFML_v4.6.json
-  Generated: 2026-06-26 17:02
+  Source: HI_HCJDC_OFML_v4.7.json
+  Generated: 2026-07-02 08:05
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- HI_HCJDC_OFML_v4.6
+TEST MATRIX <-> JSON CONSISTENCY -- HI_HCJDC_OFML_v4.7
 ============================================================
-Source: HI_HCJDC_OFML_v4.6.json
+Source: HI_HCJDC_OFML_v4.7.json
 Matrix: HI_HCJDC_OFML_TEST_MATRIX.txt
-Generated: 2026-06-26
+Generated: 2026-07-02
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (16 tests -- 3 cards, 5 combos)
-  T1  Person     [PASS] 3 cards, 17 fields, defaults verified
-  T2  Person     [PASS] DriverLicenseQuery fires (DQN)
-  T3  Person     [PASS] any[] fields verified: RegistrationState
-  T4  Person     [PASS] DriverLicenseQuery fires (DQ)
-  T5  Person     [PASS] any[] fields verified: RegistrationState
-  T6  Person     [PASS] DriverLicenseQuery fires (QW)
-  T7  Person     [PASS] any[] fields verified: RegistrationState
-  T8  Person     [PASS] DriverHistoryQuery fires (KQN)
-  T9  Person     [PASS] any[] fields verified: RegistrationState, purposeCodeDH, Attention
-  T10  Person     [PASS] DriverHistoryQuery fires (KQ)
-  T11  Person     [PASS] any[] fields verified: RegistrationState, purposeCodeDH, Attention
+ENTITY: PERSON (14 tests -- 3 cards, 5 combos)
+  T1  Person     [PASS] DriverLicenseQuery fires (DQN)
+  T2  Person     [PASS] any[] fields verified: RegistrationState
+  T3  Person     [PASS] DriverLicenseQuery fires (DQ)
+  T4  Person     [PASS] any[] fields verified: RegistrationState
+  T5  Person     [PASS] DriverLicenseQuery fires (QW)
+  T6  Person     [PASS] any[] fields verified: RegistrationState
+  T7  Person     [PASS] DriverHistoryQuery fires (KQN)
+  T8  Person     [PASS] any[] fields verified: RegistrationState, purposeCodeDH, Attention
+  T9  Person     [PASS] DriverHistoryQuery fires (KQ)
+  T10  Person     [PASS] any[] fields verified: RegistrationState, purposeCodeDH, Attention
+  T11  Person     [PASS] DriverLicenseQuery fires (DQN)
   T12  Person     [PASS] DriverLicenseQuery fires (DQN)
-  T13  Person     [PASS] DriverLicenseQuery fires (DQN)
-  T14  Person     [PASS] DriverHistoryQuery fires (KQN)
-  T15  Person     [PASS] queriesToDeselect verified
-  T16  Person     [PASS] empty form: no combos fire
-ENTITY: VEHICLE (14 tests -- 3 cards, 4 combos)
-  T17  Vehicle    [PASS] 3 cards, 8 fields, defaults verified
-  T18  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
-  T19  Vehicle    [PASS] any[] fields verified: ImageIndicator
-  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (RQV)
-  T21  Vehicle    [PASS] any[] fields verified: ImageIndicator, vehicleYear
-  T22  Vehicle    [PASS] VehicleRegistrationQuery fires (M55S)
-  T23  Vehicle    [PASS] any[] fields verified: ImageIndicator, vehicleYear
-  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (M55L)
-  T25  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T13  Person     [PASS] DriverHistoryQuery fires (KQN)
+  T14  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (12 tests -- 3 cards, 4 combos)
+  T15  Vehicle    [PASS] VehicleRegistrationQuery fires (RQV)
+  T16  Vehicle    [PASS] any[] fields verified: ImageIndicator, vehicleYear
+  T17  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
+  T18  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T19  Vehicle    [PASS] VehicleRegistrationQuery fires (M55S)
+  T20  Vehicle    [PASS] any[] fields verified: ImageIndicator, vehicleYear
+  T21  Vehicle    [PASS] VehicleRegistrationQuery fires (M55L)
+  T22  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T23  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
+  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
+  T25  Vehicle    [PASS] VehicleRegistrationQuery fires (RQV)
   T26  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
-  T27  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
-  T28  Vehicle    [PASS] VehicleRegistrationQuery fires (RQV)
-  T29  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ)
-  T30  Vehicle    [PASS] empty form: no combos fire
-ENTITY: BOAT (7 tests -- 1 card, 2 combos)
-  T31  Boat       [PASS] 1 cards, 4 fields, defaults verified
-  T32  Boat       [PASS] BoatQuery fires (BQ)
-  T33  Boat       [PASS] any[] fields verified: RegistrationState, relatedSearchHitIndicator
-  T34  Boat       [PASS] BoatQuery fires (QB)
-  T35  Boat       [PASS] any[] fields verified: RegistrationState, relatedSearchHitIndicator
-  T36  Boat       [PASS] BoatQuery fires (QB)
-  T37  Boat       [PASS] empty form: no combos fire
-ENTITY: FIREARM (4 tests -- 1 card, 1 combo)
-  T38  Firearm    [PASS] 1 cards, 5 fields, defaults verified
-  T39  Firearm    [PASS] GunQuery fires (QG)
-  T40  Firearm    [PASS] any[] fields verified: GunMake, GunCaliber, GunModel, relatedSearchHitIndicator
-  T41  Firearm    [PASS] empty form: no combos fire
-ENTITY: ARTICLE (4 tests -- 1 card, 1 combo)
-  T42  Article    [PASS] 1 cards, 3 fields, defaults verified
-  T43  Article    [PASS] ArticleSingleQuery fires (QA)
-  T44  Article    [PASS] any[] fields verified: relatedSearchHitIndicator
-  T45  Article    [PASS] empty form: no combos fire
+ENTITY: BOAT (5 tests -- 1 card, 2 combos)
+  T27  Boat       [PASS] BoatQuery fires (BQ)
+  T28  Boat       [PASS] any[] fields verified: RegistrationState, relatedSearchHitIndicator
+  T29  Boat       [PASS] BoatQuery fires (QB)
+  T30  Boat       [PASS] any[] fields verified: RegistrationState, relatedSearchHitIndicator
+  T31  Boat       [PASS] BoatQuery fires (QB)
+ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
+  T32  Firearm    [PASS] GunQuery fires (QG)
+  T33  Firearm    [PASS] any[] fields verified: GunMake, GunCaliber, GunModel, relatedSearchHitIndicator
+ENTITY: ARTICLE (2 tests -- 1 card, 1 combo)
+  T34  Article    [PASS] ArticleSingleQuery fires (QA)
+  T35  Article    [PASS] any[] fields verified: relatedSearchHitIndicator
 
-SUMMARY: 45/45 PASS, 0 FAIL
+SUMMARY: 35/35 PASS, 0 FAIL
 
 

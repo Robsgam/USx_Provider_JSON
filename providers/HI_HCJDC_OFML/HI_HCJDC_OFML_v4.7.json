@@ -1,7 +1,7 @@
 {
   "bundles": [
     {
-      "description": "Provider configuration for HI_HCJDC_OFML v4.6 -- entity forms",
+      "description": "Provider configuration for HI_HCJDC_OFML v4.7 -- entity forms",
       "configurations": [
         {
           "description": "Vehicle queries -- 3 cards: SEARCH OPTIONS (Vehicle Type/State/NCIC Image), PLATE SEARCH, VIN SEARCH. OOS-first routing: bare plate->M55L, +Plate Type+Year->RQ; bare VIN->M55S, +State->RQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.",
@@ -102,8 +102,8 @@
                 "props": {
                   "fieldId": "vehicleTypeCode",
                   "label": "Vehicle Type - Auto (Hawaii queries)",
-                  "codeTypeSource": "HI_NIBRS",
                   "initialValue": "1",
+                  "codeTypeSource": "HI_NIBRS",
                   "codeTypeCategory": "VEHICLE_TYPE"
                 },
                 "isCanvas": false,
@@ -136,8 +136,8 @@
                 "props": {
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image - include image (Y/N)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "N",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -432,8 +432,8 @@
                 "props": {
                   "fieldId": "vehicleTypeCode",
                   "label": "Vehicle Type - Auto (Hawaii queries)",
-                  "codeTypeSource": "HI_NIBRS",
                   "initialValue": "1",
+                  "codeTypeSource": "HI_NIBRS",
                   "codeTypeCategory": "VEHICLE_TYPE"
                 },
                 "isCanvas": false,
@@ -466,8 +466,8 @@
                 "props": {
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image - include image (Y/N)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "N",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -829,8 +829,8 @@
                 "props": {
                   "fieldId": "vehicleTypeCode",
                   "label": "Vehicle Type - Auto (Hawaii queries)",
-                  "codeTypeSource": "HI_NIBRS",
                   "initialValue": "1",
+                  "codeTypeSource": "HI_NIBRS",
                   "codeTypeCategory": "VEHICLE_TYPE"
                 },
                 "isCanvas": false,
@@ -863,8 +863,8 @@
                 "props": {
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image - include image (Y/N)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "N",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -1083,8 +1083,8 @@
                 "displayName": "Checkbox",
                 "props": {
                   "label": " ",
-                  "checkboxLabel": "Link to the current assigned event",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1367,8 +1367,8 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "BirthDate",
-                  "label": "Date of Birth (required with Name)"
+                  "label": "Date of Birth (required with Name)",
+                  "fieldId": "BirthDate"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1579,8 +1579,8 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "BirthDateDH",
-                  "label": "Date of Birth (DH) - required with Name"
+                  "label": "Date of Birth (DH) - required with Name",
+                  "fieldId": "BirthDateDH"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1907,8 +1907,8 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "BirthDate",
-                  "label": "Date of Birth (required with Name)"
+                  "label": "Date of Birth (required with Name)",
+                  "fieldId": "BirthDate"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2119,8 +2119,8 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "BirthDateDH",
-                  "label": "Date of Birth (DH) - required with Name"
+                  "label": "Date of Birth (DH) - required with Name",
+                  "fieldId": "BirthDateDH"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2514,8 +2514,8 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "BirthDate",
-                  "label": "Date of Birth (required with Name)"
+                  "label": "Date of Birth (required with Name)",
+                  "fieldId": "BirthDate"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2726,8 +2726,8 @@
                 },
                 "displayName": "Date",
                 "props": {
-                  "fieldId": "BirthDateDH",
-                  "label": "Date of Birth (DH) - required with Name"
+                  "label": "Date of Birth (DH) - required with Name",
+                  "fieldId": "BirthDateDH"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2808,8 +2808,8 @@
                 "displayName": "Checkbox",
                 "props": {
                   "label": " ",
-                  "checkboxLabel": "Link to the current assigned event",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3007,8 +3007,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -3199,8 +3199,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -3458,8 +3458,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -3489,8 +3489,8 @@
                 "displayName": "Checkbox",
                 "props": {
                   "label": " ",
-                  "checkboxLabel": "Link to the current assigned event",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3651,8 +3651,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -3806,8 +3806,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -4028,8 +4028,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -4059,8 +4059,8 @@
                 "displayName": "Checkbox",
                 "props": {
                   "label": " ",
-                  "checkboxLabel": "Link to the current assigned event",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4238,8 +4238,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -4410,8 +4410,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -4649,8 +4649,8 @@
                 "props": {
                   "fieldId": "relatedSearchHitIndicator",
                   "label": "Search Hit (optional)",
-                  "codeTypeSource": "NCIC",
                   "initialValue": "Y",
+                  "codeTypeSource": "NCIC",
                   "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
@@ -4680,8 +4680,8 @@
                 "displayName": "Checkbox",
                 "props": {
                   "label": " ",
-                  "checkboxLabel": "Link to the current assigned event",
-                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT"
+                  "fieldId": "LINK_CURRENT_ASSIGNED_EVENT",
+                  "checkboxLabel": "Link to the current assigned event"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4724,7 +4724,7 @@
       "provider": "MARK43"
     },
     {
-      "description": "Provider configuration for HI_HCJDC_OFML v4.6",
+      "description": "Provider configuration for HI_HCJDC_OFML v4.7",
       "configurations": [
         {
           "attributes": [
@@ -5867,6 +5867,14 @@
                     "field": "ImageIndicator",
                     "value": "N"
                   }
+                ],
+                "conditions": [
+                  {
+                    "field": [
+                      "LicensePlateTypeCode"
+                    ],
+                    "operator": "EXISTS"
+                  }
                 ]
               },
               "primaryFieldReference": "LicensePlateNumber",
@@ -5890,6 +5898,12 @@
                   }
                 ],
                 "conditions": [
+                  {
+                    "field": [
+                      "RegistrationState"
+                    ],
+                    "operator": "EXISTS"
+                  },
                   {
                     "field": [
                       "LicensePlateNumber"
@@ -5975,7 +5989,7 @@
               "state": "In"
             }
           ],
-          "description": "VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, fires on Plate Type+Year) and RQV (VIN, fires on VIN+State) ordered before in-state M55L (plate) / M55S (VIN); OOS reached by ADDING fields, never clearing Vehicle Type. QVP/QVV stolen combos REMOVED in v4.4 (they should never fire from the form; the state CommSys server auto-generates the QV/stolen query, data-mined via QRDM). 4 combos.",
+          "description": "VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, OOS-gated LicensePlateTypeCode EXISTS) and RQV (VIN, OOS-gated RegistrationState EXISTS) ordered before in-state M55L (plate) / M55S (VIN, both gated NOT_EXISTS on the same discriminators); OOS reached by ADDING fields, never clearing Vehicle Type. v4.7 added the OOS EXISTS gates so RQ/RQV no longer shadow M55L/M55S (platform fires on primaryFieldReference, not set[]; CHECK 16). QVP/QVV stolen combos REMOVED in v4.4 (state CommSys server auto-generates the QV/stolen query, data-mined via QRDM). 4 combos.",
           "handlerFunction": "CommsysTransactionRequestHandler",
           "name": "HI_HCJDC_OFML_VehicleRegistrationQuery",
           "type": "QUERYINPUTDATAMAPPING",
@@ -6519,7 +6533,7 @@
       "provider": "HI_HCJDC_OFML"
     },
     {
-      "description": "Provider configuration for HI_HCJDC_OFML v4.6 -- RMS bundle",
+      "description": "Provider configuration for HI_HCJDC_OFML v4.7 -- RMS bundle",
       "name": "RMS",
       "type": "BUNDLE",
       "provider": "RMS",

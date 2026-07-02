@@ -1,0 +1,426 @@
+Hawaii (HI) HCJDC OFML                                                          Disclaimer Statement
+
+Transport:
+
+Routing and Configuration Information:
+Mnemonic Routing
+
+ The HCJDC assigned ORI for a device (or for the site) should be placed in the
+    <Authentication>/<ORI> field in the ConnectCIC header.
+
+ The HCJDC assigned Mnemonic for a device should be placed in the
+    <Authentication>/<Mnemonic> field in the ConnectCIC header.
+
+ The User Name should be placed in the <Authentication>/<UserName> field in the
+    ConnectCIC header.
+
+Security Requirements:
+None known at this time.
+
+Logon Requirements:
+None known at this time.
+
+Certification Requirements:
+Agency sponsor is required.
+
+Data-Mined Transactions:
+
+NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle)
+Tags returned from Data mining
+
+Basic Queries Supported:
+
+ArticleSingleQuery
+
+Field Name           XML Tag Name         M/C/O        Size    Possible Values
+                                                        20     Y or N
+ArticleSerialNumber  ArticleSerialNumber  M              7
+                                                         1
+ArticleTypeCode      ArticleTypeCode      M
+
+RelatedSearchHitIndicator RelatedSearchHitIndicator O
+
+Possible Combinations
+1. (In/Out) ArticleSerialNumber, ArticleTypeCode, [RelatedSearchHitIndicator]
+
+BoatQuery            XML Tag Name         M/C/O Size Possible Values
+
+Field Name
+
+© 2025 CommSys, Inc.                                   Page 1
+Confidential. NDA Required.
+BoatHullIdNumber    BoatHullIdNumber           C       20 Alphanumeric
+                                                       8 Alphanumeric
+RegistrationNumber  RegistrationNumber         C       1 Y or N
+                                                       2 Alpha
+RelatedSearchHitIndicator RelatedSearchHitIndicator O
+
+State               State                      O
+
+Possible Combinations
+1. (In/Out) BoatHullIdNumber, [State, RelatedSearchHitIndicator]
+2. (In/Out) RegistrationNumber, [State, RelatedSearchHitIndicator]
+
+DriverHistoryQuery
+
+Field Name          XML Tag Name        M/C/O          Size  Possible Values
+                                                        30
+Attention           Attention           O                8
+                                                        30
+BirthDate           BirthDate           C               20
+                                                         1
+Name                Name                C                1
+                                                         2
+OperatorLicenseNumber OperatorLicenseNumber C
+
+PurposeCode         PurposeCode         O
+
+SexCode             SexCode             C
+
+State               State               O
+
+Possible Combinations
+1. (In/Out) BirthDate, Name, SexCode, [Attention, PurposeCode]
+2. (In/Out) OperatorLicenseNumber, [Attention, PurposeCode]
+
+DriverLicenseQuery
+
+Field Name          XML Tag Name        M/C/O          Size  Possible Values
+                                                         8
+BirthDate           BirthDate           C               30
+                                                        20
+Name                Name                C                1
+                                                         2
+OperatorLicenseNumber OperatorLicenseNumber C            2
+                                                         2
+SexCode             SexCode             C                2
+                                                         2
+State               State               O
+
+State2              State2              O
+
+State3              State3              O
+
+State4              State4              O
+
+State5              State5              O
+
+Possible Combinations
+1. (In/Out) BirthDate, Name, SexCode, [State, State2, State3, State4, State5]
+2. (In/Out) OperatorLicenseNumber, [State, State2, State3, State4, State5]
+
+GunQuery
+
+Field Name          XML Tag Name        M/C/O          Size    Possible Values
+                                                         4
+GunCaliber          GunCaliber                 O        23
+                                                        20
+GunMake             GunMake                    O        20
+                                                         1
+GunModel            GunModel                   O
+
+GunSerialNumber     GunSerialNumber            M
+
+RelatedSearchHitIndicator RelatedSearchHitIndicator O
+
+Possible Combinations
+1. (In/Out) GunSerialNumber, [GunCaliber, GunMake, GunModel, RelatedSearchHitIndicator]
+
+VehicleRegistrationQuery
+
+Field Name          XML Tag Name               M/C/O Size Possible Values
+
+© 2025 CommSys, Inc.                                   Page 2
+Confidential. NDA Required.
+ImageIndicator      ImageIndicator             O           1 Y or N
+
+LicensePlateNumber  LicensePlateNumber         C           10
+
+LicensePlateTypeCode LicensePlateTypeCode      C           2
+
+LicensePlateYear    LicensePlateYear           C           4
+
+State               State                      O           2 Submit up to 5 states
+
+VehicleTypeCode     VehicleTypeCode            C           1 1 ­ Auto/Business Name
+                                                                 2 ­ Motorcycle
+VehicleIdentificationNumber VehicleIdentificationNumber C        3 ­ Truck
+                                                                 5 ­ Trailer
+VehicleMakeCode     VehicleMakeCode            O                 6 ­ Moped
+
+VehicleYear         VehicleYear                O           20
+
+                                                           24
+
+                                                           4
+
+Possible Combinations
+1. (In) VehicleIdentificationNumber, VehicleTypeCode
+2. (In) LicensePlateNumber, VehicleTypeCode
+3. (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
+4. (Out) VehicleIdentificationNumber, [ImageIndicator, VehicleMakeCode, VehicleYear]
+
+Transactions Supported:
+
+Computerized Criminal History (CCH)
+
+CCHCriminalHistoryAQQuery
+
+Field Name          XML Tag Name        M/C/O   Size Possible Values
+Attention           Attention              M     30
+DestinationORI      DestinationORI         M      9
+FreeText            FreeText               O   14400
+PurposeCode         PurposeCode            M      1
+
+Possible Combinations
+1. (In/Out) Attention, DestinationORI, PurposeCode, [FreeText]
+
+CCHCriminalHistoryFQQuery
+
+Field Name          XML Tag Name        M/C/O  Size        Possible Values
+Address             Address                O    30
+Attention           Attention              M    30
+Building            Building               O    30
+CityAndState        CityAndState           O    30
+DepartmentName      DepartmentName         O    30
+ImageIndicator      ImageIndicator         O     1
+PurposeCode         PurposeCode            M     1
+State               State                  M     2
+StateIDNumber       StateIdNumber          M    10
+ZipCode             ZipCode                O     9
+
+Possible Combinations
+1. (In/Out) Attention, PurposeCode, State, StateIdNumber, [Address, Building, CityAndState,
+
+      DepartmentName, ImageIndicator, ZipCode]
+
+CCHCriminalHistoryIQQuery
+
+Field Name          XML Tag Name        M/C/O Size Possible Values
+
+© 2025 CommSys, Inc.                           Page 3
+Confidential. NDA Required.
+Attention       Attention                  M      30
+
+BirthDate       BirthDate                  C      8
+
+ImageIndicator  ImageIndicator             O      1
+
+MiscellaneousNumber MiscellaneousNumber C         15
+
+Name            Name                       M      30
+
+PurposeCode     PurposeCode                M      1
+
+RaceCode        RaceCode                   O      1
+
+SexCode         SexCode                    C      1
+
+SocialSecurityNumber SocialSecurityNumber C       9
+
+State           State                      M      2
+
+Possible Combinations
+1. (In/Out) Attention, BirthDate, Name, PurposeCode, SexCode, State, [ImageIndicator,
+
+      MiscellaneousNumber, RaceCode, SocialSecurityNumber]
+2. (In/Out) Attention, MiscellaneousNumber, Name, PurposeCode, State, [ImageIndicator]
+3. (In/Out) Attention, Name, PurposeCode, SocialSecurityNumber, State, [ImageIndicator]
+
+CCHCriminalHistoryQHQuery
+
+Field Name      XML Tag Name               M/C/O  Size  Possible Values
+                                              M    30
+Attention       Attention                     C     8
+                                              C     9
+BirthDate       BirthDate                     C    15
+                                              C    30
+FBINumber       FBINumber                     M     1
+                                              C     1
+MiscellaneousNumber MiscellaneousNumber       C     1
+                                              C     9
+Name            Name                          C    10
+
+PurposeCode     PurposeCode
+
+RaceCode        RaceCode
+
+SexCode         SexCode
+
+SocialSecurityNumber SocialSecurityNumber
+
+StateIdNumber   StateIdNumber
+
+Possible Combinations
+1. (In/Out) Attention, BirthDate, MiscellaneousNumber, Name, PurposeCode, RaceCode,
+
+      SexCode
+2. (In/Out) Attention, BirthDate, Name, PurposeCode, RaceCode, SexCode
+3. (In/Out) Attention, BirthDate, Name, PurposeCode, RaceCode, SexCode,
+
+      SocialSecurityNumber
+4. (In/Out) Attention, FBINumber, Name, PurposeCode
+5. (In/Out) Attention, FBINumber, PurposeCode
+6. (In/Out) Attention, MiscellaneousNumber, Name, PurposeCode
+7. (In/Out) Attention, Name, PurposeCode, SocialSecurityNumber
+8. (In/Out) Attention, Name, PurposeCode, StateIdNumber
+9. (In/Out) Attention, PurposeCode, StateIDNumber
+
+CCHCriminalHistoryQRQuery
+
+Field Name      XML Tag Name               M/C/O  Size  Possible Values
+Address         Address                       O    30
+Attention       Attention                     O    30
+Building        Building                      O    30
+CityAndState    CityAndState                  O    30
+DepartmentName  DepartmentName                O    30
+FBINumber       FBINumber                     C     9
+PurposeCode     PurposeCode                   M     1
+
+© 2025 CommSys, Inc.                              Page 4
+Confidential. NDA Required.
+StateIdNumber         StateIdNumber            C      10
+ZipCode               ZipCode
+                                               O      9
+
+Possible Combinations
+1. (In/Out) Attention, FBINumber, PurposeCode, [Address, Building, CityAndState,
+
+      DepartmentName, ZipCode]
+2. (In/Out) Address, PurposeCode, StateIdNumber, [Attention, Building, CityAndState,
+
+      DepartmentName, ZipCode]
+
+CCHCriminalHistoryZRQuery
+
+Field Name            XML Tag Name             M/C/O  Size  Possible Values
+FBINumber             FBINumber                   C     9
+PurposeCode           PurposeCode                 O     1
+StateIdNumber         StateIdNumber               C    10
+
+Possible Combinations
+1. (In/Out) FBINumber, [PurposeCode]
+2. (In/Out) StateIdNumber, [PurposeCode]
+
+Expanded Transactions Supported:
+
+SecuritiesStolenQuery
+
+Field Name                 XML Tag Name                   M/C/O Size Possible Values
+
+Denomination               Denomination                     C9
+
+Issuer                     Issuer                           O 15
+
+NCICNumber                 NCICNumber                       C 10
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+Owner                      Owner                            C 40
+
+RelatedSearchHitIndicator  RelatedSearchHitIndicator        O1
+
+SecurityDate               SecurityDate                     O8
+
+SecuritySerialNumber       SecuritySerialNumber             C9
+
+SecurityTypeCode           SecurityTypeCode                 C2
+
+SocialSecurityNumber       SocialSecurityNumber             C9
+
+Possible Combinations
+1. (In/Out) NCICNumber, [RelatedSearchHitIndicator ,SecurityDate]
+2. (In/Out) Denomination, SecuritySerialNumber, SecurityTypeCode, [Issuer,
+
+   RelatedSearchHitIndicator ,SecurityDate]
+3. (In/Out) OriginatingAgencyCaseNumber, Owner, [RelatedSearchHitIndicator,SecurityDate]
+4. (In/Out) Owner, [RelatedSearchHitIndicator,SecurityDate ,SecurityTypeCode]
+5. (In/Out) SocialSecurityNumber, [Owner, RelatedSearchHitIndicator,SecurityDate]
+
+StolenVehicleQuery
+
+Field Name                 XML Tag Name               M/C/O Size Possible Values
+
+ImageIndicator             ImageIndicator             O 1 Y or N
+
+LicensePlateNumber         LicensePlateNumber         C 10
+
+LicensePlateStateCode LicensePlateStateCode           C2
+
+VehicleIdentificationNumber VehicleIdentificationNumber C 20
+
+VehicleMakeCode            VehicleMakeCode            C 24
+
+Possible Combinations
+1. (In/Out) LicensePlateNumber, LicensePlateStateCode
+
+© 2025 CommSys, Inc.                                  Page 5
+Confidential. NDA Required.
+2. (In/Out) VehicleIdentificationNumber, VehicleMakeCode, [ImageIndicator]
+
+WantedPersonQuery
+
+Field Name                 XML Tag Name                  M/C/O Size Possible Values
+
+BirthDate                  BirthDate                     C8
+
+ExpandedBirthDateSearchCode ExpandedBirthDateSearchCode O 1 1 or 0
+
+ExpandedNameSearchCode ExpandedNameSearchCode            O 1 Y or N
+
+FBINumber                  FBINumber                     C9
+
+ImageIndicator             ImageIndicator                O 1 Y or N
+
+LicensePlateNumber         LicensePlateNumber            C 10
+
+LicensePlateStateCode      LicensePlateStateCode         C2
+
+MiscellaneousNumber        MiscellaneousNumber           C 15
+
+Name                       Name                          C 30
+
+NCICNumber                 NCICNumber                    C 10
+
+OperatorLicenseNumber      OperatorLicenseNumber         C 20
+
+OriginatingAgencyCaseNumber OriginatingAgencyCaseNumber C 20
+
+RaceCode                   RaceCode                      O1
+
+RelatedSearchHitIndicator  RelatedSearchHitIndicator     O 1 Y or N
+
+SexCode                    SexCode                       O 1 See NCIC Code Manual
+
+SocialSecurityNumber       SocialSecurityNumber          C9
+
+VehicleIdentificationNumber VehicleIdentificationNumber  C 20
+
+VehicleMakeCode            VehicleMakeCode               C 24
+
+Possible Combinations
+     1. (In/Out) NCICNumber
+     2. (In/Out) Name and one or more Record Identifiers1, [Any Optional Fields]
+     3. (In/Out) OriginatingAgencyCaseNumber, Name, [Any Optional Fields]
+     4. (In/Out) LicensePlateNumber, LicensePlateStateCode, [ImageIndicator,
+            RelatedSearchHitIndicator]
+     5. (In/Out) VehicleIdentificationNumber, VehicleMakeCode, [ImageIndicator,
+            RelatedSearchHitIndicator]
+
+1Name and one or more of the following record identifiers are required: BirthDate,
+     FBINumber, MiscellaneousNumber, OperatorLicenseNumber, SocialSecurityNumber
+
+Hardware/Software Requirements:
+ConnectCIC Third-Party Hardware and Software Minimum Requirements
+
+Notes:
+None
+
+References:
+
+     NCIC 2000 Operations Manual
+     NLETS User Guide
+
+© 2025 CommSys, Inc.                                  Page 6
+Confidential. NDA Required.
+

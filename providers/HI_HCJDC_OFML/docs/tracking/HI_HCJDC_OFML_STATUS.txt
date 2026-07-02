@@ -1,8 +1,8 @@
 HI_HCJDC_OFML STATUS
 ====================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated    : 2026-06-26
-Current: v4.6 | 66P/0F/0W/0LIM | Updated 2026-06-26
+Last updated    : 2026-07-02
+Current: v4.7 | 66P/0F/0W/0LIM | Updated 2026-07-02
 
 v4.0 (2026-06-23): 68P/0F/0W/0LIM | 28/28 PASS | All 5 entities blocked
   Single JSON. 6 QIDMs, 17 combos. Identifier-priority guardrail complete (Plate>VIN v3.6,
@@ -105,47 +105,6 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Article    RENDER:RENDER        PASS     Article RENDER gate (1 card ARTICLE; Serial req; ArticleType req no default; relatedSearchHitIndicator=Y default)
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Article    NEGATIVE:NEGATIVE    PASS     Article negative -- empty form, no Send button, no request fired
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Article    Article:QA           PASS     ArticleSingleQuery fires QA; ArticleSerialNumber=TEST + ArticleTypeCode=BBICYCL + RelatedSearchHitIndicator=Y default (2nd fire omitted RSH from input, Y still serialized)
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Firearm    Gun:QG               PASS     GunQuery fires QG; GunSerialNumber=SER783 bare + escalating optionals GunMake=AAB / GunCaliber=11 / GunModel=REER all serialize (any[]); RelatedSearchHitIndicator=Y default holds even when omitted from input (4th fire). 5 fires all QG. v4.4 full re-test.
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Boat       Boat:BQ              PASS     BoatQuery fires BQ (Reg path); RegistrationNumber=7597523 + State=WV (reverse-lookup West Virginia) + RSH=Y. No Hull present.
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Boat       Boat:QB              PASS     BoatQuery fires QB (Hull path); BoatHullIdNumber=WE23R542 bare + with State=ID (reverse-lookup Idaho); RSH=Y default holds when omitted from input (4th fire).
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Boat       Boat:Guardrail Hull>Reg PASS     Hull>Reg guardrail (v3.9): Hull=332423 + Reg=3123423 entered together -> only BoatHullIdNumber serializes, RegistrationNumber DROPPED from wire (BQ exits pool via BoatHullIdNumber NOT_EXISTS). Holds with State=AK too (6th fire).
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Firearm    RENDER:RENDER        PASS     Firearm RENDER (1 card FIREARM; Serial req; Make/Caliber/Model optional no default; RSH=Y default)
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Firearm    NEGATIVE:NEGATIVE    PASS     Firearm negative -- empty form, no Send button, no request fired
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Boat       RENDER:RENDER        PASS     Boat RENDER (1 card BOAT SEARCH; RegistrationNumber/Hull/State; RSH=Y default; State no default)
-
-LIVE TEST RESULTS (v3.4)
-========================
-  ---   2026-06-25 Boat       NEGATIVE:NEGATIVE    PASS     Boat negative -- empty form, no Send button, no request fired
 
 LIVE TEST RESULTS (v3.4)
 ========================
@@ -161,39 +120,60 @@ LIVE TEST RESULTS (v3.4)
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Firearm    Gun:QG + all optionals PASS     GunQuery QG with all optional fields -- GunSerialNumber=SER783 + GunMake=AAB + GunCaliber=11 + GunModel=REER (dropdowns resolved) + RSH=Y, all serialize via any[].
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DL:DQN               PASS     DL OLN path: DriverLicenseQuery fires DQN with OperatorLicenseNumber only; State=AR rides along (any[], reverse-lookup Arkansas). purposeCodeDH/Attention (DH fields) correctly absent from DL wire.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DL:DQ                PASS     DL Name+Sex+DOB: DriverLicenseQuery fires DQ; Name='LAST, FIRSDT M SUF' (comma-space Last-first, 4-part), SexCode=F (Female reverse-lookup), BirthDate 01011985 (yyyy-MM-dd -> MMddyyyy).
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DL:QW                PASS     DL Name+DOB (no Sex): DriverLicenseQuery fires QW; Name='LAST, FIRSDT' + BirthDate 01011985; no SexCode, no OLN. State=AR rides along on variant.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DL:Guardrail OLN>Name (DL) PASS     OLN>Name guardrail: OLN=55856576 + Name + SexCode + BirthDate all entered -> only OperatorLicenseNumber (+State=AR) on wire; Name/SexCode/BirthDate DROPPED (DQ/QW exit pool via OperatorLicenseNumber NOT_EXISTS). RMS elastic still gets all fields.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DH:KQN               PASS     DH OLN path: DriverHistoryQuery fires KQN; OperatorLicenseNumberDH=4235234 -> OperatorLicenseNumber on wire; PurposeCode=C; Attention auto-populated 'SGAMBELLONE R' (officer RMS name, NOT literal X); State=AL rides along (Alabama reverse-lookup).
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DH:KQ                PASS     DH Name+Sex+DOB: DriverHistoryQuery fires KQ; Name='LAST, FIRSDT M SUF' (comma-space Last-first, DH-suffix fields), SexCodeDH=F (Female), BirthDateDH 01011985; PurposeCode=C; Attention auto 'SGAMBELLONE R'. State=AL rides along on variant.
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DH:Guardrail OLN>Name (DH) PASS     DH OLN>Name guardrail: OperatorLicenseNumberDH=111202255 + Name + SexCode + BirthDate all entered -> only OperatorLicenseNumber (+State=AL) on wire; Name/Sex/DOB DROPPED (KQ exits pool via OperatorLicenseNumberDH NOT_EXISTS).
 
 LIVE TEST RESULTS (v3.4)
 ========================
-  ---   2026-06-25 Person     DH:DH deselects DL (one-directional) PASS     One-directional deselect: both DL OLN (12345) and DH OLN (67980) filled; clicking the DH checkbox deselects DL -> SINGLE DriverHistoryQuery fires (OperatorLicenseNumber=67980, PurposeCode=C, Attention=SGAMBELLONE R). No DriverLicenseQuery transaction. Config verified one-directional (only DH has queriesToDeselect=[DriverLicenseQuery]).
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
+
+LIVE TEST RESULTS (v3.4)
+========================
 
 LIVE TEST RESULTS (v3.4)
 ========================

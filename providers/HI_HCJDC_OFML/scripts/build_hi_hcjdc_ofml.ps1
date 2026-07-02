@@ -110,14 +110,14 @@
 #   18 MessageKeys: AQ, BQ, DQ, FQ, IQ, KQ, M55L, M55S, QA, QB, QG, QH, QR, QS, QV, QW, RQ, ZR
 #   BoatQuery uses <Choice> elements -- split into separate combos per primary field
 #   DriverLicenseQuery has a QW (Wanted Person) combo alongside DQ combos -- included per source authority
-#   VehicleRegistrationQuery has 6 combos: M55L/M55S (in-state), RQ (out-state), QV (stolen)
+#   VehicleRegistrationQuery: 4 built combos M55L/M55S (in-state), RQ/RQV (out-state); QV stolen combos removed v4.4 (server auto-generates QV, data-mined via QRDM)
 #   State2-5 fields on DL/VehicleReg: NOT implementable (platform has no multi-state mechanism). Excluded.
 #
 # DUPLICATE keyRef INVENTORY (LIMITATION #21):
 #   BoatQuery:               BQ (Boat Reg) + QB (Stolen Boat) -> BQ (Reg), QB (Hull)
 #   DriverHistoryQuery:      KQ x2           -> KQN (OLN), KQ (Name)
 #   DriverLicenseQuery:      DQ x2 + QW     -> DQN (OLN), DQ (Name), QW (distinct)
-#   VehicleRegistrationQuery: RQ x2 + QV x2 + M55L + M55S -> M55L, M55S, RQ, QVP, QVV, RQV (6 distinct)
+#   VehicleRegistrationQuery: RQ x2 + M55L + M55S -> M55L, M55S, RQ, RQV (4 distinct; QV x2 stolen removed v4.4)
 #   GunQuery:                QG              -> QG (no duplicate)
 #   ArticleSingleQuery:      QA              -> QA (no duplicate)
 #
@@ -141,10 +141,10 @@
 #   RMS: useAttributeId=true (KB standard)
 #
 # DATE FORMAT: MMddyyyy
-# NAME FORMAT: "First Last Middle Suffix" with space separators
+# NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.6",
+    [string]$Version = "4.7",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -165,19 +165,15 @@ param(
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
-$PHASEDIR = "$DIR\phases"
 if ($AttnDiagnostic) {
     $OUT    = "$DIR\diagnostics\HI_HCJDC_OFML_ATTNTEST_${AttnMode}.json"
-    $VEROUT = $null
     New-Item -ItemType Directory -Force -Path "$DIR\diagnostics" | Out-Null
 } else {
     # Root JSON name carries the version (<PROVIDER>_v<X.Y>.json). Write-ProviderJson
     # removes any stale bare/versioned sibling so one-JSON-in-root holds on every bump.
+    # phases/ retired 2026-07-02 (NJ/CA parity) -- git history is the version authority.
     $OUT    = "$DIR\HI_HCJDC_OFML_v${Version}.json"
-    $VEROUT = "$PHASEDIR\HI_HCJDC_OFML_v${Version}_${DATE}.json"
 }
-
-New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
@@ -241,22 +237,32 @@ $vehRegQuery = [PSCustomObject]@{
     # Discriminators: plate = Plate Type/Year presence; VIN = State presence. Both are
     # real OOS data, not synthetic switches. Bare plate -> M55L, bare VIN -> M55S.
     combinations = @(
-        # RQ: Out-of-state plate (Plate + PlateType + PlateYear). Neither Plate Type nor
-        # Plate Year has a form default, so RQ only fires once the officer fills them --
-        # a deliberate OOS action. A bare plate has neither -> falls through to M55L.
+        # RQ: Out-of-state plate (Plate + PlateType + PlateYear).
+        # CONDITION: LicensePlateTypeCode EXISTS -- OOS gate (v4.7 CHECK 16 shadow fix).
+        # The platform fires on primaryFieldReference presence, NOT full set[] presence, so
+        # relying on "RQ's set[] needs PlateType/Year" did NOT stop RQ firing on a bare plate --
+        # RQ (ordered first, pFR=LicensePlateNumber) shadowed M55L. Gating RQ on
+        # LicensePlateTypeCode EXISTS is the symmetric complement to M55L's LicensePlateTypeCode
+        # NOT_EXISTS: bare plate (no Plate Type) -> M55L; Plate+Type -> RQ. Mutually exclusive,
+        # both reachable (mirrors FL v7.0 / CA v2.11 OOS-gate symmetry).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EXISTS' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'Out'
         }
-        # RQV: Out-of-state VIN (VIN + State). State in set[] is the VIN OOS discriminator
-        # -- a bare VIN has no State -> falls through to M55S (in-state).
-        # CONDITION: LicensePlateNumber NOT_EXISTS -- plate-wins guardrail. When officer fills
-        # both Plate and VIN, Plate wins: RQV exits the union pool so VehicleIdentificationNumber
-        # and vehicleYear do NOT bleed into RQ's XML. (v3.6 all-fields stress test finding)
+        # RQV: Out-of-state VIN (VIN + State).
+        # CONDITIONS (both must pass):
+        #   1. RegistrationState EXISTS -- OOS gate (v4.7 CHECK 16 shadow fix). Same reason as RQ:
+        #      the platform fires on primaryFieldReference (VIN) presence, not set[] presence, so
+        #      RQV (ordered before M55S) shadowed M55S on a bare VIN. Gating on RegistrationState
+        #      EXISTS is the symmetric complement to M55S's RegistrationState NOT_EXISTS: bare VIN
+        #      (no State) -> M55S; VIN+State -> RQV. Mutually exclusive, both reachable.
+        #   2. LicensePlateNumber NOT_EXISTS -- plate-wins guardrail. When officer fills both Plate
+        #      and VIN, Plate wins: RQV exits the union pool so VIN/vehicleYear do NOT bleed into
+        #      RQ's XML. (v3.6 all-fields stress test finding)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','RegistrationState'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','RegistrationState'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQV'
             state                 = 'Out'
@@ -301,7 +307,7 @@ $vehRegQuery = [PSCustomObject]@{
         # cleared and no Plate Type/Year now matches no combo and fires NOTHING (clearing
         # Vehicle Type is an unsupported path). User-approved dormant skip, formalized.
     )
-    description        = 'VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, fires on Plate Type+Year) and RQV (VIN, fires on VIN+State) ordered before in-state M55L (plate) / M55S (VIN); OOS reached by ADDING fields, never clearing Vehicle Type. QVP/QVV stolen combos REMOVED in v4.4 (they should never fire from the form; the state CommSys server auto-generates the QV/stolen query, data-mined via QRDM). 4 combos.'
+    description        = 'VehicleRegistrationQuery -- OOS-first routing (v3.0): RQ (plate, OOS-gated LicensePlateTypeCode EXISTS) and RQV (VIN, OOS-gated RegistrationState EXISTS) ordered before in-state M55L (plate) / M55S (VIN, both gated NOT_EXISTS on the same discriminators); OOS reached by ADDING fields, never clearing Vehicle Type. v4.7 added the OOS EXISTS gates so RQ/RQV no longer shadow M55L/M55S (platform fires on primaryFieldReference, not set[]; CHECK 16). QVP/QVV stolen combos REMOVED in v4.4 (state CommSys server auto-generates the QV/stolen query, data-mined via QRDM). 4 combos.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'HI_HCJDC_OFML_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -859,7 +865,7 @@ if ($AttnDiagnostic) {
     Write-Host "  production handler is what suppresses output; if absent, Attention is dropped regardless." -ForegroundColor Cyan
     return
 }
-Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT `
     -Label "Built HI_HCJDC_OFML v${Version}" `
     -Version $Version
 

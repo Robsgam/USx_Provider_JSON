@@ -1004,8 +1004,9 @@ See also:
     VehicleIdentificationNumber+VehicleMakeCode ABSENT. RQ wins. DECISIVE.
     T7 bare Plate+VIN (no State, no PlateType/Year): M55L fires; VIN absent from CommSys XML.
     M55S exits on LicensePlateNumber NOT_EXISTS condition. DECISIVE.
-    Test logs: providers/HI_HCJDC_OFML/tests/HI_HCJDC_OFML_Vehicle_VehReg_RQ+AllFieldsStress_PLATE-WINS_GUARDRAIL__All_fields__Plate+PlateType+PlateYear+VIN+State+Make__--_CommSys_XML_=_plate_onl.txt
-               providers/HI_HCJDC_OFML/tests/HI_HCJDC_OFML_Vehicle_VehReg_M55L+PlateWinsVIN_PLATE-WINS_T7__Bare_Plate+VIN__no_State__no_PlateType_Year__--_M55L_fires__VIN_absent_from_CommSys_XML..txt
+    Test logs: the prior v3.6 working-tree logs (RQ all-fields-stress; M55L T7 bare Plate+VIN) were
+               never committed to git; the plate-wins guardrail is being re-validated in the HI v4.7
+               Vehicle re-test -- see logs/Vehicle once complete. (Rule also live-proven on FL/NJ/TX.)
 
   --- PERSON half (OLN > Name) -- FL DL live precedent ---
     When a DriverLicenseQuery (or DriverHistoryQuery) has both an OLN-set combo (set

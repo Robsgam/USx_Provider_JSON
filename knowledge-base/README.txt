@@ -462,8 +462,22 @@ TOOLS
 
   tools/doctor.ps1
     One-shot repo health dashboard (read-only). Composes score_all -Quick +
-    poisoned-array sweep (validate.ps1 G-31) + git status into one snapshot.
+    poisoned-array sweep (validate.ps1 G-31) + git status + reverse-propagation
+    status into one snapshot.
     Usage: .\doctor.ps1 [-SkipPoison] [-OutFile <path>]
+
+  tools/flag_pending_fix.ps1
+    Reverse-propagate a shared-module/JSON bug fix as a doc-stub flag. Writes a
+    [FLAG:<id>] line into each still-pending provider's PENDING_UPDATES.txt (which
+    enforce.ps1 PHASE 1 blocks on until rebuilt; the build script clears it) and
+    appends a REVERSE_PROPAGATION_LOG.md row. Idempotent; skips origin + incomplete.
+    Usage: .\flag_pending_fix.ps1 -FixId <id> -Description <text> -Providers <list|all> [-Origin <name>] [-Date <yyyy-MM-dd>] [-DryRun] [-OutFile <path>]
+
+  tools/audit_reverse_propagation.ps1
+    Portfolio status view for reverse-propagated fixes. Reads every PENDING_UPDATES.txt
+    + REVERSE_PROPAGATION_LOG.md, reports which providers are pending/propagated per fix
+    plus gaps. Informational (enforce PHASE 1 is the gate); composed into doctor.ps1.
+    Usage: .\audit_reverse_propagation.ps1 [-OutFile <path>]
 
   tools/lint_build_scripts.ps1
     Static analysis of all build scripts for anti-patterns. Checks: PlateYear

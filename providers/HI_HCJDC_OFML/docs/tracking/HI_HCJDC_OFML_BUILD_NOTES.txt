@@ -3,6 +3,29 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.7  2026-07-02  NJ/CA-parity modernization + CHECK 16 shadow fix
+  CHANGED: (1) Retired phases/ (removed $PHASEDIR/$VEROUT/-PhasePath; git rm phases/) -- git
+    history is the version authority (NJ v4.7 parity). (2) Migrated docs/ to the 4-category
+    structure (tracking/reports/reference/deliverables) and transitioned tests/ -> logs/<Entity>/
+    (legacy tests/ eliminated). (3) VehicleRegistrationQuery -- added OOS reachability gates:
+    LicensePlateTypeCode EXISTS on RQ, RegistrationState EXISTS on RQV, so RQ/RQV no longer shadow
+    M55L/M55S. (4) Corrected stale header comments (VehReg is 4 combos not 6 post-v4.4 QVP/QVV
+    removal; name format is Last-first per v4.0).
+  REASON: (1-2) Adopt the 2026-07-01 pipeline reorg HI had not yet picked up. (3) verify_build
+    CHECK 16 (combo reachability, added post-v4.6 with CA v2.11) found RQ/RQV shadowing M55L/M55S:
+    the platform fires on primaryFieldReference presence, NOT full set[] presence, so RQ
+    (pFR=LicensePlateNumber, ordered first) fired on a bare plate and shadowed the in-state M55L.
+    The EXISTS gates are symmetric to M55L/M55S's NOT_EXISTS gates (FL v7.0 / CA v2.11 pattern):
+    bare plate->M55L, Plate+Type->RQ, bare VIN->M55S, VIN+State->RQV -- mutually exclusive + reachable.
+    (4) Doc accuracy.
+  AUDITS: keyRef-vs-devdoc audit CLEAN -- every base keyRef is a real HI XML MessageKey
+    (RQ/M55L/M55S/DQ/QW/KQ/QG/QA/BQ/QB); RQV/DQN/KQN are documented synthetic disambiguations of
+    metadata combos that share a keyReference (RQ x2, DQ x2, KQ x2), LIMITATION #21 / CHECK 9 PASS.
+    NOT the NJ-class wrong-base-term bug (NJ's base terms were wrong vs its devdoc; HI's are correct).
+  RESULT: 66P/0F/0W, verify CLEAN (incl. CHECK 16). Only the Vehicle fingerprint changes (OOS gates);
+    Person/Firearm/Article/Boat unchanged -> prior blocks carry over. Vehicle re-test required; full
+    re-import. JSON key-order also refreshed from current shared modules (harmless).
+
 v4.6 (2026-06-26): VehicleMakeName VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present; shared module; result-mapping only). Vehicle State label -> 'State (leave blank for Hawaii)' for verify CHECK 15.
   CHANGED: (1) VehicleMakeName result-mapping (QRDM response) code source corrected from
     attributeType=VEHICLE / codeTypeSource=VehicleType to attributeType=VEHICLE_MAKE /
