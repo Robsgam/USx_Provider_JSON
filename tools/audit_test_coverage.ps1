@@ -479,8 +479,11 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         }
 
         $gateReasons = @()
-        if ($sqvrConfirmed -gt 0 -and $validBackedCombos -lt $sqvrConfirmed) {
-            $gateReasons += "$sqvrConfirmed [CONFIRMED] but only $validBackedCombos combo(s) have a valid current-version XML backing log ($staleBackedCombos matched only stale/unstamped logs)"
+        # Gate: if SQVR claims all combos confirmed (confirmed >= totalCombos, no pending)
+        # but the logs don't back it up -- flag INCONSISTENT.
+        # Guards skip when SQVR has no/few confirmations (provider not yet tested).
+        if ($sqvrConfirmed -ge $totalCombos -and $sqvrPending -eq 0 -and $validBackedCombos -lt $totalCombos) {
+            $gateReasons += "Only $validBackedCombos of $totalCombos combo(s) have a valid current-version XML backing log ($staleBackedCombos matched only stale/unstamped logs)"
         }
         if ($null -ne $matrixCount -and $matrixCount -ne $totalCombos) {
             $gateReasons += "TEST_MATRIX combo count ($matrixCount) != JSON combo count ($totalCombos) -- matrix is stale, regenerate"
