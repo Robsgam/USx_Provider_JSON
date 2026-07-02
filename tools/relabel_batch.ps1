@@ -73,7 +73,10 @@ $corrections = 0
 for ($i = 0; $i -lt $records.Count; $i++) {
     if (-not $assigned.ContainsKey($i)) { continue }
     $t = $assigned[$i]; $r = $records[$i]
-    $old = "$($r.combo)$(if ($r.anyField) { '_af_' + $r.anyField })$(if ($r.kind -eq 'any') { '_any' })$(if ($r.kind -eq 'guardrail') { '_guardrail' })"
+    # guardrail records have combo=null by design -- reconstruct their old label from
+    # expectedKeyRef, else a correctly-paired guardrail reads as a bogus "correction".
+    $old = if ($r.kind -eq 'guardrail') { "$($r.expectedKeyRef)_guardrail" }
+           else { "$($r.combo)$(if ($r.anyField) { '_af_' + $r.anyField })$(if ($r.kind -eq 'any') { '_any' })" }
     $new = Get-CmPlanLabel $t
     if ($old -ne $new) {
         $corrections++

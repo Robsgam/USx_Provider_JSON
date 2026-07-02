@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Boat BoatQuery
 Combo: BQ (BQ (auto))
-Date: 2026-07-02 15:35:20
+Date: 2026-07-02 15:49:26
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: d91373dcc8fee15dc9c9c8081a7f0573e3340ff50300b7f0908bc347b99bf736
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"RegistrationNumber":"FL1234AB","relatedSearchHitIndicator":"Y"}
+{"RegistrationNumber":"FL1234AB","RegistrationState":"Georgia","relatedSearchHitIndicator":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHJAGM200N2DX93CBPCE3ED">
+    <api:Transaction id="01KWJ5H0MRE1QM7RHFN4R26W1S">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id />
@@ -36,8 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>BoatQuery</MessageType>
-            <Id>01KWHJAGM200N2DX93CBPCE3ED</Id>
+            <Id>01KWJ5H0MRE1QM7RHFN4R26W1S</Id>
             <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
+            <State>GA</State>
             <RegistrationNumber>FL1234AB</RegistrationNumber>
           </Request>
         </Transaction>
@@ -60,12 +61,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KWHJAGM200N2DX93CBPCE3ED
+  Id                             01KWJ5H0MRE1QM7RHFN4R26W1S
   RelatedSearchHitIndicator      Y
+  State                          GA
   RegistrationNumber             FL1234AB
 
 NOTES
 -----
-Automated capture (txId 01KWHJAGM200N2DX93CBPCE3ED). kind=combo; anyField=; expectedKeyRef=BQ; firedMessageType=BoatQuery.
+Automated capture (txId 01KWJ5H0MRE1QM7RHFN4R26W1S). kind=combo; anyField=; expectedKeyRef=BQ; firedMessageType=BoatQuery.
 
 RESULT: PASS

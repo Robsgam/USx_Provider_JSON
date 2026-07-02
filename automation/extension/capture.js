@@ -723,6 +723,34 @@
         out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, qId: item.qId, requestXml: item.xml.xml, formState: item.formState, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse, capturedAt: new Date().toISOString(), ok: true });
       }
     }
+    // Late-indexing guard: the newest submissions can take seconds to appear in the
+    // /queries/search index -- a fetch fired right after a run raced 2 Boat rows and broke
+    // positional pairing for that family (2026-07-02). When a manifest is present and we
+    // collected fewer rows than it expects, re-list and collect until counts match (max 30s).
+    if (batch.length && fresh.length < batch.length) {
+      const tRetry = Date.now();
+      while (fresh.length < batch.length && Date.now() - tRetry < 30000) {
+        await new Promise((res) => setTimeout(res, 3000));
+        console.log('%c[USx-BULK]', 'color:#fa0', `waiting for late rows: ${fresh.length}/${batch.length}...`);
+        let extra = [];
+        try {
+          const j2 = await fetchJson(window.__usxSearchReq.url, { method: window.__usxSearchReq.method || 'POST', headers: { 'content-type': 'application/json', 'accept': 'application/json' }, body: window.__usxSearchReq.body });
+          extra = ((typeof j2 === 'string' ? JSON.parse(j2) : j2).queries || []).filter((q) => q.transaction !== 'RMS');
+        } catch (e) { break; }
+        for (const q of extra) {
+          if (have.has(q.id)) continue;
+          if (floorTs) { const ct = Date.parse((q.auditMetadata && q.auditMetadata.createdDateUtc) || ''); if (ct && ct < floorTs) { have.add(q.id); continue; } }
+          let xml2 = null;
+          try { const d2 = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml2 = L.extractConnectCicXml(typeof d2 === 'string' ? d2 : JSON.stringify(d2)); } catch (e) {}
+          if (!xml2) continue;
+          const rms2 = await getRmsPairFor(q.parsedRawQuery);
+          fresh.push({ qId: q.id, createdAt: (q.auditMetadata && q.auditMetadata.createdDateUtc) || null, formState: q.parsedRawQuery || null, xml: xml2, rmsRequestJson: rms2 ? rms2.requestJson : null, rmsResponse: rms2 ? rms2.response : null });
+          have.add(q.id);
+        }
+      }
+      console.log('%c[USx-BULK]', 'color:#fa0', `late-row wait done: ${fresh.length}/${batch.length}.`);
+    }
+
     const added = fresh.length;
     if (dropped.length) {
       const ids = new Set(loadSeenIds()); dropped.forEach((id) => ids.add(id)); saveSeenIds(Array.from(ids));
