@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Firearm GunQuery
 Combo: QG_af_GunModel (QG_af_GunModel (auto))
-Date: 2026-07-02 10:05:14
+Date: 2026-07-02 14:54:33
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: c7d019068381c6e8774e7d46aa3dfa3722ae508265923476dd0561be8dd4bbb3
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"GunCaliber":"11","GunSerialNumber":"GUN12345","relatedSearchHitIndicator":"Y"}
+{"GunModel":"TEST","GunSerialNumber":"GUN12345","relatedSearchHitIndicator":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHJ8CPXS3FKGDK69KJ7GEP3">
+    <api:Transaction id="01KWHJ8G5SEWWFGPRFF3BHD8ME">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id />
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01KWHJ8CPXS3FKGDK69KJ7GEP3</Id>
+            <Id>01KWHJ8G5SEWWFGPRFF3BHD8ME</Id>
             <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
             <GunSerialNumber>GUN12345</GunSerialNumber>
-            <GunCaliber>11</GunCaliber>
+            <GunModel>TEST</GunModel>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -61,13 +61,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KWHJ8CPXS3FKGDK69KJ7GEP3
+  Id                             01KWHJ8G5SEWWFGPRFF3BHD8ME
   RelatedSearchHitIndicator      Y
   GunSerialNumber                GUN12345
-  GunCaliber                     11
+  GunModel                       TEST
 
 NOTES
 -----
-Automated capture (txId 01KWHJ8CPXS3FKGDK69KJ7GEP3). kind=any-field; anyField=GunModel; expectedKeyRef=QG; firedMessageType=GunQuery.
+Automated capture (txId 01KWHJ8G5SEWWFGPRFF3BHD8ME). kind=any-field; anyField=GunModel; expectedKeyRef=QG; firedMessageType=GunQuery.
 
 RESULT: PASS

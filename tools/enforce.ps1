@@ -900,6 +900,20 @@ if ($gateExit -eq 0) {
     Fail "Iterate-phase gate: INCONSISTENT provider(s) -- $($badProviders -join ', ')"
 }
 
+# 6c: Log-content integrity -- every saved test log's QUERY STRING must satisfy its plan
+# test's FULL fill-set, and guardrail logs must show winner-only XML (audit_log_content.ps1;
+# added 2026-07-02 after identifier-only auditing passed label-rotated logs). Scoped to the
+# single provider when -Provider was given; providers without a TEST_PLAN pass by absence.
+if ($Provider) {
+    $logAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $Provider -Quiet 2>&1 | Out-String
+    if ($LASTEXITCODE -eq 0) {
+        Pass "Log-content integrity: $(($logAuditOut -split "`n" | Where-Object { $_ -match 'PASS|nothing to audit' } | Select-Object -First 1).Trim())"
+    } else {
+        Fail "Log-content integrity: saved logs do not match their plan tests"
+        $logAuditOut -split "`n" | Where-Object { $_ -match 'FAIL|STALE|MISMATCH|GUARDRAIL' } | Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
+    }
+}
+
 # ══════════════════════════════════════════════════════════════════════════════
 #  VERDICT
 # ══════════════════════════════════════════════════════════════════════════════

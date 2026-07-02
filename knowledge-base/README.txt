@@ -391,9 +391,37 @@ TOOLS
     label pairing is unreliable when tests share identifier values and differ only in
     optional fields (labels arrived rotated within a query family); the dex-log formState
     is ground truth. Matches each record to the provider TEST_PLAN test whose fills it
-    satisfies (tolerant values; dynamic per-messageType defaults) and rewrites labels in
-    place, reporting corrections.
+    satisfies (matcher shared with audit_log_content via _content_match.ps1) and rewrites
+    labels in place, reporting corrections. With the deterministic positional pairing in
+    capture.js, a clean run reports 0 corrections -- any correction is a process error.
     Usage: .\tools\relabel_batch.ps1 -BatchPath <file> [-PlanPath <file>]
+
+  tools/_content_match.ps1
+    Shared content-matching core (dot-sourced by relabel_batch + audit_log_content):
+    tolerant value matching (state names, M/Male, CNST_ prefixes), plan-label naming,
+    family-fillable sets, QIF formDefaults + dominant-value default detection.
+
+  tools/audit_log_content.ps1
+    Saved-log integrity audit: every test log's QUERY STRING must satisfy its plan test's
+    FULL fill-set (identifier-only auditing passed label-rotated logs, 2026-07-02), and
+    guardrail logs must show winner-only XML (losing identifier absent). Wired into
+    enforce.ps1 PHASE 6c for the scoped provider; exit 0 = 0 stale / 0 mismatch /
+    0 guardrail-wire failures.
+    Usage: .\tools\audit_log_content.ps1 -Provider <name> [-Quiet]
+
+  tools/emit_picklist_scope.ps1
+    Emits providers/<P>/logs/<P>_PICKLIST_SCOPE.json -- every visible FormSelect per entity
+    (fieldId + category/source) -- for the browser's __usxScopePicklists, which opens each
+    dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
+    Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
+
+  tools/import_picklists.ps1
+    Merges usx_picklists_<provider>_<entity>.json downloads into
+    docs/reference/TENANT_PICKLISTS.json and validates: FAIL on empty tenant tables and on
+    plan test values that match no tenant option (the CA-gunTypeCode / NJ-GunMake class).
+    Routed automatically by watch_captures.ps1. emit_test_plan.ps1 hard-gates select
+    values against this file once it exists.
+    Usage: .\tools\import_picklists.ps1 -Path <file|dir>
 
   tools/import_captured_tests.ps1
     Ingests browser-captured test records (usx_captured_*.json from the extension) into

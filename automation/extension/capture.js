@@ -631,60 +631,80 @@
       try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml = L.extractConnectCicXml(typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {}
       if (!xml) continue;
       const rms = await getRmsPairFor(q.parsedRawQuery);
-      fresh.push({ qId: q.id, formState: q.parsedRawQuery || null, xml, rmsRequestJson: rms ? rms.requestJson : null, rmsResponse: rms ? rms.response : null });
+      fresh.push({ qId: q.id, createdAt: (q.auditMetadata && q.auditMetadata.createdDateUtc) || null, formState: q.parsedRawQuery || null, xml, rmsRequestJson: rms ? rms.requestJson : null, rmsResponse: rms ? rms.response : null });
       have.add(q.id);
       if (maxNew !== null && fresh.length >= maxNew) { console.log('%c[USx-BULK]', 'color:#fa0', 'maxNew=' + maxNew + ' reached, stopping.'); break; }
       if (fresh.length % 10 === 0) console.log('%c[USx-BULK]', 'color:#fa0', `captured ${fresh.length}...`);
     }
-    // Correlate fresh captures to manifest entries. Robust to a cleared/re-run session where
-    // stale old-entity rows re-enter `fresh` (loadCaptured() reset -> `have` empty -> previously
-    // captured rows re-collected). Blind reverse-position pairing (old code, gated on
-    // batch.length===fresh.length) then stapled the wrong manifest entry onto a stale capture --
-    // e.g. a Person DriverLicenseQuery label onto a BoatQuery XML -> false-FAIL cross-entity logs.
-    // Match per item in descending confidence, ALWAYS messageType-guarded so a label can never
-    // cross entities: (1) identifier-field content match, (2) messageType-scoped reverse-order
-    // pairing (newest API entry = last manifest entry of its type), (3) unlabeled (import infers
-    // kind from XML). A fresh item never receives a label whose query != its messageType.
+    // Correlate fresh captures to manifest entries, ALWAYS messageType-guarded.
+    // PASS 1 (2026-07-02 rework): POSITIONAL alignment per messageType. Both sides carry an
+    // ordering that reflects true submission order -- manifest submittedAt (client clock) and
+    // item createdDateUtc (server clock) -- so sorting each side by its OWN timestamps and
+    // pairing positionally is deterministic and immune to client/server clock skew. This
+    // replaces identifier-content matching as pass 1: content matching is inherently ambiguous
+    // for same-identifier families (all six NJ Firearm tests share one serial; subset matches
+    // rotated the whole family's labels). Positional pass only fires when the group counts
+    // MATCH (the per-entity-download contract); otherwise fall to
+    // PASS 2 identifier-content match (formState-based, unfilled-identifier rejection), then
+    // PASS 3 messageType-scoped reverse-order, else unlabeled (import infers from XML).
     const usedM = new Set();
+    const pairOf = new Array(fresh.length).fill(-1);
+
+    // -- PASS 1: per-messageType positional alignment when counts match --
+    const mtGroups = {};
+    for (let i = 0; i < fresh.length; i++) {
+      const mt = fresh[i].xml.messageType;
+      if (!mt) continue;
+      (mtGroups[mt] = mtGroups[mt] || []).push(i);
+    }
+    for (const mt of Object.keys(mtGroups)) {
+      const itemIdx = mtGroups[mt].slice().sort((a, b) => Date.parse(fresh[a].createdAt || 0) - Date.parse(fresh[b].createdAt || 0));
+      const manIdx = batch.map((b, k) => k).filter((k) => batch[k].query === mt);
+      manIdx.sort((a, b) => Date.parse(batch[a].submittedAt || 0) - Date.parse(batch[b].submittedAt || 0));
+      const haveTimes = itemIdx.every((i) => fresh[i].createdAt) && manIdx.every((k) => batch[k].submittedAt);
+      if (itemIdx.length === manIdx.length && itemIdx.length > 0 && haveTimes) {
+        for (let p = 0; p < itemIdx.length; p++) { pairOf[itemIdx[p]] = manIdx[p]; usedM.add(manIdx[p]); }
+        console.log('%c[USx-BULK]', 'color:#fa0', `pass1 positional: ${mt} ${itemIdx.length}/${itemIdx.length} paired by timestamp order`);
+      }
+    }
+
     for (let i = 0; i < fresh.length; i++) {
       const item = fresh[i];
       const mt = item.xml.messageType;
-      let mi = -1;
+      let mi = pairOf[i];
 
-      // 1) identifier-field content match (messageType-guarded). Match against the dex-log
-      // formState when available, NOT the XML: a guardrail submission's XML is intentionally
-      // identical to the base combo's (the losing identifier is suppressed on the wire), so
-      // XML containment cross-labelled base combos onto guardrail rows and scrambled the whole
-      // CA batch (2026-07-02). The formState still shows the suppressed field, and any
-      // identifier present in formState that this test did not fill disqualifies the pair.
-      let ifj = null;
-      try { ifj = typeof item.formState === 'string' ? JSON.parse(item.formState) : item.formState; } catch (e) {}
-      const haveFj = ifj && typeof ifj === 'object';
-      mi = batch.findIndex((b, idx) => {
-        if (usedM.has(idx)) return false;
-        // Never pair when neither side has a messageType/query to anchor on -- a queryless
-        // capture + a queryless manifest entry would "match" on nothing meaningful.
-        if (!mt && !b.query) return false;
-        if (b.query && mt && b.query !== mt) return false;
-        const ids = idFills(b.fills || []);
-        if (!ids.length) return false;
-        if (haveFj) {
-          if (!ids.every((f) => String(ifj[f.fieldId] ?? '').toUpperCase() === String(f.value).toUpperCase())) return false;
-          const filledIds = new Set(ids.map((f) => String(f.fieldId).toUpperCase()));
-          return !Object.keys(ifj).some((k) => ID_FIELD_RE.test(k) && String(ifj[k] ?? '').trim() !== '' && !filledIds.has(k.toUpperCase()));
-        }
-        return ids.every((f) => item.xml.xml.includes('>' + f.value + '<'));
-      });
+      // -- PASS 2: identifier-field content match (messageType-guarded). Match against the
+      // dex-log formState, NOT the XML: a guardrail's XML is intentionally identical to the
+      // base combo's (loser suppressed on the wire); formState still shows the suppressed
+      // field, and an identifier present in formState that the test did not fill disqualifies.
+      if (mi < 0) {
+        let ifj = null;
+        try { ifj = typeof item.formState === 'string' ? JSON.parse(item.formState) : item.formState; } catch (e) {}
+        const haveFj = ifj && typeof ifj === 'object';
+        mi = batch.findIndex((b, idx) => {
+          if (usedM.has(idx)) return false;
+          if (!mt && !b.query) return false;
+          if (b.query && mt && b.query !== mt) return false;
+          const ids = idFills(b.fills || []);
+          if (!ids.length) return false;
+          if (haveFj) {
+            if (!ids.every((f) => String(ifj[f.fieldId] ?? '').toUpperCase() === String(f.value).toUpperCase())) return false;
+            const filledIds = new Set(ids.map((f) => String(f.fieldId).toUpperCase()));
+            return !Object.keys(ifj).some((k) => ID_FIELD_RE.test(k) && String(ifj[k] ?? '').trim() !== '' && !filledIds.has(k.toUpperCase()));
+          }
+          return ids.every((f) => item.xml.xml.includes('>' + f.value + '<'));
+        });
+        if (mi >= 0) usedM.add(mi);
+      }
 
-      // 2) messageType-scoped reverse-order pairing
+      // -- PASS 3: messageType-scoped reverse-order pairing --
       if (mi < 0 && mt) {
         for (let k = batch.length - 1; k >= 0; k--) {
-          if (!usedM.has(k) && batch[k].query === mt) { mi = k; break; }
+          if (!usedM.has(k) && batch[k].query === mt) { mi = k; usedM.add(k); break; }
         }
       }
 
       if (mi >= 0) {
-        usedM.add(mi);
         out.push(Object.assign(labelFromManifest(batch[mi], { fields: null, formState: item.formState, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse }), { qId: item.qId }));
       } else {
         out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, qId: item.qId, requestXml: item.xml.xml, formState: item.formState, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse, capturedAt: new Date().toISOString(), ok: true });

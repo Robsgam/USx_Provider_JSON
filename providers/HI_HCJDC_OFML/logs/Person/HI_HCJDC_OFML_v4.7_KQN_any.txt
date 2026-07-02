@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
 Combo: KQN_any (KQN_any (auto))
-Date: 2026-07-02 10:05:10
+Date: 2026-07-02 14:54:31
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: 35d896b8e14b297c2db79a56c2cbbe86b9d148e1f868149fcfa1c4ca47c9dd37
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","OperatorLicenseNumberDH":"D999888777","purposeCodeDH":"C"}
+{"Attention":"X","OperatorLicenseNumberDH":"D999888777","RegistrationState":"Georgia","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHGW7CEVG8C6D43PYXE5DHP">
+    <api:Transaction id="01KWHGWBA12Z8965KEMZA6WJGC">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id />
@@ -36,7 +36,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01KWHGW7CEVG8C6D43PYXE5DHP</Id>
+            <Id>01KWHGWBA12Z8965KEMZA6WJGC</Id>
+            <State>GA</State>
             <Attention>SGAMBELLONE R</Attention>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
             <PurposeCode>C</PurposeCode>
@@ -61,13 +62,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KWHGW7CEVG8C6D43PYXE5DHP
+  Id                             01KWHGWBA12Z8965KEMZA6WJGC
+  State                          GA
   Attention                      SGAMBELLONE R
   OperatorLicenseNumber          D999888777
   PurposeCode                    C
 
 NOTES
 -----
-Automated capture (txId 01KWHGW7CEVG8C6D43PYXE5DHP). kind=any; anyField=; expectedKeyRef=KQN; firedMessageType=DriverHistoryQuery.
+Automated capture (txId 01KWHGWBA12Z8965KEMZA6WJGC). kind=any; anyField=; expectedKeyRef=KQN; firedMessageType=DriverHistoryQuery.
 
 RESULT: PASS

@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
 Combo: DQN (DQN (auto))
-Date: 2026-07-02 10:05:10
+Date: 2026-07-02 14:54:32
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: 35d896b8e14b297c2db79a56c2cbbe86b9d148e1f868149fcfa1c4ca47c9dd37
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777","purposeCodeDH":"C"}
+{"Attention":"X","OperatorLicenseNumber":"D999888777","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHGWV1WY23ZE1NBAFHH3ADA">
+    <api:Transaction id="01KWHGV58C529KF7XVZYEVEEKP">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id />
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWHGWV1WY23ZE1NBAFHH3ADA</Id>
+            <Id>01KWHGV58C529KF7XVZYEVEEKP</Id>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
         </Transaction>
@@ -54,10 +54,7 @@ RMS QUERY
 Request:
 {
   "elasticQuery": {
-    "dlNumber": "D999888777",
-    "lastName": "DOE",
-    "firstName": "JOHN",
-    "dateOfBirth": "1990-01-15"
+    "dlNumber": "D999888777"
   },
   "from": 0,
   "size": 50
@@ -72,11 +69,11 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KWHGWV1WY23ZE1NBAFHH3ADA
+  Id                             01KWHGV58C529KF7XVZYEVEEKP
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01KWHGWV1WY23ZE1NBAFHH3ADA). kind=combo; anyField=; expectedKeyRef=DQN; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHGV58C529KF7XVZYEVEEKP). kind=combo; anyField=; expectedKeyRef=DQN; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

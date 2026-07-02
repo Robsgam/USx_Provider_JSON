@@ -52,6 +52,19 @@ function Import-CaptureFile($path, $label) {
         Write-Host "[WATCH] $label never became readable (still locked or vanished) -- skipping." -ForegroundColor DarkYellow
         return $null
     }
+    # Picklist scope downloads route to import_picklists (tenant option dumps, not test records).
+    if ($label -like 'usx_picklists_*') {
+        Write-Host "[WATCH] picklist scope capture: $label" -ForegroundColor Cyan
+        $summary = $null
+        try {
+            $out = & (Join-Path $PSScriptRoot 'import_picklists.ps1') -Path $path *>&1
+            $out | ForEach-Object { Write-Host $_ }
+            $summary = ($out | Where-Object { "$_" -match 'all validations|FAIL / ' } | Select-Object -Last 1)
+        } catch { Write-Host "[WATCH] import_picklists errored: $_" -ForegroundColor Red }
+        Remove-Item $path -Force -ErrorAction SilentlyContinue
+        if (-not $summary) { $summary = 'picklists merged (no summary line)' }
+        return "PICKLISTS: $summary"
+    }
     Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
     # Content-based relabel pass: browser label pairing is unreliable when tests share
     # identifiers and differ only in optional fields; formState content is ground truth.
@@ -75,7 +88,16 @@ function Import-CaptureFile($path, $label) {
 
 # Startup catch-up sweep -- see header comment. Only runs if files already exist; harmless
 # (no-op) on a clean start.
-$preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_captured_*.json' -File -ErrorAction SilentlyContinue)
+$preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue)
+# Picklist scope files are per-entity and ALL get imported; the largest-only rule applies
+# only to accumulated capture batches.
+$prePicklists = @($preExisting | Where-Object { $_.Name -like 'usx_picklists_*' })
+foreach ($pl in $prePicklists) {
+    Write-Host "[WATCH] startup sweep: picklist capture $($pl.Name)" -ForegroundColor Magenta
+    $s = Import-CaptureFile $pl.FullName $pl.Name
+    if ($Once -and $s) { Write-Host "[WATCH-ONCE] INGESTED $($pl.Name) -- $("$s".Trim())" -ForegroundColor Green; exit 0 }
+}
+$preExisting = @($preExisting | Where-Object { $_.Name -notlike 'usx_picklists_*' })
 if ($preExisting.Count -gt 0) {
     Write-Host "[WATCH] startup sweep: found $($preExisting.Count) pre-existing capture file(s) in Downloads." -ForegroundColor Magenta
     $newest = $preExisting | Sort-Object Length -Descending | Select-Object -First 1
@@ -95,7 +117,7 @@ if ($preExisting.Count -gt 0) {
 
 $watcher = New-Object System.IO.FileSystemWatcher
 $watcher.Path             = $downloads
-$watcher.Filter           = 'usx_captured_*.json'
+$watcher.Filter           = 'usx_*.json'
 $watcher.NotifyFilter     = [System.IO.NotifyFilters]::FileName -bor [System.IO.NotifyFilters]::LastWrite
 $watcher.EnableRaisingEvents = $true
 

@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
 Combo: DQN_guardrail (DQN_guardrail (auto))
-Date: 2026-07-02 10:05:11
+Date: 2026-07-02 14:54:30
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: 35d896b8e14b297c2db79a56c2cbbe86b9d148e1f868149fcfa1c4ca47c9dd37
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","OperatorLicenseNumber":"D999888777","purposeCodeDH":"C"}
+{"Attention":"X","BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777","SexCode":"Male","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHGV58C529KF7XVZYEVEEKP">
+    <api:Transaction id="01KWHGWKAH1WFKZXWKC0SN1YEN">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id />
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWHGV58C529KF7XVZYEVEEKP</Id>
+            <Id>01KWHGWKAH1WFKZXWKC0SN1YEN</Id>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
         </Transaction>
@@ -54,7 +54,11 @@ RMS QUERY
 Request:
 {
   "elasticQuery": {
-    "dlNumber": "D999888777"
+    "dlNumber": "D999888777",
+    "sexAttrId": "69510720597",
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "dateOfBirth": "1990-01-15"
   },
   "from": 0,
   "size": 50
@@ -69,11 +73,11 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KWHGV58C529KF7XVZYEVEEKP
+  Id                             01KWHGWKAH1WFKZXWKC0SN1YEN
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01KWHGV58C529KF7XVZYEVEEKP). kind=guardrail; anyField=; expectedKeyRef=DQN; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHGWKAH1WFKZXWKC0SN1YEN). kind=guardrail; anyField=; expectedKeyRef=DQN; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

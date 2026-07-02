@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
 Combo: RQV_af_vehicleYear (RQV_af_vehicleYear (auto))
-Date: 2026-07-02 10:05:08
+Date: 2026-07-02 14:54:28
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: 92671f531e49b5f9521bcf91f826484f5d3936a2ae7e52ca2bb1bd36a774a6df
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleTypeCode":"1"}
+{"ImageIndicator":"N","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleTypeCode":"1","vehicleYear":"2023"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHGRRRW9TN1HH7QD089PYZV">
+    <api:Transaction id="01KWHGR3EXN72HBMN40K09MQCW">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id />
@@ -36,10 +36,11 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWHGRRRW9TN1HH7QD089PYZV</Id>
+            <Id>01KWHGR3EXN72HBMN40K09MQCW</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <ImageIndicator>N</ImageIndicator>
-            <VehicleTypeCode>1</VehicleTypeCode>
+            <State>GA</State>
+            <VehicleYear>2023</VehicleYear>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -57,6 +58,9 @@ Request:
 {
   "elasticQuery": {
     "vehicle": {
+      "registrationStateAttrIds": [
+        69510726097
+      ],
       "vinNumber": "1HGCM82633A123456"
     }
   },
@@ -73,13 +77,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KWHGRRRW9TN1HH7QD089PYZV
+  Id                             01KWHGR3EXN72HBMN40K09MQCW
   VehicleIdentificationNumber    1HGCM82633A123456
   ImageIndicator                 N
-  VehicleTypeCode                1
+  State                          GA
+  VehicleYear                    2023
 
 NOTES
 -----
-Automated capture (txId 01KWHGRRRW9TN1HH7QD089PYZV). kind=any-field; anyField=vehicleYear; expectedKeyRef=RQV; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWHGR3EXN72HBMN40K09MQCW). kind=any-field; anyField=vehicleYear; expectedKeyRef=RQV; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

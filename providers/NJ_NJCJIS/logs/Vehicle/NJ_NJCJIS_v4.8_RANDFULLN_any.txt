@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
 Combo: RANDFULLN_any (RANDFULLN_any (auto))
-Date: 2026-07-02 13:14:28
+Date: 2026-07-02 14:52:16
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: 860b689c90c257cfb1836cbab9810507304a5506f5ea87440d14848aa02f072b
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey","VehicleIdentificationNumber":"1HGCM82633A123456"}
+{"ImageIndicator":"N","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHX52PKQ2GMT3NSJK4Q3BEK">
+    <api:Transaction id="01KWHX5E6CPT6EGQ8PA5EFNQYH">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWHX52PKQ2GMT3NSJK4Q3BEK</Id>
+            <Id>01KWHX5E6CPT6EGQ8PA5EFNQYH</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <ImageIndicator>N</ImageIndicator>
-            <State>NJ</State>
+            <State>GA</State>
             <RandomRequest>N</RandomRequest>
           </Request>
         </Transaction>
@@ -59,7 +59,7 @@ Request:
   "elasticQuery": {
     "vehicle": {
       "registrationStateAttrIds": [
-        69509884952
+        69509895916
       ],
       "vinNumber": "1HGCM82633A123456"
     }
@@ -78,14 +78,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWHX52PKQ2GMT3NSJK4Q3BEK
+  Id                             01KWHX5E6CPT6EGQ8PA5EFNQYH
   VehicleIdentificationNumber    1HGCM82633A123456
   ImageIndicator                 N
-  State                          NJ
+  State                          GA
   RandomRequest                  N
 
 NOTES
 -----
-Automated capture (txId 01KWHX52PKQ2GMT3NSJK4Q3BEK). kind=any; anyField=; expectedKeyRef=RANDFULLN; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWHX5E6CPT6EGQ8PA5EFNQYH). kind=any; anyField=; expectedKeyRef=RANDFULLN; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

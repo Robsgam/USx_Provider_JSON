@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
 Combo: RQ_any (RQ_any (auto))
-Date: 2026-07-02 10:05:08
+Date: 2026-07-02 14:54:29
 Result: PASS
 JSON Version: 4.7
 Entity Fingerprint: 92671f531e49b5f9521bcf91f826484f5d3936a2ae7e52ca2bb1bd36a774a6df
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","LicensePlateNumber":"TEST123","RegistrationState":"Georgia","vehicleTypeCode":"1"}
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","vehicleTypeCode":"1"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHGRJ9P0ENRA2MMTHFEM4EH">
+    <api:Transaction id="01KWHGQR8ZVRQMA5CN3SGT2T96">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id />
@@ -36,11 +36,12 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWHGRJ9P0ENRA2MMTHFEM4EH</Id>
+            <Id>01KWHGQR8ZVRQMA5CN3SGT2T96</Id>
             <ImageIndicator>N</ImageIndicator>
+            <LicensePlateYear>2026</LicensePlateYear>
             <State>GA</State>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
-            <VehicleTypeCode>1</VehicleTypeCode>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -77,14 +78,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KWHGRJ9P0ENRA2MMTHFEM4EH
+  Id                             01KWHGQR8ZVRQMA5CN3SGT2T96
   ImageIndicator                 N
+  LicensePlateYear               2026
   State                          GA
+  LicensePlateTypeCode           PC
   LicensePlateNumber             TEST123
-  VehicleTypeCode                1
 
 NOTES
 -----
-Automated capture (txId 01KWHGRJ9P0ENRA2MMTHFEM4EH). kind=any; anyField=; expectedKeyRef=RQ; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWHGQR8ZVRQMA5CN3SGT2T96). kind=any; anyField=; expectedKeyRef=RQ; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

@@ -1538,3 +1538,32 @@ See also:
   PRECEDENT (2026-06-24): NJ_NJCJIS v4.5 reproduced byte-identical; FL_FCIC v6.5 and
   HI_HCJDC_OFML v4.1 were DETERMINISTIC-but-STALE (predated the version field + the
   VehicleMakeName QRDM fix) -> rebuilt to v6.6 / v4.2.
+
+================================================================================
+12. TENANT CODE-TABLE RULE (added 2026-07-02)
+================================================================================
+
+  Code-table CONTENTS are TENANT DATA, not platform constants. The same
+  codeTypeCategory/codeTypeSource pair serves DIFFERENT option sets per tenant:
+  live-proven 2026-07-02 -- NJ's NCIC_FIREARM_MAKE/NJ_NIBRS table holds numeric
+  NIBRS make codes ('03 - Armalite AR-180 type') while HI's identically-named
+  pair holds NCIC letter codes ('IMI'); CA's NCIC_FIREARM_TYPE table had no 'HP'.
+  A pair renders options only if THAT tenant's table was created and populated
+  (USx Codes doc: "as long as a code type exists and has the proper values").
+
+  RULES:
+  - Every FormSelect's pair must be TENANT-VERIFIED before USx Tenant Testing:
+    scope the tenant (emit_picklist_scope.ps1 -> __usxScopePicklists in the
+    browser -> import_picklists.ps1 -> docs/reference/TENANT_PICKLISTS.json).
+    emit_test_plan.ps1 hard-FAILs any select test value not present in the
+    scoped tenant options.
+  - Per-provider test values for selects live in docs/reference/
+    TEST_VALUE_OVERRIDES.txt (fieldId=value), never in per-provider forks of
+    the shared Get-TestValue table.
+  - Nationally-standard code sets (firearm make/caliber/type, plate type,
+    article type) standardize on codeTypeSource=NCIC at each provider's NEXT
+    rebuild (one provider at a time; never churn a live-proven config for this
+    alone). State-specific sets (NJ_NIBRS_STATE, HI VEHICLE_TYPE, LA purpose
+    codes) stay per-state.
+  - An empty tenant table found during scoping is a platform/tenant-admin item
+    (Leo's attribute-mapping runbook; 1h cache), NOT a JSON fix.

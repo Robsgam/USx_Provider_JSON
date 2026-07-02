@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
 Combo: FULLN_any (FULLN_any (auto))
-Date: 2026-07-02 13:16:21
+Date: 2026-07-02 14:51:52
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: d77802213c8d360b91019f62375d03e5a168ed45ca3b91c35a8aebae45104add
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"Y","OperatorLicenseNumber":"D999888777","RegistrationState":"New Jersey"}
+{"ImageIndicator":"N","OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHX7JNQX7BVXW45YRFH3A91">
+    <api:Transaction id="01KWHX7T4J6SXXB4C0ZJ8GNKXX">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,9 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWHX7JNQX7BVXW45YRFH3A91</Id>
-            <ImageIndicator>Y</ImageIndicator>
-            <State>NJ</State>
+            <Id>01KWHX7T4J6SXXB4C0ZJ8GNKXX</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
         </Transaction>
@@ -57,7 +57,7 @@ Request:
 {
   "elasticQuery": {
     "dlNumber": "D999888777",
-    "registrationStateAttrId": "69509884952"
+    "registrationStateAttrId": "69509895916"
   },
   "from": 0,
   "size": 50
@@ -73,13 +73,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWHX7JNQX7BVXW45YRFH3A91
-  ImageIndicator                 Y
-  State                          NJ
+  Id                             01KWHX7T4J6SXXB4C0ZJ8GNKXX
+  ImageIndicator                 N
+  State                          GA
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01KWHX7JNQX7BVXW45YRFH3A91). kind=any; anyField=; expectedKeyRef=FULLN; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHX7T4J6SXXB4C0ZJ8GNKXX). kind=any; anyField=; expectedKeyRef=FULLN; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

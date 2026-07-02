@@ -217,6 +217,21 @@ function Get-QifHiddenFieldIds($qif) {
     return $ids
 }
 
+# QIF initialValues per fieldId (visible + hidden). Emitted into the plan as formDefaults so
+# content matching (relabel_batch / audit_log_content) knows which extra snapshot fields are
+# form defaults rather than another test's optionals (NJ Person ImageIndicator=Y, 2026-07-02).
+function Get-QifFormDefaults($qif) {
+    $d = [ordered]@{}
+    if ($qif -and $qif.layout -and $qif.layout.default) {
+        foreach ($p in $qif.layout.default.PSObject.Properties) {
+            if ($p.Value.props -and $p.Value.props.fieldId -and $null -ne $p.Value.props.initialValue -and "$($p.Value.props.initialValue)" -ne '') {
+                $d[$p.Value.props.fieldId] = "$($p.Value.props.initialValue)"
+            }
+        }
+    }
+    return $d
+}
+
 # Resolve a combo attribute name -> DOM fieldId (direct match, else QIDM attribute sourceField).
 function Resolve-FieldId([string]$name, $qidm, $fieldIds) {
     $direct = $fieldIds | Where-Object { $_ -ieq $name } | Select-Object -First 1
@@ -295,11 +310,13 @@ $entities = @($qidms | ForEach-Object { $_.targetEntity } | Select-Object -Uniqu
 $entities = @($entityOrder | Where-Object { $entities -contains $_ }) + @($entities | Where-Object { $entityOrder -notcontains $_ })
 
 $tests = New-Object System.Collections.Generic.List[object]
+$formDefaultsByEntity = [ordered]@{}
 $n = 0
 
 foreach ($ent in $entities) {
     $fieldIds = Get-QifFieldIds $qifByEntity[$ent]
     $hiddenIds = @(Get-QifHiddenFieldIds $qifByEntity[$ent])
+    $formDefaultsByEntity[$ent] = Get-QifFormDefaults $qifByEntity[$ent]
     $entQidms = @($qidms | Where-Object { $_.targetEntity -eq $ent })
 
     # render/negative are manual one-time checks done at initial provider build, not part
@@ -402,6 +419,7 @@ $plan = [ordered]@{
     tier     = 'Full'
     note     = 'Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.'
     testCount = $tests.Count
+    formDefaults = $formDefaultsByEntity
     tests    = $tests
 }
 
@@ -424,4 +442,37 @@ if ($script:Unresolved.Count -gt 0) {
     Write-Host "   Resolve (add the field's test value to Get-TestValue, or confirm it's intentionally blank) before the re-run." -ForegroundColor Yellow
 } else {
     Write-Host "[PASS] Trust check: every combo set[]/any[] field resolved a test value; guardrails present where NOT_EXISTS conditions exist." -ForegroundColor Green
+}
+
+# Tenant-picklist gate: when the tenant's actual dropdown contents have been scoped
+# (docs/reference/TENANT_PICKLISTS.json via __usxScopePicklists + import_picklists), every
+# select fill value must match a tenant option the way usx_lib matches it (^CODE anchored).
+# Catches the CA-gunTypeCode / NJ-GunMake class BEFORE any browser run. Hard FAIL (exit 1).
+$tpPath = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TENANT_PICKLISTS.json'
+if (Test-Path $tpPath) {
+    $tp = Get-Content $tpPath -Raw | ConvertFrom-Json
+    $tpFails = @()
+    foreach ($t in $tests) {
+        $entObj = if ($tp.entities) { $tp.entities.PSObject.Properties[$t.entity].Value } else { $null }
+        if (-not $entObj) { continue }
+        foreach ($fill in @($t.fills)) {
+            if (-not $fill) { continue }
+            $fldObj = $entObj.fields.PSObject.Properties[$fill.fieldId].Value
+            if (-not $fldObj) { continue }               # not a scoped select (text input etc.)
+            if ($fldObj.error) { continue }              # capture error already reported at import
+            $re = '^' + [regex]::Escape("$($fill.value)") + '\b'
+            if (-not @(@($fldObj.options) | Where-Object { $_ -match $re }).Count) {
+                $tpFails += "$($t.entity).$($fill.fieldId): value '$($fill.value)' matches no tenant option (first option: '$(@($fldObj.options)[0])')"
+            }
+        }
+    }
+    $tpFails = @($tpFails | Select-Object -Unique)
+    if ($tpFails.Count) {
+        Write-Host ""
+        Write-Host "[FAIL] Tenant-picklist gate: $($tpFails.Count) select value(s) do not exist in this tenant's dropdowns:" -ForegroundColor Red
+        foreach ($x in $tpFails) { Write-Host "   - $x" -ForegroundColor Red }
+        Write-Host "   Fix via docs/reference/TEST_VALUE_OVERRIDES.txt, then re-emit." -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "[PASS] Tenant-picklist gate: every select fill value exists in the scoped tenant dropdowns." -ForegroundColor Green
 }

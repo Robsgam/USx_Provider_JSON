@@ -111,7 +111,7 @@
       // Store the NORMALIZED fills array (not t.fills) -- PowerShell's ConvertTo-Json collapses
       // a single-element array to a bare object, and idFills() downstream (capture.js) expects
       // a real array; storing the raw plan value here crashed __usxBulkFetch mid-batch.
-      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: fills, underFilled: !filled, n: t.n });
+      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: new Date().toISOString() });
       const sent = clickSendClear();
       results.push({ n: t.n, combo: t.comboKeyRef, filled, sent });
       if (!filled) console.warn(`[USx-DRV] T${t.n} ${t.entity} ${t.comboKeyRef}: submitted UNDER-FILLED (a field failed to fill) -- capture records it, but verify this combo.`);
@@ -221,7 +221,77 @@
     return { matchCount: candidates.length, rows };
   };
 
+  // -------------------------------------------------------------------------
+  // TENANT PICKLIST SCOPE (2026-07-02): dump every dropdown's ACTUAL option list.
+  // Code-table contents are tenant data -- the same codeTypeCategory/Source pair serves
+  // different codes per tenant (NJ GunMake = numeric NIBRS '03 - Armalite...', HI/CA =
+  // NCIC 'IMI'), and there is no code-types API: options exist only in the rendered DOM.
+  // Usage: paste providers/<P>/logs/<P>_PICKLIST_SCOPE.json as `scope`, render the entity
+  // form, then __usxScopePicklists(scope, 'Vehicle'). One download per entity; no
+  // localStorage accumulation (the stale-store bug class stays dead).
+  window.__usxScopePicklists = async function (scope, entityFilter) {
+    if (!scope || !Array.isArray(scope.fields)) { console.error('[USx-SCOPE] pass the PICKLIST_SCOPE object: __usxScopePicklists(scope, "Vehicle")'); return; }
+    if (!entityFilter) { console.error('[USx-SCOPE] entityFilter required (one entity form at a time)'); return; }
+    const CAP = 500;
+    const fields = scope.fields.filter((f) => f.entity === entityFilter);
+    if (!fields.length) { console.warn('[USx-SCOPE] no select fields in scope for', entityFilter); return; }
+    const out = [];
+    const poll = async (fn, ms, step) => { const t0 = Date.now(); let r; while (!(r = fn()) && Date.now() - t0 < ms) { await L.sleep(step); } return r; };
+
+    for (const f of fields) {
+      const rec = { entity: f.entity, fieldId: f.fieldId, label: f.label || null, codeTypeCategory: f.codeTypeCategory || null, codeTypeSource: f.codeTypeSource || null, count: 0, truncated: false, options: [], error: null };
+      try {
+        const input = L.q(f.fieldId);
+        if (!input) { rec.error = 'field not found in DOM'; out.push(rec); continue; }
+        const control = input.closest('.arc-select__control') || input.closest('[class*="control"]');
+        input.focus();
+        (control || input).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', keyCode: 40, bubbles: true }));
+        const opened = await poll(() => document.querySelector('[class*="select__menu"]'), 2500, 100);
+        if (!opened) { rec.error = 'menu never opened'; out.push(rec); continue; }
+        await L.sleep(400); // let network-backed lists settle
+        const ariaControls = input.getAttribute('aria-controls') || (control && control.getAttribute('aria-controls'));
+        const scopeRoot = () => (ariaControls && document.getElementById(ariaControls)) || document.querySelector('[class*="select__menu"]') || document;
+        const readOpts = () => {
+          const all = [...scopeRoot().querySelectorAll('[class*="select__option"]')];
+          // outermost only -- substring-highlight spans nest inside real rows; role="option" matches nothing
+          return all.filter((o) => !all.some((other) => other !== o && other.contains(o))).map((o) => (o.textContent || '').trim());
+        };
+        // Virtualization guard: scroll the menu list to the bottom until the option set stabilizes or CAP.
+        const seen = new Set(readOpts());
+        const listEl = scopeRoot().querySelector('[class*="menu-list"], [class*="MenuList"]') || scopeRoot();
+        let stable = 0;
+        while (seen.size < CAP && stable < 3) {
+          const before = seen.size;
+          if (listEl && listEl.scrollHeight > listEl.clientHeight) { listEl.scrollTop = listEl.scrollHeight; await L.sleep(250); }
+          readOpts().forEach((t) => seen.add(t));
+          stable = (seen.size === before) ? stable + 1 : 0;
+          if (!listEl || listEl.scrollHeight <= listEl.clientHeight) break;
+        }
+        rec.options = [...seen].slice(0, CAP);
+        rec.count = seen.size;
+        rec.truncated = seen.size >= CAP;
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
+        await L.sleep(300);
+      } catch (e) { rec.error = String(e); }
+      console.log('%c[USx-SCOPE]', 'color:#0aa', `${f.fieldId}: ${rec.count} option(s)${rec.truncated ? ' (TRUNCATED at ' + CAP + ')' : ''}${rec.error ? ' ERROR: ' + rec.error : ''}`);
+      out.push(rec);
+    }
+
+    // Cross-check: selects rendered on the form but absent from the scope plan (and note misses above).
+    const rendered = [...document.querySelectorAll('input.arc-select__input, input[class*="select__input"]')].map((i) => i.id).filter(Boolean);
+    const scoped = new Set(fields.map((f) => f.fieldId));
+    const notInScope = rendered.filter((id) => !scoped.has(id));
+    if (notInScope.length) console.warn('[USx-SCOPE] rendered selects NOT in scope plan:', notInScope);
+
+    const payload = { provider: scope.provider || L.providerFromHost(), version: scope.version || null, entity: entityFilter, capturedAt: new Date().toISOString(), renderedSelectsNotInScope: notInScope, fields: out };
+    L.triggerDownload(`usx_picklists_${payload.provider}_${entityFilter}.json`, payload);
+    console.log('%c[USx-SCOPE]', 'color:#0aa;font-weight:bold', `${entityFilter}: ${out.length} field(s) scoped -> downloaded usx_picklists_${payload.provider}_${entityFilter}.json`);
+    return payload;
+  };
+
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();

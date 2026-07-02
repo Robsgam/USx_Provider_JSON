@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
 Combo: RANDFULL (RANDFULL (auto))
-Date: 2026-07-02 13:14:29
+Date: 2026-07-02 14:52:18
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: 860b689c90c257cfb1836cbab9810507304a5506f5ea87440d14848aa02f072b
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"Georgia"}
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWHX4ZWE5NNC2MFFA0B76WP8">
+    <api:Transaction id="01KWHX4CBEHXY2YWVN0D8W80XA">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWHX4ZWE5NNC2MFFA0B76WP8</Id>
+            <Id>01KWHX4CBEHXY2YWVN0D8W80XA</Id>
             <ImageIndicator>N</ImageIndicator>
             <LicensePlateYear>2026</LicensePlateYear>
-            <State>GA</State>
+            <State>NJ</State>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <RandomRequest>N</RandomRequest>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
@@ -61,7 +61,7 @@ Request:
   "elasticQuery": {
     "vehicle": {
       "registrationStateAttrIds": [
-        69509895916
+        69509884952
       ],
       "tag": "TEST123"
     }
@@ -80,16 +80,16 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWHX4ZWE5NNC2MFFA0B76WP8
+  Id                             01KWHX4CBEHXY2YWVN0D8W80XA
   ImageIndicator                 N
   LicensePlateYear               2026
-  State                          GA
+  State                          NJ
   LicensePlateTypeCode           PC
   RandomRequest                  N
   LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01KWHX4ZWE5NNC2MFFA0B76WP8). kind=combo; anyField=; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWHX4CBEHXY2YWVN0D8W80XA). kind=combo; anyField=; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

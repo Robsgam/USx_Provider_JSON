@@ -112,7 +112,9 @@ Architecture notes:
     DORMANT by design: ordered last; shadowed by RQ/M55L for any plate entry.
       Server auto-generates QV/stolen (QRDM data-mined). Not live-fireable from form.
 
-  RQ_guardrail -- plate-wins: Plate+VIN co-entry -> only RQ fires, VIN absent from XML [CONFIRMED]
+  M55L_guardrail -- plate-wins: Plate+VIN co-entry -> plate path wins (bare plate -> M55L per
+    v4.7 CHECK 16 routing; +Type -> RQ), VIN absent from XML. Was mislabelled RQ_guardrail
+    until the 2026-07-02 content-based relabel (sim expectation corrected). [CONFIRMED]
 
   Priority order: RQ > RQV > M55L > M55S > QVV > QVP -- CONFIRMED (live v3.6 T1-T7)
     OOS-first (add fields to reach OOS); in-state plate/VIN next; stolen dormant last.
