@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
 Combo: IA.QV (IA.QV (auto))
-Date: 2026-07-01 21:53:52
+Date: 2026-07-01 23:34:37
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: f92552aca5fcb3d56b9817febd08f5f9036e1fc3a47a784e140b32daaa26e422
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG2QDSHQNCGETCW5QB4JCDF">
+    <api:Transaction id="01KWGDTFK71B48VJ18FDNVQB6N">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWG2QDSHQNCGETCW5QB4JCDF</Id>
+            <Id>01KWGDTFK71B48VJ18FDNVQB6N</Id>
             <LicensePlateYear>2026</LicensePlateYear>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
@@ -56,13 +56,13 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "tag": "TEST123"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -75,7 +75,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG2QDSHQNCGETCW5QB4JCDF
+  Id                             01KWGDTFK71B48VJ18FDNVQB6N
   LicensePlateYear               2026
   LicensePlateTypeCode           PC
   LicensePlateNumber             TEST123
@@ -83,6 +83,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KWG2QDSHQNCGETCW5QB4JCDF). kind=combo; anyField=; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWGDTFK71B48VJ18FDNVQB6N). kind=combo; anyField=; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

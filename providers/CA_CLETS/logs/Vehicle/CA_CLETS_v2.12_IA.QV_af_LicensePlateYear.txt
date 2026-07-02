@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
 Combo: IA.QV_af_LicensePlateYear (IA.QV_af_LicensePlateYear (auto))
-Date: 2026-07-01 21:53:56
+Date: 2026-07-01 23:34:43
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: f92552aca5fcb3d56b9817febd08f5f9036e1fc3a47a784e140b32daaa26e422
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","VehicleMakeCode":"FORD","purposeCode":"C","vehicleYear":"2023"}
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","NameFirst":"JOHN","NameLast":"DOE","purposeCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG2P4PR08TMTKFM1P2JZFPP">
+    <api:Transaction id="01KWGDSEVE6R9SHXP8T01MMC3M">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,13 +36,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWG2P4PR08TMTKFM1P2JZFPP</Id>
-            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
-            <LicensePlateYear>2026</LicensePlateYear>
-            <State>GA</State>
-            <VehicleYear>2023</VehicleYear>
-            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <Id>01KWGDSEVE6R9SHXP8T01MMC3M</Id>
+            <Name>DOE, JOHN</Name>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -57,22 +52,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-  "elasticQuery": {
-    "vehicle": {
-      "registrationStateAttrIds": [
-        69586240690
-      ],
-      "tag": "TEST123"
-    }
-  },
-  "from": 0,
-  "size": 50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -81,17 +61,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG2P4PR08TMTKFM1P2JZFPP
-  VehicleMakeCode                CNST_FORD
-  LicensePlateYear               2026
-  State                          GA
-  VehicleYear                    2023
-  LicensePlateTypeCode           PC
-  LicensePlateNumber             TEST123
+  Id                             01KWGDSEVE6R9SHXP8T01MMC3M
+  Name                           DOE, JOHN
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG2P4PR08TMTKFM1P2JZFPP). kind=any-field; anyField=LicensePlateYear; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWGDSEVE6R9SHXP8T01MMC3M). kind=any-field; anyField=LicensePlateYear; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

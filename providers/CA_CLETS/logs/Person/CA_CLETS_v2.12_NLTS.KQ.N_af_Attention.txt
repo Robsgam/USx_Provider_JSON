@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
-Combo: NLTS.RQ.V_af_vehicleYear (NLTS.RQ.V_af_vehicleYear (auto))
-Date: 2026-07-01 23:34:40
+TEST LOG: CA_CLETS Person DriverHistoryQuery
+Combo: NLTS.KQ.N_af_Attention (NLTS.KQ.N_af_Attention (auto))
+Date: 2026-07-01 23:33:17
 Result: PASS
 JSON Version: 2.12
-Entity Fingerprint: f92552aca5fcb3d56b9817febd08f5f9036e1fc3a47a784e140b32daaa26e422
+Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456","purposeCode":"C"}
+{"Attention":"X","BirthDateDH":"1990-01-15","NameFirstDH":"JOHN","NameLastDH":"DOE","SexCodeDH":"Male","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWGDSZTB7HXJ40KAJCJ6FTVN">
+    <api:Transaction id="01KWG1R9F3SEBVSF4QS2RC9N44">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,10 +35,13 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWGDSZTB7HXJ40KAJCJ6FTVN</Id>
-            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KWG1R9F3SEBVSF4QS2RC9N44</Id>
+            <Attention>SGAMBELLONE R</Attention>
+            <SexCode>M</SexCode>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -52,19 +55,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "vehicle":  {
-                                         "vinNumber":  "1HGCM82633A123456"
-                                     }
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -73,12 +64,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWGDSZTB7HXJ40KAJCJ6FTVN
-  VehicleIdentificationNumber    1HGCM82633A123456
+  Id                             01KWG1R9F3SEBVSF4QS2RC9N44
+  Attention                      SGAMBELLONE R
+  SexCode                        M
   CaRequestPurposeCode           C
+  BirthDate                      19900115
+  Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01KWGDSZTB7HXJ40KAJCJ6FTVN). kind=any-field; anyField=vehicleYear; expectedKeyRef=NLTS.RQ.V; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWG1R9F3SEBVSF4QS2RC9N44). kind=any-field; anyField=Attention; expectedKeyRef=NLTS.KQ.N; firedMessageType=DriverHistoryQuery. UNDER-FILLED (a form field failed to fill on submit -- verify this combo).
 
 RESULT: PASS

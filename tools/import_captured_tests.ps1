@@ -110,7 +110,13 @@ Write-Host "  Importing captured tests from $($files.Count) file(s)" -Foreground
 $imported = 0; $failed = 0; $skipped = 0; $errored = 0
 foreach ($file in $files) {
     $records = @()
-    try { $records = @(Get-Content $file.FullName -Raw | ConvertFrom-Json) } catch { Write-Host "  [SKIP] bad JSON: $($file.Name)" -ForegroundColor DarkYellow; $skipped++; continue }
+    # ASSIGN the ConvertFrom-Json result to a variable BEFORE wrapping in @(). In Windows
+    # PowerShell 5.1, `@(Get-Content -Raw | ConvertFrom-Json)` on a JSON array collapses to a
+    # SINGLE element (the whole array), so `foreach ($r in $records)` then iterates once with
+    # $r = the entire array -> every field is array-valued -> post_test's -Tier arg-transform
+    # throws and 0 records import. pwsh 7 enumerates fine, which is why it only broke under the
+    # 5.1 watcher. Assign-first ($parsed) then @($parsed) yields the correct N records in both.
+    try { $parsed = Get-Content $file.FullName -Raw | ConvertFrom-Json; $records = @($parsed) } catch { Write-Host "  [SKIP] bad JSON: $($file.Name)" -ForegroundColor DarkYellow; $skipped++; continue }
 
     foreach ($r in $records) {
         $entity = $r.entity; if (-not $entity -and $r.query -and $QueryEntity.ContainsKey($r.query)) { $entity = $QueryEntity[$r.query] }
