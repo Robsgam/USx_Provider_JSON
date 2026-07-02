@@ -465,6 +465,7 @@
       out.push(labelFromManifest(m, rec));
     }
     L.triggerDownload('usx_captured_batch_labeled.json', out);
+    markSeen(out);   // row-click path: no store to clear, but keep ids so bulk fetch skips these
     const okN = out.filter((r) => r.ok).length;
     console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', `batch: ${okN}/${out.length} captured`, out);
     if (okN < out.length) console.log('[USx-CAP] tip: if 0 matched, run __usxDebugRows() and check the row field JSON.');
@@ -476,6 +477,19 @@
   function loadCaptured() { try { return JSON.parse(localStorage.getItem('__usx_captured') || '[]'); } catch (e) { return []; } }
   function saveCaptured(a) { try { localStorage.setItem('__usx_captured', JSON.stringify(a)); } catch (e) {} }
 
+  // Seen-id ledger, separate from the record store. After every successful download the record
+  // store is EMPTIED (each download then contains only new records -- stale labeled records from
+  // earlier runs re-imported the whole history and scrambled labels, 2026-07-02) while the ids
+  // persist here so incremental dedup still skips already-captured dex-log entries.
+  function loadSeenIds() { try { return JSON.parse(localStorage.getItem('__usx_seen_ids') || '[]'); } catch (e) { return []; } }
+  function saveSeenIds(a) { try { localStorage.setItem('__usx_seen_ids', JSON.stringify(a.slice(-3000))); } catch (e) {} }
+  function markSeen(records) {
+    const ids = new Set(loadSeenIds());
+    for (const r of records) { if (r && r.transactionId) ids.add(r.transactionId); if (r && r.qId) ids.add(r.qId); }
+    saveSeenIds(Array.from(ids));
+  }
+  function markSeenAndClear(records) { markSeen(records); saveCaptured([]); }
+
   // WATCHER (recommended for batches): you click each row's "View request and return" (a real
   // click -- the app only loads the XML for trusted clicks), and this auto-scrapes the popup,
   // matches it to the driver batch by identifier value, closes it, and accumulates. Click through
@@ -484,7 +498,7 @@
     if (window.__usxWatchTimer) { console.log('[USx-WATCH] already watching'); return; }
     let batch = [];
     if (!raw) { try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {} }
-    const seen = new Set(loadCaptured().map((r) => r.transactionId).filter(Boolean));
+    const seen = new Set(loadCaptured().map((r) => r.transactionId).filter(Boolean).concat(loadSeenIds()));
     console.log('%c[USx-WATCH]', 'color:#a0a;font-weight:bold', `watching${raw ? ' (RAW -- label from XML; combo inferred at import)' : `; batch=${batch.length}`}. Click each row's "View request and return"; I capture + close each. __usxCaptureWatchStop() when done.`);
     window.__usxWatchTimer = setInterval(() => {
       if (!popupOpen()) return;
@@ -514,7 +528,8 @@
     if (window.__usxWatchTimer) { clearInterval(window.__usxWatchTimer); window.__usxWatchTimer = null; }
     const store = loadCaptured();
     L.triggerDownload('usx_captured_batch_labeled.json', store);
-    console.log('%c[USx-WATCH]', 'color:#a0a;font-weight:bold', `stopped. ${store.length} captured -> downloaded usx_captured_batch_labeled.json`, store);
+    markSeenAndClear(store);
+    console.log('%c[USx-WATCH]', 'color:#a0a;font-weight:bold', `stopped. ${store.length} captured -> downloaded usx_captured_batch_labeled.json (store cleared; ids kept for dedup)`, store);
     return store;
   };
   window.__usxCaptureWatchReset = function () { saveCaptured([]); console.log('[USx-WATCH] cleared persisted captures.'); };
@@ -608,7 +623,7 @@
     try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
 
     const out = loadCaptured();
-    const have = new Set(out.map((r) => r.transactionId).filter(Boolean));
+    const have = new Set(out.map((r) => r.transactionId).filter(Boolean).concat(loadSeenIds()));
     const fresh = []; // new items collected this run, in API order (newest-first)
     for (const q of commsysItems) {
       if (have.has(q.id)) continue;
@@ -670,15 +685,15 @@
 
       if (mi >= 0) {
         usedM.add(mi);
-        out.push(labelFromManifest(batch[mi], { fields: null, formState: item.formState, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse }));
+        out.push(Object.assign(labelFromManifest(batch[mi], { fields: null, formState: item.formState, requestXml: item.xml.xml, transactionId: item.xml.transactionId || item.qId, messageType: mt, ok: true, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse }), { qId: item.qId }));
       } else {
-        out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, requestXml: item.xml.xml, formState: item.formState, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse, capturedAt: new Date().toISOString(), ok: true });
+        out.push({ provider, entity: null, query: mt, combo: null, tier: null, expectedKeyRef: null, kind: null, anyField: null, messageType: mt, transactionId: item.xml.transactionId || item.qId, qId: item.qId, requestXml: item.xml.xml, formState: item.formState, rmsRequestJson: item.rmsRequestJson, rmsResponse: item.rmsResponse, capturedAt: new Date().toISOString(), ok: true });
       }
     }
     const added = fresh.length;
-    saveCaptured(out);
     L.triggerDownload('usx_captured_batch_labeled.json', out);
-    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `done. +${added} new, ${out.length} total -> downloaded usx_captured_batch_labeled.json`);
+    markSeenAndClear(out);
+    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `done. +${added} new, ${out.length} total -> downloaded usx_captured_batch_labeled.json (store cleared; ids kept for dedup)`);
     return out;
   };
 
