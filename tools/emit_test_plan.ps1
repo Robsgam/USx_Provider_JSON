@@ -95,8 +95,26 @@ $version = "unknown"
 if ($json.version) { $version = $json.version }
 elseif ((Split-Path $Path -Leaf) -match 'v(\d+\.\d+)') { $version = $Matches[1] }
 
+# Per-provider test value overrides. Code-table contents are TENANT data -- the same
+# category/source pair holds different codes per tenant (NJ GunMake = numeric NIBRS codes
+# '03 - Armalite...', HI/CA = NCIC letter codes 'IMI', live-confirmed 2026-07-02). Overrides
+# live in docs/reference/TEST_VALUE_OVERRIDES.txt as `fieldId=value` lines ('#' comments).
+$script:ValueOverrides = @{}
+$ovPath = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TEST_VALUE_OVERRIDES.txt'
+if (Test-Path $ovPath) {
+    foreach ($line in Get-Content $ovPath) {
+        if ($line -match '^\s*#' -or $line -notmatch '=') { continue }
+        $k, $v = $line -split '=', 2
+        $script:ValueOverrides[$k.Trim()] = $v.Trim()
+    }
+    Write-Host "[emit] $($script:ValueOverrides.Count) test-value override(s) loaded from $ovPath"
+}
+
 # Test value per DOM fieldId (case-insensitive). Mirrors generate_test_matrix.ps1 Get-TestValue.
 function Get-TestValue([string]$fid, [bool]$isOOS) {
+    foreach ($k in $script:ValueOverrides.Keys) {
+        if ($k -ieq $fid) { return $script:ValueOverrides[$k] }
+    }
     switch -Regex ($fid) {
         '(?i)^licensePlateNumber'          { return 'TEST123' }
         '(?i)^licensePlateTypeCode'        { return 'PC' }

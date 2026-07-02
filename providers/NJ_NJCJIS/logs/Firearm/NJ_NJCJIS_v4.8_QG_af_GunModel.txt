@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Firearm GunQuery
 Combo: QG_af_GunModel (QG_af_GunModel (auto))
-Date: 2026-07-01 17:56:00
+Date: 2026-07-02 14:20:44
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: 156f9f982feecaa03c45e18d70468f894c7648df104f14782d786a0731c9bc8d
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"GunMake":"05","GunSerialNumber":"GUN12345","ImageIndicator":"N"}
+{"GunModel":"TEST","GunSerialNumber":"GUN12345","ImageIndicator":"N"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWFTS0QFYEZ3V2F8RY57XTPJ">
+    <api:Transaction id="01KWJ0Q6B4BRWHD7MH608EDG3C">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01KWFTS0QFYEZ3V2F8RY57XTPJ</Id>
+            <Id>01KWJ0Q6B4BRWHD7MH608EDG3C</Id>
             <ImageIndicator>N</ImageIndicator>
             <GunSerialNumber>GUN12345</GunSerialNumber>
-            <GunMake>05</GunMake>
+            <GunModel>TEST</GunModel>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -62,13 +62,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWFTS0QFYEZ3V2F8RY57XTPJ
+  Id                             01KWJ0Q6B4BRWHD7MH608EDG3C
   ImageIndicator                 N
   GunSerialNumber                GUN12345
-  GunMake                        05
+  GunModel                       TEST
 
 NOTES
 -----
-Automated capture (txId 01KWFTS0QFYEZ3V2F8RY57XTPJ). kind=any-field; anyField=GunModel; expectedKeyRef=QG; firedMessageType=GunQuery.
+Automated capture (txId 01KWJ0Q6B4BRWHD7MH608EDG3C). kind=any-field; anyField=GunModel; expectedKeyRef=QG; firedMessageType=GunQuery.
 
 RESULT: PASS

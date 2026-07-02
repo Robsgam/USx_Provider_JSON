@@ -53,6 +53,9 @@ function Import-CaptureFile($path, $label) {
         return $null
     }
     Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
+    # Content-based relabel pass: browser label pairing is unreliable when tests share
+    # identifiers and differ only in optional fields; formState content is ground truth.
+    try { & (Join-Path $PSScriptRoot 'relabel_batch.ps1') -BatchPath $path *>&1 | ForEach-Object { Write-Host $_ } } catch { Write-Host "[WATCH] relabel errored (importing as-is): $_" -ForegroundColor DarkYellow }
     $summary = $null
     try {
         # *>&1 merges the information stream: import_captured_tests.ps1 reports via Write-Host,
@@ -111,7 +114,7 @@ while ($true) {
     $summary = Import-CaptureFile $path $ev.Name
     Write-Host "[WATCH] done. Ready for next fetch.`n" -ForegroundColor Green
     if ($Once -and $summary) {
-        Write-Host "[WATCH-ONCE] INGESTED $($ev.Name) -- $($summary.Trim())" -ForegroundColor Green
+        Write-Host "[WATCH-ONCE] INGESTED $($ev.Name) -- $("$summary".Trim())" -ForegroundColor Green
         exit 0
     }
 }

@@ -262,6 +262,22 @@ function Resolve-SetToFieldIds($combo, $qidm, $allFields) {
 
 function Get-TestValue($field, $isOOS) {
     $fid = $field.fieldId
+    # Per-provider overrides (docs/reference/TEST_VALUE_OVERRIDES.txt) -- tenant code-table
+    # contents differ per provider (NJ GunMake = numeric NIBRS codes; HI/CA = NCIC 'IMI').
+    if ($null -eq $script:ValueOverrides) {
+        $script:ValueOverrides = @{}
+        $ovPath = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TEST_VALUE_OVERRIDES.txt'
+        if (Test-Path $ovPath) {
+            foreach ($line in Get-Content $ovPath) {
+                if ($line -match '^\s*#' -or $line -notmatch '=') { continue }
+                $k, $v = $line -split '=', 2
+                $script:ValueOverrides[$k.Trim()] = $v.Trim()
+            }
+        }
+    }
+    foreach ($k in $script:ValueOverrides.Keys) {
+        if ($k -ieq $fid) { return $script:ValueOverrides[$k] }
+    }
     switch -Regex ($fid) {
         '(?i)^licensePlateNumber'           { return 'TEST123' }
         '(?i)^licensePlateTypeCode'         { $d = $field.default_; if ($d) { return $d } else { return 'PC' } }

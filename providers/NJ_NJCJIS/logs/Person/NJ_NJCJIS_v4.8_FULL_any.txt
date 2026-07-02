@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
 Combo: FULL_any (FULL_any (auto))
-Date: 2026-07-01 17:55:59
+Date: 2026-07-02 13:16:22
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: d77802213c8d360b91019f62375d03e5a168ed45ca3b91c35a8aebae45104add
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDate":"1990-01-15","ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","SexCode":"Male"}
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"New Jersey"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWFTQ85JR688010YZCGZHDCM">
+    <api:Transaction id="01KWHX6QM7FB61NTHD1NRVFWVD">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWFTQ85JR688010YZCGZHDCM</Id>
-            <ImageIndicator>N</ImageIndicator>
-            <State>GA</State>
-            <SexCode>M</SexCode>
+            <Id>01KWHX6QM7FB61NTHD1NRVFWVD</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>NJ</State>
             <BirthDate>01151990</BirthDate>
             <Name>DOE, JOHN</Name>
           </Request>
@@ -60,9 +59,8 @@ Request:
   "elasticQuery": {
     "lastName": "DOE",
     "firstName": "JOHN",
-    "sexAttrId": "69509891711",
     "dateOfBirth": "1990-01-15",
-    "registrationStateAttrId": "69509895916"
+    "registrationStateAttrId": "69509884952"
   },
   "from": 0,
   "size": 50
@@ -78,15 +76,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWFTQ85JR688010YZCGZHDCM
-  ImageIndicator                 N
-  State                          GA
-  SexCode                        M
+  Id                             01KWHX6QM7FB61NTHD1NRVFWVD
+  ImageIndicator                 Y
+  State                          NJ
   BirthDate                      01151990
   Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01KWFTQ85JR688010YZCGZHDCM). kind=any; anyField=; expectedKeyRef=FULL; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHX6QM7FB61NTHD1NRVFWVD). kind=any; anyField=; expectedKeyRef=FULL; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

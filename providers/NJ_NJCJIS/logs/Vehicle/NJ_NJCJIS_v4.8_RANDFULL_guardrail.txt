@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
-Combo: RANDFULL_guardrail (Guardrail Plate>VIN: LicensePlateNumber+VehicleIdentificationNumber co-entered, RANDFULL (plate) wins, VIN absent from ConnectCic XML)
-Date: 2026-07-01 18:20:36
+Combo: RANDFULL_guardrail (RANDFULL_guardrail (auto))
+Date: 2026-07-02 13:14:26
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: 860b689c90c257cfb1836cbab9810507304a5506f5ea87440d14848aa02f072b
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","LicensePlateNumber":"testplate","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey","VehicleIdentificationNumber":"testvin"}
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey","VehicleIdentificationNumber":"1HGCM82633A123456"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWFTZ6F7EHYAF8WMJCW2CXBT">
+    <api:Transaction id="01KWHX5HKD8Q0B7BXB1XQHM6FQ">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,13 +36,13 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWFTZ6F7EHYAF8WMJCW2CXBT</Id>
+            <Id>01KWHX5HKD8Q0B7BXB1XQHM6FQ</Id>
             <ImageIndicator>N</ImageIndicator>
             <LicensePlateYear>2026</LicensePlateYear>
             <State>NJ</State>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <RandomRequest>N</RandomRequest>
-            <LicensePlateNumber>TESTPLATE</LicensePlateNumber>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -56,7 +56,23 @@ Not captured
 
 RMS QUERY
 ---------
-Not captured
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69509884952
+      ],
+      "tag": "TEST123",
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
 
 FIELD ANALYSIS
 --------------
@@ -65,16 +81,16 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWFTZ6F7EHYAF8WMJCW2CXBT
+  Id                             01KWHX5HKD8Q0B7BXB1XQHM6FQ
   ImageIndicator                 N
   LicensePlateYear               2026
   State                          NJ
   LicensePlateTypeCode           PC
   RandomRequest                  N
-  LicensePlateNumber             TESTPLATE
+  LicensePlateNumber             TEST123
 
 NOTES
 -----
-RMS QUERY not captured for this submission (popup-capture path used, no rmsRequestJson wired).
+Automated capture (txId 01KWHX5HKD8Q0B7BXB1XQHM6FQ). kind=guardrail; anyField=; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: NJ_NJCJIS Boat BoatQuery
-Combo: QBN_guardrail (Guardrail Hull>Reg: BoatHullIdNumber+RegistrationNumber co-entered, QBN (hull) wins, RegistrationNumber absent from ConnectCic XML)
-Date: 2026-07-01 18:20:55
+Combo: QBN_guardrail (QBN_guardrail (auto))
+Date: 2026-07-02 14:11:37
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: 6902ecd820e01bd5ebeae1fce1f3487f358b83d0b090cc53e06040d14feba1ba
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BoatHullIdNumber":"boathull","ImageIndicator":"N","RegistrationNumber":"boatreg"}
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N","RegistrationNumber":"FL1234AB"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWFV095WP1AMG6YMA1RDW42R">
+    <api:Transaction id="01KWJ0EDXYDZ14WK5XP193B87Z">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,8 +36,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>BoatQuery</MessageType>
-            <Id>01KWFV095WP1AMG6YMA1RDW42R</Id>
-            <BoatHullIdNumber>BOATHULL</BoatHullIdNumber>
+            <Id>01KWJ0EDXYDZ14WK5XP193B87Z</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
             <ImageIndicator>N</ImageIndicator>
           </Request>
         </Transaction>
@@ -61,12 +61,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWFV095WP1AMG6YMA1RDW42R
-  BoatHullIdNumber               BOATHULL
+  Id                             01KWJ0EDXYDZ14WK5XP193B87Z
+  BoatHullIdNumber               FL1234AB56H7
   ImageIndicator                 N
 
 NOTES
 -----
-RMS QUERY not captured for this submission (popup-capture path used, no rmsRequestJson wired).
+Automated capture (txId 01KWJ0EDXYDZ14WK5XP193B87Z). kind=guardrail; anyField=; expectedKeyRef=QBN; firedMessageType=BoatQuery.
 
 RESULT: PASS

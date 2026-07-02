@@ -1,0 +1,9 @@
+# TEST_VALUE_OVERRIDES.txt -- NJ_NJCJIS
+# Per-provider test values where the tenant code table differs from the global default.
+# Read by emit_test_plan.ps1 + generate_test_matrix.ps1 (fieldId=value; '#' comments).
+#
+# GunMake: the NJ tenant's NCIC_FIREARM_MAKE/NJ_NIBRS table holds NUMERIC NIBRS make codes
+# ('03 - Armalite AR-180 type'), unlike HI/CA whose tables hold NCIC letter codes ('IMI').
+# Devdoc GunMake = Alphanumeric size 23, Possible Values unconstrained -- numeric codes are
+# wire-legal. Live-confirmed 2026-07-02 (global 'IMI' matched zero options in NJ).
+GunMake=03

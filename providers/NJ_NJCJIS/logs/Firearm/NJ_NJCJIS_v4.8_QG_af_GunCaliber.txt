@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Firearm GunQuery
 Combo: QG_af_GunCaliber (QG_af_GunCaliber (auto))
-Date: 2026-07-01 17:56:00
+Date: 2026-07-02 14:20:45
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: 156f9f982feecaa03c45e18d70468f894c7648df104f14782d786a0731c9bc8d
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"GunSerialNumber":"GUN12345","ImageIndicator":"N"}
+{"GunCaliber":"11","GunSerialNumber":"GUN12345","ImageIndicator":"N"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWFTS7N4ZCKV8AD8ZQ1S7EK6">
+    <api:Transaction id="01KWJ0PZE4B5P8A5XE4TFQBN53">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,9 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01KWFTS7N4ZCKV8AD8ZQ1S7EK6</Id>
+            <Id>01KWJ0PZE4B5P8A5XE4TFQBN53</Id>
             <ImageIndicator>N</ImageIndicator>
             <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunCaliber>11</GunCaliber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -61,12 +62,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWFTS7N4ZCKV8AD8ZQ1S7EK6
+  Id                             01KWJ0PZE4B5P8A5XE4TFQBN53
   ImageIndicator                 N
   GunSerialNumber                GUN12345
+  GunCaliber                     11
 
 NOTES
 -----
-Automated capture (txId 01KWFTS7N4ZCKV8AD8ZQ1S7EK6). kind=any-field; anyField=GunCaliber; expectedKeyRef=QG; firedMessageType=GunQuery.
+Automated capture (txId 01KWJ0PZE4B5P8A5XE4TFQBN53). kind=any-field; anyField=GunCaliber; expectedKeyRef=QG; firedMessageType=GunQuery.
 
 RESULT: PASS

@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
-Combo: FULLN_guardrail (Guardrail OLN>Name: OperatorLicenseNumber+Name+DOB co-entered, FULLN (OLN) wins, Name+BirthDate absent from ConnectCic XML)
-Date: 2026-07-01 18:20:53
+Combo: FULLN_guardrail (FULLN_guardrail (auto))
+Date: 2026-07-02 13:16:19
 Result: PASS
 JSON Version: 4.8
 Entity Fingerprint: d77802213c8d360b91019f62375d03e5a168ed45ca3b91c35a8aebae45104add
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDate":"1990-01-01","ImageIndicator":"Y","NameFirst":"first","NameLast":"last","OperatorLicenseNumber":"testdl","RegistrationState":"New Jersey","SexCode":"Male"}
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777","RegistrationState":"New Jersey"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWFTZYA2W9G9NPAYT0PQFN0N">
+    <api:Transaction id="01KWHX81QK3RSEK51NWEE996MP">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWFTZYA2W9G9NPAYT0PQFN0N</Id>
+            <Id>01KWHX81QK3RSEK51NWEE996MP</Id>
             <ImageIndicator>Y</ImageIndicator>
             <State>NJ</State>
-            <OperatorLicenseNumber>TESTDL</OperatorLicenseNumber>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -53,7 +53,21 @@ Not captured
 
 RMS QUERY
 ---------
-Not captured
+Request:
+{
+  "elasticQuery": {
+    "dlNumber": "D999888777",
+    "registrationStateAttrId": "69509884952",
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "dateOfBirth": "1990-01-15"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
 
 FIELD ANALYSIS
 --------------
@@ -62,13 +76,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWFTZYA2W9G9NPAYT0PQFN0N
+  Id                             01KWHX81QK3RSEK51NWEE996MP
   ImageIndicator                 Y
   State                          NJ
-  OperatorLicenseNumber          TESTDL
+  OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-RMS QUERY not captured for this submission (popup-capture path used, no rmsRequestJson wired).
+Automated capture (txId 01KWHX81QK3RSEK51NWEE996MP). kind=guardrail; anyField=; expectedKeyRef=FULLN; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS
