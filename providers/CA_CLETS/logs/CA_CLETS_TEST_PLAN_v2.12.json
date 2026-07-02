@@ -3,7 +3,7 @@
     "version":  "2.12",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  74,
+    "testCount":  85,
     "tests":  [
                   {
                       "n":  1,
@@ -728,6 +728,38 @@
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.N",
                       "expectedKeyRef":  "IR.QVC.N",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "age",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.N",
+                      "expectedKeyRef":  "IR.QVC.N",
                       "kind":  "any",
                       "tier":  "Full",
                       "fills":  [
@@ -750,11 +782,15 @@
                                     {
                                         "fieldId":  "BirthDate",
                                         "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
                                     }
                                 ]
                   },
                   {
-                      "n":  28,
+                      "n":  29,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.O",
@@ -769,37 +805,290 @@
                                     {
                                         "fieldId":  "OperatorLicenseNumber",
                                         "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
                                     }
                                 ]
                   },
                   {
-                      "n":  29,
+                      "n":  30,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.O",
+                      "expectedKeyRef":  "IR.QVC.O",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "socialSecurityNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.O",
+                      "expectedKeyRef":  "IR.QVC.O",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "age",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.O",
+                      "expectedKeyRef":  "IR.QVC.O",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.C",
                       "expectedKeyRef":  "IR.QVC.C",
                       "kind":  "combo",
                       "tier":  "Full",
-                      "fills":  {
-                                    "fieldId":  "purposeCode",
-                                    "value":  "C"
-                                }
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    }
+                                ]
                   },
                   {
-                      "n":  30,
+                      "n":  34,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.C",
+                      "expectedKeyRef":  "IR.QVC.C",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "socialSecurityNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.C",
+                      "expectedKeyRef":  "IR.QVC.C",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "age",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  36,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.C",
+                      "expectedKeyRef":  "IR.QVC.C",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  37,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.S",
                       "expectedKeyRef":  "IR.QVC.S",
                       "kind":  "combo",
                       "tier":  "Full",
-                      "fills":  {
-                                    "fieldId":  "purposeCode",
-                                    "value":  "C"
-                                }
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    }
+                                ]
                   },
                   {
-                      "n":  31,
+                      "n":  38,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.S",
+                      "expectedKeyRef":  "IR.QVC.S",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "criminalIdNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  39,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.S",
+                      "expectedKeyRef":  "IR.QVC.S",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "age",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  40,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "IR.QVC.S",
+                      "expectedKeyRef":  "IR.QVC.S",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  41,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "ID.L1",
@@ -818,7 +1107,7 @@
                                 ]
                   },
                   {
-                      "n":  32,
+                      "n":  42,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IN.L1",
@@ -841,7 +1130,7 @@
                                 ]
                   },
                   {
-                      "n":  33,
+                      "n":  43,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IN.L1",
@@ -869,7 +1158,7 @@
                                 ]
                   },
                   {
-                      "n":  34,
+                      "n":  44,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IN.L1",
@@ -896,276 +1185,288 @@
                                 ]
                   },
                   {
-                      "n":  35,
-                      "entity":  "Person",
-                      "query":  "DriverHistoryQuery",
-                      "comboKeyRef":  "NLTS.KQ.N",
-                      "expectedKeyRef":  "NLTS.KQ.N",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "purposeCodeDH",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "BirthDateDH",
-                                        "value":  "1990-01-15"
-                                    },
-                                    {
-                                        "fieldId":  "NameLastDH",
-                                        "value":  "DOE"
-                                    },
-                                    {
-                                        "fieldId":  "NameFirstDH",
-                                        "value":  "JOHN"
-                                    },
-                                    {
-                                        "fieldId":  "SexCodeDH",
-                                        "value":  "M"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  36,
-                      "entity":  "Person",
-                      "query":  "DriverHistoryQuery",
-                      "comboKeyRef":  "NLTS.KQ.N",
-                      "expectedKeyRef":  "NLTS.KQ.N",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "purposeCodeDH",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "BirthDateDH",
-                                        "value":  "1990-01-15"
-                                    },
-                                    {
-                                        "fieldId":  "NameLastDH",
-                                        "value":  "DOE"
-                                    },
-                                    {
-                                        "fieldId":  "NameFirstDH",
-                                        "value":  "JOHN"
-                                    },
-                                    {
-                                        "fieldId":  "SexCodeDH",
-                                        "value":  "M"
-                                    },
-                                    {
-                                        "fieldId":  "RegistrationState",
-                                        "value":  "GA"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  37,
-                      "entity":  "Person",
-                      "query":  "DriverHistoryQuery",
-                      "comboKeyRef":  "NLTS.KQ.O",
-                      "expectedKeyRef":  "NLTS.KQ.O",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "purposeCodeDH",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "OperatorLicenseNumberDH",
-                                        "value":  "D999888777"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  38,
-                      "entity":  "Person",
-                      "query":  "DriverHistoryQuery",
-                      "comboKeyRef":  "NLTS.KQ.O",
-                      "expectedKeyRef":  "NLTS.KQ.O",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "purposeCodeDH",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "OperatorLicenseNumberDH",
-                                        "value":  "D999888777"
-                                    },
-                                    {
-                                        "fieldId":  "RegistrationState",
-                                        "value":  "GA"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  39,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "NLTS.DQ",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "OperatorLicenseNumber",
-                                        "value":  "D999888777"
-                                    },
-                                    {
-                                        "fieldId":  "purposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "NameLast",
-                                        "value":  "DOE"
-                                    },
-                                    {
-                                        "fieldId":  "NameFirst",
-                                        "value":  "JOHN"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  40,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "NLTS.DQ",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "OperatorLicenseNumber",
-                                        "value":  "D999888777"
-                                    },
-                                    {
-                                        "fieldId":  "purposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "NameLast",
-                                        "value":  "DOE"
-                                    },
-                                    {
-                                        "fieldId":  "NameFirst",
-                                        "value":  "JOHN"
-                                    },
-                                    {
-                                        "fieldId":  "SexCode",
-                                        "value":  "M"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  41,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "NLTS.DQ.N",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "purposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "NameLast",
-                                        "value":  "DOE"
-                                    },
-                                    {
-                                        "fieldId":  "NameFirst",
-                                        "value":  "JOHN"
-                                    },
-                                    {
-                                        "fieldId":  "SexCode",
-                                        "value":  "M"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  42,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "NLTS.DQ.N",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "purposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "OperatorLicenseNumber",
-                                        "value":  "D999888777"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  43,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "NLTS.DQ",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "OperatorLicenseNumber",
-                                        "value":  "D999888777"
-                                    },
-                                    {
-                                        "fieldId":  "purposeCode",
-                                        "value":  "C"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  44,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "NLTS.DQ",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "OperatorLicenseNumber",
-                                        "value":  "D999888777"
-                                    },
-                                    {
-                                        "fieldId":  "purposeCode",
-                                        "value":  "C"
-                                    }
-                                ]
-                  },
-                  {
                       "n":  45,
                       "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "NLTS.DQ.N",
-                      "kind":  "guardrail",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "NLTS.KQ.N",
+                      "expectedKeyRef":  "NLTS.KQ.N",
+                      "kind":  "combo",
                       "tier":  "Full",
                       "fills":  [
                                     {
-                                        "fieldId":  "purposeCode",
+                                        "fieldId":  "purposeCodeDH",
                                         "value":  "C"
                                     },
                                     {
-                                        "fieldId":  "OperatorLicenseNumber",
-                                        "value":  "D999888777"
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
                                     }
                                 ]
                   },
                   {
                       "n":  46,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "NLTS.KQ.N",
+                      "expectedKeyRef":  "NLTS.KQ.N",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  47,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "NLTS.KQ.O",
+                      "expectedKeyRef":  "NLTS.KQ.O",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  48,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "NLTS.KQ.O",
+                      "expectedKeyRef":  "NLTS.KQ.O",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  49,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "NLTS.DQ",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  50,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "NLTS.DQ",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  51,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "NLTS.DQ.N",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  52,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "NLTS.DQ.N",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  53,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "NLTS.DQ",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  54,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "NLTS.DQ",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "socialSecurityNumber",
+                                        "value":  "123456789"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  55,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "NLTS.DQ.N",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  56,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -1174,6 +1475,10 @@
                       "tier":  "Full",
                       "fills":  [
                                     {
+                                        "fieldId":  "criminalIdNumber",
+                                        "value":  "CII123456"
+                                    },
+                                    {
                                         "fieldId":  "purposeCode",
                                         "value":  "C"
                                     },
@@ -1184,7 +1489,7 @@
                                 ]
                   },
                   {
-                      "n":  47,
+                      "n":  57,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -1211,7 +1516,7 @@
                                 ]
                   },
                   {
-                      "n":  48,
+                      "n":  58,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -1234,7 +1539,7 @@
                                 ]
                   },
                   {
-                      "n":  49,
+                      "n":  59,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -1261,7 +1566,7 @@
                                 ]
                   },
                   {
-                      "n":  50,
+                      "n":  60,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  null,
@@ -1296,7 +1601,7 @@
                                 ]
                   },
                   {
-                      "n":  51,
+                      "n":  61,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH",
@@ -1319,7 +1624,7 @@
                                 ]
                   },
                   {
-                      "n":  52,
+                      "n":  62,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH",
@@ -1347,7 +1652,35 @@
                                 ]
                   },
                   {
-                      "n":  53,
+                      "n":  63,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "IG.QGH",
+                      "expectedKeyRef":  "IG.QGH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "age",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  64,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH",
@@ -1370,24 +1703,34 @@
                                     {
                                         "fieldId":  "BirthDate",
                                         "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
                                     }
                                 ]
                   },
                   {
-                      "n":  54,
+                      "n":  65,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
                       "expectedKeyRef":  "IG.QGB",
                       "kind":  "combo",
                       "tier":  "Full",
-                      "fills":  {
-                                    "fieldId":  "purposeCode",
-                                    "value":  "C"
-                                }
+                      "fills":  [
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    }
+                                ]
                   },
                   {
-                      "n":  55,
+                      "n":  66,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -1401,13 +1744,17 @@
                                         "value":  "C"
                                     },
                                     {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
                                         "fieldId":  "gunCaliber",
                                         "value":  "11"
                                     }
                                 ]
                   },
                   {
-                      "n":  56,
+                      "n":  67,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -1421,13 +1768,17 @@
                                         "value":  "C"
                                     },
                                     {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
                                         "fieldId":  "GunMake",
-                                        "value":  "05"
+                                        "value":  "IMI"
                                     }
                                 ]
                   },
                   {
-                      "n":  57,
+                      "n":  68,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -1440,17 +1791,21 @@
                                         "value":  "C"
                                     },
                                     {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
                                         "fieldId":  "gunCaliber",
                                         "value":  "11"
                                     },
                                     {
                                         "fieldId":  "GunMake",
-                                        "value":  "05"
+                                        "value":  "IMI"
                                     }
                                 ]
                   },
                   {
-                      "n":  58,
+                      "n":  69,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.S",
@@ -1469,7 +1824,7 @@
                                 ]
                   },
                   {
-                      "n":  59,
+                      "n":  70,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.S",
@@ -1493,7 +1848,7 @@
                                 ]
                   },
                   {
-                      "n":  60,
+                      "n":  71,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.S",
@@ -1516,7 +1871,7 @@
                                 ]
                   },
                   {
-                      "n":  61,
+                      "n":  72,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -1535,7 +1890,7 @@
                                 ]
                   },
                   {
-                      "n":  62,
+                      "n":  73,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -1559,7 +1914,7 @@
                                 ]
                   },
                   {
-                      "n":  63,
+                      "n":  74,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -1582,7 +1937,7 @@
                                 ]
                   },
                   {
-                      "n":  64,
+                      "n":  75,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.N",
@@ -1613,7 +1968,7 @@
                                 ]
                   },
                   {
-                      "n":  65,
+                      "n":  76,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.H",
@@ -1636,7 +1991,7 @@
                                 ]
                   },
                   {
-                      "n":  66,
+                      "n":  77,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.R",
@@ -1659,7 +2014,7 @@
                                 ]
                   },
                   {
-                      "n":  67,
+                      "n":  78,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.H",
@@ -1678,7 +2033,7 @@
                                 ]
                   },
                   {
-                      "n":  68,
+                      "n":  79,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.H",
@@ -1701,7 +2056,7 @@
                                 ]
                   },
                   {
-                      "n":  69,
+                      "n":  80,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.O",
@@ -1720,7 +2075,7 @@
                                 ]
                   },
                   {
-                      "n":  70,
+                      "n":  81,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.O",
@@ -1743,7 +2098,7 @@
                                 ]
                   },
                   {
-                      "n":  71,
+                      "n":  82,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.R",
@@ -1762,7 +2117,7 @@
                                 ]
                   },
                   {
-                      "n":  72,
+                      "n":  83,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.R",
@@ -1785,7 +2140,7 @@
                                 ]
                   },
                   {
-                      "n":  73,
+                      "n":  84,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  null,
@@ -1808,7 +2163,7 @@
                                 ]
                   },
                   {
-                      "n":  74,
+                      "n":  85,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  null,

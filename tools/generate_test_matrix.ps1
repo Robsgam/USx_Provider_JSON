@@ -288,9 +288,12 @@ function Get-TestValue($field, $isOOS) {
         '(?i)^sexCode$'                     { return 'M' }
         '(?i)^sexCodeDH'                    { return 'M' }
         '(?i)^imageIndicator'               { $d = $field.default_; if ($d) { return $d } else { return 'N' } }
-        '(?i)^gunSerialNumber'              { return 'GUN12345' }
-        '(?i)^gunMake'                      { return 'SMTH' }
-        '(?i)^gunCaliber'                   { return '9MM' }
+        '(?i)^(gun)?serialNumber'           { return 'GUN12345' }
+        '(?i)^gunMake'                      { return 'IMI' }
+        '(?i)^gunCaliber'                   { return '11' }
+        '(?i)^criminalIdNumber'             { return 'CII123456' }
+        '(?i)^socialSecurityNumber'         { return '123456789' }
+        '(?i)^age'                          { return '35' }
         '(?i)^ncicNumber'                   { return 'X123456789' }
         '(?i)^processControlNumber'         { return '0000012345' }
         '(?i)^articleSerialNumber'           { return 'ART99999' }

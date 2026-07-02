@@ -67,10 +67,17 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^sexCode'                     { return 'M' }
         '(?i)^imageIndicator'              { return 'N' }
         '(?i)^randomRequest'               { return 'N' }
-        '(?i)^gunSerialNumber'             { return 'GUN12345' }
-        '(?i)^gunMake'                     { return '05' }
+        # Gun serial fieldId varies by provider: gunSerialNumber (NJ) or serialNumber (CA). Match both.
+        '(?i)^(gun)?serialNumber'          { return 'GUN12345' }
+        # Gun make dropdown uses provider code tables -- CA/NCIC use 3-char alpha codes (e.g. IMI),
+        # NOT numeric; usx_lib anchors ^CODE, so a bare number matches nothing. IMI is confirmed live.
+        '(?i)^gunMake'                     { return 'IMI' }
         '(?i)^gunCaliber'                  { return '11' }
         '(?i)^gunModel'                    { return 'TEST' }
+        # Criminal-records (CA IR.QVC) + demographic optional fields.
+        '(?i)^criminalIdNumber'            { return 'CII123456' }
+        '(?i)^socialSecurityNumber'        { return '123456789' }
+        '(?i)^age'                         { return '35' }
         '(?i)^ncicNumber'                  { return 'X123456789' }
         '(?i)^processControlNumber'        { return '0000012345' }
         '(?i)^articleSerialNumber'         { return 'ART99999' }
