@@ -45,7 +45,8 @@ $familyFillable = Build-CmFamilyFillable $plan
 $snapshots = @($records | ForEach-Object {
     $fs = $null
     if ($_.formState) { try { $fs = $_.formState | ConvertFrom-Json } catch {} }
-    @{ messageType = $_.messageType; fs = $fs }
+    # pscustomobject, NOT hashtable: PS 5.1 Group-Object can't resolve hashtable properties.
+    [pscustomobject]@{ messageType = $_.messageType; fs = $fs }
 })
 $defaultsByMt = Build-CmDefaults $snapshots
 

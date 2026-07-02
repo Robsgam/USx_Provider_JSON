@@ -42,7 +42,9 @@ foreach ($f in $logs) {
     if ($content -match '<MessageType>([^<]+)</MessageType>') { $mt = $Matches[1] }
     $parsed += [pscustomobject]@{ File = $f; Label = $label; Fs = $fs; MessageType = $mt; Content = $content }
 }
-$defaultsByMt = Build-CmDefaults @($parsed | ForEach-Object { @{ messageType = $_.MessageType; fs = $_.Fs } })
+# pscustomobject, NOT hashtable: Windows PowerShell 5.1's Group-Object cannot resolve
+# properties on hashtables (defaults map came back empty under enforce's powershell.exe).
+$defaultsByMt = Build-CmDefaults @($parsed | ForEach-Object { [pscustomobject]@{ messageType = $_.MessageType; fs = $_.Fs } })
 
 $stale = @(); $mismatch = @(); $guardFail = @(); $ok = 0
 foreach ($p in $parsed) {
