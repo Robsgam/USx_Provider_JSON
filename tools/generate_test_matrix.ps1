@@ -283,6 +283,8 @@ function Get-TestValue($field, $isOOS) {
         '(?i)^nameFirstDH'                  { return 'JOHN' }
         '(?i)^nameMiddle'                   { return '' }
         '(?i)^nameSuffix'                   { return '' }
+        '(?i)^addressCity'                  { return 'RENO' }
+        '(?i)^addressStreetNumber'          { return '123' }
         '(?i)^birthDate$'                   { return '01/15/1990' }
         '(?i)^birthDateDH'                  { return '01/15/1990' }
         '(?i)^sexCode$'                     { return 'M' }

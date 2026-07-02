@@ -61,6 +61,9 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^nameFirst'                   { return 'JOHN' }
         '(?i)^nameMiddle'                  { return $null }
         '(?i)^nameSuffix'                  { return $null }
+        # Cross-entity owner-address refinements (CA IN.VP any[]).
+        '(?i)^addressCity'                 { return 'RENO' }
+        '(?i)^addressStreetNumber'         { return '123' }
         # Native <input type=date> only accepts ISO yyyy-MM-dd via .value (usx_lib.js
         # fillText also normalizes defensively, but emit the right format at the source).
         '(?i)^birthDate'                   { return '1990-01-15' }

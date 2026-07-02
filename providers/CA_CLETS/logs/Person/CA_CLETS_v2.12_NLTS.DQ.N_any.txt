@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: CA_CLETS Person DriverLicenseQuery
 Combo: NLTS.DQ.N_any (NLTS.DQ.N_any (auto))
-Date: 2026-07-01 20:05:14
+Date: 2026-07-01 21:54:10
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
+{"Attention":"X","BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG1NE734E686TZMMCSR5MH3">
+    <api:Transaction id="01KWG88TFVS26CV0NZVZY88SXG">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,8 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWG1NE734E686TZMMCSR5MH3</Id>
+            <Id>01KWG88TFVS26CV0NZVZY88SXG</Id>
             <State>GA</State>
+            <BirthDate>19900115</BirthDate>
             <Name>DOE, JOHN</Name>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
@@ -58,6 +59,7 @@ Request:
   "elasticQuery": {
     "lastName": "DOE",
     "firstName": "JOHN",
+    "dateOfBirth": "1990-01-15",
     "registrationStateAttrId": "69586240690"
   },
   "from": 0,
@@ -74,13 +76,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG1NE734E686TZMMCSR5MH3
+  Id                             01KWG88TFVS26CV0NZVZY88SXG
   State                          GA
+  BirthDate                      19900115
   Name                           DOE, JOHN
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG1NE734E686TZMMCSR5MH3). kind=any; anyField=; expectedKeyRef=NLTS.DQ.N; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWG88TFVS26CV0NZVZY88SXG). kind=any; anyField=; expectedKeyRef=NLTS.DQ.N; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

@@ -1,16 +1,16 @@
 ================================================================
-TEST LOG: CA_CLETS Person DriverHistoryQuery
-Combo: NLTS.KQ.O_af_Attention (NLTS.KQ.O_af_Attention (auto))
-Date: 2026-07-01 20:05:09
+TEST LOG: CA_CLETS Boat BoatQuery
+Combo: NLTS.BQ.N (NLTS.BQ.N (auto))
+Date: 2026-07-01 21:54:02
 Result: PASS
 JSON Version: 2.12
-Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
+Entity Fingerprint: 5101f20210030fba847655a6c920672ecef2a9ee5f5a674daca2d49ad5701923
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"Attention":"X","OperatorLicenseNumberDH":"D999888777","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","purposeCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG1RVVERZ0QZ8P40Q1SAP8C">
+    <api:Transaction id="01KWG2XQGGNMB8FHNJQEPYNCXX">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,10 +35,11 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01KWG1RVVERZ0QZ8P40Q1SAP8C</Id>
-            <Attention>SGAMBELLONE R</Attention>
-            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KWG2XQGGNMB8FHNJQEPYNCXX</Id>
+            <State>GA</State>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN</Name>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -62,13 +63,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG1RVVERZ0QZ8P40Q1SAP8C
-  Attention                      SGAMBELLONE R
-  OperatorLicenseNumber          D999888777
+  Id                             01KWG2XQGGNMB8FHNJQEPYNCXX
+  State                          GA
+  BirthDate                      19900115
+  Name                           DOE, JOHN
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG1RVVERZ0QZ8P40Q1SAP8C). kind=any-field; anyField=Attention; expectedKeyRef=NLTS.KQ.O; firedMessageType=DriverHistoryQuery. UNDER-FILLED (a form field failed to fill on submit -- verify this combo).
+Automated capture (txId 01KWG2XQGGNMB8FHNJQEPYNCXX). kind=combo; anyField=; expectedKeyRef=NLTS.BQ.N; firedMessageType=BoatQuery.
 
 RESULT: PASS
