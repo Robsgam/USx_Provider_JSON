@@ -415,6 +415,15 @@ TOOLS
     dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
+  tools/audit_xml_consistency.ps1
+    Cross-run XML regression check: same combo + same fills must produce the SAME wire
+    XML run after run (only the transaction id changes; normalized before diff). Compares
+    current logs against a baseline git ref -- use the previous clean pass's commit of the
+    SAME plan (diffs against a different-values baseline are expected, not regressions).
+    Live-proven 2026-07-02: HI 45/45 SAME across two same-day full runs; CA/NJ diffs vs
+    the prior day exposed that day's label rotations, not wire changes.
+    Usage: .\tools\audit_xml_consistency.ps1 -Provider <name> [-BaselineRef <commit>]
+
   tools/serve_plans.ps1
     Localhost HTTP server (127.0.0.1:8477, TcpListener, CORS *) so the extension panel's
     "Load plan from repo" / "Scope picklists" buttons fetch the repo's CURRENT
