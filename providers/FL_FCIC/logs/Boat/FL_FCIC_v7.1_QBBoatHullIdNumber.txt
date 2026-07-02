@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBBoatHullIdNumber (QBBoatHullIdNumber (auto))
+Date: 2026-07-02 18:09:06
+Result: PASS
+JSON Version: 7.1
+Entity Fingerprint: 2382fe37ebcce707a81c7871bbb4e13600ca95c2d5803c4d78cacf18179c7d2f
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWJCRXFXMQ226D4FM6E2FW45">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KWJCRXFXMQ226D4FM6E2FW45</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWJCRXFXMQ226D4FM6E2FW45
+  RelatedHitSearchIndicator      Y
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 N
+
+NOTES
+-----
+Automated capture (txId 01KWJCRXFXMQ226D4FM6E2FW45). kind=combo; anyField=; expectedKeyRef=QBBoatHullIdNumber; firedMessageType=BoatQuery.
+
+RESULT: PASS

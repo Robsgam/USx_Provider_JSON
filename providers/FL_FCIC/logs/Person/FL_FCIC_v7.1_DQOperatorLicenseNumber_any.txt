@@ -1,0 +1,85 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: DQOperatorLicenseNumber_any (DQOperatorLicenseNumber_any (auto))
+Date: 2026-07-02 18:10:00
+Result: PASS
+JSON Version: 7.1
+Entity Fingerprint: 7a60521e031d02597d7eabcc251b435cf6c2495cdf0e904759088e177f3d15ac
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","ImageIndicator":"N","OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWJCDPYK3WNX33PSJ256A4AT">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KWJCDPYK3WNX33PSJ256A4AT</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "dlNumber": "D999888777",
+    "registrationStateAttrId": "69510834680"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWJCDPYK3WNX33PSJ256A4AT
+  ImageIndicator                 N
+  State                          GA
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01KWJCDPYK3WNX33PSJ256A4AT). kind=any; anyField=; expectedKeyRef=DQOperatorLicenseNumber; firedMessageType=DriverLicenseQuery.
+
+RESULT: PASS
