@@ -228,6 +228,61 @@
   };
 
   // -------------------------------------------------------------------------
+  // RUN ALL (2026-07-02): one click drives the WHOLE plan -- switches the entity picker
+  // (the page's only generic react-select-N-input; every QIF field input has its fieldId
+  // as its DOM id), waits for that entity's form to render, runs its tests, then moves on.
+  // Finishes by navigating to dex-log and triggering the batch fetch.
+  function findEntityPicker() {
+    return [...document.querySelectorAll('input[class*="select__input"]')]
+      .find((i) => /^react-select-\d+-input$/.test(i.id)) || null;
+  }
+  async function switchEntity(entityName, probeFieldId) {
+    const picker = findEntityPicker();
+    if (!picker) return { ok: false, err: 'entity picker not found' };
+    const r = await L.selectReactSelect(picker.id, entityName);   // types, matches, clicks
+    if (!r || !r.ok) return { ok: false, err: `picker did not confirm "${entityName}" (got: ${r && r.display})` };
+    // wait for the target form: its first fill fieldId must appear in the DOM
+    const t0 = Date.now();
+    while (Date.now() - t0 < 8000) {
+      if (!probeFieldId || L.q(probeFieldId)) return { ok: true };
+      await L.sleep(250);
+    }
+    return { ok: false, err: `form for ${entityName} did not render (probe field ${probeFieldId} missing)` };
+  }
+  window.__usxRunAll = async function (plan, opts) {
+    if (!plan || !Array.isArray(plan.tests)) { console.error('[USx-RUNALL] pass the TEST_PLAN object'); return; }
+    opts = opts || {};
+    const entities = [...new Set(plan.tests.map((t) => t.entity).filter(Boolean))];
+    const summary = [];
+    for (const ent of entities) {
+      const firstTest = plan.tests.find((t) => t.entity === ent && Array.isArray(t.fills) && t.fills.length);
+      const probe = firstTest ? (Array.isArray(firstTest.fills) ? firstTest.fills[0].fieldId : firstTest.fills.fieldId) : null;
+      console.log('%c[USx-RUNALL]', 'color:#06c;font-weight:bold', `switching to ${ent}...`);
+      const sw = await switchEntity(ent, probe);
+      if (!sw.ok) { console.error('[USx-RUNALL]', sw.err, '-- STOPPING (run the remaining entities manually).'); summary.push({ entity: ent, error: sw.err }); break; }
+      await L.sleep(800);
+      const results = await window.__usxRunPlan(plan, ent);
+      const ok = results ? results.filter((r) => r.sent && r.sent.ok).length : 0;
+      summary.push({ entity: ent, submitted: ok, of: results ? results.length : 0 });
+    }
+    console.log('%c[USx-RUNALL]', 'color:#06c;font-weight:bold', 'all entities done:', summary);
+    if (opts.autoFetch !== false) {
+      console.log('%c[USx-RUNALL]', 'color:#06c', 'navigating to dex-log for the batch fetch...');
+      location.hash = '#/admin/dex-log';
+      const t0 = Date.now();
+      while (Date.now() - t0 < 15000 && !(window.__usxBulkFetch && window.__usxSearchReq)) { await L.sleep(400); }
+      if (window.__usxBulkFetch) {
+        let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch (e) {}
+        const o = { maxPages: 3, since: new Date().toISOString().slice(0, 10) }; if (n > 0) o.maxNew = n;
+        await window.__usxBulkFetch(o);
+      } else {
+        console.warn('[USx-RUNALL] bulk fetch not ready -- click ⚡ Fetch results on the dex-log panel.');
+      }
+    }
+    return summary;
+  };
+
+  // -------------------------------------------------------------------------
   // TENANT PICKLIST SCOPE (2026-07-02): dump every dropdown's ACTUAL option list.
   // Code-table contents are tenant data -- the same codeTypeCategory/Source pair serves
   // different codes per tenant (NJ GunMake = numeric NIBRS '03 - Armalite...', HI/CA =
