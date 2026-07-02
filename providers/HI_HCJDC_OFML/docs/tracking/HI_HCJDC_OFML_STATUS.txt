@@ -1,206 +1,40 @@
-HI_HCJDC_OFML STATUS
-====================
-LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated    : 2026-07-02
-Current: v4.7 | 66P/0F/0W/0LIM | Updated 2026-07-02
 
-v4.0 (2026-06-23): 68P/0F/0W/0LIM | 28/28 PASS | All 5 entities blocked
-  Single JSON. 6 QIDMs, 17 combos. Identifier-priority guardrail complete (Plate>VIN v3.6,
-  OLN>Name DL v3.7/DH v3.8, Hull>Reg v3.9). Name-order fixed (Last-first v4.0).
-  T26: KQN fires on OLN alone -- RegistrationState is in any[] (not set[]) on DH KQN.
-
-LIVE TEST RESULTS (v4.0)
-=========================
-
-All tests T1-T28 PASS. Entity block-out status:
-
-| Entity   | Status    | Version Blocked | Tests |
-|----------|-----------|-----------------|-------|
-| Vehicle  | BLOCKED   | v3.6            | T1-T8  |
-| Person   | BLOCKED   | v4.0            | T9-T11, T26-T28 |
-| Firearm  | BLOCKED   | v3.5            | T4, T24 |
-| Article  | BLOCKED   | v3.5            | T5, T25 |
-| Boat     | BLOCKED   | v4.0            | T3, T22-T23 |
-
-T26 (DH KQN): KQN fires on OperatorLicenseNumberDH alone. RegistrationState NOT in KQN
-set[] -- it is any[] only. State absent from wire when blank. CONFIRMED v4.0.
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
+LIVE TEST RESULTS -- MC (post_test.ps1)
+--------------------------------------------------
+  #     Date        Entity      Combo                Result    Notes
+  ---   ----------  ----------  -------------------  --------  -----
+  ---   2026-07-02 Vehicle    VehReg:RQ            PASS     RQ (auto)
+  ---   2026-07-02 Vehicle    VehReg:RQ_af_ImageIndicator PASS     RQ_af_ImageIndicator (auto)
+  ---   2026-07-02 Vehicle    VehReg:RQV           PASS     RQV (auto)
+  ---   2026-07-02 Vehicle    VehReg:RQV_af_ImageIndicator PASS     RQV_af_ImageIndicator (auto)
+  ---   2026-07-02 Vehicle    VehReg:RQV_af_vehicleYear PASS     RQV_af_vehicleYear (auto)
+  ---   2026-07-02 Vehicle    VehReg:RQV_any       PASS     RQV_any (auto)
+  ---   2026-07-02 Vehicle    VehReg:RQ_any        PASS     RQ_any (auto)
+  ---   2026-07-02 Vehicle    VehReg:M55L          PASS     M55L (auto)
+  ---   2026-07-02 Vehicle    VehReg:M55L_af_ImageIndicator PASS     M55L_af_ImageIndicator (auto)
+  ---   2026-07-02 Vehicle    VehReg:M55S          PASS     M55S (auto)
+  ---   2026-07-02 Vehicle    VehReg:M55S_af_ImageIndicator PASS     M55S_af_ImageIndicator (auto)
+  ---   2026-07-02 Vehicle    VehReg:M55S_af_vehicleYear PASS     M55S_af_vehicleYear (auto)
+  ---   2026-07-02 Vehicle    VehReg:M55S_any      PASS     M55S_any (auto)
+  ---   2026-07-02 Vehicle    VehReg:M55L_any      PASS     M55L_any (auto)
+  ---   2026-07-02 Vehicle    VehReg:RQ_guardrail  PASS     RQ_guardrail (auto)
+  ---   2026-07-02 Person     DH:KQN               PASS     KQN (auto)
+  ---   2026-07-02 Person     DL:DQN               PASS     DQN (auto)
+  ---   2026-07-02 Person     DL:DQN_any           PASS     DQN_any (auto)
+  ---   2026-07-02 Person     DH:KQN_af_purposeCodeDH PASS     KQN_af_purposeCodeDH (auto)
+  ---   2026-07-02 Person     DH:KQN_any           PASS     KQN_any (auto)
+  ---   2026-07-02 Person     DH:KQN_guardrail     PASS     KQN_guardrail (auto)
+  ---   2026-07-02 Person     DH:KQ_any            PASS     KQ_any (auto)
+  ---   2026-07-02 Person     DH:KQ_af_purposeCodeDH PASS     KQ_af_purposeCodeDH (auto)
+  ---   2026-07-02 Person     DH:KQ                PASS     KQ (auto)
+  ---   2026-07-02 Person     DL:DQN_guardrail     PASS     DQN_guardrail (auto)
+  ---   2026-07-02 Person     DL:QW_any            PASS     QW_any (auto)
+  ---   2026-07-02 Person     DL:QW                PASS     QW (auto)
+  ---   2026-07-02 Person     DL:DQ_any            PASS     DQ_any (auto)
+  ---   2026-07-02 Person     DL:DQ                PASS     DQ (auto)
+  ---   2026-07-02 Firearm    Gun:QG               PASS     QG (auto)
+  ---   2026-07-02 Firearm    Gun:QG_af_GunMake    PASS     QG_af_GunMake (auto)
+  ---   2026-07-02 Firearm    Gun:QG_af_GunCaliber PASS     QG_af_GunCaliber (auto)
+  ---   2026-07-02 Firearm    Gun:QG_af_GunModel   PASS     QG_af_GunModel (auto)
+  ---   2026-07-02 Firearm    Gun:QG_any           PASS     QG_any (auto)
+  ---   2026-07-02 Article    Article:QA           PASS     QA (auto)
