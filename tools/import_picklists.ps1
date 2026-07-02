@@ -78,9 +78,19 @@ foreach ($prov in $byProvider.Keys) {
                 foreach ($v in $vals) {
                     $re = '^' + [regex]::Escape($v) + '\b'
                     if (-not @($fld.options | Where-Object { $_ -match $re }).Count) {
-                        $suggest = @($fld.options)[0]
-                        Write-Host "[import-picklists] FAIL ${entName}.$($fp.Name): test value '$v' matches NO tenant option (first option: '$suggest') -- fix via TEST_VALUE_OVERRIDES.txt" -ForegroundColor Red
-                        $fail++
+                        # The DOM capture only sees the first server page of large lists
+                        # (~300, live-confirmed on GunMake/ArticleTypeCode). A miss in a
+                        # truncated/large capture is INCONCLUSIVE, not a failure -- the live
+                        # fill is the authority there (HI GunMake=IMI filled fine beyond
+                        # the captured page). Small complete lists still hard-FAIL.
+                        if ($fld.truncated -or @($fld.options).Count -ge 250) {
+                            Write-Host "[import-picklists] WARN ${entName}.$($fp.Name): value '$v' not in the captured subset ($(@($fld.options).Count) of a larger list) -- inconclusive; verify by live fill" -ForegroundColor Yellow
+                            $warn++
+                        } else {
+                            $suggest = @($fld.options)[0]
+                            Write-Host "[import-picklists] FAIL ${entName}.$($fp.Name): test value '$v' matches NO tenant option (first option: '$suggest') -- fix via TEST_VALUE_OVERRIDES.txt" -ForegroundColor Red
+                            $fail++
+                        }
                     }
                 }
             }

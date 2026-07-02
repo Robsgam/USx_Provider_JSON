@@ -283,20 +283,26 @@
           setVal(input, '');
           await poll(() => readOpts().length, 3000, 150);
         }
-        // Virtualization guard: scroll the menu list to the bottom until the option set stabilizes or CAP.
+        // Virtualization/paging guard: scroll the menu list to the bottom until the option set
+        // stabilizes or CAP. The async source pages (~300/fetch, live-confirmed: GunMake and
+        // ArticleTypeCode both plateaued at exactly 300), so wait generously between scrolls
+        // and flag a page-boundary plateau as truncated -- the list beyond it is invisible to
+        // the DOM (the endpoint-direct probe is the complete answer).
         const seen = new Set(readOpts());
         const listEl = scopeRoot().querySelector('[class*="menu-list"], [class*="MenuList"]') || scopeRoot();
         let stable = 0;
         while (seen.size < CAP && stable < 3) {
           const before = seen.size;
-          if (listEl && listEl.scrollHeight > listEl.clientHeight) { listEl.scrollTop = listEl.scrollHeight; await L.sleep(250); }
+          if (listEl && listEl.scrollHeight > listEl.clientHeight) { listEl.scrollTop = listEl.scrollHeight; await L.sleep(650); }
           readOpts().forEach((t) => seen.add(t));
           stable = (seen.size === before) ? stable + 1 : 0;
           if (!listEl || listEl.scrollHeight <= listEl.clientHeight) break;
         }
+        await L.sleep(1000);                       // one last chance for a slow page-load
+        readOpts().forEach((t) => seen.add(t));
         rec.options = [...seen].slice(0, CAP);
         rec.count = seen.size;
-        rec.truncated = seen.size >= CAP;
+        rec.truncated = seen.size >= CAP || (seen.size >= 200 && seen.size % 100 === 0);   // hard cap or page-boundary plateau
         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
         input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true }));
         await L.sleep(300);
