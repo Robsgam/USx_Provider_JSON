@@ -5,7 +5,8 @@
     1. Provider scorecard (score_all.ps1 -Quick: parses existing VALIDATOR_REPORTs)
     2. Poisoned-array sweep across all provider root JSONs (validate.ps1 G-31)
     3. Git working-tree status (uncommitted changes)
-    4. A one-line health verdict
+    4. Reverse-propagation status (audit_reverse_propagation.ps1: pending-rebuild flags)
+    5. A one-line health verdict
 
   Read-only. Does NOT modify, build, or commit anything.
 
@@ -74,7 +75,18 @@ try {
     if ($st) { ($st | ForEach-Object { Emit "  $_" }) } else { Emit "  clean working tree" }
 } catch { Emit "  [WARN] git status failed" }
 
-# --- 4. Verdict ----------------------------------------------------------------
+# --- 4. Reverse-propagation status (pending rebuilds from shared fixes) ---------
+Emit ""
+Emit "--- REVERSE-PROPAGATION (pending-rebuild flags; audit_reverse_propagation.ps1) ---"
+try {
+    $rp = & "$tool\audit_reverse_propagation.ps1" *>&1 | Out-String
+    # Show just the pending/ledger/gap body, not the tool's own banner.
+    ($rp.TrimEnd() -split "`n") | Where-Object { $_ -notmatch '^=+$' -and $_ -notmatch 'REVERSE-PROPAGATION STATUS' } | ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] audit_reverse_propagation.ps1 failed: $($_.Exception.Message)"
+}
+
+# --- 5. Verdict ----------------------------------------------------------------
 Emit ""
 Emit "================================================================"
 $fails = ([regex]::Matches(($lines -join "`n"), "\d+F\b")).Count

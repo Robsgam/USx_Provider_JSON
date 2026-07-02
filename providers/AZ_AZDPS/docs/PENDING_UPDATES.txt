@@ -2,5 +2,5 @@
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
 # Clear by running the build script (it removes this file on successful build).
 #
-RND-62365: VehicleMakeName QRDM attributeType=VEHICLE/codeTypeSource=VehicleType -> VEHICLE_MAKE/NCIC (shared module fix; rebuild required)
-ParseCommsysName empty-args: _R $args-drop bug (CA_CLETS/NY/AZ/TX still awaiting rebuild; fixed in shared module 1951db4/NJ v4.0)
+[FLAG:RND-62365] VehicleMakeName QRDM attributeType=VEHICLE/codeTypeSource=VehicleType -> VEHICLE_MAKE/NCIC (shared module fix; rebuild required)
+[FLAG:PARSECOMMSYS-ARGS] ParseCommsysName empty-args _R $args-drop bug (fixed shared module 1951db4/NJ v4.0; rebuild required)
