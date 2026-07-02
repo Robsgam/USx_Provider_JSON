@@ -64,8 +64,22 @@ $scope = [ordered]@{
 $logsDir = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'logs'
 if (-not (Test-Path $logsDir)) { New-Item -ItemType Directory -Path $logsDir | Out-Null }
 $outFile = Join-Path $logsDir "${provName}_PICKLIST_SCOPE.json"
-$scope | ConvertTo-Json -Depth 5 | Set-Content $outFile -Encoding utf8
+$json = $scope | ConvertTo-Json -Depth 5
+$json | Set-Content $outFile -Encoding utf8
+
+# Console-paste variant: the operator opens this file, selects all, and pastes the whole
+# thing into the tenant DevTools console -- it defines `scope` and prints the commands.
+$entList = @($uniq | ForEach-Object { $_.entity } | Sort-Object -Unique)
+$cmds = ($entList | ForEach-Object { "__usxScopePicklists(scope, '$_')" }) -join '\n  '
+$consoleFile = Join-Path $logsDir "${provName}_PICKLIST_SCOPE.console.js"
+@"
+// PASTE THIS ENTIRE FILE into the tenant DevTools console (F12 -> Console), press Enter.
+// Then render each entity form and run its line (one at a time; each downloads one file):
+var scope = $json;
+console.log('%c[USx-SCOPE] scope loaded: $provName v$version --', 'color:#0aa;font-weight:bold', scope.fields.length, 'select field(s). Now render an entity form and run:\n  $cmds');
+"@ | Set-Content $consoleFile -Encoding utf8
 
 $byEnt = $uniq | Group-Object entity
 Write-Host "[PASS] Picklist scope written: $outFile ($($uniq.Count) select field(s))" -ForegroundColor Green
+Write-Host "[PASS] Console-paste variant:  $consoleFile" -ForegroundColor Green
 foreach ($g in $byEnt) { Write-Host ("  {0}: {1}" -f $g.Name, (($g.Group | ForEach-Object { $_.fieldId }) -join ', ')) }
