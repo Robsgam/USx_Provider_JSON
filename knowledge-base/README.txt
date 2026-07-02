@@ -379,9 +379,21 @@ TOOLS
   tools/watch_captures.ps1
     Downloads watcher for the automated USx Tenant Testing loop. Start once per session;
     monitors ~/Downloads for usx_captured_batch_labeled*.json files dropped by the browser
-    extension's __usxBulkFetch, and auto-runs import_captured_tests.ps1 on each new file.
+    extension's __usxBulkFetch, runs relabel_batch.ps1 (content-based label correction),
+    then import_captured_tests.ps1 on each new file.
     Usage: .\tools\watch_captures.ps1            # auto-import + commit
            .\tools\watch_captures.ps1 -NoCommit  # import only, no git commit
+           .\tools\watch_captures.ps1 -Once      # exit after first import (supervised mode:
+                                                 # the supervisor reports the summary + re-arms)
+
+  tools/relabel_batch.ps1
+    Content-based batch relabeler, run by watch_captures.ps1 before every import. Browser
+    label pairing is unreliable when tests share identifier values and differ only in
+    optional fields (labels arrived rotated within a query family); the dex-log formState
+    is ground truth. Matches each record to the provider TEST_PLAN test whose fills it
+    satisfies (tolerant values; dynamic per-messageType defaults) and rewrites labels in
+    place, reporting corrections.
+    Usage: .\tools\relabel_batch.ps1 -BatchPath <file> [-PlanPath <file>]
 
   tools/import_captured_tests.ps1
     Ingests browser-captured test records (usx_captured_*.json from the extension) into
