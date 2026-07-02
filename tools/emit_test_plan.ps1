@@ -31,6 +31,61 @@ param(
 
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\_combo_match.ps1"
+. "$PSScriptRoot\_sim_helpers.ps1"
+
+# ── Firing simulation ─────────────────────────────────────────────────────────
+# Mirrors run_test_matrix.ps1's Test-ComboFires model (all set[] present + conditions;
+# any[] does not gate) and evaluates conditions via the SHARED _sim_helpers
+# Test-ComboConditionsCore, so a guardrail's expectedKeyRef equals what the conductor
+# would say it fires -- by construction. This replaces the old structural heuristic
+# ("winner = first combo that lists the excluded field in set[]"), which is wrong when an
+# entity has in-state/OOS combo splits sharing an identifier (e.g. HI RQ/M55L on plate,
+# RQV/M55S on VIN): a bare plate fires M55L (in-state), not RQ; a bare VIN fires M55S,
+# not RQV. Combo defaults (e.g. VehicleTypeCode=1) are treated as present on the form.
+function Get-EntityDefaultFields($entQidms) {
+    $d = @{}
+    foreach ($q in $entQidms) {
+        foreach ($c in $q.combinations) {
+            foreach ($def in @($c.requirements.defaults)) {
+                if ($def.field) { $d["$($def.field)"] = "$($def.value)" }
+            }
+        }
+    }
+    return $d
+}
+function Get-SimFilledRefs($qidm, $formData) {
+    $filled = @()
+    foreach ($attr in $qidm.attributes) {
+        $sfs = @()
+        if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
+        elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
+        $has = $false
+        foreach ($sf in $sfs) { if ($formData.ContainsKey($sf) -and $formData[$sf]) { $filled += $sf; $has = $true } }
+        if ($has) { $filled += $attr.name }
+    }
+    return ($filled | Select-Object -Unique)
+}
+function Get-SimFiringKeyRef($entQidms, $formData) {
+    foreach ($q in $entQidms) {
+        $filled = Get-SimFilledRefs $q $formData
+        foreach ($c in $q.combinations) {
+            $set = @($c.requirements.set)
+            $any = @($c.requirements.any)
+            $setOk = $true
+            foreach ($f in $set) { if ($filled -notcontains $f) { $setOk = $false; break } }
+            $anyOk = $true
+            if ($set.Count -eq 0 -and $any.Count -gt 0) {
+                $anyOk = $false
+                foreach ($f in $any) { if ($filled -contains $f) { $anyOk = $true; break } }
+            }
+            if (-not ($setOk -and $anyOk)) { continue }
+            if ((Test-ComboConditionsCore (Get-ComboConditions $c) $formData).ok) {
+                if ($c.keyReference) { return $c.keyReference } else { return $c.keyRef }
+            }
+        }
+    }
+    return $null
+}
 
 $raw = [System.IO.File]::ReadAllText((Resolve-Path $Path), [System.Text.UTF8Encoding]::new($false))
 $json = $raw | ConvertFrom-Json
@@ -261,23 +316,36 @@ foreach ($ent in $entities) {
         $script:Unresolved.Add("${ent}: $notExistsCount NOT_EXISTS condition(s) but 0 guardrail tests emitted (winner combo unresolved)")
     }
     if ($true) {
+        $entDefaults = Get-EntityDefaultFields $entQidms
         foreach ($gr in $entGuardrails) {
-            $gFills = @()
             $exFf  = $fieldIds | Where-Object { $_ -ieq $gr.excludedFid } | Select-Object -First 1
             if (-not $exFf) { $exFf = $gr.excludedFid }
             $exVal = Get-TestValue $exFf $false
-            if ($null -ne $exVal -and $exVal -ne '') {
-                $gFills += [ordered]@{ fieldId = $exFf; value = "$exVal" }
-            }
+            # Skip guardrails whose competing discriminator can't be filled (e.g. in-state State,
+            # which Get-TestValue intentionally leaves blank). Without a fillable discriminator the
+            # identifier conflict can't be constructed -- that NOT_EXISTS is in-state/OOS routing,
+            # not identifier priority, and is already covered by the combo tests. (Prevents the
+            # stale "bare VIN expects OOS RQV" class -- the discriminator there is State.)
+            if ($null -eq $exVal -or $exVal -eq '') { continue }
+            $gFills = @()
+            $gFills += [ordered]@{ fieldId = $exFf; value = "$exVal" }
             foreach ($sf in @($gr.loserCombo.requirements.set)) {
                 $ff  = Resolve-FieldId $sf $gr.loserQidm $fieldIds
                 $val = Get-TestValue $ff $false
                 if ($null -ne $val -and $val -ne '') { $gFills += [ordered]@{ fieldId = $ff; value = "$val" } }
             }
+            # expectedKeyRef = what ACTUALLY fires for this fill (simulated), not the structural
+            # winner heuristic (which mis-picks the OOS combo when an in-state sibling shares the
+            # identifier). Combo defaults count as present on the form.
+            $fd = @{}
+            foreach ($f in $gFills) { $fd[$f.fieldId] = $f.value }
+            foreach ($k in $entDefaults.Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $entDefaults[$k] } }
+            $simKr = Get-SimFiringKeyRef $entQidms $fd
+            if (-not $simKr) { continue }   # nothing fires for this fill -> not a valid guardrail
             $n++
             $tests.Add([ordered]@{
                 n = $n; entity = $ent; query = $gr.loserQidm.query
-                comboKeyRef = $null; expectedKeyRef = $gr.winnerKr
+                comboKeyRef = $null; expectedKeyRef = $simKr
                 kind = 'guardrail'; tier = 'Full'; fills = $gFills
             })
         }
