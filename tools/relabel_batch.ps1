@@ -45,7 +45,11 @@ $plan = Get-Content $PlanPath -Raw | ConvertFrom-Json
 $familyFillable = Build-CmFamilyFillable $plan
 $snapshots = @($records | ForEach-Object {
     $fs = $null
-    if ($_.formState) { try { $fs = $_.formState | ConvertFrom-Json } catch {} }
+    # formState is a JSON string on labeled records but an OBJECT on unlabeled-path records
+    # (bulk fetch attaches parsedRawQuery directly) -- piping an object to ConvertFrom-Json
+    # throws, which silently unmatched 7 otherwise-recognizable stale rows (2026-07-02).
+    if ($_.formState -is [string]) { try { $fs = $_.formState | ConvertFrom-Json } catch {} }
+    elseif ($_.formState) { $fs = $_.formState }
     # pscustomobject, NOT hashtable: PS 5.1 Group-Object can't resolve hashtable properties.
     [pscustomobject]@{ messageType = $_.messageType; fs = $fs }
 })
@@ -89,5 +93,7 @@ if ($unassigned.Count) {
     foreach ($i in $unassigned) { Write-Host "  $($records[$i].messageType) $($records[$i].combo) $($records[$i].formState)" }
 }
 $outRecords = if ($KeepUnmatched) { $records } else { @(0..($records.Count - 1) | Where-Object { $assigned.ContainsKey($_) } | ForEach-Object { $records[$_] }) }
-$outRecords | ConvertTo-Json -Depth 8 | Set-Content $BatchPath -Encoding utf8
+# -InputObject keeps an empty set as literal "[]" -- piping @() emits NOTHING, so the file
+# was never truncated and the import processed the dropped records anyway (2026-07-02).
+ConvertTo-Json -InputObject @($outRecords) -Depth 8 | Set-Content $BatchPath -Encoding utf8
 Write-Host "[relabel] done: $(@($outRecords).Count) record(s) written, $corrections label correction(s), $($unassigned.Count) unmatched." -ForegroundColor Green

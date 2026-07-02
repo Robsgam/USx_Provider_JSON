@@ -110,7 +110,7 @@ if ($preExisting.Count -gt 0) {
     }
     Write-Host "[WATCH] startup sweep complete.`n" -ForegroundColor Magenta
     if ($Once -and $sweepSummary) {
-        Write-Host "[WATCH-ONCE] INGESTED $($newest.Name) -- $($sweepSummary.Trim())" -ForegroundColor Green
+        Write-Host "[WATCH-ONCE] INGESTED $($newest.Name) -- $("$sweepSummary".Trim())" -ForegroundColor Green
         exit 0
     }
 }
