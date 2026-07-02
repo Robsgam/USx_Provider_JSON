@@ -55,6 +55,12 @@ function Build-CmDefaults($snapshots) {
         if (-not $states.Count) { continue }
         $d = @{}
         $fieldNames = @($states | ForEach-Object { $_.PSObject.Properties.Name } | Sort-Object -Unique)
+        # IDENTIFIERS are never defaults: in a small batch the shared identifier value
+        # (every Boat row carries the same hull number) crosses the dominance threshold and
+        # a hull-content row then passes as a Registration test -- 2 Boat logs mislabeled
+        # AND the content audit blinded the same way (2026-07-02, caught by the XML gate).
+        $idRe = '(?i)(Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber)'
+        $fieldNames = @($fieldNames | Where-Object { $_ -notmatch $idRe })
         foreach ($n in $fieldNames) {
             $vals = @($states | ForEach-Object { $p = $_.PSObject.Properties[$n]; if ($p) { "$($p.Value)" } } | Where-Object { $_ -ne $null })
             if ($vals.Count -lt 2) { if ($states.Count -eq 1 -and $vals.Count -eq 1) { $d[$n.ToUpper()] = $vals[0] }; continue }

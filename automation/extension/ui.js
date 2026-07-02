@@ -122,28 +122,9 @@
         };
         r.readAsText(f);
       };
-      // ONE-AND-DONE: auto-switches the entity picker per entity, runs everything, then
-      // hops to dex-log and fires the batch fetch. The per-entity picker below stays for
-      // manual/partial runs.
-      const runAllStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px');
-      const runAll = el('button', BTN + ';font-weight:700', '🚀 Run ALL entities (1-click)');
-      runAll.onclick = async () => {
-        const plan = window.__usxLoadedPlan;
-        if (!plan) { alert('Load the plan first (⟳ button above).'); return; }
-        runAll.disabled = true;
-        runAllStatus.style.color = '#fa0'; runAllStatus.textContent = 'Running all entities…';
-        try {
-          const s = await window.__usxRunAll(plan);
-          const err = (s || []).find(x => x.error);
-          runAllStatus.style.color = err ? '#f77' : '#7cf';
-          runAllStatus.textContent = err ? ('✖ stopped at ' + err.entity + ': ' + err.error)
-            : ('✔ ' + (s || []).map(x => `${x.entity} ${x.submitted}/${x.of}`).join(', ') + ' — fetch fired');
-        } catch (e) { runAllStatus.style.color = '#f77'; runAllStatus.textContent = '✖ ' + e.message; }
-        finally { runAll.disabled = false; }
-      };
-      p.appendChild(runAll);
-      p.appendChild(runAllStatus);
-
+      // Run ALL (auto entity switching) PARKED 2026-07-02 by user decision -- "we are
+      // trying too much"; the proven flow is semi-automatic: pick entity, Run Plan, repeat,
+      // one Fetch at the end. __usxRunAll stays available from the console for later.
       const ent = el('select', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px'); ent.id = 'usx-ent'; const entPlaceholder = document.createElement('option'); entPlaceholder.value = ''; entPlaceholder.textContent = '— load plan first —'; entPlaceholder.disabled = true; entPlaceholder.selected = true; ent.appendChild(entPlaceholder); p.appendChild(ent);
       const runStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px'); runStatus.id = 'usx-run-status'; p.appendChild(runStatus);
       const run = el('button', BTN, '▶ Run Plan');
