@@ -415,6 +415,13 @@ TOOLS
     dropdown UNFILTERED and dumps the tenant's actual option list (cap 500/field).
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
+  tools/serve_plans.ps1
+    Localhost HTTP server (127.0.0.1:8477, TcpListener, CORS *) so the extension panel's
+    "Load plan from repo" / "Scope picklists" buttons fetch the repo's CURRENT
+    TEST_PLAN / PICKLIST_SCOPE for the tenant (provider derived from hostname) instead of
+    the operator file-picking. Start once per session, like watch_captures.ps1.
+    Usage: pwsh -File tools\serve_plans.ps1
+
   tools/import_picklists.ps1
     Merges usx_picklists_<provider>_<entity>.json downloads into
     docs/reference/TENANT_PICKLISTS.json and validates: FAIL on empty tenant tables and on

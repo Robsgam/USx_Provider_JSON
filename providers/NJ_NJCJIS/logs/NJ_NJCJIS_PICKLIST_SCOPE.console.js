@@ -98,4 +98,4 @@ var scope = {
     }
   ]
 };
-console.log('%c[USx-SCOPE] scope loaded: NJ_NJCJIS v4.8 --', 'color:#0aa;font-weight:bold', scope.fields.length, 'select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')');
+console.log('%c[USx-SCOPE] scope loaded: NJ_NJCJIS v4.8 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

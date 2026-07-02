@@ -76,7 +76,7 @@ $consoleFile = Join-Path $logsDir "${provName}_PICKLIST_SCOPE.console.js"
 // PASTE THIS ENTIRE FILE into the tenant DevTools console (F12 -> Console), press Enter.
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = $json;
-console.log('%c[USx-SCOPE] scope loaded: $provName v$version --', 'color:#0aa;font-weight:bold', scope.fields.length, 'select field(s). Now render an entity form and run:\n  $cmds');
+console.log('%c[USx-SCOPE] scope loaded: $provName v$version --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  $cmds");
 "@ | Set-Content $consoleFile -Encoding utf8
 
 $byEnt = $uniq | Group-Object entity

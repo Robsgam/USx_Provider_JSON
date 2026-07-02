@@ -71,31 +71,54 @@
 
       p.appendChild(el('div', 'margin-top:8px;color:#999;font-size:11px', 'After Run Plan on universal-search, click ⚡ Fetch results — a JSON downloads; import with tools\\import_captured_tests.ps1.'));
     } else {
-      // File picker — primary UX
+      // Status line shows loaded plan info (declared first -- both load paths write to it)
+      const planStatus = el('div', 'font:11px system-ui;color:#7cf;margin:2px 0;min-height:14px'); planStatus.id = 'usx-plan-status';
+
+      // Shared plan-apply for both the repo fetch and the manual file picker.
+      function applyPlan(planObj, sourceName) {
+        const tests = planObj.tests || planObj;
+        const count = Array.isArray(tests) ? tests.length : '?';
+        const entities = Array.isArray(tests) ? [...new Set(tests.map(t => t.entity).filter(Boolean))] : [];
+        planStatus.style.color = '#7cf';
+        planStatus.textContent = `✔ ${sourceName} — ${count} tests`;
+        const sel = document.getElementById('usx-ent'); sel.innerHTML = '';
+        entities.forEach((e, i) => { const o = document.createElement('option'); o.value = e; o.textContent = e; if (i === 0) o.selected = true; sel.appendChild(o); });
+        window.__usxLoadedPlan = planObj;
+      }
+
+      // PRIMARY: load the repo's current plan from the local plan server (tools/serve_plans.ps1,
+      // http://localhost:8477 -- localhost is exempt from mixed-content blocking). Provider is
+      // derived from the tenant hostname, so one button works on every tenant.
+      const prov = window.__usxLib ? window.__usxLib.providerFromHost() : 'UNKNOWN';
+      const repoBtn = el('button', BTN, '⟳ Load plan from repo');
+      repoBtn.onclick = async () => {
+        planStatus.style.color = '#fa0'; planStatus.textContent = `fetching plan for ${prov}…`;
+        try {
+          const r = await fetch(`http://localhost:8477/plan/${prov}`);
+          if (!r.ok) throw new Error((await r.json()).error || r.status);
+          const planObj = await r.json();
+          applyPlan(planObj, `repo plan ${prov} v${planObj.version || '?'}`);
+        } catch (e) {
+          planStatus.style.color = '#f77';
+          planStatus.textContent = `✖ repo load failed (${e.message}) — is tools\\serve_plans.ps1 running? Use 📂 below.`;
+        }
+      };
+      p.appendChild(repoBtn);
+
+      // Manual file picker — kept for testing / one-off plans.
       const fileRow = el('div', 'margin:4px 0');
-      const fileLbl = el('label', 'display:block;padding:6px;border:1px dashed #555;border-radius:5px;color:#aaa;font:11px system-ui;cursor:pointer;text-align:center', '📂 Load TEST_PLAN JSON…');
+      const fileLbl = el('label', 'display:block;padding:6px;border:1px dashed #555;border-radius:5px;color:#aaa;font:11px system-ui;cursor:pointer;text-align:center', '📂 Load TEST_PLAN JSON (manual)…');
       const fileIn = el('input'); fileIn.type = 'file'; fileIn.accept = '.json'; fileIn.style.cssText = 'display:none';
       fileLbl.appendChild(fileIn);
       fileRow.appendChild(fileLbl);
       p.appendChild(fileRow);
-      // Status line shows loaded plan info
-      const planStatus = el('div', 'font:11px system-ui;color:#7cf;margin:2px 0;min-height:14px'); planStatus.id = 'usx-plan-status'; p.appendChild(planStatus);
-      // Hidden store for loaded plan
-      let _loadedPlan = null;
+      p.appendChild(planStatus);
       fileIn.onchange = () => {
         const f = fileIn.files[0]; if (!f) return;
         const r = new FileReader();
         r.onload = (ev) => {
-          try {
-            _loadedPlan = JSON.parse(ev.target.result);
-            const tests = _loadedPlan.tests || _loadedPlan;
-            const count = Array.isArray(tests) ? tests.length : '?';
-            const entities = Array.isArray(tests) ? [...new Set(tests.map(t => t.entity).filter(Boolean))] : [];
-            planStatus.textContent = `✔ ${f.name.replace(/^.*[/\\]/,'')} — ${count} tests`;
-            const sel = document.getElementById('usx-ent'); sel.innerHTML = '';
-            entities.forEach((e, i) => { const o = document.createElement('option'); o.value = e; o.textContent = e; if (i === 0) o.selected = true; sel.appendChild(o); });
-            window.__usxLoadedPlan = _loadedPlan;
-          } catch (e) { planStatus.style.color='#f77'; planStatus.textContent = '✖ parse error: ' + e.message; }
+          try { applyPlan(JSON.parse(ev.target.result), f.name.replace(/^.*[/\\]/,'')); }
+          catch (e) { planStatus.style.color='#f77'; planStatus.textContent = '✖ parse error: ' + e.message; }
         };
         r.readAsText(f);
       };
@@ -120,7 +143,30 @@
         } finally { run.disabled = false; }
       };
       p.appendChild(run);
-      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '0. Run tools\\watch_captures.ps1 once  1. Load plan  2. Pick entity  3. Run Plan  4. Fetch results'));
+
+      // Picklist scope — fetches the repo scope and dumps the CURRENT entity's dropdown
+      // options (render the entity form, pick it in the dropdown above, click).
+      const scopeBtn = el('button', BTN + ';' + BLU, '🔍 Scope picklists (current entity)');
+      const scopeStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px');
+      scopeBtn.onclick = async () => {
+        const entity = (document.getElementById('usx-ent').value || '').trim();
+        if (!entity) { alert('Load the plan first (entity list comes from it), render the entity form, then click.'); return; }
+        scopeStatus.textContent = `scoping ${entity}…`;
+        try {
+          if (!window.__usxLoadedScope) {
+            const r = await fetch(`http://localhost:8477/scope/${prov}`);
+            if (!r.ok) throw new Error((await r.json()).error || r.status);
+            window.__usxLoadedScope = await r.json();
+          }
+          const res = await window.__usxScopePicklists(window.__usxLoadedScope, entity);
+          scopeStatus.style.color = '#7cf';
+          scopeStatus.textContent = res ? `✔ ${entity}: ${res.fields.length} dropdown(s) dumped + downloaded` : `no selects for ${entity}`;
+        } catch (e) { scopeStatus.style.color = '#f77'; scopeStatus.textContent = '✖ ' + e.message; }
+      };
+      p.appendChild(scopeBtn);
+      p.appendChild(scopeStatus);
+
+      p.appendChild(el('div', 'margin-top:6px;color:#999;font-size:11px', '0. Run tools\\watch_captures.ps1 + tools\\serve_plans.ps1 once  1. ⟳ Load plan  2. Pick entity  3. Run Plan (or 🔍 Scope)  4. Fetch results'));
     }
     return p;
   }
