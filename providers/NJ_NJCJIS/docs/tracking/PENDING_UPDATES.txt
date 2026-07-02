@@ -2,4 +2,6 @@
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
 # Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:EMIT-GUARDRAIL-SIM] emit_test_plan guardrail expectedKeyRef now simulated (was a structural heuristic that mislabelled in-state/OOS split routing). Regenerate TEST_PLAN + re-run/re-validate guardrail routing. Test-harness fix, NO config change -- clear this flag after the guardrail re-validation passes. (flagged 2026-07-02)
+# [CLEARED 2026-07-02] EMIT-GUARDRAIL-SIM -- TEST_PLAN v4.8 regenerated with simulated guardrail
+# expectedKeyRefs (RANDFULL / FULLN / QBN); all 3 match the live-confirmed v4.8 guardrail logs
+# (RANDFULL_guardrail, FULLN_guardrail, QBN_guardrail -- all PASS with XML). No config change.
