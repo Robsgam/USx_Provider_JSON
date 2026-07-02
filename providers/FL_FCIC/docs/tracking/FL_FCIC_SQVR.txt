@@ -1,8 +1,17 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-02
 JSON version: v7.1
-Live test: In progress
+Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Live test: COMPLETE + INTEGRITY-CERTIFIED -- v7.1 zero-error pass 2026-07-02: 121/121
+  submitted+captured, 0 skipped, 0 unmatched, content audit 121/121, XML consistency PASS
+  (121 new -- first capture under this pipeline, no prior baseline), enforce 25P/0F/0W.
+  Boat's 3 combo families (BQ/FBQ/QB) surfaced 2 real defects fixed during this pass: an
+  attribute-name-vs-targetField mismatch that broke guardrail combo inference
+  (OperatorLicenseNumberDH), and a guardrail-label collision where 2 distinct
+  relatedHitSearchIndicator routing scenarios silently overwrote one log (now disambiguated
+  via guardrailLoser -- see tools/emit_test_plan.ps1).
 
 ================================================================================
 BoatQuery -- Boat Entity
