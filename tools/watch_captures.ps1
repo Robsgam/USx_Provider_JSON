@@ -17,7 +17,10 @@
   for "most complete accumulated snapshot" since later fetches are supersets of earlier ones),
   discard the rest as redundant duplicates.
 #>
-param([switch]$NoCommit)
+param([switch]$NoCommit, [switch]$Once)
+# -Once: exit after the first successful import. Run the watcher as a supervised background
+# task: each exit notifies the supervisor (Claude console), which reports the ingest summary
+# and relaunches. This is how ingestion acknowledgments surface in the console.
 
 $downloads    = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads')
 $importScript = Join-Path $PSScriptRoot 'import_captured_tests.ps1'
@@ -42,26 +45,12 @@ function Wait-FileReady($p) {
     return $false
 }
 
-# Windows toast so the operator sees ingestion without watching the console. Runs the WinRT
-# snippet in Windows PowerShell 5.1 (WinRT projection is not loadable in pwsh 7). Fire-and-forget.
-function Send-UsxToast($title, $body) {
-    $script = @"
-`$null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
-`$xml = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
-`$t = `$xml.GetElementsByTagName('text')
-`$null = `$t.Item(0).AppendChild(`$xml.CreateTextNode('$title'))
-`$null = `$t.Item(1).AppendChild(`$xml.CreateTextNode('$body'))
-`$appId = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier(`$appId).Show([Windows.UI.Notifications.ToastNotification]::new(`$xml))
-"@
-    try { Start-Process -WindowStyle Hidden powershell.exe -ArgumentList '-NoProfile','-Command', $script } catch {}
-}
-
 # Import one capture file (shared by the startup sweep and the live watch loop below).
+# Returns the "Imported: N PASS / N FAIL" summary line (or $null).
 function Import-CaptureFile($path, $label) {
     if (-not (Wait-FileReady $path)) {
         Write-Host "[WATCH] $label never became readable (still locked or vanished) -- skipping." -ForegroundColor DarkYellow
-        return
+        return $null
     }
     Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
     $summary = $null
@@ -71,13 +60,12 @@ function Import-CaptureFile($path, $label) {
         $summary = ($out | Where-Object { $_ -match 'Imported:' } | Select-Object -Last 1)
     } catch {
         Write-Host "[WATCH] import errored (watcher stays up): $_" -ForegroundColor Red
-        Send-UsxToast 'USx capture import FAILED' "$label -- $_"
-        return
+        return $null
     }
-    Send-UsxToast 'USx capture ingested' ("$label -- " + $(if ($summary) { $summary.Trim() } else { 'import finished (no summary line)' }))
     # import_captured_tests.ps1 archives (moves) the file into automation/captures; this is a
     # harmless no-op if it's already gone.
     Remove-Item $path -Force -ErrorAction SilentlyContinue
+    return $summary
 }
 
 # Startup catch-up sweep -- see header comment. Only runs if files already exist; harmless
@@ -87,13 +75,17 @@ if ($preExisting.Count -gt 0) {
     Write-Host "[WATCH] startup sweep: found $($preExisting.Count) pre-existing capture file(s) in Downloads." -ForegroundColor Magenta
     $newest = $preExisting | Sort-Object Length -Descending | Select-Object -First 1
     Write-Host "[WATCH] importing largest/most-complete: $($newest.Name) ($($newest.Length) bytes)" -ForegroundColor Magenta
-    Import-CaptureFile $newest.FullName $newest.Name
+    $sweepSummary = Import-CaptureFile $newest.FullName $newest.Name
     $discard = $preExisting | Where-Object { $_.FullName -ne $newest.FullName }
     foreach ($d in $discard) {
         Remove-Item $d.FullName -Force -ErrorAction SilentlyContinue
         Write-Host "[WATCH] discarded redundant duplicate: $($d.Name) ($($d.Length) bytes)" -ForegroundColor DarkYellow
     }
     Write-Host "[WATCH] startup sweep complete.`n" -ForegroundColor Magenta
+    if ($Once -and $sweepSummary) {
+        Write-Host "[WATCH-ONCE] INGESTED $($newest.Name) -- $($sweepSummary.Trim())" -ForegroundColor Green
+        exit 0
+    }
 }
 
 $watcher = New-Object System.IO.FileSystemWatcher
@@ -114,6 +106,10 @@ while ($true) {
     $recent[$ev.Name] = $now
 
     Write-Host "[WATCH] $($ev.Name) detected -- waiting for Chrome to finish writing..." -ForegroundColor Yellow
-    Import-CaptureFile $path $ev.Name
+    $summary = Import-CaptureFile $path $ev.Name
     Write-Host "[WATCH] done. Ready for next fetch.`n" -ForegroundColor Green
+    if ($Once -and $summary) {
+        Write-Host "[WATCH-ONCE] INGESTED $($ev.Name) -- $($summary.Trim())" -ForegroundColor Green
+        exit 0
+    }
 }
