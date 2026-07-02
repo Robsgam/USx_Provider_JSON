@@ -26,8 +26,10 @@ if (-not $planPath) { Write-Host "[audit-log] no TEST_PLAN for $Provider -- noth
 $plan = Get-Content $planPath -Raw | ConvertFrom-Json
 $version = $plan.version
 
+# A label can carry SEVERAL plan tests (two guardrail variants share one file name) --
+# keep them all and accept a log matching ANY of them.
 $byLabel = @{}
-foreach ($t in $plan.tests) { $byLabel[(Get-CmPlanLabel $t)] = $t }
+foreach ($t in $plan.tests) { $lbl = Get-CmPlanLabel $t; if (-not $byLabel[$lbl]) { $byLabel[$lbl] = @() }; $byLabel[$lbl] += $t }
 $familyFillable = Build-CmFamilyFillable $plan
 
 # Collect logs + parse snapshots first (defaults need the full population).
@@ -44,16 +46,23 @@ foreach ($f in $logs) {
 }
 # pscustomobject, NOT hashtable: Windows PowerShell 5.1's Group-Object cannot resolve
 # properties on hashtables (defaults map came back empty under enforce's powershell.exe).
-$defaultsByMt = Build-CmDefaults @($parsed | ForEach-Object { [pscustomobject]@{ messageType = $_.MessageType; fs = $_.Fs } })
+# With authoritative plan formDefaults, dynamic dominance is OFF (it blessed vehicleYear
+# residue as a "default" and passed mislabeled RQV logs, 2026-07-02).
+$defaultsByMt = if ($plan.formDefaults) { @{} }
+                else { Build-CmDefaults @($parsed | ForEach-Object { [pscustomobject]@{ messageType = $_.MessageType; fs = $_.Fs } }) }
 
 $stale = @(); $mismatch = @(); $guardFail = @(); $ok = 0
 foreach ($p in $parsed) {
-    $t = $byLabel[$p.Label]
-    if (-not $t) { $stale += "$($p.File.Directory.Name)\$($p.File.Name)"; continue }
+    $cands = @($byLabel[$p.Label])
+    if (-not $cands.Count) { $stale += "$($p.File.Directory.Name)\$($p.File.Name)"; continue }
     if (-not $p.Fs) { $mismatch += "$($p.Label): no parseable QUERY STRING"; continue }
-    $fd = if ($plan.formDefaults) { $plan.formDefaults.PSObject.Properties[$t.entity].Value } else { $null }
-    if (-not (Test-CmSnapshotMatchesTest $p.Fs $p.MessageType $t $familyFillable $defaultsByMt $fd)) {
-        $mismatch += "$($p.Label): QUERY STRING does not satisfy the plan test's fill-set"
+    $t = $null
+    foreach ($cand in $cands) {
+        $fd = if ($plan.formDefaults) { $plan.formDefaults.PSObject.Properties[$cand.entity].Value } else { $null }
+        if (Test-CmSnapshotMatchesTest $p.Fs $p.MessageType $cand $familyFillable $defaultsByMt $fd) { $t = $cand; break }
+    }
+    if (-not $t) {
+        $mismatch += "$($p.Label): QUERY STRING does not satisfy any plan test with this label"
         continue
     }
     # Guardrail wire check. The LOSING identifiers = the guardrail's identifier fills MINUS

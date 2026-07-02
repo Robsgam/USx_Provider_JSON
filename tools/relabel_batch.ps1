@@ -53,20 +53,31 @@ $snapshots = @($records | ForEach-Object {
     # pscustomobject, NOT hashtable: PS 5.1 Group-Object can't resolve hashtable properties.
     [pscustomobject]@{ messageType = $_.messageType; fs = $fs }
 })
-$defaultsByMt = Build-CmDefaults $snapshots
+# When the plan carries authoritative QIF formDefaults, dynamic dominance guessing is OFF:
+# it mis-classified vehicleYear residue as a "default" and let T6/T7 rows pass as T4/T5
+# (2026-07-02). Dynamic defaults remain only as a fallback for legacy plans without them.
+$defaultsByMt = if ($plan.formDefaults) { @{} } else { Build-CmDefaults $snapshots }
 
+# Two-tier assignment: EXACT matches (no ignored extras) claim their records first, so a
+# base combo can never steal an any-variant's row when both are present.
+function Test-CmExact($fs, $mt, $t, $fam) { Test-CmSnapshotMatchesTest $fs $mt $t $fam @{} $null }
 $usedRec = @{}
 $assigned = @{}
-foreach ($t in $plan.tests) {
-    $fd = if ($plan.formDefaults) { $plan.formDefaults.PSObject.Properties[$t.entity].Value } else { $null }
-    $foundIdx = -1
-    for ($i = $records.Count - 1; $i -ge 0; $i--) {   # newest last
-        if ($usedRec[$i]) { continue }
-        if (Test-CmSnapshotMatchesTest $snapshots[$i].fs $records[$i].messageType $t $familyFillable $defaultsByMt $fd) { $foundIdx = $i; break }
+foreach ($tier in 1, 2) {
+    foreach ($t in $plan.tests) {
+        if (@($assigned.Values | Where-Object { $_ -eq $t }).Count) { continue }
+        $fd = if ($plan.formDefaults) { $plan.formDefaults.PSObject.Properties[$t.entity].Value } else { $null }
+        $foundIdx = -1
+        for ($i = $records.Count - 1; $i -ge 0; $i--) {   # newest last
+            if ($usedRec[$i]) { continue }
+            $hit = if ($tier -eq 1) { Test-CmExact $snapshots[$i].fs $records[$i].messageType $t $familyFillable }
+                   else { Test-CmSnapshotMatchesTest $snapshots[$i].fs $records[$i].messageType $t $familyFillable $defaultsByMt $fd }
+            if ($hit) { $foundIdx = $i; break }
+        }
+        if ($foundIdx -lt 0) { continue }   # not in this batch (or claimed exactly in tier 1)
+        $usedRec[$foundIdx] = $true
+        $assigned[$foundIdx] = $t
     }
-    if ($foundIdx -lt 0) { continue }   # test not in this batch (per-entity downloads are normal)
-    $usedRec[$foundIdx] = $true
-    $assigned[$foundIdx] = $t
 }
 
 $corrections = 0
