@@ -1,4 +1,4 @@
-HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿HI_HCJDC_OFML -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ==========================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-02
@@ -112,6 +112,8 @@ Architecture notes:
     DORMANT by design: ordered last; shadowed by RQ/M55L for any plate entry.
       Server auto-generates QV/stolen (QRDM data-mined). Not live-fireable from form.
 
+  RQ_guardrail -- plate-wins: Plate+VIN co-entry -> only RQ fires, VIN absent from XML [CONFIRMED]
+
   Priority order: RQ > RQV > M55L > M55S > QVV > QVP -- CONFIRMED (live v3.6 T1-T7)
     OOS-first (add fields to reach OOS); in-state plate/VIN next; stolen dormant last.
     v3.6 live T6 (all-fields): RQ fires alone; RQV/QVV/M55S all exit on NOT_EXISTS. Clean.
@@ -174,6 +176,8 @@ Architecture notes:
     NOTE: In XML metadata inside DriverLicenseQuery but NOT in PDF Basic Queries.
     Included per source authority rule (metadata wins).
 
+  DQN_guardrail -- OLN>Name: OLN+Name co-entry -> only DQN fires, Name combos exit pool [CONFIRMED]
+
   Priority order: DQN > DQ > QW -- CONFIRMED (note; backed by combo logs T6/T7/T8)
     OLN first; Name+Sex+DOB second; Name+DOB without Sex falls to QW
 
@@ -216,6 +220,8 @@ Architecture notes:
     BirthDate uses CommsysParseDateRuleHandler: yyyy-MM-dd -> MMddyyyy
     any[] CONFIRMED live T23 v4.0: State=GA + PurposeCode=C + Attention=SGAMBELLONE R
     in wire (purposeCodeDH=C form input; Attention auto-populated via handler).
+
+  KQN_guardrail -- OLN>Name DH: OLN+Name co-entry -> only KQN fires, KQ exits pool [CONFIRMED]
 
   Priority order: KQN > KQ -- CONFIRMED (note; backed by combo logs T9/T10)
     OLN before Name. Live v2.9 T9 (KQN) / T10 (KQ).
@@ -266,16 +272,18 @@ Architecture notes:
   Combos: BQ (Registration), QB (Stolen/Hull)
   Optional fields: RelatedSearchHitIndicator (default=Y)
 
-  BQ -- Registration Number [PENDING]
+  BQ -- Registration Number [CONFIRMED]
     set: RegistrationNumber
     any: RegistrationState (ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ State XML attr), RelatedSearchHitIndicator (default=Y)
     keyReference: BQ
     any[] CONFIRMED live T22 v4.0: State=GA + RelatedSearchHitIndicator=Y in wire.
 
-  QB -- Hull ID [PENDING]
+  QB -- Hull ID [CONFIRMED]
     set: HullIdentificationNumber
     any: (empty)
     keyReference: QB
+
+  QB_guardrail -- Hull>Reg: Hull+Reg co-entry -> only QB fires, BQ exits pool [CONFIRMED]
 
   Priority order: BQ > QB -- CONFIRMED (note; backed by live v3.5 T22/T23)
     Registration before Hull. T22: RegistrationNumber filled -> BQ. T23: Hull filled -> QB.
