@@ -146,7 +146,7 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^coastGuardDocumentNumber'    { return 'CG123456' }
         '(?i)^related(Hit)?Search(Hit)?Indicator' { return 'Y' }
         '(?i)^vehicleTypeCode'             { return '1' }
-        '(?i)^gunTypeCode'                 { return 'HP' }
+        '(?i)^gunTypeCode'                 { return 'H' }   # NCIC gun TYP code (H - BOMB); 'HP' is not in the table (live-confirmed CA 2026-07-02)
         '(?i)^raceCode'                    { return 'W' }
         '(?i)^height$'                     { return '509' }
         '(?i)^addressCounty'               { return 'LA' }

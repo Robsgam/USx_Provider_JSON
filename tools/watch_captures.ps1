@@ -42,6 +42,21 @@ function Wait-FileReady($p) {
     return $false
 }
 
+# Windows toast so the operator sees ingestion without watching the console. Runs the WinRT
+# snippet in Windows PowerShell 5.1 (WinRT projection is not loadable in pwsh 7). Fire-and-forget.
+function Send-UsxToast($title, $body) {
+    $script = @"
+`$null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
+`$xml = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+`$t = `$xml.GetElementsByTagName('text')
+`$null = `$t.Item(0).AppendChild(`$xml.CreateTextNode('$title'))
+`$null = `$t.Item(1).AppendChild(`$xml.CreateTextNode('$body'))
+`$appId = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier(`$appId).Show([Windows.UI.Notifications.ToastNotification]::new(`$xml))
+"@
+    try { Start-Process -WindowStyle Hidden powershell.exe -ArgumentList '-NoProfile','-Command', $script } catch {}
+}
+
 # Import one capture file (shared by the startup sweep and the live watch loop below).
 function Import-CaptureFile($path, $label) {
     if (-not (Wait-FileReady $path)) {
@@ -49,12 +64,17 @@ function Import-CaptureFile($path, $label) {
         return
     }
     Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
+    $summary = $null
     try {
-        if ($NoCommit) { & $importScript -Path $path -NoCommit }
-        else           { & $importScript -Path $path -Commit }
+        $out = if ($NoCommit) { & $importScript -Path $path -NoCommit } else { & $importScript -Path $path -Commit }
+        $out | ForEach-Object { Write-Host $_ }
+        $summary = ($out | Where-Object { $_ -match 'Imported:' } | Select-Object -Last 1)
     } catch {
         Write-Host "[WATCH] import errored (watcher stays up): $_" -ForegroundColor Red
+        Send-UsxToast 'USx capture import FAILED' "$label -- $_"
+        return
     }
+    Send-UsxToast 'USx capture ingested' ("$label -- " + $(if ($summary) { $summary.Trim() } else { 'import finished (no summary line)' }))
     # import_captured_tests.ps1 archives (moves) the file into automation/captures; this is a
     # harmless no-op if it's already gone.
     Remove-Item $path -Force -ErrorAction SilentlyContinue

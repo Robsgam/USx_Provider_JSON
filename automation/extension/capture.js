@@ -412,9 +412,10 @@
   // so a `fills` producer upstream (or an older cached localStorage batch) may hand us a
   // non-array here -- normalize instead of throwing (a throw inside a .find()/.findIndex()
   // predicate aborts the whole __usxBulkFetch batch, not just this one item).
+  const ID_FIELD_RE = /Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber/i;
   function idFills(fills) {
     const arr = Array.isArray(fills) ? fills : (fills ? [fills] : []);
-    return arr.filter((f) => f && /Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber/i.test(f.fieldId));
+    return arr.filter((f) => f && ID_FIELD_RE.test(f.fieldId));
   }
   // Debug: dump the data rows the page currently shows (count + parsed field JSON).
   window.__usxDebugRows = function () {
@@ -439,7 +440,12 @@
       const idx = rows.findIndex((r, i) => {
         if (used.has(i)) return false;
         const fj = rowFieldJson(r) || {};
-        return ids.length && ids.every((f) => String(fj[f.fieldId] ?? '').toUpperCase() === String(f.value).toUpperCase());
+        if (!(ids.length && ids.every((f) => String(fj[f.fieldId] ?? '').toUpperCase() === String(f.value).toUpperCase()))) return false;
+        // Reject rows carrying an identifier this test did NOT fill: a plate-only test must not
+        // claim a Plate+VIN guardrail row. Subset matching cross-labelled the whole CA batch
+        // (2026-07-02) when the dex-log held rows from more than one run.
+        const filledIds = new Set(ids.map((f) => String(f.fieldId).toUpperCase()));
+        return !Object.keys(fj).some((k) => ID_FIELD_RE.test(k) && String(fj[k] ?? '').trim() !== '' && !filledIds.has(k.toUpperCase()));
       });
       if (idx >= 0) { used.add(idx); pair[bi] = idx; }
     });
@@ -630,7 +636,15 @@
       const mt = item.xml.messageType;
       let mi = -1;
 
-      // 1) identifier-field content match (messageType-guarded)
+      // 1) identifier-field content match (messageType-guarded). Match against the dex-log
+      // formState when available, NOT the XML: a guardrail submission's XML is intentionally
+      // identical to the base combo's (the losing identifier is suppressed on the wire), so
+      // XML containment cross-labelled base combos onto guardrail rows and scrambled the whole
+      // CA batch (2026-07-02). The formState still shows the suppressed field, and any
+      // identifier present in formState that this test did not fill disqualifies the pair.
+      let ifj = null;
+      try { ifj = typeof item.formState === 'string' ? JSON.parse(item.formState) : item.formState; } catch (e) {}
+      const haveFj = ifj && typeof ifj === 'object';
       mi = batch.findIndex((b, idx) => {
         if (usedM.has(idx)) return false;
         // Never pair when neither side has a messageType/query to anchor on -- a queryless
@@ -638,7 +652,13 @@
         if (!mt && !b.query) return false;
         if (b.query && mt && b.query !== mt) return false;
         const ids = idFills(b.fills || []);
-        return ids.length && ids.every((f) => item.xml.xml.includes('>' + f.value + '<'));
+        if (!ids.length) return false;
+        if (haveFj) {
+          if (!ids.every((f) => String(ifj[f.fieldId] ?? '').toUpperCase() === String(f.value).toUpperCase())) return false;
+          const filledIds = new Set(ids.map((f) => String(f.fieldId).toUpperCase()));
+          return !Object.keys(ifj).some((k) => ID_FIELD_RE.test(k) && String(ifj[k] ?? '').trim() !== '' && !filledIds.has(k.toUpperCase()));
+        }
+        return ids.every((f) => item.xml.xml.includes('>' + f.value + '<'));
       });
 
       // 2) messageType-scoped reverse-order pairing
