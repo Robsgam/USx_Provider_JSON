@@ -304,7 +304,15 @@ function Get-TestValue($field, $isOOS) {
         '(?i)^boatHullIdNumber'             { return 'FL1234AB56H7' }
         '(?i)^registrationNumber'           { return 'FL1234AB' }
         '(?i)^coastGuardDocumentNumber'     { return 'CG123456' }
-        '(?i)^relatedHitSearchIndicator'    { return 'Y' }
+        '(?i)^related(Hit)?Search(Hit)?Indicator' { return 'Y' }
+        '(?i)^vehicleTypeCode'              { return '1' }
+        '(?i)^gunTypeCode'                  { return 'HP' }
+        '(?i)^raceCode'                     { return 'W' }
+        '(?i)^height$'                      { return '509' }
+        '(?i)^addressCounty'                { return 'LA' }
+        '(?i)^appsRequestIndicator'         { return 'Y' }
+        '(?i)^articleBrand'                 { return 'SONY' }
+        '(?i)^articleCategory'              { return 'E' }
         '(?i)^purposeCode'                  { return 'C' }
         # Attention is auto-populated into a hidden InpH field (no visible control to fill).
         '(?i)^attention'                    { return $null }

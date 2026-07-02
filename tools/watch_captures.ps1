@@ -1,7 +1,7 @@
 <#
   watch_captures.ps1 -- start once per test session.
-  Watches Downloads for usx_captured_batch_labeled*.json dropped by __usxBulkFetch
-  and auto-runs import_captured_tests.ps1 on each new file.
+  Watches Downloads for usx_captured_*.json (batch_labeled or ULID-named individual
+  captures) and auto-runs import_captured_tests.ps1 on each new file.
 
   Usage:
     .\tools\watch_captures.ps1            # auto-import + commit
@@ -22,7 +22,7 @@ param([switch]$NoCommit)
 $downloads    = [System.IO.Path]::Combine($env:USERPROFILE, 'Downloads')
 $importScript = Join-Path $PSScriptRoot 'import_captured_tests.ps1'
 
-Write-Host "[WATCH] Monitoring $downloads for usx_captured_batch_labeled*.json" -ForegroundColor Cyan
+Write-Host "[WATCH] Monitoring $downloads for usx_captured_*.json" -ForegroundColor Cyan
 Write-Host "[WATCH] Ctrl+C to stop.`n" -ForegroundColor Cyan
 
 # Wait until a freshly-dropped file is fully written and unlocked. Chrome writes to a
@@ -62,7 +62,7 @@ function Import-CaptureFile($path, $label) {
 
 # Startup catch-up sweep -- see header comment. Only runs if files already exist; harmless
 # (no-op) on a clean start.
-$preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_captured_batch_labeled*.json' -File -ErrorAction SilentlyContinue)
+$preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_captured_*.json' -File -ErrorAction SilentlyContinue)
 if ($preExisting.Count -gt 0) {
     Write-Host "[WATCH] startup sweep: found $($preExisting.Count) pre-existing capture file(s) in Downloads." -ForegroundColor Magenta
     $newest = $preExisting | Sort-Object Length -Descending | Select-Object -First 1
@@ -78,7 +78,7 @@ if ($preExisting.Count -gt 0) {
 
 $watcher = New-Object System.IO.FileSystemWatcher
 $watcher.Path             = $downloads
-$watcher.Filter           = 'usx_captured_batch_labeled*.json'
+$watcher.Filter           = 'usx_captured_*.json'
 $watcher.NotifyFilter     = [System.IO.NotifyFilters]::FileName -bor [System.IO.NotifyFilters]::LastWrite
 $watcher.EnableRaisingEvents = $true
 

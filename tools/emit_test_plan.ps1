@@ -144,7 +144,15 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^boatHullIdNumber'            { return 'FL1234AB56H7' }
         '(?i)^registrationNumber'          { return 'FL1234AB' }
         '(?i)^coastGuardDocumentNumber'    { return 'CG123456' }
-        '(?i)^relatedHitSearchIndicator'   { return 'Y' }
+        '(?i)^related(Hit)?Search(Hit)?Indicator' { return 'Y' }
+        '(?i)^vehicleTypeCode'             { return '1' }
+        '(?i)^gunTypeCode'                 { return 'HP' }
+        '(?i)^raceCode'                    { return 'W' }
+        '(?i)^height$'                     { return '509' }
+        '(?i)^addressCounty'               { return 'LA' }
+        '(?i)^appsRequestIndicator'        { return 'Y' }
+        '(?i)^articleBrand'                { return 'SONY' }
+        '(?i)^articleCategory'             { return 'E' }
         '(?i)^(caRequestPurposeCode|purposeCode)' { return 'C' }
         # Attention is AUTO-POPULATED by a handler into a HIDDEN InpH field (officer profile,
         # gate-feeder initialValue) -- there is NO visible control to fill, so the driver must
