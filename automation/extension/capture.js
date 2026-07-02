@@ -622,11 +622,24 @@
     let batch = [];
     try { batch = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
 
+    // Manifest time floor: rows created before this run's FIRST submission (minus 2min
+    // tolerance) are backlog from earlier sessions, not this run's -- 27 stale rows rode
+    // into an HI batch (2026-07-02) because their ids predated the seen-ids ledger. Drop
+    // them here (and mark seen) so they can never pair or import again.
+    let floorTs = null;
+    const subTimes = batch.map((b) => Date.parse(b.submittedAt || '')).filter((t) => t);
+    if (subTimes.length) floorTs = Math.min(...subTimes) - 120000;
+
     const out = loadCaptured();
     const have = new Set(out.map((r) => r.transactionId).filter(Boolean).concat(loadSeenIds()));
+    const dropped = [];
     const fresh = []; // new items collected this run, in API order (newest-first)
     for (const q of commsysItems) {
       if (have.has(q.id)) continue;
+      if (floorTs) {
+        const ct = Date.parse((q.auditMetadata && q.auditMetadata.createdDateUtc) || '');
+        if (ct && ct < floorTs) { dropped.push(q.id); have.add(q.id); continue; }
+      }
       let xml = null;
       try { const d = await fetchJson('/federated-search/api/v2/openapi/queries/' + q.id); xml = L.extractConnectCicXml(typeof d === 'string' ? d : JSON.stringify(d)); } catch (e) {}
       if (!xml) continue;
@@ -711,9 +724,14 @@
       }
     }
     const added = fresh.length;
+    if (dropped.length) {
+      const ids = new Set(loadSeenIds()); dropped.forEach((id) => ids.add(id)); saveSeenIds(Array.from(ids));
+      console.log('%c[USx-BULK]', 'color:#fa0', `${dropped.length} pre-run backlog row(s) dropped (older than this run's first submission).`);
+    }
     L.triggerDownload('usx_captured_batch_labeled.json', out);
     markSeenAndClear(out);
-    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `done. +${added} new, ${out.length} total -> downloaded usx_captured_batch_labeled.json (store cleared; ids kept for dedup)`);
+    try { localStorage.removeItem('__usx_batch'); } catch (e) {}   // manifest consumed by this download
+    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `done. +${added} new, ${out.length} total -> downloaded usx_captured_batch_labeled.json (store + manifest cleared; ids kept for dedup)`);
     return out;
   };
 

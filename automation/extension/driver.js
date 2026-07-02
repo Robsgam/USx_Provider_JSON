@@ -118,7 +118,13 @@
       console.log('%c[USx-DRV]', 'color:#06c', `T${t.n} ${t.entity} ${t.comboKeyRef}: ${sent.ok ? 'submitted' : 'NOT submitted (' + sent.err + ')'}`);
       await L.sleep(dBetween);
     }
-    try { localStorage.setItem('__usx_batch', JSON.stringify(manifest)); } catch (e) {}
+    // APPEND to the session manifest (cleared by capture.js after a successful download):
+    // one Fetch after several entity runs then has every submission's manifest entry, so
+    // positional pairing works for the whole batch (overwrite left only the last entity's).
+    try {
+      let prior = []; try { prior = JSON.parse(localStorage.getItem('__usx_batch') || '[]'); } catch (e) {}
+      localStorage.setItem('__usx_batch', JSON.stringify(prior.concat(manifest)));
+    } catch (e) {}
     console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', `plan run complete: ${manifest.length} queries submitted. Go to /admin/dex-log and run __usxCaptureBatch().`, results);
     return results;
   };

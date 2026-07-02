@@ -17,7 +17,8 @@
 #>
 param(
     [Parameter(Mandatory)][string]$BatchPath,
-    [string]$PlanPath
+    [string]$PlanPath,
+    [switch]$KeepUnmatched   # forensics only; default DROPS records matching no plan test
 )
 
 . (Join-Path $PSScriptRoot '_content_match.ps1')
@@ -83,8 +84,10 @@ for ($i = 0; $i -lt $records.Count; $i++) {
 }
 $unassigned = @(0..($records.Count - 1) | Where-Object { -not $assigned.ContainsKey($_) })
 if ($unassigned.Count) {
-    Write-Host "[relabel] $($unassigned.Count) record(s) matched no plan test (keep browser label):" -ForegroundColor DarkYellow
+    $action = if ($KeepUnmatched) { 'kept (browser label)' } else { 'DROPPED (unreliable browser label; a stale morning row re-created a retired log on 2026-07-02)' }
+    Write-Host "[relabel] $($unassigned.Count) record(s) matched no plan test -- ${action}:" -ForegroundColor DarkYellow
     foreach ($i in $unassigned) { Write-Host "  $($records[$i].messageType) $($records[$i].combo) $($records[$i].formState)" }
 }
-$records | ConvertTo-Json -Depth 8 | Set-Content $BatchPath -Encoding utf8
-Write-Host "[relabel] done: $($records.Count) record(s), $corrections label correction(s), $($unassigned.Count) unmatched." -ForegroundColor Green
+$outRecords = if ($KeepUnmatched) { $records } else { @(0..($records.Count - 1) | Where-Object { $assigned.ContainsKey($_) } | ForEach-Object { $records[$_] }) }
+$outRecords | ConvertTo-Json -Depth 8 | Set-Content $BatchPath -Encoding utf8
+Write-Host "[relabel] done: $(@($outRecords).Count) record(s) written, $corrections label correction(s), $($unassigned.Count) unmatched." -ForegroundColor Green
