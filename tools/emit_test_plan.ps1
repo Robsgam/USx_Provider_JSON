@@ -177,6 +177,11 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         # not try (doing so flags a false "under-filled"). It still serializes server-side; verify
         # it in the captured XML, not by filling. Skip like in-state State.
         '(?i)^attention'                   { return $null }
+        # NY DriverHistoryQuery OOS combos (DALHOUT/DALLOUT) require a Requestor (who is asking).
+        '(?i)^requestorDH'                 { return 'SGAMBELLONE' }
+        # NY DH transaction-type override -- form defaults to 'DALL'; a distinct valid value
+        # (DLIC) proves the any-field test actually exercises the officer-typed override path.
+        '(?i)^nyNyspinTransactionNameDH'   { return 'DLIC' }
         default                            { return $null }   # unknown -> skip (avoid junk)
     }
 }
@@ -184,7 +189,7 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
 # (leave blank = home), optional name parts, and auto-populated hidden Attention. Everything
 # else returning $null is a genuine unmapped field -> the combo would fire under-filled. Track loud.
-$script:KnownEmpty = '(?i)^(registrationState|state|nameMiddle|nameSuffix|attention)$'
+$script:KnownEmpty = '(?i)^(registrationState|state|nameMiddle|nameSuffix|nameMiddleDH|nameSuffixDH|attention)$'
 $script:Unresolved = New-Object System.Collections.Generic.List[string]
 function Note-IfUnresolved([string]$ctx, [string]$fid, $val) {
     if (($null -eq $val -or $val -eq '') -and $fid -notmatch $script:KnownEmpty) {
