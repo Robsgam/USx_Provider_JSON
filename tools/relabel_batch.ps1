@@ -58,23 +58,37 @@ $snapshots = @($records | ForEach-Object {
 # (2026-07-02). Dynamic defaults remain only as a fallback for legacy plans without them.
 $defaultsByMt = if ($plan.formDefaults) { @{} } else { Build-CmDefaults $snapshots }
 
-# Two-tier assignment: EXACT matches (no ignored extras) claim their records first, so a
-# base combo can never steal an any-variant's row when both are present.
+# Three-tier assignment.
+# Tier 0 -- LABEL STABILITY: a record whose EXISTING label content-matches keeps it. Some
+#   test pairs are content-identical on purpose (an any-field's value equals the form
+#   default, e.g. ImageIndicator=N), so any content-only assignment between them is
+#   arbitrary -- the relabeler was "correcting" correct browser labels forever
+#   (19 phantom corrections, 2026-07-02). Real contradictions still get relabeled below.
+# Tier 1 -- EXACT content matches (no ignored extras) claim records next.
+# Tier 2 -- content match with defaults tolerated.
 function Test-CmExact($fs, $mt, $t, $fam) { Test-CmSnapshotMatchesTest $fs $mt $t $fam @{} $null }
+function Get-CmRecordLabel($r) {
+    if ($r.kind -eq 'guardrail') { return "$($r.expectedKeyRef)_guardrail" }
+    return "$($r.combo)$(if ($r.anyField) { '_af_' + $r.anyField })$(if ($r.kind -eq 'any') { '_any' })"
+}
 $usedRec = @{}
 $assigned = @{}
-foreach ($tier in 1, 2) {
+foreach ($tier in 0, 1, 2) {
     foreach ($t in $plan.tests) {
         if (@($assigned.Values | Where-Object { $_ -eq $t }).Count) { continue }
         $fd = if ($plan.formDefaults) { $plan.formDefaults.PSObject.Properties[$t.entity].Value } else { $null }
+        $tLabel = Get-CmPlanLabel $t
         $foundIdx = -1
         for ($i = $records.Count - 1; $i -ge 0; $i--) {   # newest last
             if ($usedRec[$i]) { continue }
-            $hit = if ($tier -eq 1) { Test-CmExact $snapshots[$i].fs $records[$i].messageType $t $familyFillable }
-                   else { Test-CmSnapshotMatchesTest $snapshots[$i].fs $records[$i].messageType $t $familyFillable $defaultsByMt $fd }
+            $hit = switch ($tier) {
+                0 { (Get-CmRecordLabel $records[$i]) -eq $tLabel -and (Test-CmSnapshotMatchesTest $snapshots[$i].fs $records[$i].messageType $t $familyFillable $defaultsByMt $fd) }
+                1 { Test-CmExact $snapshots[$i].fs $records[$i].messageType $t $familyFillable }
+                2 { Test-CmSnapshotMatchesTest $snapshots[$i].fs $records[$i].messageType $t $familyFillable $defaultsByMt $fd }
+            }
             if ($hit) { $foundIdx = $i; break }
         }
-        if ($foundIdx -lt 0) { continue }   # not in this batch (or claimed exactly in tier 1)
+        if ($foundIdx -lt 0) { continue }
         $usedRec[$foundIdx] = $true
         $assigned[$foundIdx] = $t
     }
