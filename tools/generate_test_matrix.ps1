@@ -301,7 +301,8 @@ function Get-TestValue($field, $isOOS) {
         '(?i)^coastGuardDocumentNumber'     { return 'CG123456' }
         '(?i)^relatedHitSearchIndicator'    { return 'Y' }
         '(?i)^purposeCode'                  { return 'C' }
-        '(?i)^attention'                    { return 'SMITH J' }
+        # Attention is auto-populated into a hidden InpH field (no visible control to fill).
+        '(?i)^attention'                    { return $null }
         '(?i)^caRequestPurposeCode'         { return 'C' }
         '(?i)^dexStateUserId'               { return 'BADGE' }
         default                             { return 'TEST' }

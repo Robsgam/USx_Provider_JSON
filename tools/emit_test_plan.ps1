@@ -81,15 +81,19 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         '(?i)^coastGuardDocumentNumber'    { return 'CG123456' }
         '(?i)^relatedHitSearchIndicator'   { return 'Y' }
         '(?i)^(caRequestPurposeCode|purposeCode)' { return 'C' }
-        '(?i)^attention'                   { return 'SMITH J' }
+        # Attention is AUTO-POPULATED by a handler into a HIDDEN InpH field (officer profile,
+        # gate-feeder initialValue) -- there is NO visible control to fill, so the driver must
+        # not try (doing so flags a false "under-filled"). It still serializes server-side; verify
+        # it in the captured XML, not by filling. Skip like in-state State.
+        '(?i)^attention'                   { return $null }
         default                            { return $null }   # unknown -> skip (avoid junk)
     }
 }
 
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
-# (leave blank = home), and optional name parts. Everything else returning $null is a genuine
-# unmapped field -> the combo would fire under-filled. Track those loudly.
-$script:KnownEmpty = '(?i)^(registrationState|state|nameMiddle|nameSuffix)$'
+# (leave blank = home), optional name parts, and auto-populated hidden Attention. Everything
+# else returning $null is a genuine unmapped field -> the combo would fire under-filled. Track loud.
+$script:KnownEmpty = '(?i)^(registrationState|state|nameMiddle|nameSuffix|attention)$'
 $script:Unresolved = New-Object System.Collections.Generic.List[string]
 function Note-IfUnresolved([string]$ctx, [string]$fid, $val) {
     if (($null -eq $val -or $val -eq '') -and $fid -notmatch $script:KnownEmpty) {

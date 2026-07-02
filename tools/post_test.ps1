@@ -499,60 +499,62 @@ if (Test-Path $statusPath) {
     $statusLines = @(Get-Content $statusPath -Encoding UTF8)
     $statusContent = $statusLines -join "`n"
 
-    # Look for an existing row with this entity+combo. Match on a word boundary after the
-    # combo (not a bare substring) -- otherwise combo "RANDFULL" matches the ALREADY-INSERTED
-    # row for "RANDFULLN" (and "FULL" matches "FULLN"), silently overwriting the wrong combo's
-    # row instead of inserting a distinct new one (found live, NJ v4.8 keyRef rename batch).
-    $comboBoundaryPattern = [regex]::Escape($Combo) + '(?!\w)'
-    $existingRow = $statusLines | Where-Object { $_ -match $Entity -and $_ -match $comboBoundaryPattern }
+    # ALL row matching + insertion is SCOPED to the LIVE TEST RESULTS section. Searching the
+    # whole file was doubly broken (found live corrupting CA_CLETS STATUS 2026-07-01):
+    #  (a) an ARCHITECTURE combo-listing line (e.g. "VehicleRegistrationQuery -- 5 live: ...,
+    #      IA.QV, ...") contains the entity name + a combo keyRef, so it was mistaken for an
+    #      existing result row and OVERWRITTEN with a dated row; and
+    #  (b) the insert fell back to appending a fresh "LIVE TEST RESULTS (v3.4)" section per test.
+    # Result rows have the exact form "  --- <date> <Entity> <QueryShort>:<Combo> ...", so we
+    # match on that precise key within the section only -- never on prose.
+    $rowKey = [regex]::Escape("${queryShort}:${Combo}") + '(?!\w)'
 
-    if ($existingRow) {
-        # Update existing row
-        $idx = [array]::IndexOf($statusLines, $existingRow[0])
-        if ($idx -ge 0) {
-            $statusLines[$idx] = $matrixRow
-            $statusUpdated = $true
-        }
+    # Locate the live section (first "LIVE TEST RESULTS" header). Everything from there to EOF is
+    # the section -- stray "(v3.4)" sub-headers do NOT terminate it (they're the old-bug clutter).
+    $liveStart = -1
+    for ($i = 0; $i -lt $statusLines.Count; $i++) {
+        if ($statusLines[$i] -match 'LIVE TEST RESULTS') { $liveStart = $i; break }
     }
 
-    if (-not $statusUpdated) {
-        # Anchor to the "LIVE TEST RESULTS" section header, then insert after the last row in it.
-        # A backward scan with ^\s*\d+\s was incorrectly matching build-log lines like
-        # "      3 layout variants..." before reaching the LIVE TEST section.
-        $insertIdx = -1
-        $liveTestStart = -1
-        for ($i = 0; $i -lt $statusLines.Count; $i++) {
-            if ($statusLines[$i] -match 'LIVE TEST RESULTS') {
-                $liveTestStart = $i
-                break
+    if ($liveStart -lt 0) {
+        # No live section yet -> create a clean one at end (first ever result for this provider).
+        $statusLines += @(
+            "",
+            "LIVE TEST RESULTS -- MC (post_test.ps1)",
+            "--------------------------------------------------",
+            "  #     Date        Entity      Combo                Result    Notes",
+            "  ---   ----------  ----------  -------------------  --------  -----",
+            $matrixRow
+        )
+        $statusUpdated = $true
+    } else {
+        # Existing row for THIS combo (a real dated data row only)?
+        $rowIdx = -1
+        for ($i = $liveStart; $i -lt $statusLines.Count; $i++) {
+            if ($statusLines[$i] -match '^\s+---\s+\d{4}-\d{2}-\d{2}\s' -and $statusLines[$i] -match $rowKey) {
+                $rowIdx = $i; break
             }
         }
-        if ($liveTestStart -ge 0) {
-            for ($i = $liveTestStart; $i -lt $statusLines.Count; $i++) {
-                if ($statusLines[$i] -match '^\s+---\s') {
-                    $insertIdx = $i
-                }
-                # Stop when we hit the next major section header (all-caps word at col 0)
-                if ($i -gt $liveTestStart -and $statusLines[$i] -match '^[A-Z][A-Z ]') {
-                    break
-                }
-            }
-        }
-
-        if ($insertIdx -ge 0) {
-            # Insert after the last row
-            $before = $statusLines[0..$insertIdx]
-            $after  = if ($insertIdx + 1 -lt $statusLines.Count) { $statusLines[($insertIdx + 1)..($statusLines.Count - 1)] } else { @() }
-            $statusLines = @($before) + @($matrixRow) + @($after)
+        if ($rowIdx -ge 0) {
+            $statusLines[$rowIdx] = $matrixRow
             $statusUpdated = $true
         } else {
-            # Append a new test section at the end
-            $statusLines += @(
-                "",
-                "LIVE TEST RESULTS (v3.4)",
-                "========================",
-                $matrixRow
-            )
+            # Insert after the last dated data row in the section; else after the column
+            # separator ("  ---  ------"); else right after the header. Drop any "(none yet)".
+            $insertIdx = -1
+            for ($i = $liveStart; $i -lt $statusLines.Count; $i++) {
+                if ($statusLines[$i] -match '^\s+---\s+\d{4}-\d{2}-\d{2}\s') { $insertIdx = $i }
+            }
+            if ($insertIdx -lt 0) {
+                for ($i = $liveStart; $i -lt $statusLines.Count; $i++) {
+                    if ($statusLines[$i] -match '^\s+---\s+-{3,}') { $insertIdx = $i; break }
+                }
+            }
+            if ($insertIdx -lt 0) { $insertIdx = $liveStart }
+            $before = $statusLines[0..$insertIdx]
+            $after  = if ($insertIdx + 1 -lt $statusLines.Count) { @($statusLines[($insertIdx + 1)..($statusLines.Count - 1)]) } else { @() }
+            $after  = @($after | Where-Object { $_ -notmatch '^\s*\(none yet' })
+            $statusLines = @($before) + @($matrixRow) + @($after)
             $statusUpdated = $true
         }
     }

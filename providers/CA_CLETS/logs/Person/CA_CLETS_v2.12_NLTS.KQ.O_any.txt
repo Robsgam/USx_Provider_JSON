@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: CA_CLETS Person DriverHistoryQuery
+Combo: NLTS.KQ.O_any (NLTS.KQ.O_any (auto))
+Date: 2026-07-01 19:59:47
+Result: PASS
+JSON Version: 2.12
+Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","OperatorLicenseNumberDH":"D999888777","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWG1RQ1MNQR9YCG5J1VZ8DHN">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KWG1RQ1MNQR9YCG5J1VZ8DHN</Id>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWG1RQ1MNQR9YCG5J1VZ8DHN
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KWG1RQ1MNQR9YCG5J1VZ8DHN). kind=any; anyField=; expectedKeyRef=NLTS.KQ.O; firedMessageType=DriverHistoryQuery. UNDER-FILLED (a form field failed to fill on submit -- verify this combo).
+
+RESULT: PASS
