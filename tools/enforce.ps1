@@ -41,6 +41,7 @@ $tracker   = Join-Path $repoRoot "REBUILD_TRACKER.md"
 # docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- Find-DocsPath checks the new category
 # folder first, falls back to flat docs/ (every provider that hasn't migrated yet).
 . "$toolDir\_resolve_docs_path.ps1"
+. "$toolDir\_resolve_provider_json.ps1"
 
 # ── Output + counters ────────────────────────────────────────────────────────
 $script:outputLines = @()
@@ -728,10 +729,11 @@ foreach ($pd in $providers) {
     # A JSON built with a -Version override while the script default lagged ships the
     # correct artifact but mis-stamps every doc (Get-ScriptVersion reads the default).
     # FL_FCIC v5.1 hit this 2026-06-15 (4 enforce FAILs). Fix = bump the script default.
-    $jsonFile3i = Join-Path $pd.FullName "${provName}.json"
-    if (-not (Test-Path $jsonFile3i)) {
-        $jsonFile3i = Get-ChildItem $pd.FullName -Filter "*.json" -File | Select-Object -First 1 -ExpandProperty FullName
-    }
+    # Use the canonical resolver (bare -> versioned -> _MC -> _BASE), NOT a naive first-JSON
+    # glob -- a stray non-provider JSON in root (e.g. a legacy plan file predating the
+    # logs/ TEST_PLAN convention) sorts before the versioned name and gets picked instead,
+    # producing a false "no parseable embedded version" WARN (FL_FCIC, 2026-07-02).
+    $jsonFile3i = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
     if ($jsonFile3i -and (Test-Path $jsonFile3i)) {
         $jsonText3i = [System.IO.File]::ReadAllText($jsonFile3i)
         if ($jsonText3i -match '"description":\s*"Provider configuration for [^"]*?\bv([0-9]+\.[0-9]+)') {
