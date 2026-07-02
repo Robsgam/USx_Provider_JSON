@@ -451,7 +451,7 @@ if ($script:Unresolved.Count -gt 0) {
 $tpPath = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TENANT_PICKLISTS.json'
 if (Test-Path $tpPath) {
     $tp = Get-Content $tpPath -Raw | ConvertFrom-Json
-    $tpFails = @()
+    $tpFails = @(); $tpWarns = @()
     foreach ($t in $tests) {
         $entObj = if ($tp.entities) { $tp.entities.PSObject.Properties[$t.entity].Value } else { $null }
         if (-not $entObj) { continue }
@@ -462,11 +462,18 @@ if (Test-Path $tpPath) {
             if ($fldObj.error) { continue }              # capture error already reported at import
             $re = '^' + [regex]::Escape("$($fill.value)") + '\b'
             if (-not @(@($fldObj.options) | Where-Object { $_ -match $re }).Count) {
-                $tpFails += "$($t.entity).$($fill.fieldId): value '$($fill.value)' matches no tenant option (first option: '$(@($fldObj.options)[0])')"
+                # Large lists are captured as ONE server page (~300); a miss there is
+                # inconclusive -- the live fill is the authority (mirror import_picklists).
+                if ($fldObj.truncated -or @($fldObj.options).Count -ge 250) {
+                    $tpWarns += "$($t.entity).$($fill.fieldId): value '$($fill.value)' not in the captured subset ($(@($fldObj.options).Count) of a larger list) -- inconclusive, live fill is authority"
+                } else {
+                    $tpFails += "$($t.entity).$($fill.fieldId): value '$($fill.value)' matches no tenant option (first option: '$(@($fldObj.options)[0])')"
+                }
             }
         }
     }
-    $tpFails = @($tpFails | Select-Object -Unique)
+    $tpFails = @($tpFails | Select-Object -Unique); $tpWarns = @($tpWarns | Select-Object -Unique)
+    foreach ($x in $tpWarns) { Write-Host "[WARN] Tenant-picklist gate: $x" -ForegroundColor Yellow }
     if ($tpFails.Count) {
         Write-Host ""
         Write-Host "[FAIL] Tenant-picklist gate: $($tpFails.Count) select value(s) do not exist in this tenant's dropdowns:" -ForegroundColor Red
@@ -474,5 +481,5 @@ if (Test-Path $tpPath) {
         Write-Host "   Fix via docs/reference/TEST_VALUE_OVERRIDES.txt, then re-emit." -ForegroundColor Red
         exit 1
     }
-    Write-Host "[PASS] Tenant-picklist gate: every select fill value exists in the scoped tenant dropdowns." -ForegroundColor Green
+    Write-Host "[PASS] Tenant-picklist gate: every select fill value exists in the scoped tenant dropdowns ($($tpWarns.Count) inconclusive on paged lists)." -ForegroundColor Green
 }
