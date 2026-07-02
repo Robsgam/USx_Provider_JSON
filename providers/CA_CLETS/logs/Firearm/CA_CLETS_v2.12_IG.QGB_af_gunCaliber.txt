@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: CA_CLETS Firearm GunQuery
 Combo: IG.QGB_af_gunCaliber (IG.QGB_af_gunCaliber (auto))
-Date: 2026-07-01 23:34:29
+Date: 2026-07-02 11:28:28
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: a05315ef78970346216a9429ebd3e377cc5029acdf462b379dec3ad4e4c6a23e
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"GunMake":"IMI","purposeCode":"C","serialNumber":"GUN12345"}
+{"gunCaliber":"11","purposeCode":"C","serialNumber":"GUN12345"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG8F1F84HWWM7CP1VCBWZYJ">
+    <api:Transaction id="01KWHP36FM95Z3V01FQJQXH1VN">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,9 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01KWG8F1F84HWWM7CP1VCBWZYJ</Id>
+            <Id>01KWHP36FM95Z3V01FQJQXH1VN</Id>
             <GunSerialNumber>GUN12345</GunSerialNumber>
-            <GunMake>IMI</GunMake>
+            <GunCaliber>11</GunCaliber>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -62,13 +62,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG8F1F84HWWM7CP1VCBWZYJ
+  Id                             01KWHP36FM95Z3V01FQJQXH1VN
   GunSerialNumber                GUN12345
-  GunMake                        IMI
+  GunCaliber                     11
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG8F1F84HWWM7CP1VCBWZYJ). kind=any-field; anyField=gunCaliber; expectedKeyRef=IG.QGB; firedMessageType=GunQuery.
+Automated capture (txId 01KWHP36FM95Z3V01FQJQXH1VN). kind=any-field; anyField=gunCaliber; expectedKeyRef=IG.QGB; firedMessageType=GunQuery.
 
 RESULT: PASS

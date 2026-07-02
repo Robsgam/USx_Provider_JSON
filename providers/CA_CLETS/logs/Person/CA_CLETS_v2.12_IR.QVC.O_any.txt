@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: CA_CLETS Person DriverLicenseQuery
 Combo: IR.QVC.O_any (IR.QVC.O_any (auto))
-Date: 2026-07-01 23:34:22
+Date: 2026-07-02 11:28:20
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","SexCode":"Male","age":"35","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
+{"Attention":"X","OperatorLicenseNumber":"D999888777","age":"35","appsRequestIndicator":"N","criminalIdNumber":"CII123456","purposeCode":"C","purposeCodeDH":"C","socialSecurityNumber":"123456789"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG89R93D8T0CZ35EWDQRVD5">
+    <api:Transaction id="01KWHNXJC6871SYJEHX6SWWVQ0">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,12 +36,11 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWG89R93D8T0CZ35EWDQRVD5</Id>
-            <SexCode>M</SexCode>
+            <Id>01KWHNXJC6871SYJEHX6SWWVQ0</Id>
+            <SocialSecurityNumber>123456789</SocialSecurityNumber>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <CriminalIdNumber>CII123456</CriminalIdNumber>
             <Age>35</Age>
-            <BirthDate>19900115</BirthDate>
-            <APPSRequestIndicator>N</APPSRequestIndicator>
-            <Name>DOE, JOHN</Name>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -58,14 +57,11 @@ RMS QUERY
 ---------
 Request:
 {
-    "elasticQuery":  {
-                         "lastName":  "DOE",
-                         "firstName":  "JOHN",
-                         "sexAttrId":  "69586249083",
-                         "dateOfBirth":  "1990-01-15"
-                     },
-    "from":  0,
-    "size":  50
+  "elasticQuery": {
+    "dlNumber": "D999888777"
+  },
+  "from": 0,
+  "size": 50
 }
 
 Response:
@@ -78,16 +74,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG89R93D8T0CZ35EWDQRVD5
-  SexCode                        M
+  Id                             01KWHNXJC6871SYJEHX6SWWVQ0
+  SocialSecurityNumber           123456789
+  OperatorLicenseNumber          D999888777
+  CriminalIdNumber               CII123456
   Age                            35
-  BirthDate                      19900115
-  APPSRequestIndicator           N
-  Name                           DOE, JOHN
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG89R93D8T0CZ35EWDQRVD5). kind=any; anyField=; expectedKeyRef=IR.QVC.O; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHNXJC6871SYJEHX6SWWVQ0). kind=any; anyField=; expectedKeyRef=IR.QVC.O; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

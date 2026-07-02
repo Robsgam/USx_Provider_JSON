@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
 Combo: IA.QV_af_VehicleMakeCode (IA.QV_af_VehicleMakeCode (auto))
-Date: 2026-07-01 23:34:42
+Date: 2026-07-02 11:28:15
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: f92552aca5fcb3d56b9817febd08f5f9036e1fc3a47a784e140b32daaa26e422
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","NameFirst":"JOHN","NameLast":"DOE","addressCity":"RENO","purposeCode":"C"}
+{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleMakeCode":"FORD","purposeCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWGDSK5V2Q9TTDZY4ZNV342K">
+    <api:Transaction id="01KWHNS8TGRGB36D0028TY6YWM">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,9 +36,11 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KWGDSK5V2Q9TTDZY4ZNV342K</Id>
-            <AddressCity>RENO</AddressCity>
-            <Name>DOE, JOHN</Name>
+            <Id>01KWHNS8TGRGB36D0028TY6YWM</Id>
+            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -53,7 +55,19 @@ Not captured
 
 RMS QUERY
 ---------
-Not captured
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "tag": "TEST123"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
 
 FIELD ANALYSIS
 --------------
@@ -62,13 +76,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWGDSK5V2Q9TTDZY4ZNV342K
-  AddressCity                    RENO
-  Name                           DOE, JOHN
+  Id                             01KWHNS8TGRGB36D0028TY6YWM
+  VehicleMakeCode                CNST_FORD
+  LicensePlateYear               2026
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWGDSK5V2Q9TTDZY4ZNV342K). kind=any-field; anyField=VehicleMakeCode; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KWHNS8TGRGB36D0028TY6YWM). kind=any-field; anyField=VehicleMakeCode; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

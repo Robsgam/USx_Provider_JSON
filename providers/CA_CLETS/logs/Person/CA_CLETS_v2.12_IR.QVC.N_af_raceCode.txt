@@ -1,0 +1,90 @@
+================================================================
+TEST LOG: CA_CLETS Person DriverLicenseQuery
+Combo: IR.QVC.N_af_raceCode (IR.QVC.N_af_raceCode (auto))
+Date: 2026-07-02 11:28:19
+Result: PASS
+JSON Version: 2.12
+Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","NameFirst":"JOHN","NameLast":"DOE","SexCode":"Male","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C","raceCode":"W"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWHNWHD67A6C8X24ND43KF14">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KWHNWHD67A6C8X24ND43KF14</Id>
+            <RaceCode>W</RaceCode>
+            <SexCode>M</SexCode>
+            <APPSRequestIndicator>N</APPSRequestIndicator>
+            <Name>DOE, JOHN</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "sexAttrId": "69586249083"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWHNWHD67A6C8X24ND43KF14
+  RaceCode                       W
+  SexCode                        M
+  APPSRequestIndicator           N
+  Name                           DOE, JOHN
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KWHNWHD67A6C8X24ND43KF14). kind=any-field; anyField=raceCode; expectedKeyRef=IR.QVC.N; firedMessageType=DriverLicenseQuery.
+
+RESULT: PASS

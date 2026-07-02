@@ -50,6 +50,8 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
     defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
     keyReference: IA.QV
 
+  IA.QV_guardrail -- Plate>VIN: Plate+VIN co-entry (no State) -> only IA.QV fires, VIN absent from XML [CONFIRMED]
+
   IA.QVK -- In-state VIN query [CONFIRMED]
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
@@ -116,6 +118,10 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
     conditions: RegistrationState NOT_EXISTS, criminalIdNumber NOT_EXISTS
     keyReference: ID.L1   (real devdoc keyRef; restored v2.12)
 
+  ID.L1_guardrail -- OLN>Name: OLN+Name co-entry (no State/CII) -> only ID.L1 fires, Name absent from XML [CONFIRMED]
+  IR.QVC.O_guardrail -- OLN+CII co-entry (no State) -> IR.QVC.O fires (criminal-records path wins over plain OLN) [CONFIRMED]
+  IR.QVC.N_guardrail -- Name+Sex co-entry (no OLN/State) -> IR.QVC.N fires per documented cascade [CONFIRMED]
+
   IN.L1 -- In-state Name query (catchall) [CONFIRMED]
     set: PurposeCode, NameLast, NameFirst
     any: BirthDate
@@ -133,6 +139,8 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
     set: PurposeCodeDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
     any: RegistrationState
     keyReference: NLTS.KQ.N
+
+  NLTS.KQ.O_guardrail -- OLN>Name DH: OLN+Name+DOB+Sex co-entry -> only NLTS.KQ.O fires, Name absent from XML [CONFIRMED]
 
   NLTS.KQ.O -- OLN query [CONFIRMED]
     set: PurposeCodeDH, OperatorLicenseNumberDH
@@ -200,6 +208,8 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
     set: PurposeCode, BoatHullIdNumber
     any: RegistrationState
     keyReference: IA.QB.H
+
+  IA.QB.H_guardrail -- Hull>Reg: Hull+Reg co-entry (no State) -> only IA.QB.H fires, RegistrationNumber absent from XML [CONFIRMED]
 
   IA.QB.O -- In-state OAN query [CONFIRMED]
     set: PurposeCode, OwnerAppliedNumber

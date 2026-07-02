@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: CA_CLETS Person DriverLicenseQuery
 Combo: NLTS.DQ (NLTS.DQ (auto))
-Date: 2026-07-01 23:34:13
+Date: 2026-07-02 11:28:17
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","OperatorLicenseNumber":"D999888777","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
+{"Attention":"X","OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG8BCDZSRZGHKR5ATT8QENB">
+    <api:Transaction id="01KWHM29E8MV10EKF2PN4W84D0">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWG8BCDZSRZGHKR5ATT8QENB</Id>
+            <Id>01KWHM29E8MV10EKF2PN4W84D0</Id>
+            <State>GA</State>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
@@ -54,11 +55,12 @@ RMS QUERY
 ---------
 Request:
 {
-    "elasticQuery":  {
-                         "dlNumber":  "D999888777"
-                     },
-    "from":  0,
-    "size":  50
+  "elasticQuery": {
+    "dlNumber": "D999888777",
+    "registrationStateAttrId": "69586240690"
+  },
+  "from": 0,
+  "size": 50
 }
 
 Response:
@@ -71,12 +73,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG8BCDZSRZGHKR5ATT8QENB
+  Id                             01KWHM29E8MV10EKF2PN4W84D0
+  State                          GA
   OperatorLicenseNumber          D999888777
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG8BCDZSRZGHKR5ATT8QENB). kind=combo; anyField=; expectedKeyRef=NLTS.DQ; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHM29E8MV10EKF2PN4W84D0). kind=combo; anyField=; expectedKeyRef=NLTS.DQ; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

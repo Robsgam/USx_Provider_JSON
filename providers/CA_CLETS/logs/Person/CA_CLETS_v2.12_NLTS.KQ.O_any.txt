@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: CA_CLETS Person DriverHistoryQuery
 Combo: NLTS.KQ.O_any (NLTS.KQ.O_any (auto))
-Date: 2026-07-01 23:34:08
+Date: 2026-07-02 11:28:24
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","OperatorLicenseNumberDH":"D999888777","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
+{"Attention":"X","OperatorLicenseNumberDH":"D999888777","RegistrationState":"Georgia","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG8CKX923T4VR2NAAWGSV5H">
+    <api:Transaction id="01KWHP00VA3EP4Z4EXWGEQBN17">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01KWG8CKX923T4VR2NAAWGSV5H</Id>
+            <Id>01KWHP00VA3EP4Z4EXWGEQBN17</Id>
+            <State>GA</State>
             <Attention>SGAMBELLONE R</Attention>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
@@ -62,13 +63,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG8CKX923T4VR2NAAWGSV5H
+  Id                             01KWHP00VA3EP4Z4EXWGEQBN17
+  State                          GA
   Attention                      SGAMBELLONE R
   OperatorLicenseNumber          D999888777
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG8CKX923T4VR2NAAWGSV5H). kind=any; anyField=; expectedKeyRef=NLTS.KQ.O; firedMessageType=DriverHistoryQuery.
+Automated capture (txId 01KWHP00VA3EP4Z4EXWGEQBN17). kind=any; anyField=; expectedKeyRef=NLTS.KQ.O; firedMessageType=DriverHistoryQuery.
 
 RESULT: PASS

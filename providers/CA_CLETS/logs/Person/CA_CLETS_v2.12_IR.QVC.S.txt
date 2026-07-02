@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: CA_CLETS Person DriverLicenseQuery
 Combo: IR.QVC.S (IR.QVC.S (auto))
-Date: 2026-07-01 23:34:14
+Date: 2026-07-02 11:28:22
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","age":"35","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C","socialSecurityNumber":"123456789"}
+{"Attention":"X","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C","socialSecurityNumber":"123456789"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG8B4HEX3Y9QPMX9A3YJ0MX">
+    <api:Transaction id="01KWHNY5GW6R9D2C7ZF2DSH4GQ">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,9 +36,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWG8B4HEX3Y9QPMX9A3YJ0MX</Id>
+            <Id>01KWHNY5GW6R9D2C7ZF2DSH4GQ</Id>
             <SocialSecurityNumber>123456789</SocialSecurityNumber>
-            <Age>35</Age>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -62,13 +61,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG8B4HEX3Y9QPMX9A3YJ0MX
+  Id                             01KWHNY5GW6R9D2C7ZF2DSH4GQ
   SocialSecurityNumber           123456789
-  Age                            35
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG8B4HEX3Y9QPMX9A3YJ0MX). kind=combo; anyField=; expectedKeyRef=IR.QVC.S; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHNY5GW6R9D2C7ZF2DSH4GQ). kind=combo; anyField=; expectedKeyRef=IR.QVC.S; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

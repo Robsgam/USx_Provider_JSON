@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: CA_CLETS Person DriverLicenseQuery
 Combo: IR.QVC.C_any (IR.QVC.C_any (auto))
-Date: 2026-07-01 23:34:18
+Date: 2026-07-02 11:28:21
 Result: PASS
 JSON Version: 2.12
 Entity Fingerprint: b5b2a541e301ebe66ed706c1a3e05c19022091263ae92c1e78f1141bab66ab44
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","appsRequestIndicator":"N","criminalIdNumber":"CII123456","purposeCode":"C","purposeCodeDH":"C","socialSecurityNumber":"123456789"}
+{"Attention":"X","age":"35","appsRequestIndicator":"N","criminalIdNumber":"CII123456","purposeCode":"C","purposeCodeDH":"C","socialSecurityNumber":"123456789"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KWG8AH038V520G2H1ZJD75CN">
+    <api:Transaction id="01KWHNY22DYJWGH6579YBC085E">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,9 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KWG8AH038V520G2H1ZJD75CN</Id>
+            <Id>01KWHNY22DYJWGH6579YBC085E</Id>
             <SocialSecurityNumber>123456789</SocialSecurityNumber>
             <CriminalIdNumber>CII123456</CriminalIdNumber>
+            <Age>35</Age>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -62,13 +63,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KWG8AH038V520G2H1ZJD75CN
+  Id                             01KWHNY22DYJWGH6579YBC085E
   SocialSecurityNumber           123456789
   CriminalIdNumber               CII123456
+  Age                            35
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KWG8AH038V520G2H1ZJD75CN). kind=any; anyField=; expectedKeyRef=IR.QVC.C; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KWHNY22DYJWGH6579YBC085E). kind=any; anyField=; expectedKeyRef=IR.QVC.C; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS
