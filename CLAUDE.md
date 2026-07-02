@@ -519,7 +519,7 @@ Three commands run everything. No manual checklists.
 
 **Batch mode** (`-Providers` or `-All`): runs per-provider steps (1-3) sequentially per provider, then ONE sync pass, ONE cross-provider audit, ONE repo audit, ONE enforce. Eliminates redundant global audits when rebuilding multiple providers.
 
-`build_report.ps1` runs 16 steps. Steps 1-9 execute in parallel (all read-only on the JSON); step 10 (test conductor), 11 (response simulator), 12 (label review), 13 (officer guide), 14 (test sheet), 15 (supported-query audit), and 16 (per-provider changelog) run after.
+`build_report.ps1` runs 15 steps. Steps 1-9 execute in parallel (all read-only on the JSON); step 10 (test conductor), 11 (response simulator), 12 (label review), 13 (officer guide), 14 (supported-query audit), and 15 (per-provider changelog) run after.
 
 `enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (8 locations per provider: CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER, per-provider CHANGELOG_<PROVIDER>.md, repo-root CHANGELOG.md Current line), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
 
@@ -581,8 +581,7 @@ providers/<PROVIDER>/
 │   │   ├── <PROVIDER>_METADATA_REFERENCE.txt
 │   │   └── <PROVIDER>_SUPPORTED_QUERIES.txt
 │   └── deliverables/                      # Officer/tester-facing, not read by tooling logic
-│       ├── OFFICER_GUIDE_<PROVIDER>.html/.pdf
-│       └── TEST_SHEET_<PROVIDER>.html/.pdf
+│       └── OFFICER_GUIDE_<PROVIDER>.html/.pdf
 ├── logs/                                  # The ONLY test log location [NJ_NJCJIS pilot, rolling out; tests/ eliminated 2026-07-01]
 │   ├── .test_state.json                   # Entity fingerprint/version/block-status (authority; moved from tests/)
 │   ├── .test_version                      # Legacy scalar global version (moved from tests/)

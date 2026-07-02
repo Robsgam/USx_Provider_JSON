@@ -630,8 +630,8 @@ foreach ($q in $qidms) {
 #  Each entity is tested start-to-finish (combos -> any[] -> deselect/routing),
 #  then blocked out. Render/negative are manual one-time checks done at initial
 #  provider build only, not part of this recurring matrix (2026-07-01). The test
-#  conductor and the printable test sheet group by this SAME entity order, so
-#  the PDF and the written test process are identical.
+#  conductor groups by this SAME entity order, so the conductor and the written
+#  test process are identical.
 # ════════════════════════════════════════════════════════════════════════
 
 # (Per-combo any[] and guardrail tests are generated inline in the entity loop via

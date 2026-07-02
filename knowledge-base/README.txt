@@ -123,7 +123,7 @@ TOOLS
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
   tools/build_report.ps1
-    Master build report. Runs all 11 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor + response simulator) plus label review, officer guide, test sheet, supported-query audit, and per-provider changelog.
+    Master build report. Runs all 11 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor + response simulator) plus label review, officer guide, supported-query audit, and per-provider changelog.
     After writing the manifest it PRUNES orphaned variant reports: any build-owned report file (or *_TEST_MATRIX.txt) for this provider whose name is not one this build produces (e.g. left over from a removed JSON variant) is deleted from the docs folder. Manual docs (TEST_PLAN_*, *_FIELD_CASING_REVIEW.md, *_SUPPORTED_QUERIES.txt, FIRST_RESPONDER_*) are never touched.
     Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
     Run after EVERY JSON build or edit.
@@ -169,10 +169,6 @@ TOOLS
   tools/render_html.ps1
     Self-contained HTML layout report with color-coded fields and QIDM tables.
     Usage: -Path <json> -OutFile <path>
-
-  tools/render_test_sheet.ps1
-    Generates a printable PDF test reference sheet per provider (step 14 of build_report).
-    Usage: -Path <json> [-OutFile <path>]
 
   tools/render_officer_guide.ps1
     Officer-facing printable quick-reference: every supported query + each search path's
@@ -618,7 +614,7 @@ AUTHORITATIVE SOURCE FILES (read-only)
     enforce.ps1, audit_repo.ps1, sync_version_docs.ps1, block_entity.ps1,
     audit_test_coverage.ps1, audit_supported_queries.ps1, run_test_matrix.ps1,
     generate_changelog.ps1, generate_test_matrix.ps1, diff_docs.ps1,
-    check_test_preconditions.ps1, render_test_sheet.ps1, pipeline.ps1.
+    check_test_preconditions.ps1, pipeline.ps1.
     Used by get_entity_fingerprints.ps1 and audit_reproducible.ps1.
 
   tools/audit_reproducible.ps1

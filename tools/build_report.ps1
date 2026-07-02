@@ -63,7 +63,7 @@ if ($docsDirWasExplicit -or -not $isModernSingleJson) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = 16
+$stepCount = 15
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -409,23 +409,6 @@ if (Test-Path $officerGuidePath) {
     Write-Host "  [13/$stepCount] SKIPPED (render_officer_guide.ps1 not found)" -ForegroundColor Gray
 }
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  STEP 14: Test Sheet (tester reference PDF)
-# ══════════════════════════════════════════════════════════════════════════════
-
-Write-Host ""
-Write-Host "  [14/$stepCount] Generating test sheet..." -ForegroundColor Yellow
-$testSheetPath = Join-Path $toolDir "render_test_sheet.ps1"
-$testSheetHtml = Join-Path $DeliverablesDir "TEST_SHEET_$jsonName.html"
-$testSheetPdf  = Join-Path $DeliverablesDir "TEST_SHEET_$jsonName.pdf"
-if (Test-Path $testSheetPath) {
-    & pwsh -NoProfile -ExecutionPolicy Bypass -File $testSheetPath -Path $resolvedStr -OutFile $testSheetHtml -PdfFile $testSheetPdf 2>&1 | Out-Null
-    if (Test-Path $testSheetHtml) { Write-Host "  [14/$stepCount] Saved: $testSheetHtml" -ForegroundColor Green }
-    if (Test-Path $testSheetPdf)  { Write-Host "             PDF: $testSheetPdf" -ForegroundColor Green }
-} else {
-    Write-Host "  [14/$stepCount] SKIPPED (render_test_sheet.ps1 not found)" -ForegroundColor Gray
-}
-
 # --- Summary ---
 $fires = ([regex]::Matches($queryOut, '\[FIRES')).Count
 $skips = ([regex]::Matches($queryOut, '\[SKIP\]')).Count
@@ -445,29 +428,29 @@ Write-Host "  Reports:   $ReportsDir" -ForegroundColor Gray
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# ── Step 15: Supported-query (devdoc) audit ──
+# ── Step 14: Supported-query (devdoc) audit ──
 Write-Host ""
-Write-Host "  [15/$stepCount] Supported-query (devdoc) audit..." -ForegroundColor Yellow
+Write-Host "  [14/$stepCount] Supported-query (devdoc) audit..." -ForegroundColor Yellow
 $supportedQAPath = Join-Path $toolDir "audit_supported_queries.ps1"
 $supportedQAFile = Join-Path $ReportsDir "SUPPORTED_QUERY_AUDIT_$jsonName.txt"
 if (Test-Path $supportedQAPath) {
     & powershell -ExecutionPolicy Bypass -File $supportedQAPath -Path $resolvedStr -OutFile $supportedQAFile 2>&1 | Out-Null
-    if (Test-Path $supportedQAFile) { Write-Host "  [15/$stepCount] Saved: $supportedQAFile" -ForegroundColor Green }
+    if (Test-Path $supportedQAFile) { Write-Host "  [14/$stepCount] Saved: $supportedQAFile" -ForegroundColor Green }
 } else {
-    Write-Host "  [15/$stepCount] SKIPPED (audit_supported_queries.ps1 not found)" -ForegroundColor Gray
+    Write-Host "  [14/$stepCount] SKIPPED (audit_supported_queries.ps1 not found)" -ForegroundColor Gray
 }
 
-# ── Step 16: Per-provider changelog (Markdown from BUILD_NOTES) ──
+# ── Step 15: Per-provider changelog (Markdown from BUILD_NOTES) ──
 Write-Host ""
-Write-Host "  [16/$stepCount] Generating changelog..." -ForegroundColor Yellow
+Write-Host "  [15/$stepCount] Generating changelog..." -ForegroundColor Yellow
 $changelogToolPath = Join-Path $toolDir "generate_changelog.ps1"
 $changelogFile = Join-Path $TrackingDir "CHANGELOG_$jsonName.md"
 if (Test-Path $changelogToolPath) {
     & powershell -ExecutionPolicy Bypass -File $changelogToolPath -Path $resolvedStr -OutFile $changelogFile 2>&1 | Out-Null
-    if (Test-Path $changelogFile) { Write-Host "  [16/$stepCount] Saved: $changelogFile" -ForegroundColor Green }
-    else { Write-Host "  [16/$stepCount] Changelog not produced (advisory)" -ForegroundColor Gray }
+    if (Test-Path $changelogFile) { Write-Host "  [15/$stepCount] Saved: $changelogFile" -ForegroundColor Green }
+    else { Write-Host "  [15/$stepCount] Changelog not produced (advisory)" -ForegroundColor Gray }
 } else {
-    Write-Host "  [16/$stepCount] SKIPPED (generate_changelog.ps1 not found)" -ForegroundColor Gray
+    Write-Host "  [15/$stepCount] SKIPPED (generate_changelog.ps1 not found)" -ForegroundColor Gray
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -534,8 +517,8 @@ $canonicalLeaves = @(
     "LAYOUT_REPORT_$jsonName.txt","QUERY_REPORT_$jsonName.txt","PICKLIST_REPORT_$jsonName.txt",
     "LAYOUT_$jsonName.html","VERIFY_REPORT_$jsonName.txt","METADATA_AUDIT_$jsonName.txt",
     "CAD_AUDIT_$jsonName.txt","TEST_VALIDATION_$jsonName.txt","LABEL_REVIEW_$jsonName.txt",
-    "OFFICER_GUIDE_$jsonName.html","OFFICER_GUIDE_$jsonName.pdf","TEST_SHEET_$jsonName.html",
-    "TEST_SHEET_$jsonName.pdf","SUPPORTED_QUERY_AUDIT_$jsonName.txt","CHANGELOG_$jsonName.md",
+    "OFFICER_GUIDE_$jsonName.html","OFFICER_GUIDE_$jsonName.pdf",
+    "SUPPORTED_QUERY_AUDIT_$jsonName.txt","CHANGELOG_$jsonName.md",
     "BUILD_MANIFEST_$jsonName.json","${jsonName}_TEST_MATRIX.txt"
 )
 $baseEsc    = [regex]::Escape($jsonName)

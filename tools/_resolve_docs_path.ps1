@@ -12,7 +12,7 @@
     reference/    -- derived from metadata XML, semi-static (METADATA_REFERENCE,
                       SUPPORTED_QUERIES)
     deliverables/ -- officer/tester-facing artifacts, not consumed by tooling logic
-                      (OFFICER_GUIDE, TEST_SHEET)
+                      (OFFICER_GUIDE)
 
   MIGRATION MODEL (no per-provider flag file needed): a provider has migrated if ANY of
   its 4 category folders already exists. Get-DocsCategoryDir then:
