@@ -147,6 +147,13 @@ if (Test-Path $statusFile) {
     if ($text -match '(?m)^Current:\s+v[^\r\n]+') {
         $text = $text -replace '(?m)^Current:\s+v[^\r\n]+', $newHeader
         $changed = $true
+    } else {
+        # Legacy STATUS.txt (predates the "Current:" header convention, e.g. FL_FCIC 2026-07-02)
+        # -- the "Last updated"/"Provider" replacements below can flip $changed=true while the
+        # version string never actually lands anywhere in the file, so enforce's version grep
+        # fails silently after a reported "[UPDATED]". Insert the header explicitly instead.
+        $text = $text -replace '(?m)^(Provider\s*:\s*[^\r\n]+)', "`$1`r`n${newHeader}"
+        $changed = $true
     }
 
     # Current version line

@@ -68,7 +68,10 @@ $defaultsByMt = if ($plan.formDefaults) { @{} } else { Build-CmDefaults $snapsho
 # Tier 2 -- content match with defaults tolerated.
 function Test-CmExact($fs, $mt, $t, $fam) { Test-CmSnapshotMatchesTest $fs $mt $t $fam @{} $null }
 function Get-CmRecordLabel($r) {
-    if ($r.kind -eq 'guardrail') { return "$($r.expectedKeyRef)_guardrail" }
+    if ($r.kind -eq 'guardrail') {
+        if ($r.guardrailLoser) { return "$($r.expectedKeyRef)_guardrail_vs_$($r.guardrailLoser)" }
+        return "$($r.expectedKeyRef)_guardrail"
+    }
     return "$($r.combo)$(if ($r.anyField) { '_af_' + $r.anyField })$(if ($r.kind -eq 'any') { '_any' })"
 }
 $usedRec = @{}
@@ -100,8 +103,7 @@ for ($i = 0; $i -lt $records.Count; $i++) {
     $t = $assigned[$i]; $r = $records[$i]
     # guardrail records have combo=null by design -- reconstruct their old label from
     # expectedKeyRef, else a correctly-paired guardrail reads as a bogus "correction".
-    $old = if ($r.kind -eq 'guardrail') { "$($r.expectedKeyRef)_guardrail" }
-           else { "$($r.combo)$(if ($r.anyField) { '_af_' + $r.anyField })$(if ($r.kind -eq 'any') { '_any' })" }
+    $old = Get-CmRecordLabel $r
     $new = Get-CmPlanLabel $t
     if ($old -ne $new) {
         $corrections++
@@ -111,6 +113,7 @@ for ($i = 0; $i -lt $records.Count; $i++) {
     $r | Add-Member -NotePropertyName expectedKeyRef -NotePropertyValue $t.expectedKeyRef -Force
     $r | Add-Member -NotePropertyName kind -NotePropertyValue $t.kind -Force
     $r | Add-Member -NotePropertyName anyField -NotePropertyValue $t.anyField -Force
+    $r | Add-Member -NotePropertyName guardrailLoser -NotePropertyValue $t.guardrailLoser -Force
     $r | Add-Member -NotePropertyName underFilled -NotePropertyValue $false -Force
     $r | Add-Member -NotePropertyName contentMatched -NotePropertyValue $true -Force
 }

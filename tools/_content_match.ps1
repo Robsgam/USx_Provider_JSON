@@ -27,7 +27,12 @@ function Test-CmValueMatch($fillVal, $display) {
 
 # Canonical log/record label for a plan test (matches post_test log naming).
 function Get-CmPlanLabel($t) {
-    if ($t.kind -eq 'guardrail') { return "$($t.expectedKeyRef)_guardrail" }
+    if ($t.kind -eq 'guardrail') {
+        # guardrailLoser only set when >1 loser combo resolves to this SAME winner (see
+        # emit_test_plan.ps1) -- otherwise omitted so existing filenames stay stable.
+        if ($t.guardrailLoser) { return "$($t.expectedKeyRef)_guardrail_vs_$($t.guardrailLoser)" }
+        return "$($t.expectedKeyRef)_guardrail"
+    }
     if ($t.kind -eq 'any')       { return "$($t.comboKeyRef)_any" }
     if ($t.kind -eq 'any-field') { return "$($t.comboKeyRef)_af_$($t.anyField)" }
     return $t.comboKeyRef

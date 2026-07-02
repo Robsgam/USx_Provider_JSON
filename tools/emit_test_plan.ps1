@@ -377,6 +377,7 @@ foreach ($ent in $entities) {
     }
     if ($true) {
         $entDefaults = Get-EntityDefaultFields $entQidms
+        $gCandidates = New-Object System.Collections.Generic.List[object]
         foreach ($gr in $entGuardrails) {
             $exFf  = $fieldIds | Where-Object { $_ -ieq $gr.excludedFid } | Select-Object -First 1
             if (-not $exFf) { $exFf = $gr.excludedFid }
@@ -403,12 +404,25 @@ foreach ($ent in $entities) {
             foreach ($k in $entDefaults.Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $entDefaults[$k] } }
             $simKr = Get-SimFiringKeyRef $entQidms $fd
             if (-not $simKr) { continue }   # nothing fires for this fill -> not a valid guardrail
+            $gCandidates.Add([PSCustomObject]@{ query = $gr.loserQidm.query; simKr = $simKr; fills = $gFills; loserKr = $gr.loserKr })
+        }
+        # Disambiguate guardrail log filenames ONLY when >1 loser combo resolves to the SAME
+        # winner (e.g. FL_FCIC Boat: relatedHitSearchIndicator routes Hull between the FBQ and
+        # QB combo families -- both "Hull wins" scenarios simulate to the same expectedKeyRef and
+        # silently overwrote one another's log before this existed, 2026-07-02). Leaving
+        # guardrailLoser unset for non-colliding winners keeps existing filenames stable across
+        # providers that don't hit this (Get-CmPlanLabel falls back to the undisambiguated name).
+        $winnerCounts = @{}
+        foreach ($g in $gCandidates) { $winnerCounts[$g.simKr] = @($winnerCounts[$g.simKr]) + 1 }
+        foreach ($g in $gCandidates) {
             $n++
-            $tests.Add([ordered]@{
-                n = $n; entity = $ent; query = $gr.loserQidm.query
-                comboKeyRef = $null; expectedKeyRef = $simKr
-                kind = 'guardrail'; tier = 'Full'; fills = $gFills
-            })
+            $test = [ordered]@{
+                n = $n; entity = $ent; query = $g.query
+                comboKeyRef = $null; expectedKeyRef = $g.simKr
+                kind = 'guardrail'; tier = 'Full'; fills = $g.fills
+            }
+            if (@($winnerCounts[$g.simKr]).Count -gt 1) { $test.guardrailLoser = $g.loserKr }
+            $tests.Add($test)
         }
     }
 }

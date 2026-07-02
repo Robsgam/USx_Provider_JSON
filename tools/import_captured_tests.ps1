@@ -63,7 +63,12 @@ function Infer-ComboFromXml($provider, $query, $xml) {
         foreach ($s in $set) {
             $elem = $s
             $attr = $qidm.attributes | Where-Object { $_.name -ieq $s -or (@($_.sourceField) -contains $s) } | Select-Object -First 1
-            if ($attr) { $elem = $attr.name }
+            # targetField (not name) drives wire serialization -- attribute NAME can be made
+            # unique/synthetic (e.g. OperatorLicenseNumberDH) purely so a NOT_EXISTS guardrail
+            # condition can reference it without colliding with a sibling combo's same-named
+            # attribute (FL_FCIC build script v5.1). Using .name here mis-inferred the combo
+            # for every such field (FL_FCIC KQOperatorLicenseNumber guardrail, 2026-07-02).
+            if ($attr) { $elem = if ($attr.targetField) { $attr.targetField } else { $attr.name } }
             if ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($s.ToLower())) { $score++ } else { $allPresent = $false }
         }
         if ($allPresent -and $score -gt $bestScore) { $best = $c; $bestScore = $score }
@@ -84,7 +89,7 @@ function Infer-TestKindFromXml($provider, $query, $inferredCombo, $xml) {
     foreach ($af in $anyNames) {
         $elem = $af
         $attr = $qidm.attributes | Where-Object { $_.name -ieq $af -or (@($_.sourceField) -contains $af) } | Select-Object -First 1
-        if ($attr) { $elem = $attr.name }
+        if ($attr) { $elem = if ($attr.targetField) { $attr.targetField } else { $attr.name } }
         if ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($af.ToLower())) { $optPresent += $af }
     }
     if ($optPresent.Count -eq 0) { return @{ kind='combo'; anyField=$null } }
@@ -147,7 +152,13 @@ foreach ($file in $files) {
         $comboLabel = $combo
         if ($testKind -eq 'any-field' -and $testAnyField) { $comboLabel = "${combo}_af_${testAnyField}" }
         elseif ($testKind -eq 'any') { $comboLabel = "${combo}_any" }
-        elseif ($testKind -eq 'guardrail') { $comboLabel = "${combo}_guardrail" }
+        elseif ($testKind -eq 'guardrail') {
+            # guardrailLoser (stamped by relabel_batch.ps1 from the matched plan test) disambiguates
+            # the rare case where >1 loser combo resolves to the SAME winner -- e.g. FL_FCIC Boat's
+            # relatedHitSearchIndicator routes Hull between the FBQ and QB combo families, and both
+            # "Hull wins" scenarios simulate to the same expectedKeyRef (2026-07-02).
+            $comboLabel = if ($r.guardrailLoser) { "${combo}_guardrail_vs_$($r.guardrailLoser)" } else { "${combo}_guardrail" }
+        }
         $underFilledNote = if ($r.underFilled) { ' UNDER-FILLED (a form field failed to fill on submit -- verify this combo).' } else { '' }
         $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired.$underFilledNote"
         $desc = "$comboLabel (auto)"
