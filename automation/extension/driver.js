@@ -235,8 +235,20 @@
     const CAP = 500;
     const fields = scope.fields.filter((f) => f.entity === entityFilter);
     if (!fields.length) { console.warn('[USx-SCOPE] no select fields in scope for', entityFilter); return; }
+    // Wrong-form guard: scoping Vehicle while the Firearm form is rendered produced a
+    // useless all-errors capture (2026-07-02). If NONE of the scope's fields exist in the
+    // DOM, the wrong entity form is up -- abort instead of downloading garbage.
+    const present = fields.filter((f) => L.q(f.fieldId)).length;
+    if (present === 0) {
+      console.error(`[USx-SCOPE] 0 of ${fields.length} ${entityFilter} fields found in the DOM -- is the ${entityFilter} form rendered? Aborting (nothing downloaded).`);
+      return;
+    }
     const out = [];
     const poll = async (fn, ms, step) => { const t0 = Date.now(); let r; while (!(r = fn()) && Date.now() - t0 < ms) { await L.sleep(step); } return r; };
+    const setVal = (input, v) => {
+      Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set.call(input, v);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    };
 
     for (const f of fields) {
       const rec = { entity: f.entity, fieldId: f.fieldId, label: f.label || null, codeTypeCategory: f.codeTypeCategory || null, codeTypeSource: f.codeTypeSource || null, count: 0, truncated: false, options: [], error: null };
@@ -257,6 +269,20 @@
           // outermost only -- substring-highlight spans nest inside real rows; role="option" matches nothing
           return all.filter((o) => !all.some((other) => other !== o && other.contains(o))).map((o) => (o.textContent || '').trim());
         };
+        // These arc-selects load options when TYPING triggers the search (fills work because
+        // they type); opening alone can render an empty menu (live-confirmed 2026-07-02:
+        // all 4 HI Vehicle selects read 0 options on open). Trigger the load with an
+        // empty-string input event and poll for the first option.
+        if (!readOpts().length) {
+          setVal(input, '');
+          await poll(() => readOpts().length, 3000, 150);
+        }
+        if (!readOpts().length) {           // last resort: type+erase to kick the async source
+          setVal(input, ' ');
+          await L.sleep(300);
+          setVal(input, '');
+          await poll(() => readOpts().length, 3000, 150);
+        }
         // Virtualization guard: scroll the menu list to the bottom until the option set stabilizes or CAP.
         const seen = new Set(readOpts());
         const listEl = scopeRoot().querySelector('[class*="menu-list"], [class*="MenuList"]') || scopeRoot();
