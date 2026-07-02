@@ -2,9 +2,44 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.0** | Generated: 2026-06-29
+Current: **v4.0** | Generated: 2026-07-02
 
 ---
+
+## v4.0 -- 2026-07-02 -- Cross-provider hardening rollout (rebuild, not a routine pipeline pass)
+
+**CHANGED:**
+  - PascalCase conversion: the 22 USx CAD-integration field names authored natively  
+    PascalCase (sourceField/set/any/layout fieldId); RMS bundle built with  
+    -PascalCaseUsxFields. Fields not on the 22-token list (vehicleYear, nameMiddle(DH),  
+    nameSuffix(DH), relatedHitSearchIndicator, purposeCodeDH, requestorDH,  
+    nyNyspinTransactionNameDH) intentionally stayed camelCase.  
+  - Poisoned-array fix (DriverHistoryQuery): the old State-value-comparison conditions  
+    (In=IN('NY','null'), Out=NOT_EQUALS 'NY') keyed on the attribute NAME instead of  
+    sourceField AND used value-comparison operators -- per the live-proven  
+    POISONED-ARRAY RULE these were wholly inert, so DALHOUT/DALH/DALLOUT/DALL had zero  
+    real in-state/OOS routing. Replaced with existence-only conditions on  
+    RegistrationState (EXISTS on the OOS combos, NOT_EXISTS on the in-state combos).  
+  - Identifier-priority guardrail rollout (3 pairs): Vehicle Plate>VIN (LicensePlateNumber  
+    NOT_EXISTS on RVIN/RCAR), Person OLN>Name on both DriverLicenseQuery (DLICN) and  
+    DriverHistoryQuery (DALHOUT/DALH), and Boat Hull>Reg (BoatHullIdNumber NOT_EXISTS on  
+    BVEH/RVEH).  
+  - OOS-gate symmetry hardening: added RegistrationState EXISTS to RVIN (Vehicle) and  
+    BVEH (Boat) -- set[] is not a firing gate, so these OOS combos were previously  
+    shadowing their in-state counterparts (RCAR / Boat RVEH) on a bare-identifier  
+    payload regardless of State (verify_build CHECK 16, a genuine pre-existing latent  
+    bug exposed once the new NOT_EXISTS guardrails made those combos checkable).  
+  - CAD default gap fix: added PurposeCode='C' to DALHOUT/DALLOUT's defaults[] (form  
+    initialValue existed but had no matching combo default; CAD ignores initialValues).  
+  - Adopted the versioned root JSON filename (NY_NYSPIN_EJUSTICE_v4.0.json), replacing  
+    the bare NY_NYSPIN_EJUSTICE.json, matching NJ/HI/FL/CA_CLETS.  
+  - Cleared 2 shared-module PENDING_UPDATES.txt flags (RND-62365 VehicleMakeName QRDM,  
+    PARSECOMMSYS-ARGS ParseCommsysName empty-args bug) -- both fixes already live in  
+    shared tooling, picked up automatically by this rebuild.  
+**REASON:** NY had never received the identifier-priority/poisoned-array/PascalCase rollouts
+  already live-proven on HI_HCJDC_OFML/FL_FCIC/TX_TLETS/CA_CLETS. Full re-test mandate --  
+  Vehicle/Person/Boat entities reset to PENDING (Firearm/Article structurally unchanged  
+  besides PascalCase renames, which do not change wire XML).  
 
 ## v3.0 -- 2026-06-09 -- Pipeline rebuild
 

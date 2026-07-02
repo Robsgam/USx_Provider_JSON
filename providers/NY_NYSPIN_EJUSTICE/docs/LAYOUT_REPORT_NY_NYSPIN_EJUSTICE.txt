@@ -1,12 +1,12 @@
-﻿================================================================
+================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-29 08:38
+  Source: NY_NYSPIN_EJUSTICE_v4.0.json
+  Generated: 2026-07-02 19:25
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== NY_NYSPIN_EJUSTICE.json ===
+=== NY_NYSPIN_EJUSTICE_v4.0.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=3 fields=13
@@ -32,48 +32,48 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_VEH"
       ROW ROW_VEH_1 [4 4 4]
-        licensePlateNumber (Text | maxLen=10)
-        licensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
-        licensePlateYear (Text | maxLen=4 | default=2026)
+        LicensePlateNumber (Text | maxLen=10)
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        LicensePlateYear (Text | maxLen=4 | default=2026)
       ROW ROW_VEH_2 [4 4 4]
-        vehicleIdentificationNumber (Text | maxLen=20)
-        vehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+        VehicleIdentificationNumber (Text | maxLen=20)
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
       ROW ROW_VEH_3 [4 4]
-        registrationState (Dropdown | attributeTypeId=STATE)
-        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER_OPT"
       ROW ROW_PER_OPT_1 [6 6]
-        registrationState (Dropdown | attributeTypeId=STATE)
-        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
     CARD "CARD_PER_DL"
       ROW ROW_PER_DL_1 [12]
-        operatorLicenseNumber (Text | maxLen=20)
+        OperatorLicenseNumber (Text | maxLen=20)
       ROW ROW_PER_DL_2 [6 6]
-        nameLast (Text | maxLen=35)
-        nameFirst (Text | maxLen=35)
+        NameLast (Text | maxLen=35)
+        NameFirst (Text | maxLen=35)
       ROW ROW_PER_DL_3 [6 6]
         nameMiddle (Text | maxLen=35)
         nameSuffix (Text | maxLen=10)
       ROW ROW_PER_DL_4 [6 6]
-        birthDate (FormDate)
-        sexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        BirthDate (FormDate)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DH_1 [12]
-        operatorLicenseNumberDH (Text | maxLen=20)
+        OperatorLicenseNumberDH (Text | maxLen=20)
       ROW ROW_PER_DH_2 [6 6]
-        nameLastDH (Text | maxLen=35)
-        nameFirstDH (Text | maxLen=35)
+        NameLastDH (Text | maxLen=35)
+        NameFirstDH (Text | maxLen=35)
       ROW ROW_PER_DH_3 [6 6]
         nameMiddleDH (Text | maxLen=35)
         nameSuffixDH (Text | maxLen=10)
       ROW ROW_PER_DH_4 [6 6]
-        birthDateDH (FormDate)
-        sexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+        BirthDateDH (FormDate)
+        SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
       ROW ROW_PER_DH_5 [6 6]
         purposeCodeDH (Text | maxLen=1 | default=C)
         requestorDH (Text | maxLen=35)
@@ -85,11 +85,11 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_GUN"
       ROW ROW_GUN_1 [6 6]
-        gunSerialNumber (Text | maxLen=20)
-        gunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        GunSerialNumber (Text | maxLen=20)
+        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
       ROW ROW_GUN_2 [4 4 4]
-        gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
-        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Article ===
@@ -97,10 +97,10 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_ART"
       ROW ROW_ART_1 [6 6]
-        articleSerialNumber (Text | maxLen=20)
-        articleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+        ArticleSerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
       ROW ROW_ART_2 [4 4]
-        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Boat ===
@@ -108,24 +108,24 @@ LAYOUT DETAIL
   [default]
     CARD "CARD_BOA"
       ROW ROW_BOA_1 [6 6]
-        registrationNumber (Text | maxLen=10)
-        boatHullIdNumber (Text | maxLen=20)
+        RegistrationNumber (Text | maxLen=10)
+        BoatHullIdNumber (Text | maxLen=20)
       ROW ROW_BOA_2 [4 4 4]
-        registrationState (Dropdown | attributeTypeId=STATE)
-        imageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === RMS QIDMs ===
   RMS Person Search query
-    nameFirst -> firstName
-    nameLast -> lastName
-    operatorLicenseNumber -> dlNumber
-    birthDate -> dateOfBirth
+    NameFirst -> firstName
+    NameLast -> lastName
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
     raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
-    sexCode -> sexAttrId (useAttrId)
-    registrationState -> registrationStateAttrId (useAttrId)
+    SexCode -> sexAttrId (useAttrId)
+    RegistrationState -> registrationStateAttrId (useAttrId)
   RMS Vehicle search query
-    vehicleIdentificationNumber -> vehicle.vinNumber
-    licensePlateNumber -> vehicle.tag
-    registrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    LicensePlateNumber -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
 

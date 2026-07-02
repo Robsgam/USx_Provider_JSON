@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-29 08:38
+  Source: NY_NYSPIN_EJUSTICE_v4.0.json
+  Generated: 2026-07-02 19:25
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: NY_NYSPIN_EJUSTICE
+ POST-BUILD VERIFICATION: NY_NYSPIN_EJUSTICE_v4.0
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,14 +22,13 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 25 [licensePlateTypeCode, licensePlateYear, vehicleMakeCode, vehicleYear, imageIndicator, nameMiddle, nameSuffix, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, sexCodeDH, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH, gunCaliber, gunMake, gunSerialNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber]
+  [INFO] CommSys-only: 25 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, nameMiddle, nameSuffix, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, SexCodeDH, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH, GunCaliber, GunMake, GunSerialNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
-  [PASS] All 41 QIF fieldIds are camelCase (excluded 3 platform fields)
-  [PASS] All CommSys QIDM sourceFields are camelCase
+  [INFO] camelCase check skipped (use -CamelCase to enable)
 
 --- CHECK 6: Reference Pattern Check ---
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
@@ -42,51 +41,31 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' has 2 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'DriverLicenseQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' has 4 combos but build script has no LIMITATION #21/#36 comment (per-QIDM or file-level inventory naming 'BoatQuery') -- add synthetic keyRef doc (BUILD_RULES Section 15)
+  [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
   [PASS] RMS combo fields (9) are a subset of CommSys combo fields (33) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
-  [WARN] Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: NY_NYSPIN_EJUSTICE_DriverHistoryQuery/DALHOUT: NOT_EQUALS; NY_NYSPIN_EJUSTICE_DriverHistoryQuery/DALH: IN; NY_NYSPIN_EJUSTICE_DriverHistoryQuery/DALLOUT: NOT_EQUALS; NY_NYSPIN_EJUSTICE_DriverHistoryQuery/DALL: IN
+  [PASS] No value-comparison routing conditions (existence-only or none)
 
 --- CHECK 12: Identifier-Priority Guardrail ---
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' VIN combo 'RVIN' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' VIN combo 'RCAR' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' Name combo 'DLICN' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' Name combo 'DALHOUT' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' Name combo 'DALH' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' Reg combo 'BVEH' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' Reg combo 'RVEH' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
+  [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
 
 --- CHECK 13: conditions[].field references a valid QIF sourceField ---
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALHOUT' conditions[].field='State' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALH' conditions[].field='State' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALLOUT' conditions[].field='State' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' combo 'DALL' conditions[].field='State' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
 --- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [FAIL] Field 'registrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
-  [FAIL] Field 'nyNyspinTransactionNameDH' label='Transaction Type' missing '(DH...' qualifier (DH disambiguation -- BUILD_RULES Section 11)
-  [WARN] Field 'imageIndicator' (any[]-only) label='Image' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'vehicleMakeCode' (any[]-only) label='Vehicle Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'vehicleYear' (any[]-only) label='Vehicle Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'licensePlateTypeCode' (any[]-only) label='Plate Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'licensePlateYear' (any[]-only) label='Plate Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'nameMiddle' (any[]-only) label='Middle Name' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'nameSuffix' (any[]-only) label='Suffix' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'nyNyspinTransactionNameDH' (any[]-only) label='Transaction Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'gunMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'gunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'relatedHitSearchIndicator' (any[]-only) label='Related Hit Search' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [INFO] 13 field(s) need label hint fixes
+  [PASS] All form field labels have required routing hint qualifiers (36 fields scanned)
+
+--- CHECK 16: Combo Reachability (shadow detection) ---
+  [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
 ========================================
- VERIFICATION FAILED: 15 FAIL / 12 WARN / 11 PASS
+ VERIFICATION PASSED: 15 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

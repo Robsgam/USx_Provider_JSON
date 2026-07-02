@@ -1,6 +1,7 @@
-NY_NYSPIN_EJUSTICE v3.0 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.0 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-29
+Generated: 2026-07-02
+Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
@@ -8,40 +9,40 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 8 fields):
   CARD_VEH (VEHICLE QUERY - Leave State blank for NY):
-    ROW 1: licensePlateNumber [Inp 10], licensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], licensePlateYear [Inp 2026, 4]
-    ROW 2: vehicleIdentificationNumber [Inp 20], vehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+    ROW 3: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Person (3 cards, 19 fields):
   CARD_PER_OPT (SEARCH OPTIONS - Leave State blank for NY):
-    registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
   CARD_PER_DL (DRIVER LICENSE):
-    ROW 1: operatorLicenseNumber [Inp 20]
-    ROW 2: nameLast [Inp 35], nameFirst [Inp 35]
+    ROW 1: OperatorLicenseNumber [Inp 20]
+    ROW 2: NameLast [Inp 35], NameFirst [Inp 35]
     ROW 3: nameMiddle [Inp 35], nameSuffix [Inp 10]
-    ROW 4: birthDate [FormDate], sexCode [Sel SEX]
+    ROW 4: BirthDate [FormDate], SexCode [Sel SEX]
   CARD_PER_DH (DRIVER HISTORY):
-    ROW 1: operatorLicenseNumberDH [Inp 20]
-    ROW 2: nameLastDH [Inp 35], nameFirstDH [Inp 35]
+    ROW 1: OperatorLicenseNumberDH [Inp 20]
+    ROW 2: NameLastDH [Inp 35], NameFirstDH [Inp 35]
     ROW 3: nameMiddleDH [Inp 35], nameSuffixDH [Inp 10]
-    ROW 4: birthDateDH [FormDate], sexCodeDH [Sel SEX]
+    ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 5: purposeCodeDH [Inp C, 1], requestorDH [Inp 35]
     ROW 6: nyNyspinTransactionNameDH [Inp DALL, 4]
 
 Firearm (1 card, 5 fields):
   CARD_GUN (FIREARM QUERY):
-    ROW 1: gunSerialNumber [Inp 20], gunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 1: GunSerialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 4 fields):
   CARD_ART (ARTICLE QUERY):
-    ROW 1: articleSerialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    ROW 2: imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
+    ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 5 fields):
   CARD_BOA (BOAT QUERY - Leave State blank for NY):
-    ROW 1: registrationNumber [Inp 10], boatHullIdNumber [Inp 20]
-    ROW 2: registrationState [Sel STATE], imageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 1: RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20]
+    ROW 2: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (7 QIDMs, 17 combos)
 ----------------------------------------
@@ -58,149 +59,131 @@ TEST MATRIX
 ================================================================================
 
 Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
-(render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.
+(combos+any[] per combo -> guardrail routing -> deselect), then blocked out.
+(render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (16 tests -- 3 cards, 7 combos -- NyNyspinDriverLicenseName co-fires with DL)
+ENTITY 1: PERSON (19 tests -- 3 cards, 7 combos -- NyNyspinDriverLicenseName co-fires with DL)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      Render form. Verify 3 cards:                        [    ]
-              CARD_PER_OPT: titled "SEARCH OPTIONS - Leave State blank for NY".
-              State dropdown (no default), Image dropdown=Y.
-              CARD_PER_DL: titled "DRIVER LICENSE".
-              License Number.
-              Last Name, First Name.
-              Middle Name, Suffix.
-              Date of Birth, Sex dropdown (no default).
-              CARD_PER_DH: titled "DRIVER HISTORY".
-              License Number (DH).
-              Last Name (DH), First Name (DH).
-              Middle Name (DH), Suffix (DH).
-              DOB (DH), Sex (DH) dropdown (no default).
-              Purpose Code (DH)=C, Requestor (DH).
-              Transaction Type=DALL.
- 2  Person      DLIC+DLIC          operatorLicenseNumber=D999888777 [    ]
+ 1  Person      DLIC+DLIC          OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (DLIC)
- 3  Person      DLIC+DLIC          + imageIndicator                [    ]
+ 2  Person      DLIC+DLIC          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
- 4  Person      DLICN+DLICN        birthDate=01/15/1990, nameLast=DOE, n... [    ]
+ 3  Person      DLICN+DLICN        BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: DriverLicenseQuery fires (DLICN). Check for NyNyspinDriverLicenseNameQuery co-fire
- 5  Person      DLICN+DLICN        + imageIndicator, nameMiddle, nameSuffix [    ]
+ 4  Person      DLICN+DLICN        + ImageIndicator, nameMiddle, nameSuffix [    ]
               Expected: any[] fields present in XML output.
- 6  Person      DALL+OUT+State     operatorLicenseNumberDH=D999888777, p... [    ]
+ 5  Person      DALL+OUT+State     OperatorLicenseNumberDH=D999888777, p... [    ]
               Expected: DriverHistoryQuery fires (DALLOUT)
- 7  Person      DALL+OUT+State     + imageIndicator, nyNyspinTransactionNameDH [    ]
+ 6  Person      DALL+OUT+State     + ImageIndicator, nyNyspinTransactionNameDH [    ]
               Expected: any[] fields present in XML output.
- 8  Person      DALL+OLN           operatorLicenseNumberDH=D999888777 [    ]
+ 7  Person      DALL+OLN           OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (DALL)
- 9  Person      DALL+OLN           + imageIndicator, nyNyspinTransactionNameDH [    ]
+ 8  Person      DALL+OLN           + ImageIndicator, nyNyspinTransactionNameDH [    ]
               Expected: any[] fields present in XML output.
-10  Person      DALH+OUT+State     birthDateDH=01/15/1990, nameLastDH=DO... [    ]
+ 9  Person      DALH+OUT+State     BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (DALHOUT)
-11  Person      DALH+OUT+State     + imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
+10  Person      DALH+OUT+State     + ImageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
               Expected: any[] fields present in XML output.
-12  Person      DALH+DOB           birthDateDH=01/15/1990, nameLastDH=DO... [    ]
+11  Person      DALH+DOB           BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (DALH)
-13  Person      DALH+DOB           + imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
+12  Person      DALH+DOB           + ImageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
               Expected: any[] fields present in XML output.
-14  Person      Deselect: DH deselects DL.            [    ]
+13  Person      Guardrail: DLIC>DLICN  OperatorLicenseNumber=D999888777, Bir... [    ]
+              Expected: DriverLicenseQuery fires (DLIC). DOB+LastName+FirstName+SexCode absent from XML.
+14  Person      Guardrail: DALLOUT>DALHOUT  OperatorLicenseNumberDH=D999888777, B... [    ]
+              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH+purposeCodeDH+requestorDH+RegistrationState absent from XML.
+15  Person      Guardrail: DALHOUT>DALH  RegistrationState=GA, BirthDateDH=01/... [    ]
+              Expected: DriverHistoryQuery fires (DALHOUT). DOB+LastName+FirstName+SexCodeDH absent from XML.
+16  Person      Guardrail: DALLOUT>DALH  OperatorLicenseNumberDH=D999888777, B... [    ]
+              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH absent from XML.
+17  Person      Guardrail: DALHOUT>DALL  RegistrationState=GA             [    ]
+              Expected: DriverHistoryQuery fires (DALHOUT). OLN absent from XML.
+18  Person      Deselect: DH deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
-15  Person      Priority routing: verify more-specific combo wins.  [    ]
+19  Person      Priority routing: verify more-specific combo wins.  [    ]
               Fill fields that match multiple combos, verify correct one fires.
-16  Person      Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 2: VEHICLE (10 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-17  Vehicle     Render form. Verify 1 card:                        [    ]
-              CARD_VEH: titled "VEHICLE QUERY - Leave State blank for NY".
-              Plate Number, Plate Type dropdown=PC, Plate Year=2026.
-              VIN, Vehicle Make dropdown (no default), Vehicle Year.
-              State dropdown (no default), Image dropdown=Y.
-18  Vehicle     RVEH+RVEH          licensePlateNumber=TEST123       [    ]
+20  Vehicle     RVEH+RVEH          LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (RVEH)
-19  Vehicle     RVEH+RVEH          + imageIndicator, licensePlateTypeCode, licensePlateYear [    ]
+21  Vehicle     RVEH+RVEH          + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
               Expected: any[] fields present in XML output.
-20  Vehicle     RCAR+VIN           vehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (RCAR)
-21  Vehicle     RCAR+VIN           + imageIndicator                [    ]
-              Expected: any[] fields present in XML output.
-22  Vehicle     RVIN+VIN+State     vehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (RVIN)
-23  Vehicle     RVIN+VIN+State     + imageIndicator, vehicleMakeCode, vehicleYear [    ]
-              Expected: any[] fields present in XML output.
-24  Vehicle     RVEHOU+RVEHOUT+State  licensePlateNumber=TEST123, registrat... [    ]
+22  Vehicle     RVEHOU+RVEHOUT+State  LicensePlateNumber=TEST123, Registrat... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOUT)
-25  Vehicle     RVEHOU+RVEHOUT+State  + imageIndicator, licensePlateTypeCode, licensePlateYear [    ]
+23  Vehicle     RVEHOU+RVEHOUT+State  + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
               Expected: any[] fields present in XML output.
-26  Vehicle     Empty form, verify no Send button / no request.    [    ]
+24  Vehicle     RCAR+VIN           VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RCAR)
+25  Vehicle     RCAR+VIN           + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+26  Vehicle     RVIN+VIN+State     VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RVIN)
+27  Vehicle     RVIN+VIN+State     + ImageIndicator, VehicleMakeCode, vehicleYear [    ]
+              Expected: any[] fields present in XML output.
+28  Vehicle     Guardrail: RVEHOUT>RVIN  LicensePlateNumber=TEST123, VehicleId... [    ]
+              Expected: VehicleRegistrationQuery fires (RVEHOUT). VIN+RegistrationState absent from XML.
+29  Vehicle     Guardrail: RVEHOUT>RCAR  LicensePlateNumber=TEST123, VehicleId... [    ]
+              Expected: VehicleRegistrationQuery fires (RVEHOUT). VIN absent from XML.
 
 ENTITY 3: BOAT (10 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-27  Boat        Render form. Verify 1 card:                        [    ]
-              CARD_BOA: titled "BOAT QUERY - Leave State blank for NY".
-              Registration Number, Hull ID Number.
-              State dropdown (no default), Image dropdown=Y, Related Hit Search dropdown=Y.
-28  Boat        RVEH+RVEH          registrationNumber=FL1234AB      [    ]
-              Expected: BoatQuery fires (RVEH)
-29  Boat        RVEH+RVEH          + imageIndicator, relatedHitSearchIndicator [    ]
-              Expected: any[] fields present in XML output.
-30  Boat        RCAR+Hull          boatHullIdNumber=FL1234AB56H7    [    ]
+30  Boat        RCAR+Hull          BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (RCAR)
-31  Boat        RCAR+Hull          + imageIndicator, relatedHitSearchIndicator [    ]
+31  Boat        RCAR+Hull          + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-32  Boat        BVEH+BVEH+State    registrationNumber=FL1234AB, registra... [    ]
-              Expected: BoatQuery fires (BVEH)
-33  Boat        BVEH+BVEH+State    + imageIndicator, relatedHitSearchIndicator [    ]
-              Expected: any[] fields present in XML output.
-34  Boat        BVIN+BVIN+State    boatHullIdNumber=FL1234AB56H7, regist... [    ]
+32  Boat        BVIN+BVIN+State    BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BVIN)
-35  Boat        BVIN+BVIN+State    + imageIndicator, relatedHitSearchIndicator [    ]
+33  Boat        BVIN+BVIN+State    + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-36  Boat        Empty form, verify no Send button / no request.    [    ]
+34  Boat        BVEH+BVEH+State    RegistrationNumber=FL1234AB, Registra... [    ]
+              Expected: BoatQuery fires (BVEH)
+35  Boat        BVEH+BVEH+State    + ImageIndicator, relatedHitSearchIndicator [    ]
+              Expected: any[] fields present in XML output.
+36  Boat        RVEH+RVEH          RegistrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (RVEH)
+37  Boat        RVEH+RVEH          + ImageIndicator, relatedHitSearchIndicator [    ]
+              Expected: any[] fields present in XML output.
+38  Boat        Guardrail: BVIN>BVEH  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+              Expected: BoatQuery fires (BVIN). Reg+RegistrationState absent from XML.
+39  Boat        Guardrail: BVIN>RVEH  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+              Expected: BoatQuery fires (BVIN). Reg absent from XML.
 
-ENTITY 4: FIREARM (4 tests -- 1 card, 1 combo)
+ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-37  Firearm     Render form. Verify 1 card:                        [    ]
-              CARD_GUN: titled "FIREARM QUERY".
-              Serial Number, Make dropdown (no default).
-              Caliber dropdown (no default), Image dropdown=Y, Related Hit Search dropdown=Y.
-38  Firearm     GINQ+GINQ          gunSerialNumber=GUN12345         [    ]
+40  Firearm     GINQ+GINQ          GunSerialNumber=GUN12345         [    ]
               Expected: GunQuery fires (GINQ)
-39  Firearm     GINQ+GINQ          + imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator [    ]
+41  Firearm     GINQ+GINQ          + ImageIndicator, GunMake, GunCaliber, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-40  Firearm     Empty form, verify no Send button / no request.    [    ]
 
-ENTITY 5: ARTICLE (4 tests -- 1 card, 1 combo)
+ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-41  Article     Render form. Verify 1 card:                        [    ]
-              CARD_ART: titled "ARTICLE QUERY".
-              Serial Number, Article Type dropdown (no default).
-              Image dropdown=Y, Related Hit Search dropdown=Y.
-42  Article     AINQ+AINQ          articleSerialNumber=ART99999, article... [    ]
+42  Article     AINQ+AINQ          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (AINQ)
-43  Article     AINQ+AINQ          + imageIndicator, relatedHitSearchIndicator [    ]
+43  Article     AINQ+AINQ          + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-44  Article     Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 44 tests
+TOTAL: 43 tests
 
 COMBO COVERAGE (17/17):
-  VehicleRegistrationQuery: 4/4 -- T18(RVEH+RVEH), T20(RCAR+VIN), T22(RVIN+VIN), T24(RVEHOU+RVEHOUT)
-  DriverLicenseQuery: 2/2 -- T2(DLIC+DLIC), T4(DLICN+DLICN)
-  NyNyspinDriverLicenseNameQuery: 1/1 -- T4(DGRP+DGRP co-fire)
-  DriverHistoryQuery: 4/4 -- T6(DALL+OUT), T8(DALL+OLN), T10(DALH+OUT), T12(DALH+DOB)
-  GunQuery: 1/1 -- T38(GINQ)
+  VehicleRegistrationQuery: 4/4 -- T20(RVEH+RVEH), T22(RVEHOU+RVEHOUT), T24(RCAR+VIN), T26(RVIN+VIN)
+  DriverLicenseQuery: 2/2 -- T1(DLIC+DLIC), T3(DLICN+DLICN)
+  NyNyspinDriverLicenseNameQuery: 1/1 -- T3(DGRP+DGRP co-fire)
+  DriverHistoryQuery: 4/4 -- T5(DALL+OUT), T7(DALL+OLN), T9(DALH+OUT), T11(DALH+DOB)
+  GunQuery: 1/1 -- T40(GINQ)
   ArticleSingleQuery: 1/1 -- T42(AINQ)
-  BoatQuery: 4/4 -- T28(RVEH+RVEH), T30(RCAR+Hull), T32(BVEH+BVEH), T34(BVIN+BVIN)
+  BoatQuery: 4/4 -- T30(RCAR+Hull), T32(BVIN+BVIN), T34(BVEH+BVEH), T36(RVEH+RVEH)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.0.json

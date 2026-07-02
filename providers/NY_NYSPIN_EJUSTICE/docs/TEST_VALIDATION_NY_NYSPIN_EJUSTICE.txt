@@ -1,72 +1,71 @@
-﻿================================================================
+================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE.json
-  Generated: 2026-06-29 08:38
+  Source: NY_NYSPIN_EJUSTICE_v4.0.json
+  Generated: 2026-07-02 19:25
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- NY_NYSPIN_EJUSTICE
+TEST MATRIX <-> JSON CONSISTENCY -- NY_NYSPIN_EJUSTICE_v4.0
 ============================================================
-Source: NY_NYSPIN_EJUSTICE.json
+Source: NY_NYSPIN_EJUSTICE_v4.0.json
 Matrix: NY_NYSPIN_EJUSTICE_TEST_MATRIX.txt
-Generated: 2026-06-29
+Generated: 2026-07-02
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (16 tests -- 3 cards, 7 combos -- NyNyspinDriverLicenseName co-fires with DL)
-  T1  Person     [PASS] 3 cards, 19 fields, defaults verified
-  T2  Person     [PASS] DriverLicenseQuery fires (DLIC)
-  T3  Person     [PASS] any[] fields verified: imageIndicator
-  T4  Person     [PASS] DriverLicenseQuery fires (DLICN)
-  T5  Person     [PASS] any[] fields verified: imageIndicator, nameMiddle, nameSuffix
-  T6  Person     [PASS] DriverHistoryQuery fires (DALLOUT)
-  T7  Person     [PASS] any[] fields verified: imageIndicator, nyNyspinTransactionNameDH
-  T8  Person     [PASS] DriverHistoryQuery fires (DALL)
-  T9  Person     [PASS] any[] fields verified: imageIndicator, nyNyspinTransactionNameDH
-  T10  Person     [PASS] DriverHistoryQuery fires (DALHOUT)
-  T11  Person     [PASS] any[] fields verified: imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH
-  T12  Person     [PASS] DriverHistoryQuery fires (DALH)
-  T13  Person     [PASS] any[] fields verified: imageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH
-  T14  Person     [PASS] queriesToDeselect verified
-  T15  Person     [PASS] priority routing: multiple combos present
-  T16  Person     [PASS] empty form: no combos fire
+ENTITY: PERSON (19 tests -- 3 cards, 7 combos -- NyNyspinDriverLicenseName co-fires with DL)
+  T1  Person     [PASS] DriverLicenseQuery fires (DLIC)
+  T2  Person     [PASS] any[] fields verified: ImageIndicator
+  T3  Person     [PASS] DriverLicenseQuery fires (DLICN)
+  T4  Person     [PASS] any[] fields verified: ImageIndicator, nameMiddle, nameSuffix
+  T5  Person     [PASS] DriverHistoryQuery fires (DALLOUT)
+  T6  Person     [PASS] any[] fields verified: ImageIndicator, nyNyspinTransactionNameDH
+  T7  Person     [PASS] DriverHistoryQuery fires (DALL)
+  T8  Person     [PASS] any[] fields verified: ImageIndicator, nyNyspinTransactionNameDH
+  T9  Person     [PASS] DriverHistoryQuery fires (DALHOUT)
+  T10  Person     [PASS] any[] fields verified: ImageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH
+  T11  Person     [PASS] DriverHistoryQuery fires (DALH)
+  T12  Person     [PASS] any[] fields verified: ImageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH
+  T13  Person     [PASS] DriverLicenseQuery fires (DLIC)
+  T14  Person     [PASS] DriverHistoryQuery fires (DALLOUT)
+  T15  Person     [PASS] DriverHistoryQuery fires (DALHOUT)
+  T16  Person     [PASS] DriverHistoryQuery fires (DALLOUT)
+  T17  Person     [PASS] DriverHistoryQuery fires (DALHOUT)
+  T18  Person     [PASS] queriesToDeselect verified
+  T19  Person     [PASS] priority routing: multiple combos present
 ENTITY: VEHICLE (10 tests -- 1 card, 4 combos)
-  T17  Vehicle    [PASS] 1 cards, 8 fields, defaults verified
-  T18  Vehicle    [PASS] VehicleRegistrationQuery fires (RVEH)
-  T19  Vehicle    [PASS] any[] fields verified: imageIndicator, licensePlateTypeCode, licensePlateYear
-  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (RCAR)
-  T21  Vehicle    [PASS] any[] fields verified: imageIndicator
-  T22  Vehicle    [PASS] VehicleRegistrationQuery fires (RVIN)
-  T23  Vehicle    [PASS] any[] fields verified: imageIndicator, vehicleMakeCode, vehicleYear
-  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (RVEHOUT)
-  T25  Vehicle    [PASS] any[] fields verified: imageIndicator, licensePlateTypeCode, licensePlateYear
-  T26  Vehicle    [PASS] empty form: no combos fire
+  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (RVEH)
+  T21  Vehicle    [PASS] any[] fields verified: ImageIndicator, LicensePlateTypeCode, LicensePlateYear
+  T22  Vehicle    [PASS] VehicleRegistrationQuery fires (RVEHOUT)
+  T23  Vehicle    [PASS] any[] fields verified: ImageIndicator, LicensePlateTypeCode, LicensePlateYear
+  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (RCAR)
+  T25  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T26  Vehicle    [PASS] VehicleRegistrationQuery fires (RVIN)
+  T27  Vehicle    [PASS] any[] fields verified: ImageIndicator, VehicleMakeCode, vehicleYear
+  T28  Vehicle    [PASS] VehicleRegistrationQuery fires (RVEHOUT)
+  T29  Vehicle    [PASS] VehicleRegistrationQuery fires (RVEHOUT)
 ENTITY: BOAT (10 tests -- 1 card, 4 combos)
-  T27  Boat       [PASS] 1 cards, 5 fields, defaults verified
-  T28  Boat       [PASS] BoatQuery fires (RVEH)
-  T29  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
   T30  Boat       [PASS] BoatQuery fires (RCAR)
-  T31  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T32  Boat       [PASS] BoatQuery fires (BVEH)
-  T33  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T34  Boat       [PASS] BoatQuery fires (BVIN)
-  T35  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T36  Boat       [PASS] empty form: no combos fire
-ENTITY: FIREARM (4 tests -- 1 card, 1 combo)
-  T37  Firearm    [PASS] 1 cards, 5 fields, defaults verified
-  T38  Firearm    [PASS] GunQuery fires (GINQ)
-  T39  Firearm    [PASS] any[] fields verified: imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator
-  T40  Firearm    [PASS] empty form: no combos fire
-ENTITY: ARTICLE (4 tests -- 1 card, 1 combo)
-  T41  Article    [PASS] 1 cards, 4 fields, defaults verified
+  T31  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T32  Boat       [PASS] BoatQuery fires (BVIN)
+  T33  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T34  Boat       [PASS] BoatQuery fires (BVEH)
+  T35  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T36  Boat       [PASS] BoatQuery fires (RVEH)
+  T37  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T38  Boat       [PASS] BoatQuery fires (BVIN)
+  T39  Boat       [PASS] BoatQuery fires (BVIN)
+ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
+  T40  Firearm    [PASS] GunQuery fires (GINQ)
+  T41  Firearm    [PASS] any[] fields verified: ImageIndicator, GunMake, GunCaliber, relatedHitSearchIndicator
+ENTITY: ARTICLE (2 tests -- 1 card, 1 combo)
   T42  Article    [PASS] ArticleSingleQuery fires (AINQ)
-  T43  Article    [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T44  Article    [PASS] empty form: no combos fire
+  T43  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
 
-SUMMARY: 44/44 PASS, 0 FAIL
+SUMMARY: 43/43 PASS, 0 FAIL
 
 
