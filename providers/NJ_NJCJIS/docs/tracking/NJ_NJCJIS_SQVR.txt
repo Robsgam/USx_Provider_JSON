@@ -4,10 +4,13 @@ LABELS PROVISIONAL -- refine wording during manual form use; not a graded test c
 Last updated: 2026-07-01
 JSON version: v4.8
 Validator: 61 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
-Live test: PENDING -- full re-test from T1 required (v4.8: metadata-driven keyRef rename,
-  DQ/DQN/RQ/RQN -> FULL/FULLN/RANDFULL/RANDFULLN; see BUILD_NOTES v4.8). T2-T29 below are
-  historical evidence under the pre-rename keyRef names (wire behavior unaffected by the
-  rename -- same set[]/any[]/routing -- but must be re-confirmed under the new labels).
+Live test: COMPLETE + INTEGRITY-CERTIFIED -- v4.8 zero-error pass 2026-07-02 (all 35 tests
+  under the renamed FULL/FULLN/RANDFULL/RANDFULLN keyRefs): 35/35 submitted+captured, 0 label
+  corrections, 0 unmatched, content audit 35/35, enforce 27P/0F/0W. Re-verified 2026-07-02
+  (later same day) against the FINAL hardened harness (post relabel-stability + formDefaults-
+  dominance-exclusion + positional-pairing-tie-break fixes found during HI/CA iteration):
+  test plan regenerates byte-identical, content audit still 35/35, enforce still clean. Logs
+  are a verified faithful record of user-input testing (audit_log_content + fresh-plan check).
 
 KNOWN LIMITATIONS (1):
   1. LIMITATION #31: initialValue fields not counted for set[] in submit gating/autoSelect evaluation
