@@ -137,6 +137,14 @@
         const entity = (document.getElementById('usx-ent').value || '').trim();
         const tests = (plan.tests || []).filter(t => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entity || t.entity === entity));
         if (!tests.length) { alert('No submittable tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
+        // Wrong-form guard: an entity run on the WRONG rendered form burns every test
+        // ("Firearm" ran on the Article form, all six NOT submitted, 2026-07-02). Probe the
+        // entity's first fill field before starting.
+        const firstFill = tests.map(t => Array.isArray(t.fills) ? t.fills[0] : t.fills).find(f => f && f.fieldId);
+        if (firstFill && !document.querySelector('#' + CSS.escape(firstFill.fieldId))) {
+          alert('The ' + (entity || 'selected') + ' form is not on screen (field "' + firstFill.fieldId + '" not found). Click the ' + entity + ' entity tab first, then Run Plan.');
+          return;
+        }
         runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} tests for ${entity || 'all'}…`;
         run.disabled = true;
         try {
