@@ -25,6 +25,36 @@ before running down a path (do NOT assume; confirm against XML/devdoc/live logs 
 standard (see CLAUDE.md Field Configuration Rules). NJ/FL/HI/CA_CLETS/NY are converted; remaining
 providers convert on their own next scheduled rebuild, one at a time -- no mass update.
 
+## Version Table -- machine-synced, do not hand-edit the version/score columns
+
+`tools/sync_version_docs.ps1` updates each provider's row here automatically at every rebuild;
+`enforce.ps1` CHECK 3g WARNs if a provider's current version string is missing from this file.
+This table exists to satisfy that gate -- for narrative status/notes, see CLAUDE.md's Provider
+Status table instead (this table's Notes column is intentionally terse).
+
+| # | Provider | Version | BASE Score | MC Score | LIM | Notes |
+|---|---|---|---|---|---|---|
+| 1 | NJ_NJCJIS | v4.8 |  | 61P/0F/0W | 0 | in-scope, single-JSON |
+| 2 | HI_HCJDC_OFML | v4.7 |  | 66P/0F/0W | 0 | in-scope, single-JSON |
+| 3 | NY_NYSPIN_EJUSTICE | v4.0 |  | 81P/0F/0W | 0 | in-scope, single-JSON, testing parked |
+| 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | out of scope |
+| 5 | FL_FCIC | v7.1 |  | 92P/0F/0W | 0 | in-scope, single-JSON |
+| 6 | TX_TLETS | v3.13 | 83P/0F/0W | 83P/0F/0W | 0 | out of scope |
+| 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/6W | 0 | out of scope |
+| 8 | CA_CLETS | v2.12 |  | 77P/0F/0W | 0 | in-scope, single-JSON |
+| 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | out of scope |
+| 10 | CA_CLETS_OCATS | v1.2 | 63P/0F/0W | 63P/0F/0W | 1 | out of scope |
+| 11 | CA_eSUN | v1.5 | 71P/0F/0W | 71P/0F/1W | 2 | out of scope |
+| 12 | CA_SAN_LUIS_OBISPO | v1.3 | 65P/0F/0W | 65P/0F/0W | 0 | out of scope |
+| 13 | IL_LEADS_OFML | v1.1 | 61P/0F/0W | 61P/0F/0W | 1 | out of scope |
+| 14 | MD_METERS | v1.3 | 69P/0F/0W | 69P/0F/0W | 1 | out of scope |
+| 15 | OH_LEADS | v1.3 | 77P/0F/0W | 77P/0F/1W | 4 | out of scope |
+| 16 | NM_NMLETS_OFML | v1.3 | 66P/0F/0W | 66P/0F/0W | 1 | out of scope |
+| 17 | OR_LEDS | v1.3 | 58P/0F/0W | 58P/0F/0W | 0 | out of scope |
+| 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/1W | 3 | out of scope |
+| 19 | TX_TLETS_CCH | v1.0 | 119P/0F/0W |  | 0 | out of scope, CCH stub |
+| 20 | CA_CONTRA_COSTA | -- |  |  |  | out of scope, incomplete (awaiting devdoc) |
+
 ---
 
 ## ARCHIVE -- resolved rebuild history below this line
@@ -33,547 +63,284 @@ The sections below are a running technical/engineering-decision log (root-cause 
 audits, cross-provider rollout notes) kept for institutional context beyond what a single
 provider's CHANGELOG captures. Entries are point-in-time and many are superseded by later
 entries further down -- when in doubt, trust git log / the provider's CHANGELOG over anything
-here. Not pruned in this pass (real technical content, not just changelog duplication); flagged
-as a follow-up if it grows unwieldy again.
+here.
 
-## RESOLVED v6.0 2026-06-23: FL_FCIC inert State conditions — field=attr name not sourceField
+**Pruned 2026-07-06**: purely historical entries with zero remaining forward action (fully
+resolved, captured in git history/CHANGELOGs, no live provider still pending) were deleted
+outright rather than kept as dead weight -- e.g. 2026-05-08/05-11 WARN-elimination sweeps, the
+2026-05-14 shared-module migration writeups, and a stale duplicate "current status" scorecard
+that contradicted the CURRENT STATUS section above. Entries with a mix of resolved + still-open
+providers were trimmed to just the open part, with the resolved part verified against current
+JSON/CHANGELOG content (not assumed) before removal. Two internally-duplicated tracking tables
+(poisoned-array conditions, tracked in two separate sections) were merged into one.
 
-LIVE-PROVEN (HI v3.4 T5, controlled): `conditions[].field` is matched against the FORM
-sourceField/fieldId, NOT the QIDM attribute `name`. A field naming an attribute whose
-sourceField differs is silently INERT. Cross-provider scan 2026-06-22 found FL_FCIC carries
-this in **10 places** — every `field:["State"]` NOT_EXISTS gate (attribute `State` has
-sourceField `RegistrationState`, so no form field is keyed "State"):
-- VehicleRegistrationQuery: FRQDecalNumber, FRQLicensePlateNumber, FRQTitleLienInformation, FRQVehicleIdentificationNumber
-- DriverLicenseQuery: FDQName, FDQOperatorLicenseNumber
-- BoatQuery: FBQBoatHullIdNumber, FBQDecalNumber, FBQRegistrationNumber, FBQTitleLienInformation
+## Attention auto-populate -- PENDING TX_TLETS (2026-06-22)
 
-CURRENT IMPACT: BENIGN (conductor 42/42 PASS, live T1-T42 PASS) — FL's competing combos are
-separated by primary field, so the dead State gates don't misroute today; they are dead code.
-`validate.ps1` (G-32 inert-condition check, added 2026-06-22) now WARNs on all 10. FL's stored
-report predates the gate (still 0W) so enforce does not block; a FL build_report re-run will
-show 11W (10 inert + the pre-existing Attention WARN).
+HI v2.9 resolved Attention auto-populate for optional Attention fields (root cause: this
+ConnectCic instance serializes ONLY the fired combo's `set[]`/`any[]` fields, so a handler-only
+Attention with no `any[]` entry and no gate-feeder field never reaches the wire). Fix: add
+`'Attention'` to the combo's `any[]` + a hidden gate-feeder field (`InpH 'Attention' ...
+initialValue='X'`), keep `sourceField=['Attention']` (do NOT empty it -- rejected at import).
+FL_FCIC applied this at v6.0 (CONFORMS, see Attention conformance table below).
 
-**Fix to apply at FL's next rebuild (with FULL re-test — making these gates live CHANGES routing):**
-- In `build_fl_fcic.ps1`, change each `conditions` `field` from `@('State')` to `@('RegistrationState')`.
-- Re-test the OOS-vs-in-state routing per primary (esp. plate+State and VIN+State) to confirm
-  the now-live State gates produce correct pool isolation and don't regress T1-T42.
-- Do NOT change silently; FL is live-validated. Ref: QIDM_REFERENCE.txt FIELD=SOURCEFIELD;
-  memory feedback_conditions_field_sourcefield.
+**Still pending** (out of scope, at TX_TLETS's next rebuild): add `'Attention'` to all 4 DH
+combo `any[]` (`KQNameImg`, `KQName`, `KQOLNImg`, `KQOLN`) + hidden gate-feeder field.
+Ref: `knowledge-base/RULE_HANDLERS.txt` entry 13.
 
-## RESOLVED FL v6.0 / PENDING TX: Attention auto-populate fix (2026-06-22)
+## ParseCommsysNameRuleHandler empty-args regression -- RESOLVED for in-scope providers
 
-HI v2.9 RESOLVED Attention auto-populate (live-proven: `<Attention>SGAMBELLONE R</Attention>` from
-the officer's RMS profile). Root cause: this ConnectCic instance serializes ONLY the fired combo's
-`set[]`/`any[]` fields. FL and TX carry the handler (`CommsysGetLastNameFirstNameInitialRuleHandler`,
-`sourceField=['Attention']`) but Attention is **not in any combo `any[]`** and there is **no
-gate-feeder field** → Attention is currently INERT on both (never reaches the wire).
+ROOT CAUSE (2026-06-24): `tools/_build_rms_bundle.ps1` helper `_R($fn, $args)` named its param
+`$args` (PowerShell reserved automatic variable) -> collision silently dropped every passed
+arguments array during a bug window (intro commit `13a13c8` -> fix `1951db4`, 2026-06-17).
+Symptom: Person `Name` attr gets empty args -> `ParseCommsysNameRuleHandler` returns nothing ->
+CAD `buildParsedPersonTitle` falls back to DL# as the entity title. Canonical handler spec:
+Confluence "Attribute Handle" (Cringer) handler #3; repo summary `knowledge-base/RULE_HANDLERS.txt` #19.
 
-**Fix to apply (proven on HI v2.9 — do NOT use `sourceField=[]`, rejected at import):**
-- Add `'Attention'` to every DriverHistoryQuery combo's `any[]`:
-  - FL_FCIC (`build_fl_fcic.ps1`): `KQName`, `KQOperatorLicenseNumber` (+ any other DH combos).
-  - TX_TLETS (`build_TX_TLETS.ps1`): `KQNameImg`, `KQName`, `KQOLNImg`, `KQOLN`.
-- Add a hidden `Attention` gate-feeder field on the Person/DH card: `InpH 'Attention' ... @{ initialValue = 'X' }`.
-- Keep `sourceField=['Attention']` + the handler. Expect `<Attention>` = officer LastName FirstInitial once re-imported.
-Ref: `knowledge-base/RULE_HANDLERS.txt` entry 13 (working config). Deferred to each provider's next rebuild (user, 2026-06-22).
+Shared module fixed; remediation = rebuild from current source (no patch). **Verified 2026-07-06**
+by grepping current root JSONs: CA_CLETS and NY_NYSPIN_EJUSTICE -- the two in-scope providers
+built inside the bug window -- now have zero empty-`arguments[]` occurrences for this handler;
+both confirmed fixed by their post-bug rebuilds (CA_CLETS v2.12, NY v4.0).
 
-## ParseCommsysNameRuleHandler empty-args regression (`_R` $args drop) — FLAGGED 2026-06-24
+**Still pending** (out of scope, built inside the bug window, fixes automatically on next
+rebuild -- no separate action needed): AZ_AZDPS, TX_TLETS_CCH.
 
-ROOT CAUSE: `tools/_build_rms_bundle.ps1` helper `_R($fn, $args)` named its param `$args`
-(PowerShell reserved automatic variable) → collision silently dropped EVERY passed arguments
-array → emitted `"arguments": []` on every argument-bearing handler in the QRDM/RMS response
-layer during the bug window (intro commit `13a13c8` → FIX commit `1951db4`, NJ v4.0, 2026-06-17;
-param renamed `$args`→`$ruleArgs` + null-guard). Most visible symptom: Person `Name` attr empty
-args → `ParseCommsysNameRuleHandler` returns nothing → `Name` never written → CAD
-`buildParsedPersonTitle` falls back to **DL#** as the entity title (reported on the Newark
-Foundation NJ deploy).
-
-SHARED MODULE IS ALREADY FIXED — remediation = REBUILD from current source (no patch, no code edit;
-[[feedback-clean-build-no-patches]]). Canonical handler spec: Confluence "Attribute Handle" (Cringer)
-handler #3 (3-level fallback: normalized parts → NormalizedName → Name); repo summary
-`knowledge-base/RULE_HANDLERS.txt` #19.
-
-PROPAGATION STATUS (ripgrep-verified 2026-06-24, current root JSONs):
-- POPULATED / fixed (NO action): NJ v4.4, HI v4.1, FL v6.5, TX_TLETS v3.13 (post-fix rebuilds) +
-  12 pre-bug 2026-05-11 legacy builds (LA, MD, OH, NM, OR, TN, CA_VENTURA, CA_eSUN, CA_SAN_LUIS,
-  CA_CLETS_OCATS, IL, CA_CONTRA_COSTA).
-- EMPTY `[]` — AWAITING REBUILD (the only 4; built inside the bug window): **CA_CLETS,
-  NY_NYSPIN_EJUSTICE, AZ_AZDPS, TX_TLETS_CCH.** In-scope: CA_CLETS, NY. Out-of-scope: AZ, TX_TLETS_CCH.
-
-ACTION at each affected provider's next rebuild (one-at-a-time): `pipeline.ps1 -Provider <name>`
-→ regenerates populated args → re-import. Verify: `simulate_response.ps1` shows `Name` populated.
-- **NJ / Newark Foundation:** fix already in repo since v4.0 — **re-deploy current v4.4** (no build change).
-- NUANCE (verify at rebuild): Confluence doc shows NameLast/First/Middle with 2 separators
-  `[", ", " "]`, Name with 3 `[", ", " ", " "]`; `_build_rms_bundle.ps1` emits 3 for all four. Likely immaterial.
-
-GUARD TO ADD (prevents silent regression; do at next tooling window): a `verify_build.ps1` CHECK
-that FAILs on any `ParseCommsysNameRuleHandler` with empty `arguments[]` (enforce PHASE 2c already
-runs verify_build → blocks) — would auto-flag the 4 stale providers and stop a re-regression shipping.
-This bug shipped silently because nothing gated handler args. Plan ref: `dapper-tumbling-muffin.md`.
-
-## VehicleMakeName QRDM make-table fix — FIXED in shared module 2026-06-24 (propagates on rebuild)
+## VehicleMakeName QRDM make-table fix (RND-62365) -- RESOLVED for in-scope providers
 
 The QRDM `VehicleMakeName` attribute resolved vehicle make against the FIREARM make table
-(`codeTypeCategory='NCIC_FIREARM_MAKE'` / `codeTypeSource='NJ_NIBRS'`, AP #24) — wrong; only the regex
-fallback masked it. CORRECTED in `tools/_build_rms_bundle.ps1` `Build-CommsysQrdm` (~line 623) to
-`codeTypeSource='VEHICLE'`, `codeTypeCategory='VehicleType'` (vehicle codes live in the `VehicleType`
-table under the `VEHICLE` source; user-verified vs platform registry 2026-06-24). KB: RULE_HANDLERS #16
-+ CLAUDE.md code-type pairings. Bench-verified NJ v4.5 (`HOND -> Honda`, simulate_response 0 MISSING).
+(`codeTypeCategory='NCIC_FIREARM_MAKE'`/`codeTypeSource='NJ_NIBRS'`, AP #24) -- wrong; only the
+regex fallback masked it. Corrected in `tools/_build_rms_bundle.ps1` `Build-CommsysQrdm` to
+`codeTypeSource='VEHICLE'`/`codeTypeCategory='VehicleType'` (2026-06-24, user-verified vs
+platform registry; vehicle codes live in the `VehicleType` table under the `VEHICLE` source).
+Shared-module fix -- applies automatically on each provider's next rebuild, no separate action
+needed. KB: `RULE_HANDLERS.txt` #16 + CLAUDE.md code-type pairings.
 
-**Shared-module change → every provider's VehicleMakeName corrects on its NEXT rebuild (one-at-a-time).**
-Done: **NJ v4.5**. Pending (apply at each provider's rebuild, no separate action needed — automatic on
-rebuild): HI, FL, TX_TLETS, CA_CLETS, NY, AZ, + all legacy. See memory [[project_rms_vehiclemakename_qrdm]].
+**Verified 2026-07-06** by grepping current root JSONs: all 5 in-scope providers carry the
+corrected `codeTypeSource: NCIC` -- NJ (fixed v4.5), CA_CLETS (v2.10), HI (v4.6), FL_FCIC (v6.8),
+NY (v4.0). **Still pending** (out of scope, fixes automatically on next rebuild): TX_TLETS, AZ_AZDPS.
 
-## DEFERRED BACKLOG — Process-hardening Tier 3 (2026-06-14, documented per user; REMIND at trigger)
+A related gate, CHECK 15 (`verify_build.ps1` State-label wording), also passes for all 5
+in-scope providers. TX_TLETS still needs a State-label routing hint at its next rebuild (current
+label is a bare "State").
+
+## DEFERRED BACKLOG -- Process-hardening Tier 3 (2026-06-14, documented per user; REMIND at trigger)
 
 From the tools/scripts/KB consolidation audit. Tier 1 (KB poisoned-array centralization, README fix,
 QIDM builder helpers, doctor.ps1) + Tier 2 done/in-progress. Tier 3 deferred:
 
-- **Data-driven generic build engine** — replace ~20 bespoke `build_<provider>.ps1` (~80% boilerplate)
+- **Data-driven generic build engine** -- replace ~20 bespoke `build_<provider>.ps1` (~80% boilerplate)
   with one engine + per-provider config. SCAFFOLDED/DEFERRED (user can't dedicate a big Claude block).
-  The 30-60h figure is a brute-force [Guessing] estimate — **do NOT commit to it.** Before any real
+  The 30-60h figure is a brute-force [Guessing] estimate -- **do NOT commit to it.** Before any real
   work, run a cheap time-boxed (~1-2h) SPIKE for a measured number / smarter path: derive ONE provider's
-  config from its existing JSON → generate → diff (config-by-example round-trip). If that works, per-
+  config from its existing JSON -> generate -> diff (config-by-example round-trip). If that works, per-
   provider cost may be ~minutes and the whole effort far less than guessed. `generate_build_script.ps1`
-  (the incomplete BASE/MC-era seed) was deleted 2026-07-06 as dead code — it scaffolded separate
+  (the incomplete BASE/MC-era seed) was deleted 2026-07-06 as dead code -- it scaffolded separate
   BASE+MC build scripts, contradicting the current single-JSON build model. Any future engine/scaffold
   should be authored fresh from an existing single-JSON build script (e.g. `build_fl_fcic.ps1`), not
   resurrected from that generator. **REMINDER TRIGGER:** 5+ NEW providers queued, OR idle capacity for the spike.
   Until then, use the new `Build-QidmCombo`/`Build-QidmAttribute` helpers incrementally at each rebuild
-  (semantic-reformat, validator-verified — not byte-diff).
-- **Modularize `validate.ps1`** (~2200 lines, 6 coupled phases) — SKIP. Risk > benefit; revisit only if
+  (semantic-reformat, validator-verified -- not byte-diff).
+- **Modularize `validate.ps1`** (~2200 lines, 6 coupled phases) -- SKIP. Risk > benefit; revisit only if
   it grows materially or a phase needs independent reuse.
 
-## Poisoned-Array Exposure Catalog (2026-06-14, repo-wide sweep)
+## Poisoned-Array / Value-Comparison Conditions -- per-provider status
 
-Source: `validate.ps1` G-31 (added 2026-06-14; also `verify_build.ps1` CHECK 11). Flags every
-combo with a value-comparison condition (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) — these are INERT on
-the platform (poisoned-array, QIDM_REFERENCE Sec 2a). **Poisoned = inert, NOT automatically broken**:
-benign if routing is carried elsewhere (NJ RandomRequest — same MessageKey, server-side value
-routing), harmful if it causes misroute/over-send (TX Img combos — union over-send). Each needs
-per-case analysis. Fix at each provider's rebuild (one-at-a-time).
+POISONED-ARRAY RULE (live-proven FL v4.9 T-A/T-B, USx tenant RMS client): any value-comparison
+condition (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) disables its ENTIRE conditions array, including
+co-resident NOT_EXISTS members. See `knowledge-base/QIDM_REFERENCE.txt` Sec 2a +
+`PLATFORM_BUG_REPORT.txt` BUG 6. **Poisoned = inert, NOT automatically broken** -- benign if
+routing is carried elsewhere, harmful if it causes misroute/over-send. Fix at each provider's
+own rebuild, one at a time (never a mass sweep).
 
-| Provider | Combos | Verdict / action |
-|---|---|---|
-| CA_CLETS | 0 (was 20) | FIXED v2.5 2026-06-14. Server-routing model confirmed (wire=MessageType=VehicleRegistrationQuery/DriverLicenseQuery; IV.4*/IR.QVC keyRefs server-selected by field VALUE, internal-only — 12 live VehReg + 9 DL logs). Removed 20 inert conditions; deleted 13 redundant IV.4* + IV.4V/IV.4B dups; IR.QVC criminal combos kept (devdoc DL #3-7), IR.QVC.N set[] fixed (Name+SexCode). 0F/0W/0LIM. ON RETEST QUEUE. |
-| TX_TLETS | 5 | HARMFUL (Img/catchall union over-send). FIXING NOW (v3.4: strip conditions, merge pairs, keep image+email in any[]). |
-| TX_TLETS_CCH | 5 | OUT OF SCOPE — intentional separate data-ingestion stub (user directive). |
-| NY_NYSPIN_EJUSTICE | 4 | Earmark for NY's rebuild; analyze benign-vs-harmful then. |
-| NJ_NJCJIS (mainline + PASCAL + VehStolenRemoved + VehStolenSeparate) | 2 each | KNOWN BENIGN — RandomRequest EQUALS Y; routing carried by field value, identical MessageKey. Documented. No action. |
+| Provider | Status |
+|---|---|
+| CA_CLETS | RESOLVED v2.5 (2026-06-14) -- server-routing model confirmed (wire=MessageType, keyRefs server-selected by field VALUE); 20 inert conditions removed + 13 redundant IV.4* combos deleted. |
+| NY_NYSPIN_EJUSTICE | RESOLVED v4.0 (2026-07-02) -- verified 2026-07-06: zero EQUALS/NOT_EQUALS conditions in current JSON. DALHOUT/DALLOUT now use existence-only (EXISTS/NOT_EXISTS) State routing. |
+| NJ_NJCJIS | KNOWN BENIGN, no action -- RandomRequest EQUALS Y/N; routing carried by field value, identical MessageKey across the poisoned combo. Live-passed 2026-05-28 NJCJIS tenant. |
+| TX_TLETS | STILL OPEN -- ImageIndicator EQUALS Y conditions routing (Img/catchall union over-send risk). Verify with one live query or redesign to existence/set[]-based routing at next rebuild. |
+| TX_TLETS_CCH | OUT OF SCOPE -- intentional separate data-ingestion stub (user directive). |
 
-Process lesson: simulator/combo-match tests PASS without exercising conditions live → false
-confidence (TX 40/40, CA_CLETS 40/40 both pre-finding). The static guard + request-side live test
-close that gap.
+Process lesson: simulator/combo-match tests PASS without exercising conditions live -- false
+confidence (TX 40/40, CA_CLETS 40/40 both pre-finding). The static guard (`validate.ps1` G-31,
+`verify_build.ps1` CHECK 11) + request-side live test close that gap.
 
-## ImageIndicator set[] anomaly — LA_LEMS (flagged 2026-06-15)
+## ImageIndicator set[] anomaly -- LA_LEMS (flagged 2026-06-15)
 
 Repo-wide scan (all 24 provider JSONs, during FL_FCIC v5.0 live testing) found `imageIndicator`
 in a combo `set[]` (i.e. REQUIRED) in exactly ONE place: **`LA_LEMS_MC.json` combo `DP`**.
 Everywhere else it is `any[]`/`defaults[]` only. ImageIndicator should not be required (FCIC-class
-metadata defaults blank→N; it is a query modifier, not a search key). **At LA_LEMS's next rebuild:
+metadata defaults blank->N; it is a query modifier, not a search key). **At LA_LEMS's next rebuild:
 verify DP and move `imageIndicator` out of `set[]` into `any[]`** unless LA metadata genuinely
 requires it. Context + full ImageIndicator serialization finding: `knowledge-base/FIELD_REFERENCE.txt`
-Section 9. One provider at a time — do not touch LA before its rebuild.
+Section 9. One provider at a time -- do not touch LA before its rebuild.
 
-## Process Gap-Proofing — IMPLEMENTED 2026-06-14 (then NJ)
+## Process Gap-Proofing -- IMPLEMENTED 2026-06-14
 
-DONE (all 3 pillars built + verified; design: plan `swift-gathering-snowglobe.md`):
-- **Pillar 1** `tools/audit_test_coverage.ps1 -Gate` — per-provider verdict CLOSED /
-  INCOMPLETE-consistent / INCONSISTENT; exits non-zero only on INCONSISTENT. Also fixed
-  single-JSON discovery (merged providers were silently skipped) + canonical build-script
-  version parse (NJ multi-script).
-- **Pillar 2** new `tools/verify_claims.ps1` — every KB/simulator LIVE-PROVEN claim must cite
-  a committed test log; long-path (>260) safe. KB STATUS convention added to QIDM_REFERENCE
-  Sec 2a + BUILD_RULES §17; poisoned-array rule now cites the archived T-A/T-B logs.
-- **Pillar 3** `reset_test_package.ps1` regenerates TEST_MATRIX (warns on combo delta);
-  `verify_build.ps1` CHECK 10 (RMS combos ⊆ CommSys) + CHECK 11 (value-comparison conditions
-  flag, WARN).
-- Wired both into `enforce.ps1` **PHASE 6** (blocking). Docs: TESTING_REQUIREMENTS §11 GATES
-  4-5 marked [TOOL]/[OP].
+Three-pillar iterate-phase gate built and wired into `enforce.ps1` (blocking): `audit_test_coverage.ps1
+-Gate` (per-provider CLOSED / INCOMPLETE-consistent / INCONSISTENT verdict, exits non-zero only
+on INCONSISTENT so fresh all-PENDING builds aren't blocked), `verify_claims.ps1` (every KB/simulator
+claim tagged "live-proven" must cite a real committed test log; unbacked claims flagged as
+HYPOTHESIS), and a tightened `reset_test_package.ps1` (regenerates TEST_MATRIX, warns on combo
+delta) + `verify_build.ps1` CHECK 10 (RMS combos subset-of CommSys combos) / CHECK 11
+(value-comparison conditions flagged). Docs: `knowledge-base/TESTING_REQUIREMENTS.txt` GATES 0-5,
+QIDM_REFERENCE.txt + BUILD_RULES.txt STATUS convention. Full original design rationale: plan file
+`swift-gathering-snowglobe.md` (outside the repo) if ever needed.
 
-**First gate finding (action item, one-at-a-time):** CA_CLETS is **INCONSISTENT** — 40
-[CONFIRMED] but only 36 XML-bearing logs (matches the known "NJ/CA_CLETS XML backfill needed"
-note). Full `enforce.ps1` now BLOCKS on CA_CLETS until its logs carry XML or markers are
-corrected. NJ mainline = CLOSED; TX_TLETS = CLOSED; FL v5.0 = INCOMPLETE-consistent (fresh,
-correct). All other providers INCOMPLETE-consistent.
+## Residual UNBUILT Verification -- ongoing process rule (2026-06-12)
 
-**Then:** run NJ through the new gates (user directive: gap-proofing first, then NJ).
-Full design: plan file `swift-gathering-snowglobe.md` (outside the repo).
+`extract_metadata_reference.ps1` phantom-UNBUILT bug fixed 2026-06-12 (synthetic keyRef matching).
+Remaining UNBUILT rows in each `METADATA_REFERENCE.txt` are genuine non-matches: a mix of
+documented approved skips, LIMITATION #21/#36 collapses, and possible real gaps -- treat every
+residual row as a gap until proven otherwise against the devdoc "Basic Queries Supported" combos
+(NOT key mnemonics -- devdocs may not contain key lists).
 
-**Problem:** the build phase is hard-gated (`enforce.ps1` exit 0 or blocked) but the
-test→change→iterate phase is only prose-gated, so a provider can carry stale `[CONFIRMED]`
-markers, untested combos, missing XML, and a stale TEST_MATRIX yet still pass enforce and be
-called "done." Separately, unverified platform-behavior hypotheses got written into KB +
-both simulators as "live-proven" before the confirming test ran (the FL v4.7→v5.0 churn) —
-nothing checks that a "live-proven" claim references a real committed test log.
+**ACTION at each provider's next rebuild:** classify every UNBUILT row in its METADATA_REFERENCE
+as BUILT-VARIANT / APPROVED-SKIP (cite devdoc+BUILD_NOTES) / REAL-GAP (build it). One provider at
+a time -- do not mass-sweep.
 
-**Pillar 1 — blocking iterate-phase gate.** Extend `tools/audit_test_coverage.ps1` with a
-`-Gate` mode emitting CLOSED / INCOMPLETE-consistent / INCONSISTENT (block on: `[CONFIRMED]`
-older than `tests/.test_version`; a `[CONFIRMED]` combo whose log lacks XML; TEST_MATRIX combo
-count ≠ JSON; orphan logs). Wire into `enforce.ps1` as a blocking phase that fails on
-INCONSISTENT (passes on INCOMPLETE-consistent so fresh all-PENDING builds aren't blocked) and
-always prints the verdict.
+## RMS Person QIDM Pool Isolation (2026-06-12) -- GATED, not yet applied
 
-**Pillar 2 — hypothesis quarantine.** New `tools/verify_claims.ps1`: every KB/simulator
-platform-behavior claim tagged "live-proven" must reference an existing test-log path; flag
-unbacked claims. KB convention: each behavior rule carries `STATUS: LIVE-PROVEN <log path>` or
-`STATUS: HYPOTHESIS <discriminating test>`; a HYPOTHESIS may not be encoded in a simulator as fact.
+FL v4.8 live evidence: RMS follows the union-pool serialization model -- a full DL card sends
+dlNumber+name+DOB+sex in ONE elastic query (all four Person combos match, no conditions, pool =
+union). Fix designed in BUILD_RULES Section 4 ("RMS POOL ISOLATION"): OLN-first combos +
+licenseNumber NOT_EXISTS conditions in `_build_rms_bundle.ps1`. **DO NOT APPLY until gates clear:**
+- G1: live impact test (does the elastic search AND criteria? OLN-match/name-mismatch record:
+  OLN-only vs full-card results)
+- G2: verify RmsRestPayloadHandler honors conditions (zero RMS conditions exist portfolio-wide;
+  conditions only proven on the CommSys handler)
 
-**Pillar 3 — close silent drift.** Tighten `tools/reset_test_package.ps1` to regenerate
-TEST_MATRIX (and warn on combo-count delta); add to `tools/verify_build.ps1`: RMS combos ⊆
-CommSys combos, and flag any surviving value-comparison routing condition.
-
-**Docs/rule/memory:** rewrite `knowledge-base/TESTING_REQUIREMENTS.txt` GATES 0-5 to point at
-the enforced checks; add the quarantine rule + STATUS convention to QIDM_REFERENCE.txt +
-BUILD_RULES.txt; durable lesson saved in memory [[iterate-phase-needs-hard-gate]].
-
-**Verify the gates gate:** FL_FCIC v5.0 (all-PENDING) → INCOMPLETE-consistent, not blocked;
-inject a stale `[CONFIRMED]` → INCONSISTENT + non-zero exit; `verify_claims` passes on the
-poisoned-array rule (cites committed T-A/T-B logs), flags it if the citation is removed.
-
-**Then:** run NJ through the new gates as the first real exercise (see NJ_NJCJIS_STATUS.txt PENDING).
-
----
-
-## Status: 16 PROVIDERS FLAGGED FOR REBUILD — Single-JSON merge + HIDLE_MC migration
-
-All 18 active providers rebuilt and validated (0 FAIL / 0 WARN). But audit found
-7 providers with CommsysGetLastNameFirstNameInitialRuleHandler on Attention attribute
-and NO visible form field — same pattern fixed on FL_FCIC v4.0.
-
-## Final Scorecard (2026-05-11)
-
-| # | Provider | Version | BASE Score | MC Score | LIM | Notes |
-|---|---|---|---|---|---|---|
-| 1 | NJ_NJCJIS | v4.7 |  | 61P/0F/0W/0LIM | 0 | v4.7 (2026-06-26): VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; fixes Newark vehicle "Mock results processed"). Shared module _build_rms_bundle.ps1; NJ rebuilt only. RELEASED 2026-06-29: full re-test from T1 PASS -- 8/8 combos confirmed, 5/5 entities blocked. |
-| 2 | HI_HCJDC_OFML | v4.7 |  | 66P/0F/0W/0LIM | 0 | v3.6: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on RQV/QVV/M55S) + vehicleYear any[] gap fixed. All 5 entities PENDING re-test on v3.6 (Person/Firearm/Article/Boat fingerprints preserved from v3.5; Vehicle blocked at v3.4 routing only). Cosmetic label pass pending. |
-| 3 | NY_NYSPIN_EJUSTICE | v4.0 |  | 81P/0F/0W/0LIM | 0 | MERGED single-JSON 2026-05-22, DGRP added, layout 13→7 cards, VehicleMakeCode FormSelect, one-directional deselect, CAD defaults. FLAG: plate-wins guardrail -- has RVEHOUT (OOS plate) and VIN combos; audit plate/VIN pool isolation at next rebuild |
-| 4 | AZ_AZDPS | v2.3 |  | 71P/0F/0W/0LIM | 0 | |
-| 5 | FL_FCIC | v7.1 |  | 92P/0F/0W/0LIM | 0 | v5.0 (2026-06-12): dropdown revert + poisoned-array purge -- ALL value-comparison conditions removed (proven wholly inert, T-A/T-B), existence-only routing (State/RelatedHit/OLN NOT_EXISTS), DH+Boat dest State = NCIC dropdown, not-FL gate = LIMITATION + BUG 6 escalation. BQ x3 restored v4.7, 31 combos. QV x2 PENDING platform confirmation. ImageQuery = user-approved scope skip. NOT yet imported. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next FL rebuild; FL has both plate and VIN paths in VehicleRegistrationQuery |
-| 6 | TX_TLETS | v3.13 |  | 83P/0F/0W/0LIM | 0 | EmailAddress user-fillable, Attention visible, one-directional deselect. FLAG: plate-wins guardrail (LicensePlateNumber NOT_EXISTS on VIN-path combos) -- audit at next TX rebuild |
-| 7 | LA_LEMS | v2.5 |  | 63P/0F/0W/0LIM | 0 | State no-default, purposeCodeDH fixed |
-| 8 | CA_CLETS | v2.12 |  | 77P/0F/0W/0LIM | 0 | v2.12 (2026-07-01): restored in-state DL combos ID.L1/IN.L1 (DL 6->8; v2.11 removal left no in-state backstop). Re-import + full re-test from T1 PENDING. |
-| 9 | CA_VENTURA_COUNTY | v1.4 |  | 72P/0F/0W/0LIM | 0 | |
-| 10 | CA_CLETS_OCATS | v1.2 |  | 63P/0F/0W/0LIM | 0 | |
-| 11 | CA_eSUN | v1.5 |  | 71P/0F/0W/0LIM | 0 | NEW SOURCE (2026-06-12): updated metadata XML + devdoc PDF received (old CA_eSUN.4.17.26.pdf removed). v1.5 build predates new source. On next rebuild: regen DEVDOC text, re-run extract_metadata_reference + extract_queries, diff_docs vs KB, rebuild against new XML |
-| 12 | CA_SAN_LUIS_OBISPO | v1.3 |  | 65P/0F/0W/0LIM | 0 | |
-| 13 | IL_LEADS_OFML | v1.1 |  | 61P/0F/0W/0LIM | 0 | |
-| 14 | MD_METERS | v1.3 |  | 69P/0F/0W/0LIM | 0 | State no-default. GAP (2026-06-08): Gun GunMake-primary combo missing (metadata ZGUN primaryFieldReference=GunMake has no JSON combo -- add on rebuild) |
-| 15 | OH_LEADS | v1.3 |  | 77P/0F/0W/0LIM | 0 | |
-| 16 | NM_NMLETS_OFML | v1.3 |  | 66P/0F/0W/0LIM | 0 | |
-| 17 | OR_LEDS | v1.3 |  | 58P/0F/0W/0LIM | 0 | |
-| 18 | TN_TIES | v1.4 |  | 80P/0F/0W/0LIM | 0 | |
-| 19 | TX_TLETS_CCH | v1.0 |  | 119P/0F/0W/0LIM | 0 | STUB 2026-06-09: separate CCH-gated provider, 6 base QIDMs (ported TX_TLETS) + 8 CCH transactions (AQ/AR/FQ/IQ/QH/QR/QWI/ZR), CCH-suffixed fields, autoSelect=false named-checkbox, FreeText capped, CCH response QRDM out of scope, NOT live-tested |
-
-**CA_CONTRA_COSTA**: MC script created (clean-build HIDLE_MC pattern). Incomplete — awaiting updated devdoc/metadata decision.
-
-## Residual UNBUILT Verification (2026-06-12)
-
-extract_metadata_reference.ps1 phantom-UNBUILT bug fixed 2026-06-12 (synthetic
-keyRef matching). Remaining UNBUILT rows in each METADATA_REFERENCE.txt are now
-genuine non-matches: a mix of documented approved skips, LIMITATION #21/#36
-collapses, and possible real gaps. FL_FCIC verification found 5 of its 7 were
-REAL GAPS misclassified as skips (QV x2, BQ x3 — see FL row above), so treat
-every residual row as a gap until proven otherwise against the devdoc
-"Basic Queries Supported" combos (NOT key mnemonics — devdocs may not contain
-key lists; the v4.4 FL misread cited one that does not exist).
-
-ACTION at each provider's next rebuild: classify every UNBUILT row in its
-METADATA_REFERENCE as BUILT-VARIANT / APPROVED-SKIP (cite devdoc+BUILD_NOTES) /
-REAL-GAP (build it). One provider at a time — do not mass-sweep.
-
-## Poisoned-Array Conditions Sweep (flagged 2026-06-12)
-
-POISONED-ARRAY RULE live-proven on FL v4.9 T-A/T-B (USx tenant, RMS client):
-any value-comparison condition (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) disables
-its ENTIRE conditions array, incl. co-resident NOT_EXISTS. See
-knowledge-base/QIDM_REFERENCE.txt Sec 2a + PLATFORM_BUG_REPORT.txt BUG 6.
-
-Providers carrying value-comparison conditions — fix at each one's next
-rebuild/test session (one provider at a time, NOT a mass sweep):
-
-| Provider | Conditions at risk | Action at next session |
-|---|---|---|
-| NJ_NJCJIS | RandomRequest EQUALS Y/N (RAND vs FULL routing) | CONTRADICTION: live-passed 2026-05-28 NJCJIS tenant. Run ONE RAND=Y discriminating query — check firing keyRef. If poisoned: redesign per FL v5.0 pattern |
-| TX_TLETS | ImageIndicator EQUALS Y conditions routing | Verify with one live query or redesign to existence/set[]-based routing |
-| NY_NYSPIN_EJUSTICE | DALHOUT/DALLOUT State guards (if NOT_EQUALS) | Inspect JSON; replace with existence-only or set[] routing |
-| CA_CLETS | IV.4* plate-type conditions (13 combos), State NOT_EQUALS guards | Inspect; IV.4* may be redundant anyway (see reference_ca_clets_iv4_routing) |
-
-| Provider | Residual UNBUILT rows |
-|---|---|
-| CA_VENTURA_COUNTY | 20 |
-| CA_eSUN | 10 (re-check against NEW 2026-06-12 source) |
-| NJ_NJCJIS | 9 (4 expected: LIMITATION #21 RandomRequest collapse) |
-| FL_FCIC | 7 -> 4 after v4.7 (BQ x3 restored; QV x2 pending platform confirmation of data-mined auto-send; QW x2 approved skip) |
-| CA_CLETS_OCATS | 6 |
-| CA_SAN_LUIS_OBISPO | 4 |
-| OH_LEADS | 3 |
-| TX_TLETS | 3 |
-| TX_TLETS_CCH | 3 |
-| HI_HCJDC_OFML | 2 (1 known: DL SexCode-primary combo, see row 2) |
-| MD_METERS | 1 (known: Gun GunMake-primary combo, see row 14) |
-| NM_NMLETS_OFML | 1 |
-| AZ, CA_CLETS, CA_CONTRA_COSTA, IL, LA, NY, OR, TN | 0 |
-
-## RMS Person QIDM Pool Isolation (2026-06-12) -- ALL 19 PROVIDERS, GATED
-
-FL v4.8 live evidence: RMS follows the union-pool serialization model -- a full
-DL card sends dlNumber+name+DOB+sex in ONE elastic query (all four Person combos
-match, no conditions, pool = union). Fix designed in BUILD_RULES Section 4
-("RMS POOL ISOLATION"): OLN-first combos + licenseNumber NOT_EXISTS conditions
-in _build_rms_bundle.ps1. DO NOT APPLY until gates clear:
-- G1: live impact test (does the elastic search AND criteria? OLN-match/name-
-  mismatch record: OLN-only vs full-card results)
-- G2: verify RmsRestPayloadHandler honors conditions (zero RMS conditions exist
-  portfolio-wide; conditions only proven on the CommSys handler)
-When applied, propagates to every provider at its rebuild (shared module).
-test_commsys now simulates RMS QIDMs + prints a UNION POOL line per QIDM.
+When applied, propagates to every provider at its rebuild (shared module). `test_commsys.ps1`
+already simulates RMS QIDMs + prints a UNION POOL line per QIDM.
 
 ## Shadowed Combo Findings (G-16 subset check, 2026-06-12)
 
-validate.ps1 G-16 upgraded from consecutive-count heuristic to true subset-shadowing
-detection (an earlier UNCONDITIONED combo whose set[] is a subset of a later combo's
-set[] makes the later combo unreachable under first-match). FL v4.7 clean. Latent
-findings in other providers (verify/fix at each provider's next rebuild -- add routing
-conditions or reorder; cross-check CA_CLETS IV.4* redundancy note):
+`validate.ps1` G-16 upgraded from consecutive-count heuristic to true subset-shadowing detection
+(an earlier UNCONDITIONED combo whose set[] is a subset of a later combo's set[] makes the later
+combo unreachable under first-match).
 
-| Provider | Shadowed combo | Shadowing combo |
-|---|---|---|
-| CA_CLETS | IA.QVK (VehicleRegistrationQuery) | IV.4V |
-| CA_CLETS | IR.QVC.N (DriverLicenseQuery) | IN.L1 |
-| CA_CLETS | IV.4B (BoatQuery) | IA.QB.R |
-| TX_TLETS | QVVehicleIdentificationNumber (VehicleInsuranceRegistrationQuery) | RQVehicleIdentificationNumber |
-| TX_TLETS_CCH | QVVehicleIdentificationNumber (VehicleInsuranceRegistrationQuery) | RQVehicleIdentificationNumber |
+| Provider | Status |
+|---|---|
+| CA_CLETS | RESOLVED -- IV.4* combos deleted entirely as part of the poisoned-array fix (v2.5); IR.QVC.N shadow fixed v2.12 (RegistrationState NOT_EXISTS + SexCode EXISTS added for mutual exclusion, `verify_build` CHECK 16 reachability CLEAN). Verified 2026-07-06: zero IV.4* keyRefs remain in current JSON. |
+| TX_TLETS / TX_TLETS_CCH | STILL OPEN -- `QVVehicleIdentificationNumber` shadowed by `RQVehicleIdentificationNumber`; add routing conditions or reorder at next rebuild. |
 
-NY/NJ/FL and all 13 other providers: 0 findings (existing docs/ validator reports
-predate the G-16 upgrade; scores refresh at each provider's next rebuild).
+NY/NJ/HI/FL_FCIC and all other providers: 0 findings.
 
-## What Was Fixed (2026-05-08 through 2026-05-11)
+## Remaining Limitations (portfolio-wide)
+- TX_TLETS: 2 LIM -- EmailAddress is QIDM-only on DL+DH (no form field, handler-filled); genuinely
+  unfixable without platform form field additions. See also [[project_tx_email_field_other_team]]
+  (EmailAddress form field/handler now owned by a separate eng team -- do not build/modify it).
 
-### WARN Elimination (all 18 providers)
-- ArticleType sourceField references (6 providers)
-- Attention field combo placement (3 providers)
-- State routing issues (3 providers)
-- ImageIndicator defaults (2 providers)
-- DH-suffix fieldId consistency (2 providers)
-- Total: ~75 WARNs eliminated down to 0
+## One-Directional queriesToDeselect -- per-provider status (rule flagged 2026-05-12)
 
-### Dynamic PlateYear (all 18 providers)
-- `$currentYear = [string](Get-Date).Year` added to all build scripts
-- `initialValue = $currentYear` replaces hardcoded '2026'
+Rule (KB BUILD_RULES.txt Sec 11 + AP #14/#23): default query (DL, VehReg) has autoSelect=true and
+NO queriesToDeselect; opt-in query (DH, VehStolen) deselects ONLY the default. NEVER bidirectional
+(mutual cross-deselect -> error popup, see `providers/PLATFORM_BUG_REPORT.txt` BUG 2).
 
-### DH-suffix fieldIds (9 DL+DH providers)
-- All 9 providers with DL+DH now use DH-suffix pattern
-- queriesToDeselect configured on all 9
-
-### Combo Ordering (all 18 providers)
-- Most-specific combinations first in every QIDM
-
-### State initialValue Removal (HI, LA, MD)
-- Removed per "start clean" principle — LIM #30 eliminated
-- Officers must explicitly select state
-
-### purposeCodeDH Field Type Fix (HI, LA)
-- Changed from FormSelect (attributeTypeId=DEX_INQUIRY_PURPOSE_CODE) to FormInput (maxLength=1, initialValue=C)
-- Matches FL/NM/OH/TN/TX majority pattern
-
-## Cross-Provider Audit (2026-05-11)
-- 323 PASS / 0 FAIL / 2 WARN / 192 INFO
-- 2 WARNs: CA_SAN_LUIS_OBISPO CaRequestPurposeCode (documented in metadata as intentional)
-
-## Remaining Limitations (2 total)
-- TX_TLETS: 2 LIM — EmailAddress is QIDM-only on DL+DH (no form field, handler-filled)
-- These are genuinely unfixable without platform form field additions
-
-## One-Directional queriesToDeselect — Flagged 2026-05-12
-
-Rule (KB BUILD_RULES.txt Sec 11 + AP #14/#23): default query (DL, VehReg) has
-autoSelect=true and NO queriesToDeselect; opt-in query (DH, VehStolen) deselects
-ONLY the default. NEVER bidirectional (mutual cross-deselect → error popup).
-Fix at each provider's next rebuild; verify against current JSON (list is as-of
-the flag date and may be stale — `verify_build.ps1` / audit catches live state).
-
-DL+DH — remove queriesToDeselect from DriverLicenseQuery:
-- FIXED: CA_CLETS (v1.8), FL_FCIC (correct since v3.9), TX_TLETS (v3.1)
-- FLAGGED: NY_NYSPIN_EJUSTICE, AZ_AZDPS, LA_LEMS, TN_TIES,
-  OH_LEADS, NM_NMLETS_OFML, MD_METERS, CA_SAN_LUIS_OBISPO, CA_eSUN, CA_VENTURA_COUNTY
+DL+DH -- remove queriesToDeselect from DriverLicenseQuery:
+- FIXED: CA_CLETS (v1.8), FL_FCIC (since v3.9), TX_TLETS (v3.1), NY_NYSPIN_EJUSTICE (v4.0, DH-suffix + one-directional)
 - Already correct: NJ_NJCJIS (since v2.9), HI_HCJDC_OFML (one-directional since v1.8 -- DL has no deselect; DH deselects DL only)
+- STILL FLAGGED (out of scope, fix at next rebuild): AZ_AZDPS, LA_LEMS, TN_TIES, OH_LEADS,
+  NM_NMLETS_OFML, MD_METERS, CA_SAN_LUIS_OBISPO, CA_eSUN, CA_VENTURA_COUNTY
 
-VehReg+VehStolen — remove queriesToDeselect from VehicleRegistrationQuery:
+VehReg+VehStolen -- remove queriesToDeselect from VehicleRegistrationQuery:
 - FIXED: TX_TLETS (v3.1)
-- N/A: HI_HCJDC_OFML (no VehicleStolenQuery built; prior flag was stale)
+- N/A: HI_HCJDC_OFML (no VehicleStolenQuery built)
 
-## Attention Field — Automated Handler is the Standard (REVERSED 2026-06-22)
+## Attention Field -- Automated Handler is the Standard (REVERSED 2026-06-22)
 
-REVERSAL: the prior "expose Attention as a visible field" directive (FL_FCIC v4.0,
-flagged 2026-05-13) is REVERSED. Wherever Attention is part of a query as an
-OPTIONAL field, it is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
-(no visible field) -- the automated-Attention standard (BUILD_RULES Sec 14, user
-directive 2026-06-22). The earlier performance attribution to the handler is doubted;
-WNG perf fix makes any degradation negligible (re-verify in HI live test).
-REQUIRED Attention (metadata set[], e.g. CCH) stays a visible officer-supplied field.
+REVERSAL: the prior "expose Attention as a visible field" directive (FL_FCIC v4.0, flagged
+2026-05-13) is REVERSED. Wherever Attention is part of a query as an OPTIONAL field, it is
+auto-populated via `CommsysGetLastNameFirstNameInitialRuleHandler` (no visible field) -- the
+automated-Attention standard (BUILD_RULES Sec 14, user directive 2026-06-22). REQUIRED Attention
+(metadata set[], e.g. CCH) stays a visible officer-supplied field.
 
-Conformance (verify_build.ps1 CHECK 8):
+Conformance (`verify_build.ps1` CHECK 8):
 | Provider | Attention state | Status |
 |---|---|---|
 | HI_HCJDC_OFML | handler on DriverHistoryQuery | CONFORMS |
 | LA_LEMS | handler on all 6 QIDMs | CONFORMS |
 | TN_TIES, CA_eSUN, CA_VENTURA_COUNTY, OH_LEADS | handler on DriverHistoryQuery | CONFORMS |
-| FL_FCIC | converted to handler v5.3 (2026-06-22) | CONFORMS |
+| FL_FCIC | converted to handler v5.3 / v6.0 | CONFORMS |
 | TX_TLETS | converted to handler v3.9 (2026-06-22) | CONFORMS |
 | TX_TLETS_CCH | CCH = required (visible, exempt); DH optional still visible | OUT OF SCOPE (do not touch) |
 | NJ, CA_CLETS, CA_OCATS, CA_SLO, IL, MD, NY, OR, AZ, NM | no optional Attention attr | N/A |
 
-**Also noted:** TX_TLETS EmailAddress on DL+DH — no form field AND no handler (orphan, sends empty).
+**Also noted:** TX_TLETS EmailAddress on DL+DH -- no form field AND no handler (orphan, sends empty).
 
-## KB-Based RMS — 2026-05-14
+## Single-JSON Merge -- 2026-05-21 (extended through 2026-07-02)
 
-All 38 build scripts (19 BASE + 19 MC) now use `tools/_build_rms_bundle.ps1`
-to construct the RMS bundle and CommSys QRDM from inline KB specifications. No external
-template dependency — HIDLE_MC.json and HIDLE.json load paths both eliminated.
+BASE/MC dual-variant build path eliminated for the 5 in-scope providers: NJ_NJCJIS, FL_FCIC,
+CA_CLETS, HI_HCJDC_OFML, NY_NYSPIN_EJUSTICE -- all MERGED (one build script, one JSON output,
+reports in `docs/`). Remaining out-of-scope providers merge on their own next rebuild (see
+"Flagged for Full Rebuild" below). Tools updated: `pipeline.ps1`, `enforce.ps1`,
+`build_report.ps1`, `sync_version_docs.ps1`, `audit_cad.ps1`. KB updated: BUILD_RULES.txt
+Section 6, CLAUDE.md.
 
-**Methodology**: Build from KB knowledge + metadata/devdocs only. `_build_rms_bundle.ps1`
-defines all RMS and CommSys result-mapping data in code. No HIDLE.json, no patches, no
-cleanup. Build scripts call `Build-RmsBundle` and `Build-CommsysQrdm` directly.
+## Flagged for Full Rebuild on Next Test (14 remaining, all out of scope)
 
-**BASE migration (2026-05-14)**: All 19 BASE scripts previously loaded `source/HIDLE.json`,
-cloned CommSys QRDM, and applied 5 inline patches (Patch 1/3/6/7/8). Replaced with
-`Build-CommsysQrdm` + `Build-RmsBundle` — same 2-line pattern as MC scripts. ~87 lines of
-HIDLE load + QRDM clone + patch code eliminated per script (~1,650 lines total).
-Migration script `_migrate_base_rms.ps1` deleted after successful run.
+On first test of each remaining provider: (1) delete old BASE script, rename MC->primary
+(`build_<provider>.ps1`), update output to `<PROVIDER>.json`; (2) run build script, then
+`build_report.ps1`, verify 0 FAIL on all checks including CAD audit; (3) reports go to `docs/`
+(not `docs/base/` or `docs/mc/`).
 
-## Shared Layout Helpers — 2026-05-14
-
-All 38 build scripts (19 BASE + 19 MC) now use `tools/_build_layout_helpers.ps1` for QIF layout construction.
-Previously each script duplicated ~95 lines of identical helper functions (N, Inp, InpH, Sel,
-SelH, Dt, BuildMultiCardLayout, AddCadNodes, AddFrNodes, MakeLayouts). Now consolidated into
-a single 103-line shared module. InpH signature standardized to include maxLen parameter
-(AZ_AZDPS 6 call sites updated). ~1,800 lines of duplication eliminated.
-
-### Provider Helpers — `tools/_build_provider_helpers.ps1`
-
-All 38 build scripts (19 BASE + 19 MC) now use `tools/_build_provider_helpers.ps1` for provider
-boilerplate: AUTH config, QMF, QRDM, ENTITIES bundle, and output+validation. Previously each
-script duplicated ~60 lines of identical AUTH/QMF/QRDM blocks plus ~20 lines of output/validation
-code. Now consolidated into 5 shared functions (Build-Auth, Build-Qmf, Build-ProviderQrdm,
-Build-EntitiesBundle, Write-ProviderJson). Write-ProviderJson standardizes pretty-printed output,
-phase archiving, and validator-with-exit-on-fail across all scripts. ~2,400 lines
-of duplication eliminated. Migration completed 2026-05-14 with 5 verification builds (CA_CLETS_OCATS
-63P, IL_LEADS_OFML 61P, AZ_AZDPS 71P, FL_FCIC 102P, TN_TIES 80P — all 0F/0W).
-
-### Already Built, Verified, and MERGED to Single-JSON (3)
-
-| Provider | Version | Score | Status |
+| Provider | MC Script Updated | Attention Fix Needed | Notes |
 |---|---|---|---|
-| NJ_NJCJIS | v4.7 |  | v4.7 2026-06-26: VehicleMakeName code source corrected VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365). RELEASED 2026-06-29: 8/8 combos confirmed. |
-| CA_CLETS | v2.12 |  | v2.12 (2026-07-01): restored in-state DL combos ID.L1/IN.L1 (DL 6->8). Re-import + full re-test from T1 PENDING. |
-| FL_FCIC | v7.1 |  | 31 combos (v6.4 FBQ casing fix, Boat re-opened); Attention HIDDEN + auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (v6.0) |
+| TX_TLETS | YES | YES (DH only) | +race dead field, camelCase applied |
+| LA_LEMS | YES | YES (ALL 7 QIDMs) | +race dead field |
+| AZ_AZDPS | YES | NO | Keep SSN, remove PlateYear, unique $final assembly |
+| CA_VENTURA_COUNTY | YES | YES (DH only) | Standard cleanup |
+| CA_eSUN | YES | YES (DH only) | Standard cleanup |
+| CA_SAN_LUIS_OBISPO | YES | NO | Standard cleanup |
+| CA_CLETS_OCATS | YES | NO | Standard cleanup |
+| IL_LEADS_OFML | YES | NO | Standard cleanup |
+| MD_METERS | YES | NO | +race dead field |
+| OH_LEADS | YES | YES (DH only) | Standard cleanup |
+| NM_NMLETS_OFML | YES | NO | Standard cleanup |
+| OR_LEDS | YES | NO | Standard cleanup |
+| TN_TIES | YES | YES (DH only) | Keep SSN |
+| CA_CONTRA_COSTA | NO | NO | Incomplete -- awaiting updated devdoc/metadata |
 
-### Flagged for Full Rebuild on Next Test (16)
+(HI_HCJDC_OFML and NY_NYSPIN_EJUSTICE were on this list originally -- both since fully merged
+and rebuilt under the current methodology; removed from the table 2026-07-06.)
 
-Scripts updated, NOT yet built. On first test of each provider:
-1. Delete old BASE script, rename MC→primary (`build_<provider>.ps1`), update output to `<PROVIDER>.json`
-2. Run build script, then build_report.ps1, verify 0 FAIL on all checks including CAD audit
-3. Reports go to `docs/` (not `docs/base/` or `docs/mc/`)
+## CAD Defaults -- Flagged 2026-05-19
 
-| # | Provider | MC Script Updated | Attention Fix Needed | Notes |
-|---|---|---|---|---|
-| 1 | TX_TLETS | YES | YES (DH only) | +race dead field, camelCase applied |
-| 2 | HI_HCJDC_OFML | YES | YES (DH only) | Standard cleanup |
-| 3 | LA_LEMS | YES | YES (ALL 7 QIDMs) | +race dead field |
-| 4 | AZ_AZDPS | YES | NO | Keep SSN, remove PlateYear, unique $final assembly |
-| 5 | NY_NYSPIN_EJUSTICE | DONE (v2.0) | DONE (v2.0) | Merged 2026-05-22 |
-| 6 | CA_VENTURA_COUNTY | YES | YES (DH only) | Standard cleanup |
-| 7 | CA_eSUN | YES | YES (DH only) | Standard cleanup |
-| 8 | CA_SAN_LUIS_OBISPO | YES | NO | Standard cleanup |
-| 9 | CA_CLETS_OCATS | YES | NO | Standard cleanup |
-| 10 | IL_LEADS_OFML | YES | NO | Standard cleanup |
-| 11 | MD_METERS | YES | NO | +race dead field |
-| 12 | OH_LEADS | YES | YES (DH only) | Standard cleanup |
-| 13 | NM_NMLETS_OFML | YES | NO | Standard cleanup |
-| 14 | OR_LEDS | YES | NO | Standard cleanup |
-| 15 | TN_TIES | YES | YES (DH only) | Keep SSN |
-| 16 | CA_CONTRA_COSTA | NO | NO | Incomplete — awaiting updated devdoc/metadata |
+CAD dispatch does NOT apply QIF form initialValues. Fields in `any[]` with initialValues need
+combination-level `defaults[]` to ensure CAD-dispatched XML includes them. `audit_cad.ps1` CHECK 6
+validates this automatically. BUILD_RULES.txt Section 12 documents the rule. All 5 in-scope
+providers have this resolved (see each provider's CHANGELOG). Fix on next rebuild of each
+remaining provider -- fields to default are provider-specific, check each provider's form
+initialValues, not a universal list. Common gaps found historically: ImageIndicator,
+LicensePlateTypeCode/LicensePlateYear, RelatedHitSearchIndicator, PurposeCode.
 
-## Single-JSON Merge — 2026-05-21
+## Legacy Artifact Cleanup -- Flagged 2026-06-03
 
-BASE/MC dual-variant build path eliminated. One build script per provider → one JSON output.
-- NJ_NJCJIS, FL_FCIC, CA_CLETS: MERGED (scripts renamed, JSONs renamed, reports in docs/)
-- 16 remaining providers: merge on next rebuild (see instructions above)
-- Tools updated: pipeline.ps1, enforce.ps1, build_report.ps1, sync_version_docs.ps1, audit_cad.ps1
-- KB updated: BUILD_RULES.txt Section 6, CLAUDE.md
-
-## CAD Defaults — Flagged 2026-05-19
-
-CAD dispatch does NOT apply QIF form initialValues. Fields in any[] with initialValues
-need combination-level `defaults[]` to ensure CAD-dispatched XML includes them.
-audit_cad.ps1 CHECK 6 now validates this automatically. BUILD_RULES.txt Section 12 documents the rule.
-
-**NJ_NJCJIS v3.3 DONE** — all 13 combos have defaults. 0 FAIL on CAD audit CHECK 6.
-
-**142 FAIL across remaining 17 providers.** Most common missing defaults:
-- ImageIndicator (nearly all providers that have it)
-- LicensePlateTypeCode / LicensePlateYear (all providers with plate combos)
-- RelatedHitSearchIndicator (TX_TLETS)
-- PurposeCode (CA providers — flagged as INFO due to codeTypeProvider)
-
-Fix on next rebuild of each provider. Fields to default are provider-specific — check
-each provider's form initialValues, not a universal list.
-
-## Legacy Artifact Cleanup — Flagged 2026-06-03
-
-On rebuild of each remaining provider, also clean up legacy BASE/MC artifacts.
-See BUILD_RULES.txt Section 13 for full checklist.
+On rebuild of each remaining provider, also clean up legacy BASE/MC artifacts. See
+BUILD_RULES.txt Section 13 for full checklist.
 
 | Cleanup Item | Providers Affected |
 |---|---|
-| Delete _BASE_TEST_MATRIX.txt + _MC_TEST_MATRIX.txt | 14 (all except NJ, FL, TX, CA_CLETS — cleaned 2026-06-03) |
-| Delete BASE_SIM/MC_SIM test logs | AZ_AZDPS, NY_NYSPIN_EJUSTICE |
-| Rename _MC suffix JSON to {PROVIDER}.json | 12 (_MC suffix providers) |
-| Consolidate dual JSON (BASE + MC) | HI_HCJDC_OFML (only provider with 2 root JSONs) |
-| Regenerate METADATA_REFERENCE (remove "MC expansion candidate") | 14 (all except NJ, FL, TX, CA_CLETS — fixed 2026-06-03) |
-
-## Next Actions
-- TX_TLETS v3.3 live testing in progress (imported TLETS USx Tenant 2026-06-03)
-- Provider work order: TX_TLETS (ACTIVE), NY, AZ
-- Merge BASE/MC → single-JSON on each rebuild (16 providers)
-- Fix Attention hidden automation on next rebuild of each flagged provider
-- Fix CAD defaults (142 FAILs) on next rebuild of each provider
-- Legacy cleanup per Section 13 checklist on each rebuild
-- Each provider's first test triggers: merge scripts → build → build_report → verify all checks CLEAN
+| Delete _BASE_TEST_MATRIX.txt + _MC_TEST_MATRIX.txt | All except NJ, FL, TX, CA_CLETS, HI, NY (cleaned on rebuild) |
+| Rename _MC suffix JSON to {PROVIDER}.json | Remaining _MC suffix providers |
+| Consolidate dual JSON (BASE + MC) | Any provider with 2 root JSONs |
+| Regenerate METADATA_REFERENCE (remove "MC expansion candidate") | Remaining unmerged providers |
 
 ## Medium-Priority Tool Enhancements (post-TX, not blocking)
 
-### 4A — verify_build.ps1: DH-suffix fieldId isolation CHECK
+### 4A -- verify_build.ps1: DH-suffix fieldId isolation CHECK
   Validate all DH card fieldIds end with DH suffix.
   Cross-check DH QIDM sourceFields only reference DH-suffixed tokens.
   Prevents DL/DH field bleed without needing a live test to detect it.
   Track: add after TX_TLETS rebuild (TX is the highest-DH-complexity provider).
 
-### 4B — audit_cad.ps1 CHECK 6 enhancement: defaults[].field name validation
+### 4B -- audit_cad.ps1 CHECK 6 enhancement: defaults[].field name validation
   Current CHECK 6 validates that combo defaults[] entries exist.
   Enhancement: verify each defaults[].field matches a QIDM attribute name (not sourceField),
   and that the field appears in the combo any[]. Catches wrong-field-name defaults silently
   passing the existing check.
   Track: add during TX rebuild cycle.
 
-### 4C — lint_build_scripts.ps1: hardcoded value detector
+### 4C -- lint_build_scripts.ps1: hardcoded value detector
   Flag string literals in combo set[]/any[] matching year patterns (^\d{4}$), 2-letter
   state codes, or version strings. $currentYear already enforced for PlateYear; extend
   to catch accidental hardcodes elsewhere (e.g., hardcoded '2025' in a year field).
   Track: add during TX rebuild cycle.
-
-## RND-62365: VehicleMakeName code-source + CHECK 15 State-label (2026-06-26)
-
-- VehicleMakeName VEHICLE_MAKE/NCIC correction (was VEHICLE/VehicleType, absent on Newark
-  instance, broke NJ v4.6 vehicle queries; probe-confirmed VEHICLE_MAKE/NCIC present; matches
-  RND-54190 + sibling VehicleModelName). Shared module tools/_build_rms_bundle.ps1.
-  STATUS: NJ done (v4.7), CA_CLETS done (v2.10), HI done (v4.6).
-  **FL_FCIC (v6.7) and TX_TLETS still carry the wrong VEHICLE/VehicleType in their built JSONs
-  -> fixed automatically on their next rebuild; verify VehicleMakeName=VEHICLE_MAKE/NCIC after.**
-
-- CHECK 15 State-label gate refined 2026-06-26 (verify_build.ps1) to accept "change for
-  out-of-state" (defaulted-State providers) in addition to "leave blank for".
-  STATUS: NJ + CA pass; HI done v4.6 (label "State (Hawaii = leave blank)" -> "State (leave
-  blank for Hawaii)").
-  **FL_FCIC + TX_TLETS need a State-label routing hint at their next rebuild (TX label is a bare
-  "State"; FL verify current label).**
