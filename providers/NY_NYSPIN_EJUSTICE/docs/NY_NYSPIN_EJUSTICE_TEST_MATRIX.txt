@@ -7,11 +7,12 @@ Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (1 card, 8 fields):
-  CARD_VEH (VEHICLE QUERY):
+Vehicle (2 cards, 8 fields):
+  CARD_VEH_OPT (SEARCH OPTIONS):
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+  CARD_VEH_SEARCH (VEHICLE SEARCH):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Person (3 cards, 19 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
@@ -40,10 +41,11 @@ Article (1 card, 4 fields):
     ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-Boat (1 card, 5 fields):
-  CARD_BOA (BOAT QUERY):
-    ROW 1: RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20]
-    ROW 2: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+Boat (2 cards, 5 fields):
+  CARD_BOA_OPT (SEARCH OPTIONS):
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+  CARD_BOA_SEARCH (BOAT SEARCH):
+    RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20]
 
 QIDM SUMMARY (7 QIDMs, 17 combos)
 ----------------------------------------
@@ -107,7 +109,7 @@ ENTITY 1: PERSON (19 tests -- 3 cards, 7 combos -- NyNyspinDriverLicenseName co-
 19  Person      Priority routing: verify more-specific combo wins.  [    ]
               Fill fields that match multiple combos, verify correct one fires.
 
-ENTITY 2: VEHICLE (10 tests -- 1 card, 4 combos)
+ENTITY 2: VEHICLE (10 tests -- 2 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -132,7 +134,7 @@ ENTITY 2: VEHICLE (10 tests -- 1 card, 4 combos)
 29  Vehicle     Guardrail: RVEHOUT>RCAR  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOUT). VIN absent from XML.
 
-ENTITY 3: BOAT (10 tests -- 1 card, 4 combos)
+ENTITY 3: BOAT (10 tests -- 2 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------

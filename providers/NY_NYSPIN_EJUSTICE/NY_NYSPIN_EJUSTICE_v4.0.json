@@ -4,7 +4,7 @@
                         "description":  "Entity form configurations",
                         "configurations":  [
                                                {
-                                                   "description":  "Vehicle queries -- single card: Plate (RVEH), VIN+State (RVIN), VIN (RCAR)",
+                                                   "description":  "Vehicle queries -- 2 cards (Options+Search): Plate (RVEH), VIN+State (RVIN), VIN (RCAR)",
                                                    "label":  "Vehicle",
                                                    "layout":  {
                                                                   "default":  {
@@ -55,33 +55,115 @@
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
-                                                                                                                  "CARD_VEH"
+                                                                                                                  "CARD_VEH_OPT",
+                                                                                                                  "CARD_VEH_SEARCH"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
 
                                                                                                                     },
                                                                                                     "parent":  "FORM_ROOT"
                                                                                                 },
-                                                                                  "CARD_VEH":  {
-                                                                                                   "type":  {
-                                                                                                                "resolvedName":  "Card"
-                                                                                                            },
-                                                                                                   "displayName":  "Card",
-                                                                                                   "props":  {
-                                                                                                                 "title":  "VEHICLE QUERY"
-                                                                                                             },
-                                                                                                   "isCanvas":  true,
-                                                                                                   "hidden":  false,
-                                                                                                   "nodes":  [
-                                                                                                                 "ROW_VEH_1",
-                                                                                                                 "ROW_VEH_2",
-                                                                                                                 "ROW_VEH_3"
-                                                                                                             ],
-                                                                                                   "linkedNodes":  {
+                                                                                  "CARD_VEH_OPT":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "Card"
+                                                                                                                },
+                                                                                                       "displayName":  "Card",
+                                                                                                       "props":  {
+                                                                                                                     "title":  "SEARCH OPTIONS"
+                                                                                                                 },
+                                                                                                       "isCanvas":  true,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+                                                                                                                     "ROW_VEH_OPT_1"
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
 
+                                                                                                                       },
+                                                                                                       "parent":  "ROOT_PAGE"
+                                                                                                   },
+                                                                                  "ROW_VEH_OPT_1":  {
+                                                                                                        "type":  {
+                                                                                                                     "resolvedName":  "Row"
+                                                                                                                 },
+                                                                                                        "displayName":  "Row",
+                                                                                                        "props":  {
+                                                                                                                      "templateColumns":  [
+                                                                                                                                              "6",
+                                                                                                                                              "6"
+                                                                                                                                          ]
+                                                                                                                  },
+                                                                                                        "isCanvas":  true,
+                                                                                                        "hidden":  false,
+                                                                                                        "nodes":  [
+                                                                                                                      "RegistrationState_Input",
+                                                                                                                      "ImageIndicator_Input"
+                                                                                                                  ],
+                                                                                                        "linkedNodes":  {
+
+                                                                                                                        },
+                                                                                                        "parent":  "CARD_VEH_OPT"
+                                                                                                    },
+                                                                                  "RegistrationState_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Select",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "RegistrationState",
+                                                                                                                                "label":  "State (leave blank for NY)",
+                                                                                                                                "attributeTypeId":  "STATE"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_VEH_OPT_1"
+                                                                                                              },
+                                                                                  "ImageIndicator_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormSelect"
+                                                                                                                        },
+                                                                                                               "displayName":  "Select",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "ImageIndicator",
+                                                                                                                             "label":  "Image (optional)",
+                                                                                                                             "initialValue":  "Y",
+                                                                                                                             "codeTypeSource":  "NCIC",
+                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_VEH_OPT_1"
+                                                                                                           },
+                                                                                  "CARD_VEH_SEARCH":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "Card"
                                                                                                                    },
-                                                                                                   "parent":  "ROOT_PAGE"
-                                                                                               },
+                                                                                                          "displayName":  "Card",
+                                                                                                          "props":  {
+                                                                                                                        "title":  "VEHICLE SEARCH"
+                                                                                                                    },
+                                                                                                          "isCanvas":  true,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+                                                                                                                        "ROW_VEH_1",
+                                                                                                                        "ROW_VEH_2"
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROOT_PAGE"
+                                                                                                      },
                                                                                   "ROW_VEH_1":  {
                                                                                                     "type":  {
                                                                                                                  "resolvedName":  "Row"
@@ -104,7 +186,7 @@
                                                                                                     "linkedNodes":  {
 
                                                                                                                     },
-                                                                                                    "parent":  "CARD_VEH"
+                                                                                                    "parent":  "CARD_VEH_SEARCH"
                                                                                                 },
                                                                                   "LicensePlateNumber_Input":  {
                                                                                                                    "type":  {
@@ -191,7 +273,7 @@
                                                                                                     "linkedNodes":  {
 
                                                                                                                     },
-                                                                                                    "parent":  "CARD_VEH"
+                                                                                                    "parent":  "CARD_VEH_SEARCH"
                                                                                                 },
                                                                                   "VehicleIdentificationNumber_Input":  {
                                                                                                                             "type":  {
@@ -253,71 +335,7 @@
 
                                                                                                                             },
                                                                                                             "parent":  "ROW_VEH_2"
-                                                                                                        },
-                                                                                  "ROW_VEH_3":  {
-                                                                                                    "type":  {
-                                                                                                                 "resolvedName":  "Row"
-                                                                                                             },
-                                                                                                    "displayName":  "Row",
-                                                                                                    "props":  {
-                                                                                                                  "templateColumns":  [
-                                                                                                                                          "4",
-                                                                                                                                          "4"
-                                                                                                                                      ]
-                                                                                                              },
-                                                                                                    "isCanvas":  true,
-                                                                                                    "hidden":  false,
-                                                                                                    "nodes":  [
-                                                                                                                  "RegistrationState_Input",
-                                                                                                                  "ImageIndicator_Input"
-                                                                                                              ],
-                                                                                                    "linkedNodes":  {
-
-                                                                                                                    },
-                                                                                                    "parent":  "CARD_VEH"
-                                                                                                },
-                                                                                  "RegistrationState_Input":  {
-                                                                                                                  "type":  {
-                                                                                                                               "resolvedName":  "FormSelect"
-                                                                                                                           },
-                                                                                                                  "displayName":  "Select",
-                                                                                                                  "props":  {
-                                                                                                                                "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State (leave blank for NY)",
-                                                                                                                                "attributeTypeId":  "STATE"
-                                                                                                                            },
-                                                                                                                  "isCanvas":  false,
-                                                                                                                  "hidden":  false,
-                                                                                                                  "nodes":  [
-
-                                                                                                                            ],
-                                                                                                                  "linkedNodes":  {
-
-                                                                                                                                  },
-                                                                                                                  "parent":  "ROW_VEH_3"
-                                                                                                              },
-                                                                                  "ImageIndicator_Input":  {
-                                                                                                               "type":  {
-                                                                                                                            "resolvedName":  "FormSelect"
-                                                                                                                        },
-                                                                                                               "displayName":  "Select",
-                                                                                                               "props":  {
-                                                                                                                             "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "Image (optional)",
-                                                                                                                             "initialValue":  "Y",
-                                                                                                                             "codeTypeSource":  "NCIC",
-                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                         },
-                                                                                                               "isCanvas":  false,
-                                                                                                               "hidden":  false,
-                                                                                                               "nodes":  [
-
-                                                                                                                         ],
-                                                                                                               "linkedNodes":  {
-
-                                                                                                                               },
-                                                                                                               "parent":  "ROW_VEH_3"
-                                                                                                           }
+                                                                                                        }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -368,33 +386,115 @@
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "CONTEXT_INFO_CARD",
-                                                                                                                       "CARD_VEH"
+                                                                                                                       "CARD_VEH_OPT",
+                                                                                                                       "CARD_VEH_SEARCH"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
                                                                                                          "parent":  "FORM_ROOT"
                                                                                                      },
-                                                                                       "CARD_VEH":  {
-                                                                                                        "type":  {
-                                                                                                                     "resolvedName":  "Card"
-                                                                                                                 },
-                                                                                                        "displayName":  "Card",
-                                                                                                        "props":  {
-                                                                                                                      "title":  "VEHICLE QUERY"
-                                                                                                                  },
-                                                                                                        "isCanvas":  true,
-                                                                                                        "hidden":  false,
-                                                                                                        "nodes":  [
-                                                                                                                      "ROW_VEH_1",
-                                                                                                                      "ROW_VEH_2",
-                                                                                                                      "ROW_VEH_3"
-                                                                                                                  ],
-                                                                                                        "linkedNodes":  {
+                                                                                       "CARD_VEH_OPT":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Card"
+                                                                                                                     },
+                                                                                                            "displayName":  "Card",
+                                                                                                            "props":  {
+                                                                                                                          "title":  "SEARCH OPTIONS"
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "ROW_VEH_OPT_1"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
 
+                                                                                                                            },
+                                                                                                            "parent":  "ROOT_PAGE"
+                                                                                                        },
+                                                                                       "ROW_VEH_OPT_1":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "Row"
+                                                                                                                      },
+                                                                                                             "displayName":  "Row",
+                                                                                                             "props":  {
+                                                                                                                           "templateColumns":  [
+                                                                                                                                                   "6",
+                                                                                                                                                   "6"
+                                                                                                                                               ]
+                                                                                                                       },
+                                                                                                             "isCanvas":  true,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
+                                                                                                                           "RegistrationState_Input",
+                                                                                                                           "ImageIndicator_Input"
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "CARD_VEH_OPT"
+                                                                                                         },
+                                                                                       "RegistrationState_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormSelect"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Select",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "RegistrationState",
+                                                                                                                                     "label":  "State (leave blank for NY)",
+                                                                                                                                     "attributeTypeId":  "STATE"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_VEH_OPT_1"
+                                                                                                                   },
+                                                                                       "ImageIndicator_Input":  {
+                                                                                                                    "type":  {
+                                                                                                                                 "resolvedName":  "FormSelect"
+                                                                                                                             },
+                                                                                                                    "displayName":  "Select",
+                                                                                                                    "props":  {
+                                                                                                                                  "fieldId":  "ImageIndicator",
+                                                                                                                                  "label":  "Image (optional)",
+                                                                                                                                  "initialValue":  "Y",
+                                                                                                                                  "codeTypeSource":  "NCIC",
+                                                                                                                                  "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                              },
+                                                                                                                    "isCanvas":  false,
+                                                                                                                    "hidden":  false,
+                                                                                                                    "nodes":  [
+
+                                                                                                                              ],
+                                                                                                                    "linkedNodes":  {
+
+                                                                                                                                    },
+                                                                                                                    "parent":  "ROW_VEH_OPT_1"
+                                                                                                                },
+                                                                                       "CARD_VEH_SEARCH":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "Card"
                                                                                                                         },
-                                                                                                        "parent":  "ROOT_PAGE"
-                                                                                                    },
+                                                                                                               "displayName":  "Card",
+                                                                                                               "props":  {
+                                                                                                                             "title":  "VEHICLE SEARCH"
+                                                                                                                         },
+                                                                                                               "isCanvas":  true,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+                                                                                                                             "ROW_VEH_1",
+                                                                                                                             "ROW_VEH_2"
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROOT_PAGE"
+                                                                                                           },
                                                                                        "ROW_VEH_1":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "Row"
@@ -417,7 +517,7 @@
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
-                                                                                                         "parent":  "CARD_VEH"
+                                                                                                         "parent":  "CARD_VEH_SEARCH"
                                                                                                      },
                                                                                        "LicensePlateNumber_Input":  {
                                                                                                                         "type":  {
@@ -504,7 +604,7 @@
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
-                                                                                                         "parent":  "CARD_VEH"
+                                                                                                         "parent":  "CARD_VEH_SEARCH"
                                                                                                      },
                                                                                        "VehicleIdentificationNumber_Input":  {
                                                                                                                                  "type":  {
@@ -567,70 +667,6 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_VEH_2"
                                                                                                              },
-                                                                                       "ROW_VEH_3":  {
-                                                                                                         "type":  {
-                                                                                                                      "resolvedName":  "Row"
-                                                                                                                  },
-                                                                                                         "displayName":  "Row",
-                                                                                                         "props":  {
-                                                                                                                       "templateColumns":  [
-                                                                                                                                               "4",
-                                                                                                                                               "4"
-                                                                                                                                           ]
-                                                                                                                   },
-                                                                                                         "isCanvas":  true,
-                                                                                                         "hidden":  false,
-                                                                                                         "nodes":  [
-                                                                                                                       "RegistrationState_Input",
-                                                                                                                       "ImageIndicator_Input"
-                                                                                                                   ],
-                                                                                                         "linkedNodes":  {
-
-                                                                                                                         },
-                                                                                                         "parent":  "CARD_VEH"
-                                                                                                     },
-                                                                                       "RegistrationState_Input":  {
-                                                                                                                       "type":  {
-                                                                                                                                    "resolvedName":  "FormSelect"
-                                                                                                                                },
-                                                                                                                       "displayName":  "Select",
-                                                                                                                       "props":  {
-                                                                                                                                     "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State (leave blank for NY)",
-                                                                                                                                     "attributeTypeId":  "STATE"
-                                                                                                                                 },
-                                                                                                                       "isCanvas":  false,
-                                                                                                                       "hidden":  false,
-                                                                                                                       "nodes":  [
-
-                                                                                                                                 ],
-                                                                                                                       "linkedNodes":  {
-
-                                                                                                                                       },
-                                                                                                                       "parent":  "ROW_VEH_3"
-                                                                                                                   },
-                                                                                       "ImageIndicator_Input":  {
-                                                                                                                    "type":  {
-                                                                                                                                 "resolvedName":  "FormSelect"
-                                                                                                                             },
-                                                                                                                    "displayName":  "Select",
-                                                                                                                    "props":  {
-                                                                                                                                  "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "Image (optional)",
-                                                                                                                                  "initialValue":  "Y",
-                                                                                                                                  "codeTypeSource":  "NCIC",
-                                                                                                                                  "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                              },
-                                                                                                                    "isCanvas":  false,
-                                                                                                                    "hidden":  false,
-                                                                                                                    "nodes":  [
-
-                                                                                                                              ],
-                                                                                                                    "linkedNodes":  {
-
-                                                                                                                                    },
-                                                                                                                    "parent":  "ROW_VEH_3"
-                                                                                                                },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -762,33 +798,115 @@
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "CONTEXT_INFO_CARD",
-                                                                                                                          "CARD_VEH"
+                                                                                                                          "CARD_VEH_OPT",
+                                                                                                                          "CARD_VEH_SEARCH"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
                                                                                                             "parent":  "FORM_ROOT"
                                                                                                         },
-                                                                                          "CARD_VEH":  {
-                                                                                                           "type":  {
-                                                                                                                        "resolvedName":  "Card"
-                                                                                                                    },
-                                                                                                           "displayName":  "Card",
-                                                                                                           "props":  {
-                                                                                                                         "title":  "VEHICLE QUERY"
-                                                                                                                     },
-                                                                                                           "isCanvas":  true,
-                                                                                                           "hidden":  false,
-                                                                                                           "nodes":  [
-                                                                                                                         "ROW_VEH_1",
-                                                                                                                         "ROW_VEH_2",
-                                                                                                                         "ROW_VEH_3"
-                                                                                                                     ],
-                                                                                                           "linkedNodes":  {
+                                                                                          "CARD_VEH_OPT":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "Card"
+                                                                                                                        },
+                                                                                                               "displayName":  "Card",
+                                                                                                               "props":  {
+                                                                                                                             "title":  "SEARCH OPTIONS"
+                                                                                                                         },
+                                                                                                               "isCanvas":  true,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+                                                                                                                             "ROW_VEH_OPT_1"
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
 
+                                                                                                                               },
+                                                                                                               "parent":  "ROOT_PAGE"
+                                                                                                           },
+                                                                                          "ROW_VEH_OPT_1":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "Row"
+                                                                                                                         },
+                                                                                                                "displayName":  "Row",
+                                                                                                                "props":  {
+                                                                                                                              "templateColumns":  [
+                                                                                                                                                      "6",
+                                                                                                                                                      "6"
+                                                                                                                                                  ]
+                                                                                                                          },
+                                                                                                                "isCanvas":  true,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+                                                                                                                              "RegistrationState_Input",
+                                                                                                                              "ImageIndicator_Input"
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "CARD_VEH_OPT"
+                                                                                                            },
+                                                                                          "RegistrationState_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Select",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "RegistrationState",
+                                                                                                                                        "label":  "State (leave blank for NY)",
+                                                                                                                                        "attributeTypeId":  "STATE"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_VEH_OPT_1"
+                                                                                                                      },
+                                                                                          "ImageIndicator_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormSelect"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Select",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "ImageIndicator",
+                                                                                                                                     "label":  "Image (optional)",
+                                                                                                                                     "initialValue":  "Y",
+                                                                                                                                     "codeTypeSource":  "NCIC",
+                                                                                                                                     "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_VEH_OPT_1"
+                                                                                                                   },
+                                                                                          "CARD_VEH_SEARCH":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "Card"
                                                                                                                            },
-                                                                                                           "parent":  "ROOT_PAGE"
-                                                                                                       },
+                                                                                                                  "displayName":  "Card",
+                                                                                                                  "props":  {
+                                                                                                                                "title":  "VEHICLE SEARCH"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  true,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+                                                                                                                                "ROW_VEH_1",
+                                                                                                                                "ROW_VEH_2"
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROOT_PAGE"
+                                                                                                              },
                                                                                           "ROW_VEH_1":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "Row"
@@ -811,7 +929,7 @@
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
-                                                                                                            "parent":  "CARD_VEH"
+                                                                                                            "parent":  "CARD_VEH_SEARCH"
                                                                                                         },
                                                                                           "LicensePlateNumber_Input":  {
                                                                                                                            "type":  {
@@ -898,7 +1016,7 @@
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
-                                                                                                            "parent":  "CARD_VEH"
+                                                                                                            "parent":  "CARD_VEH_SEARCH"
                                                                                                         },
                                                                                           "VehicleIdentificationNumber_Input":  {
                                                                                                                                     "type":  {
@@ -961,70 +1079,6 @@
                                                                                                                                     },
                                                                                                                     "parent":  "ROW_VEH_2"
                                                                                                                 },
-                                                                                          "ROW_VEH_3":  {
-                                                                                                            "type":  {
-                                                                                                                         "resolvedName":  "Row"
-                                                                                                                     },
-                                                                                                            "displayName":  "Row",
-                                                                                                            "props":  {
-                                                                                                                          "templateColumns":  [
-                                                                                                                                                  "4",
-                                                                                                                                                  "4"
-                                                                                                                                              ]
-                                                                                                                      },
-                                                                                                            "isCanvas":  true,
-                                                                                                            "hidden":  false,
-                                                                                                            "nodes":  [
-                                                                                                                          "RegistrationState_Input",
-                                                                                                                          "ImageIndicator_Input"
-                                                                                                                      ],
-                                                                                                            "linkedNodes":  {
-
-                                                                                                                            },
-                                                                                                            "parent":  "CARD_VEH"
-                                                                                                        },
-                                                                                          "RegistrationState_Input":  {
-                                                                                                                          "type":  {
-                                                                                                                                       "resolvedName":  "FormSelect"
-                                                                                                                                   },
-                                                                                                                          "displayName":  "Select",
-                                                                                                                          "props":  {
-                                                                                                                                        "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State (leave blank for NY)",
-                                                                                                                                        "attributeTypeId":  "STATE"
-                                                                                                                                    },
-                                                                                                                          "isCanvas":  false,
-                                                                                                                          "hidden":  false,
-                                                                                                                          "nodes":  [
-
-                                                                                                                                    ],
-                                                                                                                          "linkedNodes":  {
-
-                                                                                                                                          },
-                                                                                                                          "parent":  "ROW_VEH_3"
-                                                                                                                      },
-                                                                                          "ImageIndicator_Input":  {
-                                                                                                                       "type":  {
-                                                                                                                                    "resolvedName":  "FormSelect"
-                                                                                                                                },
-                                                                                                                       "displayName":  "Select",
-                                                                                                                       "props":  {
-                                                                                                                                     "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "Image (optional)",
-                                                                                                                                     "initialValue":  "Y",
-                                                                                                                                     "codeTypeSource":  "NCIC",
-                                                                                                                                     "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                                 },
-                                                                                                                       "isCanvas":  false,
-                                                                                                                       "hidden":  false,
-                                                                                                                       "nodes":  [
-
-                                                                                                                                 ],
-                                                                                                                       "linkedNodes":  {
-
-                                                                                                                                       },
-                                                                                                                       "parent":  "ROW_VEH_3"
-                                                                                                                   },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -5084,32 +5138,138 @@
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
-                                                                                                                  "CARD_BOA"
+                                                                                                                  "CARD_BOA_OPT",
+                                                                                                                  "CARD_BOA_SEARCH"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
 
                                                                                                                     },
                                                                                                     "parent":  "FORM_ROOT"
                                                                                                 },
-                                                                                  "CARD_BOA":  {
-                                                                                                   "type":  {
-                                                                                                                "resolvedName":  "Card"
-                                                                                                            },
-                                                                                                   "displayName":  "Card",
-                                                                                                   "props":  {
-                                                                                                                 "title":  "BOAT QUERY"
-                                                                                                             },
-                                                                                                   "isCanvas":  true,
-                                                                                                   "hidden":  false,
-                                                                                                   "nodes":  [
-                                                                                                                 "ROW_BOA_1",
-                                                                                                                 "ROW_BOA_2"
-                                                                                                             ],
-                                                                                                   "linkedNodes":  {
+                                                                                  "CARD_BOA_OPT":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "Card"
+                                                                                                                },
+                                                                                                       "displayName":  "Card",
+                                                                                                       "props":  {
+                                                                                                                     "title":  "SEARCH OPTIONS"
+                                                                                                                 },
+                                                                                                       "isCanvas":  true,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+                                                                                                                     "ROW_BOA_OPT_1"
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
 
+                                                                                                                       },
+                                                                                                       "parent":  "ROOT_PAGE"
+                                                                                                   },
+                                                                                  "ROW_BOA_OPT_1":  {
+                                                                                                        "type":  {
+                                                                                                                     "resolvedName":  "Row"
+                                                                                                                 },
+                                                                                                        "displayName":  "Row",
+                                                                                                        "props":  {
+                                                                                                                      "templateColumns":  [
+                                                                                                                                              "4",
+                                                                                                                                              "4",
+                                                                                                                                              "4"
+                                                                                                                                          ]
+                                                                                                                  },
+                                                                                                        "isCanvas":  true,
+                                                                                                        "hidden":  false,
+                                                                                                        "nodes":  [
+                                                                                                                      "RegistrationState_Input",
+                                                                                                                      "ImageIndicator_Input",
+                                                                                                                      "RelatedHitSearchIndicator_Input"
+                                                                                                                  ],
+                                                                                                        "linkedNodes":  {
+
+                                                                                                                        },
+                                                                                                        "parent":  "CARD_BOA_OPT"
+                                                                                                    },
+                                                                                  "RegistrationState_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Select",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "RegistrationState",
+                                                                                                                                "label":  "State (leave blank for NY)",
+                                                                                                                                "attributeTypeId":  "STATE"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_BOA_OPT_1"
+                                                                                                              },
+                                                                                  "ImageIndicator_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormSelect"
+                                                                                                                        },
+                                                                                                               "displayName":  "Select",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "ImageIndicator",
+                                                                                                                             "label":  "Image (optional)",
+                                                                                                                             "initialValue":  "Y",
+                                                                                                                             "codeTypeSource":  "NCIC",
+                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_BOA_OPT_1"
+                                                                                                           },
+                                                                                  "RelatedHitSearchIndicator_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Select",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                        "label":  "Related Hit Search (optional)",
+                                                                                                                                        "initialValue":  "Y",
+                                                                                                                                        "codeTypeSource":  "NCIC",
+                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_BOA_OPT_1"
+                                                                                                                      },
+                                                                                  "CARD_BOA_SEARCH":  {
+                                                                                                          "type":  {
+                                                                                                                       "resolvedName":  "Card"
                                                                                                                    },
-                                                                                                   "parent":  "ROOT_PAGE"
-                                                                                               },
+                                                                                                          "displayName":  "Card",
+                                                                                                          "props":  {
+                                                                                                                        "title":  "BOAT SEARCH"
+                                                                                                                    },
+                                                                                                          "isCanvas":  true,
+                                                                                                          "hidden":  false,
+                                                                                                          "nodes":  [
+                                                                                                                        "ROW_BOA_1"
+                                                                                                                    ],
+                                                                                                          "linkedNodes":  {
+
+                                                                                                                          },
+                                                                                                          "parent":  "ROOT_PAGE"
+                                                                                                      },
                                                                                   "ROW_BOA_1":  {
                                                                                                     "type":  {
                                                                                                                  "resolvedName":  "Row"
@@ -5130,7 +5290,7 @@
                                                                                                     "linkedNodes":  {
 
                                                                                                                     },
-                                                                                                    "parent":  "CARD_BOA"
+                                                                                                    "parent":  "CARD_BOA_SEARCH"
                                                                                                 },
                                                                                   "RegistrationNumber_Input":  {
                                                                                                                    "type":  {
@@ -5171,95 +5331,7 @@
 
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_BOA_1"
-                                                                                                             },
-                                                                                  "ROW_BOA_2":  {
-                                                                                                    "type":  {
-                                                                                                                 "resolvedName":  "Row"
-                                                                                                             },
-                                                                                                    "displayName":  "Row",
-                                                                                                    "props":  {
-                                                                                                                  "templateColumns":  [
-                                                                                                                                          "4",
-                                                                                                                                          "4",
-                                                                                                                                          "4"
-                                                                                                                                      ]
-                                                                                                              },
-                                                                                                    "isCanvas":  true,
-                                                                                                    "hidden":  false,
-                                                                                                    "nodes":  [
-                                                                                                                  "RegistrationState_Input",
-                                                                                                                  "ImageIndicator_Input",
-                                                                                                                  "RelatedHitSearchIndicator_Input"
-                                                                                                              ],
-                                                                                                    "linkedNodes":  {
-
-                                                                                                                    },
-                                                                                                    "parent":  "CARD_BOA"
-                                                                                                },
-                                                                                  "RegistrationState_Input":  {
-                                                                                                                  "type":  {
-                                                                                                                               "resolvedName":  "FormSelect"
-                                                                                                                           },
-                                                                                                                  "displayName":  "Select",
-                                                                                                                  "props":  {
-                                                                                                                                "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State (leave blank for NY)",
-                                                                                                                                "attributeTypeId":  "STATE"
-                                                                                                                            },
-                                                                                                                  "isCanvas":  false,
-                                                                                                                  "hidden":  false,
-                                                                                                                  "nodes":  [
-
-                                                                                                                            ],
-                                                                                                                  "linkedNodes":  {
-
-                                                                                                                                  },
-                                                                                                                  "parent":  "ROW_BOA_2"
-                                                                                                              },
-                                                                                  "ImageIndicator_Input":  {
-                                                                                                               "type":  {
-                                                                                                                            "resolvedName":  "FormSelect"
-                                                                                                                        },
-                                                                                                               "displayName":  "Select",
-                                                                                                               "props":  {
-                                                                                                                             "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "Image (optional)",
-                                                                                                                             "initialValue":  "Y",
-                                                                                                                             "codeTypeSource":  "NCIC",
-                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                         },
-                                                                                                               "isCanvas":  false,
-                                                                                                               "hidden":  false,
-                                                                                                               "nodes":  [
-
-                                                                                                                         ],
-                                                                                                               "linkedNodes":  {
-
-                                                                                                                               },
-                                                                                                               "parent":  "ROW_BOA_2"
-                                                                                                           },
-                                                                                  "RelatedHitSearchIndicator_Input":  {
-                                                                                                                          "type":  {
-                                                                                                                                       "resolvedName":  "FormSelect"
-                                                                                                                                   },
-                                                                                                                          "displayName":  "Select",
-                                                                                                                          "props":  {
-                                                                                                                                        "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                        "label":  "Related Hit Search (optional)",
-                                                                                                                                        "initialValue":  "Y",
-                                                                                                                                        "codeTypeSource":  "NCIC",
-                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                                    },
-                                                                                                                          "isCanvas":  false,
-                                                                                                                          "hidden":  false,
-                                                                                                                          "nodes":  [
-
-                                                                                                                                    ],
-                                                                                                                          "linkedNodes":  {
-
-                                                                                                                                          },
-                                                                                                                          "parent":  "ROW_BOA_2"
-                                                                                                                      }
+                                                                                                             }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -5310,32 +5382,138 @@
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "CONTEXT_INFO_CARD",
-                                                                                                                       "CARD_BOA"
+                                                                                                                       "CARD_BOA_OPT",
+                                                                                                                       "CARD_BOA_SEARCH"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
                                                                                                          "parent":  "FORM_ROOT"
                                                                                                      },
-                                                                                       "CARD_BOA":  {
-                                                                                                        "type":  {
-                                                                                                                     "resolvedName":  "Card"
-                                                                                                                 },
-                                                                                                        "displayName":  "Card",
-                                                                                                        "props":  {
-                                                                                                                      "title":  "BOAT QUERY"
-                                                                                                                  },
-                                                                                                        "isCanvas":  true,
-                                                                                                        "hidden":  false,
-                                                                                                        "nodes":  [
-                                                                                                                      "ROW_BOA_1",
-                                                                                                                      "ROW_BOA_2"
-                                                                                                                  ],
-                                                                                                        "linkedNodes":  {
+                                                                                       "CARD_BOA_OPT":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Card"
+                                                                                                                     },
+                                                                                                            "displayName":  "Card",
+                                                                                                            "props":  {
+                                                                                                                          "title":  "SEARCH OPTIONS"
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "ROW_BOA_OPT_1"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
 
+                                                                                                                            },
+                                                                                                            "parent":  "ROOT_PAGE"
+                                                                                                        },
+                                                                                       "ROW_BOA_OPT_1":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "Row"
+                                                                                                                      },
+                                                                                                             "displayName":  "Row",
+                                                                                                             "props":  {
+                                                                                                                           "templateColumns":  [
+                                                                                                                                                   "4",
+                                                                                                                                                   "4",
+                                                                                                                                                   "4"
+                                                                                                                                               ]
+                                                                                                                       },
+                                                                                                             "isCanvas":  true,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
+                                                                                                                           "RegistrationState_Input",
+                                                                                                                           "ImageIndicator_Input",
+                                                                                                                           "RelatedHitSearchIndicator_Input"
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "CARD_BOA_OPT"
+                                                                                                         },
+                                                                                       "RegistrationState_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormSelect"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Select",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "RegistrationState",
+                                                                                                                                     "label":  "State (leave blank for NY)",
+                                                                                                                                     "attributeTypeId":  "STATE"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_BOA_OPT_1"
+                                                                                                                   },
+                                                                                       "ImageIndicator_Input":  {
+                                                                                                                    "type":  {
+                                                                                                                                 "resolvedName":  "FormSelect"
+                                                                                                                             },
+                                                                                                                    "displayName":  "Select",
+                                                                                                                    "props":  {
+                                                                                                                                  "fieldId":  "ImageIndicator",
+                                                                                                                                  "label":  "Image (optional)",
+                                                                                                                                  "initialValue":  "Y",
+                                                                                                                                  "codeTypeSource":  "NCIC",
+                                                                                                                                  "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                              },
+                                                                                                                    "isCanvas":  false,
+                                                                                                                    "hidden":  false,
+                                                                                                                    "nodes":  [
+
+                                                                                                                              ],
+                                                                                                                    "linkedNodes":  {
+
+                                                                                                                                    },
+                                                                                                                    "parent":  "ROW_BOA_OPT_1"
+                                                                                                                },
+                                                                                       "RelatedHitSearchIndicator_Input":  {
+                                                                                                                               "type":  {
+                                                                                                                                            "resolvedName":  "FormSelect"
+                                                                                                                                        },
+                                                                                                                               "displayName":  "Select",
+                                                                                                                               "props":  {
+                                                                                                                                             "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                             "label":  "Related Hit Search (optional)",
+                                                                                                                                             "initialValue":  "Y",
+                                                                                                                                             "codeTypeSource":  "NCIC",
+                                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                                         },
+                                                                                                                               "isCanvas":  false,
+                                                                                                                               "hidden":  false,
+                                                                                                                               "nodes":  [
+
+                                                                                                                                         ],
+                                                                                                                               "linkedNodes":  {
+
+                                                                                                                                               },
+                                                                                                                               "parent":  "ROW_BOA_OPT_1"
+                                                                                                                           },
+                                                                                       "CARD_BOA_SEARCH":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "Card"
                                                                                                                         },
-                                                                                                        "parent":  "ROOT_PAGE"
-                                                                                                    },
+                                                                                                               "displayName":  "Card",
+                                                                                                               "props":  {
+                                                                                                                             "title":  "BOAT SEARCH"
+                                                                                                                         },
+                                                                                                               "isCanvas":  true,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+                                                                                                                             "ROW_BOA_1"
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROOT_PAGE"
+                                                                                                           },
                                                                                        "ROW_BOA_1":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "Row"
@@ -5356,7 +5534,7 @@
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
-                                                                                                         "parent":  "CARD_BOA"
+                                                                                                         "parent":  "CARD_BOA_SEARCH"
                                                                                                      },
                                                                                        "RegistrationNumber_Input":  {
                                                                                                                         "type":  {
@@ -5398,94 +5576,6 @@
                                                                                                                                       },
                                                                                                                       "parent":  "ROW_BOA_1"
                                                                                                                   },
-                                                                                       "ROW_BOA_2":  {
-                                                                                                         "type":  {
-                                                                                                                      "resolvedName":  "Row"
-                                                                                                                  },
-                                                                                                         "displayName":  "Row",
-                                                                                                         "props":  {
-                                                                                                                       "templateColumns":  [
-                                                                                                                                               "4",
-                                                                                                                                               "4",
-                                                                                                                                               "4"
-                                                                                                                                           ]
-                                                                                                                   },
-                                                                                                         "isCanvas":  true,
-                                                                                                         "hidden":  false,
-                                                                                                         "nodes":  [
-                                                                                                                       "RegistrationState_Input",
-                                                                                                                       "ImageIndicator_Input",
-                                                                                                                       "RelatedHitSearchIndicator_Input"
-                                                                                                                   ],
-                                                                                                         "linkedNodes":  {
-
-                                                                                                                         },
-                                                                                                         "parent":  "CARD_BOA"
-                                                                                                     },
-                                                                                       "RegistrationState_Input":  {
-                                                                                                                       "type":  {
-                                                                                                                                    "resolvedName":  "FormSelect"
-                                                                                                                                },
-                                                                                                                       "displayName":  "Select",
-                                                                                                                       "props":  {
-                                                                                                                                     "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State (leave blank for NY)",
-                                                                                                                                     "attributeTypeId":  "STATE"
-                                                                                                                                 },
-                                                                                                                       "isCanvas":  false,
-                                                                                                                       "hidden":  false,
-                                                                                                                       "nodes":  [
-
-                                                                                                                                 ],
-                                                                                                                       "linkedNodes":  {
-
-                                                                                                                                       },
-                                                                                                                       "parent":  "ROW_BOA_2"
-                                                                                                                   },
-                                                                                       "ImageIndicator_Input":  {
-                                                                                                                    "type":  {
-                                                                                                                                 "resolvedName":  "FormSelect"
-                                                                                                                             },
-                                                                                                                    "displayName":  "Select",
-                                                                                                                    "props":  {
-                                                                                                                                  "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "Image (optional)",
-                                                                                                                                  "initialValue":  "Y",
-                                                                                                                                  "codeTypeSource":  "NCIC",
-                                                                                                                                  "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                              },
-                                                                                                                    "isCanvas":  false,
-                                                                                                                    "hidden":  false,
-                                                                                                                    "nodes":  [
-
-                                                                                                                              ],
-                                                                                                                    "linkedNodes":  {
-
-                                                                                                                                    },
-                                                                                                                    "parent":  "ROW_BOA_2"
-                                                                                                                },
-                                                                                       "RelatedHitSearchIndicator_Input":  {
-                                                                                                                               "type":  {
-                                                                                                                                            "resolvedName":  "FormSelect"
-                                                                                                                                        },
-                                                                                                                               "displayName":  "Select",
-                                                                                                                               "props":  {
-                                                                                                                                             "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                             "label":  "Related Hit Search (optional)",
-                                                                                                                                             "initialValue":  "Y",
-                                                                                                                                             "codeTypeSource":  "NCIC",
-                                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                                         },
-                                                                                                                               "isCanvas":  false,
-                                                                                                                               "hidden":  false,
-                                                                                                                               "nodes":  [
-
-                                                                                                                                         ],
-                                                                                                                               "linkedNodes":  {
-
-                                                                                                                                               },
-                                                                                                                               "parent":  "ROW_BOA_2"
-                                                                                                                           },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -5617,32 +5707,138 @@
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "CONTEXT_INFO_CARD",
-                                                                                                                          "CARD_BOA"
+                                                                                                                          "CARD_BOA_OPT",
+                                                                                                                          "CARD_BOA_SEARCH"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
                                                                                                             "parent":  "FORM_ROOT"
                                                                                                         },
-                                                                                          "CARD_BOA":  {
-                                                                                                           "type":  {
-                                                                                                                        "resolvedName":  "Card"
-                                                                                                                    },
-                                                                                                           "displayName":  "Card",
-                                                                                                           "props":  {
-                                                                                                                         "title":  "BOAT QUERY"
-                                                                                                                     },
-                                                                                                           "isCanvas":  true,
-                                                                                                           "hidden":  false,
-                                                                                                           "nodes":  [
-                                                                                                                         "ROW_BOA_1",
-                                                                                                                         "ROW_BOA_2"
-                                                                                                                     ],
-                                                                                                           "linkedNodes":  {
+                                                                                          "CARD_BOA_OPT":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "Card"
+                                                                                                                        },
+                                                                                                               "displayName":  "Card",
+                                                                                                               "props":  {
+                                                                                                                             "title":  "SEARCH OPTIONS"
+                                                                                                                         },
+                                                                                                               "isCanvas":  true,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+                                                                                                                             "ROW_BOA_OPT_1"
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
 
+                                                                                                                               },
+                                                                                                               "parent":  "ROOT_PAGE"
+                                                                                                           },
+                                                                                          "ROW_BOA_OPT_1":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "Row"
+                                                                                                                         },
+                                                                                                                "displayName":  "Row",
+                                                                                                                "props":  {
+                                                                                                                              "templateColumns":  [
+                                                                                                                                                      "4",
+                                                                                                                                                      "4",
+                                                                                                                                                      "4"
+                                                                                                                                                  ]
+                                                                                                                          },
+                                                                                                                "isCanvas":  true,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+                                                                                                                              "RegistrationState_Input",
+                                                                                                                              "ImageIndicator_Input",
+                                                                                                                              "RelatedHitSearchIndicator_Input"
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "CARD_BOA_OPT"
+                                                                                                            },
+                                                                                          "RegistrationState_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Select",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "RegistrationState",
+                                                                                                                                        "label":  "State (leave blank for NY)",
+                                                                                                                                        "attributeTypeId":  "STATE"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_BOA_OPT_1"
+                                                                                                                      },
+                                                                                          "ImageIndicator_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormSelect"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Select",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "ImageIndicator",
+                                                                                                                                     "label":  "Image (optional)",
+                                                                                                                                     "initialValue":  "Y",
+                                                                                                                                     "codeTypeSource":  "NCIC",
+                                                                                                                                     "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_BOA_OPT_1"
+                                                                                                                   },
+                                                                                          "RelatedHitSearchIndicator_Input":  {
+                                                                                                                                  "type":  {
+                                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                                           },
+                                                                                                                                  "displayName":  "Select",
+                                                                                                                                  "props":  {
+                                                                                                                                                "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                                "label":  "Related Hit Search (optional)",
+                                                                                                                                                "initialValue":  "Y",
+                                                                                                                                                "codeTypeSource":  "NCIC",
+                                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                                            },
+                                                                                                                                  "isCanvas":  false,
+                                                                                                                                  "hidden":  false,
+                                                                                                                                  "nodes":  [
+
+                                                                                                                                            ],
+                                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                                  },
+                                                                                                                                  "parent":  "ROW_BOA_OPT_1"
+                                                                                                                              },
+                                                                                          "CARD_BOA_SEARCH":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "Card"
                                                                                                                            },
-                                                                                                           "parent":  "ROOT_PAGE"
-                                                                                                       },
+                                                                                                                  "displayName":  "Card",
+                                                                                                                  "props":  {
+                                                                                                                                "title":  "BOAT SEARCH"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  true,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+                                                                                                                                "ROW_BOA_1"
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROOT_PAGE"
+                                                                                                              },
                                                                                           "ROW_BOA_1":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "Row"
@@ -5663,7 +5859,7 @@
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
-                                                                                                            "parent":  "CARD_BOA"
+                                                                                                            "parent":  "CARD_BOA_SEARCH"
                                                                                                         },
                                                                                           "RegistrationNumber_Input":  {
                                                                                                                            "type":  {
@@ -5705,94 +5901,6 @@
                                                                                                                                          },
                                                                                                                          "parent":  "ROW_BOA_1"
                                                                                                                      },
-                                                                                          "ROW_BOA_2":  {
-                                                                                                            "type":  {
-                                                                                                                         "resolvedName":  "Row"
-                                                                                                                     },
-                                                                                                            "displayName":  "Row",
-                                                                                                            "props":  {
-                                                                                                                          "templateColumns":  [
-                                                                                                                                                  "4",
-                                                                                                                                                  "4",
-                                                                                                                                                  "4"
-                                                                                                                                              ]
-                                                                                                                      },
-                                                                                                            "isCanvas":  true,
-                                                                                                            "hidden":  false,
-                                                                                                            "nodes":  [
-                                                                                                                          "RegistrationState_Input",
-                                                                                                                          "ImageIndicator_Input",
-                                                                                                                          "RelatedHitSearchIndicator_Input"
-                                                                                                                      ],
-                                                                                                            "linkedNodes":  {
-
-                                                                                                                            },
-                                                                                                            "parent":  "CARD_BOA"
-                                                                                                        },
-                                                                                          "RegistrationState_Input":  {
-                                                                                                                          "type":  {
-                                                                                                                                       "resolvedName":  "FormSelect"
-                                                                                                                                   },
-                                                                                                                          "displayName":  "Select",
-                                                                                                                          "props":  {
-                                                                                                                                        "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State (leave blank for NY)",
-                                                                                                                                        "attributeTypeId":  "STATE"
-                                                                                                                                    },
-                                                                                                                          "isCanvas":  false,
-                                                                                                                          "hidden":  false,
-                                                                                                                          "nodes":  [
-
-                                                                                                                                    ],
-                                                                                                                          "linkedNodes":  {
-
-                                                                                                                                          },
-                                                                                                                          "parent":  "ROW_BOA_2"
-                                                                                                                      },
-                                                                                          "ImageIndicator_Input":  {
-                                                                                                                       "type":  {
-                                                                                                                                    "resolvedName":  "FormSelect"
-                                                                                                                                },
-                                                                                                                       "displayName":  "Select",
-                                                                                                                       "props":  {
-                                                                                                                                     "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "Image (optional)",
-                                                                                                                                     "initialValue":  "Y",
-                                                                                                                                     "codeTypeSource":  "NCIC",
-                                                                                                                                     "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                                 },
-                                                                                                                       "isCanvas":  false,
-                                                                                                                       "hidden":  false,
-                                                                                                                       "nodes":  [
-
-                                                                                                                                 ],
-                                                                                                                       "linkedNodes":  {
-
-                                                                                                                                       },
-                                                                                                                       "parent":  "ROW_BOA_2"
-                                                                                                                   },
-                                                                                          "RelatedHitSearchIndicator_Input":  {
-                                                                                                                                  "type":  {
-                                                                                                                                               "resolvedName":  "FormSelect"
-                                                                                                                                           },
-                                                                                                                                  "displayName":  "Select",
-                                                                                                                                  "props":  {
-                                                                                                                                                "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                                "label":  "Related Hit Search (optional)",
-                                                                                                                                                "initialValue":  "Y",
-                                                                                                                                                "codeTypeSource":  "NCIC",
-                                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN"
-                                                                                                                                            },
-                                                                                                                                  "isCanvas":  false,
-                                                                                                                                  "hidden":  false,
-                                                                                                                                  "nodes":  [
-
-                                                                                                                                            ],
-                                                                                                                                  "linkedNodes":  {
-
-                                                                                                                                                  },
-                                                                                                                                  "parent":  "ROW_BOA_2"
-                                                                                                                              },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"

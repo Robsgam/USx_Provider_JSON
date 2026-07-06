@@ -560,13 +560,27 @@ $nyBundle = [PSCustomObject]@{
 # =====================================================================
 
 # ------------------------------------------------------------------
-# Vehicle -- 1 card
-# All vehicle fields on one card. State blank=NY, filled=OOS.
+# Vehicle -- 2 cards (SEARCH OPTIONS + VEHICLE SEARCH)
+# SEARCH OPTIONS holds the cross-cutting router/modifier fields (State = in/out-of-state
+# selector, Image); VEHICLE SEARCH holds the identifiers. Mirrors the Person card structure
+# (CARD_PER_OPT + DL/DH) and FL_FCIC/HI_HCJDC_OFML's Vehicle Options+Search split, so the
+# "leave State blank for NY / fill for out-of-state" decision sits up front, separate from the
+# search identifiers. Layout-only -- same fields/fieldIds/combos, no routing change.
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH'
-        title = 'VEHICLE QUERY'
+        id    = 'CARD_VEH_OPT'
+        title = 'SEARCH OPTIONS'
+        rows  = @(
+            @{ id = 'ROW_VEH_OPT_1'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_VEH_OPT_1' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_VEH_SEARCH'
+        title = 'VEHICLE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or VIN)' '10' 'ROW_VEH_1' }
@@ -578,15 +592,11 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('4','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_VEH_3' }
-            )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- single card: Plate (RVEH), VIN+State (RVIN), VIN (RCAR)'
+    description  = 'Vehicle queries -- 2 cards (Options+Search): Plate (RVEH), VIN+State (RVIN), VIN (RCAR)'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -744,22 +754,31 @@ $articleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Boat -- 1 card
-# All boat fields on one card. State blank=NY, filled=OOS.
+# Boat -- 2 cards (SEARCH OPTIONS + BOAT SEARCH)
+# SEARCH OPTIONS holds the cross-cutting modifier/router fields (State = in/out-of-state
+# selector, Image, Related Hit); BOAT SEARCH holds the identifiers (Reg Number, Hull ID).
+# Mirrors the Vehicle + Person card structure and FL_FCIC/HI_HCJDC_OFML's Boat Options+Search
+# split. Layout-only -- same fields/fieldIds/combos, no routing change.
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA'
-        title = 'BOAT QUERY'
+        id    = 'CARD_BOA_OPT'
+        title = 'SEARCH OPTIONS'
+        rows  = @(
+            @{ id = 'ROW_BOA_OPT_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_OPT_1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_OPT_1' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_BOA_SEARCH'
+        title = 'BOAT SEARCH'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '10' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
-            )}
-            @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_2' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
         )
     }
