@@ -14,11 +14,16 @@
 
   Usage: .\generate_test_matrix.ps1 -Path <provider.json> [-OutFile <path>] [-Variant <BASE|MC>]
 
-  KNOWN DUPLICATION (flagged 2026-07-06, not fixed -- see emit_test_plan.ps1's matching header
-  note): this tool's combo/value-resolution logic is mirrored (not shared) by emit_test_plan.ps1
-  for the browser-driver JSON plan. Deliberately NOT extracted to a common module in this pass --
-  NY_NYSPIN_EJUSTICE live testing consumes emit_test_plan.ps1's output directly and a refactor
-  here is too risky right before that resumes. Do the extraction as a dedicated follow-up.
+  Get-TestValue's value table is shared with emit_test_plan.ps1 via
+  tools/_combo_value_resolver.ps1 (Get-ComboTestValue -Caller 'GenerateTestMatrix') --
+  extracted 2026-07-06 after a line-by-line diff confirmed ~35 identical cases plus a
+  handful of real, pre-existing behavioral differences (QIF-default awareness, date format,
+  a few NY-specific fields only emit_test_plan.ps1 has values for). See that module's
+  header for the full list. Verified byte-identical matrix output for NY_NYSPIN_EJUSTICE and
+  FL_FCIC before/after the extraction -- this tool's output is exactly what it was. The
+  field-id resolution helper below (Resolve-SetToFieldIds) is NOT shared with
+  emit_test_plan's Resolve-FieldId -- that one differs in case-sensitivity and fallback
+  semantics in ways that need a separate, dedicated look, not bundled into this pass.
 #>
 
 param(
@@ -30,6 +35,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $isPrelim = $false   # tiers removed; always emit the full matrix
+. (Join-Path $PSScriptRoot '_combo_value_resolver.ps1')
 
 # ── Parse JSON ──
 $raw = [System.IO.File]::ReadAllText((Resolve-Path $Path), [System.Text.UTF8Encoding]::new($false))
@@ -266,82 +272,15 @@ function Resolve-SetToFieldIds($combo, $qidm, $allFields) {
     return $ids
 }
 
+# Delegates to the shared resolver (tools/_combo_value_resolver.ps1) -- see that module's
+# header for the documented behavioral differences from emit_test_plan.ps1's copy of this
+# same-named function. Lazy-loads TEST_VALUE_OVERRIDES.txt on first call (unchanged timing).
 function Get-TestValue($field, $isOOS) {
-    $fid = $field.fieldId
-    # Per-provider overrides (docs/reference/TEST_VALUE_OVERRIDES.txt) -- tenant code-table
-    # contents differ per provider (NJ GunMake = numeric NIBRS codes; HI/CA = NCIC 'IMI').
     if ($null -eq $script:ValueOverrides) {
-        $script:ValueOverrides = @{}
-        $ovPath = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TEST_VALUE_OVERRIDES.txt'
-        if (Test-Path $ovPath) {
-            foreach ($line in Get-Content $ovPath) {
-                if ($line -match '^\s*#' -or $line -notmatch '=') { continue }
-                $k, $v = $line -split '=', 2
-                $script:ValueOverrides[$k.Trim()] = $v.Trim()
-            }
-        }
+        $ov = Get-ComboValueOverrides -ProviderJsonPath $Path
+        $script:ValueOverrides = $ov.Overrides
     }
-    foreach ($k in $script:ValueOverrides.Keys) {
-        if ($k -ieq $fid) { return $script:ValueOverrides[$k] }
-    }
-    switch -Regex ($fid) {
-        '(?i)^licensePlateNumber'           { return 'TEST123' }
-        '(?i)^licensePlateTypeCode'         { $d = $field.default_; if ($d) { return $d } else { return 'PC' } }
-        '(?i)^licensePlateYear'             { $d = $field.default_; if ($d) { return $d } else { return (Get-Date).Year.ToString() } }
-        '(?i)^vehicleIdentificationNumber'  { return '1HGCM82633A123456' }
-        # Make codes are category-prefixed (CNST_FORD/PASS_FORD); usx_lib anchors ^CODE\b, so
-        # bare "FORD" matches nothing. CNST_FORD = documented CA/FL-consistent value.
-        '(?i)^vehicleMakeCode'              { return 'CNST_FORD' }
-        '(?i)^vehicleYear'                  { return '2023' }
-        '(?i)^decalNumber'                  { return 'FL12345678' }
-        '(?i)^titleLienInformation'         { return 'ABCD1234' }
-        '(?i)^registrationState$'           { if ($isOOS) { return 'GA' } else { return $null } }
-        '(?i)^registrationStateDH'          { return $field.default_ }
-        '(?i)^operatorLicenseNumber$'       { return 'D999888777' }
-        '(?i)^operatorLicenseNumberDH'      { return 'D999888777' }
-        '(?i)^nameLast$'                    { return 'DOE' }
-        '(?i)^nameLastDH'                   { return 'DOE' }
-        '(?i)^nameFirst$'                   { return 'JOHN' }
-        '(?i)^nameFirstDH'                  { return 'JOHN' }
-        '(?i)^nameMiddle'                   { return '' }
-        '(?i)^nameSuffix'                   { return '' }
-        '(?i)^addressCity'                  { return 'RENO' }
-        '(?i)^addressStreetNumber'          { return '123' }
-        '(?i)^birthDate$'                   { return '01/15/1990' }
-        '(?i)^birthDateDH'                  { return '01/15/1990' }
-        '(?i)^sexCode$'                     { return 'M' }
-        '(?i)^sexCodeDH'                    { return 'M' }
-        '(?i)^imageIndicator'               { $d = $field.default_; if ($d) { return $d } else { return 'N' } }
-        '(?i)^(gun)?serialNumber'           { return 'GUN12345' }
-        '(?i)^gunMake'                      { return 'IMI' }
-        '(?i)^gunCaliber'                   { return '11' }
-        '(?i)^criminalIdNumber'             { return 'CII123456' }
-        '(?i)^socialSecurityNumber'         { return '123456789' }
-        '(?i)^age'                          { return '35' }
-        '(?i)^ncicNumber'                   { return 'X123456789' }
-        '(?i)^processControlNumber'         { return '0000012345' }
-        '(?i)^articleSerialNumber'           { return 'ART99999' }
-        '(?i)^articleTypeCode'              { return 'BBICYCL' }
-        '(?i)^ownerAppliedNumber'           { return 'OAN999' }
-        '(?i)^boatHullIdNumber'             { return 'FL1234AB56H7' }
-        '(?i)^registrationNumber'           { return 'FL1234AB' }
-        '(?i)^coastGuardDocumentNumber'     { return 'CG123456' }
-        '(?i)^related(Hit)?Search(Hit)?Indicator' { return 'Y' }
-        '(?i)^vehicleTypeCode'              { return '1' }
-        '(?i)^gunTypeCode'                  { return 'H' }   # NCIC gun TYP code (H - BOMB); 'HP' is not in the table (live-confirmed CA 2026-07-02)
-        '(?i)^raceCode'                     { return 'W' }
-        '(?i)^height$'                      { return '509' }
-        '(?i)^addressCounty'                { return 'LA' }
-        '(?i)^appsRequestIndicator'         { return 'Y' }
-        '(?i)^articleBrand'                 { return 'SONY' }
-        '(?i)^articleCategory'              { return 'E' }
-        '(?i)^purposeCode'                  { return 'C' }
-        # Attention is auto-populated into a hidden InpH field (no visible control to fill).
-        '(?i)^attention'                    { return $null }
-        '(?i)^caRequestPurposeCode'         { return 'C' }
-        '(?i)^dexStateUserId'               { return 'BADGE' }
-        default                             { return 'TEST' }
-    }
+    return Get-ComboTestValue -FieldId $field.fieldId -IsOOS $isOOS -Caller 'GenerateTestMatrix' -Overrides $script:ValueOverrides -FieldDefault $field.default_
 }
 
 function Get-QueryShortLabel($query) {

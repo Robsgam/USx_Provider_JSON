@@ -478,6 +478,17 @@ TOOLS
     truth so audit_test_coverage.ps1 and block_entity.ps1 use identical matching rules.
     Dot-source only; defines functions (Get-CommSysQidms, etc.), no side effects.
 
+  tools/_combo_value_resolver.ps1
+    Shared module: combo set[]/any[] test-value resolution (Get-ComboTestValue,
+    Get-ComboValueOverrides). Extracted 2026-07-06 from emit_test_plan.ps1 and
+    generate_test_matrix.ps1's near-identical Get-TestValue functions after a line-by-line
+    diff confirmed ~35 identical cases plus a documented set of real, pre-existing
+    behavioral differences (QIF-default awareness, date format, a few provider-specific
+    fields) -- see the module header for the full list and the -Caller parameter that
+    reproduces each tool's exact prior output. Verified byte-identical output before/after
+    extraction (NY_NYSPIN_EJUSTICE emit_test_plan + generate_test_matrix, FL_FCIC
+    generate_test_matrix). Dot-source only; defines functions, no side effects.
+
   tools/_test_provenance.ps1
     Shared module: test-log provenance + tier helpers. Single source of truth for reading
     stamped JSON Version / Entity Fingerprint / Tier from a log header and determining

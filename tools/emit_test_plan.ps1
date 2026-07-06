@@ -9,11 +9,16 @@
   Mirrors generate_test_matrix.ps1's resolution (combo set[] -> form fieldId via direct match
   or the QIDM attribute sourceField; Get-TestValue for values), but emits JSON the driver eats.
 
-  KNOWN DUPLICATION (flagged 2026-07-06, not fixed -- see generate_test_matrix.ps1's matching
-  header note): this combo/value-resolution logic is duplicated between the two tools instead
-  of shared. Deliberately NOT extracted to a common module in this pass -- NY_NYSPIN_EJUSTICE
-  live testing consumes this tool's output directly and a refactor here is too risky right
-  before that resumes. Do the extraction as a dedicated follow-up, not opportunistically.
+  Get-TestValue's value table is shared with generate_test_matrix.ps1 via
+  tools/_combo_value_resolver.ps1 (Get-ComboTestValue -Caller 'EmitTestPlan') -- extracted
+  2026-07-06 after a line-by-line diff confirmed ~35 identical cases plus a handful of real,
+  pre-existing behavioral differences (date format, QIF-default awareness, a few NY-specific
+  fields only this tool has values for). See that module's header for the full list.
+  Verified byte-identical plan output for NY_NYSPIN_EJUSTICE before/after the extraction --
+  this tool's output is exactly what it was. The field-id resolution helper below
+  (Resolve-FieldId) is NOT shared with generate_test_matrix's Resolve-SetToFieldIds -- that
+  one differs in case-sensitivity and fallback semantics in ways that need a separate,
+  dedicated look, not bundled into this pass.
 
   Trust warnings (non-silent): reports any combo set[]/any[] field it could NOT resolve a test
   value for (genuinely unmapped -> that combo would fire under-filled), and any entity whose
@@ -38,6 +43,7 @@ param(
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\_combo_match.ps1"
 . "$PSScriptRoot\_sim_helpers.ps1"
+. "$PSScriptRoot\_combo_value_resolver.ps1"
 
 # ── Firing simulation ─────────────────────────────────────────────────────────
 # Mirrors run_test_matrix.ps1's Test-ComboFires model (all set[] present + conditions;
@@ -105,91 +111,17 @@ elseif ((Split-Path $Path -Leaf) -match 'v(\d+\.\d+)') { $version = $Matches[1] 
 # category/source pair holds different codes per tenant (NJ GunMake = numeric NIBRS codes
 # '03 - Armalite...', HI/CA = NCIC letter codes 'IMI', live-confirmed 2026-07-02). Overrides
 # live in docs/reference/TEST_VALUE_OVERRIDES.txt as `fieldId=value` lines ('#' comments).
-$script:ValueOverrides = @{}
-$ovPath = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TEST_VALUE_OVERRIDES.txt'
-if (Test-Path $ovPath) {
-    foreach ($line in Get-Content $ovPath) {
-        if ($line -match '^\s*#' -or $line -notmatch '=') { continue }
-        $k, $v = $line -split '=', 2
-        $script:ValueOverrides[$k.Trim()] = $v.Trim()
-    }
-    Write-Host "[emit] $($script:ValueOverrides.Count) test-value override(s) loaded from $ovPath"
+$ovResult = Get-ComboValueOverrides -ProviderJsonPath $Path
+$script:ValueOverrides = $ovResult.Overrides
+if (Test-Path $ovResult.Path) {
+    Write-Host "[emit] $($script:ValueOverrides.Count) test-value override(s) loaded from $($ovResult.Path)"
 }
 
-# Test value per DOM fieldId (case-insensitive). Mirrors generate_test_matrix.ps1 Get-TestValue.
+# Test value per DOM fieldId (case-insensitive). Delegates to the shared resolver
+# (tools/_combo_value_resolver.ps1) -- see that module's header for the documented
+# behavioral differences from generate_test_matrix.ps1's copy of this same-named function.
 function Get-TestValue([string]$fid, [bool]$isOOS) {
-    foreach ($k in $script:ValueOverrides.Keys) {
-        if ($k -ieq $fid) { return $script:ValueOverrides[$k] }
-    }
-    switch -Regex ($fid) {
-        '(?i)^licensePlateNumber'          { return 'TEST123' }
-        '(?i)^licensePlateTypeCode'        { return 'PC' }
-        '(?i)^licensePlateYear'            { return (Get-Date).Year.ToString() }
-        '(?i)^vehicleIdentificationNumber' { return '1HGCM82633A123456' }
-        # Make dropdown codes are category-prefixed (CNST_FORD, PASS_FORD, ...); usx_lib.js
-        # anchors its option match to the leading code (^CODE\b), so a bare "FORD" matches
-        # nothing and falls back to opts[0]. CNST_FORD is the documented CA/FL-consistent value.
-        '(?i)^vehicleMakeCode'             { return 'CNST_FORD' }
-        '(?i)^vehicleYear'                 { return '2023' }
-        '(?i)^decalNumber'                 { return 'FL12345678' }
-        '(?i)^titleLienInformation'        { return 'ABCD1234' }
-        '(?i)^(registrationState|^state)$' { if ($isOOS) { return 'GA' } else { return $null } }
-        '(?i)^registrationStateDH'         { return 'NJ' }
-        '(?i)^operatorLicenseNumber'       { return 'D999888777' }
-        '(?i)^nameLast'                    { return 'DOE' }
-        '(?i)^nameFirst'                   { return 'JOHN' }
-        '(?i)^nameMiddle'                  { return $null }
-        '(?i)^nameSuffix'                  { return $null }
-        # Cross-entity owner-address refinements (CA IN.VP any[]).
-        '(?i)^addressCity'                 { return 'RENO' }
-        '(?i)^addressStreetNumber'         { return '123' }
-        # Native <input type=date> only accepts ISO yyyy-MM-dd via .value (usx_lib.js
-        # fillText also normalizes defensively, but emit the right format at the source).
-        '(?i)^birthDate'                   { return '1990-01-15' }
-        '(?i)^sexCode'                     { return 'M' }
-        '(?i)^imageIndicator'              { return 'N' }
-        '(?i)^randomRequest'               { return 'N' }
-        # Gun serial fieldId varies by provider: gunSerialNumber (NJ) or serialNumber (CA). Match both.
-        '(?i)^(gun)?serialNumber'          { return 'GUN12345' }
-        # Gun make dropdown uses provider code tables -- CA/NCIC use 3-char alpha codes (e.g. IMI),
-        # NOT numeric; usx_lib anchors ^CODE, so a bare number matches nothing. IMI is confirmed live.
-        '(?i)^gunMake'                     { return 'IMI' }
-        '(?i)^gunCaliber'                  { return '11' }
-        '(?i)^gunModel'                    { return 'TEST' }
-        # Criminal-records (CA IR.QVC) + demographic optional fields.
-        '(?i)^criminalIdNumber'            { return 'CII123456' }
-        '(?i)^socialSecurityNumber'        { return '123456789' }
-        '(?i)^age'                         { return '35' }
-        '(?i)^ncicNumber'                  { return 'X123456789' }
-        '(?i)^processControlNumber'        { return '0000012345' }
-        '(?i)^articleSerialNumber'         { return 'ART99999' }
-        '(?i)^articleTypeCode'             { return 'BBICYCL' }
-        '(?i)^ownerAppliedNumber'          { return 'OAN999' }
-        '(?i)^boatHullIdNumber'            { return 'FL1234AB56H7' }
-        '(?i)^registrationNumber'          { return 'FL1234AB' }
-        '(?i)^coastGuardDocumentNumber'    { return 'CG123456' }
-        '(?i)^related(Hit)?Search(Hit)?Indicator' { return 'Y' }
-        '(?i)^vehicleTypeCode'             { return '1' }
-        '(?i)^gunTypeCode'                 { return 'H' }   # NCIC gun TYP code (H - BOMB); 'HP' is not in the table (live-confirmed CA 2026-07-02)
-        '(?i)^raceCode'                    { return 'W' }
-        '(?i)^height$'                     { return '509' }
-        '(?i)^addressCounty'               { return 'LA' }
-        '(?i)^appsRequestIndicator'        { return 'Y' }
-        '(?i)^articleBrand'                { return 'SONY' }
-        '(?i)^articleCategory'             { return 'E' }
-        '(?i)^(caRequestPurposeCode|purposeCode)' { return 'C' }
-        # Attention is AUTO-POPULATED by a handler into a HIDDEN InpH field (officer profile,
-        # gate-feeder initialValue) -- there is NO visible control to fill, so the driver must
-        # not try (doing so flags a false "under-filled"). It still serializes server-side; verify
-        # it in the captured XML, not by filling. Skip like in-state State.
-        '(?i)^attention'                   { return $null }
-        # NY DriverHistoryQuery OOS combos (DALHOUT/DALLOUT) require a Requestor (who is asking).
-        '(?i)^requestorDH'                 { return 'SGAMBELLONE' }
-        # NY DH transaction-type override -- form defaults to 'DALL'; a distinct valid value
-        # (DLIC) proves the any-field test actually exercises the officer-typed override path.
-        '(?i)^nyNyspinTransactionNameDH'   { return 'DLIC' }
-        default                            { return $null }   # unknown -> skip (avoid junk)
-    }
+    return Get-ComboTestValue -FieldId $fid -IsOOS $isOOS -Caller 'EmitTestPlan' -Overrides $script:ValueOverrides
 }
 
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
