@@ -9,6 +9,12 @@
   Mirrors generate_test_matrix.ps1's resolution (combo set[] -> form fieldId via direct match
   or the QIDM attribute sourceField; Get-TestValue for values), but emits JSON the driver eats.
 
+  KNOWN DUPLICATION (flagged 2026-07-06, not fixed -- see generate_test_matrix.ps1's matching
+  header note): this combo/value-resolution logic is duplicated between the two tools instead
+  of shared. Deliberately NOT extracted to a common module in this pass -- NY_NYSPIN_EJUSTICE
+  live testing consumes this tool's output directly and a refactor here is too risky right
+  before that resumes. Do the extraction as a dedicated follow-up, not opportunistically.
+
   Trust warnings (non-silent): reports any combo set[]/any[] field it could NOT resolve a test
   value for (genuinely unmapped -> that combo would fire under-filled), and any entity whose
   QIDMs carry NOT_EXISTS conditions but produced zero guardrail tests. A non-zero unresolved

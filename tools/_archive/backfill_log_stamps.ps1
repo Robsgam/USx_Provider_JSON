@@ -33,7 +33,10 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$toolDir  = $PSScriptRoot
+# Archived 2026-07-06 (past its one-time-migration window); moved from tools/ to
+# tools/_archive/, one directory deeper -- toolDir below points at the real tools/
+# so the dot-sourced shared modules and repoRoot resolution still work unchanged.
+$toolDir  = (Resolve-Path "$PSScriptRoot\..").Path
 $repoRoot = (Resolve-Path "$toolDir\..").Path
 $provDir  = Join-Path $repoRoot "providers\$Provider"
 $testsDir = Join-Path $provDir "tests"

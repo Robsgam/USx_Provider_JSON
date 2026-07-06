@@ -13,6 +13,12 @@
   back-compat but ignored.
 
   Usage: .\generate_test_matrix.ps1 -Path <provider.json> [-OutFile <path>] [-Variant <BASE|MC>]
+
+  KNOWN DUPLICATION (flagged 2026-07-06, not fixed -- see emit_test_plan.ps1's matching header
+  note): this tool's combo/value-resolution logic is mirrored (not shared) by emit_test_plan.ps1
+  for the browser-driver JSON plan. Deliberately NOT extracted to a common module in this pass --
+  NY_NYSPIN_EJUSTICE live testing consumes emit_test_plan.ps1's output directly and a refactor
+  here is too risky right before that resumes. Do the extraction as a dedicated follow-up.
 #>
 
 param(

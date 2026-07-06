@@ -463,13 +463,15 @@ TOOLS
     Usage: .\compare_captures.ps1 -CaptureFile <auto.json> -Provider <name>
            .\compare_captures.ps1 -CaptureFile <rerun.json> -ReferenceFile <ref.json>
 
-  tools/backfill_log_stamps.ps1
+  tools/_archive/backfill_log_stamps.ps1  (ARCHIVED 2026-07-06 -- past its migration window)
     One-time migration tool. Stamps pre-existing test logs (written before provenance stamping
     existed) with the JSON Version + Entity Fingerprint + Tier header that post_test.ps1 now
     writes automatically. Run only for providers whose logs were genuinely run against the
     CURRENT shipped JSON. Never use for providers whose logs predate a rebuild (those must
-    re-test). Idempotent -- never overwrites an existing stamp.
-    Usage: .\backfill_log_stamps.ps1 -Provider <name> [-DryRun]
+    re-test). Idempotent -- never overwrites an existing stamp. Moved to tools/_archive/ rather
+    than deleted, in case a future rebuild ever needs this exact migration again; still runnable
+    from its new path (internal tools/ references updated accordingly).
+    Usage: .\_archive\backfill_log_stamps.ps1 -Provider <name> [-Apply] [-Tier <tier>]
 
   tools/_combo_match.ps1
     Shared module: CommSys combo enumeration + test-log filename matching. Single source of
