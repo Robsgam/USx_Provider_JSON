@@ -722,6 +722,22 @@ function Audit-Provider {
             }
 
             if ($matchingJsonCombos.Count -eq 0) {
+                # BUG FIX 2026-07-06: an XML keyRef that is genuinely not built (e.g. FL_FCIC QV/QW
+                # -- CommSys auto-sends these, platform-confirmed, see BUILD_NOTES) was being
+                # falsely marked [PASS] "covered by invented variants" below, because the pooled
+                # field-overlap heuristic doesn't distinguish "these invented combos are a 1:1
+                # rename of THIS keyRef" from "these invented combos belong to a different sibling
+                # keyRef in the same query and just happen to share field names" (Name/DOB/OLN are
+                # common to most person-search variants). Root cause found while reconciling this
+                # report against <PROVIDER>_METADATA_REFERENCE.txt, which correctly shows these as
+                # UNBUILT. Fix: an explicitly registered "not-built" keyRef (registry field token
+                # '*') skips the loose pooled-coverage check entirely and reports honestly instead
+                # of guessing. This does NOT change behavior for any keyRef not in the registry.
+                if (Test-AllowListed $qName $kr '*') {
+                    Out-Note "  keyRef ${kr}: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)"
+                    continue
+                }
+
                 # Find invented keyRef variants for this query (JSON combos whose keyRef is not in XML)
                 $inventedCombos = @()
                 foreach ($qidm in $jsonQidms) {
