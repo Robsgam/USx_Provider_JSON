@@ -450,6 +450,19 @@ function Audit-Provider {
 
     # ══════════════════════════════════════════════════════════════════════════
     # CHECK 1: Query Coverage
+    #
+    # INVESTIGATED 2026-07-06: this check's XML-vs-JSON query coverage overlaps
+    # conceptually with <PROVIDER>_METADATA_REFERENCE.txt's "BUILD COVERAGE" section
+    # (per-keyRef BUILT/UNBUILT + summary table) -- a prior cleanup pass flagged it as
+    # possible duplication to trim. Left unchanged on inspection: every line below is an
+    # Out-Pass/Out-Fail call, and the print IS the count -- $script:passCount++ /
+    # $script:failCount++ happen in the same statement as the Write-Host text (see the
+    # Out-Pass/Out-Fail function defs above). The Out-Fail path here ("in JSON but NOT in
+    # XML") is exactly the [FAIL] count enforce.ps1 Phase 2b greps out of this report
+    # (`$mdFails = ([regex]::Matches($mdText, '\[FAIL\]')).Count`). Trimming any printed
+    # line would change that FAIL count (or the PASS count), i.e. it is not "purely
+    # printed diagnostic text" -- it's the gate itself. Do not trim without re-deriving
+    # the FAIL/PASS computation independently of the print first.
     # ══════════════════════════════════════════════════════════════════════════
     Out-Line ""
     Out-Line "--- CHECK 1: Query Coverage ---"
