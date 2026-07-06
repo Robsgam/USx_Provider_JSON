@@ -4,11 +4,18 @@ Date: 2026-05-12
 Submitted by: Rob Sgambellone (rob.sgambellone@mark43.com)
 ===============================================================================
 
-This report documents five confirmed platform defects discovered during
+This report documents six confirmed platform defects discovered during
 production testing of ConnectCIC provider JSON configurations. Each defect
 has been reproduced with specific test steps and verified across multiple
 provider configurations. These are platform-level issues that cannot be
 resolved through JSON configuration changes.
+
+RESOLUTION STATUS (as of 2026-07-06): all 6 bugs below (BUG 1-6) remain OPEN on the
+platform side -- every one is currently mitigated only by the config-side "Workaround"
+noted in its own section, not by a platform fix. This file is NOT a per-provider ticket
+tracker -- for provider-level DEX ticket status see `providers/JIRA_REFERENCE.txt`. If a
+platform team fix ever lands for one of these, mark it RESOLVED here with the date and
+confirming test log, and only then consider removing its config-side workaround.
 
 ===============================================================================
 BUG 1: CLEAR FORM BUTTON DOES NOT RESET QUERY SELECTION STATE

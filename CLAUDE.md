@@ -337,7 +337,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (58 scripts + 10 shared modules in `tools/`)
+## Tools (57 scripts + 10 shared modules in `tools/`, + 1 archived one-time migration tool in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
