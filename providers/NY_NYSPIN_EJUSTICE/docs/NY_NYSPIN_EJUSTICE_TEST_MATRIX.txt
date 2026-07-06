@@ -8,13 +8,13 @@ Validator: unknown
 FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 8 fields):
-  CARD_VEH (VEHICLE QUERY - Leave State blank for NY):
+  CARD_VEH (VEHICLE QUERY):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Person (3 cards, 19 fields):
-  CARD_PER_OPT (SEARCH OPTIONS - Leave State blank for NY):
+  CARD_PER_OPT (SEARCH OPTIONS):
     RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
   CARD_PER_DL (DRIVER LICENSE):
     ROW 1: OperatorLicenseNumber [Inp 20]
@@ -26,8 +26,9 @@ Person (3 cards, 19 fields):
     ROW 2: NameLastDH [Inp 35], NameFirstDH [Inp 35]
     ROW 3: nameMiddleDH [Inp 35], nameSuffixDH [Inp 10]
     ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
-    ROW 5: purposeCodeDH [Inp C, 1], requestorDH [Inp 35]
-    ROW 6: nyNyspinTransactionNameDH [Inp DALL, 4]
+    ROW 5: purposeCodeDH [Inp C, 1]
+    ROW 6: requestorDH [Inp X, 35]
+    ROW 7: nyNyspinTransactionNameDH [Inp DALL, 4]
 
 Firearm (1 card, 5 fields):
   CARD_GUN (FIREARM QUERY):
@@ -40,7 +41,7 @@ Article (1 card, 4 fields):
     ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 5 fields):
-  CARD_BOA (BOAT QUERY - Leave State blank for NY):
+  CARD_BOA (BOAT QUERY):
     ROW 1: RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20]
     ROW 2: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 

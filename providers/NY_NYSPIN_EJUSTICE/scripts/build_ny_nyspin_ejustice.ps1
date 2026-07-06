@@ -334,9 +334,16 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State';                size = 2;  sourceField = @('RegistrationState');        targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'PurposeCode';          size = 1;  sourceField = @('purposeCodeDH');            targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'Requestor';            size = 35; sourceField = @('requestorDH');              targetField = 'Requestor' }
+        [PSCustomObject]@{
+            name        = 'Requestor'
+            rule        = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+            size        = 35; sourceField = @('requestorDH'); targetField = 'Requestor'
+        }
         [PSCustomObject]@{ name = 'NyNyspinTransactionName'; size = 4; sourceField = @('nyNyspinTransactionNameDH'); targetField = 'NyNyspinTransactionName' }
     )
+    # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
+    # This QIDM's 4 combos (DALHOUT/DALH/DALLOUT/DALL) are synthetic disambiguations --
+    # see the file-header keyRef inventory comment for the full rationale.
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
@@ -346,7 +353,7 @@ $dhQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = @('RegistrationState');        operator = 'EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Requestor'; value = 'X' })
             }
             primaryFieldReference = 'Name'
             keyReference          = 'DALHOUT'
@@ -367,7 +374,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','purposeCodeDH','requestorDH','RegistrationState'); any = @('ImageIndicator','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','purposeCodeDH','requestorDH','RegistrationState'); any = @('ImageIndicator','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Requestor'; value = 'X' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALLOUT'
             state                 = 'Out'
@@ -559,7 +566,7 @@ $nyBundle = [PSCustomObject]@{
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH'
-        title = 'VEHICLE QUERY - Leave State blank for NY'
+        title = 'VEHICLE QUERY'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
@@ -567,7 +574,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (Plate wins if both entered)' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
             )}
@@ -596,7 +603,7 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_OPT'
-        title = 'SEARCH OPTIONS - Leave State blank for NY'
+        title = 'SEARCH OPTIONS'
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
@@ -609,7 +616,7 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER LICENSE'
         rows  = @(
             @{ id = 'ROW_PER_DL_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_DL_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB + Sex)' '20' 'ROW_PER_DL_1' }
             )}
             @{ id = 'ROW_PER_DL_2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '35' 'ROW_PER_DL_2' }
@@ -630,23 +637,35 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER HISTORY'
         rows  = @(
             @{ id = 'ROW_PER_DH_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_PER_DH_1' }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '35' 'ROW_PER_DH_2' }
                 @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '35' 'ROW_PER_DH_2' }
             )}
             @{ id = 'ROW_PER_DH_3'; cols = @('6','6'); fields = @(
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH)' '35' 'ROW_PER_DH_3' }
-                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)'      '10' 'ROW_PER_DH_3' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH, optional)' '35' 'ROW_PER_DH_3' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH, optional)'      '10' 'ROW_PER_DH_3' }
             )}
             @{ id = 'ROW_PER_DH_4'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH)'                                                         'ROW_PER_DH_4' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_4' }
             )}
-            @{ id = 'ROW_PER_DH_5'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_PER_DH_5'; cols = @('12'); fields = @(
                 @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1'  'ROW_PER_DH_5' @{ initialValue = 'C' } }
-                @{ id = 'RequestorDH_Input';   node = Inp 'requestorDH'   'Requestor (DH)'    '35' 'ROW_PER_DH_5' }
+            )}
+            # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
+            # field (set[] on DALHOUT/DALLOUT), so BUILD_RULES Section 14's default rule would
+            # keep it visible/officer-filled. Exception granted here because the value is knowable
+            # and stable (officer's own RMS-profile name), not officer judgment -- same rationale
+            # as the optional-Attention standard elsewhere, deliberately extended to a required
+            # field. Hidden gate-feeder + CommsysGetLastNameFirstNameInitialRuleHandler on the
+            # 'Requestor' QIDM attribute (see below); sourceField=['requestorDH'] already pointed
+            # at this fieldId. Working config verified against RULE_HANDLERS.txt entry 13 (HI
+            # v2.9 live-proven recipe): non-empty sourceField + field listed in the combo's set[]
+            # (already true here) + hidden field with non-empty initialValue.
+            @{ id = 'ROW_PER_DH_5B'; cols = @('12'); fields = @(
+                @{ id = 'RequestorDH_Input'; node = InpH 'requestorDH' 'Requestor (DH, auto-populated from officer profile)' '35' 'ROW_PER_DH_5B' @{ initialValue = 'X' } }
             )}
             @{ id = 'ROW_PER_DH_6'; cols = @('12'); fields = @(
                 @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (DH, optional)' '4' 'ROW_PER_DH_6' @{ initialValue = 'DALL' } }
@@ -731,7 +750,7 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
-        title = 'BOAT QUERY - Leave State blank for NY'
+        title = 'BOAT QUERY'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '10' 'ROW_BOA_1' }

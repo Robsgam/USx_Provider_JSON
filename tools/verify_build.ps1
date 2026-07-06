@@ -375,7 +375,11 @@ $hiddenFieldWhitelist = @(
     '(?i)state',                         # RMS dual-field State exception
     '(?i)dexStateUserId',                # AUTH user id from RMS profile
     '(?i)cadUnit|cadEvent|linkToEvent',  # CAD / First-Responder context
-    '(?i)^Attention$'                    # auto-Attention gate-feeder (handler emits officer profile name; field hidden, value ignored)
+    '(?i)^Attention$',                   # auto-Attention gate-feeder (handler emits officer profile name; field hidden, value ignored)
+    '(?i)^requestorDH$'                  # NY_NYSPIN_EJUSTICE required-field exception (2026-07-06, user-approved):
+                                          # CommsysGetLastNameFirstNameInitialRuleHandler gate-feeder, same rationale as
+                                          # Attention above, deliberately extended to a required (set[]) field because
+                                          # the value is knowable/stable (officer's own RMS profile), not officer judgment.
 )
 
 # Recursively collect hidden form-field nodes (hidden=true + props.fieldId + Form* type)
@@ -413,27 +417,33 @@ foreach ($hf in $uniqueHidden) {
     }
 }
 
-# Attention auto-populate handler -- APPROVED STANDARD (user decision 2026-06-22).
-# Wherever Attention is part of a query it is auto-populated via
-# CommsysGetLastNameFirstNameInitialRuleHandler (no visible field required).
-# Flag the INVERSE: an Attention attribute with NO handler (a manual visible
-# field) should be converted to the automated handler per the standard.
+# Auto-populate handler -- APPROVED STANDARD (user decision 2026-06-22; extended to
+# Requestor 2026-07-06, NY_NYSPIN_EJUSTICE). Wherever one of these identity attributes is
+# part of a query it is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
+# (no visible field required). Flag the INVERSE: such an attribute with NO handler (a
+# manual visible field) is only flagged if it's NOT legitimately required (see below) --
+# generalized from an Attention-only check so the same empty-sourceField import-rejection
+# protection (RULE_HANDLERS.txt entry 13) covers Requestor too, not just Attention.
+$autoPopAttrNames = @('Attention', 'Requestor')
 $autoPopHandlers = 0
 if ($providerBundle) {
     foreach ($cfg in $providerBundle.configurations) {
         if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
-        # Fields required (set[]) across this QIDM's combos. A REQUIRED Attention
-        # (e.g. CCH criminal-history queries) is legitimately an officer-supplied
-        # visible field -- the name-derived handler is the OPTIONAL-Attention
-        # standard only -- so exempt required Attention from the WARN.
+        # Fields required (set[]) across this QIDM's combos. A REQUIRED identity attribute
+        # (e.g. CCH criminal-history Attention, or TX_TLETS_CCH's Requestor) is legitimately
+        # an officer-supplied visible field -- the name-derived handler is the OPTIONAL
+        # standard only, UNLESS a specific required-field exception has been granted and
+        # wired with the handler (e.g. NY_NYSPIN_EJUSTICE's Requestor) -- so exempt required-
+        # and-unhandled attributes from the WARN, but still validate wiring quality if a
+        # handler IS present regardless of required/optional status.
         $setFields = @()
         foreach ($c in $cfg.combinations) {
             if ($c.requirements -and $c.requirements.set) { $setFields += @($c.requirements.set) }
         }
         foreach ($attr in $cfg.attributes) {
-            if ($attr.name -ne 'Attention') { continue }
+            if ($autoPopAttrNames -notcontains $attr.name) { continue }
             $hasHandler = ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial')
-            $isRequired = ($setFields -contains 'Attention')
+            $isRequired = ($setFields -contains $attr.name)
             foreach ($sf in $attr.sourceField) { if ($setFields -contains $sf) { $isRequired = $true } }
             if ($hasHandler) {
                 # IMPORT CONSTRAINT (live-proven HI v2.5, 2026-06-22): ConnectCic REJECTS a
@@ -441,20 +451,19 @@ if ($providerBundle) {
                 # ("Invalid attributes found ... [Attention]"). So this handler's attribute
                 # MUST carry a non-empty sourceField (e.g. @('Attention')) to import.
                 # CAVEAT: with a sourceField that names no real form field, the attribute is
-                # gated out of serialization at query time, so Attention never reaches the
-                # wire -- the auto-Attention handler is effectively inert on this platform.
+                # gated out of serialization at query time, so it never reaches the wire.
                 # See RULE_HANDLERS.txt entry 13 + [[project_attention_sourcefield_bug]].
                 $sfCount = @($attr.sourceField).Count
                 if ($sfCount -eq 0) {
-                    Fail "QIDM '$($cfg.name)' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler with EMPTY sourceField -- ConnectCic REJECTS this at import (live-proven HI v2.5). sourceField MUST be non-empty, e.g. @('Attention')"
+                    Fail "QIDM '$($cfg.name)' attr '$($attr.name)' uses CommsysGetLastNameFirstNameInitialRuleHandler with EMPTY sourceField -- ConnectCic REJECTS this at import (live-proven HI v2.5). sourceField MUST be non-empty, e.g. @('$($attr.name)')"
                     $autoPopHandlers++
                 } else {
-                    Info "QIDM '$($cfg.name)' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable; NOTE: does not serialize on this platform, see RULE_HANDLERS.txt entry 13)"
+                    Info "QIDM '$($cfg.name)' attr '$($attr.name)' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)"
                 }
             } elseif ($isRequired) {
-                Info "QIDM '$($cfg.name)' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard"
+                Info "QIDM '$($cfg.name)' attr '$($attr.name)' is required (set[]) -- officer-supplied visible field, exempt from automated standard"
             } else {
-                Warn "QIDM '$($cfg.name)' attr 'Attention' has no auto-populate handler -- wire CommsysGetLastNameFirstNameInitialRuleHandler per automated-Attention standard (BUILD_RULES Visible-First Mandate)"
+                Warn "QIDM '$($cfg.name)' attr '$($attr.name)' has no auto-populate handler -- wire CommsysGetLastNameFirstNameInitialRuleHandler per the automated-identity-field standard (BUILD_RULES Visible-First Mandate), or confirm exempt"
                 $autoPopHandlers++
             }
         }

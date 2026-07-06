@@ -68,7 +68,7 @@
                                                                                                             },
                                                                                                    "displayName":  "Card",
                                                                                                    "props":  {
-                                                                                                                 "title":  "VEHICLE QUERY - Leave State blank for NY"
+                                                                                                                 "title":  "VEHICLE QUERY"
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
@@ -200,7 +200,7 @@
                                                                                                                             "displayName":  "Input",
                                                                                                                             "props":  {
                                                                                                                                           "fieldId":  "VehicleIdentificationNumber",
-                                                                                                                                          "label":  "VIN",
+                                                                                                                                          "label":  "VIN (Plate wins if both entered)",
                                                                                                                                           "maxLength":  "20"
                                                                                                                                       },
                                                                                                                             "isCanvas":  false,
@@ -381,7 +381,7 @@
                                                                                                                  },
                                                                                                         "displayName":  "Card",
                                                                                                         "props":  {
-                                                                                                                      "title":  "VEHICLE QUERY - Leave State blank for NY"
+                                                                                                                      "title":  "VEHICLE QUERY"
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
@@ -513,7 +513,7 @@
                                                                                                                                  "displayName":  "Input",
                                                                                                                                  "props":  {
                                                                                                                                                "fieldId":  "VehicleIdentificationNumber",
-                                                                                                                                               "label":  "VIN",
+                                                                                                                                               "label":  "VIN (Plate wins if both entered)",
                                                                                                                                                "maxLength":  "20"
                                                                                                                                            },
                                                                                                                                  "isCanvas":  false,
@@ -775,7 +775,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "VEHICLE QUERY - Leave State blank for NY"
+                                                                                                                         "title":  "VEHICLE QUERY"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -907,7 +907,7 @@
                                                                                                                                     "displayName":  "Input",
                                                                                                                                     "props":  {
                                                                                                                                                   "fieldId":  "VehicleIdentificationNumber",
-                                                                                                                                                  "label":  "VIN",
+                                                                                                                                                  "label":  "VIN (Plate wins if both entered)",
                                                                                                                                                   "maxLength":  "20"
                                                                                                                                               },
                                                                                                                                     "isCanvas":  false,
@@ -1136,7 +1136,7 @@
                                                                                                                 },
                                                                                                        "displayName":  "Card",
                                                                                                        "props":  {
-                                                                                                                     "title":  "SEARCH OPTIONS - Leave State blank for NY"
+                                                                                                                     "title":  "SEARCH OPTIONS"
                                                                                                                  },
                                                                                                        "isCanvas":  true,
                                                                                                        "hidden":  false,
@@ -1260,7 +1260,7 @@
                                                                                                                       "displayName":  "Input",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                    "label":  "License Number",
+                                                                                                                                    "label":  "License Number (or search by Name + DOB + Sex)",
                                                                                                                                     "maxLength":  "20"
                                                                                                                                 },
                                                                                                                       "isCanvas":  false,
@@ -1475,6 +1475,7 @@
                                                                                                                     "ROW_PER_DH_3",
                                                                                                                     "ROW_PER_DH_4",
                                                                                                                     "ROW_PER_DH_5",
+                                                                                                                    "ROW_PER_DH_5B",
                                                                                                                     "ROW_PER_DH_6"
                                                                                                                 ],
                                                                                                       "linkedNodes":  {
@@ -1509,7 +1510,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                      "label":  "License Number (DH)",
+                                                                                                                                      "label":  "License Number (DH) - or Name + DOB + Sex",
                                                                                                                                       "maxLength":  "20"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -1613,7 +1614,7 @@
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "nameMiddleDH",
-                                                                                                                           "label":  "Middle Name (DH)",
+                                                                                                                           "label":  "Middle Name (DH, optional)",
                                                                                                                            "maxLength":  "35"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
@@ -1633,7 +1634,7 @@
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "nameSuffixDH",
-                                                                                                                           "label":  "Suffix (DH)",
+                                                                                                                           "label":  "Suffix (DH, optional)",
                                                                                                                            "maxLength":  "10"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
@@ -1715,15 +1716,13 @@
                                                                                                        "displayName":  "Row",
                                                                                                        "props":  {
                                                                                                                      "templateColumns":  [
-                                                                                                                                             "6",
-                                                                                                                                             "6"
+                                                                                                                                             "12"
                                                                                                                                          ]
                                                                                                                  },
                                                                                                        "isCanvas":  true,
                                                                                                        "hidden":  false,
                                                                                                        "nodes":  [
-                                                                                                                     "PurposeCodeDH_Input",
-                                                                                                                     "RequestorDH_Input"
+                                                                                                                     "PurposeCodeDH_Input"
                                                                                                                  ],
                                                                                                        "linkedNodes":  {
 
@@ -1751,6 +1750,26 @@
                                                                                                                               },
                                                                                                               "parent":  "ROW_PER_DH_5"
                                                                                                           },
+                                                                                  "ROW_PER_DH_5B":  {
+                                                                                                        "type":  {
+                                                                                                                     "resolvedName":  "Row"
+                                                                                                                 },
+                                                                                                        "displayName":  "Row",
+                                                                                                        "props":  {
+                                                                                                                      "templateColumns":  [
+                                                                                                                                              "12"
+                                                                                                                                          ]
+                                                                                                                  },
+                                                                                                        "isCanvas":  true,
+                                                                                                        "hidden":  false,
+                                                                                                        "nodes":  [
+                                                                                                                      "RequestorDH_Input"
+                                                                                                                  ],
+                                                                                                        "linkedNodes":  {
+
+                                                                                                                        },
+                                                                                                        "parent":  "CARD_PER_DH"
+                                                                                                    },
                                                                                   "RequestorDH_Input":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "FormInput"
@@ -1758,18 +1777,19 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "requestorDH",
-                                                                                                                          "label":  "Requestor (DH)",
-                                                                                                                          "maxLength":  "35"
+                                                                                                                          "label":  "Requestor (DH, auto-populated from officer profile)",
+                                                                                                                          "maxLength":  "35",
+                                                                                                                          "initialValue":  "X"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
-                                                                                                            "hidden":  false,
+                                                                                                            "hidden":  true,
                                                                                                             "nodes":  [
 
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
-                                                                                                            "parent":  "ROW_PER_DH_5"
+                                                                                                            "parent":  "ROW_PER_DH_5B"
                                                                                                         },
                                                                                   "ROW_PER_DH_6":  {
                                                                                                        "type":  {
@@ -1877,7 +1897,7 @@
                                                                                                                      },
                                                                                                             "displayName":  "Card",
                                                                                                             "props":  {
-                                                                                                                          "title":  "SEARCH OPTIONS - Leave State blank for NY"
+                                                                                                                          "title":  "SEARCH OPTIONS"
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
@@ -2001,7 +2021,7 @@
                                                                                                                            "displayName":  "Input",
                                                                                                                            "props":  {
                                                                                                                                          "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                         "label":  "License Number",
+                                                                                                                                         "label":  "License Number (or search by Name + DOB + Sex)",
                                                                                                                                          "maxLength":  "20"
                                                                                                                                      },
                                                                                                                            "isCanvas":  false,
@@ -2216,6 +2236,7 @@
                                                                                                                          "ROW_PER_DH_3",
                                                                                                                          "ROW_PER_DH_4",
                                                                                                                          "ROW_PER_DH_5",
+                                                                                                                         "ROW_PER_DH_5B",
                                                                                                                          "ROW_PER_DH_6"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
@@ -2250,7 +2271,7 @@
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                           "label":  "License Number (DH)",
+                                                                                                                                           "label":  "License Number (DH) - or Name + DOB + Sex",
                                                                                                                                            "maxLength":  "20"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
@@ -2354,7 +2375,7 @@
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "nameMiddleDH",
-                                                                                                                                "label":  "Middle Name (DH)",
+                                                                                                                                "label":  "Middle Name (DH, optional)",
                                                                                                                                 "maxLength":  "35"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -2374,7 +2395,7 @@
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "nameSuffixDH",
-                                                                                                                                "label":  "Suffix (DH)",
+                                                                                                                                "label":  "Suffix (DH, optional)",
                                                                                                                                 "maxLength":  "10"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -2456,15 +2477,13 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "6",
-                                                                                                                                                  "6"
+                                                                                                                                                  "12"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
-                                                                                                                          "PurposeCodeDH_Input",
-                                                                                                                          "RequestorDH_Input"
+                                                                                                                          "PurposeCodeDH_Input"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
@@ -2492,6 +2511,26 @@
                                                                                                                                    },
                                                                                                                    "parent":  "ROW_PER_DH_5"
                                                                                                                },
+                                                                                       "ROW_PER_DH_5B":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "Row"
+                                                                                                                      },
+                                                                                                             "displayName":  "Row",
+                                                                                                             "props":  {
+                                                                                                                           "templateColumns":  [
+                                                                                                                                                   "12"
+                                                                                                                                               ]
+                                                                                                                       },
+                                                                                                             "isCanvas":  true,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
+                                                                                                                           "RequestorDH_Input"
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "CARD_PER_DH"
+                                                                                                         },
                                                                                        "RequestorDH_Input":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "FormInput"
@@ -2499,18 +2538,19 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "requestorDH",
-                                                                                                                               "label":  "Requestor (DH)",
-                                                                                                                               "maxLength":  "35"
+                                                                                                                               "label":  "Requestor (DH, auto-populated from officer profile)",
+                                                                                                                               "maxLength":  "35",
+                                                                                                                               "initialValue":  "X"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
-                                                                                                                 "hidden":  false,
+                                                                                                                 "hidden":  true,
                                                                                                                  "nodes":  [
 
                                                                                                                            ],
                                                                                                                  "linkedNodes":  {
 
                                                                                                                                  },
-                                                                                                                 "parent":  "ROW_PER_DH_5"
+                                                                                                                 "parent":  "ROW_PER_DH_5B"
                                                                                                              },
                                                                                        "ROW_PER_DH_6":  {
                                                                                                             "type":  {
@@ -2699,7 +2739,7 @@
                                                                                                                         },
                                                                                                                "displayName":  "Card",
                                                                                                                "props":  {
-                                                                                                                             "title":  "SEARCH OPTIONS - Leave State blank for NY"
+                                                                                                                             "title":  "SEARCH OPTIONS"
                                                                                                                          },
                                                                                                                "isCanvas":  true,
                                                                                                                "hidden":  false,
@@ -2823,7 +2863,7 @@
                                                                                                                               "displayName":  "Input",
                                                                                                                               "props":  {
                                                                                                                                             "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                            "label":  "License Number",
+                                                                                                                                            "label":  "License Number (or search by Name + DOB + Sex)",
                                                                                                                                             "maxLength":  "20"
                                                                                                                                         },
                                                                                                                               "isCanvas":  false,
@@ -3038,6 +3078,7 @@
                                                                                                                             "ROW_PER_DH_3",
                                                                                                                             "ROW_PER_DH_4",
                                                                                                                             "ROW_PER_DH_5",
+                                                                                                                            "ROW_PER_DH_5B",
                                                                                                                             "ROW_PER_DH_6"
                                                                                                                         ],
                                                                                                               "linkedNodes":  {
@@ -3072,7 +3113,7 @@
                                                                                                                                 "displayName":  "Input",
                                                                                                                                 "props":  {
                                                                                                                                               "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                              "label":  "License Number (DH)",
+                                                                                                                                              "label":  "License Number (DH) - or Name + DOB + Sex",
                                                                                                                                               "maxLength":  "20"
                                                                                                                                           },
                                                                                                                                 "isCanvas":  false,
@@ -3176,7 +3217,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "nameMiddleDH",
-                                                                                                                                   "label":  "Middle Name (DH)",
+                                                                                                                                   "label":  "Middle Name (DH, optional)",
                                                                                                                                    "maxLength":  "35"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -3196,7 +3237,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "nameSuffixDH",
-                                                                                                                                   "label":  "Suffix (DH)",
+                                                                                                                                   "label":  "Suffix (DH, optional)",
                                                                                                                                    "maxLength":  "10"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -3278,15 +3319,13 @@
                                                                                                                "displayName":  "Row",
                                                                                                                "props":  {
                                                                                                                              "templateColumns":  [
-                                                                                                                                                     "6",
-                                                                                                                                                     "6"
+                                                                                                                                                     "12"
                                                                                                                                                  ]
                                                                                                                          },
                                                                                                                "isCanvas":  true,
                                                                                                                "hidden":  false,
                                                                                                                "nodes":  [
-                                                                                                                             "PurposeCodeDH_Input",
-                                                                                                                             "RequestorDH_Input"
+                                                                                                                             "PurposeCodeDH_Input"
                                                                                                                          ],
                                                                                                                "linkedNodes":  {
 
@@ -3314,6 +3353,26 @@
                                                                                                                                       },
                                                                                                                       "parent":  "ROW_PER_DH_5"
                                                                                                                   },
+                                                                                          "ROW_PER_DH_5B":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "Row"
+                                                                                                                         },
+                                                                                                                "displayName":  "Row",
+                                                                                                                "props":  {
+                                                                                                                              "templateColumns":  [
+                                                                                                                                                      "12"
+                                                                                                                                                  ]
+                                                                                                                          },
+                                                                                                                "isCanvas":  true,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+                                                                                                                              "RequestorDH_Input"
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "CARD_PER_DH"
+                                                                                                            },
                                                                                           "RequestorDH_Input":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "FormInput"
@@ -3321,18 +3380,19 @@
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "requestorDH",
-                                                                                                                                  "label":  "Requestor (DH)",
-                                                                                                                                  "maxLength":  "35"
+                                                                                                                                  "label":  "Requestor (DH, auto-populated from officer profile)",
+                                                                                                                                  "maxLength":  "35",
+                                                                                                                                  "initialValue":  "X"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
-                                                                                                                    "hidden":  false,
+                                                                                                                    "hidden":  true,
                                                                                                                     "nodes":  [
 
                                                                                                                               ],
                                                                                                                     "linkedNodes":  {
 
                                                                                                                                     },
-                                                                                                                    "parent":  "ROW_PER_DH_5"
+                                                                                                                    "parent":  "ROW_PER_DH_5B"
                                                                                                                 },
                                                                                           "ROW_PER_DH_6":  {
                                                                                                                "type":  {
@@ -5037,7 +5097,7 @@
                                                                                                             },
                                                                                                    "displayName":  "Card",
                                                                                                    "props":  {
-                                                                                                                 "title":  "BOAT QUERY - Leave State blank for NY"
+                                                                                                                 "title":  "BOAT QUERY"
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
@@ -5263,7 +5323,7 @@
                                                                                                                  },
                                                                                                         "displayName":  "Card",
                                                                                                         "props":  {
-                                                                                                                      "title":  "BOAT QUERY - Leave State blank for NY"
+                                                                                                                      "title":  "BOAT QUERY"
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
@@ -5570,7 +5630,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "BOAT QUERY - Leave State blank for NY"
+                                                                                                                         "title":  "BOAT QUERY"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -7359,6 +7419,9 @@
                                                                       },
                                                                       {
                                                                           "name":  "Requestor",
+                                                                          "rule":  {
+                                                                                       "function":  "CommsysGetLastNameFirstNameInitialRuleHandler"
+                                                                                   },
                                                                           "size":  35,
                                                                           "sourceField":  [
                                                                                               "requestorDH"
@@ -7418,6 +7481,10 @@
                                                                                                                   {
                                                                                                                       "field":  "PurposeCode",
                                                                                                                       "value":  "C"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "Requestor",
+                                                                                                                      "value":  "X"
                                                                                                                   }
                                                                                                               ]
                                                                                              },
@@ -7500,6 +7567,10 @@
                                                                                                                   {
                                                                                                                       "field":  "PurposeCode",
                                                                                                                       "value":  "C"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "Requestor",
+                                                                                                                      "value":  "X"
                                                                                                                   }
                                                                                                               ]
                                                                                              },

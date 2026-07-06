@@ -6,7 +6,7 @@ Current: **v4.0** | Generated: 2026-07-06
 
 ---
 
-## v4.0 -- 2026-07-02 -- Cross-provider hardening rollout (rebuild, not a routine pipeline pass)
+## v4.0 -- 2026-07-06 -- Cross-provider hardening rollout (rebuild, not a routine pipeline pass)
 
 **CHANGED:**
   - PascalCase conversion: the 22 USx CAD-integration field names authored natively  

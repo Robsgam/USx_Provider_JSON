@@ -13,7 +13,7 @@ knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
 
-## Provider Status (updated 2026-07-02)
+## Provider Status (updated 2026-07-06)
 
 | Provider | Path | Version | Status | Notable patterns |
 |---|---|---|---|---|
