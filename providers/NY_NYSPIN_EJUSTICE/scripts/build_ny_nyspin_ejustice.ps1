@@ -638,7 +638,7 @@ $perLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_PER_DL_4'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'                                                    'ROW_PER_DL_4' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
             )}
         )
     }
@@ -658,8 +658,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH, optional)'      '10' 'ROW_PER_DH_3' }
             )}
             @{ id = 'ROW_PER_DH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH)'                                                         'ROW_PER_DH_4' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_4' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH)'                                               'ROW_PER_DH_4' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_4' }
             )}
             @{ id = 'ROW_PER_DH_5'; cols = @('12'); fields = @(
                 @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1'  'ROW_PER_DH_5' @{ initialValue = 'C' } }
@@ -704,7 +704,7 @@ $faLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';         node = Sel 'GunMake'         'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';         node = Sel 'GunMake'         'Gun Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'GunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
@@ -734,8 +734,8 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE QUERY'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number (with Article Type)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4'); fields = @(
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_ART_2' }
@@ -777,7 +777,7 @@ $boaLayout = MakeLayouts @(
         title = 'BOAT SEARCH'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '10' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '10' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
             )}
         )
