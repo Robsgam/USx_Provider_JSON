@@ -356,9 +356,9 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | 7 | `audit_metadata.ps1` | Validates QIDM configs against authoritative XML metadata | `-Path <json>` `-OutFile` |
 | 8 | `audit_cad.ps1` | CAD dispatch field alignment (camelCase fieldIds, layout variants, Patch 8) | `-Path <json>` `-Variant` `-OutFile` |
 | 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
-| 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation | `-Path <json>` `-Matrix <file>` `-OutFile` |
-| 11 | `simulate_response.ps1` | CJIS response handler simulator: executes all QRDM handler transformations (Height, Name, VehicleYear, truncate, AttributeMapping) against comprehensive synthetic test data per entity. Target: 0 MISSING / 0 UNMAPPED. No live data required. | `-Path <json>` `-Entity` `-RunEdgeCases` `-OutFile` |
-| -- | `build_report.ps1` | **Master orchestrator** — runs all 11 above + saves reports to docs/, then prunes orphaned variant reports (build-owned report files for a JSON variant no longer present — e.g. after consolidating branches) | `-Path <json>` |
+| 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation. Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 | `-Path <json>` `-Matrix <file>` `-OutFile` |
+| 11 | `simulate_response.ps1` | CJIS response handler simulator: executes all QRDM handler transformations (Height, Name, VehicleYear, truncate, AttributeMapping) against comprehensive synthetic test data per entity. Target: 0 MISSING / 0 UNMAPPED. No live data required. Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 | `-Path <json>` `-Entity` `-RunEdgeCases` `-OutFile` |
+| -- | `build_report.ps1` | **Master orchestrator** — always runs 1-9 + saves reports to docs/, then prunes orphaned variant reports (build-owned report files for a JSON variant no longer present — e.g. after consolidating branches). Pass `-IncludeExtended` to also run 10-11 plus lint/label-review/officer-guide/test-conductor (advisory outputs demoted from the default run 2026-07-06 -- nothing gates on them) | `-Path <json>` `-IncludeExtended` |
 
 ### Auditors (repo-wide checks)
 
@@ -461,7 +461,7 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 | **What field type** (FormInput/FormSelect/FormDate) should a field use? | `METADATA_REFERENCE.txt` field definitions + `audit_cross_provider.ps1` for consistency | Manual XML inspection, guessing from field name |
 | **What combos fire** for a given entity/field set? | `test_commsys.ps1 -Path <json> -Entity <entity>` | Manual build script reading, mental combo matching |
 | **What does the layout look like?** | `render_layout.ps1 -Path <json> -Summary` | Reading raw Craft.js node tree in JSON |
-| **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs all 11 tools) | Spot-reading JSON sections |
+| **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs 9 core tools; `-IncludeExtended` for the 2 advisory ones) | Spot-reading JSON sections |
 | **Is this field consistent across providers?** | `audit_cross_provider.ps1 -Path providers/` | Manual grep across provider folders |
 | **Are all docs/versions in sync?** | `enforce.ps1 -Provider <name>` | Manual file-by-file comparison |
 | **What anti-patterns apply?** | `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 31 LIMITATIONs) | Memory, training data |
@@ -494,7 +494,7 @@ Three commands run everything. No manual checklists.
 
 **Batch mode** (`-Providers` or `-All`): runs per-provider steps (1-3) sequentially per provider, then ONE sync pass, ONE cross-provider audit, ONE repo audit, ONE enforce. Eliminates redundant global audits when rebuilding multiple providers.
 
-`build_report.ps1` runs 15 steps. Steps 1-9 execute in parallel (all read-only on the JSON); step 10 (test conductor), 11 (response simulator), 12 (label review), 13 (officer guide), 14 (supported-query audit), and 15 (per-provider changelog) run after.
+`build_report.ps1` runs 15 steps. Steps 1-9 execute in parallel (all read-only on the JSON) and always run. Steps 10 (test conductor), 11 (response simulator), 12 (label review), and 13 (officer guide) are advisory outputs enforce.ps1 never reads back — demoted to opt-in 2026-07-06, skipped by default, run via `-IncludeExtended` or the underlying tool standalone. Step 14 (supported-query audit) and 15 (per-provider changelog) always run — both are read by enforce.ps1 (Phase 2e / Phase 3 doc-sync).
 
 `enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (8 locations per provider: CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER, per-provider CHANGELOG_<PROVIDER>.md, repo-root CHANGELOG.md Current line), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
 

@@ -130,9 +130,14 @@ TOOLS
     Calibrated against NJ_NJCJIS (37 PASS / 1 FAIL [BOM only]).
 
   tools/build_report.ps1
-    Master build report. Runs all 11 tools (validator + layout + query sim + picklist + HTML + verify + metadata audit + CAD audit + test matrix + test conductor + response simulator) plus label review, officer guide, supported-query audit, and per-provider changelog.
+    Master build report. Always runs 9 core tools (validator + layout + query sim + picklist +
+    HTML + verify + metadata audit + CAD audit + test matrix), then supported-query audit and
+    per-provider changelog -- all of these are read back by enforce.ps1. Lint, test conductor,
+    response simulator, label review, and officer guide are advisory-only (nothing gates on
+    them) and were demoted to opt-in 2026-07-06: pass -IncludeExtended to also run them, or
+    invoke the underlying tool standalone any time.
     After writing the manifest it PRUNES orphaned variant reports: any build-owned report file (or *_TEST_MATRIX.txt) for this provider whose name is not one this build produces (e.g. left over from a removed JSON variant) is deleted from the docs folder. Manual docs (TEST_PLAN_*, *_FIELD_CASING_REVIEW.md, *_SUPPORTED_QUERIES.txt, FIRST_RESPONDER_*) are never touched.
-    Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json>
+    Usage: powershell.exe -ExecutionPolicy Bypass -File build_report.ps1 -Path <json> [-IncludeExtended]
     Run after EVERY JSON build or edit.
 
   tools/verify_build.ps1
@@ -171,6 +176,8 @@ TOOLS
     Derives each field's (required)/(required for <keyRefs>)/(optional) label hint from the
     QIDM combo set[]/any[] -- the consistent method for the field labeling convention. Flags
     fields needing a human semantic hint (value meanings, out-of-state, cross-field "or use X").
+    Called automatically by build_report.ps1 as step 12 only when -IncludeExtended is passed
+    (advisory output, not read by enforce.ps1).
     Usage: -Path <json> [-OutFile <path>]
 
   tools/render_html.ps1
@@ -181,6 +188,8 @@ TOOLS
     Officer-facing printable quick-reference: every supported query + each search path's
     required/optional fields in plain English (no internal jargon). HTML + best-effort PDF
     via Edge headless. A transform of QIDM combos + queryLabel + QIF field labels.
+    Called automatically by build_report.ps1 as step 13 only when -IncludeExtended is passed
+    (advisory deliverable, not read by enforce.ps1).
     Usage: -Path <json> -OutFile <html> [-PdfFile <pdf>]
 
   tools/render_cad_guide.ps1
@@ -509,6 +518,8 @@ TOOLS
     Static analysis of all build scripts for anti-patterns. Checks: PlateYear
     dynamic ($currentYear), field type correctness, missing RMS patches,
     AP #21-23 violations, validator call presence.
+    Called automatically by build_report.ps1 as the [PRE] step only when -IncludeExtended is
+    passed (advisory output, not read by enforce.ps1). Also called by preflight_rebuild.ps1.
     Usage: .\lint_build_scripts.ps1 [-Path <dir>] [-OutFile <path>]
 
   tools/preflight_rebuild.ps1
@@ -562,7 +573,7 @@ TOOLS
       1. Build JSON (run build script). On a version change, automatically
          runs reset_test_package.ps1 -- rebuild restarts testing so logs
          line up with the new JSON.
-      2. Build report (11 tools via build_report.ps1)
+      2. Build report (9 core tools via build_report.ps1; -IncludeExtended for the advisory ones)
       3. Extract metadata reference (METADATA_REFERENCE.txt)
       4. Sync CLAUDE.md provider table (sync_provider_table.ps1)
       5. Sync version docs (sync_version_docs.ps1 — STATUS, SQVR, JSON_INVENTORY, REBUILD_TRACKER, BUILD_NOTES, CHANGELOG)
@@ -583,7 +594,9 @@ TOOLS
     Automated test conductor. Reads a test matrix file and validates every
     test case against the provider JSON via combo simulation. Includes
     synthetic test data fallback for provider-specific fields.
-    Called automatically by build_report.ps1 as step 10.
+    Called automatically by build_report.ps1 as step 10 only when -IncludeExtended is passed
+    (advisory output, not read by enforce.ps1). Also used directly by emit_test_plan.ps1 and
+    audit_simulator_parity.ps1 -- this demotion only removed build_report's own invocation.
     Usage: .\run_test_matrix.ps1 -Path <json> [-Matrix <file>] [-OutFile <path>]
 
   tools/simulate_response.ps1
@@ -593,7 +606,8 @@ TOOLS
     entities. No live data required. MISSING = attribute sourceField present in entity
     test data but absent from response (real gap). UNMAPPED = code value not in handler
     lookup table (real gap). Both must be 0.
-    Called automatically by build_report.ps1 as step 11.
+    Called automatically by build_report.ps1 as step 11 only when -IncludeExtended is passed
+    (advisory output, not read by enforce.ps1).
     Usage: .\simulate_response.ps1 -Path <json> [-Entity <name>] [-RunEdgeCases] [-OutFile <path>]
 
 ================================================================================

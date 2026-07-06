@@ -19,7 +19,13 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$Path,
-    [string]$DocsDir
+    [string]$DocsDir,
+    # Opt-in: also run the 5 advisory/on-demand report generators that enforce.ps1 never
+    # reads back (LINT_REPORT, RESPONSE_SIMULATION, LABEL_REVIEW, OFFICER_GUIDE, TEST_VALIDATION).
+    # Demoted from the automatic run 2026-07-06 (waste-reduction pass) -- they cost build time
+    # on every build/rebuild but nothing gates on their output. Run standalone any time via the
+    # underlying tool directly, or pass this switch to regenerate all 5 in one build_report run.
+    [switch]$IncludeExtended
 )
 
 $ErrorActionPreference = "Stop"
@@ -82,25 +88,31 @@ $header = @"
 
 # --- PRE. Build Script Lint (delegates to lint_build_scripts.ps1 -- single source of truth,
 #     broader checks than the old inline set). Run as a CHILD PROCESS: lint_build_scripts ends
-#     in exit 0/1, which would terminate this script if called with & in-session. ---
-Write-Host ""
-Write-Host "  [PRE] Checking build scripts..." -ForegroundColor Yellow
-$scriptsDir = Join-Path $jsonDir "scripts"
-$lintFile = Join-Path $ReportsDir "LINT_REPORT_$jsonName.txt"
-if (Test-Path $scriptsDir) {
-    $linter = Join-Path $PSScriptRoot "lint_build_scripts.ps1"
-    $lintOut = powershell.exe -ExecutionPolicy Bypass -File $linter -Path $scriptsDir -OutFile $lintFile 2>&1 | Out-String
-    $m = [regex]::Match($lintOut, '(\d+)\s+warnings\s*\|\s*(\d+)\s+failures')
-    $lintWarnCount = if ($m.Success) { [int]$m.Groups[1].Value } else { 0 }
-    $lintFailCount = if ($m.Success) { [int]$m.Groups[2].Value } else { 0 }
-    if ($lintWarnCount -gt 0 -or $lintFailCount -gt 0) {
-        Write-Host "  [PRE] $lintWarnCount warning(s), $lintFailCount failure(s) -- see $lintFile" -ForegroundColor Red
+#     in exit 0/1, which would terminate this script if called with & in-session.
+#     Advisory only -- nothing in enforce.ps1 reads LINT_REPORT -- so it's opt-in (-IncludeExtended).
+#     Run tools/lint_build_scripts.ps1 directly any time for an on-demand check. ---
+$lintWarnCount = 0
+$lintFailCount = 0
+if ($IncludeExtended) {
+    Write-Host ""
+    Write-Host "  [PRE] Checking build scripts..." -ForegroundColor Yellow
+    $scriptsDir = Join-Path $jsonDir "scripts"
+    $lintFile = Join-Path $ReportsDir "LINT_REPORT_$jsonName.txt"
+    if (Test-Path $scriptsDir) {
+        $linter = Join-Path $PSScriptRoot "lint_build_scripts.ps1"
+        $lintOut = powershell.exe -ExecutionPolicy Bypass -File $linter -Path $scriptsDir -OutFile $lintFile 2>&1 | Out-String
+        $m = [regex]::Match($lintOut, '(\d+)\s+warnings\s*\|\s*(\d+)\s+failures')
+        $lintWarnCount = if ($m.Success) { [int]$m.Groups[1].Value } else { 0 }
+        $lintFailCount = if ($m.Success) { [int]$m.Groups[2].Value } else { 0 }
+        if ($lintWarnCount -gt 0 -or $lintFailCount -gt 0) {
+            Write-Host "  [PRE] $lintWarnCount warning(s), $lintFailCount failure(s) -- see $lintFile" -ForegroundColor Red
+        } else {
+            Write-Host "  [PRE] CLEAN -- $lintFile" -ForegroundColor Green
+        }
     } else {
-        Write-Host "  [PRE] CLEAN -- $lintFile" -ForegroundColor Green
+        ($header + "BUILD SCRIPT LINT`n=================`n`nNo scripts/ directory found at $scriptsDir`n") | Out-File -FilePath $lintFile -Encoding utf8
+        Write-Host "  [PRE] No scripts/ directory -- $lintFile" -ForegroundColor Gray
     }
-} else {
-    ($header + "BUILD SCRIPT LINT`n=================`n`nNo scripts/ directory found at $scriptsDir`n") | Out-File -FilePath $lintFile -Encoding utf8
-    Write-Host "  [PRE] No scripts/ directory -- $lintFile" -ForegroundColor Gray
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -340,8 +352,12 @@ if ($outputs[9]) {
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  STEP 10: Test Conductor (sequential -- depends on step 9 output)
+#  Advisory only -- TEST_VALIDATION is not read by enforce.ps1 (TEST_MATRIX freshness, the
+#  gated artifact, comes from step 9 above, unaffected). Opt-in via -IncludeExtended; run
+#  tools/run_test_matrix.ps1 directly any time for an on-demand check.
 # ══════════════════════════════════════════════════════════════════════════════
 
+if ($IncludeExtended) {
 Write-Host ""
 Write-Host "  [10/$stepCount] Running test conductor..." -ForegroundColor Yellow
 $testConductorPath = Join-Path $toolDir "run_test_matrix.ps1"
@@ -362,11 +378,20 @@ if ((Test-Path $testConductorPath) -and (Test-Path $matrixFile)) {
 } else {
     Write-Host "  [10/$stepCount] SKIPPED (run_test_matrix.ps1 or matrix not found)" -ForegroundColor Gray
 }
+} else {
+    Write-Host ""
+    Write-Host "  [10/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
+}
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  STEP 11: Response Simulator (sequential -- QRDM inbound path + missing-field test)
+#  Advisory only -- not read by enforce.ps1. Opt-in via -IncludeExtended; run
+#  tools/simulate_response.ps1 directly any time for an on-demand check.
 # ══════════════════════════════════════════════════════════════════════════════
 
+$mapped = 0; $missing = 0; $unmapped = 0; $respSimRan = $false
+if ($IncludeExtended) {
+$respSimRan = $true
 Write-Host ""
 Write-Host "  [11/$stepCount] Running response simulator..." -ForegroundColor Yellow
 $respSimPath = Join-Path $toolDir "simulate_response.ps1"
@@ -380,11 +405,17 @@ if (Test-Path $respSimPath) {
 } else {
     Write-Host "  [11/$stepCount] SKIPPED (simulate_response.ps1 not found)" -ForegroundColor Gray
 }
+} else {
+    Write-Host ""
+    Write-Host "  [11/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
+}
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  STEP 12: Label Review (sequential -- advisory, does not fail the build)
+#  Opt-in via -IncludeExtended; run tools/suggest_field_labels.ps1 directly any time.
 # ══════════════════════════════════════════════════════════════════════════════
 
+if ($IncludeExtended) {
 Write-Host ""
 Write-Host "  [12/$stepCount] Running label review..." -ForegroundColor Yellow
 $labelReviewPath = Join-Path $toolDir "suggest_field_labels.ps1"
@@ -395,7 +426,17 @@ if (Test-Path $labelReviewPath) {
 } else {
     Write-Host "  [12/$stepCount] SKIPPED (suggest_field_labels.ps1 not found)" -ForegroundColor Gray
 }
+} else {
+    Write-Host ""
+    Write-Host "  [12/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
+}
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  STEP 13: Officer Query Guide -- advisory deliverable, not read by enforce.ps1.
+#  Opt-in via -IncludeExtended; run tools/render_officer_guide.ps1 directly any time.
+# ══════════════════════════════════════════════════════════════════════════════
+
+if ($IncludeExtended) {
 Write-Host ""
 Write-Host "  [13/$stepCount] Generating officer query guide..." -ForegroundColor Yellow
 $officerGuidePath = Join-Path $toolDir "render_officer_guide.ps1"
@@ -407,6 +448,10 @@ if (Test-Path $officerGuidePath) {
     else { Write-Host "  [13/$stepCount] Officer guide not produced (advisory)" -ForegroundColor Gray }
 } else {
     Write-Host "  [13/$stepCount] SKIPPED (render_officer_guide.ps1 not found)" -ForegroundColor Gray
+}
+} else {
+    Write-Host ""
+    Write-Host "  [13/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
 }
 
 # --- Summary ---
@@ -423,7 +468,7 @@ Write-Host "  Lint:      $(if ($lintWarnCount -gt 0) { "$lintWarnCount WARN" } e
 Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Green" })
 Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL / $verifyWarns WARN" } elseif ($verifyWarns -gt 0) { "0 FAIL / $verifyWarns WARN" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } elseif ($verifyWarns -gt 0) { "Yellow" } else { "Green" })
 Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
-Write-Host "  RespSim:   MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped  (RESPONSE_SIMULATION_$jsonName.txt)" -ForegroundColor $(if ($unmapped -gt 0) { "Red" } elseif ($missing -gt 0) { "Cyan" } else { "Green" })
+Write-Host "  RespSim:   $(if ($respSimRan) { "MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped  (RESPONSE_SIMULATION_$jsonName.txt)" } else { "SKIPPED (advisory; pass -IncludeExtended to run)" })" -ForegroundColor $(if ($unmapped -gt 0) { "Red" } elseif ($missing -gt 0) { "Cyan" } else { "Green" })
 Write-Host "  Reports:   $ReportsDir" -ForegroundColor Gray
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
