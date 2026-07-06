@@ -26,9 +26,16 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot '_metadata_keyref_match.ps1')
+
 $xmlResolved = Resolve-Path $XmlPath
 $jsonResolved = Resolve-Path $Path
 $providerName = [System.IO.Path]::GetFileNameWithoutExtension($jsonResolved) -replace '_(BASE|MC)$', ''
+# Separate, fully-stripped name (version suffix too) for locating <PROVIDER>_ACCEPTED_DIVERGENCES.txt,
+# which is never version-suffixed. Kept distinct from $providerName above (used verbatim in the report
+# header) to avoid changing existing report output for versioned providers.
+$declProviderName = $providerName -replace '_v[\d.]+$', ''
+$keyRefDeclarations = Get-KeyRefDeclarations -JsonDir ([System.IO.Path]::GetDirectoryName($jsonResolved)) -ProviderName $declProviderName
 
 [xml]$metadata = Get-Content $xmlResolved -Raw
 $json = [System.IO.File]::ReadAllText($jsonResolved) | ConvertFrom-Json
@@ -326,20 +333,14 @@ foreach ($qName in $includeQueries) {
         }
 
         foreach ($c in $metaCombos) {
-            $isComboBuilt = $false
-            $syntheticKr = "$($c.keyReference)$($c.primaryField)"
-            foreach ($bkr in $builtKrs) {
-                $bBase = $bkr -replace '\.[A-Z0-9]+$', ''
-                # Match exact keyRef, dotted-variant base, or synthetic keyRef
-                # (built combos use keyRef + primaryField, e.g. KQ + Name -> KQName,
-                #  per LIMITATION #21 invented-keyRef pattern)
-                if ($bBase -eq $c.keyReference -or $bkr -eq $c.keyReference -or
-                    $bkr -eq $syntheticKr -or $bkr.StartsWith($syntheticKr)) {
-                    $isComboBuilt = $true
-                    break
-                }
-            }
-            if (-not $isComboBuilt) {
+            # Matching delegated to _metadata_keyref_match.ps1 (shared with audit_metadata.ps1's
+            # CHECK 4) -- declaration-first (ACCEPTED_DIVERGENCES built-as/not-built), mechanical
+            # keyRef/dotted-base/synthetic-suffix rule as the fallback for providers/keyRefs with
+            # no declaration. See that module's header for why a pure mechanical rule is
+            # insufficient (NJ_NJCJIS's RANDFULL/RANDFULLN compound rename).
+            $resolved = Resolve-XmlKeyRefBuild -XmlKeyRef $c.keyReference -XmlPrimaryField $c.primaryField `
+                -Query $qName -BuiltKeyRefs $builtKrs -Declarations $keyRefDeclarations
+            if ($resolved.Status -ne 'built') {
                 $totalSkipped++
                 [void]$sb.AppendLine("  UNBUILT $($c.keyReference.PadRight(14)) $($c.primaryField)")
                 $unbuiltCombos += @{ query = $qName; keyRef = $c.keyReference; primaryField = $c.primaryField }

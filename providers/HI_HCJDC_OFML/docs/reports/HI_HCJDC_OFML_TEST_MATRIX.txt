@@ -1,6 +1,6 @@
 HI_HCJDC_OFML v4.7 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-02
+Generated: 2026-07-06
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -108,11 +108,11 @@ ENTITY 2: VEHICLE (12 tests -- 3 cards, 4 combos)
               Expected: VehicleRegistrationQuery fires (RQ)
 18  Vehicle     RQ+Plate           + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-19  Vehicle     M55S+M55S          vehicleTypeCode=TEST, VehicleIdentifi... [    ]
+19  Vehicle     M55S+M55S          vehicleTypeCode=1, VehicleIdentificat... [    ]
               Expected: VehicleRegistrationQuery fires (M55S)
 20  Vehicle     M55S+M55S          + ImageIndicator, vehicleYear   [    ]
               Expected: any[] fields present in XML output.
-21  Vehicle     M55L+M55L          vehicleTypeCode=TEST, LicensePlateNum... [    ]
+21  Vehicle     M55L+M55L          vehicleTypeCode=1, LicensePlateNumber... [    ]
               Expected: VehicleRegistrationQuery fires (M55L)
 22  Vehicle     M55L+M55L          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.

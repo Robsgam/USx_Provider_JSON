@@ -1,7 +1,7 @@
 NJ_NJCJIS v4.8 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-01
-Tier: Full -- full standard: combos + any[] + guardrails + deselect + negative
+Generated: 2026-07-06
+Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
@@ -50,110 +50,81 @@ TEST MATRIX
 ================================================================================
 
 Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
-(render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.
+(combos+any[] per combo -> guardrail routing -> deselect), then blocked out.
+(render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (7 tests -- 3 cards, 2 combos)
+ENTITY 1: VEHICLE (5 tests -- 3 cards, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Vehicle     Render form. Verify 3 cards:                        [    ]
-              CARD_VEH_OPT: titled "Search Options".
-              State (default NJ - change for out-of-state) dropdown=NJ, Random Request (N = full record; Y = random) dropdown=N, Image (optional) dropdown=N.
-              CARD_VEH_PLATE: titled "PLATE SEARCH".
-              Plate Number (required), Plate Type (optional) dropdown=PC, Plate Year (optional)=2026.
-              CARD_VEH_VIN: titled "VIN SEARCH".
-              VIN (required).
- 2  Vehicle     RANDFU+RANDFULL    LicensePlateNumber=TEST123       [    ]
+ 1  Vehicle     RANDFU+RANDFULL    LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (RANDFULL)
- 3  Vehicle     RANDFU+RANDFULL    + RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator [    ]
+ 2  Vehicle     RANDFU+RANDFULL    + RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
- 4  Vehicle     RANDFU+RANDFULLN   VehicleIdentificationNumber=1HGCM8263... [    ]
+ 3  Vehicle     RANDFU+RANDFULLN   VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RANDFULLN)
- 5  Vehicle     RANDFU+RANDFULLN   + RandomRequest, RegistrationState, ImageIndicator [    ]
+ 4  Vehicle     RANDFU+RANDFULLN   + RandomRequest, RegistrationState, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
- 6  Vehicle     Guardrail: RANDFULL>RANDFULLN  LicensePlateNumber=TEST123, VehicleId... [    ]
+ 5  Vehicle     Guardrail: RANDFULL>RANDFULLN  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RANDFULL). VIN absent from XML.
- 7  Vehicle     Empty form, verify no Send button / no request.    [    ]
 
-ENTITY 2: PERSON (7 tests -- 3 cards, 2 combos)
+ENTITY 2: PERSON (5 tests -- 3 cards, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 8  Person      Render form. Verify 3 cards:                        [    ]
-              CARD_PER_OPT: titled "Search Options".
-              State (default NJ - change for out-of-state) dropdown=NJ, Image (optional) dropdown=Y.
-              CARD_PER_OLN: titled "LICENSE NUMBER".
-              License Number (or search by Name + DOB).
-              CARD_PER_NAME: titled "NAME SEARCH".
-              First Name, Last Name.
-              Date of Birth (required with Name), Sex (optional) dropdown (no default).
- 9  Person      FULLN+FULLN        OperatorLicenseNumber=D999888777 [    ]
+ 6  Person      FULLN+FULLN        OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (FULLN)
-10  Person      FULLN+FULLN        + ImageIndicator, RegistrationState [    ]
+ 7  Person      FULLN+FULLN        + ImageIndicator, RegistrationState [    ]
               Expected: any[] fields present in XML output.
-11  Person      FULL+FULL          BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+ 8  Person      FULL+FULL          BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: DriverLicenseQuery fires (FULL)
-12  Person      FULL+FULL          + ImageIndicator, SexCode, RegistrationState [    ]
+ 9  Person      FULL+FULL          + ImageIndicator, SexCode, RegistrationState [    ]
               Expected: any[] fields present in XML output.
-13  Person      Guardrail: FULLN>FULL  OperatorLicenseNumber=D999888777, Bir... [    ]
+10  Person      Guardrail: FULLN>FULL  OperatorLicenseNumber=D999888777, Bir... [    ]
               Expected: DriverLicenseQuery fires (FULLN). DOB+LastName+FirstName absent from XML.
-14  Person      Empty form, verify no Send button / no request.    [    ]
 
-ENTITY 3: BOAT (7 tests -- 1 card, 2 combos)
+ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-15  Boat        Render form. Verify 1 card:                        [    ]
-              CARD_BOA: titled "BOAT SEARCH".
-              Registration Number (or use Hull ID), Hull ID Number (or use Registration Number), Image (optional) dropdown=N.
-16  Boat        QB+N               BoatHullIdNumber=FL1234AB56H7    [    ]
+11  Boat        QB+N               BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QBN)
-17  Boat        QB+N               + ImageIndicator                [    ]
+12  Boat        QB+N               + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-18  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
+13  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QB)
-19  Boat        QB+Reg             + ImageIndicator                [    ]
+14  Boat        QB+Reg             + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-20  Boat        Guardrail: QBN>QB  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+15  Boat        Guardrail: QBN>QB  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (QBN). Reg absent from XML.
-21  Boat        Empty form, verify no Send button / no request.    [    ]
 
-ENTITY 4: FIREARM (4 tests -- 1 card, 1 combo)
+ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-22  Firearm     Render form. Verify 1 card:                        [    ]
-              CARD_GUN: titled "NCIC FIREARM QUERY".
-              Serial Number (required), Make (optional) dropdown (no default).
-              Caliber (optional) dropdown (no default), Model (optional), Image (optional) dropdown=N.
-23  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+16  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
               Expected: GunQuery fires (QG)
-24  Firearm     QG+Serial          + GunCaliber, GunMake, GunModel, ImageIndicator [    ]
+17  Firearm     QG+Serial          + GunCaliber, GunMake, GunModel, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
-25  Firearm     Empty form, verify no Send button / no request.    [    ]
 
-ENTITY 5: ARTICLE (4 tests -- 1 card, 1 combo)
+ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-26  Article     Render form. Verify 1 card:                        [    ]
-              CARD_ART: titled "NCIC ARTICLE QUERY".
-              Serial Number (required), Article Type (required) dropdown (no default), Image (optional) dropdown=N.
-27  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+18  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QA)
-28  Article     QA+Serial          + ImageIndicator                [    ]
+19  Article     QA+Serial          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-29  Article     Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
-TOTAL: 29 tests
+TOTAL: 19 tests
 
 COMBO COVERAGE (8/8):
-  VehicleRegistrationQuery: 2/2 -- T2(RANDFULL), T4(RANDFULLN)
-  DriverLicenseQuery: 2/2 -- T9(FULLN+FULLN), T11(FULL+FULL)
-  GunQuery: 1/1 -- T23(Serial)
-  ArticleSingleQuery: 1/1 -- T27(Serial)
-  BoatQuery: 2/2 -- T16(N), T18(Reg)
+  VehicleRegistrationQuery: 2/2 -- T1(RANDFULL), T3(RANDFULLN)
+  DriverLicenseQuery: 2/2 -- T6(FULLN+FULLN), T8(FULL+FULL)
+  GunQuery: 1/1 -- T16(Serial)
+  ArticleSingleQuery: 1/1 -- T18(Serial)
+  BoatQuery: 2/2 -- T11(N), T13(Reg)
 
 IMPORT FILE: NJ_NJCJIS_v4.8.json

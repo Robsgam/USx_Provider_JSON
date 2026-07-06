@@ -1,6 +1,6 @@
 CA_CLETS v2.12 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-01
+Generated: 2026-07-06
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -66,11 +66,11 @@ ENTITY 1: PERSON (31 tests -- 3 cards, 10 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      IR.QVC+IR.QVC.S    purposeCode=C, socialSecurityNumber=TEST [    ]
+ 1  Person      IR.QVC+IR.QVC.S    purposeCode=C, socialSecurityNumber=1... [    ]
               Expected: DriverLicenseQuery fires (IR.QVC.S)
  2  Person      IR.QVC+IR.QVC.S    + age                           [    ]
               Expected: any[] fields present in XML output.
- 3  Person      IR.QVC+IR.QVC.C    purposeCode=C, criminalIdNumber=TEST [    ]
+ 3  Person      IR.QVC+IR.QVC.C    purposeCode=C, criminalIdNumber=CII12... [    ]
               Expected: DriverLicenseQuery fires (IR.QVC.C)
  4  Person      IR.QVC+IR.QVC.C    + age                           [    ]
               Expected: any[] fields present in XML output.
@@ -116,7 +116,7 @@ ENTITY 1: PERSON (31 tests -- 3 cards, 10 combos)
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+socialSecurityNumber absent from XML.
 25  Person      Guardrail: NLTS.DQ.N>ID.L1  RegistrationState=GA, purposeCode=C [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ.N). OLN absent from XML.
-26  Person      Guardrail: IR.QVC.O>ID.L1  criminalIdNumber=TEST, purposeCode=C,... [    ]
+26  Person      Guardrail: IR.QVC.O>ID.L1  criminalIdNumber=CII123456, purposeCo... [    ]
               Expected: DriverLicenseQuery fires (IR.QVC.O). purposeCode+OLN absent from XML.
 27  Person      Guardrail: NLTS.DQ>IN.L1  OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (NLTS.DQ). purposeCode+LastName+FirstName absent from XML.
@@ -183,7 +183,7 @@ ENTITY 4: FIREARM (4 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-52  Firearm     IG+.QGB            purposeCode=C, serialNumber=TEST [    ]
+52  Firearm     IG+.QGB            purposeCode=C, serialNumber=GUN12345 [    ]
               Expected: GunQuery fires (IG.QGB)
 53  Firearm     IG+.QGB            + gunCaliber, GunMake, gunTypeCode [    ]
               Expected: any[] fields present in XML output.

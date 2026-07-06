@@ -489,6 +489,20 @@ TOOLS
     extraction (NY_NYSPIN_EJUSTICE emit_test_plan + generate_test_matrix, FL_FCIC
     generate_test_matrix). Dot-source only; defines functions, no side effects.
 
+  tools/_metadata_keyref_match.ps1
+    Shared module: XML-keyRef-to-JSON-built-combo matcher (Get-KeyRefDeclarations,
+    Resolve-XmlKeyRefBuild). Extracted 2026-07-06 -- audit_metadata.ps1 CHECK 4 and
+    extract_metadata_reference.ps1's BUILD COVERAGE each independently decided "is this
+    XML keyRef built," using different heuristics that could disagree (confirmed live on
+    FL_FCIC's QV/QW). Declaration-first: a provider's ACCEPTED_DIVERGENCES.txt may carry
+    keyRef-level `built-as`/`not-built` rows (new rule types, same file as the existing
+    field-level rules); falls back to the mechanical keyRef/dotted-base/synthetic-suffix
+    rule otherwise. The mechanical rule alone is insufficient -- NJ_NJCJIS's
+    RANDFULL/RANDFULLN compound rename requires an explicit `built-as` declaration (see
+    NJ_NJCJIS_ACCEPTED_DIVERGENCES.txt). Verified: byte-identical output for providers/
+    keyRefs with no declaration; enforce.ps1 FAIL/WARN counts unchanged for all 5 in-scope
+    providers. Dot-source only; defines functions, no side effects.
+
   tools/_test_provenance.ps1
     Shared module: test-log provenance + tier helpers. Single source of truth for reading
     stamped JSON Version / Entity Fingerprint / Tier from a log header and determining

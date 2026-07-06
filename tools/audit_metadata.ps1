@@ -15,6 +15,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+. (Join-Path $PSScriptRoot '_metadata_keyref_match.ps1')
+
 $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 # If tools/ is directly under repo root, adjust
 if (Test-Path (Join-Path $PSScriptRoot '..\providers')) {
@@ -396,6 +398,11 @@ function Audit-Provider {
         return $acceptedDiv.ContainsKey(('{0}|{1}|{2}' -f $q, $kr, $field).ToLower())
     }
 
+    # Same ACCEPTED_DIVERGENCES file, different rule namespace ('built-as'/'not-built' vs.
+    # the field-level rules above) -- shared with extract_metadata_reference.ps1's BUILD
+    # COVERAGE via _metadata_keyref_match.ps1. See that module's header for why.
+    $keyRefDeclarations = Get-KeyRefDeclarations -JsonDir $jsonDir -ProviderName $providerName
+
     # Per-query metadata SET-union / ANY-union (XML field tokens, lowercased) for the
     # promote gate (CHECK 4d). A field metadata has in ANY but the build puts in SET[]
     # is an over-promotion (the DQN v4.0 bug class). A field metadata ALSO has in SET[]
@@ -698,12 +705,27 @@ function Audit-Provider {
         $xmlCombos = @($txn.Combinations.Combination)
         $jsonQidms = $qidmByQuery[$qName]
 
+        # Full list of this query's built JSON keyRefs -- needed by the shared matcher
+        # (Resolve-XmlKeyRefBuild) below, both for its mechanical fallback and to confirm a
+        # declared "built-as" target still actually exists.
+        $jsonKeyRefsForQuery = @()
+        foreach ($qidm in $jsonQidms) {
+            if (-not $qidm.combinations) { continue }
+            foreach ($jc in @($qidm.combinations)) {
+                if ($jc.keyReference) { $jsonKeyRefsForQuery += $jc.keyReference }
+            }
+        }
+
         Out-Line "  ${qName}:"
 
         foreach ($xmlCombo in $xmlCombos) {
             $kr = $xmlCombo.keyReference
             if (-not $kr) {
                 try { $kr = $xmlCombo.GetAttribute('keyReference') } catch { $kr = '(unknown)' }
+            }
+            $pfr = $xmlCombo.primaryFieldReference
+            if (-not $pfr) {
+                try { $pfr = $xmlCombo.GetAttribute('primaryFieldReference') } catch { $pfr = '' }
             }
 
             $reqs = Get-XmlComboRequirements -combo $xmlCombo
@@ -722,36 +744,45 @@ function Audit-Provider {
             }
 
             if ($matchingJsonCombos.Count -eq 0) {
-                # BUG FIX 2026-07-06: an XML keyRef that is genuinely not built (e.g. FL_FCIC QV/QW
-                # -- CommSys auto-sends these, platform-confirmed, see BUILD_NOTES) was being
-                # falsely marked [PASS] "covered by invented variants" below, because the pooled
-                # field-overlap heuristic doesn't distinguish "these invented combos are a 1:1
-                # rename of THIS keyRef" from "these invented combos belong to a different sibling
-                # keyRef in the same query and just happen to share field names" (Name/DOB/OLN are
-                # common to most person-search variants). Root cause found while reconciling this
-                # report against <PROVIDER>_METADATA_REFERENCE.txt, which correctly shows these as
-                # UNBUILT. Fix: an explicitly registered "not-built" keyRef (registry field token
-                # '*') skips the loose pooled-coverage check entirely and reports honestly instead
-                # of guessing. This does NOT change behavior for any keyRef not in the registry.
-                if (Test-AllowListed $qName $kr '*') {
-                    Out-Note "  keyRef ${kr}: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)"
+                # Matching delegated to _metadata_keyref_match.ps1 (shared with
+                # extract_metadata_reference.ps1's BUILD COVERAGE) -- declaration-first
+                # (ACCEPTED_DIVERGENCES built-as/not-built), mechanical keyRef/dotted-base/
+                # synthetic-suffix rule as the fallback. Replaces the old per-query POOLED
+                # field-overlap heuristic (2026-07-06), which produced false [PASS] "covered by
+                # invented variants" verdicts for keyRefs that are genuinely not built but happen
+                # to share field names with an unrelated sibling combo (FL_FCIC QV/QW were the
+                # confirmed case, root-caused by reconciling against <PROVIDER>_METADATA_
+                # REFERENCE.txt, which correctly showed them as UNBUILT).
+                #
+                # HARD INVARIANT: this block must never call Out-Fail/Out-Warn. An unmatched or
+                # not-built XML keyRef is reported via Out-Pass/Out-Info/Out-Note only -- exactly
+                # like the code it replaces -- so enforce.ps1's Phase 2b [FAIL]-count gate cannot
+                # regress from this change (verified: this block contained zero Out-Fail/Out-Warn
+                # before this refactor too).
+                $resolved = Resolve-XmlKeyRefBuild -XmlKeyRef $kr -XmlPrimaryField $pfr `
+                    -Query $qName -BuiltKeyRefs $jsonKeyRefsForQuery -Declarations $keyRefDeclarations
+
+                if ($resolved.Status -eq 'not-built') {
+                    if ($resolved.Source -eq 'declaration') {
+                        Out-Note "  keyRef ${kr}: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)"
+                    } else {
+                        Out-Info "  keyRef ${kr}: no matching built combo (no exact keyRef, dotted-variant, or keyRef+primaryField match)"
+                    }
                     continue
                 }
 
-                # Find invented keyRef variants for this query (JSON combos whose keyRef is not in XML)
-                $inventedCombos = @()
+                # Built (via declaration or the mechanical rule): validate the XML combo's
+                # fields against ONLY the specific matched JSON combo(s) -- not the whole query's
+                # pool -- so a field that coincidentally appears on an unrelated sibling combo can
+                # no longer produce a false [PASS].
+                $matchedCombos = @()
                 foreach ($qidm in $jsonQidms) {
                     if (-not $qidm.combinations) { continue }
                     foreach ($jc in @($qidm.combinations)) {
-                        if ($jc.keyReference -and -not $allXmlKeyRefs.ContainsKey($jc.keyReference)) {
-                            $inventedCombos += $jc
+                        if ($jc.keyReference -and ($resolved.Matches -icontains $jc.keyReference)) {
+                            $matchedCombos += $jc
                         }
                     }
-                }
-
-                if ($inventedCombos.Count -eq 0) {
-                    Out-Info "  keyRef ${kr}: no exact match in JSON (no invented variants found)"
-                    continue
                 }
 
                 # Build sourceField→targetField map for field resolution
@@ -767,69 +798,67 @@ function Audit-Provider {
                     }
                 }
 
-                # Collect all set[] and any[] fields across all invented variants
-                $allInventedSet = @()
-                $allInventedAny = @()
-                foreach ($ic in $inventedCombos) {
-                    if ($ic.requirements) {
-                        if ($ic.requirements.set) { $allInventedSet += @($ic.requirements.set) }
-                        if ($ic.requirements.any) { $allInventedAny += @($ic.requirements.any) }
+                # Collect set[] and any[] fields across the matched combo(s) only
+                $matchedSet = @()
+                $matchedAny = @()
+                foreach ($mc in $matchedCombos) {
+                    if ($mc.requirements) {
+                        if ($mc.requirements.set) { $matchedSet += @($mc.requirements.set) }
+                        if ($mc.requirements.any) { $matchedAny += @($mc.requirements.any) }
                     }
                 }
-                $allInventedFields = @($allInventedSet) + @($allInventedAny) | Select-Object -Unique
+                $matchedFields = @($matchedSet) + @($matchedAny) | Select-Object -Unique
+                $matchedNames = ($resolved.Matches) -join ','
 
-                $inventedNames = ($inventedCombos | ForEach-Object { $_.keyReference }) -join ','
-
-                # Validate XML set[] fields against invented variants
+                # Validate XML set[] fields against the matched combo(s)
                 foreach ($xsf in $xmlSetFields) {
                     $found = $false
-                    foreach ($isf in $allInventedFields) {
+                    foreach ($isf in $matchedFields) {
                         if ($isf -ieq $xsf) { $found = $true; break }
                         if ($src2tgt.ContainsKey($isf.ToLower())) {
                             if (Test-FieldEquiv $src2tgt[$isf.ToLower()] $xsf) { $found = $true; break }
                         }
                     }
                     if ($found) {
-                        Out-Pass "  keyRef ${kr}: set field '$xsf' covered by invented variants ($inventedNames)"
+                        Out-Pass "  keyRef ${kr}: set field '$xsf' covered by ${matchedNames}"
                     } else {
-                        $inInvAny = $false
-                        foreach ($isf in $allInventedAny) {
-                            if ($isf -ieq $xsf) { $inInvAny = $true; break }
+                        $inMatchedAny = $false
+                        foreach ($isf in $matchedAny) {
+                            if ($isf -ieq $xsf) { $inMatchedAny = $true; break }
                             if ($src2tgt.ContainsKey($isf.ToLower())) {
-                                if (Test-FieldEquiv $src2tgt[$isf.ToLower()] $xsf) { $inInvAny = $true; break }
+                                if (Test-FieldEquiv $src2tgt[$isf.ToLower()] $xsf) { $inMatchedAny = $true; break }
                             }
                         }
-                        if ($inInvAny) {
-                            Out-Info "  keyRef ${kr}: XML set field '$xsf' demoted to any[] in invented variants"
+                        if ($inMatchedAny) {
+                            Out-Info "  keyRef ${kr}: XML set field '$xsf' demoted to any[] in ${matchedNames}"
                         } else {
-                            # INFO not WARN: invented variants exist but don't cover this field path.
-                            # This means the build chose a different search path for this query.
+                            # INFO not WARN: matched combo(s) exist but don't cover this field path.
                             # CHECK 5 (Primary Field Coverage) already catches missing primary paths as FAIL/WARN.
-                            Out-Info "  keyRef ${kr}: XML set field '$xsf' not covered by invented variants ($inventedNames) -- intentional exclusion, see CHECK 5"
+                            Out-Info "  keyRef ${kr}: XML set field '$xsf' not covered by ${matchedNames} -- intentional exclusion, see CHECK 5"
                         }
                     }
                 }
 
-                # Validate XML any[] fields against invented variants
+                # Validate XML any[] fields against the matched combo(s)
                 foreach ($xaf in $xmlAnyFields) {
                     $found = $false
-                    foreach ($isf in $allInventedFields) {
+                    foreach ($isf in $matchedFields) {
                         if ($isf -ieq $xaf) { $found = $true; break }
                         if ($src2tgt.ContainsKey($isf.ToLower())) {
                             if (Test-FieldEquiv $src2tgt[$isf.ToLower()] $xaf) { $found = $true; break }
                         }
                     }
                     if ($found) {
-                        Out-Pass "  keyRef ${kr}: any field '$xaf' covered by invented variants ($inventedNames)"
+                        Out-Pass "  keyRef ${kr}: any field '$xaf' covered by ${matchedNames}"
                     } else {
                         $isFormOnly = $false
                         foreach ($fo in $formOnlyFields) {
                             if ($fo -ieq $xaf) { $isFormOnly = $true; break }
                         }
                         if ($isFormOnly) {
-                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in invented variants (form-only)"
+                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in ${matchedNames} (form-only)"
                         } else {
-                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in invented variants"
+                            Out-Info "  keyRef ${kr}: XML any field '$xaf' not in ${matchedNames}"
                         }
                     }
                 }

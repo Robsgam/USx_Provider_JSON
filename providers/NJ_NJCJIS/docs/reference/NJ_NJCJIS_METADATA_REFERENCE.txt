@@ -1,7 +1,7 @@
-﻿NJ_NJCJIS_v4.7 METADATA REFERENCE
+NJ_NJCJIS_v4.8 METADATA REFERENCE
 ==================================
-Generated: 2026-06-26
-Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS_v4.7.json
+Generated: 2026-07-06
+Source: NJ_NJCJIS.xml (metadata) + NJ_NJCJIS_v4.8.json
 Metadata: 6 total transactions, 5 queries built in JSON
 
 ================================================================================
@@ -59,10 +59,8 @@ METADATA COMBINATIONS (2 total):
   FULL          OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator, State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   DQ             set[BirthDate, NameLast, NameFirst]
-  BUILT   DQN            set[OperatorLicenseNumber]
-  UNBUILT FULL           Name
-  UNBUILT FULL           OperatorLicenseNumber
+  BUILT   FULL           set[BirthDate, NameLast, NameFirst]
+  BUILT   FULLN          set[OperatorLicenseNumber]
 
 ================================================================================
 4. GunQuery (version 1)
@@ -105,12 +103,8 @@ METADATA COMBINATIONS (4 total):
   FULL          VehicleIdentificationNumber  VehicleIdentificationNumber, State, RandomRequest      ImageIndicator
 
 BUILD COVERAGE (2 of 4 built):
-  BUILT   RQ             set[LicensePlateNumber]
-  BUILT   RQN            set[VehicleIdentificationNumber]
-  UNBUILT RAND           LicensePlateNumber
-  UNBUILT RAND           VehicleIdentificationNumber
-  UNBUILT FULL           LicensePlateNumber
-  UNBUILT FULL           VehicleIdentificationNumber
+  BUILT   RANDFULL       set[LicensePlateNumber]
+  BUILT   RANDFULLN      set[VehicleIdentificationNumber]
 
 ================================================================================
 BUILD SUMMARY
@@ -125,17 +119,6 @@ BUILD SUMMARY
   VehicleRegistrationQuery                   4      2     2  50%
   ----------------------------------  --------  -----  ----  --------
   TOTAL                                   10      8     2  80%
-
-================================================================================
-UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)
-================================================================================
-
-  FULL           Name                     (DriverLicenseQuery)
-  FULL           OperatorLicenseNumber    (DriverLicenseQuery)
-  RAND           LicensePlateNumber       (VehicleRegistrationQuery)
-  RAND           VehicleIdentificationNumber (VehicleRegistrationQuery)
-  FULL           LicensePlateNumber       (VehicleRegistrationQuery)
-  FULL           VehicleIdentificationNumber (VehicleRegistrationQuery)
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (1 of 6 in metadata)

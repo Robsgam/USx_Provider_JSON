@@ -1,0 +1,9 @@
+# NJ_NJCJIS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4) and tools/extract_metadata_reference.ps1 (BUILD
+# COVERAGE) via the shared tools/_metadata_keyref_match.ps1 matcher. Each non-comment line
+# records a keyRef-level or field-level divergence that is intentional and correct.
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+#
+
+VehicleRegistrationQuery | RAND | RANDFULL,RANDFULLN | built-as | Metadata-driven keyRef rename (v4.8, 2026-07-01): devdoc defines 4 combos under keyReference RAND and FULL (2 primaryFieldReference variants each: LicensePlateNumber, VehicleIdentificationNumber), each RAND/FULL pair identical Set/Any per identifier -- merged into one physical combo per identifier (RANDFULL for LicensePlateNumber, RANDFULLN for VehicleIdentificationNumber). Without this declaration the mechanical keyRef+primaryField matcher cannot derive RANDFULL/RANDFULLN from RAND or FULL (FULL is embedded mid-string, not a prefix), and would falsely report a fully-built query as not-built. | build-notes | 2026-07-06
+VehicleRegistrationQuery | FULL | RANDFULL,RANDFULLN | built-as | Metadata-driven keyRef rename (v4.8, 2026-07-01): see RAND entry above -- same merge, other half of the RAND+FULL pair. | build-notes | 2026-07-06
