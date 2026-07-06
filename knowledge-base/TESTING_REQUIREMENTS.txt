@@ -649,8 +649,9 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
   [OP]   There is no tier choice anymore. Every session runs the single FULL pass:
          render per entity + EVERY combo (required set[] fields) + each combo's optional
          any[] permutations + guardrail/priority tests + deselect tests + a negative per
-         entity. The former "Preliminary" subset no longer exists. (set_tier.ps1 is
-         deprecated; Get-ActiveTier always returns 'Full'; the matrix is always
+         entity. The former "Preliminary" subset no longer exists. (set_tier.ps1 was
+         the deprecated no-op tool for the old tier system; deleted 2026-07-06.
+         Get-ActiveTier always returns 'Full'; the matrix is always
          docs/<P>_TEST_MATRIX.txt.)
   [TOOL] post_test.ps1 STAMPS every log with JSON Version + Entity Fingerprint +
          Tier (Full). block_entity.ps1 requires, per entity, a valid current-version XML

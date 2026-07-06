@@ -24,7 +24,7 @@ SOURCE AUTHORITY RULES:
   Document any MetaData vs. DevDoc discrepancies in provider docs.
 
 ================================================================================
-FILES IN THIS FOLDER (9 files, organized by question)
+FILES IN THIS FOLDER (10 files, organized by question)
 ================================================================================
 
   README.txt               This file -- index and overview
@@ -70,6 +70,13 @@ FILES IN THIS FOLDER (9 files, organized by question)
                            24 handlers: 4 property paths, 9 handler functions,
                            14 attribute rule handlers, 1 special handler.
                            Origin map, dead ends, build script checklist.
+
+  CANADIAN_QUERIES_AVAILABLE.txt  "Which providers have Canadian query metadata?"
+                           REFERENCE ONLY -- cross-provider availability matrix
+                           (CA_CLETS/FL_FCIC/OR_LEDS/NY_NYSPIN/NJ_NJCJIS). ZERO
+                           providers have built these; blocked pending official
+                           devdoc + metadata. Not part of the standard read order --
+                           only relevant if/when Canadian queries are prioritized.
 
   BEFORE ANYTHING ELSE -- NAMING RULE:
     Provider folder name MUST match the metadata XML filename minus .xml.
@@ -193,11 +200,6 @@ TOOLS
     Creates a stub test log in tests/. Required by GATE 2 before every test.
     Usage: -Provider <name> -Version <ver> -Entity <entity> -Combo <combo>
 
-  tools/test_layout.ps1
-    QIF layout tree validator. Checks parent-child relationships and generates
-    an HTML form preview for visual inspection.
-    Usage: -Path <json>
-
   tools/build_codetype_test.ps1
     Generates CODETYPE_TEST.json for dropdown validation. Tests which
     codeTypeCategory + codeTypeSource combinations produce non-empty dropdowns.
@@ -212,11 +214,6 @@ TOOLS
     Pre-build validation against PROVIDER_CONFIG.txt. Catches configuration
     drift (BirthDate format, provider name, date format) before the build runs.
     Usage: .\preflight_check.ps1
-
-  tools/report_cad_mapping.ps1
-    Generates an HTML report mapping CAD field names to each provider JSON's
-    field configuration. Shows sourceField->targetField per QIDM.
-    Usage: .\report_cad_mapping.ps1 -Path <json> -OutFile <path>
 
   tools/audit_repo.ps1
     Full monorepo consistency audit. Checks KB docs, build scripts, tools,
@@ -249,14 +246,6 @@ TOOLS
     CAD auto-populate, CAD_DISPATCH/FIRST_RESPONDER layout variants, Patch 8
     completeness, and QIDM sourceField case alignment.
     Usage: .\audit_cad.ps1 [-Path <json>] [-Variant <BASE|MC>] [-OutFile <path>]
-
-  tools/test_cad_dispatch.ps1
-    CAD Dispatch Coverage Validator. Algorithmically determines which CommSys
-    combos CAD auto-populate can trigger (set[] covered by CAD fields + combo
-    defaults[]), builds a minimal CAD form state for each, runs the combo
-    simulator, and verifies the expected combo fires first. Reports PASS / FAIL /
-    SKIP (SKIP = not CAD-triggerable by design). Provider-agnostic.
-    Usage: .\test_cad_dispatch.ps1 -Provider <name> [-OutFile <path>]
 
   tools/audit_simulator_parity.ps1
     Tool-integrity gate. Confirms test_commsys.ps1 and run_test_matrix.ps1 both
@@ -457,12 +446,6 @@ TOOLS
     generate_test_matrix.ps1 logic in JSON the driver consumes.
     Usage: .\emit_test_plan.ps1 -Path <json> [-OutFile <path.plan.json>]
 
-  tools/set_tier.ps1  (DEPRECATED 2026-07-01)
-    Tiers removed — testing is a single all-or-nothing "Full" pass. Retained as a no-op that
-    stamps tests/.test_tier = 'Full' and reports; any -Tier argument is ignored. block_entity.ps1
-    always requires full-pass coverage (every combo's XML log + an any[] log per combo + render
-    + negative). Usage: .\set_tier.ps1 -Provider <name>
-
   tools/compare_captures.ps1
     Validation-only tool (no import). For each record in an automation capture file, finds
     the matching reference -- a committed test log (default) or a second capture file -- and
@@ -490,19 +473,6 @@ TOOLS
     whether a log validly backs a [CONFIRMED] combo. Used by post_test.ps1 (writer),
     audit_test_coverage.ps1, block_entity.ps1, and backfill_log_stamps.ps1 (readers).
     Dot-source only; defines functions, no side effects.
-
-  tools/map_cad_fields.ps1
-    Maps CAD field names to provider JSON fieldIds. Reports MATCH,
-    CASE_MISMATCH, NO_MATCH, EXTRA. Auto-detects variant.
-    Generates Patch 8 rename map code snippet.
-    Usage: .\map_cad_fields.ps1 -Path <json> -CadFields <comma-separated|file> [-OutFile <path>] [-GeneratePatch]
-
-  tools/Apply-CadFieldAlignment.ps1
-    CAD field alignment function for MC build scripts. Renames PascalCase
-    fieldIds to camelCase for CAD auto-populate compatibility. Renames
-    sourceField, combo set[]/any[], and QIF fieldIds. Does NOT touch
-    targetField, primaryFieldReference, or keyReference (XML-facing).
-    Usage: dot-source then call Apply-CadFieldAlignment -QidmList <array> -FormList <array> -RmsBundle <obj> [-ProviderRenames <hashtable>]
 
   tools/diff_docs.ps1
     Diffs updated engineering docs against KB files. Extracts 7 element
@@ -601,13 +571,6 @@ TOOLS
       8. Enforce (enforce.ps1 — final gate)
     Stops on first failure with specific error reporting.
     Replaces manual multi-step workflow with one command.
-
-  tools/generate_build_script.ps1
-    Build script generator. Reads metadata XML and produces both BASE and MC
-    build scripts with QIDM generation, field mapping (30+ patterns), combo
-    requirements, and layout construction. Generates TODO markers for manual
-    review items (combo ordering, date format, State initialValue, etc.).
-    Usage: .\generate_build_script.ps1 -XmlPath <metadata.xml> [-DevdocPath <txt>] [-OutDir <path>]
 
   tools/generate_test_matrix.ps1
     Test matrix generator. Reads provider JSON and auto-generates a 9-phase

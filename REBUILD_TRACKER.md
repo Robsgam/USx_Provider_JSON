@@ -1,25 +1,40 @@
 # Rebuild Tracker
-Generated: 2026-05-08 | Last updated: 2026-06-24
+Generated: 2026-05-08 | Last updated: 2026-07-06
 
-## CURRENT TEST / BUILD ORDER (user directive 2026-06-14, SUBJECT TO CHANGE)
+## CURRENT STATUS -- see CLAUDE.md, not this section
 
-1. **FL_FCIC** (v5.1) -- DONE 2026-06-15. Imported to USx tenant; full matrix T1-T42 PASS
-   (one-directional deselect + co-fire pool isolation confirmed); enforce-clean. Request-side.
-2. **TX_TLETS** (v3.4) -- ACTIVE. Imported USx TLETS tenant 2026-06-15; RENDER PASS (all 4 entities);
-   T1+ live testing in progress. Carry: Img/catchall merged + image/email in any[]; email-in-set[] CAD
-   tabled (handler pending); image/email auto-send handlers pending.
-3. **NJ_NJCJIS** -- test + DECIDE the Vehicle-Stolen branch winner (VehStolenRemoved vs
-   VehStolenSeparate). Hopefully we know which way to go by then (PM input pending).
-4. **NY_NYSPIN_EJUSTICE** -- (has 4 poisoned-array combos earmarked; analyze benign-vs-harmful at rebuild).
-5. **AZ_AZDPS**.
+**This file is a historical/technical archive, not the current-status source.** Current
+version/score/status per provider lives in `CLAUDE.md`'s "Provider Status" table (kept in
+sync via `sync_provider_table.ps1`); current build/test order lives in memory
+`project_provider_work_order` (git is authoritative for what's actually done -- check
+per-provider `CHANGELOG_<PROVIDER>.md` for that provider's full version history).
+
+As of 2026-07-06, the providers that have gone through the post-methodology-shift pipeline
+(PascalCase-native, single-JSON, identifier-priority guardrails) are: NJ_NJCJIS, CA_CLETS,
+HI_HCJDC_OFML, FL_FCIC, NY_NYSPIN_EJUSTICE. NY_NYSPIN_EJUSTICE testing is intentionally PARKED
+at the browser-capture step (user request 2026-07-02) -- resume there, don't re-rebuild. All
+other providers (TX_TLETS, AZ_AZDPS, LA_LEMS, and the legacy v1.x stubs) are not yet rebuilt
+under the current methodology; their BASE/MC and legacy-casing paths in shared tools are still
+load-bearing.
 
 Gating reality: each "test" needs the JSON imported to the USx tenant by the user; this env returns
 NO live state responses (request-side XML + visual only). Methodology: challenge/verify + secure data
 before running down a path (do NOT assume; confirm against XML/devdoc/live logs first).
 
-**ON RECORD -- PascalCase vs camelCase:** may need to PAUSE the order and re-evaluate the form-param
-casing question (PascalCase migration vs camelCase; OnScene/Forge exact-match vs CAD). Keep flagged;
-revisit when it blocks or when the user calls it. See NJ STATUS PASCALCASE MIGRATION + [[nj-pascalcase-mock]].
+**RESOLVED -- PascalCase vs camelCase:** PascalCase is the native, authored-from-the-start
+standard (see CLAUDE.md Field Configuration Rules). NJ/FL/HI/CA_CLETS/NY are converted; remaining
+providers convert on their own next scheduled rebuild, one at a time -- no mass update.
+
+---
+
+## ARCHIVE -- resolved rebuild history below this line
+
+The sections below are a running technical/engineering-decision log (root-cause analyses, gap
+audits, cross-provider rollout notes) kept for institutional context beyond what a single
+provider's CHANGELOG captures. Entries are point-in-time and many are superseded by later
+entries further down -- when in doubt, trust git log / the provider's CHANGELOG over anything
+here. Not pruned in this pass (real technical content, not just changelog duplication); flagged
+as a follow-up if it grows unwieldy again.
 
 ## RESOLVED v6.0 2026-06-23: FL_FCIC inert State conditions — field=attr name not sourceField
 
@@ -119,7 +134,10 @@ QIDM builder helpers, doctor.ps1) + Tier 2 done/in-progress. Tier 3 deferred:
   work, run a cheap time-boxed (~1-2h) SPIKE for a measured number / smarter path: derive ONE provider's
   config from its existing JSON → generate → diff (config-by-example round-trip). If that works, per-
   provider cost may be ~minutes and the whole effort far less than guessed. `generate_build_script.ps1`
-  is the incomplete seed. **REMINDER TRIGGER:** 5+ NEW providers queued, OR idle capacity for the spike.
+  (the incomplete BASE/MC-era seed) was deleted 2026-07-06 as dead code — it scaffolded separate
+  BASE+MC build scripts, contradicting the current single-JSON build model. Any future engine/scaffold
+  should be authored fresh from an existing single-JSON build script (e.g. `build_fl_fcic.ps1`), not
+  resurrected from that generator. **REMINDER TRIGGER:** 5+ NEW providers queued, OR idle capacity for the spike.
   Until then, use the new `Build-QidmCombo`/`Build-QidmAttribute` helpers incrementally at each rebuild
   (semantic-reformat, validator-verified — not byte-diff).
 - **Modularize `validate.ps1`** (~2200 lines, 6 coupled phases) — SKIP. Risk > benefit; revisit only if
