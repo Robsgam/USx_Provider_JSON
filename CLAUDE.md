@@ -348,9 +348,9 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | # | Tool | Purpose | Key flags |
 |---|---|---|---|
 | 1 | `validate.ps1` | 6-phase structural validator (encoding, bundles, QIF types, QIDM refs, autoSelect, combos) | `-Path <json>` `-ShowDetail` |
-| 2 | `render_layout.ps1` | CLI layout tree renderer | `-Path <json>` `-Summary` `-Entity` `-Variant` `-QidmOnly` |
-| 3 | `test_commsys.ps1` | CommSys query simulator (combo matching + XML output) | `-Path <json>` `-Entity` `-Combo` `-OutFile` |
-| 4 | `report_picklists.ps1` | Scans FormSelect dropdowns + QRDM/QIDM code types | `-Path <json>` `-OutFile` |
+| 2 | `render_layout.ps1` | CLI layout tree renderer (LAYOUT_REPORT). Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 or audit_repo.ps1 Category 10 | `-Path <json>` `-Summary` `-Entity` `-Variant` `-QidmOnly` |
+| 3 | `test_commsys.ps1` | CommSys query simulator (combo matching + XML output; QUERY_REPORT). Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 or audit_repo.ps1 Category 10 | `-Path <json>` `-Entity` `-Combo` `-OutFile` |
+| 4 | `report_picklists.ps1` | Scans FormSelect dropdowns + QRDM/QIDM code types (PICKLIST_REPORT). Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 or audit_repo.ps1 Category 10 | `-Path <json>` `-OutFile` |
 | 5 | `render_html.ps1` | Self-contained HTML layout report with color-coded fields and QIDM tables | `-Path <json>` `-OutFile` |
 | 6 | `verify_build.ps1` | Post-build verification (banned patterns, fieldId consistency, reference patterns, Visible-First Mandate / hidden-field check) | `-Path <json>` `-CamelCase` |
 | 7 | `audit_metadata.ps1` | Validates QIDM configs against authoritative XML metadata | `-Path <json>` `-OutFile` |
@@ -358,7 +358,7 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
 | 10 | `run_test_matrix.ps1` | Automated test conductor — validates all test matrix cases via combo simulation. Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 | `-Path <json>` `-Matrix <file>` `-OutFile` |
 | 11 | `simulate_response.ps1` | CJIS response handler simulator: executes all QRDM handler transformations (Height, Name, VehicleYear, truncate, AttributeMapping) against comprehensive synthetic test data per entity. Target: 0 MISSING / 0 UNMAPPED. No live data required. Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 | `-Path <json>` `-Entity` `-RunEdgeCases` `-OutFile` |
-| -- | `build_report.ps1` | **Master orchestrator** — always runs 1-9 + saves reports to docs/, then prunes orphaned variant reports (build-owned report files for a JSON variant no longer present — e.g. after consolidating branches). Pass `-IncludeExtended` to also run 10-11 plus lint/label-review/officer-guide/test-conductor (advisory outputs demoted from the default run 2026-07-06 -- nothing gates on them) | `-Path <json>` `-IncludeExtended` |
+| -- | `build_report.ps1` | **Master orchestrator** — always runs 1, 5-9 + saves reports to docs/, then prunes orphaned variant reports (build-owned report files for a JSON variant no longer present — e.g. after consolidating branches). Pass `-IncludeExtended` to also run 2-4 (layout/query/picklist reports) plus 10-11, lint/label-review/officer-guide/test-conductor (8 advisory outputs demoted from the default run 2026-07-06 -- nothing gates on them) | `-Path <json>` `-IncludeExtended` |
 
 ### Auditors (repo-wide checks)
 
@@ -494,7 +494,7 @@ Three commands run everything. No manual checklists.
 
 **Batch mode** (`-Providers` or `-All`): runs per-provider steps (1-3) sequentially per provider, then ONE sync pass, ONE cross-provider audit, ONE repo audit, ONE enforce. Eliminates redundant global audits when rebuilding multiple providers.
 
-`build_report.ps1` runs 15 steps. Steps 1-9 execute in parallel (all read-only on the JSON) and always run. Steps 10 (test conductor), 11 (response simulator), 12 (label review), and 13 (officer guide) are advisory outputs enforce.ps1 never reads back — demoted to opt-in 2026-07-06, skipped by default, run via `-IncludeExtended` or the underlying tool standalone. Step 14 (supported-query audit) and 15 (per-provider changelog) always run — both are read by enforce.ps1 (Phase 2e / Phase 3 doc-sync).
+`build_report.ps1` runs 15 steps. Steps 1, 5, 6, 7, 8, 9 always run (read-only on the JSON; core gated outputs). Steps 2 (layout report), 3 (query simulator), and 4 (picklist scanner) — plus 10 (test conductor), 11 (response simulator), 12 (label review), and 13 (officer guide) — are advisory outputs enforce.ps1 (and audit_repo.ps1 Category 10) never require — demoted to opt-in 2026-07-06 (steps 10-13) and 2026-07-06 follow-up (steps 2-4, once Category 10's report-completeness check no longer required them), skipped by default, run via `-IncludeExtended` or the underlying tool standalone. Step 14 (supported-query audit) and 15 (per-provider changelog) always run — both are read by enforce.ps1 (Phase 2e / Phase 3 doc-sync).
 
 `enforce.ps1` runs 5 phases: build freshness, validator scores, doc version sync (8 locations per provider: CLAUDE.md, STATUS, SQVR, JSON_INVENTORY, BUILD_NOTES + date checksum, REBUILD_TRACKER, per-provider CHANGELOG_<PROVIDER>.md, repo-root CHANGELOG.md Current line), cross-provider + repo integrity (phases 4-5 run in parallel), git status. Exit 0 = verified. Exit 1 = blocked.
 

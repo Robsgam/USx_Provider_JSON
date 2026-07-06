@@ -465,7 +465,13 @@ Write-Host ""
 Write-Host "--- CATEGORY 10: Report File Completeness ---" -ForegroundColor Yellow
 
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
-$reportPrefixes = @('VALIDATOR_REPORT','LAYOUT_REPORT','QUERY_REPORT','PICKLIST_REPORT','VERIFY_REPORT','METADATA_AUDIT','CAD_AUDIT')
+# LAYOUT_REPORT/QUERY_REPORT/PICKLIST_REPORT dropped from this required list 2026-07-06:
+# build_report.ps1 demoted their generators (render_layout/test_commsys/report_picklists) to
+# the opt-in -IncludeExtended bundle (same treatment as LINT_REPORT/RESPONSE_SIMULATION/
+# LABEL_REVIEW/OFFICER_GUIDE/TEST_VALIDATION before them) -- a default build_report run no
+# longer produces them, so requiring them here would FAIL every provider's default build.
+# LAYOUT_HTML (render_html.ps1, still core) is unaffected -- checked separately below.
+$reportPrefixes = @('VALIDATOR_REPORT','VERIFY_REPORT','METADATA_AUDIT','CAD_AUDIT')
 # Legacy _MC/_BASE providers: convert to single-JSON during scheduled rebuild, not a gap
 $flaggedProviders = @('CA_CONTRA_COSTA','AZ_AZDPS','CA_CLETS_OCATS','CA_eSUN','CA_SAN_LUIS_OBISPO',
     'CA_VENTURA_COUNTY','HI_HCJDC_OFML','IL_LEADS_OFML','LA_LEMS','MD_METERS',
@@ -490,7 +496,7 @@ foreach ($pd in $providerDirs) {
     if (-not $htmlSingle) { $missingSingle += 'LAYOUT_HTML' }
 
     if ($missingSingle.Count -eq 0) {
-        Pass "${provName} -- docs/ has all 8 report files (single-JSON)"
+        Pass "${provName} -- docs/ has all 5 report files (single-JSON)"
     } elseif (Test-Path $baseDir) {
         $baseFiles = @(Get-ChildItem $baseDir -File | ForEach-Object { $_.Name })
         $missingBase = @()
@@ -505,7 +511,7 @@ foreach ($pd in $providerDirs) {
             if ($isFlagged) { Info "FLAGGED: ${provName} docs/base/ missing: $($missingBase -join ', ')" }
             else { Fail "${provName} docs/base/ missing: $($missingBase -join ', ')" }
         } else {
-            Pass "${provName} -- docs/base/ has all 8 report files"
+            Pass "${provName} -- docs/base/ has all 5 report files"
         }
     } else {
         if ($isFlagged) { Info "FLAGGED: ${provName} -- no report files in docs/ or docs/base/" }
@@ -528,7 +534,7 @@ foreach ($pd in $providerDirs) {
             if ($missingMc.Count -gt 0) {
                 Fail "${provName} docs/mc/ missing: $($missingMc -join ', ')"
             } else {
-                Pass "${provName} -- docs/mc/ has all 8 report files"
+                Pass "${provName} -- docs/mc/ has all 5 report files"
             }
         } else {
             if ($isFlagged) { Info "FLAGGED: ${provName} -- MC JSON exists but docs/mc/ missing (legacy, convert on rebuild)" }

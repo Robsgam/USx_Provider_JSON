@@ -1,7 +1,8 @@
 <#
   build_report.ps1 -- Generate layout + query reports for a provider JSON
   Runs validator, renderer, query simulator, and picklist scanner.
-  Steps 1-9 run in PARALLEL (all read-only on JSON, independent outputs).
+  Steps 1-9 launch in PARALLEL (all read-only on JSON, independent outputs); steps 2/3/4
+  (LAYOUT_REPORT/QUERY_REPORT/PICKLIST_REPORT) only launch under -IncludeExtended (see below).
   Step 10 (test conductor) runs after step 9 completes.
 
   Auto-detects build path from JSON name:
@@ -20,11 +21,14 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Path,
     [string]$DocsDir,
-    # Opt-in: also run the 5 advisory/on-demand report generators that enforce.ps1 never
-    # reads back (LINT_REPORT, RESPONSE_SIMULATION, LABEL_REVIEW, OFFICER_GUIDE, TEST_VALIDATION).
-    # Demoted from the automatic run 2026-07-06 (waste-reduction pass) -- they cost build time
-    # on every build/rebuild but nothing gates on their output. Run standalone any time via the
-    # underlying tool directly, or pass this switch to regenerate all 5 in one build_report run.
+    # Opt-in: also run the 8 advisory/on-demand report generators that enforce.ps1 (and, as of
+    # 2026-07-06, audit_repo.ps1 Category 10 / audit_structure.ps1) never require:
+    # LINT_REPORT, RESPONSE_SIMULATION, LABEL_REVIEW, OFFICER_GUIDE, TEST_VALIDATION (demoted
+    # 2026-07-06 waste-reduction pass), plus LAYOUT_REPORT, QUERY_REPORT, PICKLIST_REPORT
+    # (demoted 2026-07-06 follow-up, once Category 10's report-completeness check -- the last
+    # gate requiring them -- was updated to match). They cost build time on every build/rebuild
+    # but nothing gates on their output. Run standalone any time via the underlying tool
+    # directly, or pass this switch to regenerate all 8 in one build_report run.
     [switch]$IncludeExtended
 )
 
@@ -185,26 +189,37 @@ $jobs[1] = Start-Job -ScriptBlock {
     & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
 } -ArgumentList $validatorPath, $resolvedStr
 
-# Step 2: Layout Renderer (summary + detail in one job)
+# Step 2: Layout Renderer (summary + detail in one job) -- produces LAYOUT_REPORT.
+#   Advisory only -- nothing in enforce.ps1 or audit_repo.ps1 Category 10 reads LAYOUT_REPORT
+#   as of 2026-07-06 (moved out of the report-completeness requirement alongside QUERY_REPORT/
+#   PICKLIST_REPORT below). Opt-in via -IncludeExtended; run render_layout.ps1 directly any time.
+if ($IncludeExtended) {
 $jobs[2] = Start-Job -ScriptBlock {
     param($tool, $json)
     $summary = & powershell -ExecutionPolicy Bypass -File $tool -Path $json -Summary 2>&1 | Out-String
     $detail  = & powershell -ExecutionPolicy Bypass -File $tool -Path $json -Variant default 2>&1 | Out-String
     "$summary`n`nLAYOUT DETAIL`n=============`n`n$detail"
 } -ArgumentList $rendererPath, $resolvedStr
+}
 
-# Step 3: Query Simulator
+# Step 3: Query Simulator -- produces QUERY_REPORT. Advisory only (same 2026-07-06 change as
+#   step 2/4); opt-in via -IncludeExtended; run test_commsys.ps1 directly any time.
+if ($IncludeExtended) {
 $jobs[3] = Start-Job -ScriptBlock {
     param($tool, $json)
     & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
 } -ArgumentList $queryPath, $resolvedStr
+}
 
-# Step 4: Picklist Scanner
+# Step 4: Picklist Scanner -- produces PICKLIST_REPORT. Advisory only (same 2026-07-06 change);
+#   opt-in via -IncludeExtended; run report_picklists.ps1 directly any time.
+if ($IncludeExtended) {
 $jobs[4] = Start-Job -ScriptBlock {
     param($tool, $json, $outFile)
     & powershell -ExecutionPolicy Bypass -File $tool -Path $json -OutFile $outFile 2>&1 | Out-String
     "SAVED"
 } -ArgumentList $picklistPath, $resolvedStr, $picklistFile
+}
 
 # Step 5: HTML Layout Render
 $jobs[5] = Start-Job -ScriptBlock {
@@ -274,19 +289,32 @@ Write-Host "  [1/$stepCount] Saved: $validatorFile" -ForegroundColor Green
 
 # --- Step 2: Layout ---
 Write-Host ""
-$layoutOut = $outputs[2]
-($header + "LAYOUT SUMMARY`n==============`n`n" + $layoutOut) | Out-File -FilePath $layoutFile -Encoding utf8
-Write-Host "  [2/$stepCount] Saved: $layoutFile" -ForegroundColor Green
+$queryOut = $null
+if ($outputs[2]) {
+    $layoutOut = $outputs[2]
+    ($header + "LAYOUT SUMMARY`n==============`n`n" + $layoutOut) | Out-File -FilePath $layoutFile -Encoding utf8
+    Write-Host "  [2/$stepCount] Saved: $layoutFile" -ForegroundColor Green
+} else {
+    Write-Host "  [2/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
+}
 
 # --- Step 3: Query Simulator ---
 Write-Host ""
-$queryOut = $outputs[3]
-($header + "QUERY SIMULATION`n================`n`n" + $queryOut) | Out-File -FilePath $queryFile -Encoding utf8
-Write-Host "  [3/$stepCount] Saved: $queryFile" -ForegroundColor Green
+if ($outputs[3]) {
+    $queryOut = $outputs[3]
+    ($header + "QUERY SIMULATION`n================`n`n" + $queryOut) | Out-File -FilePath $queryFile -Encoding utf8
+    Write-Host "  [3/$stepCount] Saved: $queryFile" -ForegroundColor Green
+} else {
+    Write-Host "  [3/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
+}
 
 # --- Step 4: Picklist ---
 Write-Host ""
-Write-Host "  [4/$stepCount] Saved: $picklistFile" -ForegroundColor Green
+if ($outputs[4]) {
+    Write-Host "  [4/$stepCount] Saved: $picklistFile" -ForegroundColor Green
+} else {
+    Write-Host "  [4/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
+}
 
 # --- Step 5: HTML ---
 Write-Host ""
@@ -455,8 +483,10 @@ if (Test-Path $officerGuidePath) {
 }
 
 # --- Summary ---
-$fires = ([regex]::Matches($queryOut, '\[FIRES')).Count
-$skips = ([regex]::Matches($queryOut, '\[SKIP\]')).Count
+# $queryOut is $null when step 3 (Query Simulator, QUERY_REPORT) was skipped -- not run by
+# default since 2026-07-06; pass -IncludeExtended to populate it.
+$fires = if ($queryOut) { ([regex]::Matches($queryOut, '\[FIRES')).Count } else { 0 }
+$skips = if ($queryOut) { ([regex]::Matches($queryOut, '\[SKIP\]')).Count } else { 0 }
 $pass = ([regex]::Matches($validatorOut, '\[PASS\]')).Count
 $fail = ([regex]::Matches($validatorOut, '\[FAIL\]')).Count
 $warn = ([regex]::Matches($validatorOut, '\[WARN\]')).Count
@@ -467,7 +497,7 @@ Write-Host "  REPORT COMPLETE" -ForegroundColor Green
 Write-Host "  Lint:      $(if ($lintWarnCount -gt 0) { "$lintWarnCount WARN" } else { "CLEAN" })" -ForegroundColor $(if ($lintWarnCount -gt 0) { "Yellow" } else { "Green" })
 Write-Host "  Validator: $pass PASS / $fail FAIL / $warn WARN" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Green" })
 Write-Host "  Verify:    $(if ($verifyFails -gt 0) { "$verifyFails FAIL / $verifyWarns WARN" } elseif ($verifyWarns -gt 0) { "0 FAIL / $verifyWarns WARN" } else { "CLEAN" })" -ForegroundColor $(if ($verifyFails -gt 0) { "Red" } elseif ($verifyWarns -gt 0) { "Yellow" } else { "Green" })
-Write-Host "  Queries:   $fires FIRE / $skips SKIP" -ForegroundColor $(if ($fires -gt 0) { "Green" } else { "Yellow" })
+Write-Host "  Queries:   $(if ($queryOut) { "$fires FIRE / $skips SKIP" } else { "SKIPPED (advisory; pass -IncludeExtended to run)" })" -ForegroundColor $(if (-not $queryOut) { "Gray" } elseif ($fires -gt 0) { "Green" } else { "Yellow" })
 Write-Host "  RespSim:   $(if ($respSimRan) { "MAPPED=$mapped  MISSING=$missing  UNMAPPED=$unmapped  (RESPONSE_SIMULATION_$jsonName.txt)" } else { "SKIPPED (advisory; pass -IncludeExtended to run)" })" -ForegroundColor $(if ($unmapped -gt 0) { "Red" } elseif ($missing -gt 0) { "Cyan" } else { "Green" })
 Write-Host "  Reports:   $ReportsDir" -ForegroundColor Gray
 Write-Host "================================================================" -ForegroundColor Cyan

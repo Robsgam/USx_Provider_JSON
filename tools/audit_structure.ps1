@@ -85,9 +85,12 @@ if ($Path) {
     $providerFolders = @(Get-ChildItem $providersDir -Directory | Sort-Object Name)
 }
 
-# ── Report file prefixes (the 6 build_report outputs) ────────────────────────
+# ── Report file prefixes (the always-run build_report outputs) ───────────────
+# LAYOUT_REPORT/QUERY_REPORT/PICKLIST_REPORT dropped 2026-07-06 -- build_report.ps1 demoted
+# their generators to the opt-in -IncludeExtended bundle (matching audit_repo.ps1 Category 10),
+# so a default build no longer produces them; requiring them here would just be noise.
 
-$reportTextPrefixes = @('VALIDATOR_REPORT', 'LAYOUT_REPORT', 'QUERY_REPORT', 'PICKLIST_REPORT', 'VERIFY_REPORT')
+$reportTextPrefixes = @('VALIDATOR_REPORT', 'VERIFY_REPORT')
 # HTML is LAYOUT_<provider>_<variant>.html
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -492,7 +495,7 @@ foreach ($provFolder in $providerFolders) {
                 Write-Pass "release/ has $($releaseJsons.Count) JSON file(s): $($releaseJsons.Name -join ', ')"
             }
 
-            # Check for all 5 text report prefixes
+            # Check for all text report prefixes (+ LAYOUT_HTML, checked separately below)
             $missingRelease = @()
             foreach ($rp in $reportTextPrefixes) {
                 $match = $releaseFiles | Where-Object { $_.Name -match "^${rp}_" }
