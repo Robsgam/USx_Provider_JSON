@@ -214,21 +214,21 @@ v2.1 changes from v2.0:
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: BVIN
 
-  RVEH -- Registration Number, NY (no state) [PENDING]
+  RVEH -- Registration Number, NY (no state) [CONFIRMED]
     set: registrationNumber
-    any: imageIndicator, relatedHitSearchIndicator
-    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+    any: imageIndicator
+    defaults: ImageIndicator=Y
     keyReference: RVEH
-    Live proof: logs/Boat/NY_NYSPIN_EJUSTICE_v4.0_RVEH.txt (BoatQuery, RegistrationNumber,
+    Live proof: logs/Boat/NY_NYSPIN_EJUSTICE_v4.3_RVEH.txt (BoatQuery, RegistrationNumber,
       no state -> in-state, PASS). Marker was auto-left PENDING because keyRef RVEH is shared
-      with Vehicle (auto-updater flipped Vehicle's RVEH first); reconciled by hand 2026-07-07.
+      with Vehicle (auto-updater flipped Vehicle's RVEH first); reconciled by hand 2026-07-07 (v4.3).
 
-  RCAR -- Hull ID, NY (no state) [PENDING]
+  RCAR -- Hull ID, NY (no state) [CONFIRMED]
     set: boatHullIdNumber
-    any: imageIndicator, relatedHitSearchIndicator
-    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+    any: imageIndicator
+    defaults: ImageIndicator=Y
     keyReference: RCAR
-    Live proof: logs/Boat/NY_NYSPIN_EJUSTICE_v4.0_RCAR.txt (BoatQuery, BoatHullIdNumber,
+    Live proof: logs/Boat/NY_NYSPIN_EJUSTICE_v4.3_RCAR.txt (BoatQuery, BoatHullIdNumber,
       no state -> in-state, PASS). Same shared-keyRef reconciliation as Boat RVEH above.
 
   Priority: BVEH (2 set) > BVIN (2 set) > RVEH (1 set) > RCAR (1 set)
