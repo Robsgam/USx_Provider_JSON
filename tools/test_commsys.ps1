@@ -75,7 +75,6 @@ $testData["Person"] = @{
     addressCity                = "ALBANY"
     addressStateCode           = "NY"
     addressZipCode             = "12203"
-    messageContinueKeyCode     = ""
     PurposeCode                = "D"
     Attention                  = "DISPATCHER JONES"
     Requestor                  = "DISPATCHER JONES"

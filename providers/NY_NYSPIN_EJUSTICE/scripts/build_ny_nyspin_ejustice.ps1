@@ -60,7 +60,7 @@
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
 
 param(
-    [string]$Version = "4.1"
+    [string]$Version = "4.2"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -267,12 +267,11 @@ $dgrpQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'AddressStateCode';             size = 2;   sourceField = @('addressStateCode');             targetField = 'AddressStateCode'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'AddressZipCode';               size = 5;   sourceField = @('addressZipCode');               targetField = 'AddressZipCode' }
         [PSCustomObject]@{ name = 'Age';                          size = 1;   sourceField = @('age');                          targetField = 'Age' }
-        [PSCustomObject]@{ name = 'MessageContinueKeyCode';       size = 30;  sourceField = @('messageContinueKeyCode');       targetField = 'MessageContinueKeyCode' }
         [PSCustomObject]@{ name = 'MiscellaneousDescriptiveText'; size = 200; sourceField = @('miscellaneousDescriptiveText'); targetField = 'MiscellaneousDescriptiveText' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NameLastDGRP','NameFirstDGRP'); any = @('nameMiddleDGRP','nameSuffixDGRP','BirthDateDGRP','SexCodeDGRP','addressStreet','addressCity','addressStateCode','addressZipCode','age','messageContinueKeyCode','miscellaneousDescriptiveText') }
+            requirements          = [PSCustomObject]@{ set = @('NameLastDGRP','NameFirstDGRP'); any = @('nameMiddleDGRP','nameSuffixDGRP','BirthDateDGRP','SexCodeDGRP','addressStreet','addressCity','addressStateCode','addressZipCode','age','miscellaneousDescriptiveText') }
             primaryFieldReference = 'Name'
             keyReference          = 'DGRP'
             state                 = 'In/Out'
@@ -664,8 +663,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'Middle Name (optional)' '35' 'ROW_PER_DGRP_2' }
                 @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (optional)'      '10' 'ROW_PER_DGRP_2' }
             )}
-            @{ id = 'ROW_PER_DGRP_3'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_PER_DGRP_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDateDGRP_Input'; node = Dt  'BirthDateDGRP' 'Date of Birth (optional)'                                         'ROW_PER_DGRP_3' }
+                @{ id = 'Age_Input';           node = Inp 'age' 'DOB Search Range (+/- years, optional)' '1' 'ROW_PER_DGRP_3' }
                 @{ id = 'SexCodeDGRP_Input';   node = Sel 'SexCodeDGRP'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DGRP_3' }
             )}
             @{ id = 'ROW_PER_DGRP_4'; cols = @('6','6'); fields = @(
@@ -675,10 +675,6 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DGRP_5'; cols = @('6','6'); fields = @(
                 @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_5' }
                 @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (optional)' '5' 'ROW_PER_DGRP_5' }
-            )}
-            @{ id = 'ROW_PER_DGRP_6'; cols = @('6','6'); fields = @(
-                @{ id = 'Age_Input';                    node = Inp 'age' 'Age (optional)' '1' 'ROW_PER_DGRP_6' }
-                @{ id = 'MessageContinueKeyCode_Input'; node = Inp 'messageContinueKeyCode' 'Continuation Key (optional)' '30' 'ROW_PER_DGRP_6' }
             )}
             @{ id = 'ROW_PER_DGRP_7'; cols = @('12'); fields = @(
                 @{ id = 'MiscellaneousDescriptiveText_Input'; node = Inp 'miscellaneousDescriptiveText' 'Additional Descriptors (optional)' '200' 'ROW_PER_DGRP_7' }
