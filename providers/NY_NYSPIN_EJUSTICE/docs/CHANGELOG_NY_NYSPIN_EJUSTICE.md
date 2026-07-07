@@ -2,9 +2,14 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.3** | Generated: 2026-07-07
+Current: **v4.4** | Generated: 2026-07-07
 
 ---
+
+## v4.4 -- 2026-07-07 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v4.3 -- 2026-07-07 -- Pipeline rebuild
 

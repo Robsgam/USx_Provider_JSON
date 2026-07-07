@@ -10,7 +10,7 @@
 #
 # LAYOUT (5 QIFs, 9 cards):
 #   Vehicle:  2 cards -- SEARCH OPTIONS (State, Image) + VEHICLE SEARCH (Plate + VIN)
-#   Person:   4 cards -- SEARCH OPTIONS (State, Image) + DRIVER LICENSE + DL NAME SEARCH (DGRP) + DRIVER HISTORY
+#   Person:   4 cards -- SEARCH OPTIONS (State, Image) + DRIVER LICENSE + DRIVER HISTORY + DL NAME SEARCH (DGRP, last)
 #   Firearm:  1 card
 #   Article:  1 card
 #   Boat:     2 cards -- SEARCH OPTIONS (State, Image) + BOAT SEARCH (Reg + Hull)
@@ -60,7 +60,7 @@
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
 
 param(
-    [string]$Version = "4.3"
+    [string]$Version = "4.4"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -653,37 +653,6 @@ $perLayout = MakeLayouts @(
         )
     }
     @{
-        id    = 'CARD_PER_DGRP'
-        title = 'DL NAME SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_DGRP_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLastDGRP_Input';  node = Inp 'NameLastDGRP'  'Last Name'  '35' 'ROW_PER_DGRP_1' }
-                @{ id = 'NameFirstDGRP_Input'; node = Inp 'NameFirstDGRP' 'First Name' '35' 'ROW_PER_DGRP_1' }
-            )}
-            @{ id = 'ROW_PER_DGRP_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'Middle Name (optional)' '35' 'ROW_PER_DGRP_2' }
-                @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (optional)'      '10' 'ROW_PER_DGRP_2' }
-            )}
-            @{ id = 'ROW_PER_DGRP_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDateDGRP_Input'; node = Dt  'BirthDateDGRP' 'Date of Birth (optional)'                                         'ROW_PER_DGRP_3' }
-                @{ id = 'Age_Input';           node = Inp 'age' 'DOB Search Range (+/- years, optional)' '1' 'ROW_PER_DGRP_3' }
-                @{ id = 'SexCodeDGRP_Input';   node = Sel 'SexCodeDGRP'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DGRP_3' }
-            )}
-            @{ id = 'ROW_PER_DGRP_4'; cols = @('6','6'); fields = @(
-                @{ id = 'AddressStreet_Input'; node = Inp 'addressStreet' 'Street (optional)' '20' 'ROW_PER_DGRP_4' }
-                @{ id = 'AddressCity_Input';   node = Inp 'addressCity'   'City (optional)'   '15' 'ROW_PER_DGRP_4' }
-            )}
-            @{ id = 'ROW_PER_DGRP_5'; cols = @('6','6'); fields = @(
-                @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_5' }
-                @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (optional)' '5' 'ROW_PER_DGRP_5' }
-            )}
-            @{ id = 'ROW_PER_DGRP_6'; cols = @('4','8'); fields = @(
-                @{ id = 'MessageContinueKeyCode_Input';      node = Inp 'messageContinueKeyCode' 'Continuation Key (optional)' '30' 'ROW_PER_DGRP_6' }
-                @{ id = 'MiscellaneousDescriptiveText_Input'; node = Inp 'miscellaneousDescriptiveText' 'Additional Descriptors (optional)' '200' 'ROW_PER_DGRP_6' }
-            )}
-        )
-    }
-    @{
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY'
         rows  = @(
@@ -723,9 +692,42 @@ $perLayout = MakeLayouts @(
             )}
         )
     }
+    # DL NAME SEARCH (DGRP) placed LAST on the Person form (user layout call 2026-07-07) --
+    # card order is pure Craft.js layout, no routing/entity impact. DGRP stays targetEntity=Person.
+    @{
+        id    = 'CARD_PER_DGRP'
+        title = 'DL NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_DGRP_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLastDGRP_Input';  node = Inp 'NameLastDGRP'  'Last Name'  '35' 'ROW_PER_DGRP_1' }
+                @{ id = 'NameFirstDGRP_Input'; node = Inp 'NameFirstDGRP' 'First Name' '35' 'ROW_PER_DGRP_1' }
+            )}
+            @{ id = 'ROW_PER_DGRP_2'; cols = @('6','6'); fields = @(
+                @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'Middle Name (optional)' '35' 'ROW_PER_DGRP_2' }
+                @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (optional)'      '10' 'ROW_PER_DGRP_2' }
+            )}
+            @{ id = 'ROW_PER_DGRP_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BirthDateDGRP_Input'; node = Dt  'BirthDateDGRP' 'Date of Birth (optional)'                                         'ROW_PER_DGRP_3' }
+                @{ id = 'Age_Input';           node = Inp 'age' 'DOB Search Range (+/- years, optional)' '1' 'ROW_PER_DGRP_3' }
+                @{ id = 'SexCodeDGRP_Input';   node = Sel 'SexCodeDGRP'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DGRP_3' }
+            )}
+            @{ id = 'ROW_PER_DGRP_4'; cols = @('6','6'); fields = @(
+                @{ id = 'AddressStreet_Input'; node = Inp 'addressStreet' 'Street (optional)' '20' 'ROW_PER_DGRP_4' }
+                @{ id = 'AddressCity_Input';   node = Inp 'addressCity'   'City (optional)'   '15' 'ROW_PER_DGRP_4' }
+            )}
+            @{ id = 'ROW_PER_DGRP_5'; cols = @('6','6'); fields = @(
+                @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_5' }
+                @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (optional)' '5' 'ROW_PER_DGRP_5' }
+            )}
+            @{ id = 'ROW_PER_DGRP_6'; cols = @('4','8'); fields = @(
+                @{ id = 'MessageContinueKeyCode_Input';      node = Inp 'messageContinueKeyCode' 'Continuation Key (optional)' '30' 'ROW_PER_DGRP_6' }
+                @{ id = 'MiscellaneousDescriptiveText_Input'; node = Inp 'miscellaneousDescriptiveText' 'Additional Descriptors (optional)' '200' 'ROW_PER_DGRP_6' }
+            )}
+        )
+    }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- OPTIONS + DRIVER LICENSE (OLN+Name) + DL NAME SEARCH (DGRP, own fields, full metadata set) + DRIVER HISTORY (DH-suffix)'
+    description  = 'Person queries -- OPTIONS + DRIVER LICENSE (OLN+Name) + DRIVER HISTORY (DH-suffix) + DL NAME SEARCH (DGRP, own fields, full metadata set; placed last)'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

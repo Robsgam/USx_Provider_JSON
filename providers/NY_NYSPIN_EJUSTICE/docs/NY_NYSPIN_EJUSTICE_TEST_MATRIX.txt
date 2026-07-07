@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE v4.3 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.4 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-07
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -22,13 +22,6 @@ Person (4 cards, 32 fields):
     ROW 2: NameLast [Inp 35], NameFirst [Inp 35]
     ROW 3: nameMiddle [Inp 35], nameSuffix [Inp 10]
     ROW 4: BirthDate [FormDate], SexCode [Sel SEX]
-  CARD_PER_DGRP (DL NAME SEARCH):
-    ROW 1: NameLastDGRP [Inp 35], NameFirstDGRP [Inp 35]
-    ROW 2: nameMiddleDGRP [Inp 35], nameSuffixDGRP [Inp 10]
-    ROW 3: BirthDateDGRP [FormDate], age [Inp 1], SexCodeDGRP [Sel SEX]
-    ROW 4: addressStreet [Inp 20], addressCity [Inp 15]
-    ROW 5: addressStateCode [Sel STATE], addressZipCode [Inp 5]
-    ROW 6: messageContinueKeyCode [Inp 30], miscellaneousDescriptiveText [Inp 200]
   CARD_PER_DH (DRIVER HISTORY):
     ROW 1: OperatorLicenseNumberDH [Inp 20]
     ROW 2: NameLastDH [Inp 35], NameFirstDH [Inp 35]
@@ -37,6 +30,13 @@ Person (4 cards, 32 fields):
     ROW 5: purposeCodeDH [Inp C, 1]
     ROW 6: requestorDH [Inp X, 35]
     ROW 7: nyNyspinTransactionNameDH [Inp DALL, 4]
+  CARD_PER_DGRP (DL NAME SEARCH):
+    ROW 1: NameLastDGRP [Inp 35], NameFirstDGRP [Inp 35]
+    ROW 2: nameMiddleDGRP [Inp 35], nameSuffixDGRP [Inp 10]
+    ROW 3: BirthDateDGRP [FormDate], age [Inp 1], SexCodeDGRP [Sel SEX]
+    ROW 4: addressStreet [Inp 20], addressCity [Inp 15]
+    ROW 5: addressStateCode [Sel STATE], addressZipCode [Inp 5]
+    ROW 6: messageContinueKeyCode [Inp 30], miscellaneousDescriptiveText [Inp 200]
 
 Firearm (1 card, 4 fields):
   CARD_GUN (FIREARM QUERY):
@@ -198,4 +198,4 @@ COMBO COVERAGE (17/17):
   ArticleSingleQuery: 1/1 -- T43(AINQ)
   BoatQuery: 4/4 -- T31(RCAR+Hull), T33(BVIN+BVIN), T35(BVEH+BVEH), T37(RVEH+RVEH)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.3.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.4.json
