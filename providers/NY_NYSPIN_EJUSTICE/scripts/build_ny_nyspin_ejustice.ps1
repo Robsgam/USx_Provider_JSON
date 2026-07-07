@@ -9,11 +9,11 @@
 #   tools\_build_rms_bundle.ps1       -- RMS bundle + CommSys QRDM (KB specs)
 #
 # LAYOUT (5 QIFs, 9 cards):
-#   Vehicle:  2 cards -- SEARCH OPTIONS (State, Image) + VEHICLE SEARCH (Plate + VIN)
+#   Vehicle:  1 card (v4.6) -- VEHICLE QUERY (Plate row + options folded in, VIN row)
 #   Person:   3 cards (v4.5) -- DRIVER LICENSE (OLN+Name+own State/Image) + DRIVER HISTORY (DH-suffix, own StateDH/ImageDH) + DL NAME SEARCH (DGRP, last). SEARCH OPTIONS card dumped.
 #   Firearm:  1 card
 #   Article:  1 card
-#   Boat:     2 cards -- SEARCH OPTIONS (State, Image) + BOAT SEARCH (Reg + Hull)
+#   Boat:     1 card (v4.6) -- BOAT QUERY (Reg + Hull + options folded in)
 #
 # QIDMs (7, 17 combos):
 #   VehicleRegistrationQuery             RVIN, RVEHOUT, RVEH, RCAR
@@ -60,7 +60,7 @@
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
 
 param(
-    [string]$Version = "4.5"
+    [string]$Version = "4.6"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -578,35 +578,28 @@ $nyBundle = [PSCustomObject]@{
 # search identifiers. Layout-only -- same fields/fieldIds/combos, no routing change.
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
+    # Single card (v4.6): SEARCH OPTIONS folded into the plate row -- no separate options card.
     @{
-        id    = 'CARD_VEH_OPT'
-        title = 'SEARCH OPTIONS'
+        id    = 'CARD_VEH'
+        title = 'VEHICLE QUERY'
         rows  = @(
-            @{ id = 'ROW_VEH_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_VEH_OPT_1' }
+            @{ id = 'ROW_VEH_1'; cols = @('4','2','2','2','2'); fields = @(
+                @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN)' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (opt)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (opt)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_VEH_1' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_SEARCH'
-        title = 'VEHICLE SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or VIN)' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (optional)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
-            )}
-            @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
+            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (or search by Plate)' '20' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (opt)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (opt)' '4' 'ROW_VEH_2' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- 2 cards (Options+Search): Plate (RVEH), VIN+State (RVIN), VIN (RCAR)'
+    description  = 'Vehicle queries -- 1 card (v4.6, options folded in): Plate (RVEH), Plate+State OOS (RVEHOUT), VIN+State (RVIN), VIN (RCAR)'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -627,19 +620,19 @@ $perLayout = MakeLayouts @(
         rows  = @(
             # Row 1: primary identifier + search options folded in (OPTIONS card dumped v4.5).
             @{ id = 'ROW_PER_DL_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB + Sex)' '20' 'ROW_PER_DL_1' }
-                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (blank=NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
-                @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DL_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name)' '20' 'ROW_PER_DL_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
+                @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DL_1' }
             )}
             @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '35' 'ROW_PER_DL_2' }
-                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name' '35' 'ROW_PER_DL_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name (Name search)'  '35' 'ROW_PER_DL_2' }
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name (Name search)' '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'MI (opt)'     '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (opt)' '10' 'ROW_PER_DL_2' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'                                                    'ROW_PER_DL_3' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (Name search)'                                      'ROW_PER_DL_3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (Name search)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
         )
     }
@@ -649,21 +642,21 @@ $perLayout = MakeLayouts @(
         rows  = @(
             # Row 1: primary identifier + DH-own State/Image folded in (self-contained card, v4.5).
             @{ id = 'ROW_PER_DH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_PER_DH_1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (DH, blank=NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
-                @{ id = 'ImageIndicatorDH_Input';        node = Sel 'ImageIndicatorDH' 'Image (DH)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or search by Name' '20' 'ROW_PER_DH_1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (DH, leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
+                @{ id = 'ImageIndicatorDH_Input';        node = Sel 'ImageIndicatorDH' 'Image (DH, optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1' }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (DH)'  '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (DH)' '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (DH)'         '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)'     '10' 'ROW_PER_DH_2' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (DH, Name search)'  '35' 'ROW_PER_DH_2' }
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (DH, Name search)' '35' 'ROW_PER_DH_2' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (DH, opt)'         '35' 'ROW_PER_DH_2' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH, opt)'     '10' 'ROW_PER_DH_2' }
             )}
             @{ id = 'ROW_PER_DH_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH)'                                               'ROW_PER_DH_3' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - req. with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
-                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (DH)' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH, Name search)'                                 'ROW_PER_DH_3' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH, Name search)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH, out-of-state)' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
+                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (DH, opt)' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
             )}
             # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
             # field (set[] on DALHOUT/DALLOUT), so BUILD_RULES Section 14's default rule would
@@ -787,29 +780,22 @@ $articleForm = [PSCustomObject]@{
 # split. Layout-only -- same fields/fieldIds/combos, no routing change.
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
+    # Single card (v4.6): SEARCH OPTIONS folded into the identifier row -- no separate options card.
     @{
-        id    = 'CARD_BOA_OPT'
-        title = 'SEARCH OPTIONS'
+        id    = 'CARD_BOA'
+        title = 'BOAT QUERY'
         rows  = @(
-            @{ id = 'ROW_BOA_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_OPT_1' }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_BOA_SEARCH'
-        title = 'BOAT SEARCH'
-        rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_BOA_1'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '10' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_1' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- single card: Reg+State (BVEH), Hull+State (BVIN), Reg (RVEH), Hull (RCAR)'
+    description  = 'Boat queries -- 1 card (v4.6, options folded in): Reg+State (BVEH), Hull+State (BVIN), Reg (RVEH), Hull (RCAR)'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
