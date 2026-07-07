@@ -1,0 +1,78 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person NyNyspinDriverLicenseNameQuery
+Combo: DGRP_any (DGRP_any (auto))
+Date: 2026-07-07 13:50:42
+Result: PASS
+JSON Version: 4.3
+Entity Fingerprint: d550b589f80a58cec07c7c82fde236c6c249b2e177297c51ad0770ad23a436ff
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+@{BirthDateDGRP=1990-01-15; ImageIndicator=Y; NameFirstDGRP=JOHN; NameLastDGRP=DOE; SexCodeDGRP=Male; addressCity=RENO; age=35; nyNyspinTransactionNameDH=DALL; purposeCodeDH=C; requestorDH=X}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWYT6WCPZ2PVQNJFV1Q5NSH9">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>NyNyspinDriverLicenseNameQuery</MessageType>
+            <Id>01KWYT6WCPZ2PVQNJFV1Q5NSH9</Id>
+            <AddressCity>RENO</AddressCity>
+            <SexCode>M</SexCode>
+            <Age>35</Age>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWYT6WCPZ2PVQNJFV1Q5NSH9
+  AddressCity                    RENO
+  SexCode                        M
+  Age                            35
+  BirthDate                      01151990
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KWYT6WCPZ2PVQNJFV1Q5NSH9). kind=any; anyField=; expectedKeyRef=DGRP; firedMessageType=NyNyspinDriverLicenseNameQuery.
+
+RESULT: PASS
