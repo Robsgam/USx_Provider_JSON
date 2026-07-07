@@ -2,9 +2,14 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.0** | Generated: 2026-07-06
+Current: **v4.1** | Generated: 2026-07-07
 
 ---
+
+## v4.1 -- 2026-07-07 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v4.0 -- 2026-07-06 -- Cross-provider hardening rollout (rebuild, not a routine pipeline pass)
 

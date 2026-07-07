@@ -8,12 +8,12 @@
 #   source\New York (NYSPIN_XML).pdf  -- CommSys devdoc (Basic Queries Supported) [CROSS-CHECK]
 #   tools\_build_rms_bundle.ps1       -- RMS bundle + CommSys QRDM (KB specs)
 #
-# LAYOUT (5 QIFs, 7 cards):
-#   Vehicle:  1 card -- VEHICLE QUERY (Plate + VIN + State + Image)
-#   Person:   3 cards -- OPTIONS (State, Image) + DRIVER LICENSE + DRIVER HISTORY
+# LAYOUT (5 QIFs, 9 cards):
+#   Vehicle:  2 cards -- SEARCH OPTIONS (State, Image) + VEHICLE SEARCH (Plate + VIN)
+#   Person:   4 cards -- SEARCH OPTIONS (State, Image) + DRIVER LICENSE + DL NAME SEARCH (DGRP) + DRIVER HISTORY
 #   Firearm:  1 card
 #   Article:  1 card
-#   Boat:     1 card -- BOAT QUERY (Reg + Hull + State + Image + RelatedHit)
+#   Boat:     2 cards -- SEARCH OPTIONS (State, Image) + BOAT SEARCH (Reg + Hull)
 #
 # QIDMs (7, 17 combos):
 #   VehicleRegistrationQuery             RVIN, RVEHOUT, RVEH, RCAR
@@ -60,7 +60,7 @@
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
 
 param(
-    [string]$Version = "4.0"
+    [string]$Version = "4.1"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -230,47 +230,59 @@ $dlQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e2. NyNyspinDriverLicenseNameQuery (DGRP)
+# 1e2. NyNyspinDriverLicenseNameQuery (DGRP) -- own card, full metadata field set (v4.1)
 # XML: NyNyspinDriverLicenseNameQuery v1
 #   DGRP: set[Name], any[AddressCity, AddressStateCode, AddressStreet,
 #         AddressZipCode, Age, BirthDate, MessageContinueKeyCode,
 #         MiscellaneousDescriptiveText, SexCode]
-# Name composite -> set[nameLast, nameFirst], any[nameMiddle, nameSuffix]
-# Uses DL name fields (not DH-suffix) -- shares name pool with DL.
-# autoSelect=FALSE: DGRP (set=2) would otherwise auto-fire whenever Name is
-#   entered and send BEFORE DriverLicenseQuery's deselect could intercept,
-#   producing a dual NyNyspinDriverLicenseNameQuery co-fire (confirmed v2.8
-#   live test). With autoSelect=false the officer manually selects DGRP for a
-#   name-only DMV search; Name+DOB+Sex auto-routes to DL (DLICN) alone.
-# No ImageIndicator or State in this transaction's metadata.
+# v4.1: DGRP broken out to its OWN card (CARD_PER_DGRP "DL NAME SEARCH") with DGRP-suffixed
+#   Name/DOB/Sex fields (full isolation, mirrors the DH-suffix pattern) + all 7 previously
+#   missing optional fields (address block, Age, MessageContinueKeyCode,
+#   MiscellaneousDescriptiveText). No ImageIndicator or State in this transaction's metadata.
+# autoSelect=TRUE (v4.1, was FALSE): the v2.8 dual co-fire happened because DGRP SHARED DL's
+#   Name pool, so any name entry satisfied DGRP's set and it auto-fired alongside DL. Now that
+#   DGRP has its own field pool, filling the DL card no longer satisfies DGRP's set (and vice
+#   versa) -- the co-fire cause is gone, so DGRP can auto-fire on its own card's Name with no
+#   manual-select step and no queriesToDeselect. LIVE-VERIFY on the v4.1 capture: DGRP fires
+#   alone from its card, and does NOT co-fire when only the DL card is used.
+# ⚠️ Age (maxLen=1), MessageContinueKeyCode (pagination token), MiscellaneousDescriptiveText
+#   (200-char free text) built as-is per metadata -- flagged for a possible future remove/keep
+#   call (user reserves that decision).
 # =====================================================================
 $dgrpQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name        = 'BirthDate'
             rule        = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size        = 10; sourceField = @('BirthDate'); targetField = 'BirthDate'
+            size        = 10; sourceField = @('BirthDateDGRP'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{
             name        = 'Name'
             rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
-            size        = 35; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
+            size        = 35; sourceField = @('NameLastDGRP','NameFirstDGRP','nameMiddleDGRP','nameSuffixDGRP'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDGRP'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'AddressStreet';                size = 20;  sourceField = @('addressStreet');                targetField = 'AddressStreet' }
+        [PSCustomObject]@{ name = 'AddressCity';                  size = 15;  sourceField = @('addressCity');                  targetField = 'AddressCity' }
+        [PSCustomObject]@{ name = 'AddressStateCode';             size = 2;   sourceField = @('addressStateCode');             targetField = 'AddressStateCode'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'AddressZipCode';               size = 5;   sourceField = @('addressZipCode');               targetField = 'AddressZipCode' }
+        [PSCustomObject]@{ name = 'Age';                          size = 1;   sourceField = @('age');                          targetField = 'Age' }
+        [PSCustomObject]@{ name = 'MessageContinueKeyCode';       size = 30;  sourceField = @('messageContinueKeyCode');       targetField = 'MessageContinueKeyCode' }
+        [PSCustomObject]@{ name = 'MiscellaneousDescriptiveText'; size = 200; sourceField = @('miscellaneousDescriptiveText'); targetField = 'MiscellaneousDescriptiveText' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('nameMiddle','nameSuffix','BirthDate','SexCode') }
+            requirements          = [PSCustomObject]@{ set = @('NameLastDGRP','NameFirstDGRP'); any = @('nameMiddleDGRP','nameSuffixDGRP','BirthDateDGRP','SexCodeDGRP','addressStreet','addressCity','addressStateCode','addressZipCode','age','messageContinueKeyCode','miscellaneousDescriptiveText') }
             primaryFieldReference = 'Name'
             keyReference          = 'DGRP'
             state                 = 'In/Out'
         }
     )
-    description     = 'Mapping for NyNyspinDriverLicenseNameQuery -- DGRP (Name search). Manual select (autoSelect=false) so it does not co-fire with DL on Name+DOB+Sex.'
+    description     = 'Mapping for NyNyspinDriverLicenseNameQuery -- DGRP (Name search). v4.1: own card + DGRP-suffixed fields (isolated from DL/DH pool) + full metadata field set; autoSelect=true (isolation removes the v2.8 co-fire cause).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery'
     type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $false
+    autoSelect      = $true
     provider        = 'NY_NYSPIN_EJUSTICE'
     providerType    = 'Commsys'
     query           = 'NyNyspinDriverLicenseNameQuery'
@@ -411,12 +423,11 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'GunCaliber';      size = 4;  sourceField = @('GunCaliber');      targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';         size = 23; sourceField = @('GunMake');          targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunSerialNumber'; size = 20; sourceField = @('GunSerialNumber');  targetField = 'GunSerialNumber' }
-        [PSCustomObject]@{ name = 'ImageIndicator';  size = 1;  sourceField = @('ImageIndicator');   targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1; sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('GunSerialNumber'); any = @('ImageIndicator','GunMake','GunCaliber','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('GunSerialNumber'); any = @('GunMake','GunCaliber','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'GINQ'
             state                 = 'In/Out'
@@ -491,38 +502,37 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'BoatHullIdNumber';   size = 20; sourceField = @('BoatHullIdNumber');    targetField = 'BoatHullIdNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator';     size = 1;  sourceField = @('ImageIndicator');      targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'RegistrationNumber'; size = 10; sourceField = @('RegistrationNumber');  targetField = 'RegistrationNumber' }
-        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1; sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('RegistrationNumber','RegistrationState')
-                any        = @('ImageIndicator','relatedHitSearchIndicator')
+                any        = @('ImageIndicator')
                 conditions = @(
                     [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BVEH'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber','RegistrationState'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber','RegistrationState'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BVIN'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'RVEH'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'RCAR'
             state                 = 'In/Out'
@@ -643,6 +653,39 @@ $perLayout = MakeLayouts @(
         )
     }
     @{
+        id    = 'CARD_PER_DGRP'
+        title = 'DL NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_DGRP_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLastDGRP_Input';  node = Inp 'NameLastDGRP'  'Last Name'  '35' 'ROW_PER_DGRP_1' }
+                @{ id = 'NameFirstDGRP_Input'; node = Inp 'NameFirstDGRP' 'First Name' '35' 'ROW_PER_DGRP_1' }
+            )}
+            @{ id = 'ROW_PER_DGRP_2'; cols = @('6','6'); fields = @(
+                @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'Middle Name (optional)' '35' 'ROW_PER_DGRP_2' }
+                @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (optional)'      '10' 'ROW_PER_DGRP_2' }
+            )}
+            @{ id = 'ROW_PER_DGRP_3'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDGRP_Input'; node = Dt  'BirthDateDGRP' 'Date of Birth (optional)'                                         'ROW_PER_DGRP_3' }
+                @{ id = 'SexCodeDGRP_Input';   node = Sel 'SexCodeDGRP'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DGRP_3' }
+            )}
+            @{ id = 'ROW_PER_DGRP_4'; cols = @('6','6'); fields = @(
+                @{ id = 'AddressStreet_Input'; node = Inp 'addressStreet' 'Street (optional)' '20' 'ROW_PER_DGRP_4' }
+                @{ id = 'AddressCity_Input';   node = Inp 'addressCity'   'City (optional)'   '15' 'ROW_PER_DGRP_4' }
+            )}
+            @{ id = 'ROW_PER_DGRP_5'; cols = @('6','6'); fields = @(
+                @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_5' }
+                @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (optional)' '5' 'ROW_PER_DGRP_5' }
+            )}
+            @{ id = 'ROW_PER_DGRP_6'; cols = @('6','6'); fields = @(
+                @{ id = 'Age_Input';                    node = Inp 'age' 'Age (optional)' '1' 'ROW_PER_DGRP_6' }
+                @{ id = 'MessageContinueKeyCode_Input'; node = Inp 'messageContinueKeyCode' 'Continuation Key (optional)' '30' 'ROW_PER_DGRP_6' }
+            )}
+            @{ id = 'ROW_PER_DGRP_7'; cols = @('12'); fields = @(
+                @{ id = 'MiscellaneousDescriptiveText_Input'; node = Inp 'miscellaneousDescriptiveText' 'Additional Descriptors (optional)' '200' 'ROW_PER_DGRP_7' }
+            )}
+        )
+    }
+    @{
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY'
         rows  = @(
@@ -684,7 +727,7 @@ $perLayout = MakeLayouts @(
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- OPTIONS + DRIVER LICENSE (OLN+Name, DL+DGRP) + DRIVER HISTORY (DH-suffix)'
+    description  = 'Person queries -- OPTIONS + DRIVER LICENSE (OLN+Name) + DL NAME SEARCH (DGRP, own fields, full metadata set) + DRIVER HISTORY (DH-suffix)'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -706,9 +749,8 @@ $faLayout = MakeLayouts @(
                 @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';         node = Sel 'GunMake'         'Gun Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
                 @{ id = 'GunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_GUN_2' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
@@ -765,10 +807,9 @@ $boaLayout = MakeLayouts @(
         id    = 'CARD_BOA_OPT'
         title = 'SEARCH OPTIONS'
         rows  = @(
-            @{ id = 'ROW_BOA_OPT_1'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_BOA_OPT_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_OPT_1' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_BOA_OPT_1' }
             )}
         )
     }

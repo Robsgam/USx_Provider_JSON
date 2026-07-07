@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE_v4.0.json
-  Generated: 2026-07-06 19:23
+  Source: NY_NYSPIN_EJUSTICE_v4.1.json
+  Generated: 2026-07-07 11:09
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: NY_NYSPIN_EJUSTICE_v4.0
+ POST-BUILD VERIFICATION: NY_NYSPIN_EJUSTICE_v4.1
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 25 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, nameMiddle, nameSuffix, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, SexCodeDH, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH, GunCaliber, GunMake, GunSerialNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 38 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, nameMiddle, nameSuffix, BirthDateDGRP, NameLastDGRP, NameFirstDGRP, nameMiddleDGRP, nameSuffixDGRP, SexCodeDGRP, addressStreet, addressCity, addressStateCode, addressZipCode, age, messageContinueKeyCode, miscellaneousDescriptiveText, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, SexCodeDH, purposeCodeDH, requestorDH, nyNyspinTransactionNameDH, GunCaliber, GunMake, GunSerialNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -46,7 +46,7 @@ POST-BUILD VERIFICATION
   [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (33) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (46) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -61,7 +61,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (36 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (49 fields scanned)
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

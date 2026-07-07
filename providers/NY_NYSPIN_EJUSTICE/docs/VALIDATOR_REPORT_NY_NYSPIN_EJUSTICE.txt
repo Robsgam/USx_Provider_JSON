@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE_v4.0.json
-  Generated: 2026-07-06 19:23
+  Source: NY_NYSPIN_EJUSTICE_v4.1.json
+  Generated: 2026-07-07 11:09
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -27,13 +27,12 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 22 fieldIds
-  [PASS] QIF 'ENTITY_Firearm' ImageIndicator default='Y' for Firearm
-  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 35 fieldIds
+  [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
   [PASS] QIF 'ENTITY_Article' ImageIndicator default='Y' for Article
   [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds
   [PASS] QIF 'ENTITY_Boat' ImageIndicator default='Y' for Boat
-  [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
+  [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
 
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 4 combos
@@ -44,7 +43,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' -> Person : 3 attrs, 1 combos
+  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' -> Person : 10 attrs, 1 combos
+  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' attr 'AddressStateCode' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' -> Person : 9 attrs, 4 combos
@@ -52,11 +52,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' ImageIndicator size=1
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_GunQuery' -> Firearm : 5 attrs, 1 combos
-  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_GunQuery' ImageIndicator size=1
+  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_GunQuery' -> Firearm : 4 attrs, 1 combos
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_ArticleSingleQuery' -> Article : 4 attrs, 1 combos
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_ArticleSingleQuery' ImageIndicator size=1
-  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' -> Boat : 5 attrs, 4 combos
+  [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' -> Boat : 4 attrs, 4 combos
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' ImageIndicator size=1
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
@@ -64,8 +63,9 @@ VALIDATOR RESULTS
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
-  [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
+  [PASS] Person: 3 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
          NY_NYSPIN_EJUSTICE_DriverLicenseQuery (query=DriverLicenseQuery, deselect=)
+         NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery (query=NyNyspinDriverLicenseNameQuery, deselect=)
          NY_NYSPIN_EJUSTICE_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
   [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
   [PASS] Person : 3 QIDMs, 1 QIF(s)
@@ -105,7 +105,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NY_NYSPIN_EJUSTICE_BoatQuery' combo 'RCAR': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 81 PASS / 0 FAIL / 0 WARN
+  RESULTS: 80 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.
