@@ -2,23 +2,9 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
   "provider": "NY_NYSPIN_EJUSTICE",
-  "version": "4.0",
+  "version": "4.4",
   "note": "Paste as scope; render each entity form; __usxScopePicklists(scope, '<Entity>'). One download per entity.",
   "fields": [
-    {
-      "entity": "Vehicle",
-      "fieldId": "LicensePlateTypeCode",
-      "label": "Plate Type (optional)",
-      "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
-      "codeTypeSource": "NCIC"
-    },
-    {
-      "entity": "Vehicle",
-      "fieldId": "VehicleMakeCode",
-      "label": "Vehicle Make (optional)",
-      "codeTypeCategory": "",
-      "codeTypeSource": ""
-    },
     {
       "entity": "Vehicle",
       "fieldId": "RegistrationState",
@@ -32,6 +18,20 @@ var scope = {
       "label": "Image (optional)",
       "codeTypeCategory": "YES_NO_UNKNOWN",
       "codeTypeSource": "NCIC"
+    },
+    {
+      "entity": "Vehicle",
+      "fieldId": "LicensePlateTypeCode",
+      "label": "Plate Type (optional)",
+      "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+      "codeTypeSource": "NCIC"
+    },
+    {
+      "entity": "Vehicle",
+      "fieldId": "VehicleMakeCode",
+      "label": "Vehicle Make (optional)",
+      "codeTypeCategory": "",
+      "codeTypeSource": ""
     },
     {
       "entity": "Person",
@@ -50,21 +50,35 @@ var scope = {
     {
       "entity": "Person",
       "fieldId": "SexCode",
-      "label": "Sex",
+      "label": "Sex (required with Name)",
       "codeTypeCategory": "",
       "codeTypeSource": ""
     },
     {
       "entity": "Person",
       "fieldId": "SexCodeDH",
-      "label": "Sex (DH)",
+      "label": "Sex (DH) - required with Name",
+      "codeTypeCategory": "",
+      "codeTypeSource": ""
+    },
+    {
+      "entity": "Person",
+      "fieldId": "SexCodeDGRP",
+      "label": "Sex (optional)",
+      "codeTypeCategory": "",
+      "codeTypeSource": ""
+    },
+    {
+      "entity": "Person",
+      "fieldId": "addressStateCode",
+      "label": "State (optional)",
       "codeTypeCategory": "",
       "codeTypeSource": ""
     },
     {
       "entity": "Firearm",
       "fieldId": "GunMake",
-      "label": "Make (optional)",
+      "label": "Gun Make (optional)",
       "codeTypeCategory": "NCIC_FIREARM_MAKE",
       "codeTypeSource": "NCIC"
     },
@@ -77,13 +91,6 @@ var scope = {
     },
     {
       "entity": "Firearm",
-      "fieldId": "ImageIndicator",
-      "label": "Image (optional)",
-      "codeTypeCategory": "YES_NO_UNKNOWN",
-      "codeTypeSource": "NCIC"
-    },
-    {
-      "entity": "Firearm",
       "fieldId": "relatedHitSearchIndicator",
       "label": "Related Hit Search (optional)",
       "codeTypeCategory": "YES_NO_UNKNOWN",
@@ -92,7 +99,7 @@ var scope = {
     {
       "entity": "Article",
       "fieldId": "ArticleTypeCode",
-      "label": "Article Type",
+      "label": "Article Type (required)",
       "codeTypeCategory": "NCIC_ARTICLE_TYPE",
       "codeTypeSource": "CA_CLETS"
     },
@@ -123,14 +130,7 @@ var scope = {
       "label": "Image (optional)",
       "codeTypeCategory": "YES_NO_UNKNOWN",
       "codeTypeSource": "NCIC"
-    },
-    {
-      "entity": "Boat",
-      "fieldId": "relatedHitSearchIndicator",
-      "label": "Related Hit Search (optional)",
-      "codeTypeCategory": "YES_NO_UNKNOWN",
-      "codeTypeSource": "NCIC"
     }
   ]
 };
-console.log('%c[USx-SCOPE] scope loaded: NY_NYSPIN_EJUSTICE v4.0 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: NY_NYSPIN_EJUSTICE v4.4 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

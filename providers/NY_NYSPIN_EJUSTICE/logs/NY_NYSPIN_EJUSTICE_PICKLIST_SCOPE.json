@@ -1,22 +1,8 @@
 {
   "provider": "NY_NYSPIN_EJUSTICE",
-  "version": "4.0",
+  "version": "4.4",
   "note": "Paste as scope; render each entity form; __usxScopePicklists(scope, '<Entity>'). One download per entity.",
   "fields": [
-    {
-      "entity": "Vehicle",
-      "fieldId": "LicensePlateTypeCode",
-      "label": "Plate Type (optional)",
-      "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
-      "codeTypeSource": "NCIC"
-    },
-    {
-      "entity": "Vehicle",
-      "fieldId": "VehicleMakeCode",
-      "label": "Vehicle Make (optional)",
-      "codeTypeCategory": "",
-      "codeTypeSource": ""
-    },
     {
       "entity": "Vehicle",
       "fieldId": "RegistrationState",
@@ -30,6 +16,20 @@
       "label": "Image (optional)",
       "codeTypeCategory": "YES_NO_UNKNOWN",
       "codeTypeSource": "NCIC"
+    },
+    {
+      "entity": "Vehicle",
+      "fieldId": "LicensePlateTypeCode",
+      "label": "Plate Type (optional)",
+      "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+      "codeTypeSource": "NCIC"
+    },
+    {
+      "entity": "Vehicle",
+      "fieldId": "VehicleMakeCode",
+      "label": "Vehicle Make (optional)",
+      "codeTypeCategory": "",
+      "codeTypeSource": ""
     },
     {
       "entity": "Person",
@@ -48,21 +48,35 @@
     {
       "entity": "Person",
       "fieldId": "SexCode",
-      "label": "Sex",
+      "label": "Sex (required with Name)",
       "codeTypeCategory": "",
       "codeTypeSource": ""
     },
     {
       "entity": "Person",
       "fieldId": "SexCodeDH",
-      "label": "Sex (DH)",
+      "label": "Sex (DH) - required with Name",
+      "codeTypeCategory": "",
+      "codeTypeSource": ""
+    },
+    {
+      "entity": "Person",
+      "fieldId": "SexCodeDGRP",
+      "label": "Sex (optional)",
+      "codeTypeCategory": "",
+      "codeTypeSource": ""
+    },
+    {
+      "entity": "Person",
+      "fieldId": "addressStateCode",
+      "label": "State (optional)",
       "codeTypeCategory": "",
       "codeTypeSource": ""
     },
     {
       "entity": "Firearm",
       "fieldId": "GunMake",
-      "label": "Make (optional)",
+      "label": "Gun Make (optional)",
       "codeTypeCategory": "NCIC_FIREARM_MAKE",
       "codeTypeSource": "NCIC"
     },
@@ -75,13 +89,6 @@
     },
     {
       "entity": "Firearm",
-      "fieldId": "ImageIndicator",
-      "label": "Image (optional)",
-      "codeTypeCategory": "YES_NO_UNKNOWN",
-      "codeTypeSource": "NCIC"
-    },
-    {
-      "entity": "Firearm",
       "fieldId": "relatedHitSearchIndicator",
       "label": "Related Hit Search (optional)",
       "codeTypeCategory": "YES_NO_UNKNOWN",
@@ -90,7 +97,7 @@
     {
       "entity": "Article",
       "fieldId": "ArticleTypeCode",
-      "label": "Article Type",
+      "label": "Article Type (required)",
       "codeTypeCategory": "NCIC_ARTICLE_TYPE",
       "codeTypeSource": "CA_CLETS"
     },
@@ -119,13 +126,6 @@
       "entity": "Boat",
       "fieldId": "ImageIndicator",
       "label": "Image (optional)",
-      "codeTypeCategory": "YES_NO_UNKNOWN",
-      "codeTypeSource": "NCIC"
-    },
-    {
-      "entity": "Boat",
-      "fieldId": "relatedHitSearchIndicator",
-      "label": "Related Hit Search (optional)",
       "codeTypeCategory": "YES_NO_UNKNOWN",
       "codeTypeSource": "NCIC"
     }
