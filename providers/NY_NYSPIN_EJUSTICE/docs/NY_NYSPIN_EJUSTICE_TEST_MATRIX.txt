@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE v4.2 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.3 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-07
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -14,7 +14,7 @@ Vehicle (2 cards, 8 fields):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
 
-Person (4 cards, 31 fields):
+Person (4 cards, 32 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
     RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
   CARD_PER_DL (DRIVER LICENSE):
@@ -28,7 +28,7 @@ Person (4 cards, 31 fields):
     ROW 3: BirthDateDGRP [FormDate], age [Inp 1], SexCodeDGRP [Sel SEX]
     ROW 4: addressStreet [Inp 20], addressCity [Inp 15]
     ROW 5: addressStateCode [Sel STATE], addressZipCode [Inp 5]
-    ROW 6: miscellaneousDescriptiveText [Inp 200]
+    ROW 6: messageContinueKeyCode [Inp 30], miscellaneousDescriptiveText [Inp 200]
   CARD_PER_DH (DRIVER HISTORY):
     ROW 1: OperatorLicenseNumberDH [Inp 20]
     ROW 2: NameLastDH [Inp 35], NameFirstDH [Inp 35]
@@ -198,4 +198,4 @@ COMBO COVERAGE (17/17):
   ArticleSingleQuery: 1/1 -- T43(AINQ)
   BoatQuery: 4/4 -- T31(RCAR+Hull), T33(BVIN+BVIN), T35(BVEH+BVEH), T37(RVEH+RVEH)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.2.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.3.json

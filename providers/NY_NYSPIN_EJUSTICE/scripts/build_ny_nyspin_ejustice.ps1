@@ -60,7 +60,7 @@
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
 
 param(
-    [string]$Version = "4.2"
+    [string]$Version = "4.3"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -267,11 +267,12 @@ $dgrpQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'AddressStateCode';             size = 2;   sourceField = @('addressStateCode');             targetField = 'AddressStateCode'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'AddressZipCode';               size = 5;   sourceField = @('addressZipCode');               targetField = 'AddressZipCode' }
         [PSCustomObject]@{ name = 'Age';                          size = 1;   sourceField = @('age');                          targetField = 'Age' }
+        [PSCustomObject]@{ name = 'MessageContinueKeyCode';       size = 30;  sourceField = @('messageContinueKeyCode');       targetField = 'MessageContinueKeyCode' }
         [PSCustomObject]@{ name = 'MiscellaneousDescriptiveText'; size = 200; sourceField = @('miscellaneousDescriptiveText'); targetField = 'MiscellaneousDescriptiveText' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NameLastDGRP','NameFirstDGRP'); any = @('nameMiddleDGRP','nameSuffixDGRP','BirthDateDGRP','SexCodeDGRP','addressStreet','addressCity','addressStateCode','addressZipCode','age','miscellaneousDescriptiveText') }
+            requirements          = [PSCustomObject]@{ set = @('NameLastDGRP','NameFirstDGRP'); any = @('nameMiddleDGRP','nameSuffixDGRP','BirthDateDGRP','SexCodeDGRP','addressStreet','addressCity','addressStateCode','addressZipCode','age','messageContinueKeyCode','miscellaneousDescriptiveText') }
             primaryFieldReference = 'Name'
             keyReference          = 'DGRP'
             state                 = 'In/Out'
@@ -676,8 +677,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_5' }
                 @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (optional)' '5' 'ROW_PER_DGRP_5' }
             )}
-            @{ id = 'ROW_PER_DGRP_7'; cols = @('12'); fields = @(
-                @{ id = 'MiscellaneousDescriptiveText_Input'; node = Inp 'miscellaneousDescriptiveText' 'Additional Descriptors (optional)' '200' 'ROW_PER_DGRP_7' }
+            @{ id = 'ROW_PER_DGRP_6'; cols = @('4','8'); fields = @(
+                @{ id = 'MessageContinueKeyCode_Input';      node = Inp 'messageContinueKeyCode' 'Continuation Key (optional)' '30' 'ROW_PER_DGRP_6' }
+                @{ id = 'MiscellaneousDescriptiveText_Input'; node = Inp 'miscellaneousDescriptiveText' 'Additional Descriptors (optional)' '200' 'ROW_PER_DGRP_6' }
             )}
         )
     }

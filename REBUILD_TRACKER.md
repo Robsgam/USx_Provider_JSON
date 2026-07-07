@@ -36,7 +36,7 @@ Status table instead (this table's Notes column is intentionally terse).
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v4.8 |  | 61P/0F/0W | 0 | in-scope, single-JSON |
 | 2 | HI_HCJDC_OFML | v4.7 |  | 66P/0F/0W | 0 | in-scope, single-JSON |
-| 3 | NY_NYSPIN_EJUSTICE | v4.2 |  | 80P/0F/0W/0LIM | 0 | in-scope, single-JSON, testing parked |
+| 3 | NY_NYSPIN_EJUSTICE | v4.3 |  | 80P/0F/0W/0LIM | 0 | in-scope, single-JSON, testing parked |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | out of scope |
 | 5 | FL_FCIC | v7.1 |  | 92P/0F/0W | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v3.13 | 83P/0F/0W | 83P/0F/0W | 0 | out of scope |
