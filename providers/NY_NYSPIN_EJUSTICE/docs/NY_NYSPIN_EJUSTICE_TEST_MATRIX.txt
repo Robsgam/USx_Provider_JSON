@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE v4.4 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-07
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -14,29 +14,21 @@ Vehicle (2 cards, 8 fields):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
 
-Person (4 cards, 32 fields):
-  CARD_PER_OPT (SEARCH OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+Person (3 cards, 34 fields):
   CARD_PER_DL (DRIVER LICENSE):
-    ROW 1: OperatorLicenseNumber [Inp 20]
-    ROW 2: NameLast [Inp 35], NameFirst [Inp 35]
-    ROW 3: nameMiddle [Inp 35], nameSuffix [Inp 10]
-    ROW 4: BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NameLast [Inp 35], NameFirst [Inp 35], nameMiddle [Inp 35], nameSuffix [Inp 10]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
   CARD_PER_DH (DRIVER HISTORY):
-    ROW 1: OperatorLicenseNumberDH [Inp 20]
-    ROW 2: NameLastDH [Inp 35], NameFirstDH [Inp 35]
-    ROW 3: nameMiddleDH [Inp 35], nameSuffixDH [Inp 10]
-    ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
-    ROW 5: purposeCodeDH [Inp C, 1]
-    ROW 6: requestorDH [Inp X, 35]
-    ROW 7: nyNyspinTransactionNameDH [Inp DALL, 4]
+    ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], ImageIndicatorDH [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NameLastDH [Inp 35], NameFirstDH [Inp 35], nameMiddleDH [Inp 35], nameSuffixDH [Inp 10]
+    ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX], purposeCodeDH [Inp C, 1], nyNyspinTransactionNameDH [Inp DALL, 4]
+    ROW 4: requestorDH [Inp X, 35]
   CARD_PER_DGRP (DL NAME SEARCH):
-    ROW 1: NameLastDGRP [Inp 35], NameFirstDGRP [Inp 35]
-    ROW 2: nameMiddleDGRP [Inp 35], nameSuffixDGRP [Inp 10]
-    ROW 3: BirthDateDGRP [FormDate], age [Inp 1], SexCodeDGRP [Sel SEX]
-    ROW 4: addressStreet [Inp 20], addressCity [Inp 15]
-    ROW 5: addressStateCode [Sel STATE], addressZipCode [Inp 5]
-    ROW 6: messageContinueKeyCode [Inp 30], miscellaneousDescriptiveText [Inp 200]
+    ROW 1: NameLastDGRP [Inp 35], NameFirstDGRP [Inp 35], nameMiddleDGRP [Inp 35], nameSuffixDGRP [Inp 10]
+    ROW 2: BirthDateDGRP [FormDate], age [Inp 1], SexCodeDGRP [Sel SEX]
+    ROW 3: addressStreet [Inp 20], addressCity [Inp 15], addressStateCode [Sel STATE], addressZipCode [Inp 5]
+    ROW 4: messageContinueKeyCode [Inp 30], miscellaneousDescriptiveText [Inp 200]
 
 Firearm (1 card, 4 fields):
   CARD_GUN (FIREARM QUERY):
@@ -73,100 +65,100 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (20 tests -- 4 cards, 7 combos)
+ENTITY 1: VEHICLE (10 tests -- 2 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      DLIC+DLIC          OperatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (DLIC)
- 2  Person      DLIC+DLIC          + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
- 3  Person      DLICN+DLICN        BirthDate=01/15/1990, NameLast=DOE, N... [    ]
-              Expected: DriverLicenseQuery fires (DLICN)
- 4  Person      DLICN+DLICN        + ImageIndicator, nameMiddle, nameSuffix [    ]
-              Expected: any[] fields present in XML output.
- 5  Person      DGRP+DGRP          NameLastDGRP=DOE, NameFirstDGRP=JOHN [    ]
-              Expected: NyNyspinDriverLicenseNameQuery fires (DGRP)
- 6  Person      DGRP+DGRP          + nameMiddleDGRP, nameSuffixDGRP, BirthDateDGRP, SexCodeDGRP [    ]
-              Expected: any[] fields present in XML output.
- 7  Person      DALL+OUT+State     OperatorLicenseNumberDH=D999888777, p... [    ]
-              Expected: DriverHistoryQuery fires (DALLOUT)
- 8  Person      DALL+OUT+State     + ImageIndicator, nyNyspinTransactionNameDH [    ]
-              Expected: any[] fields present in XML output.
- 9  Person      DALL+OLN           OperatorLicenseNumberDH=D999888777 [    ]
-              Expected: DriverHistoryQuery fires (DALL)
-10  Person      DALL+OLN           + ImageIndicator, nyNyspinTransactionNameDH [    ]
-              Expected: any[] fields present in XML output.
-11  Person      DALH+OUT+State     BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
-              Expected: DriverHistoryQuery fires (DALHOUT)
-12  Person      DALH+OUT+State     + ImageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
-              Expected: any[] fields present in XML output.
-13  Person      DALH+DOB           BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
-              Expected: DriverHistoryQuery fires (DALH)
-14  Person      DALH+DOB           + ImageIndicator, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
-              Expected: any[] fields present in XML output.
-15  Person      Guardrail: DLIC>DLICN  OperatorLicenseNumber=D999888777, Bir... [    ]
-              Expected: DriverLicenseQuery fires (DLIC). DOB+LastName+FirstName+SexCode absent from XML.
-16  Person      Guardrail: DALLOUT>DALHOUT  OperatorLicenseNumberDH=D999888777, B... [    ]
-              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH+purposeCodeDH+requestorDH+RegistrationState absent from XML.
-17  Person      Guardrail: DALHOUT>DALH  RegistrationState=GA, BirthDateDH=01/... [    ]
-              Expected: DriverHistoryQuery fires (DALHOUT). DOB+LastName+FirstName+SexCodeDH absent from XML.
-18  Person      Guardrail: DALLOUT>DALH  OperatorLicenseNumberDH=D999888777, B... [    ]
-              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH absent from XML.
-19  Person      Guardrail: DALHOUT>DALL  RegistrationState=GA             [    ]
-              Expected: DriverHistoryQuery fires (DALHOUT). OLN absent from XML.
-20  Person      Deselect: DH deselects DL.            [    ]
-              Fill both query fields. Check deselect behavior.
-
-ENTITY 2: VEHICLE (10 tests -- 2 cards, 4 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-21  Vehicle     RVEH+RVEH          LicensePlateNumber=TEST123       [    ]
+ 1  Vehicle     RVEH+RVEH          LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (RVEH)
-22  Vehicle     RVEH+RVEH          + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
+ 2  Vehicle     RVEH+RVEH          + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
               Expected: any[] fields present in XML output.
-23  Vehicle     RVEHOU+RVEHOUT+State  LicensePlateNumber=TEST123, Registrat... [    ]
+ 3  Vehicle     RVEHOU+RVEHOUT+State  LicensePlateNumber=TEST123, Registrat... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOUT)
-24  Vehicle     RVEHOU+RVEHOUT+State  + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
+ 4  Vehicle     RVEHOU+RVEHOUT+State  + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
               Expected: any[] fields present in XML output.
-25  Vehicle     RCAR+VIN           VehicleIdentificationNumber=1HGCM8263... [    ]
+ 5  Vehicle     RCAR+VIN           VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RCAR)
-26  Vehicle     RCAR+VIN           + ImageIndicator                [    ]
+ 6  Vehicle     RCAR+VIN           + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-27  Vehicle     RVIN+VIN+State     VehicleIdentificationNumber=1HGCM8263... [    ]
+ 7  Vehicle     RVIN+VIN+State     VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RVIN)
-28  Vehicle     RVIN+VIN+State     + ImageIndicator, VehicleMakeCode, vehicleYear [    ]
+ 8  Vehicle     RVIN+VIN+State     + ImageIndicator, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-29  Vehicle     Guardrail: RVEHOUT>RVIN  LicensePlateNumber=TEST123, VehicleId... [    ]
+ 9  Vehicle     Guardrail: RVEHOUT>RVIN  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOUT). VIN+RegistrationState absent from XML.
-30  Vehicle     Guardrail: RVEHOUT>RCAR  LicensePlateNumber=TEST123, VehicleId... [    ]
+10  Vehicle     Guardrail: RVEHOUT>RCAR  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOUT). VIN absent from XML.
 
-ENTITY 3: BOAT (10 tests -- 2 cards, 4 combos)
+ENTITY 2: BOAT (10 tests -- 2 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-31  Boat        RCAR+Hull          BoatHullIdNumber=FL1234AB56H7    [    ]
+11  Boat        RCAR+Hull          BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (RCAR)
-32  Boat        RCAR+Hull          + ImageIndicator                [    ]
+12  Boat        RCAR+Hull          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-33  Boat        BVIN+BVIN+State    BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+13  Boat        BVIN+BVIN+State    BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BVIN)
-34  Boat        BVIN+BVIN+State    + ImageIndicator                [    ]
+14  Boat        BVIN+BVIN+State    + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-35  Boat        BVEH+BVEH+State    RegistrationNumber=FL1234AB, Registra... [    ]
+15  Boat        BVEH+BVEH+State    RegistrationNumber=FL1234AB, Registra... [    ]
               Expected: BoatQuery fires (BVEH)
-36  Boat        BVEH+BVEH+State    + ImageIndicator                [    ]
+16  Boat        BVEH+BVEH+State    + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-37  Boat        RVEH+RVEH          RegistrationNumber=FL1234AB      [    ]
+17  Boat        RVEH+RVEH          RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (RVEH)
-38  Boat        RVEH+RVEH          + ImageIndicator                [    ]
+18  Boat        RVEH+RVEH          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-39  Boat        Guardrail: BVIN>BVEH  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+19  Boat        Guardrail: BVIN>BVEH  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BVIN). Reg+RegistrationState absent from XML.
-40  Boat        Guardrail: BVIN>RVEH  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+20  Boat        Guardrail: BVIN>RVEH  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BVIN). Reg absent from XML.
+
+ENTITY 3: PERSON (20 tests -- 3 cards, 7 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+21  Person      DLIC+DLIC          OperatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (DLIC)
+22  Person      DLIC+DLIC          + ImageIndicator, RegistrationState [    ]
+              Expected: any[] fields present in XML output.
+23  Person      DLICN+DLICN        BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverLicenseQuery fires (DLICN)
+24  Person      DLICN+DLICN        + ImageIndicator, RegistrationState, nameMiddle, nameSuffix [    ]
+              Expected: any[] fields present in XML output.
+25  Person      DGRP+DGRP          NameLastDGRP=DOE, NameFirstDGRP=JOHN [    ]
+              Expected: NyNyspinDriverLicenseNameQuery fires (DGRP)
+26  Person      DGRP+DGRP          + nameMiddleDGRP, nameSuffixDGRP, BirthDateDGRP, SexCodeDGRP [    ]
+              Expected: any[] fields present in XML output.
+27  Person      DALL+OUT           OperatorLicenseNumberDH=D999888777, p... [    ]
+              Expected: DriverHistoryQuery fires (DALLOUT)
+28  Person      DALL+OUT           + ImageIndicatorDH, nyNyspinTransactionNameDH [    ]
+              Expected: any[] fields present in XML output.
+29  Person      DALL+OLN           OperatorLicenseNumberDH=D999888777 [    ]
+              Expected: DriverHistoryQuery fires (DALL)
+30  Person      DALL+OLN           + ImageIndicatorDH, nyNyspinTransactionNameDH [    ]
+              Expected: any[] fields present in XML output.
+31  Person      DALH+OUT           BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
+              Expected: DriverHistoryQuery fires (DALHOUT)
+32  Person      DALH+OUT           + ImageIndicatorDH, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
+              Expected: any[] fields present in XML output.
+33  Person      DALH+DOB           BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
+              Expected: DriverHistoryQuery fires (DALH)
+34  Person      DALH+DOB           + ImageIndicatorDH, nameMiddleDH, nameSuffixDH, nyNyspinTransactionNameDH [    ]
+              Expected: any[] fields present in XML output.
+35  Person      Guardrail: DLIC>DLICN  OperatorLicenseNumber=D999888777, Bir... [    ]
+              Expected: DriverLicenseQuery fires (DLIC). DOB+LastName+FirstName+SexCode absent from XML.
+36  Person      Guardrail: DALLOUT>DALHOUT  OperatorLicenseNumberDH=D999888777, B... [    ]
+              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH+purposeCodeDH+requestorDH+RegistrationStateDH absent from XML.
+37  Person      Guardrail: DALHOUT>DALH  BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
+              Expected: DriverHistoryQuery fires (DALHOUT). DOB+LastName+FirstName+SexCodeDH absent from XML.
+38  Person      Guardrail: DALLOUT>DALH  OperatorLicenseNumberDH=D999888777, B... [    ]
+              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH absent from XML.
+39  Person      Guardrail: DALHOUT>DALL                                   [    ]
+              Expected: DriverHistoryQuery fires (DALHOUT). OLN absent from XML.
+40  Person      Deselect: DH deselects DL.            [    ]
+              Fill both query fields. Check deselect behavior.
 
 ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
@@ -190,12 +182,12 @@ ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 TOTAL: 44 tests
 
 COMBO COVERAGE (17/17):
-  VehicleRegistrationQuery: 4/4 -- T21(RVEH+RVEH), T23(RVEHOU+RVEHOUT), T25(RCAR+VIN), T27(RVIN+VIN)
-  DriverLicenseQuery: 2/2 -- T1(DLIC+DLIC), T3(DLICN+DLICN)
-  NyNyspinDriverLicenseNameQuery: 1/1 -- T5(DGRP)
-  DriverHistoryQuery: 4/4 -- T7(DALL+OUT), T9(DALL+OLN), T11(DALH+OUT), T13(DALH+DOB)
+  VehicleRegistrationQuery: 4/4 -- T1(RVEH+RVEH), T3(RVEHOU+RVEHOUT), T5(RCAR+VIN), T7(RVIN+VIN)
+  DriverLicenseQuery: 2/2 -- T21(DLIC+DLIC), T23(DLICN+DLICN)
+  NyNyspinDriverLicenseNameQuery: 1/1 -- T25(DGRP)
+  DriverHistoryQuery: 4/4 -- T27(DALL+OUT), T29(DALL+OLN), T31(DALH+OUT), T33(DALH+DOB)
   GunQuery: 1/1 -- T41(GINQ)
   ArticleSingleQuery: 1/1 -- T43(AINQ)
-  BoatQuery: 4/4 -- T31(RCAR+Hull), T33(BVIN+BVIN), T35(BVEH+BVEH), T37(RVEH+RVEH)
+  BoatQuery: 4/4 -- T11(RCAR+Hull), T13(BVIN+BVIN), T15(BVEH+BVEH), T17(RVEH+RVEH)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.4.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.5.json
