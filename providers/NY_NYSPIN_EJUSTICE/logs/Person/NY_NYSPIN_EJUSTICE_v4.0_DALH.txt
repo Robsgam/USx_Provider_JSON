@@ -1,0 +1,78 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
+Combo: DALH (DALH (auto))
+Date: 2026-07-07 10:08:09
+Result: PASS
+JSON Version: 4.0
+Entity Fingerprint: 4a3c3f22dfcc3beeed5d4e67860ba489aba6320f1fd8acba8963ac1e4f145581
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","NameFirstDH":"JOHN","NameLastDH":"DOE","SexCodeDH":"Male","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C","requestorDH":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWYE7RRW0TBM6B0PA7W6DW6M">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KWYE7RRW0TBM6B0PA7W6DW6M</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <NyNyspinTransactionName>DALL</NyNyspinTransactionName>
+            <SexCode>M</SexCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWYE7RRW0TBM6B0PA7W6DW6M
+  ImageIndicator                 Y
+  NyNyspinTransactionName        DALL
+  SexCode                        M
+  BirthDate                      01151990
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KWYE7RRW0TBM6B0PA7W6DW6M). kind=combo; anyField=; expectedKeyRef=DALH; firedMessageType=DriverHistoryQuery.
+
+RESULT: PASS
