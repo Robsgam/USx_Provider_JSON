@@ -917,6 +917,24 @@ if ($Provider) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  ADVISORY: picklist-scope reminders -- NON-BLOCKING. A [NOTE] is not a PASS/FAIL/WARN and
+#  does not affect the verdict or exit code. Reminds when a provider still owes its one-time
+#  tenant picklist capture, or a build introduced a new code category the capture doesn't cover.
+# ══════════════════════════════════════════════════════════════════════════════
+$pickNotes = @()
+foreach ($pd in $providers) {
+    $jsonPick = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $pd.Name
+    if (-not $jsonPick) { continue }
+    $n = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_picklist_scope.ps1" -Path $jsonPick 2>&1 | Where-Object { $_ -match '^\[NOTE\]' }
+    if ($n) { $pickNotes += $n }
+}
+if ($pickNotes.Count -gt 0) {
+    Out ""
+    Out "  PICKLIST SCOPE (advisory -- does not affect the verdict):"
+    $pickNotes | ForEach-Object { Out "    $($_.ToString().Trim())" }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  VERDICT
 # ══════════════════════════════════════════════════════════════════════════════
 Out ""

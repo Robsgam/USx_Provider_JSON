@@ -437,6 +437,15 @@ TOOLS
     values against this file once it exists.
     Usage: .\tools\import_picklists.ps1 -Path <file|dir>
 
+  tools/audit_picklist_scope.ps1
+    ADVISORY picklist-scope reminder (never blocks; emits [NOTE], always exits 0). Reminds when
+    a provider still owes its one-time tenant picklist capture (no TENANT_PICKLISTS.json) or when
+    a build introduced a new non-null code category the capture doesn't cover. Only real
+    codeTypeCategory dropdowns are compared (attributeTypeId STATE/SEX/VEHICLE_MAKE capture as
+    null and are tenant-stable). Required categories are scoped to the ENTITIES bundle (not RMS).
+    enforce.ps1 surfaces the NOTE without affecting the verdict/exit code.
+    Usage: .\tools\audit_picklist_scope.ps1 -Path <provider.json>
+
   tools/import_captured_tests.ps1
     Ingests browser-captured test records (usx_captured_*.json from the extension) into
     post_test.ps1. Each record carries provider/entity/query/combo/tier/expectedKeyRef +
