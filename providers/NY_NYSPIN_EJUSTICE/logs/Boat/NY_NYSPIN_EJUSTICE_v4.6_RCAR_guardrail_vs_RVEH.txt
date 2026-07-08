@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Boat BoatQuery
+Combo: RCAR_guardrail_vs_RVEH (RCAR_guardrail_vs_RVEH (auto))
+Date: 2026-07-07 21:52:20
+Result: PASS
+JSON Version: 4.6
+Entity Fingerprint: b22950fe403a1aa428880c34434370ffc132a1a765470dab5fea39eff6cb3f9a
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"Y","RegistrationNumber":"FL1234AB"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWZPS2CZ6QAXRYNHW3SS4HRE">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KWZPS2CZ6QAXRYNHW3SS4HRE</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>Y</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWZPS2CZ6QAXRYNHW3SS4HRE
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 Y
+
+NOTES
+-----
+Automated capture (txId 01KWZPS2CZ6QAXRYNHW3SS4HRE). kind=guardrail; anyField=; expectedKeyRef=RCAR; firedMessageType=BoatQuery.
+
+RESULT: PASS

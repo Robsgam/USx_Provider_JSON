@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Firearm GunQuery
+Combo: GINQ (GINQ (auto))
+Date: 2026-07-07 21:52:28
+Result: PASS
+JSON Version: 4.6
+Entity Fingerprint: 0c5fe97b1d21cba9df48f28d4dfd289bdc7c0e0582c8bc2f1c10f3cd9a860afe
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunSerialNumber":"GUN12345","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KWZPNW75XK7F8J2A29PZGBKH">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KWZPNW75XK7F8J2A29PZGBKH</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KWZPNW75XK7F8J2A29PZGBKH
+  RelatedHitSearchIndicator      Y
+  GunSerialNumber                GUN12345
+
+NOTES
+-----
+Automated capture (txId 01KWZPNW75XK7F8J2A29PZGBKH). kind=combo; anyField=; expectedKeyRef=GINQ; firedMessageType=GunQuery.
+
+RESULT: PASS
