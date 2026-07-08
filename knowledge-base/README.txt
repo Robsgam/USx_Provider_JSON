@@ -446,6 +446,16 @@ TOOLS
     enforce.ps1 surfaces the NOTE without affecting the verdict/exit code.
     Usage: .\tools\audit_picklist_scope.ps1 -Path <provider.json>
 
+  tools/audit_metadata_field_coverage.ps1
+    ADVISORY "form behind the metadata" detector (emits [FIELD-GAP]/[OK], always exits 0). Per
+    built query, diffs the authoritative metadata field set (METADATA_REFERENCE.txt "METADATA
+    FIELDS") against the fields wired into that query's QIDM (attributes[].targetField). A metadata
+    field with no matching attribute is an under-exposure candidate (the class that hid on NY DGRP:
+    10 metadata fields, 3 wired). On-demand only -- NOT gated (over-reports deliberate portfolio-wide
+    skips like State2-5 multi-state, Requestor/attention, RelatedHitSearchIndicator); classify each
+    candidate against the devdoc before acting.
+    Usage: .\tools\audit_metadata_field_coverage.ps1 -Path <provider.json>
+
   tools/import_captured_tests.ps1
     Ingests browser-captured test records (usx_captured_*.json from the extension) into
     post_test.ps1. Each record carries provider/entity/query/combo/tier/expectedKeyRef +
