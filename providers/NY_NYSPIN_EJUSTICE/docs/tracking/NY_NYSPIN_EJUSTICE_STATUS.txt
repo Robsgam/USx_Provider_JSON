@@ -1,0 +1,101 @@
+NY_NYSPIN_EJUSTICE -- BUILD STATUS
+====================================
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
+Last updated    : 2026-07-07
+Current: v4.6 | 80P/0F/0W/0LIM | Updated 2026-07-07
+Provider: NY_NYSPIN_EJUSTICE
+Phase: Single JSON (multi-card)
+
+CURRENT VERSION
+---------------
+v3.0  81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
+CAD audit: 68 PASS / 0 FAIL / 0 WARN / 71 INFO
+Simulation: 17/17 combos FIRE, 30/30 test conductor PASS
+Live test: ALL combos PENDING -- full matrix restarted at Test 1 for v3.0 (rebuild restarts testing)
+Import: re-import v3.0 to USx Provider Tenant required before live testing
+
+ARCHITECTURE
+------------
+Entities: Vehicle, Person, Firearm, Article, Boat (5 QIFs)
+Layout: Multi-card (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1) = 7 cards
+QIDMs:    VehicleRegistrationQuery (RVIN/RVEH/RVEHOUT/RCAR) -- 4 combos (RVEHOUT = plate OOS)
+          DriverLicenseQuery (DLICN/DLIC) -- 2 combos, autoSelect=true, no deselect
+          NyNyspinDriverLicenseNameQuery (DGRP) -- 1 combo, autoSelect=FALSE (manual select; avoids co-fire), DL Name Search
+          DriverHistoryQuery (DALH/DALL/DALHOUT/DALLOUT) -- 4 combos, autoSelect=true, queriesToDeselect=DL (OUT = OOS)
+                     State conditions (v3.0): in-state IN(NY,null), OOS NOT_EQUALS NY -- checkbox unlit for OOS until Requestor entered
+                     NyNyspinTransactionName visible FormInput, default DALL (officer can override, e.g. DLIC); any[]+defaults all 4 DH combos
+          GunQuery (GINQ) -- 1 combo
+          ArticleSingleQuery (AINQ) -- 1 combo
+          BoatQuery (BVEH/BVIN/RVEH/RCAR) -- 4 combos
+RMS:      Vehicle + Person QIDMs, both autoSelect=true
+Total combos: 17 CommSys + 2 RMS
+
+Standard patterns:
+  - ImageIndicator on ALL entities (Person=Y, others=N) + CAD defaults on all 17 combos
+  - RelatedHitSearchIndicator on Gun/Article/Boat (Y default) + CAD defaults
+  - One-directional queriesToDeselect (DH deselects DL, DL has no deselect)
+  - DH-suffix fieldIds (operatorLicenseNumberDH, nameLastDH, nameFirstDH, etc.)
+  - NCIC state pattern (single visible RegistrationState, codeTypeProvider=NCIC)
+  - PlateType=PC, PlateYear=2026 defaults + CAD defaults on RVEH
+  - VehicleMakeCode as FormSelect (VEHICLE_MAKE/NCIC dropdown)
+  - All fieldIds camelCase
+
+KNOWN CONSTRAINTS
+-----------------
+LIMITATION #30: State has NO initialValue (blank=NY in-state, filled=OOS routing)
+
+TEST MATRIX
+-----------
+See docs/NY_NYSPIN_EJUSTICE_TEST_MATRIX.txt (auto-generated, 17 combos, 30 tests).
+v2.4 re-import needed -- tenant has v1.1; pending live tests: DGRP, DALHOUT/DALLOUT, RVEHOUT,
+NyNyspinTransactionName (default DALL + officer override e.g. DLIC).
+
+BUILD LOG  (newest first)
+  v2.4  2026-06-09  build_ny_nyspin_ejustice.ps1 (NyNyspinTransactionName field)
+    81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
+    Added NyNyspinTransactionName as visible FormInput on DH card (fieldId
+    nyNyspinTransactionNameDH, maxLength 4, initialValue=DALL). Added to any[] +
+    defaults[]=DALL on all 4 DH combos. Per Visible-First Mandate (BUILD_RULES Section 14) --
+    exposes the driver-history transaction selector instead of omitting it. 7 QIDMs, 17 combos.
+    Pending live test.
+
+  v2.3  2026-06-08  build_ny_nyspin_ejustice.ps1 (RVEHOUT plate-OOS combo)
+    81 PASS / 0 FAIL / 0 WARN / 0 LIM / 17 FIRE / 0 SKIP
+    Added RVEHOUT (Vehicle plate OOS Choice combo, set=[licensePlateNumber, registrationState]).
+    RVEH narrowed to in-state only; OOS plate now routes to RVEHOUT (Choice-set OOS, LIMIT #36).
+    7 QIDMs, 17 combos. Pending live test.
+
+  v2.2  2026-06-08  build_ny_nyspin_ejustice.ps1 (DH OOS combos)
+    80 PASS / 0 FAIL / 0 WARN / 0 LIM / 16 FIRE / 0 SKIP
+    Added DALHOUT/DALLOUT (DriverHistory OOS combos). 7 QIDMs, 16 combos. Pending live test.
+
+  v2.1  2026-05-22  build_ny_nyspin_ejustice.ps1 (layout tightening + DGRP)
+    78 PASS / 0 FAIL / 0 WARN / 0 LIM / 14 FIRE / 0 SKIP
+    Added DGRP QIDM (NyNyspinDriverLicenseNameQuery, DL Name Search, 1 combo).
+    Layout tightened: Vehicle 3â†’1, Person 5â†’3, Boat 3â†’1 (13â†’7 cards).
+    VehicleMakeCode corrected to FormSelect (VEHICLE_MAKE/NCIC dropdown).
+    7 QIDMs, 14 combos.
+
+  v2.0  2026-05-22  build_ny_nyspin_ejustice.ps1 (single script)
+    74 PASS / 0 FAIL / 0 WARN / 0 LIM / 13 FIRE / 0 SKIP
+    CAD: 64P/0F/0W/67I
+    BASE/MC merge, one-directional deselect, CAD defaults all 13 combos,
+    camelCase fix (nameMiddleDH/nameSuffixDH), VehicleMakeCode Selâ†’Inp,
+    RelatedHitSearchIndicator on Gun/Article/Boat.
+
+  v1.6  2026-05-18  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
+    BASE: 74P/0F/0W | MC: 74P/0F/0W
+    Routine rebuild -- shared tooling improvements, no functional changes.
+
+  v1.1  2026-04-30  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
+    BASE: 74P/0F/0W/5LIM | MC: 74P/0F/0W/5LIM
+    Fixes: ImageIndicator all entities, AUTH keyRef, RMS autoSelect, Person Image FormSelect
+
+  v1.0  2026-04-24  build_ny_nyspin_ejustice.ps1 / build_ny_nyspin_ejustice_mc.ps1
+    BASE: 44P/0F, 15/15 live test PASS | MC: 44P/0F, 19/19 live test PASS
+
+LIVE TEST RESULTS -- MC (post_test.ps1)
+--------------------------------------------------
+  #     Date        Entity      Combo                Result    Notes
+  ---   ----------  ----------  -------------------  --------  -----
+  (none yet -- v4.6 USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v4.6/)
