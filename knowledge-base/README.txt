@@ -447,13 +447,16 @@ TOOLS
     Usage: .\tools\audit_picklist_scope.ps1 -Path <provider.json>
 
   tools/audit_metadata_field_coverage.ps1
-    ADVISORY "form behind the metadata" detector (emits [FIELD-GAP]/[OK], always exits 0). Per
-    built query, diffs the authoritative metadata field set (METADATA_REFERENCE.txt "METADATA
-    FIELDS") against the fields wired into that query's QIDM (attributes[].targetField). A metadata
-    field with no matching attribute is an under-exposure candidate (the class that hid on NY DGRP:
-    10 metadata fields, 3 wired). On-demand only -- NOT gated (over-reports deliberate portfolio-wide
-    skips like State2-5 multi-state, Requestor/attention, RelatedHitSearchIndicator); classify each
-    candidate against the devdoc before acting.
+    ADVISORY "form behind the metadata" detector (emits [FIELD-GAP]/[OK], always exits 0). Flags a
+    metadata field only when: (1) it's in the Set/Any of a BUILT combo (source XML +
+    Resolve-XmlKeyRefBuild from _metadata_keyref_match.ps1, so unbuilt/orphan-combo fields don't
+    count), (2) it's not wired into the query's QIDM (attributes[].targetField), and (3) it's not on
+    the curated $SKIP list of optional/non-search modifiers (Requestor/Attention, RelatedHitSearch,
+    State2-5, VINSequenceNumber, MessageContinueKeyCode, ExpandedNameSearchCode, MessageKeyModifier).
+    This is the class that hid on NY DGRP. On-demand, NOT gated -- remaining flags are genuine
+    candidates for a human keep/expose call (a survivor may still be a deliberate provider-specific
+    skip, e.g. HI VehicleMakeCode). Do NOT global-skip-list a real search field (would hide a gap on
+    another provider) -- provider-specific skips belong in that provider's ACCEPTED_DIVERGENCES.
     Usage: .\tools\audit_metadata_field_coverage.ps1 -Path <provider.json>
 
   tools/import_captured_tests.ps1
