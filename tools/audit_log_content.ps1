@@ -73,7 +73,12 @@ foreach ($p in $parsed) {
     if ($t.kind -eq 'guardrail') {
         $idRe = '(?i)(Number$|^operatorLicense|^nameLast|Serial|Hull|^registrationNumber)'
         $gIds = @($t.fills) | Where-Object { $_ -and $_.fieldId -match $idRe }
-        $winner = $plan.tests | Where-Object { $_.kind -eq 'combo' -and $_.comboKeyRef -eq $t.expectedKeyRef } | Select-Object -First 1
+        # Scope the winner lookup to the guardrail test's OWN entity: some providers reuse a keyRef
+        # across entities (NY Boat & Vehicle both use RVEH/RCAR), so an un-scoped first-match picks
+        # the wrong entity's combo (Vehicle RCAR=VIN) and mis-labels the real winner id (Boat
+        # RCAR=Hull) as a "losing identifier on the wire" -- a false GUARDRAIL WIRE FAIL.
+        $winner = $plan.tests | Where-Object { $_.kind -eq 'combo' -and $_.comboKeyRef -eq $t.expectedKeyRef -and $_.entity -eq $t.entity } | Select-Object -First 1
+        if (-not $winner) { $winner = $plan.tests | Where-Object { $_.kind -eq 'combo' -and $_.comboKeyRef -eq $t.expectedKeyRef } | Select-Object -First 1 }
         $wIdNames = @()
         if ($winner) { $wIdNames = @(@($winner.fills) | Where-Object { $_ -and $_.fieldId -match $idRe } | ForEach-Object { $_.fieldId.ToUpper() }) }
         $xmlBody = if ($p.Content -match '(?s)COMMSYS XML\s*-+\s*(.*?)(COMMSYS XML RESPONSE|RMS QUERY|FIELD ANALYSIS)') { $Matches[1] } else { $p.Content }
