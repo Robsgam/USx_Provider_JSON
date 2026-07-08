@@ -383,10 +383,26 @@ if (Test-Path $sqvrPath) {
     $newMarkerEsc = [regex]::Escape($newMarker)
     $alreadySatisfied = $false
 
+    # Entity-scope the marker search (v4.6 fix): some providers reuse a keyRef across entities --
+    # e.g. NY Boat and Vehicle both use RVEH/RCAR. Un-scoped, Strategy 1 flips the FIRST match
+    # (whichever entity's section comes first) and leaves the real one PENDING, forcing a manual
+    # reconcile every rebuild. Tag each SQVR line with its owning entity from the section headers
+    # ("N. <Query> -- <Entity> Entity") and skip lines outside this test's -Entity. If the entity
+    # never appears as a section header, fall back to whole-file search (unchanged behavior).
+    $hdrPattern = '^\s*\d+[a-z]?\.\s+.*--\s+(\w+)\s+Entity'
+    $lineEnt = New-Object 'string[]' $sqvrLines.Count
+    $curEnt = $null
+    for ($e = 0; $e -lt $sqvrLines.Count; $e++) {
+        if ($sqvrLines[$e] -match $hdrPattern) { $curEnt = $Matches[1] }
+        $lineEnt[$e] = $curEnt
+    }
+    $entityScoped = ($lineEnt -contains $Entity)
+
     # Strategy 1: Find "keyReference: <Combo>" line, then look UP for the
     #             description line carrying a marker and replace ONLY that one.
     $keyRefIdx = -1
     for ($i = 0; $i -lt $sqvrLines.Count; $i++) {
+        if ($entityScoped -and $lineEnt[$i] -ne $Entity) { continue }
         if ($sqvrLines[$i] -match "^\s*keyReference:\s*${comboEsc}(\s|$)") {
             $keyRefIdx = $i
             break
@@ -415,6 +431,7 @@ if (Test-Path $sqvrPath) {
         $comboVariants = $comboVariants | Select-Object -Unique
 
         for ($i = 0; $i -lt $sqvrLines.Count; $i++) {
+            if ($entityScoped -and $lineEnt[$i] -ne $Entity) { continue }
             foreach ($cv in $comboVariants) {
                 if ($sqvrLines[$i] -match "^\s+${cv}\s+--.*${markerPattern}") {
                     if ($sqvrLines[$i] -match $newMarkerEsc) { $alreadySatisfied = $true }
@@ -430,6 +447,7 @@ if (Test-Path $sqvrPath) {
     #             (e.g., user passes "RMS co-fire" and the line says "  RMS co-fire [PENDING]")
     if (-not $sqvrUpdated -and -not $alreadySatisfied) {
         for ($i = 0; $i -lt $sqvrLines.Count; $i++) {
+            if ($entityScoped -and $lineEnt[$i] -ne $Entity) { continue }
             if ($sqvrLines[$i] -match $comboEsc -and $sqvrLines[$i] -match $markerPattern) {
                 if ($sqvrLines[$i] -match $newMarkerEsc) { $alreadySatisfied = $true }
                 else { $sqvrLines[$i] = $sqvrLines[$i] -replace $markerPattern, $newMarker; $sqvrUpdated = $true }
