@@ -13,9 +13,12 @@
   usx_captured_batch_labeled*.json files piled up (each __usxBulkFetch re-downloads the
   FULL accumulated capture set, and Chrome appends " (N)" rather than overwrite an existing
   same-named file) -- a freshly started watcher would never have picked any of them up. On
-  startup, sweep for pre-existing matches: import only the LARGEST (byte size is a safe proxy
-  for "most complete accumulated snapshot" since later fetches are supersets of earlier ones),
-  discard the rest as redundant duplicates.
+  startup, sweep for pre-existing matches. The largest-only rule applies ONLY to cumulative
+  `usx_captured_batch*` files (later fetches are supersets of earlier ones) -- keep the largest,
+  discard smaller batches. Individual ULID-named popup captures are DISTINCT combos, NOT
+  duplicates, so import EACH (import_captured_tests dedupes by transactionId). Empty files
+  (content '[]') are skipped entirely -- a stale empty batch_labeled.json must never displace or
+  dedupe-out real individual captures (this discarded good popup captures before the 2026-07-09 fix).
 #>
 param([switch]$NoCommit, [switch]$Once)
 # -Once: exit after the first successful import. Run the watcher as a supervised background
@@ -98,19 +101,40 @@ foreach ($pl in $prePicklists) {
     if ($Once -and $s) { Write-Host "[WATCH-ONCE] INGESTED $($pl.Name) -- $("$s".Trim())" -ForegroundColor Green; exit 0 }
 }
 $preExisting = @($preExisting | Where-Object { $_.Name -notlike 'usx_picklists_*' })
+# Drop empty capture files (content '[]' ~= 2-4 bytes) -- a click-capture/Fetch that grabbed
+# nothing. They hold no records and must NEVER displace or dedupe-out real captures (an empty
+# batch_labeled.json was discarding good individual popup captures as its "duplicates").
+foreach ($e in @($preExisting | Where-Object { $_.Length -le 4 })) {
+    Remove-Item $e.FullName -Force -ErrorAction SilentlyContinue
+    Write-Host "[WATCH] skipped empty capture: $($e.Name) ($($e.Length) bytes)" -ForegroundColor DarkYellow
+}
+$preExisting = @($preExisting | Where-Object { $_.Length -gt 4 })
 if ($preExisting.Count -gt 0) {
-    Write-Host "[WATCH] startup sweep: found $($preExisting.Count) pre-existing capture file(s) in Downloads." -ForegroundColor Magenta
-    $newest = $preExisting | Sort-Object Length -Descending | Select-Object -First 1
-    Write-Host "[WATCH] importing largest/most-complete: $($newest.Name) ($($newest.Length) bytes)" -ForegroundColor Magenta
-    $sweepSummary = Import-CaptureFile $newest.FullName $newest.Name
-    $discard = $preExisting | Where-Object { $_.FullName -ne $newest.FullName }
-    foreach ($d in $discard) {
-        Remove-Item $d.FullName -Force -ErrorAction SilentlyContinue
-        Write-Host "[WATCH] discarded redundant duplicate: $($d.Name) ($($d.Length) bytes)" -ForegroundColor DarkYellow
+    Write-Host "[WATCH] startup sweep: found $($preExisting.Count) non-empty capture file(s) in Downloads." -ForegroundColor Magenta
+    # batch_labeled files are CUMULATIVE (each bulk fetch re-downloads the whole accumulated batch)
+    # -> keep only the largest. Individual ULID-named popup captures are DISTINCT combos -> import
+    # each (import_captured_tests dedupes by transactionId, so any true overlap collapses safely).
+    $batches     = @($preExisting | Where-Object { $_.Name -like 'usx_captured_batch*' })
+    $individuals = @($preExisting | Where-Object { $_.Name -notlike 'usx_captured_batch*' })
+    $toImport = @()
+    if ($batches.Count -gt 0) {
+        $largestBatch = $batches | Sort-Object Length -Descending | Select-Object -First 1
+        $toImport += $largestBatch
+        foreach ($d in @($batches | Where-Object { $_.FullName -ne $largestBatch.FullName })) {
+            Remove-Item $d.FullName -Force -ErrorAction SilentlyContinue
+            Write-Host "[WATCH] discarded redundant cumulative batch: $($d.Name) ($($d.Length) bytes)" -ForegroundColor DarkYellow
+        }
+    }
+    $toImport += $individuals
+    $sweepSummary = $null
+    foreach ($f in $toImport) {
+        Write-Host "[WATCH] importing: $($f.Name) ($($f.Length) bytes)" -ForegroundColor Magenta
+        $s = Import-CaptureFile $f.FullName $f.Name
+        if ($s) { $sweepSummary = $s }
     }
     Write-Host "[WATCH] startup sweep complete.`n" -ForegroundColor Magenta
     if ($Once -and $sweepSummary) {
-        Write-Host "[WATCH-ONCE] INGESTED $($newest.Name) -- $("$sweepSummary".Trim())" -ForegroundColor Green
+        Write-Host "[WATCH-ONCE] INGESTED $($toImport.Count) file(s) -- last: $("$sweepSummary".Trim())" -ForegroundColor Green
         exit 0
     }
 }
