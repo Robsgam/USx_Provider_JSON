@@ -1,0 +1,8 @@
+# TX_TLETS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4 / 4d). Each non-comment line records a
+# set/any divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+#
+
+BoatQuery | BQRegistrationNumber | registrationState | promoted-to-set | Intentional out-of-state boat routing: BQ combos are state='Out', so destination State is required (set[]) to force the OOS boat query; metadata lists State in any[]. Pre-existing since v3.x (Boat unchanged by v3.9 Attention conversion); surfaced by CHECK 4d on rebuild. | metadata-vs-devdoc | 2026-06-22
+BoatQuery | BQBoatHullIdNumber | registrationState | promoted-to-set | Intentional out-of-state boat routing: BQ combos are state='Out', so destination State is required (set[]) to force the OOS boat query; metadata lists State in any[]. Pre-existing since v3.x (Boat unchanged by v3.9 Attention conversion); surfaced by CHECK 4d on rebuild. | metadata-vs-devdoc | 2026-06-22
