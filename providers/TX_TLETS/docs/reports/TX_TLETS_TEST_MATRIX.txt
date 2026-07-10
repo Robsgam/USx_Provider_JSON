@@ -1,6 +1,6 @@
 TX_TLETS v4.0 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-09
+Generated: 2026-07-10
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -126,7 +126,7 @@ ENTITY 2: VEHICLE (17 tests -- 1 card, 7 combos)
               Expected: VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
 29  Vehicle     VIN+VIN            + RegistrationState, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-30  Vehicle     DPSI+StickerNumber  stickerNumber=TEST               [    ]
+30  Vehicle     DPSI+StickerNumber  stickerNumber=STK1234567         [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
 31  Vehicle     DPSI+StickerNumber  + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
