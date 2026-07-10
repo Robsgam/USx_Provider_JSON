@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: TX_TLETS Firearm GunQuery
+Combo: QGGunSerialNumber (QGGunSerialNumber (auto))
+Date: 2026-07-10 10:54:23
+Result: PASS
+JSON Version: 4.0
+Entity Fingerprint: 9b342ab5221cd21b7be5b1d4ab35a4256d0b6f68b4f9a05c2a2b89b141366889
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunSerialNumber":"GUN12345","ImageIndicator":"N","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KX67XY07Y6YZGREG32A0A0WG">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KX67XY07Y6YZGREG32A0A0WG</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KX67XY07Y6YZGREG32A0A0WG
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  GunSerialNumber                GUN12345
+
+NOTES
+-----
+Automated capture (txId 01KX67XY07Y6YZGREG32A0A0WG). kind=combo; anyField=; expectedKeyRef=QGGunSerialNumber; firedMessageType=GunQuery.
+
+RESULT: PASS

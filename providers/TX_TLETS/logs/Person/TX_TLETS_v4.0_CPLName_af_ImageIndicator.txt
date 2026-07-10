@@ -1,0 +1,88 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverLicenseQuery
+Combo: CPLName_af_ImageIndicator (CPLName_af_ImageIndicator (auto))
+Date: 2026-07-10 10:54:27
+Result: PASS
+JSON Version: 4.0
+Entity Fingerprint: 309477dbcc662a500113051b9a9007f0fc5cd8ec3b387e860744e4b43a303341
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Texas","purposeCodeDH":"C","reasonCode":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KX67TF31S7HMJDX4EWGD1DZR">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KX67TF31S7HMJDX4EWGD1DZR</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>TX</State>
+            <ReasonCode>C</ReasonCode>
+            <Name>DOE,JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "registrationStateAttrId": "69509558547"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KX67TF31S7HMJDX4EWGD1DZR
+  ImageIndicator                 N
+  State                          TX
+  ReasonCode                     C
+  Name                           DOE,JOHN
+
+NOTES
+-----
+Automated capture (txId 01KX67TF31S7HMJDX4EWGD1DZR). kind=any-field; anyField=ImageIndicator; expectedKeyRef=CPLName; firedMessageType=DriverLicenseQuery.
+
+RESULT: PASS

@@ -1,0 +1,78 @@
+================================================================
+TEST LOG: TX_TLETS Firearm GunQuery
+Combo: QGGunSerialNumber_any (QGGunSerialNumber_any (auto))
+Date: 2026-07-10 10:54:22
+Result: PASS
+JSON Version: 4.0
+Entity Fingerprint: 9b342ab5221cd21b7be5b1d4ab35a4256d0b6f68b4f9a05c2a2b89b141366889
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunCaliber":"11","GunMake":"IMI","GunSerialNumber":"GUN12345","ImageIndicator":"N","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KX67YGTHZS41VDPDPYF0WZJ9">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KX67YGTHZS41VDPDPYF0WZJ9</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunCaliber>11</GunCaliber>
+            <GunMake>IMI</GunMake>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KX67YGTHZS41VDPDPYF0WZJ9
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  GunSerialNumber                GUN12345
+  GunCaliber                     11
+  GunMake                        IMI
+
+NOTES
+-----
+Automated capture (txId 01KX67YGTHZS41VDPDPYF0WZJ9). kind=any; anyField=; expectedKeyRef=QGGunSerialNumber; firedMessageType=GunQuery.
+
+RESULT: PASS

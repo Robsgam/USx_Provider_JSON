@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: TX_TLETS Article ArticleSingleQuery
+Combo: QANCICNumber (QANCICNumber (auto))
+Date: 2026-07-10 10:54:20
+Result: PASS
+JSON Version: 4.0
+Entity Fingerprint: 8baa268186809b42212f5e2e9281aea878f099a183cd2c0f6cf82a9bc8c7a4a5
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","NCICNumber":"X123456789","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KX67ZNXNNGR1V84D66WR037A">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01KX67ZNXNNGR1V84D66WR037A</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KX67ZNXNNGR1V84D66WR037A
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  NCICNumber                     X123456789
+
+NOTES
+-----
+Automated capture (txId 01KX67ZNXNNGR1V84D66WR037A). kind=combo; anyField=; expectedKeyRef=QANCICNumber; firedMessageType=ArticleSingleQuery.
+
+RESULT: PASS
