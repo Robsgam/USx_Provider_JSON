@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Vehicle VehicleRegistrationQuery
 Combo: RVEH (RVEH (auto))
-Date: 2026-07-09 13:27:23
+Date: 2026-07-10 10:30:22
 Result: PASS
 JSON Version: 4.6
 Entity Fingerprint: db3ae6a0a46e6fcad1ad0def4765066a9702513c079ff322c4c39dc3340f0cbe
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-@{ImageIndicator=Y; LicensePlateNumber=test123; LicensePlateTypeCode=PC; LicensePlateYear=2026}
+{"ImageIndicator":"Y","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX3YJ2NZA4E9NWHFEA5E8T81">
+    <api:Transaction id="01KX66F7QND29V9PYAS3N886SH">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KX3YJ2NZA4E9NWHFEA5E8T81</Id>
+            <Id>01KX66F7QND29V9PYAS3N886SH</Id>
             <ImageIndicator>Y</ImageIndicator>
             <LicensePlateYear>2026</LicensePlateYear>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
@@ -58,7 +58,7 @@ Request:
 {
   "elasticQuery": {
     "vehicle": {
-      "tag": "test123"
+      "tag": "TEST123"
     }
   },
   "from": 0,
@@ -75,7 +75,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX3YJ2NZA4E9NWHFEA5E8T81
+  Id                             01KX66F7QND29V9PYAS3N886SH
   ImageIndicator                 Y
   LicensePlateYear               2026
   LicensePlateTypeCode           PC
@@ -83,6 +83,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KX3YJ2NZA4E9NWHFEA5E8T81). kind=combo; anyField=; expectedKeyRef=RVEH; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KX66F7QND29V9PYAS3N886SH). kind=combo; anyField=; expectedKeyRef=RVEH; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS
