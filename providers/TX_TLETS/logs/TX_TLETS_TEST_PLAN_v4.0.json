@@ -47,6 +47,10 @@
         {
           "fieldId": "LicensePlateYear",
           "value": "2026"
+        },
+        {
+          "fieldId": "financialResponsibilityType",
+          "value": "Y"
         }
       ]
     },
@@ -66,6 +70,10 @@
         {
           "fieldId": "LicensePlateYear",
           "value": "2026"
+        },
+        {
+          "fieldId": "financialResponsibilityType",
+          "value": "Y"
         },
         {
           "fieldId": "RegistrationState",
@@ -131,10 +139,16 @@
       "expectedKeyRef": "VINVehicleIdentificationNumber",
       "kind": "combo",
       "tier": "Full",
-      "fills": {
-        "fieldId": "VehicleIdentificationNumber",
-        "value": "1HGCM82633A123456"
-      }
+      "fills": [
+        {
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "financialResponsibilityType",
+          "value": "Y"
+        }
+      ]
     },
     {
       "n": 6,
@@ -149,6 +163,10 @@
         {
           "fieldId": "VehicleIdentificationNumber",
           "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "financialResponsibilityType",
+          "value": "Y"
         },
         {
           "fieldId": "vehicleYear",
@@ -168,6 +186,10 @@
         {
           "fieldId": "VehicleIdentificationNumber",
           "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "financialResponsibilityType",
+          "value": "Y"
         },
         {
           "fieldId": "RegistrationState",
@@ -404,7 +426,7 @@
       "entity": "Vehicle",
       "query": "VehicleInsuranceRegistrationQuery",
       "comboKeyRef": null,
-      "expectedKeyRef": "RQLicensePlateNumber",
+      "expectedKeyRef": "REGLicensePlateNumber",
       "kind": "guardrail",
       "tier": "Full",
       "fills": [
@@ -415,6 +437,10 @@
         {
           "fieldId": "VehicleIdentificationNumber",
           "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "financialResponsibilityType",
+          "value": "Y"
         }
       ],
       "guardrailLoser": "VINVehicleIdentificationNumber"
