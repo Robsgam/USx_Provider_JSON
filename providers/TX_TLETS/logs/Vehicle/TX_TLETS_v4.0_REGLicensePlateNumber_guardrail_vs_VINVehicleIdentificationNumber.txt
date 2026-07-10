@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
-Combo: RQVehicleIdentificationNumber_af_vehicleYear (RQVehicleIdentificationNumber_af_vehicleYear (auto))
-Date: 2026-07-10 11:21:35
+Combo: REGLicensePlateNumber_guardrail_vs_VINVehicleIdentificationNumber (REGLicensePlateNumber_guardrail_vs_VINVehicleIdentificationNumber (auto))
+Date: 2026-07-10 11:21:34
 Result: PASS
 JSON Version: 4.0
 Entity Fingerprint: 6c2337f236624a600357da597aa6dd60afc3f39d12fe9f78f55df188373cb399
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleYear":"2023"}
+{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","VehicleIdentificationNumber":"1HGCM82633A123456","financialResponsibilityType":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX69M4FHFP92N1XH0J7WVDS8">
+    <api:Transaction id="01KX69MCWA4WQ8SXEHRVNVZVSY">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,12 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KX69M4FHFP92N1XH0J7WVDS8</Id>
-            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <Id>01KX69MCWA4WQ8SXEHRVNVZVSY</Id>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
+            <LicensePlateYear>2026</LicensePlateYear>
             <State>TX</State>
-            <VehicleYear>2023</VehicleYear>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -60,6 +62,7 @@ Request:
       "registrationStateAttrIds": [
         69509558547
       ],
+      "tag": "TEST123",
       "vinNumber": "1HGCM82633A123456"
     }
   },
@@ -77,13 +80,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX69M4FHFP92N1XH0J7WVDS8
-  VehicleIdentificationNumber    1HGCM82633A123456
+  Id                             01KX69MCWA4WQ8SXEHRVNVZVSY
+  FinancialResponsibilityType    Y
+  LicensePlateYear               2026
   State                          TX
-  VehicleYear                    2023
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01KX69M4FHFP92N1XH0J7WVDS8). kind=any-field; anyField=vehicleYear; expectedKeyRef=RQVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
+Automated capture (txId 01KX69MCWA4WQ8SXEHRVNVZVSY). kind=guardrail; anyField=; expectedKeyRef=REGLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
 
 RESULT: PASS

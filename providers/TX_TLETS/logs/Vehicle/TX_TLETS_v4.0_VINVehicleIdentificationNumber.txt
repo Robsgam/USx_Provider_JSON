@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: VINVehicleIdentificationNumber (VINVehicleIdentificationNumber (auto))
-Date: 2026-07-10 10:54:31
+Date: 2026-07-10 11:21:40
 Result: PASS
 JSON Version: 4.0
 Entity Fingerprint: 6c2337f236624a600357da597aa6dd60afc3f39d12fe9f78f55df188373cb399
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","VehicleIdentificationNumber":"1HGCM82633A123456"}
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","VehicleIdentificationNumber":"1HGCM82633A123456","financialResponsibilityType":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX67PFSFBFK179BTKPSB5CJK">
+    <api:Transaction id="01KX69JQ8ZT40GQTTZ23GF3P53">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,8 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KX67PFSFBFK179BTKPSB5CJK</Id>
+            <Id>01KX69JQ8ZT40GQTTZ23GF3P53</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
             <State>TX</State>
           </Request>
         </Transaction>
@@ -76,12 +77,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX67PFSFBFK179BTKPSB5CJK
+  Id                             01KX69JQ8ZT40GQTTZ23GF3P53
   VehicleIdentificationNumber    1HGCM82633A123456
+  FinancialResponsibilityType    Y
   State                          TX
 
 NOTES
 -----
-Automated capture (txId 01KX67PFSFBFK179BTKPSB5CJK). kind=combo; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
+Automated capture (txId 01KX69JQ8ZT40GQTTZ23GF3P53). kind=combo; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
 
 RESULT: PASS

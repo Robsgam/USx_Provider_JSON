@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: VINVehicleIdentificationNumber_any (VINVehicleIdentificationNumber_any (auto))
-Date: 2026-07-10 10:54:31
+Date: 2026-07-10 11:21:39
 Result: PASS
 JSON Version: 4.0
 Entity Fingerprint: 6c2337f236624a600357da597aa6dd60afc3f39d12fe9f78f55df188373cb399
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleYear":"2023"}
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","financialResponsibilityType":"Y","vehicleYear":"2023"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX67PQ9GDAQFX73MGT90J8CW">
+    <api:Transaction id="01KX69JZJBGDRNS9XQVTXNRFAW">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,8 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KX67PQ9GDAQFX73MGT90J8CW</Id>
+            <Id>01KX69JZJBGDRNS9XQVTXNRFAW</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
             <State>GA</State>
             <VehicleYear>2023</VehicleYear>
           </Request>
@@ -77,13 +78,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX67PQ9GDAQFX73MGT90J8CW
+  Id                             01KX69JZJBGDRNS9XQVTXNRFAW
   VehicleIdentificationNumber    1HGCM82633A123456
+  FinancialResponsibilityType    Y
   State                          GA
   VehicleYear                    2023
 
 NOTES
 -----
-Automated capture (txId 01KX67PQ9GDAQFX73MGT90J8CW). kind=any; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
+Automated capture (txId 01KX69JZJBGDRNS9XQVTXNRFAW). kind=any; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
 
 RESULT: PASS
