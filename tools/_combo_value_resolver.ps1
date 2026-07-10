@@ -140,7 +140,6 @@ function Get-ComboTestValue {
         '(?i)^articleCategory'             { return 'E' }
         '(?i)^(caRequestPurposeCode|purposeCode)' { return 'C' }
         '(?i)^stickerNumber'               { return 'STK1234567' }
-        '(?i)^financialResponsibilityType' { return 'Y' }
         '(?i)^regionId'                    { return '0001' }
         '(?i)^reasonCode'                  { return 'C' }
         '(?i)^expandedBirthDateSearchCode' { return 'Y' }

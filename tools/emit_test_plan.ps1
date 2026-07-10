@@ -336,12 +336,6 @@ foreach ($ent in $entities) {
             foreach ($sf in @($gr.loserCombo.requirements.set)) {
                 $ff  = Resolve-FieldId $sf $gr.loserQidm $fieldIds
                 if (@($hiddenIds) -icontains $ff) { continue }   # hidden gate-feeder: driver can't type into it
-                # A guardrail proves the loser IDENTIFIER is absent from the wire; the loser's
-                # non-identifier companion (financialResponsibilityType -- insurance info, not an
-                # identifier) is irrelevant to the collision and the driver does not fill it on a
-                # guardrail row (it IS filled on the regular combo test). Including it here
-                # over-specifies the plan and makes audit_log_content mismatch the captured log.
-                if ($ff -ieq 'financialResponsibilityType') { continue }
                 $val = Get-TestValue $ff $false
                 if ($null -ne $val -and $val -ne '') { $gFills += [ordered]@{ fieldId = $ff; value = "$val" } }
             }
