@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Firearm GunQuery
 Combo: GINQ_af_relatedHitSearchIndicator (GINQ_af_relatedHitSearchIndicator (auto))
-Date: 2026-07-09 13:27:22
+Date: 2026-07-10 10:36:30
 Result: PASS
 JSON Version: 4.6
 Entity Fingerprint: 0c5fe97b1d21cba9df48f28d4dfd289bdc7c0e0582c8bc2f1c10f3cd9a860afe
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-@{GunSerialNumber=gun12345; relatedHitSearchIndicator=Y}
+{"GunSerialNumber":"GUN12345","relatedHitSearchIndicator":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX3YMMSEDFJ7C4CD88EWVWPE">
+    <api:Transaction id="01KX679THHJFHXBGBCBK55B2XH">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01KX3YMMSEDFJ7C4CD88EWVWPE</Id>
+            <Id>01KX679THHJFHXBGBCBK55B2XH</Id>
             <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
             <GunSerialNumber>GUN12345</GunSerialNumber>
           </Request>
@@ -61,12 +61,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX3YMMSEDFJ7C4CD88EWVWPE
+  Id                             01KX679THHJFHXBGBCBK55B2XH
   RelatedHitSearchIndicator      Y
   GunSerialNumber                GUN12345
 
 NOTES
 -----
-Automated capture (txId 01KX3YMMSEDFJ7C4CD88EWVWPE). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=GINQ; firedMessageType=GunQuery.
+Automated capture (txId 01KX679THHJFHXBGBCBK55B2XH). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=GINQ; firedMessageType=GunQuery.
 
 RESULT: PASS
