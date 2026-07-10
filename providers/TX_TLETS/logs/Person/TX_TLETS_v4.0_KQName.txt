@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: TX_TLETS Person DriverHistoryQuery
-Combo: KQOLN (KQOLN (auto))
-Date: 2026-07-10 13:45:48
+Combo: KQName (KQName (auto))
+Date: 2026-07-10 13:45:50
 Result: PASS
 JSON Version: 4.0
 Entity Fingerprint: 309477dbcc662a500113051b9a9007f0fc5cd8ec3b387e860744e4b43a303341
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","ImageIndicator":"Y","OperatorLicenseNumberDH":"D999888777","RegistrationState":"Texas","purposeCodeDH":"C","reasonCode":"C"}
+{"Attention":"X","BirthDateDH":"1990-01-15","ImageIndicator":"Y","NameFirstDH":"JOHN","NameLastDH":"DOE","RegistrationState":"Texas","SexCodeDH":"Male","purposeCodeDH":"C","reasonCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX6CCKD3X2HK9H7GWJ7PCQDR">
+    <api:Transaction id="01KX6CBFJM8KXXB4XKNHYNG4WB">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,13 +36,15 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01KX6CCKD3X2HK9H7GWJ7PCQDR</Id>
+            <Id>01KX6CBFJM8KXXB4XKNHYNG4WB</Id>
             <ImageIndicator>Y</ImageIndicator>
             <State>TX</State>
             <Attention>SGAMBELLONE R</Attention>
-            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <SexCode>M</SexCode>
             <ReasonCode>C</ReasonCode>
             <PurposeCode>C</PurposeCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE,JOHN</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -65,16 +67,18 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX6CCKD3X2HK9H7GWJ7PCQDR
+  Id                             01KX6CBFJM8KXXB4XKNHYNG4WB
   ImageIndicator                 Y
   State                          TX
   Attention                      SGAMBELLONE R
-  OperatorLicenseNumber          D999888777
+  SexCode                        M
   ReasonCode                     C
   PurposeCode                    C
+  BirthDate                      01151990
+  Name                           DOE,JOHN
 
 NOTES
 -----
-Automated capture (txId 01KX6CCKD3X2HK9H7GWJ7PCQDR). kind=combo; anyField=; expectedKeyRef=KQOLN; firedMessageType=DriverHistoryQuery.
+Automated capture (txId 01KX6CBFJM8KXXB4XKNHYNG4WB). kind=combo; anyField=; expectedKeyRef=KQName; firedMessageType=DriverHistoryQuery.
 
 RESULT: PASS

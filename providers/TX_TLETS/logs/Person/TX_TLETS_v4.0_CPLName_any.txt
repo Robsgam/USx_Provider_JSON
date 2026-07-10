@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: TX_TLETS Person DriverLicenseQuery
 Combo: CPLName_any (CPLName_any (auto))
-Date: 2026-07-10 10:54:26
+Date: 2026-07-10 13:45:51
 Result: PASS
 JSON Version: 4.0
 Entity Fingerprint: 309477dbcc662a500113051b9a9007f0fc5cd8ec3b387e860744e4b43a303341
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","purposeCodeDH":"C","reasonCode":"C"}
+{"Attention":"X","ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","messageKey":"CPL","purposeCodeDH":"C","reasonCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX67TKFP8EY6E3Y1G2WNKB7B">
+    <api:Transaction id="01KX6CASY9X8NR5FPDSA23ACA2">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,8 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KX67TKFP8EY6E3Y1G2WNKB7B</Id>
+            <Id>01KX6CASY9X8NR5FPDSA23ACA2</Id>
             <ImageIndicator>N</ImageIndicator>
+            <MessageKey>CPL</MessageKey>
             <State>GA</State>
             <ReasonCode>C</ReasonCode>
             <Name>DOE,JOHN</Name>
@@ -75,14 +76,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX67TKFP8EY6E3Y1G2WNKB7B
+  Id                             01KX6CASY9X8NR5FPDSA23ACA2
   ImageIndicator                 N
+  MessageKey                     CPL
   State                          GA
   ReasonCode                     C
   Name                           DOE,JOHN
 
 NOTES
 -----
-Automated capture (txId 01KX67TKFP8EY6E3Y1G2WNKB7B). kind=any; anyField=; expectedKeyRef=CPLName; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KX6CASY9X8NR5FPDSA23ACA2). kind=any; anyField=; expectedKeyRef=CPLName; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

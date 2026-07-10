@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: TX_TLETS Person DriverLicenseQuery
 Combo: QWName_any (QWName_any (auto))
-Date: 2026-07-10 10:54:27
+Date: 2026-07-10 13:45:52
 Result: PASS
 JSON Version: 4.0
 Entity Fingerprint: 309477dbcc662a500113051b9a9007f0fc5cd8ec3b387e860744e4b43a303341
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Texas","SexCode":"Male","purposeCodeDH":"C","raceCode":"W","reasonCode":"C"}
+{"Attention":"X","BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Texas","SexCode":"Male","expandedBirthDateSearchCode":"Y","purposeCodeDH":"C","raceCode":"W","reasonCode":"C","regionId":"0001"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX67T7MY2EJVYZ1YYHBKSH8D">
+    <api:Transaction id="01KX6CA5C5WNEA3KW28VV01AD5">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,11 +36,13 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KX67T7MY2EJVYZ1YYHBKSH8D</Id>
+            <Id>01KX6CA5C5WNEA3KW28VV01AD5</Id>
             <RaceCode>W</RaceCode>
+            <ExpandedBirthDateSearchCode>Y</ExpandedBirthDateSearchCode>
             <ImageIndicator>Y</ImageIndicator>
             <State>TX</State>
             <SexCode>M</SexCode>
+            <RegionId>0001</RegionId>
             <ReasonCode>C</ReasonCode>
             <BirthDate>01151990</BirthDate>
             <Name>DOE,JOHN</Name>
@@ -80,17 +82,19 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX67T7MY2EJVYZ1YYHBKSH8D
+  Id                             01KX6CA5C5WNEA3KW28VV01AD5
   RaceCode                       W
+  ExpandedBirthDateSearchCode    Y
   ImageIndicator                 Y
   State                          TX
   SexCode                        M
+  RegionId                       0001
   ReasonCode                     C
   BirthDate                      01151990
   Name                           DOE,JOHN
 
 NOTES
 -----
-Automated capture (txId 01KX67T7MY2EJVYZ1YYHBKSH8D). kind=any; anyField=; expectedKeyRef=QWName; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KX6CA5C5WNEA3KW28VV01AD5). kind=any; anyField=; expectedKeyRef=QWName; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

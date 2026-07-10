@@ -1,7 +1,7 @@
 ================================================================
-TEST LOG: TX_TLETS Person DriverHistoryQuery
-Combo: KQOLN (KQOLN (auto))
-Date: 2026-07-10 13:45:48
+TEST LOG: TX_TLETS Person DriverLicenseQuery
+Combo: CPLName_af_reasonCode (CPLName_af_reasonCode (auto))
+Date: 2026-07-10 13:45:52
 Result: PASS
 JSON Version: 4.0
 Entity Fingerprint: 309477dbcc662a500113051b9a9007f0fc5cd8ec3b387e860744e4b43a303341
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","ImageIndicator":"Y","OperatorLicenseNumberDH":"D999888777","RegistrationState":"Texas","purposeCodeDH":"C","reasonCode":"C"}
+{"Attention":"X","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Texas","purposeCodeDH":"C","reasonCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KX6CCKD3X2HK9H7GWJ7PCQDR">
+    <api:Transaction id="01KX6CAMJ3M20C1V8B305J40HV">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,14 +35,12 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01KX6CCKD3X2HK9H7GWJ7PCQDR</Id>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KX6CAMJ3M20C1V8B305J40HV</Id>
             <ImageIndicator>Y</ImageIndicator>
             <State>TX</State>
-            <Attention>SGAMBELLONE R</Attention>
-            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
             <ReasonCode>C</ReasonCode>
-            <PurposeCode>C</PurposeCode>
+            <Name>DOE,JOHN</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -56,7 +54,19 @@ Not captured
 
 RMS QUERY
 ---------
-Not captured
+Request:
+{
+  "elasticQuery": {
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "registrationStateAttrId": "69509558547"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
 
 FIELD ANALYSIS
 --------------
@@ -65,16 +75,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KX6CCKD3X2HK9H7GWJ7PCQDR
+  Id                             01KX6CAMJ3M20C1V8B305J40HV
   ImageIndicator                 Y
   State                          TX
-  Attention                      SGAMBELLONE R
-  OperatorLicenseNumber          D999888777
   ReasonCode                     C
-  PurposeCode                    C
+  Name                           DOE,JOHN
 
 NOTES
 -----
-Automated capture (txId 01KX6CCKD3X2HK9H7GWJ7PCQDR). kind=combo; anyField=; expectedKeyRef=KQOLN; firedMessageType=DriverHistoryQuery.
+Automated capture (txId 01KX6CAMJ3M20C1V8B305J40HV). kind=any-field; anyField=reasonCode; expectedKeyRef=CPLName; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS
