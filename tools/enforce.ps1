@@ -426,6 +426,26 @@ foreach ($pd in $providers) {
             Pass "$provName $($spec.label) -- clean"
         }
     }
+
+    # Canonical folder structure (live audit_structure.ps1). Provider-SCOPED gate: a structure
+    # FAIL blocks only when enforcing that specific provider (-Provider); on a bare portfolio-wide
+    # run it downgrades to WARN so out-of-scope legacy stubs (e.g. TX_TLETS_CCH) don't block the
+    # whole portfolio. Run live -- audit_structure reads the folder tree, not a cached report.
+    $structOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_structure.ps1" -Path $pd.FullName 2>&1 | Out-String
+    $sFail = ([regex]::Matches($structOut, '\[FAIL\]')).Count
+    $sWarn = ([regex]::Matches($structOut, '\[WARN\]')).Count
+    if ($sFail -gt 0) {
+        if ($Provider) {
+            Fail "$provName structure -- $sFail FAIL / $sWarn WARN (audit_structure)"
+        } else {
+            Warn "$provName structure -- $sFail FAIL / $sWarn WARN (run 'enforce -Provider $provName' to gate)"
+        }
+        $structOut -split "`n" | Where-Object { $_ -match '\[FAIL\]' } | ForEach-Object { Out "       $($_.Trim())" }
+    } elseif ($sWarn -gt 0) {
+        Warn "$provName structure -- $sWarn WARN (audit_structure)"
+    } else {
+        Pass "$provName structure -- clean"
+    }
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
