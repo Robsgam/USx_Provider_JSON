@@ -157,12 +157,10 @@ foreach ($provFolder in $providerFolders) {
     Out-Line ""
     Out-Line "--- CHECK 2: Required Directories ---" 'Yellow'
 
-    $requiredDirs = @(
-        'docs', 'docs/base', 'docs/mc',
-        'scripts', 'source', 'tests',
-        'phases', 'phases/base', 'phases/mc',
-        'release'
-    )
+    # Current canonical structure requires only docs/, scripts/, source/. The legacy dirs
+    # (docs/base, docs/mc, phases/*, release) are retired under the single-JSON + pipeline-v2
+    # methodology, so requiring them would penalize correctly-migrated providers.
+    $requiredDirs = @('docs', 'scripts', 'source')
 
     foreach ($rd in $requiredDirs) {
         $dirPath = Join-Path $provRoot ($rd -replace '/', '\')
@@ -171,6 +169,20 @@ foreach ($provFolder in $providerFolders) {
         } else {
             Write-Fail "$rd/ -- directory missing"
         }
+    }
+
+    # Test-log location: logs/<Entity>/ (pipeline v2, current) or tests/ (legacy). One required.
+    $logsDir  = Join-Path $provRoot 'logs'
+    $testsDir = Join-Path $provRoot 'tests'
+    if (Test-Path $logsDir) {
+        Write-Pass "logs/ (pipeline-v2 test package)"
+        if (Test-Path $testsDir) {
+            Write-Warn "tests/ still present alongside logs/ -- legacy folder should be removed (pipeline v2 eliminated tests/)"
+        }
+    } elseif (Test-Path $testsDir) {
+        Write-Info "tests/ (legacy test package -- migrates to logs/<Entity>/ on next rebuild)"
+    } else {
+        Write-Fail "no test-log directory (expected logs/ or tests/)"
     }
 
     # ── CHECK 3: Required Files -- JSON ───────────────────────────────────────
@@ -219,10 +231,9 @@ foreach ($provFolder in $providerFolders) {
         Write-Fail "scripts/build_${provLower}.ps1 missing"
     }
 
+    # Single-script model is current; a separate _mc build script is legacy, not required.
     if (Test-Path $mcBuild) {
-        Write-Pass "scripts/build_${provLower}_mc.ps1 exists"
-    } else {
-        Write-Warn "scripts/build_${provLower}_mc.ps1 missing"
+        Write-Info "scripts/build_${provLower}_mc.ps1 present (legacy MC split -- single-script build is current)"
     }
 
     # Check for non-standard script names (v2, v3, test variants)
@@ -252,12 +263,15 @@ foreach ($provFolder in $providerFolders) {
         @{ Name = "JSON_INVENTORY.md";            Label = "JSON_INVENTORY.md" }
     )
 
+    # These tracking docs live under docs/tracking/ (migrated) or flat docs/ (legacy).
+    # Read-only check of both locations -- do NOT use Find-DocsPath here (it creates dirs).
     foreach ($df in $requiredDocFiles) {
-        $docPath = Join-Path $docsDir $df.Name
-        if (Test-Path $docPath) {
+        $catPath  = Join-Path (Join-Path $docsDir 'tracking') $df.Name
+        $flatPath = Join-Path $docsDir $df.Name
+        if ((Test-Path $catPath) -or (Test-Path $flatPath)) {
             Write-Pass "docs/$($df.Name) exists"
         } else {
-            Write-Fail "docs/$($df.Name) missing"
+            Write-Fail "docs/(tracking/)$($df.Name) missing"
         }
     }
 
@@ -266,9 +280,24 @@ foreach ($provFolder in $providerFolders) {
     Out-Line ""
     Out-Line "--- CHECK 6: Report Files ---" 'Yellow'
 
-    # BASE reports in docs/base/
     $baseDocsDir = Join-Path $docsDir 'base'
-    if (Test-Path $baseDocsDir) {
+    $mcDocsDir = Join-Path $docsDir 'mc'
+    $reportsDir = Join-Path $docsDir 'reports'
+
+    if (Test-Path $reportsDir) {
+        # Migrated 4-category layout: build_report.ps1 always-run outputs land in docs/reports/.
+        $repFiles = @(Get-ChildItem $reportsDir -File | ForEach-Object { $_.Name })
+        $missingReports = @()
+        foreach ($rp in $reportTextPrefixes) {
+            if (-not ($repFiles | Where-Object { $_ -match "^${rp}_${provName}" })) { $missingReports += $rp }
+        }
+        if ($missingReports.Count -gt 0) {
+            Write-Fail "docs/reports/ missing: $($missingReports -join ', ')"
+        } else {
+            Write-Pass "docs/reports/ has VALIDATOR + VERIFY reports"
+        }
+    } elseif (Test-Path $baseDocsDir) {
+        # Legacy BASE reports in docs/base/
         $baseDocFiles = @(Get-ChildItem $baseDocsDir -File | ForEach-Object { $_.Name })
 
         $missingBaseReports = @()
@@ -286,11 +315,10 @@ foreach ($provFolder in $providerFolders) {
             Write-Pass "docs/base/ has all 6 report files"
         }
     } else {
-        Write-Info "docs/base/ does not exist -- skipping report check"
+        Write-Info "no docs/reports/ or docs/base/ -- skipping report check"
     }
 
-    # MC reports in docs/mc/
-    $mcDocsDir = Join-Path $docsDir 'mc'
+    # MC reports in docs/mc/ (legacy split only)
     if (Test-Path $mcDocsDir) {
         $mcDocFiles = @(Get-ChildItem $mcDocsDir -File |
             Where-Object { $_.Name -ne '.gitkeep' } |
@@ -367,11 +395,11 @@ foreach ($provFolder in $providerFolders) {
     Out-Line ""
     Out-Line "--- CHECK 8: JSON Internal Provider Name ---" 'Yellow'
 
+    # Check the active root JSON (resolved in CHECK 3), plus any legacy BASE/MC siblings still present.
     $jsonFilesToCheck = @()
-    if (Test-Path $baseReadable) { $jsonFilesToCheck += $baseReadable }
-    elseif (Test-Path $baseJson)  { $jsonFilesToCheck += $baseJson }
-    if (Test-Path $mcReadable) { $jsonFilesToCheck += $mcReadable }
-    elseif (Test-Path $mcJson)  { $jsonFilesToCheck += $mcJson }
+    if ($activeJson) { $jsonFilesToCheck += $activeJson }
+    if ((Test-Path $baseJson) -and ($baseJson -ne $activeJson)) { $jsonFilesToCheck += $baseJson }
+    if ((Test-Path $mcJson)   -and ($mcJson   -ne $activeJson)) { $jsonFilesToCheck += $mcJson }
 
     foreach ($jf in $jsonFilesToCheck) {
         $jfName = Split-Path $jf -Leaf

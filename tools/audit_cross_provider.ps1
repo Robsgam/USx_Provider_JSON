@@ -62,12 +62,20 @@ $allProviders = @()
 
 foreach ($pd in $providerDirs) {
     $provName = $pd.Name
-    # Find BASE and MC JSONs at the top level of the provider directory
+    # Find root JSONs at the top level of the provider directory. Covers both the legacy
+    # BASE/MC dual-variant naming AND the current single-JSON standard (versioned
+    # <PROVIDER>_v<X.Y>.json or bare <PROVIDER>.json) so migrated providers are actually audited.
     $jsonFiles = @(Get-ChildItem $pd.FullName -File -Filter '*.json' |
-        Where-Object { $_.Name -match '_BASE\.json$|_MC\.json$' })
+        Where-Object {
+            $_.Name -match '_BASE\.json$|_MC\.json$' -or
+            $_.Name -match "^$([regex]::Escape($provName))_v[\d.]+\.json$" -or
+            $_.Name -eq "$provName.json"
+        })
 
     foreach ($jf in $jsonFiles) {
-        $variant = if ($jf.Name -match '_MC\.json$') { 'MC' } else { 'BASE' }
+        $variant = if ($jf.Name -match '_MC\.json$') { 'MC' }
+                   elseif ($jf.Name -match '_BASE\.json$') { 'BASE' }
+                   else { 'SINGLE' }
         try {
             $rawText = [System.IO.File]::ReadAllText($jf.FullName)
             $parsed = $rawText | ConvertFrom-Json
@@ -177,6 +185,29 @@ function Get-CommSysQidms {
     return $qidms
 }
 
+# ── Helper: Get routing-gate fieldIds (fields used in CommSys combo conditions) ──
+# A field referenced by any combo condition (EXISTS/NOT_EXISTS/…) is a routing gate: giving it
+# an initialValue would change which combo fires, so it is intentionally left un-defaulted
+# (the State / LIMITATION #30 rule, applied to plate fields for OOS-gated providers like HI).
+function Get-RoutingGateFields {
+    param([object]$json)
+    $gate = @()
+    foreach ($q in (Get-CommSysQidms -json $json)) {
+        if (-not $q.combinations) { continue }
+        foreach ($c in $q.combinations) {
+            $conds = $null
+            try { $conds = $c.requirements.conditions } catch { }
+            if (-not $conds) { continue }
+            foreach ($cond in $conds) {
+                $f = $null
+                try { $f = $cond.field } catch { }
+                if ($f) { $gate += @($f) }
+            }
+        }
+    }
+    return @($gate | Select-Object -Unique)
+}
+
 # ── Helper: Get ENTITIES bundle ───────────────────────────────────────────────
 function Get-EntitiesBundle {
     param([object]$json)
@@ -216,19 +247,23 @@ $currentYear = (Get-Date).Year.ToString()
 foreach ($prov in $validProviders) {
     Out "  $($prov.Tag):"
     $fields = Get-FormFields -json $prov.Json
+    $gateFields = Get-RoutingGateFields -json $prov.Json
 
     if ($fields.Count -eq 0) {
         Info "No form fields found (possible parse issue)"
         continue
     }
 
-    # Vehicle LicensePlateTypeCode: initialValue must be 'PC'
+    # Vehicle LicensePlateTypeCode: initialValue must be 'PC' -- UNLESS it is a combo routing gate
+    # (OOS-gated providers like HI leave it blank by design; defaulting it would misroute).
     $vehPlateType = @($fields | Where-Object { $_.Entity -eq 'Vehicle' -and $_.FieldId -match '^[Ll]icensePlateTypeCode$' })
     if ($vehPlateType.Count -gt 0) {
         $iv = $null
         try { $iv = $vehPlateType[0].Props.initialValue } catch { }
         if ($iv -eq 'PC') {
             Pass "Vehicle LicensePlateTypeCode initialValue='PC'"
+        } elseif ($vehPlateType[0].FieldId -in $gateFields) {
+            Info "Vehicle LicensePlateTypeCode has no default -- combo routing gate (OOS-gated by design, LIMITATION #30 analogue)"
         } else {
             Fail "Vehicle LicensePlateTypeCode initialValue='$iv' (expected 'PC')"
         }
@@ -242,13 +277,18 @@ foreach ($prov in $validProviders) {
         }
     }
 
-    # Vehicle LicensePlateYear: initialValue must be current year
+    # Vehicle LicensePlateYear: initialValue must be current year -- UNLESS it is a combo routing
+    # gate (OOS-gated providers leave it blank by design, same as LicensePlateTypeCode above).
     $vehPlateYear = @($fields | Where-Object { $_.Entity -eq 'Vehicle' -and $_.FieldId -match '^[Ll]icensePlateYear$' })
     if ($vehPlateYear.Count -gt 0) {
         $iv = $null
         try { $iv = $vehPlateYear[0].Props.initialValue } catch { }
         if ($iv -eq $currentYear) {
             Pass "Vehicle LicensePlateYear initialValue='$currentYear'"
+        } elseif (($vehPlateYear[0].FieldId -in $gateFields) -or ('LicensePlateTypeCode' -in $gateFields)) {
+            # Year is the OOS-only companion of LicensePlateTypeCode; when the type code gates OOS
+            # routing, the year field is intentionally left blank alongside it.
+            Info "Vehicle LicensePlateYear has no default -- OOS-only companion of the plate-type routing gate"
         } else {
             Warn "Vehicle LicensePlateYear initialValue='$iv' (expected '$currentYear')"
         }
@@ -530,8 +570,9 @@ if (Test-Path $divergencePath) {
 $fieldTypeMap = @{}
 
 foreach ($prov in $validProviders) {
-    # Only use BASE to avoid double-counting BASE+MC with identical fields
-    if ($prov.Variant -ne 'BASE') { continue }
+    # Use BASE + SINGLE (single-JSON) providers; skip only MC to avoid double-counting the
+    # BASE+MC pair with identical fields. Single-JSON providers have no twin, so they are included.
+    if ($prov.Variant -eq 'MC') { continue }
 
     $fields = Get-FormFields -json $prov.Json
     foreach ($f in $fields) {
@@ -584,33 +625,55 @@ Out ""
 Info "Field type consistency: $consistentCount consistent / $inconsistentCount inconsistent (fields shared by 2+ providers)"
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CHECK 6: camelCase Enforcement (BASE only)
+# CHECK 6: Field-ID casing (methodology-aware)
 # ══════════════════════════════════════════════════════════════════════════════
 Out ""
-OutColor "--- CHECK 6: camelCase Enforcement (BASE only) ---" Yellow
+OutColor "--- CHECK 6: Field-ID Casing ---" Yellow
 
 $platformFields = @('CAD_UNIT_SELECT_VALUE','CAD_EVENT_SELECT_VALUE','LINK_CURRENT_ASSIGNED_EVENT')
 
+# The 22 USx CAD-integration tokens authored in PascalCase (CLAUDE.md Field Configuration Rules).
+# Their presence marks a provider as built under the PascalCase methodology.
+$usxPascalTokens = @(
+    'LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RandomRequest','RegistrationState',
+    'ImageIndicator','VehicleIdentificationNumber','NCICNumber','VehicleMakeCode','NameFirst','NameLast',
+    'BirthDate','SexCode','OperatorLicenseNumber','GunSerialNumber','GunMake','GunCaliber','GunModel',
+    'ArticleSerialNumber','ArticleTypeCode','RegistrationNumber','BoatHullIdNumber')
+
 foreach ($prov in $validProviders) {
-    if ($prov.Variant -ne 'BASE') { continue }
+    # BASE + SINGLE only; MC duplicates BASE fields.
+    if ($prov.Variant -eq 'MC') { continue }
 
     $fields = Get-FormFields -json $prov.Json
     $allFieldIds = @($fields | ForEach-Object { $_.FieldId } | Select-Object -Unique)
     $checkableFieldIds = @($allFieldIds | Where-Object { $_ -notin $platformFields })
 
-    # camelCase: first char lowercase, no underscores
-    $violations = @($checkableFieldIds | Where-Object {
-        ($_ -cmatch '^[A-Z]') -or ($_ -match '_')
-    })
+    # Detect casing methodology: a provider that authors any of the 22 USx tokens in PascalCase
+    # is a PascalCase provider. Its per-field casing correctness is enforced by verify_build /
+    # audit_cad (which are casing-aware); here we only flag underscores (never valid off-platform).
+    $isPascalProvider = @($checkableFieldIds | Where-Object { $_ -cin $usxPascalTokens }).Count -gt 0
 
     Out "  $($prov.Name):"
-    if ($violations.Count -gt 0) {
-        Warn "Non-camelCase fieldIds ($($violations.Count)): $($violations -join ', ')"
-    } else {
-        if ($checkableFieldIds.Count -gt 0) {
-            Pass "All $($checkableFieldIds.Count) fieldIds are camelCase"
+    if ($isPascalProvider) {
+        $violations = @($checkableFieldIds | Where-Object { $_ -match '_' })
+        if ($violations.Count -gt 0) {
+            Warn "PascalCase provider: fieldIds with underscores ($($violations.Count)): $($violations -join ', ')"
         } else {
-            Info "No checkable fieldIds found"
+            Pass "PascalCase provider: all $($checkableFieldIds.Count) fieldIds underscore-free (casing verified per-provider by verify_build/audit_cad)"
+        }
+    } else {
+        # Legacy camelCase provider: first char lowercase, no underscores.
+        $violations = @($checkableFieldIds | Where-Object {
+            ($_ -cmatch '^[A-Z]') -or ($_ -match '_')
+        })
+        if ($violations.Count -gt 0) {
+            Warn "Non-camelCase fieldIds ($($violations.Count)): $($violations -join ', ')"
+        } else {
+            if ($checkableFieldIds.Count -gt 0) {
+                Pass "All $($checkableFieldIds.Count) fieldIds are camelCase"
+            } else {
+                Info "No checkable fieldIds found"
+            }
         }
     }
 }
