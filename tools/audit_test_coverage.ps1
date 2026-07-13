@@ -371,16 +371,20 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-Line "    [CONFIRMED]: $sqvrConfirmed"
         Out-Line "    [PENDING]:   $sqvrPending"
 
-        # Compare: SQVR confirmed should roughly match tested combo count
-        $sqvrAligned = ($sqvrConfirmed -eq $testedCombos)
+        # Alignment = every combo confirmed and nothing pending. The SQVR legitimately carries
+        # EXTRA [CONFIRMED] rows beyond the combo set (guardrail / negative / render checks), so an
+        # exact count match is the wrong test -- require 0 PENDING and confirmed >= combos instead.
+        $sqvrAligned = ($sqvrPending -eq 0) -and ($sqvrConfirmed -ge $testedCombos)
         if ($sqvrAligned) {
-            Out-LineColor "    Alignment: YES (SQVR confirmed=$sqvrConfirmed, tested combos=$testedCombos)" "Green"
+            $extra = $sqvrConfirmed - $testedCombos
+            $extraNote = if ($extra -gt 0) { " (+$extra guardrail/negative/render rows)" } else { "" }
+            Out-LineColor "    Alignment: YES (SQVR confirmed=$sqvrConfirmed >= combos=$testedCombos, 0 pending)$extraNote" "Green"
         } else {
-            Out-LineColor "    Alignment: NO (SQVR confirmed=$sqvrConfirmed, tested combos=$testedCombos)" "Yellow"
-            if ($sqvrConfirmed -gt $testedCombos) {
-                Out-LineColor "    WARN: SQVR has more [CONFIRMED] than matched test logs (some logs may use non-standard naming)" "Yellow"
+            Out-LineColor "    Alignment: NO (SQVR confirmed=$sqvrConfirmed, tested combos=$testedCombos, pending=$sqvrPending)" "Yellow"
+            if ($sqvrPending -gt 0) {
+                Out-LineColor "    WARN: SQVR still has $sqvrPending [PENDING] marker(s) -- combos not fully confirmed" "Yellow"
             } else {
-                Out-LineColor "    WARN: More test logs match combos than SQVR [CONFIRMED] markers (SQVR may need update)" "Yellow"
+                Out-LineColor "    WARN: fewer SQVR [CONFIRMED] than tested combos (SQVR under-marked / truncated -- needs update)" "Yellow"
             }
         }
     } else {
@@ -427,7 +431,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
     }
 
     Out-Line ""
-    $sqvrStatus = if (-not $sqvrExists) { "N/A" } elseif ($sqvrConfirmed -eq $testedCombos) { "YES" } else { "NO" }
+    $sqvrStatus = if (-not $sqvrExists) { "N/A" } elseif (($sqvrPending -eq 0) -and ($sqvrConfirmed -ge $testedCombos)) { "YES" } else { "NO" }
     Out-Line "    SQVR status:"
     if ($sqvrExists) {
         Out-Line "      [CONFIRMED]: $sqvrConfirmed"

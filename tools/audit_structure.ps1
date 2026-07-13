@@ -177,7 +177,17 @@ foreach ($provFolder in $providerFolders) {
     if (Test-Path $logsDir) {
         Write-Pass "logs/ (pipeline-v2 test package)"
         if (Test-Path $testsDir) {
-            Write-Warn "tests/ still present alongside logs/ -- legacy folder should be removed (pipeline v2 eliminated tests/)"
+            # Distinguish an unmigrated tests/ (still holds LIVE logs) from one retaining only
+            # KB-cited historical archives. verify_claims resolves _archive_pre_v* under EITHER
+            # tests/ or logs/<Entity>/, so archive-only tests/ keeps those citations backed and is
+            # an acceptable terminal state -- only live content signals incomplete migration.
+            $liveTestContent = @(Get-ChildItem $testsDir -Force -ErrorAction SilentlyContinue |
+                Where-Object { $_.Name -ne '.gitkeep' -and $_.Name -notmatch '^_archive_pre_v' })
+            if ($liveTestContent.Count -gt 0) {
+                Write-Warn "tests/ has live content ($($liveTestContent.Count) item(s)) alongside logs/ -- migrate to logs/<Entity>/ (pipeline v2 eliminated tests/)"
+            } else {
+                Write-Info "tests/ retains only KB-cited _archive_pre_v* history (acceptable; may relocate to logs/_archive later)"
+            }
         }
     } elseif (Test-Path $testsDir) {
         Write-Info "tests/ (legacy test package -- migrates to logs/<Entity>/ on next rebuild)"
