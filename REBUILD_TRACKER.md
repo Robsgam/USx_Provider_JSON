@@ -13,7 +13,7 @@ As of 2026-07-06, the providers that have gone through the post-methodology-shif
 (PascalCase-native, single-JSON, identifier-priority guardrails) are: NJ_NJCJIS, CA_CLETS,
 HI_HCJDC_OFML, FL_FCIC, NY_NYSPIN_EJUSTICE. NY_NYSPIN_EJUSTICE testing is intentionally PARKED
 at the browser-capture step (user request 2026-07-02) -- resume there, don't re-rebuild. All
-other providers (TX_TLETS, AZ_AZDPS, LA_LEMS, and the legacy v1.x stubs) are not yet rebuilt
+other providers (AZ_AZDPS, LA_LEMS, and the legacy v1.x stubs) are not yet rebuilt (TX_TLETS rebuilt v4.0 2026-07-09, tested, block-deferred)
 under the current methodology; their BASE/MC and legacy-casing paths in shared tools are still
 load-bearing.
 
@@ -36,10 +36,10 @@ Status table instead (this table's Notes column is intentionally terse).
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v4.8 |  | 61P/0F/0W | 0 | in-scope, single-JSON |
 | 2 | HI_HCJDC_OFML | v4.7 |  | 66P/0F/0W | 0 | in-scope, single-JSON |
-| 3 | NY_NYSPIN_EJUSTICE | v4.6 |  | 80P/0F/0W/0LIM | 0 | in-scope, single-JSON, testing parked |
+| 3 | NY_NYSPIN_EJUSTICE | v4.6 |  | 81P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | out of scope |
 | 5 | FL_FCIC | v7.1 |  | 92P/0F/0W | 0 | in-scope, single-JSON |
-| 6 | TX_TLETS | v4.0 |  | 81P/0F/0W/0LIM | 0 | out of scope |
+| 6 | TX_TLETS | v4.0 |  | 81P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/6W | 0 | out of scope |
 | 8 | CA_CLETS | v2.12 |  | 77P/0F/0W | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | out of scope |
@@ -83,9 +83,9 @@ Attention with no `any[]` entry and no gate-feeder field never reaches the wire)
 initialValue='X'`), keep `sourceField=['Attention']` (do NOT empty it -- rejected at import).
 FL_FCIC applied this at v6.0 (CONFORMS, see Attention conformance table below).
 
-**Still pending** (out of scope, at TX_TLETS's next rebuild): add `'Attention'` to all 4 DH
-combo `any[]` (`KQNameImg`, `KQName`, `KQOLNImg`, `KQOLN`) + hidden gate-feeder field.
-Ref: `knowledge-base/RULE_HANDLERS.txt` entry 13.
+**RESOLVED for TX_TLETS** (v3.12 / v4.0): Attention auto-populated via handler + hidden gate-feeder
+(initialValue='X'), present in both DH combo `any[]` (v4.0 merged the image-variant split to
+`KQName`/`KQOLN`). Ref: `knowledge-base/RULE_HANDLERS.txt` entry 13.
 
 ## ParseCommsysNameRuleHandler empty-args regression -- RESOLVED for in-scope providers
 
@@ -116,11 +116,10 @@ needed. KB: `RULE_HANDLERS.txt` #16 + CLAUDE.md code-type pairings.
 
 **Verified 2026-07-06** by grepping current root JSONs: all 5 in-scope providers carry the
 corrected `codeTypeSource: NCIC` -- NJ (fixed v4.5), CA_CLETS (v2.10), HI (v4.6), FL_FCIC (v6.8),
-NY (v4.0). **Still pending** (out of scope, fixes automatically on next rebuild): TX_TLETS, AZ_AZDPS.
+NY (v4.0), and TX_TLETS (v4.0 -- VEHICLE_MAKE/NCIC verified present in the JSON). **Still pending** (out of scope, fixes automatically on next rebuild): AZ_AZDPS.
 
 A related gate, CHECK 15 (`verify_build.ps1` State-label wording), also passes for all 5
-in-scope providers. TX_TLETS still needs a State-label routing hint at its next rebuild (current
-label is a bare "State").
+in-scope providers, and now TX_TLETS too (v4.0 added State routing hints -- verify_build CHECK 15 clean).
 
 ## DEFERRED BACKLOG -- Process-hardening Tier 3 (2026-06-14, documented per user; REMIND at trigger)
 
