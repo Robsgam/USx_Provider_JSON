@@ -13,9 +13,433 @@ Live test: COMPLETE + INTEGRITY-CERTIFIED -- v7.1 zero-error pass 2026-07-02: 12
   relatedHitSearchIndicator routing scenarios silently overwrote one log (now disambiguated
   via guardrailLoser -- see tools/emit_test_plan.ps1).
 
+Metadata: source/FL_FCIC.xml (FCIC v94, 170+ message keys) [field-authority]
+Devdoc:   source/FL_FCIC.pdf (CommSys devdoc, 6 Basic Queries Supported) [supported-query authority]
+Supported-query authority: docs/reference/FL_FCIC_SUPPORTED_QUERIES.txt (CONFIRMED vs devdoc 2026-07-13)
+Accepted divergences:      docs/tracking/FL_FCIC_ACCEPTED_DIVERGENCES.txt (QV/QW auto-send skips)
+Evidence: logs/<Entity>/FL_FCIC_v7.1_<combo>.txt -- one file per combo (121 files); every
+  built combo below cites its base log. All 5 entities block_entity-locked at v7.1
+  (logs/.test_state.json = authority).
+
+Architecture notes:
+  - 6 basic queries (VehReg / DL / DH / Gun / Article / Boat), 31 CommSys combos, 5 QIFs
+  - Combo array order follows the devdoc "Possible Combinations" listing order in every QIDM
+    (v4.7 standard): in-state combos first, OOS/stolen combos later, reached by first-match.
+  - Routing conditions are EXISTENCE-ONLY (State NOT_EXISTS/EXISTS, OLN NOT_EXISTS,
+    RelatedHit NOT_EXISTS/EXISTS, Hull NOT_EXISTS). POISONED-ARRAY RULE (QIDM_REFERENCE Sec 2a,
+    live-proven v4.9 T-A/T-B): any value comparison (EQUALS/NOT_EQUALS) disables the WHOLE
+    conditions array -- all value-comparison conditions were removed. LIMITATION #1: the
+    serialization pool is the union of set[]+any[] of ALL matching combos; existence conditions
+    keep later combos out of the pool so a fully-filled card sends only the firing path's fields.
+  - conditions[].field = QIF sourceField (form fieldId), NOT the attribute name -- a wrong/
+    attr-name token is silently inert (verify_build CHECK 13; live-proven HI v3.3 / FL v6.4).
+  - Identifier-priority guardrails complete: Plate>VIN (Vehicle), OLN>Name (DL + DH),
+    Hull>Reg (Boat, all 3 families).
+  - PascalCase USx fieldIds (native, v5.2). Name = Last-first comma-space "Last, First" (v6.1).
+    Date = yyyyMMdd (CommsysParseDateRuleHandler). State = NCIC dropdown, no initialValue (LIMIT #30).
+    Attention = auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler (no visible field).
+  - DL/DH: one-directional/opt-in queriesToDeselect; DH-suffix fieldIds; DH is OUT-OF-STATE ONLY.
+
 ================================================================================
-BoatQuery -- Boat Entity
+1. VehicleRegistrationQuery -- Vehicle Entity
 ================================================================================
 
-  FBQBoatHullIdNumber_guardrail -- FBQBoatHullIdNumber_guardrail (auto) [CONFIRMED]
-    keyReference: FBQBoatHullIdNumber_guardrail
+  QIDM: FL_FCIC_VehicleRegistrationQuery
+  QIF:  Vehicle (2 cards: Search Options[State/Image] + Vehicle Search[Plate/VIN/Decal/Title])
+  Combos (devdoc order): FRQ Decal(1), FRQ Plate(2), FRQ Title(3), FRQ VIN(4),
+          [QV 5-6 NOT built -- auto-send], RQ Plate(7), RQ VIN(8) = 6 combos
+  Optional fields: VehicleMakeCode, VehicleYear, ImageIndicator, LicensePlateTypeCode/Year
+  Routing principle: FRQ = FCIC in-state (State NOT_EXISTS -- a State-filled query falls
+    through to RQ). RQ = Nlets out-of-state (State EXISTS). Plate>VIN guardrail: VIN combos
+    carry LicensePlateNumber NOT_EXISTS, so when a plate is also entered the VIN combos exit
+    the union pool and the plate path wins.
+
+  FRQDecalNumber -- in-state Decal [CONFIRMED]
+    set: decalNumber, LicensePlateYear
+    any: ImageIndicator
+    conditions: RegistrationState NOT_EXISTS
+    defaults: ImageIndicator=N, LicensePlateYear=<current year> (CAD ignores initialValue, CHECK 6)
+    keyReference: FRQDecalNumber
+    evidence: logs/Vehicle/FL_FCIC_v7.1_FRQDecalNumber.txt
+
+  FRQLicensePlateNumber -- in-state Plate [CONFIRMED]
+    set: LicensePlateNumber
+    any: LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator
+    conditions: RegistrationState NOT_EXISTS
+    defaults: LicensePlateYear=<current year>, ImageIndicator=N
+    keyReference: FRQLicensePlateNumber
+    evidence: logs/Vehicle/FL_FCIC_v7.1_FRQLicensePlateNumber.txt
+
+  FRQTitleLienInformation -- in-state Title/Lien [CONFIRMED]
+    set: titleLienInformation
+    any: ImageIndicator
+    conditions: RegistrationState NOT_EXISTS
+    defaults: ImageIndicator=N
+    keyReference: FRQTitleLienInformation
+    evidence: logs/Vehicle/FL_FCIC_v7.1_FRQTitleLienInformation.txt
+
+  FRQVehicleIdentificationNumber -- in-state VIN [CONFIRMED]
+    set: VehicleIdentificationNumber
+    any: VehicleMakeCode, vehicleYear, ImageIndicator
+    conditions: RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (Plate>VIN)
+    defaults: ImageIndicator=N
+    keyReference: FRQVehicleIdentificationNumber
+    evidence: logs/Vehicle/FL_FCIC_v7.1_FRQVehicleIdentificationNumber.txt
+
+  RQLicensePlateNumber -- OOS Plate + State [CONFIRMED]
+    set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
+    any: ImageIndicator
+    conditions: RegistrationState EXISTS (explicit OOS gate, v7.0 -- mirror of FRQ NOT_EXISTS)
+    defaults: ImageIndicator=N, LicensePlateYear=<current year>, LicensePlateTypeCode=PC (CHECK 6)
+    keyReference: RQLicensePlateNumber
+    evidence: logs/Vehicle/FL_FCIC_v7.1_RQLicensePlateNumber.txt
+
+  RQVehicleIdentificationNumber -- OOS VIN + State [CONFIRMED]
+    set: VehicleIdentificationNumber, RegistrationState
+    any: VehicleMakeCode, vehicleYear, ImageIndicator
+    conditions: LicensePlateNumber NOT_EXISTS (Plate>VIN guardrail)
+    defaults: ImageIndicator=N
+    keyReference: RQVehicleIdentificationNumber
+    evidence: logs/Vehicle/FL_FCIC_v7.1_RQVehicleIdentificationNumber.txt
+
+  Plate>VIN guardrail -- Plate+VIN co-entry -> only the plate path fires, VIN combos exit
+    the pool (LicensePlateNumber NOT_EXISTS on FRQVehicleIdentificationNumber +
+    RQVehicleIdentificationNumber). [CONFIRMED]
+    evidence: logs/Vehicle/FL_FCIC_v7.1_FRQLicensePlateNumber_guardrail_vs_FRQVehicleIdentificationNumber.txt
+              logs/Vehicle/FL_FCIC_v7.1_FRQLicensePlateNumber_guardrail_vs_RQVehicleIdentificationNumber.txt
+
+  Priority order: FRQ (in-state) before RQ (OOS); within each, Plate before VIN -- CONFIRMED.
+    In-state (State blank) fires FRQ; adding State routes to RQ (State EXISTS). Plate>VIN
+    guardrail decides Plate+VIN co-entry in favor of the plate. First-match on devdoc order.
+
+  APPROVED SKIP -- QV (Stolen Vehicle, by Plate / by VIN):
+    Devdoc lists QV under VehicleRegistrationQuery but in the "Data-Mined Transactions" list.
+    CommSys auto-sends QV as a side effect of the Vehicle query firing (platform-confirmed);
+    response data-mined via QRDM. NOT built by design -- not a coverage gap.
+    (FL_FCIC_ACCEPTED_DIVERGENCES.txt, 2026-07-06.)
+
+================================================================================
+2. DriverLicenseQuery -- Person Entity
+================================================================================
+
+  QIDM: FL_FCIC_DriverLicenseQuery  (autoSelect=true; queriesToDeselect not set on DL)
+  QIF:  Person, Driver License card (shared entity with DriverHistory; DH uses DH-suffix fields)
+  Combos (devdoc order): FDQ Name(1), FDQ OLN(2), [QW 3-4 auto-sent], DQ Name(5), DQ OLN(6)
+          = 4 combos
+  Optional fields: ImageIndicator
+  Routing principle: FDQ = DHSMV in-state (State NOT_EXISTS -- a State-filled query falls
+    through to DQ). DQ = Nlets out-of-state (State EXISTS). OLN>Name guardrail: Name combos
+    carry OperatorLicenseNumber NOT_EXISTS, so an OLN entry excludes Name/DOB/Sex from the pool.
+
+  FDQName -- in-state Name + DOB + Sex [CONFIRMED]
+    set: BirthDate, NameLast, NameFirst, SexCode
+    any: ImageIndicator
+    conditions: RegistrationState NOT_EXISTS AND OperatorLicenseNumber NOT_EXISTS (OLN>Name)
+    defaults: ImageIndicator=Y
+    keyReference: FDQName
+    Name uses FormatStringRuleHandler arguments=[', '] -> "Last, First"
+    BirthDate uses CommsysParseDateRuleHandler yyyy-MM-dd -> yyyyMMdd
+    evidence: logs/Person/FL_FCIC_v7.1_FDQName.txt
+
+  FDQOperatorLicenseNumber -- in-state OLN [CONFIRMED]
+    set: OperatorLicenseNumber
+    any: ImageIndicator
+    conditions: RegistrationState NOT_EXISTS
+    defaults: ImageIndicator=Y
+    keyReference: FDQOperatorLicenseNumber
+    evidence: logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber.txt
+
+  DQName -- OOS Name + DOB + Sex + State [CONFIRMED]
+    set: BirthDate, NameLast, NameFirst, SexCode, RegistrationState
+    any: ImageIndicator
+    conditions: OperatorLicenseNumber NOT_EXISTS (OLN>Name)
+    defaults: ImageIndicator=Y
+    keyReference: DQName
+    evidence: logs/Person/FL_FCIC_v7.1_DQName.txt
+
+  DQOperatorLicenseNumber -- OOS OLN + State [CONFIRMED]
+    set: OperatorLicenseNumber, RegistrationState
+    any: ImageIndicator
+    conditions: RegistrationState EXISTS (explicit OOS gate, v7.0)
+    defaults: ImageIndicator=Y
+    keyReference: DQOperatorLicenseNumber
+    evidence: logs/Person/FL_FCIC_v7.1_DQOperatorLicenseNumber.txt
+
+  OLN>Name guardrail -- OLN+Name co-entry -> only the OLN combo fires, Name combos exit the
+    pool (OperatorLicenseNumber NOT_EXISTS on FDQName + DQName). [CONFIRMED]
+    evidence: logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber_guardrail_vs_FDQName.txt
+              logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber_guardrail_vs_DQName.txt
+
+  Priority order: FDQ (in-state) before DQ (OOS); within each, OLN before Name -- CONFIRMED.
+    State blank fires FDQ; adding State routes to DQ. DQ is In/Out (State=FL legal, no not-FL guard).
+
+  APPROVED SKIP -- QW (Wanted Person, by Name / by OLN):
+    In XML metadata under DriverLicenseQuery, in the devdoc "Data-Mined Transactions" list.
+    CommSys auto-sends QW as a side effect of the DL query firing (platform-confirmed;
+    WantedPersonQuery QIDM removed v4.2). NOT built by design -- not a coverage gap.
+    (FL_FCIC_ACCEPTED_DIVERGENCES.txt, 2026-07-06.)
+
+================================================================================
+3. DriverHistoryQuery -- Person Entity (DH-suffix, OUT-OF-STATE ONLY)
+================================================================================
+
+  QIDM: FL_FCIC_DriverHistoryQuery  (autoSelect=true; queriesToDeselect=[DriverLicenseQuery])
+  QIF:  Person, Driver History card (DH-suffix fieldIds isolate from the DL field pool, AP #14)
+  Combos (devdoc order): KQ Name(1), KQ OLN(2) = 2 combos
+  Optional fields: purposeCodeDH, Attention (auto-populated via handler)
+  Routing principle: DH is OUT-OF-STATE ONLY per FCIC ("KQ is out of state and <XX>
+    destination is required ... something other than FL"). RegistrationStateDH is in set[]
+    with no default (destination must be an explicit officer choice). CAD dispatch cannot
+    supply a destination, so DH will not auto-fire from CAD (correct). The not-FL rule is
+    NOT enforceable config-side -- value-comparison conditions poison the array (LIMITATION +
+    platform escalation); dropdown + card title carry the officer-facing guard. OLN>Name:
+    KQName carries OperatorLicenseNumberDH NOT_EXISTS (unique DH attr name, v5.1 fix).
+
+  KQName -- OOS Name + DOB + Sex + DestState [CONFIRMED]
+    set: BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationStateDH
+    any: purposeCodeDH, Attention
+    conditions: OperatorLicenseNumberDH NOT_EXISTS (OLN>Name; unique DH attr name, v5.1)
+    defaults: Attention=X (CAD hidden gate-feeder; handler emits officer LastName FirstInitial)
+    keyReference: KQName
+    Name uses FormatStringRuleHandler arguments=[', ']; BirthDate yyyy-MM-dd -> yyyyMMdd
+    evidence: logs/Person/FL_FCIC_v7.1_KQName.txt
+
+  KQOperatorLicenseNumber -- OOS OLN + DestState [CONFIRMED]
+    set: OperatorLicenseNumberDH, RegistrationStateDH
+    any: purposeCodeDH, Attention
+    conditions: RegistrationStateDH EXISTS (explicit OOS gate, v7.0)
+    defaults: Attention=X
+    keyReference: KQOperatorLicenseNumber
+    evidence: logs/Person/FL_FCIC_v7.1_KQOperatorLicenseNumber.txt
+
+  OLN>Name guardrail (DH) -- OLN+Name co-entry -> only KQOperatorLicenseNumber fires, KQName
+    exits the pool (OperatorLicenseNumberDH NOT_EXISTS on KQName). [CONFIRMED]
+    evidence: logs/Person/FL_FCIC_v7.1_KQOperatorLicenseNumber_guardrail_vs_KQName.txt
+
+  Priority order: KQ OLN before KQ Name -- CONFIRMED (OLN>Name guardrail).
+
+  DL/DH mutual exclusion -- one-directional/opt-in: DL default (autoSelect=true, no deselect);
+    DH opt-in (autoSelect=true, queriesToDeselect=[DriverLicenseQuery]). [CONFIRMED via combo logs]
+
+  Attention auto-populate -- KQ combos carry Attention in any[] + a hidden gate-feeder
+    (initialValue=X) + combo default; handler emits officer LastName FirstInitial (HI v2.9
+    pattern). [CONFIRMED -- purposeCodeDH any[] coverage: logs/Person/FL_FCIC_v7.1_KQName_af_purposeCodeDH.txt]
+
+================================================================================
+4. GunQuery -- Firearm Entity
+================================================================================
+
+  QIDM: FL_FCIC_GunQuery
+  QIF:  Firearm (1 card)
+  Combos: QG by Serial(1), QG by NCIC#(2), QG by PCN(3) = 3 combos
+  Optional fields: GunMake, ImageIndicator
+
+  QGGunSerialNumber -- Serial Number [CONFIRMED]
+    set: GunSerialNumber
+    any: GunMake, ImageIndicator
+    defaults: ImageIndicator=N
+    keyReference: QGGunSerialNumber
+    evidence: logs/Firearm/FL_FCIC_v7.1_QGGunSerialNumber.txt
+
+  QGNCICNumber -- NCIC Number [CONFIRMED]
+    set: NCICNumber
+    any: GunMake, ImageIndicator
+    defaults: ImageIndicator=N
+    keyReference: QGNCICNumber
+    evidence: logs/Firearm/FL_FCIC_v7.1_QGNCICNumber.txt
+
+  QGProcessControlNumber -- Process Control Number [CONFIRMED]
+    set: processControlNumber
+    any: GunMake, ImageIndicator
+    defaults: ImageIndicator=N
+    keyReference: QGProcessControlNumber
+    evidence: logs/Firearm/FL_FCIC_v7.1_QGProcessControlNumber.txt
+
+  Priority order: three independent identifiers (Serial / NCIC# / PCN); no priority conflict --
+    each fires on its own primary field. First-match on devdoc order.
+
+================================================================================
+5. ArticleSingleQuery -- Article Entity
+================================================================================
+
+  QIDM: FL_FCIC_ArticleSingleQuery
+  QIF:  Article (1 card)
+  Combos: QA by Serial+Type(1), QA by OAN+Type(2), QA by NCIC#(3), QA by PCN(4) = 4 combos
+  Optional fields: ImageIndicator
+
+  QAArticleSerialNumber -- Serial + ArticleType [CONFIRMED]
+    set: ArticleSerialNumber, ArticleTypeCode
+    any: ImageIndicator
+    defaults: ImageIndicator=N
+    keyReference: QAArticleSerialNumber
+    evidence: logs/Article/FL_FCIC_v7.1_QAArticleSerialNumber.txt
+
+  QAOwnerAppliedNumber -- OwnerAppliedNumber + ArticleType [CONFIRMED]
+    set: ArticleTypeCode, ownerAppliedNumber
+    any: ImageIndicator
+    defaults: ImageIndicator=N
+    keyReference: QAOwnerAppliedNumber
+    evidence: logs/Article/FL_FCIC_v7.1_QAOwnerAppliedNumber.txt
+
+  QANCICNumber -- NCIC Number [CONFIRMED]
+    set: NCICNumber
+    any: ImageIndicator
+    defaults: ImageIndicator=N
+    keyReference: QANCICNumber
+    evidence: logs/Article/FL_FCIC_v7.1_QANCICNumber.txt
+
+  QAProcessControlNumber -- Process Control Number [CONFIRMED]
+    set: processControlNumber
+    any: ImageIndicator
+    defaults: ImageIndicator=N
+    keyReference: QAProcessControlNumber
+    evidence: logs/Article/FL_FCIC_v7.1_QAProcessControlNumber.txt
+
+  Priority order: four independent identifiers (Serial+Type / OAN+Type / NCIC# / PCN); no
+    priority conflict -- each fires on its own primary field. First-match on devdoc order.
+
+================================================================================
+6. BoatQuery -- Boat Entity
+================================================================================
+
+  QIDM: FL_FCIC_BoatQuery
+  QIF:  Boat (2 cards: Search Options[State/Stolen/Image] + Boat Search[Hull/Reg/CG/Decal/
+        Title/NCIC/PCN/Name/DOB])
+  Combos (devdoc order): FBQ Hull(1), FBQ Decal(2), FBQ Reg(3), FBQ Title(4),
+          QB Hull(5), QB CG(6), QB NCIC(7), QB PCN(8), QB Reg(9),
+          BQ Name(10), BQ Hull(11), BQ Reg(12) = 12 combos
+  Optional fields: ImageIndicator, RelatedHitSearchIndicator (Stolen Search dropdown)
+  Routing principle: FBQ = FCIC in-state registration (RegistrationState NOT_EXISTS -> defers
+    to BQ; Hull/Reg additionally RelatedHit NOT_EXISTS -> defers to QB). QB = NCIC stolen
+    (RelatedHit EXISTS in set[] does the gating). BQ = Nlets OOS (destination State in set[];
+    non-FL rule is a LIMITATION -- dropdown + card hint only). Hull>Reg guardrail applied
+    across all 3 families: Reg combos carry BoatHullIdNumber NOT_EXISTS.
+
+  FBQBoatHullIdNumber -- in-state Hull ID [CONFIRMED]
+    set: BoatHullIdNumber
+    any: decalNumber, titleLienInformation, ImageIndicator (Reg removed v7.1, LIMIT #1 de-bleed)
+    conditions: RegistrationState NOT_EXISTS AND relatedHitSearchIndicator NOT_EXISTS
+    defaults: ImageIndicator=N
+    keyReference: FBQBoatHullIdNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_FBQBoatHullIdNumber.txt
+
+  FBQDecalNumber -- in-state Decal [CONFIRMED]
+    set: decalNumber
+    any: BoatHullIdNumber, titleLienInformation, ImageIndicator (Reg removed v7.1)
+    conditions: RegistrationState NOT_EXISTS
+    defaults: ImageIndicator=N
+    keyReference: FBQDecalNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_FBQDecalNumber.txt
+
+  FBQRegistrationNumber -- in-state Registration [CONFIRMED]
+    set: RegistrationNumber
+    any: decalNumber, titleLienInformation, ImageIndicator
+    conditions: RegistrationState NOT_EXISTS AND relatedHitSearchIndicator NOT_EXISTS
+                AND BoatHullIdNumber NOT_EXISTS (Hull>Reg, FBQ family)
+    defaults: ImageIndicator=N
+    keyReference: FBQRegistrationNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_FBQRegistrationNumber.txt
+
+  FBQTitleLienInformation -- in-state Title/Lien [CONFIRMED]
+    set: titleLienInformation
+    any: BoatHullIdNumber, decalNumber, ImageIndicator (Reg removed v7.1)
+    conditions: RegistrationState NOT_EXISTS
+    defaults: ImageIndicator=N
+    keyReference: FBQTitleLienInformation
+    evidence: logs/Boat/FL_FCIC_v7.1_FBQTitleLienInformation.txt
+
+  QBBoatHullIdNumber -- stolen Hull ID [CONFIRMED]
+    set: BoatHullIdNumber, relatedHitSearchIndicator
+    any: ImageIndicator (Reg removed v6.9)
+    conditions: relatedHitSearchIndicator EXISTS (explicit Stolen gate, v6.9)
+    defaults: ImageIndicator=N
+    keyReference: QBBoatHullIdNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_QBBoatHullIdNumber.txt
+
+  QBCoastGuardDocumentNumber -- stolen Coast Guard Doc [CONFIRMED]
+    set: coastGuardDocumentNumber
+    any: ImageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N
+    keyReference: QBCoastGuardDocumentNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_QBCoastGuardDocumentNumber.txt
+
+  QBNCICNumber -- stolen NCIC Number [CONFIRMED]
+    set: NCICNumber
+    any: ImageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N
+    keyReference: QBNCICNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_QBNCICNumber.txt
+
+  QBProcessControlNumber -- stolen Process Control Number [CONFIRMED]
+    set: processControlNumber
+    any: ImageIndicator, relatedHitSearchIndicator
+    defaults: ImageIndicator=N
+    keyReference: QBProcessControlNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_QBProcessControlNumber.txt
+
+  QBRegistrationNumber -- stolen Registration [CONFIRMED]
+    set: RegistrationNumber, relatedHitSearchIndicator
+    any: ImageIndicator
+    conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg, QB family)
+                AND relatedHitSearchIndicator EXISTS (explicit Stolen gate, v6.9)
+    defaults: ImageIndicator=N
+    keyReference: QBRegistrationNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_QBRegistrationNumber.txt
+
+  BQName -- OOS Name + DOB + DestState [CONFIRMED]
+    set: BirthDate, NameLast, NameFirst, RegistrationState
+    any: BoatHullIdNumber, RegistrationNumber
+    keyReference: BQName
+    Name uses FormatStringRuleHandler arguments=[', ']; BirthDate yyyy-MM-dd -> yyyyMMdd
+    evidence: logs/Boat/FL_FCIC_v7.1_BQName.txt
+
+  BQBoatHullIdNumber -- OOS Hull + DestState [CONFIRMED]
+    set: BoatHullIdNumber, RegistrationState
+    any: (empty; Reg removed v6.9)
+    keyReference: BQBoatHullIdNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_BQBoatHullIdNumber.txt
+
+  BQRegistrationNumber -- OOS Registration + DestState [CONFIRMED]
+    set: RegistrationNumber, RegistrationState
+    any: (empty)
+    conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg, BQ OOS family)
+    keyReference: BQRegistrationNumber
+    evidence: logs/Boat/FL_FCIC_v7.1_BQRegistrationNumber.txt
+
+  Hull>Reg guardrail -- Hull+Reg co-entry -> only the Hull combo fires, the Reg combo exits
+    the pool. Applied to all 3 families: FBQ (FBQRegistrationNumber), QB (QBRegistrationNumber),
+    BQ (BQRegistrationNumber) all carry BoatHullIdNumber NOT_EXISTS. Hull ID (HIN) is the
+    unique permanent identifier; Reg is reassignable -> Hull wins. [CONFIRMED]
+    evidence: logs/Boat/FL_FCIC_v7.1_FBQBoatHullIdNumber_guardrail_vs_FBQRegistrationNumber.txt
+              logs/Boat/FL_FCIC_v7.1_FBQBoatHullIdNumber_guardrail_vs_BQRegistrationNumber.txt
+              logs/Boat/FL_FCIC_v7.1_QBBoatHullIdNumber_guardrail_vs_QBRegistrationNumber.txt
+              logs/Boat/FL_FCIC_v7.1_QBBoatHullIdNumber_guardrail_vs_FBQBoatHullIdNumber.txt
+              logs/Boat/FL_FCIC_v7.1_QBRegistrationNumber_guardrail_vs_FBQRegistrationNumber.txt
+
+  Priority order: FBQ (in-state) > QB (stolen, RelatedHit EXISTS) > BQ (OOS, State in set[]);
+    within each family, Hull before Reg (Hull>Reg guardrail) -- CONFIRMED. State NOT_EXISTS
+    defers FBQ to BQ; RelatedHit routes FBQ<->QB; first-match on devdoc order.
+
+================================================================================
+RMS BUNDLE
+================================================================================
+
+  RMS Vehicle + Person QIDMs co-fire alongside CommSys (Build-RmsBundle emits Vehicle and
+  Person only; Gun/Article/Boat/DH have no RMS mapping -- "Not captured" in those logs is the
+  correct, expected state, not a gap). RMS Vehicle stripped to 3 attrs. VehicleMakeName QRDM
+  code source = VEHICLE_MAKE/NCIC (RND-62365, v6.8).
+
+================================================================================
+SUMMARY
+================================================================================
+
+  Total combos: 31 CommSys (6 QIDMs) + guardrail routing tests + RMS co-fires
+    VehicleRegistrationQuery 6, DriverLicenseQuery 4, DriverHistoryQuery 2,
+    GunQuery 3, ArticleSingleQuery 4, BoatQuery 12.
+  CONFIRMED: 31 / 31 combos -- every built combo cites its base log in logs/<Entity>/.
+    Guardrails CONFIRMED: Plate>VIN (Vehicle), OLN>Name (DL + DH), Hull>Reg (Boat x3 families).
+  PENDING: 0.
+  APPROVED SKIP: QV (Stolen Vehicle) + QW (Wanted Person) = CommSys auto-sends / data-mined
+    (not gaps); ImageQuery = user-scoped PHASE 2 skip.
+  Live test: 121/121 submitted+captured, content audit 121/121, XML consistency PASS,
+    all 5 entities block_entity-locked at v7.1 (logs/.test_state.json = authority).

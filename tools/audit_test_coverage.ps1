@@ -493,12 +493,29 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
             $gateReasons += "TEST_MATRIX combo count ($matrixCount) != JSON combo count ($totalCombos) -- matrix is stale, regenerate"
         }
 
+        # Done-criterion: a provider is not CLOSED until its supported-query set is devdoc-CONFIRMED
+        # (STATUS: CONFIRMED in SUPPORTED_QUERIES). PROVISIONAL = the list is still JSON-derived and
+        # unverified against the devdoc, i.e. legitimately "not done yet" -- hold at INCOMPLETE
+        # (non-blocking) rather than declaring CLOSED. Applies to every future provider.
+        $sqConfirmed = $false
+        $sqRefPath  = Join-Path (Join-Path $provDir 'docs\reference') "${provName}_SUPPORTED_QUERIES.txt"
+        $sqFlatPath = Join-Path (Join-Path $provDir 'docs') "${provName}_SUPPORTED_QUERIES.txt"
+        $sqFile = if (Test-Path $sqRefPath) { $sqRefPath } elseif (Test-Path $sqFlatPath) { $sqFlatPath } else { $null }
+        if ($sqFile) {
+            $sqFirstLine = Get-Content -LiteralPath $sqFile -TotalCount 1
+            if ($sqFirstLine -match 'STATUS:\s*CONFIRMED') { $sqConfirmed = $true }
+        }
+
+        $notConfirmedNote = $null
         if ($gateReasons.Count -gt 0) {
             $verdict = "INCONSISTENT"
-        } elseif ($sqvrExists -and $sqvrPending -eq 0 -and $sqvrConfirmed -gt 0) {
+        } elseif ($sqvrExists -and $sqvrPending -eq 0 -and $sqvrConfirmed -gt 0 -and $sqConfirmed) {
             $verdict = "CLOSED"
         } else {
             $verdict = "INCOMPLETE-consistent"
+            if ($sqvrExists -and $sqvrPending -eq 0 -and $sqvrConfirmed -gt 0 -and -not $sqConfirmed) {
+                $notConfirmedNote = "SUPPORTED_QUERIES not CONFIRMED -- devdoc-verify the query set and flip STATUS: CONFIRMED before declaring this provider done"
+            }
         }
 
         $vColor = switch ($verdict) { "CLOSED" { "Green" } "INCONSISTENT" { "Red" } default { "Yellow" } }
@@ -509,6 +526,7 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         Out-Line "    build v$buildVer | tier $activeTier | logs/.test_version $tvShow | combos JSON=$totalCombos matrix=$mcShow"
         Out-Line "    SQVR: $sqvrConfirmed CONFIRMED / $sqvrPending PENDING / $sqvrApprovedSkip APPROVED-SKIP | valid-backed combos: $validBackedCombos"
         foreach ($r in $gateReasons) { Out-LineColor "    - $r" "Red" }
+        if ($notConfirmedNote) { Out-LineColor "    - $notConfirmedNote" "Yellow" }
         if ($provenanceNotes.Count -gt 0 -and $verdict -eq 'INCONSISTENT') {
             foreach ($n in ($provenanceNotes | Select-Object -First 12)) { Out-LineColor "      x $n" "DarkYellow" }
         }
