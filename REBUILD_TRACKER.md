@@ -155,7 +155,7 @@ own rebuild, one at a time (never a mass sweep).
 | CA_CLETS | RESOLVED v2.5 (2026-06-14) -- server-routing model confirmed (wire=MessageType, keyRefs server-selected by field VALUE); 20 inert conditions removed + 13 redundant IV.4* combos deleted. |
 | NY_NYSPIN_EJUSTICE | RESOLVED v4.0 (2026-07-02) -- verified 2026-07-06: zero EQUALS/NOT_EQUALS conditions in current JSON. DALHOUT/DALLOUT now use existence-only (EXISTS/NOT_EXISTS) State routing. |
 | NJ_NJCJIS | KNOWN BENIGN, no action -- RandomRequest EQUALS Y/N; routing carried by field value, identical MessageKey across the poisoned combo. Live-passed 2026-05-28 NJCJIS tenant. |
-| TX_TLETS | STILL OPEN -- ImageIndicator EQUALS Y conditions routing (Img/catchall union over-send risk). Verify with one live query or redesign to existence/set[]-based routing at next rebuild. |
+| TX_TLETS | RESOLVED v4.0 (2026-07-09) -- verified 2026-07-13: the v4.0 rebuild merged the DH image-variant split and the shipped `TX_TLETS_v4.0.json` has ZERO EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX conditions. ImageIndicator=Y is now a plain `any[]` default (no value-comparison condition), so the poisoned-array risk is gone. |
 | TX_TLETS_CCH | OUT OF SCOPE -- intentional separate data-ingestion stub (user directive). |
 
 Process lesson: simulator/combo-match tests PASS without exercising conditions live -- false
@@ -219,7 +219,8 @@ combo unreachable under first-match).
 | Provider | Status |
 |---|---|
 | CA_CLETS | RESOLVED -- IV.4* combos deleted entirely as part of the poisoned-array fix (v2.5); IR.QVC.N shadow fixed v2.12 (RegistrationState NOT_EXISTS + SexCode EXISTS added for mutual exclusion, `verify_build` CHECK 16 reachability CLEAN). Verified 2026-07-06: zero IV.4* keyRefs remain in current JSON. |
-| TX_TLETS / TX_TLETS_CCH | STILL OPEN -- `QVVehicleIdentificationNumber` shadowed by `RQVehicleIdentificationNumber`; add routing conditions or reorder at next rebuild. |
+| TX_TLETS | RESOLVED v4.0 (2026-07-09) -- CHECK-16 reachability pass added existence-only EXISTS gates (VIN FRT EXISTS, QV-VIN RegionId EXISTS) so the VIN combos are individually reachable; verify_build CHECK 16 clean. |
+| TX_TLETS_CCH | STILL OPEN (out of scope, CCH stub) -- `QVVehicleIdentificationNumber` shadowed by `RQVehicleIdentificationNumber`; fixes on its next rebuild. |
 
 NY/NJ/HI/FL_FCIC and all other providers: 0 findings.
 
