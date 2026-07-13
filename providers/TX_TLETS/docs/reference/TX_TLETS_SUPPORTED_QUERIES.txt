@@ -1,5 +1,5 @@
-STATUS: PROVISIONAL
-# TX_TLETS supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
+STATUS: CONFIRMED (devdoc-verified 2026-07-13)
+# TX_TLETS supported queries -- DERIVED FROM JSON COMBOS, then CONFIRMED against source/TX_TLETS_DEVDOC.txt 'Basic Queries Supported'. VehicleRegistration + VehicleInsuranceRegistration are merged under one Vehicle Registration QIDM (identical primary set). One devdoc combo intentionally NOT built -- see SKIP below.
 # ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
 #   - remove any line the devdoc does NOT authorize
 #   - add any devdoc-supported query intentionally not built (document as a skip)
@@ -11,6 +11,12 @@ Article | NCICNumber
 Boat | BoatHullIdNumber
 Boat | NCICNumber
 Boat | RegistrationNumber
+# SKIP: Boat | Name -- devdoc BoatQuery "Possible Combinations" #2 (OutOfState: Name, BirthDate, State)
+#   is NOT built: the BoatQuery v13 METADATA transaction defines no Name or BirthDate field (only
+#   BoatHullIdNumber / ImageIndicator / NCICNumber / RegistrationNumber / RelatedHitSearchIndicator / State).
+#   Metadata is field-authority -- a boat-by-name search cannot be sent through this transaction, so the
+#   devdoc combo is unbuildable from TX's current metadata (devdoc/metadata discrepancy, flagged 2026-07-13).
+#   If TX later supplies BoatQuery metadata that includes Name/BirthDate, build this combo and remove this skip.
 Driver History | Name
 Driver History | OperatorLicenseNumber
 Driver License | Name

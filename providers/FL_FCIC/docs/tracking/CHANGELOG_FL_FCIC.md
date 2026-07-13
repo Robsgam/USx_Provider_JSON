@@ -2,7 +2,7 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.1** | Generated: 2026-07-06
+Current: **v7.1** | Generated: 2026-07-13
 
 ---
 
