@@ -1,6 +1,6 @@
-NY_NYSPIN_EJUSTICE v4.6 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.7 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-07
+Generated: 2026-07-13
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -9,7 +9,7 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 8 fields):
   CARD_VEH (VEHICLE QUERY):
-    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
 
 Person (3 cards, 34 fields):
@@ -36,11 +36,11 @@ Firearm (1 card, 4 fields):
 Article (1 card, 4 fields):
   CARD_ART (ARTICLE QUERY):
     ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 4 fields):
   CARD_BOA (BOAT QUERY):
-    RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 QIDM SUMMARY (7 QIDMs, 17 combos)
 ----------------------------------------
@@ -186,4 +186,4 @@ COMBO COVERAGE (17/17):
   ArticleSingleQuery: 1/1 -- T43(AINQ)
   BoatQuery: 4/4 -- T31(RCAR+Hull), T33(BVIN+BVIN), T35(BVEH+BVEH), T37(RVEH+RVEH)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.6.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.7.json
