@@ -1,5 +1,35 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.8 (2026-07-15): Person card layout/label feedback pass (Vehicle-consistency + DH parity)
+#   + removed the QW shadow combo from DriverLicenseQuery.
+#   (0) REMOVED: the 'QW' combo (Wanted Person, Name+DOB with Sex optional) from
+#   DriverLicenseQuery. QW is a platform-auto-sent shadow query, not a client-buildable combo --
+#   confirmed precedent: FL_FCIC_BUILD_NOTES.txt v4.2 (2026-05-19), "Remove WantedPersonQuery (QW)
+#   QIDM... CommSys auto-sends QW query; no JSON-side QIDM needed. Confirmed by platform team."
+#   QW is a standard NCIC-level key (not FL-specific), so the finding transfers directly to HI's
+#   own QW combo. This also fixes a real bug found while investigating (QW's any[] was wrongly
+#   'RegistrationState' -- metadata gives QW no State field at all; copy-pasted from DQ's OOS
+#   pattern by mistake) by removing the combo entirely rather than patching it. HI's own v1.0
+#   build notes flagged this same PDF-vs-XML gap ("PDF Basic Queries does NOT show it") but chose
+#   wrong at the time (include per metadata) -- the FL_FCIC platform-team confirmation supersedes
+#   that original call. Consequence: Sex is now genuinely required whenever searching DL by Name
+#   (matches DH's SexCodeDH, which never had a Sex-optional fallback) -- label changed accordingly
+#   (see item 2 below). DriverLicenseQuery now has exactly 2 combos (DQ, DQN), matching the
+#   devdoc's own "Possible Combinations" list exactly.
+#   (1) 'State (leave blank for in-state)' -> 'State (leave blank for Hawaii)' -- matches Vehicle's
+#   label exactly (verify_build CHECK 15). (2) sexCode_Input label 'Sex (optional)' -> 'Sex -
+#   required with Name' (see item 0 above -- no longer optional once QW is removed).
+#   nameMiddle/nameMiddleDH label 'Middle Name' -> 'M.I.' (DL)/'M.I. (DH)' (DH). (3) nameSuffixDH
+#   label de-cluttered from 'Suffix (DH, optional)' to 'Suffix (DH)' -- matches DL's plain 'Suffix'
+#   + the First/Last (DH) naming convention. (4) DL/DH Person card row regroup: First Name + Last
+#   Name get their own row; M.I. + Suffix + Date of Birth share one row; Sex(Code) moves to its own
+#   row (previously paired with DOB -- DOB is now grouped with M.I./Suffix instead). Applied
+#   identically to both DL and DH cards for placement parity.
+#   PurposeCode dropdown NOT changed -- confirmed via Confluence "USx Attribute Mappings" page:
+#   DEX_INQUIRY_PURPOSE_CODE code-type mapping is documented ONLY for Louisiana + Sales Demo
+#   Systems, not for any other state including HI (matches the portfolio-wide FormSelect->
+#   FormInput revert already done on FL/NM/OH/TN/TX/LA/HI; see HI_HCJDC_OFML_BUILD_NOTES.txt v3.x).
+#   Re-opens ALL 5 HI entities for live re-test (Person card change forces a global version bump).
 # v4.6 (2026-06-26): (1) VehicleMakeName code-source correction (RND-62365, shared module
 #   tools/_build_rms_bundle.ps1): VEHICLE/VehicleType -> attributeType=VEHICLE_MAKE/codeTypeSource=NCIC
 #   (probe-confirmed present; matches RND-54190 + sibling VehicleModelName). Result-mapping only.
@@ -144,7 +174,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.7",
+    [string]$Version = "4.8",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -343,8 +373,10 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # DQ: Name+DOB+Sex path -- 4 set[], most specific. primary=SexCode per metadata
-        # (the SexCode-primary DQ combo; distinguishes from QW Name+DOB). State optional (OOS).
+        # DQ: Name+DOB+Sex path -- 4 set[], most specific. primary=SexCode per metadata.
+        # State optional (OOS). Sex is REQUIRED here (bundled with Name+DOB) -- matches the
+        # devdoc's own "Possible Combinations" list exactly (only 2 combos: Name+DOB+Sex, or
+        # OLN). No separate Sex-optional Name variant exists once QW is removed (see below).
         # CONDITION: OperatorLicenseNumber NOT_EXISTS -- OLN>Name guardrail (v3.7). When the
         # officer enters an OLN (fires DQN), this Name-based combo exits the union pool so Name/
         # Sex/DOB do not bleed onto the wire. conditions[].field = sourceField (PascalCase).
@@ -355,14 +387,18 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'DQ'
             state                 = 'In/Out'
         }
-        # QW: Wanted Person -- 3 set[] (Name+DOB, no Sex). State optional companion (OOS).
-        # CONDITION: OperatorLicenseNumber NOT_EXISTS -- OLN>Name guardrail (v3.7), same as DQ.
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
-            primaryFieldReference = 'Name'
-            keyReference          = 'QW'
-            state                 = 'In/Out'
-        }
+        # QW (Wanted Person, Name+DOB with Sex optional) intentionally NOT built (v4.8).
+        # Removed: it's a platform-auto-sent shadow query, not a client-buildable combo --
+        # CommSys auto-sends the QW/NCIC Wanted Person check itself. Confirmed precedent:
+        # FL_FCIC_BUILD_NOTES.txt v4.2 (2026-05-19), "Remove WantedPersonQuery (QW) QIDM...
+        # CommSys auto-sends QW query; no JSON-side QIDM needed. Confirmed by platform team."
+        # QW is a standard NCIC-level key (not FL-specific), so the finding transfers directly.
+        # The metadata XML technically defines QW as its own combo (any=[SexCode]), and HI's
+        # v1.0 build notes flagged the same PDF-vs-XML gap ("PDF Basic Queries does NOT show
+        # it") but chose wrong at the time (include per metadata) -- the FL_FCIC platform-team
+        # confirmation supersedes that original call. Also fixes a real bug: the previously-
+        # built QW combo's any[] was RegistrationState (wrong -- metadata gives QW no State
+        # field at all; that copy-pasted DQ's OOS pattern by mistake).
         # DQN: OLN path -- 1 set[], least specific. State optional companion (OOS).
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('RegistrationState') }
@@ -371,7 +407,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- DQ (Name+Sex+DOB), QW (Wanted Person), DQN (OLN). State in any[] for OOS. Shared Person fields; DH is opt-in (no queriesToDeselect).'
+    description     = 'DriverLicenseQuery -- DQ (Name+Sex+DOB, Sex required), DQN (OLN). State in any[] for OOS. QW (Wanted Person) intentionally not built -- platform auto-sends it (FL_FCIC v4.2 precedent). Shared Person fields; DH is opt-in (no queriesToDeselect).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'HI_HCJDC_OFML_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -699,7 +735,7 @@ $perLayout = MakeLayouts @(
         title = 'SEARCH OPTIONS'
         rows  = @(
             @{ id = 'ROW_PER_OPT1'; cols = @('12'); fields = @(
-                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for in-state)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT1' }
+                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT1' }
             )}
         )
     }
@@ -710,15 +746,17 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DL1'; cols = @('12'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_PER_DL1' }
             )}
-            @{ id = 'ROW_PER_DL2'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_DL2'; cols = @('6','6'); fields = @(
                 @{ id = 'nameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL2' }
                 @{ id = 'nameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL2' }
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_DL2' }
-                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '30' 'ROW_PER_DL2' }
             )}
-            @{ id = 'ROW_PER_DL3'; cols = @('6','6'); fields = @(
-                @{ id = 'birthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_PER_DL3' }
-                @{ id = 'sexCode_Input';   node = Sel 'SexCode'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL3' }
+            @{ id = 'ROW_PER_DL3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'M.I.'    '30' 'ROW_PER_DL3' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'  '30' 'ROW_PER_DL3' }
+                @{ id = 'birthDate_Input';  node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_PER_DL3' }
+            )}
+            @{ id = 'ROW_PER_DL4'; cols = @('4'); fields = @(
+                @{ id = 'sexCode_Input';   node = Sel 'SexCode'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL4' }
             )}
         )
     }
@@ -730,15 +768,17 @@ $perLayout = MakeLayouts @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_PER_DH1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code (DH) - optional' '1' 'ROW_PER_DH1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_PER_DH2'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_DH2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (DH)'  '30' 'ROW_PER_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (DH)'   '30' 'ROW_PER_DH2' }
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name (DH, optional)' '30' 'ROW_PER_DH2' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH, optional)'      '30' 'ROW_PER_DH2' }
             )}
-            @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name' 'ROW_PER_DH3' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
+            @{ id = 'ROW_PER_DH3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'M.I. (DH)'   '30' 'ROW_PER_DH3' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)' '30' 'ROW_PER_DH3' }
+                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name' 'ROW_PER_DH3' }
+            )}
+            @{ id = 'ROW_PER_DH4'; cols = @('4'); fields = @(
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH4' }
             )}
             # v2.7: hidden Attention gate-feeder. The DH QIDM Attention attribute
             # (CommsysGetLastNameFirstNameInitialRuleHandler) is gated out of

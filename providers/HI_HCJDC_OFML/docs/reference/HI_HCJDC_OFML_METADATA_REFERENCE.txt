@@ -1,7 +1,7 @@
-HI_HCJDC_OFML_v4.7 METADATA REFERENCE
+﻿HI_HCJDC_OFML_v4.8 METADATA REFERENCE
 ======================================
-Generated: 2026-07-06
-Source: HI_HCJDC_OFML.xml (metadata) + HI_HCJDC_OFML_v4.7.json
+Generated: 2026-07-15
+Source: HI_HCJDC_OFML.xml (metadata) + HI_HCJDC_OFML_v4.8.json
 Metadata: 15 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -86,10 +86,10 @@ METADATA COMBINATIONS (3 total):
   DQ            SexCode                 SexCode, BirthDate, Name                               State, State2, State3, Stat...
   QW            Name                    BirthDate, Name                                        SexCode
 
-BUILD COVERAGE (3 of 3 built):
+BUILD COVERAGE (2 of 3 built):
   BUILT   DQ             set[SexCode, BirthDate, NameLast, NameFirst]
-  BUILT   QW             set[BirthDate, NameLast, NameFirst]
   BUILT   DQN            set[OperatorLicenseNumber]
+  UNBUILT QW             Name
 
 ================================================================================
 5. GunQuery (version 4)
@@ -156,16 +156,17 @@ BUILD SUMMARY
   ArticleSingleQuery                         1      1     0  100% (COMPLETE)
   BoatQuery                                  2      2     0  100% (COMPLETE)
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
-  DriverLicenseQuery                         3      3     0  100% (COMPLETE)
+  DriverLicenseQuery                         3      2     1  67%
   GunQuery                                   1      1     0  100% (COMPLETE)
   VehicleRegistrationQuery                   6      4     2  67%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   15     13     2  87%
+  TOTAL                                   15     12     3  80%
 
 ================================================================================
-UNBUILT METADATA COMBOS (2 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (3 combos in metadata, not in JSON)
 ================================================================================
 
+  QW             Name                     (DriverLicenseQuery)
   QV             LicensePlateNumber       (VehicleRegistrationQuery)
   QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
 

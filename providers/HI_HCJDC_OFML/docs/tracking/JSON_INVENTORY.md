@@ -11,6 +11,12 @@ Every iteration saved. Never overwrite.
 ## Changelog (auto-appended by sync_version_docs.ps1)
 
 
+
+## v4.8 (2026-07-15)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| HI_HCJDC_OFML_v4.8.json | v4.8 | Current | 66P/0F/0W/0LIM. |
 ## v4.7 (2026-07-02)
 
 | File | Version | Status | Notes |
