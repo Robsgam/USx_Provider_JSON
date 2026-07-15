@@ -1419,8 +1419,7 @@
                                                                                                       "hidden":  false,
                                                                                                       "nodes":  [
                                                                                                                     "ROW_PER_L1",
-                                                                                                                    "ROW_PER_N1",
-                                                                                                                    "ROW_PER_N2"
+                                                                                                                    "ROW_PER_N1"
                                                                                                                 ],
                                                                                                       "linkedNodes":  {
 
@@ -1518,8 +1517,9 @@
                                                                                                      "displayName":  "Row",
                                                                                                      "props":  {
                                                                                                                    "templateColumns":  [
-                                                                                                                                           "4",
-                                                                                                                                           "4",
+                                                                                                                                           "3",
+                                                                                                                                           "3",
+                                                                                                                                           "2",
                                                                                                                                            "2",
                                                                                                                                            "2"
                                                                                                                                        ]
@@ -1530,7 +1530,8 @@
                                                                                                                    "NameLast_Input",
                                                                                                                    "NameFirst_Input",
                                                                                                                    "nameMiddle_Input",
-                                                                                                                   "nameSuffix_Input"
+                                                                                                                   "nameSuffix_Input",
+                                                                                                                   "messageKey_Input"
                                                                                                                ],
                                                                                                      "linkedNodes":  {
 
@@ -1617,93 +1618,6 @@
                                                                                                                            },
                                                                                                            "parent":  "ROW_PER_N1"
                                                                                                        },
-                                                                                  "ROW_PER_N2":  {
-                                                                                                     "type":  {
-                                                                                                                  "resolvedName":  "Row"
-                                                                                                              },
-                                                                                                     "displayName":  "Row",
-                                                                                                     "props":  {
-                                                                                                                   "templateColumns":  [
-                                                                                                                                           "3",
-                                                                                                                                           "3",
-                                                                                                                                           "2",
-                                                                                                                                           "4"
-                                                                                                                                       ]
-                                                                                                               },
-                                                                                                     "isCanvas":  true,
-                                                                                                     "hidden":  false,
-                                                                                                     "nodes":  [
-                                                                                                                   "raceCode_Input",
-                                                                                                                   "expandedBirthDateSearchCode_Input",
-                                                                                                                   "regionId_Input",
-                                                                                                                   "messageKey_Input"
-                                                                                                               ],
-                                                                                                     "linkedNodes":  {
-
-                                                                                                                     },
-                                                                                                     "parent":  "CARD_PER_DL"
-                                                                                                 },
-                                                                                  "raceCode_Input":  {
-                                                                                                         "type":  {
-                                                                                                                      "resolvedName":  "FormSelect"
-                                                                                                                  },
-                                                                                                         "displayName":  "Select",
-                                                                                                         "props":  {
-                                                                                                                       "fieldId":  "raceCode",
-                                                                                                                       "label":  "Race (opt)",
-                                                                                                                       "codeTypeCategory":  "NIBRS_RACE",
-                                                                                                                       "codeTypeSource":  "NIBRS"
-                                                                                                                   },
-                                                                                                         "isCanvas":  false,
-                                                                                                         "hidden":  false,
-                                                                                                         "nodes":  [
-
-                                                                                                                   ],
-                                                                                                         "linkedNodes":  {
-
-                                                                                                                         },
-                                                                                                         "parent":  "ROW_PER_N2"
-                                                                                                     },
-                                                                                  "expandedBirthDateSearchCode_Input":  {
-                                                                                                                            "type":  {
-                                                                                                                                         "resolvedName":  "FormInput"
-                                                                                                                                     },
-                                                                                                                            "displayName":  "Input",
-                                                                                                                            "props":  {
-                                                                                                                                          "fieldId":  "expandedBirthDateSearchCode",
-                                                                                                                                          "label":  "Expanded DOB (opt)",
-                                                                                                                                          "maxLength":  "1"
-                                                                                                                                      },
-                                                                                                                            "isCanvas":  false,
-                                                                                                                            "hidden":  false,
-                                                                                                                            "nodes":  [
-
-                                                                                                                                      ],
-                                                                                                                            "linkedNodes":  {
-
-                                                                                                                                            },
-                                                                                                                            "parent":  "ROW_PER_N2"
-                                                                                                                        },
-                                                                                  "regionId_Input":  {
-                                                                                                         "type":  {
-                                                                                                                      "resolvedName":  "FormInput"
-                                                                                                                  },
-                                                                                                         "displayName":  "Input",
-                                                                                                         "props":  {
-                                                                                                                       "fieldId":  "regionId",
-                                                                                                                       "label":  "Region ID (opt)",
-                                                                                                                       "maxLength":  "4"
-                                                                                                                   },
-                                                                                                         "isCanvas":  false,
-                                                                                                         "hidden":  false,
-                                                                                                         "nodes":  [
-
-                                                                                                                   ],
-                                                                                                         "linkedNodes":  {
-
-                                                                                                                         },
-                                                                                                         "parent":  "ROW_PER_N2"
-                                                                                                     },
                                                                                   "messageKey_Input":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "FormInput"
@@ -1722,7 +1636,7 @@
                                                                                                            "linkedNodes":  {
 
                                                                                                                            },
-                                                                                                           "parent":  "ROW_PER_N2"
+                                                                                                           "parent":  "ROW_PER_N1"
                                                                                                        },
                                                                                   "CARD_PER_DH":  {
                                                                                                       "type":  {
@@ -2236,8 +2150,7 @@
                                                                                                            "hidden":  false,
                                                                                                            "nodes":  [
                                                                                                                          "ROW_PER_L1",
-                                                                                                                         "ROW_PER_N1",
-                                                                                                                         "ROW_PER_N2"
+                                                                                                                         "ROW_PER_N1"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -2335,8 +2248,9 @@
                                                                                                           "displayName":  "Row",
                                                                                                           "props":  {
                                                                                                                         "templateColumns":  [
-                                                                                                                                                "4",
-                                                                                                                                                "4",
+                                                                                                                                                "3",
+                                                                                                                                                "3",
+                                                                                                                                                "2",
                                                                                                                                                 "2",
                                                                                                                                                 "2"
                                                                                                                                             ]
@@ -2347,7 +2261,8 @@
                                                                                                                         "NameLast_Input",
                                                                                                                         "NameFirst_Input",
                                                                                                                         "nameMiddle_Input",
-                                                                                                                        "nameSuffix_Input"
+                                                                                                                        "nameSuffix_Input",
+                                                                                                                        "messageKey_Input"
                                                                                                                     ],
                                                                                                           "linkedNodes":  {
 
@@ -2434,93 +2349,6 @@
                                                                                                                                 },
                                                                                                                 "parent":  "ROW_PER_N1"
                                                                                                             },
-                                                                                       "ROW_PER_N2":  {
-                                                                                                          "type":  {
-                                                                                                                       "resolvedName":  "Row"
-                                                                                                                   },
-                                                                                                          "displayName":  "Row",
-                                                                                                          "props":  {
-                                                                                                                        "templateColumns":  [
-                                                                                                                                                "3",
-                                                                                                                                                "3",
-                                                                                                                                                "2",
-                                                                                                                                                "4"
-                                                                                                                                            ]
-                                                                                                                    },
-                                                                                                          "isCanvas":  true,
-                                                                                                          "hidden":  false,
-                                                                                                          "nodes":  [
-                                                                                                                        "raceCode_Input",
-                                                                                                                        "expandedBirthDateSearchCode_Input",
-                                                                                                                        "regionId_Input",
-                                                                                                                        "messageKey_Input"
-                                                                                                                    ],
-                                                                                                          "linkedNodes":  {
-
-                                                                                                                          },
-                                                                                                          "parent":  "CARD_PER_DL"
-                                                                                                      },
-                                                                                       "raceCode_Input":  {
-                                                                                                              "type":  {
-                                                                                                                           "resolvedName":  "FormSelect"
-                                                                                                                       },
-                                                                                                              "displayName":  "Select",
-                                                                                                              "props":  {
-                                                                                                                            "fieldId":  "raceCode",
-                                                                                                                            "label":  "Race (opt)",
-                                                                                                                            "codeTypeCategory":  "NIBRS_RACE",
-                                                                                                                            "codeTypeSource":  "NIBRS"
-                                                                                                                        },
-                                                                                                              "isCanvas":  false,
-                                                                                                              "hidden":  false,
-                                                                                                              "nodes":  [
-
-                                                                                                                        ],
-                                                                                                              "linkedNodes":  {
-
-                                                                                                                              },
-                                                                                                              "parent":  "ROW_PER_N2"
-                                                                                                          },
-                                                                                       "expandedBirthDateSearchCode_Input":  {
-                                                                                                                                 "type":  {
-                                                                                                                                              "resolvedName":  "FormInput"
-                                                                                                                                          },
-                                                                                                                                 "displayName":  "Input",
-                                                                                                                                 "props":  {
-                                                                                                                                               "fieldId":  "expandedBirthDateSearchCode",
-                                                                                                                                               "label":  "Expanded DOB (opt)",
-                                                                                                                                               "maxLength":  "1"
-                                                                                                                                           },
-                                                                                                                                 "isCanvas":  false,
-                                                                                                                                 "hidden":  false,
-                                                                                                                                 "nodes":  [
-
-                                                                                                                                           ],
-                                                                                                                                 "linkedNodes":  {
-
-                                                                                                                                                 },
-                                                                                                                                 "parent":  "ROW_PER_N2"
-                                                                                                                             },
-                                                                                       "regionId_Input":  {
-                                                                                                              "type":  {
-                                                                                                                           "resolvedName":  "FormInput"
-                                                                                                                       },
-                                                                                                              "displayName":  "Input",
-                                                                                                              "props":  {
-                                                                                                                            "fieldId":  "regionId",
-                                                                                                                            "label":  "Region ID (opt)",
-                                                                                                                            "maxLength":  "4"
-                                                                                                                        },
-                                                                                                              "isCanvas":  false,
-                                                                                                              "hidden":  false,
-                                                                                                              "nodes":  [
-
-                                                                                                                        ],
-                                                                                                              "linkedNodes":  {
-
-                                                                                                                              },
-                                                                                                              "parent":  "ROW_PER_N2"
-                                                                                                          },
                                                                                        "messageKey_Input":  {
                                                                                                                 "type":  {
                                                                                                                              "resolvedName":  "FormInput"
@@ -2539,7 +2367,7 @@
                                                                                                                 "linkedNodes":  {
 
                                                                                                                                 },
-                                                                                                                "parent":  "ROW_PER_N2"
+                                                                                                                "parent":  "ROW_PER_N1"
                                                                                                             },
                                                                                        "CARD_PER_DH":  {
                                                                                                            "type":  {
@@ -3134,8 +2962,7 @@
                                                                                                               "hidden":  false,
                                                                                                               "nodes":  [
                                                                                                                             "ROW_PER_L1",
-                                                                                                                            "ROW_PER_N1",
-                                                                                                                            "ROW_PER_N2"
+                                                                                                                            "ROW_PER_N1"
                                                                                                                         ],
                                                                                                               "linkedNodes":  {
 
@@ -3233,8 +3060,9 @@
                                                                                                              "displayName":  "Row",
                                                                                                              "props":  {
                                                                                                                            "templateColumns":  [
-                                                                                                                                                   "4",
-                                                                                                                                                   "4",
+                                                                                                                                                   "3",
+                                                                                                                                                   "3",
+                                                                                                                                                   "2",
                                                                                                                                                    "2",
                                                                                                                                                    "2"
                                                                                                                                                ]
@@ -3245,7 +3073,8 @@
                                                                                                                            "NameLast_Input",
                                                                                                                            "NameFirst_Input",
                                                                                                                            "nameMiddle_Input",
-                                                                                                                           "nameSuffix_Input"
+                                                                                                                           "nameSuffix_Input",
+                                                                                                                           "messageKey_Input"
                                                                                                                        ],
                                                                                                              "linkedNodes":  {
 
@@ -3332,93 +3161,6 @@
                                                                                                                                    },
                                                                                                                    "parent":  "ROW_PER_N1"
                                                                                                                },
-                                                                                          "ROW_PER_N2":  {
-                                                                                                             "type":  {
-                                                                                                                          "resolvedName":  "Row"
-                                                                                                                      },
-                                                                                                             "displayName":  "Row",
-                                                                                                             "props":  {
-                                                                                                                           "templateColumns":  [
-                                                                                                                                                   "3",
-                                                                                                                                                   "3",
-                                                                                                                                                   "2",
-                                                                                                                                                   "4"
-                                                                                                                                               ]
-                                                                                                                       },
-                                                                                                             "isCanvas":  true,
-                                                                                                             "hidden":  false,
-                                                                                                             "nodes":  [
-                                                                                                                           "raceCode_Input",
-                                                                                                                           "expandedBirthDateSearchCode_Input",
-                                                                                                                           "regionId_Input",
-                                                                                                                           "messageKey_Input"
-                                                                                                                       ],
-                                                                                                             "linkedNodes":  {
-
-                                                                                                                             },
-                                                                                                             "parent":  "CARD_PER_DL"
-                                                                                                         },
-                                                                                          "raceCode_Input":  {
-                                                                                                                 "type":  {
-                                                                                                                              "resolvedName":  "FormSelect"
-                                                                                                                          },
-                                                                                                                 "displayName":  "Select",
-                                                                                                                 "props":  {
-                                                                                                                               "fieldId":  "raceCode",
-                                                                                                                               "label":  "Race (opt)",
-                                                                                                                               "codeTypeCategory":  "NIBRS_RACE",
-                                                                                                                               "codeTypeSource":  "NIBRS"
-                                                                                                                           },
-                                                                                                                 "isCanvas":  false,
-                                                                                                                 "hidden":  false,
-                                                                                                                 "nodes":  [
-
-                                                                                                                           ],
-                                                                                                                 "linkedNodes":  {
-
-                                                                                                                                 },
-                                                                                                                 "parent":  "ROW_PER_N2"
-                                                                                                             },
-                                                                                          "expandedBirthDateSearchCode_Input":  {
-                                                                                                                                    "type":  {
-                                                                                                                                                 "resolvedName":  "FormInput"
-                                                                                                                                             },
-                                                                                                                                    "displayName":  "Input",
-                                                                                                                                    "props":  {
-                                                                                                                                                  "fieldId":  "expandedBirthDateSearchCode",
-                                                                                                                                                  "label":  "Expanded DOB (opt)",
-                                                                                                                                                  "maxLength":  "1"
-                                                                                                                                              },
-                                                                                                                                    "isCanvas":  false,
-                                                                                                                                    "hidden":  false,
-                                                                                                                                    "nodes":  [
-
-                                                                                                                                              ],
-                                                                                                                                    "linkedNodes":  {
-
-                                                                                                                                                    },
-                                                                                                                                    "parent":  "ROW_PER_N2"
-                                                                                                                                },
-                                                                                          "regionId_Input":  {
-                                                                                                                 "type":  {
-                                                                                                                              "resolvedName":  "FormInput"
-                                                                                                                          },
-                                                                                                                 "displayName":  "Input",
-                                                                                                                 "props":  {
-                                                                                                                               "fieldId":  "regionId",
-                                                                                                                               "label":  "Region ID (opt)",
-                                                                                                                               "maxLength":  "4"
-                                                                                                                           },
-                                                                                                                 "isCanvas":  false,
-                                                                                                                 "hidden":  false,
-                                                                                                                 "nodes":  [
-
-                                                                                                                           ],
-                                                                                                                 "linkedNodes":  {
-
-                                                                                                                                 },
-                                                                                                                 "parent":  "ROW_PER_N2"
-                                                                                                             },
                                                                                           "messageKey_Input":  {
                                                                                                                    "type":  {
                                                                                                                                 "resolvedName":  "FormInput"
@@ -3437,7 +3179,7 @@
                                                                                                                    "linkedNodes":  {
 
                                                                                                                                    },
-                                                                                                                   "parent":  "ROW_PER_N2"
+                                                                                                                   "parent":  "ROW_PER_N1"
                                                                                                                },
                                                                                           "CARD_PER_DH":  {
                                                                                                               "type":  {
@@ -7731,14 +7473,6 @@
                                                                                    }
                                                                       },
                                                                       {
-                                                                          "name":  "ExpandedBirthDateSearchCode",
-                                                                          "size":  1,
-                                                                          "sourceField":  [
-                                                                                              "expandedBirthDateSearchCode"
-                                                                                          ],
-                                                                          "targetField":  "ExpandedBirthDateSearchCode"
-                                                                      },
-                                                                      {
                                                                           "name":  "ImageIndicator",
                                                                           "size":  1,
                                                                           "sourceField":  [
@@ -7782,28 +7516,12 @@
                                                                           "targetField":  "OperatorLicenseNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "RaceCode",
-                                                                          "size":  1,
-                                                                          "sourceField":  [
-                                                                                              "raceCode"
-                                                                                          ],
-                                                                          "targetField":  "RaceCode"
-                                                                      },
-                                                                      {
                                                                           "name":  "ReasonCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
                                                                                               "reasonCode"
                                                                                           ],
                                                                           "targetField":  "ReasonCode"
-                                                                      },
-                                                                      {
-                                                                          "name":  "RegionId",
-                                                                          "size":  4,
-                                                                          "sourceField":  [
-                                                                                              "regionId"
-                                                                                          ],
-                                                                          "targetField":  "RegionId"
                                                                       },
                                                                       {
                                                                           "name":  "SexCode",
@@ -7876,40 +7594,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "DQName",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "BirthDate",
-                                                                                                             "NameLast",
-                                                                                                             "NameFirst"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "expandedBirthDateSearchCode",
-                                                                                                             "nameMiddle",
-                                                                                                             "nameSuffix",
-                                                                                                             "raceCode",
-                                                                                                             "regionId",
-                                                                                                             "SexCode"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "OperatorLicenseNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "BirthDate"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "QWName",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -7993,7 +7677,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- 4 combos (DQName, QWName, CPLName, DQOLN). v3.4: poisoned conditions removed; image/email/reason in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165.",
+                                                   "description":  "DriverLicenseQuery -- 3 combos (DQName, CPLName, DQOLN). v3.4: poisoned conditions removed; image/email/reason in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165. v4.2: QWName (Wanted Person) removed -- platform auto-sends it, not client-buildable (FL_FCIC v4.2 precedent).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "TX_TLETS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -8667,7 +8351,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS v4.1",
+                        "description":  "Provider configuration for TX_TLETS v4.2",
                         "name":  "TX_TLETS",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS"

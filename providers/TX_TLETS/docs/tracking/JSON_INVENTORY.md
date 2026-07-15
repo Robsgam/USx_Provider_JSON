@@ -37,6 +37,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v4.2 (2026-07-15)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_v4.2.json | v4.2 | Current | 80P/0F/0W/0LIM. |
 ## v4.1 (2026-07-15)
 
 | File | Version | Status | Notes |

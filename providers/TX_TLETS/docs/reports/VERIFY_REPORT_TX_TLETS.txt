@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.1.json
-  Generated: 2026-07-15 15:01
+  Source: TX_TLETS_v4.2.json
+  Generated: 2026-07-15 18:42
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_v4.1
+ POST-BUILD VERIFICATION: TX_TLETS_v4.2
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 33 [financialResponsibilityType, LicensePlateTypeCode, LicensePlateYear, regionId, stickerNumber, VehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, ImageIndicator, messageKey, nameMiddle, nameSuffix, raceCode, reasonCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, GunSerialNumber, NCICNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 31 [financialResponsibilityType, LicensePlateTypeCode, LicensePlateYear, regionId, stickerNumber, VehicleMakeCode, vehicleYear, emailAddress, ImageIndicator, messageKey, nameMiddle, nameSuffix, reasonCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, GunSerialNumber, NCICNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -45,7 +45,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (41) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (39) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -60,7 +60,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (44 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned)
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

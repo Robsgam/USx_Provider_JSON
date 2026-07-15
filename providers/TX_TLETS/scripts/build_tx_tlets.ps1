@@ -1,6 +1,18 @@
-# build_tx_tlets.ps1  -- TX_TLETS v4.1
+# build_tx_tlets.ps1  -- TX_TLETS v4.2
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
-# 22 CommSys combos: 7 VehReg + 4 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# 21 CommSys combos: 7 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v4.2 (2026-07-15): Removed the QWName combo (Wanted Person, Name+DOB with Sex optional) from
+#   DriverLicenseQuery. QW is a platform-auto-sent shadow query, not client-buildable --
+#   confirmed precedent: FL_FCIC_BUILD_NOTES.txt v4.2, "CommSys auto-sends QW query; no
+#   JSON-side QIDM needed. Confirmed by platform team." Portfolio audit found the same pattern
+#   built on HI_HCJDC_OFML (removed v4.8) and TX_TLETS -- QW is a standard NCIC-level key (not
+#   FL-specific). TX's own devdoc doesn't authorize a Sex-optional Name variant either: its
+#   closest "Possible Combination" (#3, Name+BirthDate+SexCode+RaceCode) requires Sex AND Race
+#   together, a stricter/different combo than what QWName actually built (Sex/Race both merely
+#   optional). DriverLicenseQuery now has 3 combos (DQName, CPLName, DQOLN) -- Sex is genuinely
+#   required whenever searching via DQName (already gated by its own SexCode EXISTS condition +
+#   set[] membership, unchanged). TX_TLETS_CCH intentionally NOT touched -- defer until this is
+#   vetted live, consistent with the CCH-defers-until-main rule. Re-opens Person for live re-test.
 # v4.1 (RND-57165): EmailAddress converted from a manually-typed field to the automated-handler
 #        pattern -- GetUserProfileSingleValueRuleHandler (arguments=['email']) + hidden
 #        gate-feeder on the shared Person SEARCH OPTIONS card, matching the existing Attention
@@ -56,7 +68,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.1"
+    [string]$Version = "4.2"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -112,7 +124,7 @@ $vehRegQuery = [PSCustomObject]@{
     description = 'VehicleInsuranceRegistrationQuery -- 7 combos (REG/RQ/VIN+FRT/DPSI/QV).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
-# --- DriverLicenseQuery (4 combos) ---
+# --- DriverLicenseQuery (3 combos) ---
 # v3.4: POISONED-ARRAY fix. v3.2 gated "image-path" combos with `ImageIndicator EQUALS Y` +
 # ReasonCode/EmailAddress conditions -- but value-comparison conditions are INERT on the platform
 # (QIDM_REFERENCE Sec 2a), so each Img combo and its catchall twin (identical set[]) both fired =>
@@ -132,29 +144,29 @@ $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate' }
         [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress'; rule = [PSCustomObject]@{ function = 'GetUserProfileSingleValueRuleHandler'; arguments = @('email') } }
-        [PSCustomObject]@{ name = 'ExpandedBirthDateSearchCode'; size = 1; sourceField = @('expandedBirthDateSearchCode'); targetField = 'ExpandedBirthDateSearchCode' }
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
         # MessageKey (CPL/DWI/RDL) -- DL metadata field, optional in the CPL combo any[] (metadata is field-authority).
         [PSCustomObject]@{ name = 'MessageKey'; size = 3; sourceField = @('messageKey'); targetField = 'MessageKey' }
         [PSCustomObject]@{ name = 'Name'; rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',',' ',' ') }; size = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name' }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'RaceCode'; size = 1; sourceField = @('raceCode'); targetField = 'RaceCode' }
         [PSCustomObject]@{ name = 'ReasonCode'; size = 1; sourceField = @('reasonCode'); targetField = 'ReasonCode' }
-        [PSCustomObject]@{ name = 'RegionId'; size = 4; sourceField = @('regionId'); targetField = 'RegionId' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # DQ Name (merged v3.4 -- image/email/reason in any[], no poisoned conditions)
+        # SexCode EXISTS is a NECESSARY gate, not redundant with set[] membership -- CHECK 16
+        # proved the platform fires on primaryFieldReference presence, not full set[] presence,
+        # so without this condition Name alone (no Sex) could still fire DQName.
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('emailAddress','ImageIndicator','nameMiddle','nameSuffix','reasonCode','RegistrationState'); defaults = $imgDefs; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('SexCode'); operator = 'EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'DQName'; state = 'In/Out' }
-        # QW Name -- unchanged (no image/email)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('BirthDate','NameLast','NameFirst'); any = @('expandedBirthDateSearchCode','nameMiddle','nameSuffix','raceCode','regionId','SexCode'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('BirthDate'); operator = 'EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'QWName'; state = 'In/Out' }
+        # QWName (Wanted Person, Name+DOB with Sex/Race/RegionId/ExpandedDOB all optional)
+        # intentionally NOT built (v4.2) -- platform-auto-sent shadow query, see header comment.
         # CPL Name (merged v3.4)
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('emailAddress','ImageIndicator','messageKey','nameMiddle','nameSuffix','reasonCode','RegistrationState'); defaults = $imgDefs; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'CPLName'; state = 'In/Out' }
         # DQ OLN (merged v3.4)
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('emailAddress','ImageIndicator','reasonCode','RegistrationState'); defaults = $imgDefs }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOLN'; state = 'In/Out' }
     )
-    description = 'DriverLicenseQuery -- 4 combos (DQName, QWName, CPLName, DQOLN). v3.4: poisoned conditions removed; image/email/reason in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
+    description = 'DriverLicenseQuery -- 3 combos (DQName, CPLName, DQOLN). v3.4: poisoned conditions removed; image/email/reason in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165. v4.2: QWName (Wanted Person) removed -- platform auto-sends it, not client-buildable (FL_FCIC v4.2 precedent).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
 }
 
 # --- DriverHistoryQuery (2 combos) ---
@@ -342,18 +354,15 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDate_Input';             node = Dt  'BirthDate' 'Date of Birth (Name search)' 'ROW_PER_L1' }
                 @{ id = 'SexCode_Input';               node = Sel 'SexCode'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_L1' }
             )}
-            @{ id = 'ROW_PER_N1'; cols = @('4','4','2','2'); fields = @(
+            @{ id = 'ROW_PER_N1'; cols = @('3','3','2','2','2'); fields = @(
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name (Name search)'  '30' 'ROW_PER_N1' }
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name (Name search)' '30' 'ROW_PER_N1' }
                 @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI (opt)'     '30' 'ROW_PER_N1' }
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (opt)' '30' 'ROW_PER_N1' }
+                @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'Message Key (CPL/DWI/RDL, opt)' '3' 'ROW_PER_N1' }
             )}
-            @{ id = 'ROW_PER_N2'; cols = @('3','3','2','4'); fields = @(
-                @{ id = 'raceCode_Input';                    node = Sel 'raceCode' 'Race (opt)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_N2' }
-                @{ id = 'expandedBirthDateSearchCode_Input'; node = Inp 'expandedBirthDateSearchCode' 'Expanded DOB (opt)' '1' 'ROW_PER_N2' }
-                @{ id = 'regionId_Input';                    node = Inp 'regionId' 'Region ID (opt)' '4' 'ROW_PER_N2' }
-                @{ id = 'messageKey_Input';                  node = Inp 'messageKey' 'Message Key (CPL/DWI/RDL, opt)' '3' 'ROW_PER_N2' }
-            )}
+            # ROW_PER_N2 (Race/Expanded DOB/Region ID) removed v4.2 -- those 3 fields only ever
+            # fed the now-removed QWName combo (platform-auto-sent shadow query, not built).
         )
     }
     @{
