@@ -39,7 +39,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 3 | NY_NYSPIN_EJUSTICE | v4.7 |  | 80P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | out of scope |
 | 5 | FL_FCIC | v7.1 |  | 92P/0F/0W | 0 | in-scope, single-JSON |
-| 6 | TX_TLETS | v4.0 |  | 81P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
+| 6 | TX_TLETS | v4.1 |  | 81P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/6W | 0 | out of scope |
 | 8 | CA_CLETS | v2.12 |  | 77P/0F/0W | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | out of scope |

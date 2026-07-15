@@ -1,6 +1,13 @@
-# build_tx_tlets.ps1  -- TX_TLETS v4.0
+# build_tx_tlets.ps1  -- TX_TLETS v4.1
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
 # 22 CommSys combos: 7 VehReg + 4 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v4.1 (RND-57165): EmailAddress converted from a manually-typed field to the automated-handler
+#        pattern -- GetUserProfileSingleValueRuleHandler (arguments=['email']) + hidden
+#        gate-feeder on the shared Person SEARCH OPTIONS card, matching the existing Attention
+#        mechanism. CJIS policy requires the actual signed-in officer's email on TLETS DL-photo
+#        requests (NAM+DOB/OLN + IMQ + RSN + EML), not a shared/typed value. ReasonCode="C"
+#        default already existed (imgDefs/imgDefsDH) -- confirmed satisfied, no change needed.
+#        Ref: source/RND-57165_EmailAddressHandler/ (ticket + Confluence handler doc).
 # v4.0 CHECK-16 reachability fixes (set[] does NOT gate firing -- only primary+conditions): added
 #   existence-only EXISTS gates so metadata combos are all reachable -- VIN gated FRT EXISTS, QV-VIN
 #   RegionId EXISTS, DL DQName SexCode EXISTS + QWName BirthDate EXISTS, Boat BQ RegistrationState
@@ -49,7 +56,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.0"
+    [string]$Version = "4.1"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -110,16 +117,21 @@ $vehRegQuery = [PSCustomObject]@{
 # ReasonCode/EmailAddress conditions -- but value-comparison conditions are INERT on the platform
 # (QIDM_REFERENCE Sec 2a), so each Img combo and its catchall twin (identical set[]) both fired =>
 # union over-send. Fix: merge each pair into ONE combo per path; image/email/reason stay in any[]
-# (sent when populated); defaults inject ImageIndicator=Y + ReasonCode=C (covers CAD). Email is
-# manually entered for now (future email-injection handler TBD). All query paths preserved.
+# (sent when populated); defaults inject ImageIndicator=Y + ReasonCode=C (covers CAD). All query
+# paths preserved.
+# v4.1 (RND-57165): EmailAddress converted to the automated-handler pattern
+# (GetUserProfileSingleValueRuleHandler, arguments=['email']) + hidden gate-feeder, same
+# mechanism as Attention -- CJIS policy requires the actual signed-in officer's email, not a
+# manually-typed value an officer could get wrong or leave blank. See
+# source/RND-57165_EmailAddressHandler/ for the ticket + handler reference docs.
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'DQ', 'QW', 'CPL'; field-name suffixes (DQName, DQOLN, CPLName) synthetic.
-$imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
+$imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'EmailAddress'; value = 'X' })
 $noImgDefs = @([PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate' }
-        [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress' }
+        [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress'; rule = [PSCustomObject]@{ function = 'GetUserProfileSingleValueRuleHandler'; arguments = @('email') } }
         [PSCustomObject]@{ name = 'ExpandedBirthDateSearchCode'; size = 1; sourceField = @('expandedBirthDateSearchCode'); targetField = 'ExpandedBirthDateSearchCode' }
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
         # MessageKey (CPL/DWI/RDL) -- DL metadata field, optional in the CPL combo any[] (metadata is field-authority).
@@ -142,7 +154,7 @@ $dlQuery = [PSCustomObject]@{
         # DQ OLN (merged v3.4)
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('emailAddress','ImageIndicator','reasonCode','RegistrationState'); defaults = $imgDefs }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOLN'; state = 'In/Out' }
     )
-    description = 'DriverLicenseQuery -- 4 combos (DQName, QWName, CPLName, DQOLN). v3.4: poisoned conditions removed; image/email/reason in any[].'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
+    description = 'DriverLicenseQuery -- 4 combos (DQName, QWName, CPLName, DQOLN). v3.4: poisoned conditions removed; image/email/reason in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverLicenseQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverLicenseQuery'; queryLabel = 'Driver License'; targetEntity = 'Person'
 }
 
 # --- DriverHistoryQuery (2 combos) ---
@@ -151,19 +163,20 @@ $dlQuery = [PSCustomObject]@{
 # actually enforced "Image only with email" -- the Img variant shadowed the plain one AND could
 # serialize Image=Y without email. Merged to one combo per identifier: ImageIndicator (default Y) is
 # the trigger; ReasonCode (default C) + EmailAddress ride with it in any[] (sent when present).
-# EmailAddress is exposed as a visible field now and will be auto-populated by a handler later
-# (like Attention/Requestor) -- until then the officer types it on image queries.
+# v4.1 (RND-57165): EmailAddress converted to the automated-handler pattern (same mechanism as
+# Attention below) -- CJIS policy requires the actual signed-in officer's email.
 # OLN>Name identifier-priority guardrail kept on KQName (OperatorLicenseNumberDH NOT_EXISTS).
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'KQ'; synthetic labels KQName/KQOLN. See PLATFORM_CONSTRAINTS.txt.
-# Attention auto-populates via CommsysGetLastNameFirstNameInitialRuleHandler; the hidden
-# gate-feeder field carries initialValue='X', so each DH combo needs a matching default (audit_cad CHECK 6).
-$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' })
+# Attention auto-populates via CommsysGetLastNameFirstNameInitialRuleHandler; EmailAddress via
+# GetUserProfileSingleValueRuleHandler (arguments=['email']) -- both use a hidden gate-feeder
+# field carrying initialValue='X', so each DH combo needs a matching default (audit_cad CHECK 6).
+$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' }, [PSCustomObject]@{ field = 'EmailAddress'; value = 'X' })
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'; rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' } }
         [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate' }
-        [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress' }
+        [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress'; rule = [PSCustomObject]@{ function = 'GetUserProfileSingleValueRuleHandler'; arguments = @('email') } }
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'Name'; rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',',' ',' ') }; size = 30; sourceField = @('NameLastDH','NameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name' }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
@@ -178,7 +191,7 @@ $dhQuery = [PSCustomObject]@{
         # KQOLN -- OLN path (catchall). Image=Y + Reason=C defaults ride; Email in any[].
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('Attention','ImageIndicator','emailAddress','purposeCodeDH','reasonCode','RegistrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
     )
-    description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). v4.0: image-variant split merged (set[] does not gate firing); ImageIndicator=Y default triggers Reason=C + Email, all in any[]; Email exposed now, handler later. DH-suffix; OLN>Name guardrail on KQName; Attention auto-populated (gate-feeder).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
+    description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). v4.0: image-variant split merged (set[] does not gate firing); ImageIndicator=Y default triggers Reason=C, all in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165. DH-suffix; OLN>Name guardrail on KQName; Attention auto-populated (gate-feeder).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
 
 # --- GunQuery (2 combos) ---
@@ -306,11 +319,17 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_OPT'
         title = 'SEARCH OPTIONS'
         rows  = @(
-            @{ id = 'ROW_PER_O1'; cols = @('3','2','2','5'); fields = @(
+            # EmailAddress is auto-populated via GetUserProfileSingleValueRuleHandler (RND-57165)
+            # -- hidden gate-feeder makes 'emailAddress' visible to the platform so the handler's
+            # sourceField resolves and the officer's own signed-in email enters the serialization
+            # pool. CJIS policy requires the actual requestor's email, not a manually-typed value.
+            @{ id = 'ROW_PER_OE'; cols = @('12'); fields = @(
+                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_OE' @{ initialValue = 'X' } }
+            )}
+            @{ id = 'ROW_PER_O1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (default TX - change for out-of-state)' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_O1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (opt)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
                 @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code (opt)' '1' 'ROW_PER_O1' @{ initialValue = 'C' } }
-                @{ id = 'emailAddress_Input';      node = Inp 'emailAddress' 'Email Address (optional; sent with image queries)' '80' 'ROW_PER_O1' }
             )}
         )
     }

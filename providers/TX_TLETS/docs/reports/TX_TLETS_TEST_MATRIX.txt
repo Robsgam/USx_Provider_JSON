@@ -1,4 +1,4 @@
-TX_TLETS v4.0 -- TEST MATRIX
+TX_TLETS v4.1 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-15
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -15,7 +15,8 @@ Vehicle (1 card, 10 fields):
 
 Person (3 cards, 24 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
-    RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1], emailAddress [Inp 80]
+    emailAddress [Inp X, 80]
+    RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
   CARD_PER_DL (DRIVER LICENSE):
     ROW 1: OperatorLicenseNumber [Inp 20], BirthDate [FormDate], SexCode [Sel SEX]
     ROW 2: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
@@ -203,4 +204,4 @@ COMBO COVERAGE (22/22):
   ArticleSingleQuery: 2/2 -- T51(Serial), T53(NCIC)
   BoatQuery: 5/5 -- T35(BQ+Hull), T37(QB+Hull), T39(BQ+Reg), T41(QB+Reg), T43(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.0.json
+IMPORT FILE: TX_TLETS_v4.1.json

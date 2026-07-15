@@ -832,7 +832,7 @@ foreach ($bundle in $providerBundles) {
             'HeightParserRuleHandler','ParseCommsysNameRuleHandler','ParseCommsysVehicleYearRuleHandler',
             'truncate','FormatArrayRuleHandler','FormatNameRuleHandler','AttributeArrayWrapperRuleHandler',
             'RmsRestPayloadHandler','RmsRestResultsHandler','RestRequestHandler','QueryResultsLayoutHandler',
-            'StaticValueRuleHandler')
+            'StaticValueRuleHandler','GetUserProfileSingleValueRuleHandler')
         foreach ($attr in $cfg.attributes) {
             if ($attr.rule -and $attr.rule.function -and $attr.rule.function -is [string]) {
                 if ($knownHandlers -notcontains $attr.rule.function) {

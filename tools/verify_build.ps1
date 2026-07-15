@@ -376,10 +376,13 @@ $hiddenFieldWhitelist = @(
     '(?i)dexStateUserId',                # AUTH user id from RMS profile
     '(?i)cadUnit|cadEvent|linkToEvent',  # CAD / First-Responder context
     '(?i)^Attention$',                   # auto-Attention gate-feeder (handler emits officer profile name; field hidden, value ignored)
-    '(?i)^requestorDH$'                  # NY_NYSPIN_EJUSTICE required-field exception (2026-07-06, user-approved):
+    '(?i)^requestorDH$',                 # NY_NYSPIN_EJUSTICE required-field exception (2026-07-06, user-approved):
                                           # CommsysGetLastNameFirstNameInitialRuleHandler gate-feeder, same rationale as
                                           # Attention above, deliberately extended to a required (set[]) field because
                                           # the value is knowable/stable (officer's own RMS profile), not officer judgment.
+    '(?i)^emailAddress$'                 # TX_TLETS RND-57165 (2026-07-15, user-approved): GetUserProfileSingleValueRuleHandler
+                                          # gate-feeder, same rationale as Attention -- CJIS policy requires the actual
+                                          # signed-in officer's email on TLETS DL-photo requests, not an officer-typed value.
 )
 
 # Recursively collect hidden form-field nodes (hidden=true + props.fieldId + Form* type)

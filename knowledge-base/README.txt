@@ -67,8 +67,8 @@ FILES IN THIS FOLDER (10 files, organized by question)
                            7 known import errors with root cause and fix
 
   RULE_HANDLERS.txt        "What handlers exist?"
-                           24 handlers: 4 property paths, 9 handler functions,
-                           14 attribute rule handlers, 1 special handler.
+                           25 handlers: 4 property paths, 9 handler functions,
+                           15 attribute rule handlers, 1 special handler.
                            Origin map, dead ends, build script checklist.
 
   CANADIAN_QUERIES_AVAILABLE.txt  "Which providers have Canadian query metadata?"

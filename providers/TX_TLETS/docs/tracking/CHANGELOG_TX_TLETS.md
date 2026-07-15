@@ -2,9 +2,33 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.0** | Generated: 2026-07-15
+Current: **v4.1** | Generated: 2026-07-15
 
 ---
+
+## v4.1 -- 2026-07-15 -- EmailAddress auto-populate handler (RND-57165)
+
+**CHANGED:** EmailAddress converted from a manually-typed field to the automated-handler pattern --
+         GetUserProfileSingleValueRuleHandler (arguments=['email']) on the QIDM attribute (both  
+         DriverLicenseQuery and DriverHistoryQuery), same hidden-gate-feeder mechanism already  
+         proven for Attention: emailAddress_Input on the shared Person SEARCH OPTIONS card  
+         converted to a hidden InpH with initialValue='X', and EmailAddress='X' added to both  
+         $imgDefs (DL) and $imgDefsDH (DH) combo defaults so the gate-feeder value actually  
+         reaches the serialization pool (audit_cad CHECK 6). Confirmed ReasonCode="C" default  
+         already existed on both -- no change needed there, satisfies the ticket's second ask.  
+         Added GetUserProfileSingleValueRuleHandler to validate.ps1's known-handlers list and  
+         verify_build.ps1's hidden-field approved-exception whitelist (both previously only knew  
+         about Attention/requestorDH); added it to knowledge-base/RULE_HANDLERS.txt as handler  
+         #25. Reference material (ticket summary, Confluence handler doc, sample config) saved  
+         to source/RND-57165_EmailAddressHandler/.  
+**REASON:**  Texas CJIS Security Policy requires DL-photo requests (ImageIndicator=Y) to carry the
+         actual signed-in officer's email, not a shared/agency address or an officer-typed value  
+         that could be wrong or blank -- this was the one deliverable the separate eng team  
+         (RND-57165) had to build before TX_TLETS could be re-tested and block_entity-locked;  
+         the field was deliberately left visible/manual since v4.0 specifically as a stand-in  
+         until this handler was delivered.  
+VALIDATOR: 81P/0F/0W/0LIM. VERIFY: 15P/0W/0F. Full re-test from Test 1 (GATE 1) required before  
+         re-locking -- this is a version bump on a previously fully-tested provider.  
 
 ## v4.0 -- 2026-07-09 -- Rebuild under current methodology (PascalCase + condensed UI + reachability)
 

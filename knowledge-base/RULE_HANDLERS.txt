@@ -510,6 +510,37 @@ Found at 4 property paths in the JSON structure.
 
       Returns null if sourceField not present in userArguments.
 
+  --------------------------------------------------------------------------
+  25. GetUserProfileSingleValueRuleHandler
+  --------------------------------------------------------------------------
+      Config type:  QIDM attribute (any single UserProfile property -- EmailAddress etc.)
+      Arguments:    [0] = key to retrieve from UserProfile.
+                    Common values: firstName, lastName, badgeNumber, email, userId, departmentId
+      Purpose:      Retrieves a named property from the UserProfile of the officer who made the
+                    query (session-derived, no userArguments/form lookup involved beyond the
+                    gate-feeder needed to get the attribute into the serialization pool).
+      Source:       Confluence "Attribute Handle" page item #22 (RND-57165); Jira RND-57165
+                    ("Handler to backfill email address based on value of a field (Texas Data
+                    Provider)")
+      All builds:   NO -- first use is TX_TLETS v4.1 EmailAddress (CJIS requires the actual
+                    signed-in officer's email, not a shared/typed value, on TLETS DL-photo
+                    requests). Same UserProfileService family as #13
+                    (CommsysGetLastNameFirstNameInitialRuleHandler) -- follow the identical
+                    "non-empty sourceField + any[] membership + hidden gate-feeder with
+                    initialValue" recipe proven for Attention (see #13 above); nothing in the
+                    Confluence doc suggests this one is exempt from that same pool-membership
+                    requirement.
+
+      Config:
+        {
+          "name": "Email",
+          "rule": { "function": "GetUserProfileSingleValueRuleHandler", "arguments": ["email"] },
+          "sourceField": ["EmailAddress"],
+          "targetField": "Email"
+        }
+
+      Output: { "Email": "test.user@mark43.com" }
+
 ================================================================================
   CODE MAPPING HANDLERS (response-side)
 ================================================================================
@@ -558,8 +589,9 @@ Found at 4 property paths in the JSON structure.
   Build scripts configure: CommsysTransactionRequestHandler on each QIDM
                            CommsysParseDateRuleHandler on BirthDate attrs
                            FormatStringRuleHandler on Name attrs
+                           GetUserProfileSingleValueRuleHandler on EmailAddress (TX_TLETS only, so far)
 
-  Total ecosystem:         24 unique handlers
+  Total ecosystem:         25 unique handlers
 
 ================================================================================
   HANDLER SUMMARY TABLE (from engineering doc)
@@ -588,6 +620,7 @@ Found at 4 property paths in the JSON structure.
   CommsysGetLastNameFirstNameInitialRuleHandler | Format user name            | Yes (Profile)
   CommsysImageDataRuleHandler              | Extract ImageData               | Yes (Config)
   CommsysImageIdRuleHandler                | Extract ImageId                 | Yes (Config)
+  GetUserProfileSingleValueRuleHandler     | Get named UserProfile property  | Yes (Profile)
 
 ================================================================================
   DEAD ENDS / DO NOT USE
