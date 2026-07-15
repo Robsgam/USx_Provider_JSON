@@ -101,6 +101,34 @@ function Get-ComboTestValue {
         if ($FieldId -match '(?i)^nyNyspinTransactionNameDH') { return 'DLIC' }
     }
 
+    # ── CCH-suffixed fields (TX_TLETS_CCH, added 2026-07-15): these must be checked BEFORE
+    # the generic patterns below since switch -Regex takes the first match, and a few CCH
+    # field names would otherwise collide with an unrelated base-field case intended for a
+    # different provider/context (attentionCCH would silently inherit '^attention' -> $null,
+    # meant for TX_TLETS main's automated hidden Attention gate-feeder -- CCH's Attention is a
+    # plain visible manually-typed field and needs a real value). The rest are genuinely new
+    # field names (Requestor/Operator/FreeText/InquiryReason/NletsDestination/etc.) with no
+    # prior case at all.
+    switch -Regex ($FieldId) {
+        '(?i)^attentionCCH'                { return 'SGAMBELLONE' }
+        '(?i)^requestorCCH'                { return 'SGAMBELLONE' }
+        '(?i)^operatorCCH'                 { return 'SGAMBELLONE' }
+        '(?i)^freeTextCCH'                 { return 'TEST FREE TEXT MESSAGE' }
+        '(?i)^inquiryReasonCCH'            { return 'TRAFFIC STOP' }
+        '(?i)^nletsDestination\d*CCH'      { return 'TX' }
+        '(?i)^stateIdNumberCCH'            { return 'TX1234567' }
+        '(?i)^fbiNumberCCH'                { return '123456789' }
+        '(?i)^miscellaneousNumberCCH'      { return 'MISC123456789' }
+        '(?i)^addressCityStateCCH'         { return 'AUSTIN TX' }
+        '(?i)^addressStreetCCH'            { return '5805 N LAMAR BLVD' }
+        '(?i)^addressZipCodeCCH'           { return '787520000' }
+        '(?i)^buildingNameCCH'             { return 'HQ' }
+        '(?i)^departmentNameCCH'           { return 'RECORDS' }
+        '(?i)^expandedNameSearchIndicatorCCH' { return 'Y' }
+        '(?i)^stateCCH'                    { return 'TX' }
+        default { break }
+    }
+
     # ── Shared cases: verified identical (same regex, same output) in both tools today ──
     switch -Regex ($FieldId) {
         '(?i)^licensePlateNumber'          { return 'TEST123' }

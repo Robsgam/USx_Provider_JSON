@@ -137,6 +137,21 @@ $cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
 # USx-native providers (NJ/FL/HI/TX) are Pascal BY DESIGN -- enabling -CamelCase there
 # would FAIL every field (false positive on known-good), so we only pass it when the
 # entity fieldIds are predominantly lowercase-first (a camelCase provider).
+# TX_TLETS_CCH v1.1 is a deliberately MIXED provider (PascalCase base-6 QIDMs identical to
+# TX_TLETS main + camelCase CCH-suffixed fields) -- the CCH cards' bulk of lowercase-starting
+# fieldIds (attentionCCH, nameLastCCH, etc.) can tip the overall ratio past 60% and wrongly
+# flag this as a camelCase provider. Guard: if any of the 22 canonical PascalCase USx tokens
+# (see CLAUDE.md Field Configuration Rules) appear verbatim (case-sensitive) among the
+# fieldIds, this is a Pascal-or-mixed provider -- a true camelCase provider would only ever
+# have the lowercase-first form of these tokens, so an exact match is a reliable signal
+# regardless of what fraction of the total field count it represents.
+$pascalCaseTokens = @(
+    'LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RandomRequest',
+    'RegistrationState','ImageIndicator','VehicleIdentificationNumber','NCICNumber',
+    'VehicleMakeCode','NameFirst','NameLast','BirthDate','SexCode','OperatorLicenseNumber',
+    'GunSerialNumber','GunMake','GunCaliber','GunModel','ArticleSerialNumber','ArticleTypeCode',
+    'RegistrationNumber','BoatHullIdNumber'
+)
 $useCamelCase = $false
 try {
     $detectJson = Get-Content $resolvedStr -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -154,7 +169,8 @@ try {
         }
     }
     $fids = $fids | Where-Object { $_ } | Select-Object -Unique
-    if ($fids.Count -gt 0) {
+    $hasPascalToken = @($fids | Where-Object { $pascalCaseTokens -ccontains ($_ -replace 'DH$','') }).Count -gt 0
+    if ($fids.Count -gt 0 -and -not $hasPascalToken) {
         $lower = @($fids | Where-Object { $_ -cmatch '^[a-z]' }).Count
         if (($lower / [double]$fids.Count) -ge 0.6) { $useCamelCase = $true }
     }

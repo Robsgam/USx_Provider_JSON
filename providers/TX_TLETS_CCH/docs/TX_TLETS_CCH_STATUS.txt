@@ -1,21 +1,24 @@
-﻿================================================================
+================================================================
   STATUS: TX_TLETS_CCH
-  Version: v1.0
-  Updated: 2026-06-09
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
+  Version: v1.1
+  Updated: 2026-07-15
 ================================================================
 
 CURRENT STATE
 =============
   Phase: STUB (single JSON, multi-card)
-  v1.0  119P/0F/0W/0LIM  (validator)
-  14 QIDMs: 6 base (ported from TX_TLETS) + 8 CCH (AQ/AR/FQ/IQ/QH/QR/QWI/ZR)
+  v1.1  113P/0F/0W/0LIM  (validator)
+  14 QIDMs: 6 base (identical to TX_TLETS main) + 8 CCH (AQ/AR/FQ/IQ/QH/QR/QWI/ZR)
   Import: Not attempted -- NOT live-tested
 
 ARCHITECTURE
 ============
-  Base 6 QIDMs: VehReg, DL, DH, Gun, Article, Boat (ported verbatim from TX_TLETS v3.3)
+  Base 6 QIDMs: VehReg, DL, DH, Gun, Article, Boat (ported from TX_TLETS v4.0 -- identical to
+    main except for the CCH addition: PascalCase, poisoned-array-free, identifier-priority
+    guardrails, CAD defaults, Attention automation)
   8 CCH QIDMs (Person, autoSelect=false, named-checkbox via queryLabel):
-    QH (5 combos, Choice split), IQ (1), QWI (3, Choice split), QR (2), ZR (2), FQ (1), AQ (1), AR (1)
+    QH (4 combos, metadata-exact: BDOB/Name/SID/FBI), IQ (1), QWI (3, Choice split), QR (2), ZR (2), FQ (1), AQ (1), AR (1)
   CCH fields fully isolated -- every CCH form fieldId is CCH-suffixed (zero collision w/ base Person form)
   3 CCH cards on Person QIF: CCH OPTIONS (shared), CCH PERSON, CCH RECORD/ADMIN
   FreeText (AQ/AR, maxLen 14400) single-row, capped display

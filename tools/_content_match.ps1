@@ -43,7 +43,10 @@ function Build-CmFamilyFillable($plan) {
     $fam = @{}
     foreach ($t in $plan.tests) {
         if (-not $fam.ContainsKey($t.query)) { $fam[$t.query] = @{} }
-        foreach ($f in @($t.fills)) { if ($f) { $fam[$t.query][$f.fieldId.ToUpper()] = $true } }
+        # ConvertTo-Json can serialize a genuinely-empty PowerShell array as JSON `{}` (not
+        # `[]`) when every field in a combo's set[] is unmapped in the value resolver -- that
+        # round-trips through ConvertFrom-Json as a truthy, property-less object, not $null.
+        foreach ($f in @($t.fills)) { if ($f -and $f.fieldId) { $fam[$t.query][$f.fieldId.ToUpper()] = $true } }
     }
     return $fam
 }
@@ -86,7 +89,7 @@ function Build-CmDefaults($snapshots) {
 function Test-CmSnapshotMatchesTest($fs, [string]$messageType, $t, $familyFillable, $defaultsByMt, $formDefaults = $null) {
     if ($messageType -and $messageType -ne $t.query) { return $false }
     if (-not $fs) { return $false }
-    $fills = @($t.fills) | Where-Object { $_ }
+    $fills = @($t.fills) | Where-Object { $_ -and $_.fieldId }
     foreach ($fill in $fills) {
         $p = $fs.PSObject.Properties[$fill.fieldId]
         if (-not $p -or -not (Test-CmValueMatch $fill.value $p.Value)) { return $false }

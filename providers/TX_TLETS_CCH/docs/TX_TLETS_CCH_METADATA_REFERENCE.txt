@@ -1,7 +1,7 @@
-﻿TX_TLETS_CCH METADATA REFERENCE
-================================
-Generated: 2026-06-12
-Source: TX_TLETS_CCH.xml (metadata) + TX_TLETS_CCH.json
+﻿TX_TLETS_CCH_v1.1 METADATA REFERENCE
+=====================================
+Generated: 2026-07-15
+Source: TX_TLETS_CCH.xml (metadata) + TX_TLETS_CCH_v1.1.json
 Metadata: 113 total transactions, 14 queries built in JSON
 
 ================================================================================
@@ -21,8 +21,8 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber                                                            ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 1 built):
-  BUILT   QAArticleSerialNumber set[articleSerialNumber, articleTypeCode]
-  BUILT   QANCICNumber   set[ncicNumber]
+  BUILT   QAArticleSerialNumber set[ArticleSerialNumber, ArticleTypeCode]
+  BUILT   QANCICNumber   set[NCICNumber]
 
 ================================================================================
 2. BoatQuery (version 13)
@@ -46,11 +46,11 @@ METADATA COMBINATIONS (5 total):
   BQ            BoatHullIdNumber        BoatHullIdNumber                                       State
 
 BUILD COVERAGE (5 of 5 built):
-  BUILT   BQRegistrationNumber set[registrationNumber, registrationState]
-  BUILT   BQBoatHullIdNumber set[boatHullIdNumber, registrationState]
-  BUILT   QBRegistrationNumber set[registrationNumber]
-  BUILT   QBBoatHullIdNumber set[boatHullIdNumber]
-  BUILT   QBNCICNumber   set[ncicNumber]
+  BUILT   BQRegistrationNumber set[RegistrationNumber, RegistrationState]
+  BUILT   BQBoatHullIdNumber set[BoatHullIdNumber, RegistrationState]
+  BUILT   QBRegistrationNumber set[RegistrationNumber]
+  BUILT   QBBoatHullIdNumber set[BoatHullIdNumber]
+  BUILT   QBNCICNumber   set[NCICNumber]
 
 ================================================================================
 3. CCHCriminalHistoryAQQuery (version 5)
@@ -174,10 +174,9 @@ METADATA COMBINATIONS (4 total):
   QH            StateIdNumber           InquiryReason, Requestor, Operator, StateIdNumber,...  Name
   QH            FBINumber               InquiryReason, Requestor, Operator, FBINumber, Pur...  Name
 
-BUILD COVERAGE (5 of 4 built):
+BUILD COVERAGE (4 of 4 built):
   BUILT   QH.BDOB        set[requestorCCH, operatorCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH, raceCodeCCH]
-  BUILT   QH.NAME.SSN    set[requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, socialSecurityNumberCCH]
-  BUILT   QH.NAME.MISC   set[requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, miscellaneousNumberCCH]
+  BUILT   QH.NAME        set[requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH]
   BUILT   QH.SID         set[inquiryReasonCCH, requestorCCH, operatorCCH, stateIdNumberCCH, purposeCodeCCH]
   BUILT   QH.FBI         set[inquiryReasonCCH, requestorCCH, operatorCCH, fbiNumberCCH, purposeCodeCCH]
 
@@ -280,11 +279,9 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber + Choice[ImageIndicator + Re...  Attention, PurposeCode, State
   KQ            Name                    Name, BirthDate, SexCode + Choice[ImageIndicator +...  Attention, PurposeCode, State
 
-BUILD COVERAGE (4 of 2 built):
-  BUILT   KQNameImg      set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-  BUILT   KQName         set[sexCodeDH, birthDateDH, nameLastDH, nameFirstDH]
-  BUILT   KQOLNImg       set[operatorLicenseNumberDH]
-  BUILT   KQOLN          set[operatorLicenseNumberDH]
+BUILD COVERAGE (2 of 2 built):
+  BUILT   KQName         set[SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH]
+  BUILT   KQOLN          set[OperatorLicenseNumberDH]
   UNBUILT KQ             OperatorLicenseNumber
 
 ================================================================================
@@ -314,14 +311,11 @@ METADATA COMBINATIONS (5 total):
   RSDWW         OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  EmailAddress, ImageIndicato...
 
-BUILD COVERAGE (7 of 5 built):
-  BUILT   DQNameImg      set[sexCode, birthDate, nameLast, nameFirst]
-  BUILT   DQName         set[sexCode, birthDate, nameLast, nameFirst]
-  BUILT   QWName         set[birthDate, nameLast, nameFirst]
-  BUILT   CPLNameImg     set[nameLast, nameFirst]
-  BUILT   CPLName        set[nameLast, nameFirst]
-  BUILT   DQOLNImg       set[operatorLicenseNumber]
-  BUILT   DQOLN          set[operatorLicenseNumber]
+BUILD COVERAGE (4 of 5 built):
+  BUILT   DQName         set[SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   QWName         set[BirthDate, NameLast, NameFirst]
+  BUILT   CPLName        set[NameLast, NameFirst]
+  BUILT   DQOLN          set[OperatorLicenseNumber]
   UNBUILT RSDWW          OperatorLicenseNumber
   UNBUILT DQ             OperatorLicenseNumber
 
@@ -343,8 +337,8 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber                                                                ImageIndicator, RelatedHitS...
 
 BUILD COVERAGE (2 of 1 built):
-  BUILT   QGGunSerialNumber set[gunSerialNumber]
-  BUILT   QGNCICNumber   set[ncicNumber]
+  BUILT   QGGunSerialNumber set[GunSerialNumber]
+  BUILT   QGNCICNumber   set[NCICNumber]
 
 ================================================================================
 14. VehicleInsuranceRegistrationQuery (version 14)
@@ -374,13 +368,13 @@ METADATA COMBINATIONS (7 total):
   VIN           VehicleIdentificationNumber  VehicleIdentificationNumber, FinancialResponsibili...  State
 
 BUILD COVERAGE (7 of 7 built):
-  BUILT   REGLicensePlateNumber set[licensePlateNumber, licensePlateYear, financialResponsibilityType]
-  BUILT   RQLicensePlateNumber set[licensePlateNumber, licensePlateYear, licensePlateTypeCode]
-  BUILT   VINVehicleIdentificationNumber set[vehicleIdentificationNumber, financialResponsibilityType]
+  BUILT   REGLicensePlateNumber set[LicensePlateNumber, LicensePlateYear, financialResponsibilityType]
+  BUILT   RQLicensePlateNumber set[LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode]
+  BUILT   VINVehicleIdentificationNumber set[VehicleIdentificationNumber, financialResponsibilityType]
   BUILT   DPSIStickerNumber set[stickerNumber]
-  BUILT   QVLicensePlateNumber set[licensePlateNumber]
-  BUILT   RQVehicleIdentificationNumber set[vehicleIdentificationNumber]
-  BUILT   QVVehicleIdentificationNumber set[vehicleIdentificationNumber]
+  BUILT   QVLicensePlateNumber set[LicensePlateNumber]
+  BUILT   QVVehicleIdentificationNumber set[VehicleIdentificationNumber]
+  BUILT   RQVehicleIdentificationNumber set[VehicleIdentificationNumber]
 
 ================================================================================
 BUILD SUMMARY
@@ -394,16 +388,16 @@ BUILD SUMMARY
   CCHCriminalHistoryARQuery                  1      1     0  100% (COMPLETE)
   CCHCriminalHistoryFQQuery                  1      1     0  100% (COMPLETE)
   CCHCriminalHistoryIQQuery                  1      1     0  100% (COMPLETE)
-  CCHCriminalHistoryQHQuery                  4      5     0  125%
+  CCHCriminalHistoryQHQuery                  4      4     0  100% (COMPLETE)
   CCHCriminalHistoryQRQuery                  2      2     0  100% (COMPLETE)
   CCHCriminalHistoryQWIQuery                 1      3     0  300%
   CCHCriminalHistoryZRQuery                  2      2     0  100% (COMPLETE)
-  DriverHistoryQuery                         2      4     0  200%
-  DriverLicenseQuery                         5      7     0  140%
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         5      4     1  80%
   GunQuery                                   1      2     0  200%
   VehicleInsuranceRegistrationQuery          7      7     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   34     43     0  126%
+  TOTAL                                   34     37     1  109%
 
 ================================================================================
 UNBUILT METADATA COMBOS (3 combos in metadata, not in JSON)

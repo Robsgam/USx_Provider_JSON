@@ -1,9 +1,12 @@
-STATUS: PROVISIONAL
-# TX_TLETS_CCH supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED (devdoc-verified 2026-07-15)
+# TX_TLETS_CCH supported queries -- DERIVED FROM JSON COMBOS, then CONFIRMED against
+# source/TX_TLETS_DEVDOC.txt 'Basic Queries Supported' (base 6 QIDMs, identical to TX_TLETS main
+# per this provider's design rule) plus source/TX_TLETS_CCH_DEVDOC.txt for the 8 CCH transactions.
+# SUPPORTED_QUERY_AUDIT_TX_TLETS_CCH.txt: 37 PASS / 0 FAIL / 0 WARN. Base-6 list matches
+# TX_TLETS main's own CONFIRMED list exactly (ported v1.1 rebuild), including one shared skip
+# below. CCH's 8 transactions (AQ/AR/FQ/IQ/QH/QR/QWI/ZR) were independently reviewed this session
+# against both the metadata XML and the DPS "2025 TCIC/TLETS Full Access Operation Manual" --
+# zero discrepancies found against either source.
 # Format: <QueryLabel> | <PrimaryFieldReference>
 
 Article | ArticleSerialNumber
@@ -11,6 +14,13 @@ Article | NCICNumber
 Boat | BoatHullIdNumber
 Boat | NCICNumber
 Boat | RegistrationNumber
+# SKIP: Boat | Name -- devdoc BoatQuery "Possible Combinations" #2 (OutOfState: Name, BirthDate, State)
+#   is NOT built: the BoatQuery v13 METADATA transaction defines no Name or BirthDate field (only
+#   BoatHullIdNumber / ImageIndicator / NCICNumber / RegistrationNumber / RelatedHitSearchIndicator / State).
+#   Metadata is field-authority -- a boat-by-name search cannot be sent through this transaction, so the
+#   devdoc combo is unbuildable from TX's current metadata. Same gap as TX_TLETS main (flagged
+#   2026-07-13); this provider's Boat QIDM is ported directly from main, so it carries forward.
+#   If TX later supplies BoatQuery metadata that includes Name/BirthDate, build this combo and remove this skip.
 CCH Admin Query (AQ) | FreeText
 CCH Admin Response (AR) | FreeText
 CCH Criminal History (QH) | BirthDate

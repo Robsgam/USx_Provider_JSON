@@ -1,66 +1,66 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: TX_TLETS_CCH
-  Source: TX_TLETS_CCH.json
-  Generated: 2026-06-29 08:42
+  PICKLIST / DROPDOWN REPORT: TX_TLETS_CCH_v1.1
+  Source: TX_TLETS_CCH_v1.1.json
+  Generated: 2026-07-15 11:50
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 --------------------------------------------------
 
   Entity: Article
-    articleTypeCode [Article Type]
+    ArticleTypeCode [Article Type (required)]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
-    imageIndicator [Image] (default=N)
+    ImageIndicator [Image (opt)] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Related Hit Search] (default=Y)
+    relatedHitSearchIndicator [Related Hit Search (opt)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    imageIndicator [Image] (default=N)
+    ImageIndicator [Image (opt)] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    registrationState [State]
+    RegistrationState [State (leave blank for TX)]
       Config: attributeTypeId=STATE
-    relatedHitSearchIndicator [Related Hit Search] (default=Y)
+    relatedHitSearchIndicator [Related Hit Search (opt)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
-    gunCaliber [Caliber]
+    GunCaliber [Caliber (opt)]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    gunMake [Make]
+    GunMake [Gun Make (opt)]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    imageIndicator [Image] (default=N)
+    ImageIndicator [Image (opt)] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Related Hit Search] (default=Y)
+    relatedHitSearchIndicator [Related Hit Search (opt)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    imageIndicator [Image] (default=Y)
+    ImageIndicator [Image (opt)] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     imageIndicatorCCH [Image (CCH)]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    raceCode [Race]
+    raceCode [Race (opt)]
       Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
     raceCodeCCH [Race (CCH)]
       Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
-    registrationState [State] (default=TX)
+    RegistrationState [State (default TX - change for out-of-state)] (default=TX)
       Config: attributeTypeId=STATE
     relatedHitSearchIndicatorCCH [Related Hit Search (CCH)]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    sexCode [Sex]
+    SexCode [Sex (required with Name)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
     sexCodeCCH [Sex (CCH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
-    sexCodeDH [Sex (DH)]
+    SexCodeDH [Sex (DH) - required with Name]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
     stateCCH [State (CCH)]
       Config: attributeTypeId=STATE
 
   Entity: Vehicle
-    licensePlateTypeCode [Plate Type] (default=PC)
+    LicensePlateTypeCode [Plate Type (opt)] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    registrationState [State] (default=TX)
+    RegistrationState [State (default TX - change for out-of-state)] (default=TX)
       Config: attributeTypeId=STATE
-    vehicleMakeCode [Vehicle Make]
+    VehicleMakeCode [Vehicle Make (opt)]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
@@ -113,7 +113,7 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
       VehicleColorCode -> VehicleColorCode
         attributeType=ITEM_COLOR | codeTypeSource=NCIC
       VehicleMakeName -> VehicleMakeName
-        codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NJ_NIBRS
+        attributeType=VEHICLE_MAKE | codeTypeSource=NCIC
       VehicleStyleCode -> BodyStyle
         codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
       VehicleModelName -> VehicleModelName

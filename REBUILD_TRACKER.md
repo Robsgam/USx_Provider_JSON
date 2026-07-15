@@ -52,7 +52,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 16 | NM_NMLETS_OFML | v1.3 | 66P/0F/0W | 66P/0F/0W | 1 | out of scope |
 | 17 | OR_LEDS | v1.3 | 58P/0F/0W | 58P/0F/0W | 0 | out of scope |
 | 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/1W | 3 | out of scope |
-| 19 | TX_TLETS_CCH | v1.0 | 119P/0F/0W |  | 0 | out of scope, CCH stub |
+| 19 | TX_TLETS_CCH | v1.1 |  | 113P/0F/0W/0LIM | 0 | out of scope, CCH stub |
 | 20 | CA_CONTRA_COSTA | -- |  |  |  | out of scope, incomplete (awaiting devdoc) |
 
 ---

@@ -2,9 +2,44 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.0** | Generated: 2026-06-29
+Current: **v1.1** | Generated: 2026-07-15
 
 ---
+
+## v1.1 -- 2026-07-15 -- Base-6 QIDMs rebuilt to match TX_TLETS main exactly + CCH QH metadata fix
+
+**CHANGED:** Design rule established -- TX_TLETS_CCH must be identical to TX_TLETS main except
+         for the CCH addition. Ported the 6 base QIDMs (VehReg/DL/DH/Gun/Article/Boat) and  
+         their layout directly from TX_TLETS v4.0: PascalCase field naming (22 USx CAD  
+         tokens; -PascalCaseUsxFields on RMS), poisoned-array-free DL/DH combos (dropped  
+         inert ImageIndicator EQUALS/ReasonCode EQUALS/EmailAddress REGEX conditions),  
+         identifier-priority guardrails (Plate>VIN x3, OLN>Name x7, Hull>Reg x1), QV-VIN  
+         CHECK-16 reachability fix (RegionId EXISTS), CAD combo defaults (LicensePlateYear/  
+         LicensePlateTypeCode on REG/RQ), DH Attention converted to the automated-handler  
+         pattern. Boat keeps the same RegistrationState-in-set[] metadata divergence as  
+         TX_TLETS main (documented in new TX_TLETS_CCH_ACCEPTED_DIVERGENCES.txt) with the  
+         same EXISTS/NOT_EXISTS routing so both BQ (OOS) and QB (in-state/NCIC) stay  
+         reachable. CCH QH: replaced the non-metadata QH.NAME.SSN/QH.NAME.MISC substitute  
+         combos with the actual metadata-defined bare QH.NAME combo (SocialSecurityNumber/  
+         MiscellaneousNumber now optional any[], not required) -- adds a previously-  
+         impossible Name-only search path. Shared AQ/AR vs FQ/IQ NletsDestination form  
+         fields resized 9->2 chars (Nlets destinations are 2-char state codes; the shared  
+         field was oversized for FQ/IQ's stricter metadata). ParseCommsysNameRuleHandler  
+         empty-arguments regression (shared-module fix from 2026-06-17) now picked up.  
+         Retired the phases/ snapshot mechanism and legacy docs/base, docs/mc scaffolding  
+         to match TX_TLETS main (git history is authoritative). Also fixed two shared-tool  
+         bugs surfaced by running this provider through the pipeline for the first time:  
+         build_report.ps1's PascalCase/camelCase auto-detect heuristic (now recognizes the  
+         22 canonical PascalCase tokens so a deliberately-mixed provider isn't misclassified)  
+         and emit_test_plan.ps1's null-handling for combos with no 'any' key (was crashing  
+         on CCH's AR combo, which has no any[] fields).  
+**REASON:**  TX_TLETS_CCH was scaffolded 2026-06-09 from TX_TLETS v3.3 and never picked up any
+         of the fixes TX_TLETS main gained through its own v3.9->v4.0 rebuild cycle. User  
+         directive: bring it to full parity with main before this stub can be considered  
+         test-ready. CCH fields stay camelCase throughout (no TX_TLETS-main analog exists  
+         for them).  
+VALIDATOR: 113P/0F/0W/0LIM. VERIFY: 15P/0W/0F. CAD_AUDIT: 0F/0W. METADATA_AUDIT: 0F/0W  
+           (Boat divergence recognized as [NOTE], not [FAIL]).  
 
 ## v1.0 -- 2026-06-09
 

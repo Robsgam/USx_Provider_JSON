@@ -81,8 +81,11 @@ function Get-SimFiringKeyRef($entQidms, $formData) {
     foreach ($q in $entQidms) {
         $filled = Get-SimFilledRefs $q $formData
         foreach ($c in $q.combinations) {
-            $set = @($c.requirements.set)
-            $any = @($c.requirements.any)
+            # Filter nulls: @($null) is a 1-element array in PowerShell, not empty -- a combo
+            # with no 'any' key (a valid minimal combo, e.g. CCH AR) must not inject a phantom
+            # null entry that later crashes Get-ComboTestValue's mandatory -FieldId parameter.
+            $set = @($c.requirements.set | Where-Object { $_ })
+            $any = @($c.requirements.any | Where-Object { $_ })
             $setOk = $true
             foreach ($f in $set) { if ($filled -notcontains $f) { $setOk = $false; break } }
             $anyOk = $true
@@ -268,7 +271,10 @@ foreach ($ent in $entities) {
     foreach ($q in $entQidms) {
         foreach ($c in $q.combinations) {
             $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
-            $setNames = @($c.requirements.set)
+            # Filter nulls: @($null) is a 1-element array in PowerShell, not empty -- a combo
+            # with no 'any' key (a valid minimal combo, e.g. CCH AR) must not inject a phantom
+            # null entry that later crashes Get-ComboTestValue's mandatory -FieldId parameter.
+            $setNames = @($c.requirements.set | Where-Object { $_ })
             $isOOS = [bool]($setNames | Where-Object { $_ -match '(?i)^(registrationState|state)$' })
             $fills = Build-Fills $setNames $q $fieldIds $isOOS $hiddenIds
             # Trust: flag any set[] field we couldn't resolve a value for (under-fill risk).
@@ -279,7 +285,7 @@ foreach ($ent in $entities) {
                 expectedKeyRef = $kr; kind = 'combo'; tier = 'Full'; fills = $fills
             })
             # individual any[] field tests + all-together (full pass)
-            $anyNames = @($c.requirements.any)
+            $anyNames = @($c.requirements.any | Where-Object { $_ })
             if ($anyNames.Count -gt 0) {
                 # One test per individual any[] field
                 foreach ($af in $anyNames) {
@@ -333,7 +339,7 @@ foreach ($ent in $entities) {
             if ($null -eq $exVal -or $exVal -eq '') { continue }
             $gFills = @()
             $gFills += [ordered]@{ fieldId = $exFf; value = "$exVal" }
-            foreach ($sf in @($gr.loserCombo.requirements.set)) {
+            foreach ($sf in @($gr.loserCombo.requirements.set | Where-Object { $_ })) {
                 $ff  = Resolve-FieldId $sf $gr.loserQidm $fieldIds
                 if (@($hiddenIds) -icontains $ff) { continue }   # hidden gate-feeder: driver can't type into it
                 $val = Get-TestValue $ff $false

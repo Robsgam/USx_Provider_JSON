@@ -1,38 +1,38 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH.json
-  Generated: 2026-06-29 08:42
+  Source: TX_TLETS_CCH_v1.1.json
+  Generated: 2026-07-15 11:49
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- TX_TLETS_CCH
+TEST MATRIX <-> JSON CONSISTENCY -- TX_TLETS_CCH_v1.1
 ============================================================
-Source: TX_TLETS_CCH.json
+Source: TX_TLETS_CCH_v1.1.json
 Matrix: TX_TLETS_CCH_TEST_MATRIX.txt
-Generated: 2026-06-29
+Generated: 2026-07-15
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (42 tests -- 6 cards, 27 combos -- CCHCriminalHistoryAQ/CCHCriminalHistoryAR/CCHCriminalHistoryFQ/CCHCriminalHistoryIQ/CCHCriminalHistoryQH/CCHCriminalHistoryQR/CCHCriminalHistoryQWI/CCHCriminalHistoryZR co-fires with DL)
-  T1  Person     [PASS] 6 cards, 55 fields, defaults verified
-  T2  Person     [PASS] DriverLicenseQuery fires (DQName)
-  T3  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, registrationState
-  T4  Person     [PASS] DriverLicenseQuery fires (DQNameImg)
-  T5  Person     [PASS] any[] fields verified: emailAddress, imageIndicator, nameMiddle, nameSuffix
-  T6  Person     [PASS] DriverLicenseQuery fires (QWName)
-  T7  Person     [PASS] any[] fields verified: expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode
-  T8  Person     [PASS] DriverLicenseQuery fires (DQOLN)
-  T9  Person     [PASS] any[] fields verified: registrationState
-  T10  Person     [PASS] DriverLicenseQuery fires (DQOLNImg)
-  T11  Person     [PASS] any[] fields verified: emailAddress, imageIndicator, reasonCode, registrationState
-  T12  Person     [PASS] DriverLicenseQuery fires (CPLName)
-  T13  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, registrationState
-  T14  Person     [PASS] DriverLicenseQuery fires (CPLNameImg)
-  T15  Person     [PASS] any[] fields verified: emailAddress, imageIndicator, nameMiddle, nameSuffix
+ENTITY: PERSON (33 tests -- 6 cards, 21 combos -- CCHCriminalHistoryAQ/CCHCriminalHistoryAR/CCHCriminalHistoryFQ/CCHCriminalHistoryIQ/CCHCriminalHistoryQH/CCHCriminalHistoryQR/CCHCriminalHistoryQWI/CCHCriminalHistoryZR co-fires with DL)
+  T1  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T2  Person     [PASS] any[] fields verified: emailAddress, ImageIndicator, nameMiddle, nameSuffix
+  T3  Person     [PASS] DriverLicenseQuery fires (QWName)
+  T4  Person     [PASS] any[] fields verified: expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode
+  T5  Person     [PASS] DriverLicenseQuery fires (DQOLN)
+  T6  Person     [PASS] any[] fields verified: emailAddress, ImageIndicator, reasonCode, RegistrationState
+  T7  Person     [PASS] DriverLicenseQuery fires (CPLName)
+  T8  Person     [PASS] any[] fields verified: emailAddress, ImageIndicator, messageKey, nameMiddle
+  T9  Person     [PASS] (structural check)
+  T10  Person     [PASS] (structural check)
+  T11  Person     [PASS] (structural check)
+  T12  Person     [PASS] (structural check)
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] (structural check)
+  T15  Person     [PASS] (structural check)
   T16  Person     [PASS] (structural check)
   T17  Person     [PASS] (structural check)
   T18  Person     [PASS] (structural check)
@@ -41,70 +41,58 @@ ENTITY: PERSON (42 tests -- 6 cards, 27 combos -- CCHCriminalHistoryAQ/CCHCrimin
   T21  Person     [PASS] (structural check)
   T22  Person     [PASS] (structural check)
   T23  Person     [PASS] (structural check)
-  T24  Person     [PASS] (structural check)
-  T25  Person     [PASS] (structural check)
-  T26  Person     [PASS] (structural check)
-  T27  Person     [PASS] (structural check)
-  T28  Person     [PASS] (structural check)
-  T29  Person     [PASS] (structural check)
-  T30  Person     [PASS] (structural check)
-  T31  Person     [PASS] (structural check)
-  T32  Person     [PASS] DriverHistoryQuery fires (KQName)
-  T33  Person     [PASS] any[] fields verified: attentionDH, nameMiddleDH, nameSuffixDH, purposeCodeDH
-  T34  Person     [PASS] DriverHistoryQuery fires (KQNameImg)
-  T35  Person     [PASS] any[] fields verified: attentionDH, emailAddress, imageIndicator, nameMiddleDH
-  T36  Person     [PASS] DriverHistoryQuery fires (KQOLN)
-  T37  Person     [PASS] any[] fields verified: attentionDH, purposeCodeDH, registrationState
-  T38  Person     [PASS] DriverHistoryQuery fires (KQOLNImg)
-  T39  Person     [PASS] any[] fields verified: attentionDH, emailAddress, imageIndicator, purposeCodeDH
-  T40  Person     [PASS] queriesToDeselect verified
-  T41  Person     [PASS] priority routing: multiple combos present
-  T42  Person     [PASS] empty form: no combos fire
-ENTITY: VEHICLE (16 tests -- 1 card, 7 combos)
-  T43  Vehicle    [PASS] 1 cards, 10 fields, defaults verified
-  T44  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
-  T45  Vehicle    [PASS] any[] fields verified: registrationState
-  T46  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
-  T47  Vehicle    [PASS] any[] fields verified: regionId, registrationState
+  T24  Person     [PASS] DriverHistoryQuery fires (KQName)
+  T25  Person     [PASS] any[] fields verified: Attention, ImageIndicator, emailAddress, nameMiddleDH
+  T26  Person     [PASS] DriverHistoryQuery fires (KQOLN)
+  T27  Person     [PASS] any[] fields verified: Attention, ImageIndicator, emailAddress, purposeCodeDH
+  T28  Person     [PASS] DriverLicenseQuery fires (DQOLN)
+  T29  Person     [PASS] DriverLicenseQuery fires (DQOLN)
+  T30  Person     [PASS] DriverLicenseQuery fires (DQOLN)
+  T31  Person     [PASS] DriverHistoryQuery fires (KQOLN)
+  T32  Person     [PASS] queriesToDeselect verified
+  T33  Person     [PASS] priority routing: multiple combos present
+ENTITY: VEHICLE (17 tests -- 1 card, 7 combos)
+  T34  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
+  T35  Vehicle    [PASS] any[] fields verified: RegistrationState
+  T36  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
+  T37  Vehicle    [PASS] any[] fields verified: regionId, RegistrationState
+  T38  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
+  T39  Vehicle    [PASS] any[] fields verified: RegistrationState
+  T40  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
+  T41  Vehicle    [PASS] any[] fields verified: RegistrationState, VehicleMakeCode, vehicleYear
+  T42  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVVehicleIdentificationNumber)
+  T43  Vehicle    [PASS] any[] fields verified: regionId
+  T44  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
+  T45  Vehicle    [PASS] any[] fields verified: RegistrationState, vehicleYear
+  T46  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
+  T47  Vehicle    [PASS] any[] fields verified: RegistrationState
   T48  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
-  T49  Vehicle    [PASS] any[] fields verified: registrationState
-  T50  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
-  T51  Vehicle    [PASS] any[] fields verified: registrationState, vehicleMakeCode, vehicleYear
-  T52  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (QVVehicleIdentificationNumber)
-  T53  Vehicle    [PASS] any[] fields verified: regionId
-  T54  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
-  T55  Vehicle    [PASS] any[] fields verified: registrationState
-  T56  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
-  T57  Vehicle    [PASS] any[] fields verified: registrationState
-  T58  Vehicle    [PASS] empty form: no combos fire
+  T49  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
+  T50  Vehicle    [PASS] VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
 ENTITY: BOAT (12 tests -- 1 card, 5 combos)
-  T59  Boat       [PASS] 1 cards, 6 fields, defaults verified
-  T60  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
-  T61  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T62  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
-  T63  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T64  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
-  T65  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T66  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
-  T67  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T68  Boat       [PASS] BoatQuery fires (QBNCICNumber)
-  T69  Boat       [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T70  Boat       [PASS] empty form: no combos fire
-ENTITY: FIREARM (6 tests -- 1 card, 2 combos)
-  T71  Firearm    [PASS] 1 cards, 6 fields, defaults verified
-  T72  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
-  T73  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake, imageIndicator, relatedHitSearchIndicator
-  T74  Firearm    [PASS] GunQuery fires (QGNCICNumber)
-  T75  Firearm    [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T76  Firearm    [PASS] empty form: no combos fire
-ENTITY: ARTICLE (6 tests -- 1 card, 2 combos)
-  T77  Article    [PASS] 1 cards, 5 fields, defaults verified
-  T78  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
-  T79  Article    [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T80  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
-  T81  Article    [PASS] any[] fields verified: imageIndicator, relatedHitSearchIndicator
-  T82  Article    [PASS] empty form: no combos fire
+  T51  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+  T52  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T53  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T54  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T55  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
+  T56  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T57  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
+  T58  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T59  Boat       [PASS] BoatQuery fires (QBNCICNumber)
+  T60  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T61  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+  T62  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+ENTITY: FIREARM (4 tests -- 1 card, 2 combos)
+  T63  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
+  T64  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator
+  T65  Firearm    [PASS] GunQuery fires (QGNCICNumber)
+  T66  Firearm    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+ENTITY: ARTICLE (4 tests -- 1 card, 2 combos)
+  T67  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
+  T68  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T69  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
+  T70  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
 
-SUMMARY: 82/82 PASS, 0 FAIL
+SUMMARY: 70/70 PASS, 0 FAIL
 
 

@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH.json
-  Generated: 2026-06-29 08:42
+  Source: TX_TLETS_CCH_v1.1.json
+  Generated: 2026-07-15 11:49
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_CCH
+ POST-BUILD VERIFICATION: TX_TLETS_CCH_v1.1
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,12 +22,11 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 64 [financialResponsibilityType, licensePlateTypeCode, licensePlateYear, regionId, stickerNumber, vehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, imageIndicator, nameMiddle, nameSuffix, raceCode, reasonCode, attentionDH, birthDateDH, nameLastDH, nameFirstDH, nameMiddleDH, nameSuffixDH, operatorLicenseNumberDH, purposeCodeDH, sexCodeDH, gunCaliber, gunMake, gunSerialNumber, ncicNumber, relatedHitSearchIndicator, articleSerialNumber, articleTypeCode, boatHullIdNumber, registrationNumber, attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, nletsDestination2CCH, nletsDestination3CCH, nletsDestination4CCH, nletsDestination5CCH, purposeCodeCCH, addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, stateCCH, stateIdNumberCCH, birthDateCCH, miscellaneousNumberCCH, nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH, raceCodeCCH, sexCodeCCH, socialSecurityNumberCCH, fbiNumberCCH, operatorCCH, requestorCCH, expandedBirthDateSearchCodeCCH, expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH]
+  [INFO] CommSys-only: 65 [financialResponsibilityType, LicensePlateTypeCode, LicensePlateYear, regionId, stickerNumber, VehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, ImageIndicator, messageKey, nameMiddle, nameSuffix, raceCode, reasonCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, GunSerialNumber, NCICNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber, attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, nletsDestination2CCH, nletsDestination3CCH, nletsDestination4CCH, nletsDestination5CCH, purposeCodeCCH, addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, stateCCH, stateIdNumberCCH, birthDateCCH, miscellaneousNumberCCH, nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH, raceCodeCCH, sexCodeCCH, socialSecurityNumberCCH, fbiNumberCCH, operatorCCH, requestorCCH, expandedBirthDateSearchCodeCCH, expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
-  [PASS] All 82 QIF fieldIds are camelCase (excluded 3 platform fields)
-  [PASS] All CommSys QIDM sourceFields are camelCase
+  [INFO] camelCase check skipped (use -CamelCase to enable)
 
 --- CHECK 6: Reference Pattern Check ---
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
@@ -37,75 +36,43 @@ POST-BUILD VERIFICATION
   [INFO] Single-JSON provider -- skipping cross-variant check
 
 --- CHECK 8: Visible-First Mandate ---
-  [WARN] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' attr 'Attention' has no auto-populate handler -- wire CommsysGetLastNameFirstNameInitialRuleHandler per automated-Attention standard (BUILD_RULES Visible-First Mandate)
-  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryAQQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard
-  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryARQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard
-  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryFQQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard
-  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard
-  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard
-  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated-Attention standard
+  [INFO] Hidden field 'Attention' (FormInput) -- documented exception, allowed
+  [INFO] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
+  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryAQQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
+  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryARQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
+  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryFQQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
+  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
+  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' attr 'Requestor' is required (set[]) -- officer-supplied visible field, exempt from automated standard
+  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
+  [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQWIQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
+  [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 9: Synthetic keyRef Documentation ---
   [PASS] All 10 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (72) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (73) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
-  [WARN] Value-comparison conditions present (poisoned-array; inert on CommSys form path) -- redesign at rebuild: TX_TLETS_CCH_DriverLicenseQuery/DQNameImg: EQUALS; TX_TLETS_CCH_DriverLicenseQuery/DQNameImg: EQUALS; TX_TLETS_CCH_DriverLicenseQuery/DQNameImg: REGEX; TX_TLETS_CCH_DriverLicenseQuery/CPLNameImg: EQUALS; TX_TLETS_CCH_DriverLicenseQuery/CPLNameImg: EQUALS; TX_TLETS_CCH_DriverLicenseQuery/CPLNameImg: REGEX; TX_TLETS_CCH_DriverLicenseQuery/DQOLNImg: EQUALS; TX_TLETS_CCH_DriverLicenseQuery/DQOLNImg: EQUALS; TX_TLETS_CCH_DriverLicenseQuery/DQOLNImg: REGEX; TX_TLETS_CCH_DriverHistoryQuery/KQNameImg: EQUALS; TX_TLETS_CCH_DriverHistoryQuery/KQNameImg: EQUALS; TX_TLETS_CCH_DriverHistoryQuery/KQNameImg: REGEX; TX_TLETS_CCH_DriverHistoryQuery/KQOLNImg: EQUALS; TX_TLETS_CCH_DriverHistoryQuery/KQOLNImg: EQUALS; TX_TLETS_CCH_DriverHistoryQuery/KQOLNImg: REGEX
+  [PASS] No value-comparison routing conditions (existence-only or none)
 
 --- CHECK 12: Identifier-Priority Guardrail ---
-  [FAIL] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' VIN combo 'VINVehicleIdentificationNumber' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' VIN combo 'RQVehicleIdentificationNumber' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' VIN combo 'QVVehicleIdentificationNumber' missing LicensePlateNumber NOT_EXISTS (plate>VIN guardrail; plate+VIN co-entry will bleed VIN into plate XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' Name combo 'DQNameImg' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' Name combo 'DQName' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' Name combo 'QWName' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' Name combo 'CPLNameImg' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' Name combo 'CPLName' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' Name combo 'KQNameImg' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' Name combo 'KQName' missing OperatorLicenseNumber NOT_EXISTS (OLN>Name guardrail; OLN+Name co-entry will bleed Name into OLN XML)
-  [FAIL] QIDM 'TX_TLETS_CCH_BoatQuery' Reg combo 'BQRegistrationNumber' missing BoatHullIdNumber NOT_EXISTS (Hull>Reg guardrail; Hull+Reg co-entry will bleed RegistrationNumber into Hull XML)
+  [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
 
 --- CHECK 13: conditions[].field references a valid QIF sourceField ---
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQNameImg' conditions[].field='ImageIndicator' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQNameImg' conditions[].field='ReasonCode' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQNameImg' conditions[].field='EmailAddress' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'CPLNameImg' conditions[].field='ImageIndicator' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'CPLNameImg' conditions[].field='ReasonCode' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'CPLNameImg' conditions[].field='EmailAddress' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQOLNImg' conditions[].field='ImageIndicator' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQOLNImg' conditions[].field='ReasonCode' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQOLNImg' conditions[].field='EmailAddress' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQNameImg' conditions[].field='ImageIndicator' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQNameImg' conditions[].field='ReasonCode' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQNameImg' conditions[].field='EmailAddress' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQOLNImg' conditions[].field='ImageIndicator' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQOLNImg' conditions[].field='ReasonCode' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
-  [FAIL] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo 'KQOLNImg' conditions[].field='EmailAddress' not found in Person QIF fieldIds (silently inert -- use the form fieldId, not the attribute name; casing matters)
+  [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
 --- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [FAIL] Field 'registrationState' label='State' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11
-  [WARN] Field 'regionId' (any[]-only) label='Region ID' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'vehicleMakeCode' (any[]-only) label='Vehicle Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'vehicleYear' (any[]-only) label='Vehicle Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'emailAddress' (any[]-only) label='Email Address' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'imageIndicator' (any[]-only) label='Image' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'nameMiddle' (any[]-only) label='Middle Name' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'nameSuffix' (any[]-only) label='Suffix' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'reasonCode' (any[]-only) label='Reason Code' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'expandedBirthDateSearchCode' (any[]-only) label='Expanded DOB' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'raceCode' (any[]-only) label='Race' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'gunCaliber' (any[]-only) label='Caliber' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'gunMake' (any[]-only) label='Make' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [WARN] Field 'relatedHitSearchIndicator' (any[]-only) label='Related Hit Search' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [INFO] 14 field(s) need label hint fixes
+  [PASS] All form field labels have required routing hint qualifiers (76 fields scanned)
+
+--- CHECK 16: Combo Reachability (shadow detection) ---
+  [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
 ========================================
- VERIFICATION FAILED: 27 FAIL / 15 WARN / 11 PASS
+ VERIFICATION PASSED: 15 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

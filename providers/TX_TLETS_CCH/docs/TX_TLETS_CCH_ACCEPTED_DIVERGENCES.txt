@@ -1,0 +1,8 @@
+# TX_TLETS_CCH ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4 / 4d). Each non-comment line records a
+# set/any divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+#
+
+BoatQuery | BQRegistrationNumber | registrationState | promoted-to-set | Intentional out-of-state boat routing: BQ combos are state='Out', so destination State is required (set[]) to force the OOS boat query; metadata lists State in any[]. Same divergence as TX_TLETS main (see providers/TX_TLETS/docs/tracking/TX_TLETS_ACCEPTED_DIVERGENCES.txt) -- TX_TLETS_CCH's base 6 QIDMs are ported directly from TX_TLETS main. Surfaced by CHECK 4d on the v1.1 rebuild. | metadata-vs-devdoc | 2026-07-15
+BoatQuery | BQBoatHullIdNumber | registrationState | promoted-to-set | Intentional out-of-state boat routing: BQ combos are state='Out', so destination State is required (set[]) to force the OOS boat query; metadata lists State in any[]. Same divergence as TX_TLETS main (see providers/TX_TLETS/docs/tracking/TX_TLETS_ACCEPTED_DIVERGENCES.txt) -- TX_TLETS_CCH's base 6 QIDMs are ported directly from TX_TLETS main. Surfaced by CHECK 4d on the v1.1 rebuild. | metadata-vs-devdoc | 2026-07-15

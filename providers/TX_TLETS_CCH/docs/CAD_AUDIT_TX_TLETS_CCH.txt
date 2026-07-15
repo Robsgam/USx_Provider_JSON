@@ -1,25 +1,25 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH.json
-  Generated: 2026-06-29 08:42
+  Source: TX_TLETS_CCH_v1.1.json
+  Generated: 2026-07-15 11:49
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: TX_TLETS_CCH
+ CAD AUDIT: TX_TLETS_CCH_v1.1
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
   Vehicle:
-    [PASS] licensePlateNumber: in QIF and CAD list
-    [PASS] licensePlateTypeCode: in QIF and CAD list
-    [PASS] licensePlateYear: in QIF and CAD list
-    [PASS] vehicleIdentificationNumber: in QIF and CAD list
-    [PASS] vehicleMakeCode: in QIF and CAD list
+    [PASS] licensePlateNumber: in QIF as 'LicensePlateNumber' (PascalCase USx fieldIds)
+    [PASS] licensePlateTypeCode: in QIF as 'LicensePlateTypeCode' (PascalCase USx fieldIds)
+    [PASS] licensePlateYear: in QIF as 'LicensePlateYear' (PascalCase USx fieldIds)
+    [PASS] vehicleIdentificationNumber: in QIF as 'VehicleIdentificationNumber' (PascalCase USx fieldIds)
+    [PASS] vehicleMakeCode: in QIF as 'VehicleMakeCode' (PascalCase USx fieldIds)
     [PASS] vehicleYear: in QIF and CAD list
-    [PASS] registrationState: in QIF and CAD list
+    [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -34,17 +34,17 @@ CAD AUDIT
     [INFO] financialResponsibilityType: in QIF, not in CAD list (provider-specific)
     [INFO] regionId: in QIF, not in CAD list (provider-specific)
   Person:
-    [PASS] operatorLicenseNumber: in QIF and CAD list
-    [PASS] nameFirst: in QIF and CAD list
-    [PASS] nameLast: in QIF and CAD list
+    [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
+    [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
+    [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
     [PASS] nameMiddle: in QIF and CAD list
     [PASS] nameSuffix: in QIF and CAD list
-    [PASS] birthDate: in QIF and CAD list
-    [PASS] sexCode: in QIF and CAD list
+    [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
+    [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [PASS] raceCode: in QIF and CAD list
-    [PASS] imageIndicator: in QIF and CAD list
-    [PASS] registrationState: in QIF and CAD list
-    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
+    [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
+    [PASS] attention: in QIF as 'Attention' (PascalCase USx fieldIds)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -64,15 +64,15 @@ CAD AUDIT
     [INFO] emailAddress: in QIF, not in CAD list (provider-specific)
     [INFO] expandedBirthDateSearchCode: in QIF, not in CAD list (provider-specific)
     [INFO] regionId: in QIF, not in CAD list (provider-specific)
-    [INFO] operatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
+    [INFO] messageKey: in QIF, not in CAD list (provider-specific)
+    [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
     [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
-    [INFO] attentionDH: in QIF, not in CAD list (provider-specific)
-    [INFO] nameLastDH: in QIF, not in CAD list (provider-specific)
-    [INFO] nameFirstDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
     [INFO] nameMiddleDH: in QIF, not in CAD list (provider-specific)
     [INFO] nameSuffixDH: in QIF, not in CAD list (provider-specific)
-    [INFO] birthDateDH: in QIF, not in CAD list (provider-specific)
-    [INFO] sexCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
+    [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] attentionCCH: in QIF, not in CAD list (provider-specific)
     [INFO] inquiryReasonCCH: in QIF, not in CAD list (provider-specific)
     [INFO] purposeCodeCCH: in QIF, not in CAD list (provider-specific)
@@ -108,10 +108,10 @@ CAD AUDIT
   Firearm:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] gunCaliber: in QIF and CAD list
+    [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -122,15 +122,15 @@ CAD AUDIT
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] gunSerialNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] gunMake: in QIF, not in CAD list (provider-specific)
-    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] GunSerialNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] GunMake: in QIF, not in CAD list (provider-specific)
+    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] articleTypeCode: in QIF and CAD list
+    [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
     [INFO] articleBrand: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -139,13 +139,13 @@ CAD AUDIT
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] articleSerialNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] ArticleSerialNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
   Boat:
-    [PASS] boatHullIdNumber: in QIF and CAD list
-    [PASS] registrationNumber: in QIF and CAD list
-    [PASS] registrationState: in QIF and CAD list
-    [PASS] imageIndicator: in QIF and CAD list
+    [PASS] boatHullIdNumber: in QIF as 'BoatHullIdNumber' (PascalCase USx fieldIds)
+    [PASS] registrationNumber: in QIF as 'RegistrationNumber' (PascalCase USx fieldIds)
+    [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -154,7 +154,7 @@ CAD AUDIT
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] ncicNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
 
 --- CHECK 2: CAD_DISPATCH Layout Variant ---
     [PASS] Vehicle QIF 'ENTITY_Vehicle': CAD_DISPATCH layout exists
@@ -195,24 +195,18 @@ CAD AUDIT
     [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryZRQuery': all sourceFields match QIF fieldIds (case-sensitive)
 
 --- CHECK 6: CAD Defaults Coverage ---
-    [FAIL] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo REGLicensePlateNumber -- missing default for LicensePlateYear (form default='2026')
-    [FAIL] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo RQLicensePlateNumber -- missing default for LicensePlateYear (form default='2026')
-    [FAIL] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo RQLicensePlateNumber -- missing default for LicensePlateTypeCode (form default='PC')
+    [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo REGLicensePlateNumber -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo RQLicensePlateNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo VINVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo DPSIStickerNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo QVLicensePlateNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo RQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo QVVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo DQNameImg -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo RQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo DQName -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo QWName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo CPLNameImg -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo CPLName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo DQOLNImg -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo DQOLN -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo KQNameImg -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo KQName -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo KQOLNImg -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' combo KQOLN -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_GunQuery' combo QGGunSerialNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_GunQuery' combo QGNCICNumber -- defaults cover all initialValue any[] fields
@@ -228,8 +222,7 @@ CAD AUDIT
     [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryFQQuery' combo FQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' combo IQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo QH.BDOB -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo QH.NAME.SSN -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo QH.NAME.MISC -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo QH.NAME -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo QH.SID -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo QH.FBI -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' combo QR.FBI -- defaults cover all initialValue any[] fields
@@ -246,6 +239,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 100 PASS / 3 FAIL / 0 WARN / 111 INFO
+Total: 97 PASS / 0 FAIL / 0 WARN / 110 INFO
 
 
