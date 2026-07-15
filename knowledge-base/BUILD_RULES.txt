@@ -941,6 +941,27 @@ See also:
     value arrays (QIDM_REFERENCE Section 2a). Combo-level conditions are silently
     ignored (FL v4.7 live failure 2026-06-12).
 
+  QW / "DATA-MINED TRANSACTION" PLATFORM AUTO-SEND -- DO NOT BUILD (FL_FCIC v4.2,
+  HI_HCJDC_OFML v4.8): `QW` (NCIC Wanted Person Query) is a platform-auto-sent shadow
+  combo, not a client-buildable one -- CommSys sends the Wanted Person check itself
+  as a side effect of another query. FL_FCIC_BUILD_NOTES.txt v4.2 (2026-05-19):
+  "Remove WantedPersonQuery (QW) QIDM... CommSys auto-sends QW query; no JSON-side
+  QIDM needed. Confirmed by platform team." HI_HCJDC_OFML built QW explicitly since
+  v1.0 (a documented PDF-vs-XML gap resolved wrong at the time -- "include per
+  metadata" despite the devdoc's own "Possible Combinations" list never showing a
+  Sex-optional Name variant) and removed it at v4.8 once the FL precedent surfaced.
+  QW is a standard NCIC-level key, not FL-specific -- treat any metadata-defined QW
+  combo the same way (not built, `not-built` entry in ACCEPTED_DIVERGENCES.txt) on
+  any future provider, unless a NEW platform-team confirmation says otherwise for
+  that specific tenant. Do NOT extrapolate this to other devdoc "data-mined" list
+  members (QA/QB/QG) without their own confirmation -- FL_FCIC's own BQ was
+  initially miscategorized this way and later restored once proven it's a real,
+  devdoc-authorized combo (BQ_BUILD_NOTES "BQ restore" entry); only QW itself has
+  an actual platform-team confirmation behind it. `QV` (NCIC Stolen Vehicle) is
+  still unconfirmed/PENDING on FL as of v4.7 -- do not assume it's the same class
+  as QW without its own confirmation (HI documents QV as not-built per a separate,
+  weaker justification -- see HI_HCJDC_OFML_ACCEPTED_DIVERGENCES.txt).
+
     DEFAULTED-FIELD SUBSET-SHADOWING (HI VehicleRegistrationQuery, 2026-06-22):
     a combo whose set[] contains a DEFAULTED form field (e.g. vehicleTypeCode
     initialValue=1) plus a shared primary (LicensePlateNumber) is ALWAYS satisfied
