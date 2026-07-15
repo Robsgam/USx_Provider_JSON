@@ -37,9 +37,26 @@ populates SQVR.txt with the transaction list from metadata. Then:
 ```
 pdftotext source/<PROVIDER>.pdf source/<PROVIDER>_DEVDOC.txt
 ```
-Read the devdoc's **"Basic Queries Supported"** section. This is the *sole* authority for which
-queries to build — metadata defining a transaction does NOT authorize building it if the devdoc
-doesn't list it (see CLAUDE.md's Source Authority Lookup Table).
+Read the devdoc's **"Basic Queries Supported"** section. This is the *default* scope authority —
+metadata defining a transaction does NOT by itself authorize building it if the devdoc doesn't
+list it under this heading (see CLAUDE.md's Source Authority Lookup Table).
+
+**Expanded/additional transactions — a judgment call, not an automatic build.** Devdocs often
+have a second, later section (worded like "Expanded Transactions Supported") listing further
+metadata-defined transactions beyond the basic set. Confirmed precedent (NY_NYSPIN_EJUSTICE's
+`NyNyspinDriverLicenseNameQuery`/DGRP, added at v2.1): it's acceptable to build one of these when
+it provides clear additional officer search value ("broader search coverage" was NY's own
+documented reason) — but this is a deliberate scope-expansion decision, not something to do by
+default. If you find candidates in this section, surface them to the user explicitly and get
+sign-off before building, rather than silently including or silently excluding them.
+
+**Tool note**: `extract_queries.ps1`'s SQVR output can hide a transaction's true combo structure
+if the metadata nests a `<Choice>` of 2+ alternative required-field paths inside a `<Set>` (e.g.
+an in-state path vs. an out-of-state path under one `<Combination>` element) — the tool now
+surfaces each alternative path explicitly (fixed 2026-07-15, was previously silently dropping
+Choice content). If a combo's extracted `set:` looks suspiciously empty or a devdoc-implied
+combo seems to be missing, check the raw XML directly for a nested `<Choice>` before assuming
+the transaction has no requirements or the combo doesn't exist.
 
 ## Step 3 — KB read order (README.txt's own prescribed order — follow it)
 

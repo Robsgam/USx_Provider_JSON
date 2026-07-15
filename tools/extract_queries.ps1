@@ -16,6 +16,45 @@ $ErrorActionPreference = 'Stop'
 
 if (-not (Test-Path $XmlPath)) { Write-Error "File not found: $XmlPath"; return }
 
+# A <Set> can contain a nested <Choice> of 2+ alternative <Set> branches (each representing a
+# distinct required-field path under the SAME <Combination>/keyRef -- e.g. NY's RVEH combo has
+# an in-state minimal-plate path and an out-of-state plate+year+type+state path, both inside one
+# <Combination keyReference="RVEH">). Branches can themselves nest further <Any>/<Choice>
+# (confirmed live in NY_NYSPIN_EJUSTICE.XML). Recurse so every alternative path's real fields
+# surface, instead of the Choice node being silently skipped (which previously produced an
+# empty set[] for the whole combo, or dropped the OOS/expanded path from view entirely).
+function Resolve-RequirementPaths {
+    param($SetNode)
+    $directFields = @()
+    $anyFields = @()
+    $choiceNode = $null
+    foreach ($child in $SetNode.ChildNodes) {
+        switch ($child.LocalName) {
+            'Field'  { $directFields += $child.reference }
+            'Any'    {
+                foreach ($af in $child.ChildNodes) {
+                    if ($af.LocalName -eq 'Field') { $anyFields += $af.reference }
+                }
+            }
+            'Choice' { $choiceNode = $child }
+        }
+    }
+    if (-not $choiceNode) {
+        return @([PSCustomObject]@{ Set = $directFields; Any = $anyFields })
+    }
+    $paths = @()
+    foreach ($altSet in $choiceNode.ChildNodes) {
+        if ($altSet.LocalName -ne 'Set') { continue }
+        foreach ($sub in (Resolve-RequirementPaths $altSet)) {
+            $paths += [PSCustomObject]@{
+                Set = @($directFields + $sub.Set)
+                Any = @($anyFields + $sub.Any)
+            }
+        }
+    }
+    return $paths
+}
+
 [xml]$xml = Get-Content $XmlPath -Raw -Encoding UTF8
 
 $fileName = [System.IO.Path]::GetFileNameWithoutExtension($XmlPath)
@@ -123,6 +162,7 @@ $lines += ""
 
 # Detail for each query
 $comboTotal = 0
+$pathTotal = 0
 foreach ($txn in $queryTxns) {
     $name = $txn.name
     $ver = $txn.version
@@ -166,29 +206,20 @@ foreach ($txn in $queryTxns) {
             $keyRef = $c.keyReference
             $primary = $c.primaryFieldReference
 
-            $setFields = @()
-            $anyFields = @()
-
+            $paths = @()
             if ($c.Requirements -and $c.Requirements.Set) {
-                $setNode = $c.Requirements.Set
-                foreach ($child in $setNode.ChildNodes) {
-                    if ($child.LocalName -eq 'Field') {
-                        $setFields += $child.reference
-                    } elseif ($child.LocalName -eq 'Any') {
-                        foreach ($af in $child.ChildNodes) {
-                            if ($af.LocalName -eq 'Field') {
-                                $anyFields += $af.reference
-                            }
-                        }
-                    }
-                }
+                # @(...) around the call is required, not decorative: PowerShell silently
+                # collapses a 1-element array returned from a function back to a bare scalar on
+                # assignment, which made $paths.Count (and later $c.Paths.Count) return $null for
+                # every non-Choice combo (the common case), mis-routing into the empty-fallback
+                # branch below. @() guarantees array-ness for 0/1/N results alike.
+                $paths = @(Resolve-RequirementPaths $c.Requirements.Set)
             }
 
             $combos += [PSCustomObject]@{
                 KeyRef = $keyRef
                 Primary = $primary
-                Set = $setFields
-                Any = $anyFields
+                Paths = $paths
             }
         }
     }
@@ -200,13 +231,31 @@ foreach ($txn in $queryTxns) {
         $ci = 0
         foreach ($c in $combos) {
             $ci++
-            $setStr = ($c.Set -join ', ')
-            $anyStr = if ($c.Any.Count -gt 0) { "[" + ($c.Any -join ', ') + "]" } else { '' }
             $lines += ""
             $lines += "  $ci. keyRef: $($c.KeyRef)"
             $lines += "     primary: $($c.Primary)"
-            $lines += "     set: $setStr"
-            if ($anyStr) { $lines += "     any: $anyStr" }
+            if ($c.Paths.Count -le 1) {
+                $p = if ($c.Paths.Count -eq 1) { $c.Paths[0] } else { [PSCustomObject]@{ Set = @(); Any = @() } }
+                $setStr = ($p.Set -join ', ')
+                $anyStr = if ($p.Any.Count -gt 0) { "[" + ($p.Any -join ', ') + "]" } else { '' }
+                $lines += "     set: $setStr"
+                if ($anyStr) { $lines += "     any: $anyStr" }
+            } else {
+                # <Choice> gave 2+ alternative required-field paths under this one keyRef --
+                # e.g. an in-state path and an out-of-state path. Providers typically build each
+                # alternative as its own synthetic keyRef (LIMITATION #21/#36) -- surface all of
+                # them here so that split isn't missed at extraction time.
+                $lines += "     (Choice -- $($c.Paths.Count) alternative required-field paths; likely built as $($c.Paths.Count) separate synthetic keyRefs)"
+                $pi = 0
+                foreach ($p in $c.Paths) {
+                    $pi++
+                    $setStr = ($p.Set -join ', ')
+                    $anyStr = if ($p.Any.Count -gt 0) { "[" + ($p.Any -join ', ') + "]" } else { '' }
+                    $lines += "       path ${pi}: set: $setStr"
+                    if ($anyStr) { $lines += "               any: $anyStr" }
+                }
+            }
+            $pathTotal += [Math]::Max($c.Paths.Count, 1)
         }
     } else {
         $lines += ""
@@ -217,7 +266,11 @@ foreach ($txn in $queryTxns) {
 }
 
 $lines += "=" * 78
-$lines += "TOTALS: $($queryTxns.Count) query transactions, $comboTotal combinations"
+if ($pathTotal -ne $comboTotal) {
+    $lines += "TOTALS: $($queryTxns.Count) query transactions, $comboTotal XML <Combination> elements, $pathTotal required-field paths (some combos contain a <Choice> of 2+ alternative paths -- see 'likely built as N separate synthetic keyRefs' notes above)"
+} else {
+    $lines += "TOTALS: $($queryTxns.Count) query transactions, $comboTotal combinations"
+}
 $lines += "=" * 78
 
 # Output
