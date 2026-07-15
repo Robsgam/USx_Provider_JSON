@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: HI_HCJDC_OFML Article ArticleSingleQuery
+Combo: QA_any (QA_any (auto))
+Date: 2026-07-15 18:31:25
+Result: PASS
+JSON Version: 4.8
+Entity Fingerprint: 36643cf619b458700c6b9b207a6f81380a92ae8972613d105fbbe09257266bda
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ArticleSerialNumber":"ART99999","ArticleTypeCode":"BBICYCL","relatedSearchHitIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXKYCXSP4KHVA8Q09FZ145P7">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01KXKYCXSP4KHVA8Q09FZ145P7</Id>
+            <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KXKYCXSP4KHVA8Q09FZ145P7
+  RelatedSearchHitIndicator      Y
+  ArticleTypeCode                BBICYCL
+  ArticleSerialNumber            ART99999
+
+NOTES
+-----
+Automated capture (txId 01KXKYCXSP4KHVA8Q09FZ145P7). kind=any; anyField=; expectedKeyRef=QA; firedMessageType=ArticleSingleQuery.
+
+RESULT: PASS
