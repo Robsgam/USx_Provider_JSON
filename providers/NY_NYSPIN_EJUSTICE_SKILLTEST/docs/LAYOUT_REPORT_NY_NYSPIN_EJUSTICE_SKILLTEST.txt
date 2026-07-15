@@ -1,0 +1,125 @@
+================================================================
+  Build Report: NY_NYSPIN_EJUSTICE_SKILLTEST
+  Source: NY_NYSPIN_EJUSTICE_SKILLTEST_v1.0.json
+  Generated: 2026-07-15 13:08
+================================================================
+LAYOUT SUMMARY
+==============
+
+=== NY_NYSPIN_EJUSTICE_SKILLTEST_v1.0.json ===
+QIFs: 5
+  Vehicle | entity=Vehicle | qidm= | cards=2 fields=4
+  Person | entity=Person | qidm= | cards=3 fields=13
+  Firearm | entity=Firearm | qidm= | cards=1 fields=4
+  Article | entity=Article | qidm= | cards=1 fields=2
+  Boat | entity=Boat | qidm= | cards=2 fields=2
+QIDMs: 6
+  NY_NYSPIN_EJUSTICE_SKILLTEST_VehicleRegistrationQuery | attrs=8 combos=4 autoSelect=True
+  NY_NYSPIN_EJUSTICE_SKILLTEST_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
+  NY_NYSPIN_EJUSTICE_SKILLTEST_DriverHistoryQuery | attrs=9 combos=4 autoSelect=False
+  NY_NYSPIN_EJUSTICE_SKILLTEST_GunQuery | attrs=4 combos=1 autoSelect=
+  NY_NYSPIN_EJUSTICE_SKILLTEST_ArticleSingleQuery | attrs=4 combos=1 autoSelect=
+  NY_NYSPIN_EJUSTICE_SKILLTEST_BoatQuery | attrs=4 combos=4 autoSelect=
+
+
+LAYOUT DETAIL
+=============
+
+
+=== Vehicle ===
+  name=ENTITY_Vehicle | entity=Vehicle | qidm=
+  [default]
+    CARD "CARD_VEH_OPT"
+      ROW ROW_VEH_OPT_1 [6 6]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+    CARD "CARD_VEH_SEARCH"
+      ROW ROW_VEH_1 [4 4 4]
+        LicensePlateNumber (Text | maxLen=10)
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
+        LicensePlateYear (Text | maxLen=4 | default=2026)
+      ROW ROW_VEH_2 [4 4 4]
+        VehicleIdentificationNumber (Text | maxLen=20)
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+        vehicleYear (Text | maxLen=4)
+
+=== Person ===
+  name=ENTITY_Person | entity=Person | qidm=
+  [default]
+    CARD "CARD_PER_OPT"
+      ROW ROW_PER_OPT_1 [6 6]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+    CARD "CARD_PER_DL"
+      ROW ROW_PER_DL_1 [12]
+        OperatorLicenseNumber (Text | maxLen=20)
+      ROW ROW_PER_DL_2 [3 3 3 3]
+        NameFirst (Text | maxLen=15)
+        NameLast (Text | maxLen=15)
+        nameMiddle (Text | maxLen=10)
+        nameSuffix (Text | maxLen=5)
+      ROW ROW_PER_DL_3 [6 6]
+        BirthDate (FormDate)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+    CARD "CARD_PER_DH"
+      ROW ROW_PER_DH_1 [12]
+        OperatorLicenseNumberDH (Text | maxLen=20)
+      ROW ROW_PER_DH_2 [3 3 3 3]
+        NameFirstDH (Text | maxLen=15)
+        NameLastDH (Text | maxLen=15)
+        nameMiddleDH (Text | maxLen=10)
+        nameSuffixDH (Text | maxLen=5)
+      ROW ROW_PER_DH_3 [6 6]
+        BirthDateDH (FormDate)
+        SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DH_4 [3 6 3]
+        purposeCodeDH (Text | maxLen=1 | default=C)
+        requestorDH (Text | maxLen=35)
+        nyNyspinTransactionNameDH (Text | maxLen=4)
+
+=== Firearm ===
+  name=ENTITY_Firearm | entity=Firearm | qidm=
+  [default]
+    CARD "CARD_GUN_SEARCH"
+      ROW ROW_GUN_1 [3 3 3 3]
+        GunSerialNumber (Text | maxLen=20)
+        GunMake (Text | maxLen=23)
+        GunCaliber (Text | maxLen=4)
+        relatedHitSearchIndicator (Text | maxLen=1)
+
+=== Article ===
+  name=ENTITY_Article | entity=Article | qidm=
+  [default]
+    CARD "CARD_ART_SEARCH"
+      ROW ROW_ART_1 [4 4 4]
+        ArticleSerialNumber (Text | maxLen=20)
+        ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+      ROW ROW_ART_2 [4]
+        relatedHitSearchIndicator (Text | maxLen=1)
+
+=== Boat ===
+  name=ENTITY_Boat | entity=Boat | qidm=
+  [default]
+    CARD "CARD_BOA_OPT"
+      ROW ROW_BOA_OPT_1 [6 6]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+    CARD "CARD_BOA_SEARCH"
+      ROW ROW_BOA_1 [6 6]
+        BoatHullIdNumber (Text | maxLen=20)
+        RegistrationNumber (Text | maxLen=10)
+
+=== RMS QIDMs ===
+  RMS Person Search query
+    NameFirst -> firstName
+    NameLast -> lastName
+    OperatorLicenseNumber -> dlNumber
+    BirthDate -> dateOfBirth
+    SexCode -> sexAttrId (useAttrId)
+    RegistrationState -> registrationStateAttrId (useAttrId)
+  RMS Vehicle search query
+    VehicleIdentificationNumber -> vehicle.vinNumber
+    LicensePlateNumber -> vehicle.tag
+    RegistrationState -> vehicle.registrationStateAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
+

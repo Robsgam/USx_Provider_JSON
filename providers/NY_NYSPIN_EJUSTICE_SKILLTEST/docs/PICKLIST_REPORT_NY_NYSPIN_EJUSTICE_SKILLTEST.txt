@@ -1,0 +1,109 @@
+======================================================================
+  PICKLIST / DROPDOWN REPORT: NY_NYSPIN_EJUSTICE_SKILLTEST_v1.0
+  Source: NY_NYSPIN_EJUSTICE_SKILLTEST_v1.0.json
+  Generated: 2026-07-15 13:08
+======================================================================
+
+SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
+--------------------------------------------------
+
+  Entity: Article
+    ArticleTypeCode [Article Type]
+      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+    ImageIndicator [Image (optional)] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Boat
+    ImageIndicator [Image (optional)] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    RegistrationState [State (leave blank for NY)]
+      Config: attributeTypeId=STATE
+
+  Entity: Person
+    ImageIndicator [Image (optional)] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    RegistrationState [State (leave blank for NY)]
+      Config: attributeTypeId=STATE
+    SexCode [Sex (required with Name)]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex (DH) - required with Name]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+
+  Entity: Vehicle
+    ImageIndicator [Image (optional)] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    LicensePlateTypeCode [Plate Type (out-of-state plates)] (default=PC)
+      Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
+    RegistrationState [State (leave blank for NY)]
+      Config: attributeTypeId=STATE
+    VehicleMakeCode [Vehicle Make (optional)]
+      Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
+
+SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
+--------------------------------------------------
+
+  Config Type: QUERYINPUTDATAMAPPING
+    Config: NY_NYSPIN_EJUSTICE_SKILLTEST_VehicleRegistrationQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: NY_NYSPIN_EJUSTICE_SKILLTEST_DriverLicenseQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: NY_NYSPIN_EJUSTICE_SKILLTEST_DriverHistoryQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: NY_NYSPIN_EJUSTICE_SKILLTEST_BoatQuery
+      State -> State
+        codeTypeProvider=NCIC
+
+  Config Type: QUERYRESULTDATAMAPPING
+    Config: NY_NYSPIN_EJUSTICE_SKILLTEST_Results
+      AddressStateCode -> AddressStateCode
+        codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
+      EyeColorCode -> EyeColorCode
+        attributeType=EYE_COLOR | codeTypeSource=NCIC
+      HairColorCode -> HairColorCode
+        attributeType=HAIR_COLOR | codeTypeSource=NCIC
+      RaceCode -> RaceCode
+        codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+      SexCode -> SexCode
+        attributeType=SEX | codeTypeSource=NIBRS
+      VehicleColorCode -> VehicleColorCode
+        attributeType=ITEM_COLOR | codeTypeSource=NCIC
+      VehicleMakeName -> VehicleMakeName
+        attributeType=VEHICLE_MAKE | codeTypeSource=NCIC
+      VehicleStyleCode -> BodyStyle
+        codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
+      VehicleModelName -> VehicleModelName
+        attributeType=VEHICLE_MODEL | codeTypeSource=NCIC
+
+SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
+--------------------------------------------------
+
+  QIDM: NY_NYSPIN_EJUSTICE_SKILLTEST_VehicleRegistrationQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: NY_NYSPIN_EJUSTICE_SKILLTEST_DriverLicenseQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: NY_NYSPIN_EJUSTICE_SKILLTEST_DriverLicenseQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: NY_NYSPIN_EJUSTICE_SKILLTEST_DriverHistoryQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: NY_NYSPIN_EJUSTICE_SKILLTEST_DriverHistoryQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: NY_NYSPIN_EJUSTICE_SKILLTEST_BoatQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+======================================================================
+  SUMMARY
+======================================================================
+  Form dropdowns: 12
+  QRDM code type attrs: 15

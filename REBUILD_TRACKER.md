@@ -54,6 +54,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/1W | 3 | out of scope |
 | 19 | TX_TLETS_CCH | v1.1 |  | 113P/0F/0W/0LIM | 0 | out of scope, CCH stub |
 | 20 | CA_CONTRA_COSTA | -- |  |  |  | out of scope, incomplete (awaiting devdoc) |
+| 21 | NY_NYSPIN_EJUSTICE_SKILLTEST | v1.0 |  | 74P/0F/0W/0LIM | 0 | skill/procedure-test sandbox provider (independent rebuild of NY NYSPIN eJustice from source materials, scoped to devdoc "Basic Queries Supported"); NOT scheduled for tenant import |
 
 ---
 

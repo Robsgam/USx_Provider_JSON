@@ -1,0 +1,31 @@
+STATUS: CONFIRMED
+# NY_NYSPIN_EJUSTICE_SKILLTEST supported queries -- human-reviewed against
+# source/NY_NYSPIN_DEVDOC.txt (cross-checked against a fresh `pdftotext -layout`
+# extraction of source/NY_NYSPIN_EJUSTICE_4.13.26.pdf, 2026-07-15) literal
+# "Basic Queries Supported:" section (lines 17-140 of the devdoc.txt / 36-150 of
+# the fresh layout extraction). That section enumerates EXACTLY 6 queries:
+# ArticleSingleQuery, BoatQuery, DriverHistoryQuery, DriverLicenseQuery, GunQuery,
+# VehicleRegistrationQuery. All 8 rows below map to those 6 queries.
+#
+# OUT OF SCOPE (metadata defines these, but they are NOT under the devdoc's
+# "Basic Queries Supported" heading -- they live under separate later headings:
+# "Canadian Basic Inquiries (CBI)", "Wanted Missing Person Inquiries (WMP-I)",
+# and "Expanded Transactions Supported:"). Per knowledge-base/README.txt SOURCE
+# AUTHORITY RULES, metadata existence alone does not authorize building a query:
+#   CBICanadaDriverLicenseQuery, CBICanadaVehicleRegistrationQuery (CBI)
+#   WMPIPersonMINQQuery, WMPIPersonWINQQuery, WMPIProtectionOrderQuery (WMP-I)
+#   NyNyspinBoatBINQQuery, NyNyspinBoatRegistrationNameQuery,
+#   NyNyspinDriverLicenseNameQuery, NyNyspinNicbAllFilesQuery,
+#   NyNyspinVehicleRegistrationNameQuery (Expanded Transactions Supported)
+# Format: <QueryLabel> | <PrimaryFieldReference>
+
+Article | ArticleSerialNumber
+Boat | BoatHullIdNumber
+Boat | RegistrationNumber
+Driver History | Name
+Driver History | OperatorLicenseNumber
+Driver License | Name
+Driver License | OperatorLicenseNumber
+Firearm | GunSerialNumber
+Vehicle Registration | LicensePlateNumber
+Vehicle Registration | VehicleIdentificationNumber

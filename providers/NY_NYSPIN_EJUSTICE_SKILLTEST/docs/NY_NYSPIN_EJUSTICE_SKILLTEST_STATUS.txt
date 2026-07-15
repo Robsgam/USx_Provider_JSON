@@ -1,0 +1,36 @@
+================================================================
+  STATUS: NY_NYSPIN_EJUSTICE_SKILLTEST
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
+  Version: v1.0
+  Updated: 2026-07-15
+================================================================
+
+CURRENT STATE
+=============
+  Phase: 1 (STANDUP -- QIDM confirmation complete, single JSON, multi-card layout)
+  Version: v1.0
+  Validator: 74 PASS / 0 FAIL / 0 WARN (0 LIMITATION)
+  Verify:    CLEAN
+  Metadata audit: 129 PASS / 0 FAIL / 0 WARN
+  CAD audit: 63 PASS / 0 FAIL / 0 WARN
+  Supported-query audit: CONFIRMED, 16 PASS / 0 FAIL / 0 WARN
+  Import: Not attempted (this is a skill-test build, not scheduled for tenant import)
+
+TEST MATRIX
+===========
+  Entity              Query                    Combo       Result    Date
+  ------------------  -----------------------  ----------  --------  ----------
+  (simulator-verified only -- 46/46 test-matrix cases PASS via test_commsys.ps1 /
+   run_test_matrix.ps1; no live USx Tenant Testing has been performed for this
+   skill-test provider. See docs/TEST_VALIDATION_NY_NYSPIN_EJUSTICE_SKILLTEST.txt
+   and logs/NY_NYSPIN_EJUSTICE_SKILLTEST_TEST_PLAN_v1.0.json.)
+
+NOTES
+=====
+  Provider scaffolded on 2026-07-15.
+  XML source: NY_NYSPIN_EJUSTICE_SKILLTEST.xml
+  Scope: 6 QIDMs / 16 combos, limited to the devdoc's literal "Basic Queries
+  Supported" section (ArticleSingleQuery, BoatQuery, DriverHistoryQuery,
+  DriverLicenseQuery, GunQuery, VehicleRegistrationQuery). 10 additional metadata
+  transactions (CBI, WMPI, Expanded Transactions Supported) are explicitly out of
+  scope -- see docs/NY_NYSPIN_EJUSTICE_SKILLTEST_SUPPORTED_QUERIES.txt.
