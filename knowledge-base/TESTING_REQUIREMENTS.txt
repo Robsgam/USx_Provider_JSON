@@ -1084,13 +1084,16 @@ SECTION 17 -- DEPLOYMENT ENVIRONMENTS
       No provider JSONs have been deployed to a live environment yet.
       All current imports are to Provider Tenants or Foundation Tenants only.
 
-  CURRENT IMPORT STATE (updated 2026-05-21):
+  CURRENT IMPORT STATE:
+    NOTE: this table is not kept current for version/score -- see REBUILD_TRACKER.md +
+    CLAUDE.md's Provider Status table for that. It exists here only to track which
+    providers have a Foundation Tenant engagement (deployment architecture, not versions).
 
-    | Provider    | Version | USx Provider Tenant | Foundation Tenant        |
-    |-------------|---------|---------------------|--------------------------|
-    | NJ_NJCJIS   | v3.4    | YES (2026-05-21)    | Newark Foundation (v3.4) |
-    | FL_FCIC     | v4.3    | YES (2026-05-21)    | --                       |
-    | CA_CLETS    | v2.4    | YES (2026-05-21)    | --                       |
+    | Provider    | USx Provider Tenant | Foundation Tenant                    |
+    |-------------|---------------------|---------------------------------------|
+    | NJ_NJCJIS   | YES                 | Newark Foundation                      |
+    | FL_FCIC     | YES                 | Miami Springs Foundation (2026-07-15)  |
+    | CA_CLETS    | YES                 | --                                     |
 
   IMPORT WORKFLOW:
     1. Build JSON → build_report.ps1 → enforce.ps1 (all gates clear)
