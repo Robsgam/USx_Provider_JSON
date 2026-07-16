@@ -97,9 +97,9 @@ Architecture notes:
 
   Plate>VIN guardrail -- Plate+VIN co-entry -> only the plate path fires, VIN combos exit
     the pool (LicensePlateNumber NOT_EXISTS on FRQVehicleIdentificationNumber +
-    RQVehicleIdentificationNumber). [PENDING]
-    evidence: logs/Vehicle/FL_FCIC_v7.1_FRQLicensePlateNumber_guardrail_vs_FRQVehicleIdentificationNumber.txt
-              logs/Vehicle/FL_FCIC_v7.1_FRQLicensePlateNumber_guardrail_vs_RQVehicleIdentificationNumber.txt
+    RQVehicleIdentificationNumber). [CONFIRMED]
+    evidence: logs/Vehicle/FL_FCIC_v7.6_FRQLicensePlateNumber_guardrail_vs_FRQVehicleIdentificationNumber.txt
+              logs/Vehicle/FL_FCIC_v7.6_FRQLicensePlateNumber_guardrail_vs_RQVehicleIdentificationNumber.txt
 
   Priority order: FRQ (in-state) before RQ (OOS); within each, Plate before VIN -- CONFIRMED.
     In-state (State blank) fires FRQ; adding State routes to RQ (State EXISTS). Plate>VIN
@@ -168,9 +168,9 @@ Architecture notes:
     evidence: logs/Person/FL_FCIC_v7.1_DQOperatorLicenseNumber.txt
 
   OLN>Name guardrail -- OLN+Name co-entry -> only the OLN combo fires, Name combos exit the
-    pool (OperatorLicenseNumber NOT_EXISTS on FDQName + DQName). [PENDING]
-    evidence: logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber_guardrail_vs_FDQName.txt
-              logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber_guardrail_vs_DQName.txt
+    pool (OperatorLicenseNumber NOT_EXISTS on FDQName + DQName). [CONFIRMED]
+    evidence: logs/Person/FL_FCIC_v7.6_FDQOperatorLicenseNumber_guardrail_vs_FDQName.txt
+              logs/Person/FL_FCIC_v7.6_FDQOperatorLicenseNumber_guardrail_vs_DQName.txt
 
   Priority order: FDQ (in-state) before DQ (OOS); within each, OLN before Name -- CONFIRMED.
     State blank fires FDQ; adding State routes to DQ. DQ is In/Out (State=FL legal, no not-FL guard).
@@ -215,8 +215,8 @@ Architecture notes:
     evidence: logs/Person/FL_FCIC_v7.1_KQOperatorLicenseNumber.txt
 
   OLN>Name guardrail (DH) -- OLN+Name co-entry -> only KQOperatorLicenseNumber fires, KQName
-    exits the pool (OperatorLicenseNumberDH NOT_EXISTS on KQName). [PENDING]
-    evidence: logs/Person/FL_FCIC_v7.1_KQOperatorLicenseNumber_guardrail_vs_KQName.txt
+    exits the pool (OperatorLicenseNumberDH NOT_EXISTS on KQName). [CONFIRMED]
+    evidence: logs/Person/FL_FCIC_v7.6_KQOperatorLicenseNumber_guardrail_vs_KQName.txt
 
   Priority order: KQ OLN before KQ Name -- CONFIRMED (OLN>Name guardrail).
 
