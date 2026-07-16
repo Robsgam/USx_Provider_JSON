@@ -203,11 +203,30 @@ if ($errored -gt 0) { Write-Host "  [WARN] $errored record(s) errored in post_te
 
 if ($Commit -and ($imported + $failed) -gt 0) {
     Push-Location $repoRoot
+    # Native git commands write routine info (e.g. CRLF autocrlf notices) to stderr. Under the
+    # script-wide $ErrorActionPreference = "Stop", PowerShell promotes ANY stderr line from a
+    # native command into a terminating error, so a harmless git warning was aborting this block
+    # before `git commit`/`git push` ever ran -- tests looked "committed" (no visible failure)
+    # but silently stayed local. Scope ErrorActionPreference down to 'Continue' for these calls
+    # and gate success on $LASTEXITCODE instead of exception-catching stderr noise.
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
     try {
-        & git add -- providers automation/captures 2>&1 | Out-Null
-        & git commit -m "Import automated USx Tenant Testing captures ($imported PASS / $failed FAIL)`n`nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>" 2>&1 | Out-Null
-        & git push 2>&1 | Out-Null
-        Write-Host "  Git: committed + pushed" -ForegroundColor Gray
-    } catch { Write-Host "  [WARN] git step failed: $_" -ForegroundColor Yellow } finally { Pop-Location }
+        git add -- providers automation/captures 2>&1 | Out-Null
+        git commit -m "Import automated USx Tenant Testing captures ($imported PASS / $failed FAIL)`n`nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>" 2>&1 | Out-Null
+        $commitExit = $LASTEXITCODE
+        git push 2>&1 | Out-Null
+        $pushExit = $LASTEXITCODE
+        if ($commitExit -eq 0 -and $pushExit -eq 0) {
+            Write-Host "  Git: committed + pushed" -ForegroundColor Gray
+        } else {
+            Write-Host "  [WARN] git step failed: commit exit=$commitExit push exit=$pushExit" -ForegroundColor Yellow
+        }
+    } catch {
+        Write-Host "  [WARN] git step failed: $_" -ForegroundColor Yellow
+    } finally {
+        $ErrorActionPreference = $prevEap
+        Pop-Location
+    }
 }
 exit 0
