@@ -2,7 +2,7 @@ FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-16
-JSON version: v7.5
+JSON version: v7.6
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: COMPLETE + INTEGRITY-CERTIFIED -- v7.1 zero-error pass 2026-07-02: 121/121
   submitted+captured, 0 skipped, 0 unmatched, content audit 121/121, XML consistency PASS
@@ -269,28 +269,28 @@ Architecture notes:
   Combos: QA by Serial+Type(1), QA by OAN+Type(2), QA by NCIC#(3), QA by PCN(4) = 4 combos
   Optional fields: ImageIndicator
 
-  QAArticleSerialNumber -- Serial + ArticleType [CONFIRMED]
+  QAArticleSerialNumber -- Serial + ArticleType [PENDING]
     set: ArticleSerialNumber, ArticleTypeCode
     any: ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QAArticleSerialNumber
     evidence: logs/Article/FL_FCIC_v7.1_QAArticleSerialNumber.txt
 
-  QAOwnerAppliedNumber -- OwnerAppliedNumber + ArticleType [CONFIRMED]
+  QAOwnerAppliedNumber -- OwnerAppliedNumber + ArticleType [PENDING]
     set: ArticleTypeCode, ownerAppliedNumber
     any: ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QAOwnerAppliedNumber
     evidence: logs/Article/FL_FCIC_v7.1_QAOwnerAppliedNumber.txt
 
-  QANCICNumber -- NCIC Number [CONFIRMED]
+  QANCICNumber -- NCIC Number [PENDING]
     set: NCICNumber
     any: ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QANCICNumber
     evidence: logs/Article/FL_FCIC_v7.1_QANCICNumber.txt
 
-  QAProcessControlNumber -- Process Control Number [CONFIRMED]
+  QAProcessControlNumber -- Process Control Number [PENDING]
     set: processControlNumber
     any: ImageIndicator
     defaults: ImageIndicator=N
@@ -317,7 +317,7 @@ Architecture notes:
     non-FL rule is a LIMITATION -- dropdown + card hint only). Hull>Reg guardrail applied
     across all 3 families: Reg combos carry BoatHullIdNumber NOT_EXISTS.
 
-  FBQBoatHullIdNumber -- in-state Hull ID [CONFIRMED]
+  FBQBoatHullIdNumber -- in-state Hull ID [PENDING]
     set: BoatHullIdNumber
     any: decalNumber, titleLienInformation, ImageIndicator (Reg removed v7.1, LIMIT #1 de-bleed)
     conditions: RegistrationState NOT_EXISTS AND relatedHitSearchIndicator NOT_EXISTS
@@ -325,7 +325,7 @@ Architecture notes:
     keyReference: FBQBoatHullIdNumber
     evidence: logs/Boat/FL_FCIC_v7.1_FBQBoatHullIdNumber.txt
 
-  FBQDecalNumber -- in-state Decal [CONFIRMED]
+  FBQDecalNumber -- in-state Decal [PENDING]
     set: decalNumber
     any: BoatHullIdNumber, titleLienInformation, ImageIndicator (Reg removed v7.1)
     conditions: RegistrationState NOT_EXISTS
@@ -333,7 +333,7 @@ Architecture notes:
     keyReference: FBQDecalNumber
     evidence: logs/Boat/FL_FCIC_v7.1_FBQDecalNumber.txt
 
-  FBQRegistrationNumber -- in-state Registration [CONFIRMED]
+  FBQRegistrationNumber -- in-state Registration [PENDING]
     set: RegistrationNumber
     any: decalNumber, titleLienInformation, ImageIndicator
     conditions: RegistrationState NOT_EXISTS AND relatedHitSearchIndicator NOT_EXISTS
@@ -342,7 +342,7 @@ Architecture notes:
     keyReference: FBQRegistrationNumber
     evidence: logs/Boat/FL_FCIC_v7.1_FBQRegistrationNumber.txt
 
-  FBQTitleLienInformation -- in-state Title/Lien [CONFIRMED]
+  FBQTitleLienInformation -- in-state Title/Lien [PENDING]
     set: titleLienInformation
     any: BoatHullIdNumber, decalNumber, ImageIndicator (Reg removed v7.1)
     conditions: RegistrationState NOT_EXISTS
@@ -350,7 +350,7 @@ Architecture notes:
     keyReference: FBQTitleLienInformation
     evidence: logs/Boat/FL_FCIC_v7.1_FBQTitleLienInformation.txt
 
-  QBBoatHullIdNumber -- stolen Hull ID [CONFIRMED]
+  QBBoatHullIdNumber -- stolen Hull ID [PENDING]
     set: BoatHullIdNumber, relatedHitSearchIndicator
     any: ImageIndicator (Reg removed v6.9)
     conditions: relatedHitSearchIndicator EXISTS (explicit Stolen gate, v6.9)
@@ -358,28 +358,28 @@ Architecture notes:
     keyReference: QBBoatHullIdNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBBoatHullIdNumber.txt
 
-  QBCoastGuardDocumentNumber -- stolen Coast Guard Doc [CONFIRMED]
+  QBCoastGuardDocumentNumber -- stolen Coast Guard Doc [PENDING]
     set: coastGuardDocumentNumber
     any: ImageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N
     keyReference: QBCoastGuardDocumentNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBCoastGuardDocumentNumber.txt
 
-  QBNCICNumber -- stolen NCIC Number [CONFIRMED]
+  QBNCICNumber -- stolen NCIC Number [PENDING]
     set: NCICNumber
     any: ImageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N
     keyReference: QBNCICNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBNCICNumber.txt
 
-  QBProcessControlNumber -- stolen Process Control Number [CONFIRMED]
+  QBProcessControlNumber -- stolen Process Control Number [PENDING]
     set: processControlNumber
     any: ImageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N
     keyReference: QBProcessControlNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBProcessControlNumber.txt
 
-  QBRegistrationNumber -- stolen Registration [CONFIRMED]
+  QBRegistrationNumber -- stolen Registration [PENDING]
     set: RegistrationNumber, relatedHitSearchIndicator
     any: ImageIndicator
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg, QB family)
@@ -388,20 +388,20 @@ Architecture notes:
     keyReference: QBRegistrationNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBRegistrationNumber.txt
 
-  BQName -- OOS Name + DOB + DestState [CONFIRMED]
+  BQName -- OOS Name + DOB + DestState [PENDING]
     set: BirthDate, NameLast, NameFirst, RegistrationState
     any: BoatHullIdNumber, RegistrationNumber
     keyReference: BQName
     Name uses FormatStringRuleHandler arguments=[', ']; BirthDate yyyy-MM-dd -> yyyyMMdd
     evidence: logs/Boat/FL_FCIC_v7.1_BQName.txt
 
-  BQBoatHullIdNumber -- OOS Hull + DestState [CONFIRMED]
+  BQBoatHullIdNumber -- OOS Hull + DestState [PENDING]
     set: BoatHullIdNumber, RegistrationState
     any: (empty; Reg removed v6.9)
     keyReference: BQBoatHullIdNumber
     evidence: logs/Boat/FL_FCIC_v7.1_BQBoatHullIdNumber.txt
 
-  BQRegistrationNumber -- OOS Registration + DestState [CONFIRMED]
+  BQRegistrationNumber -- OOS Registration + DestState [PENDING]
     set: RegistrationNumber, RegistrationState
     any: (empty)
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg, BQ OOS family)
@@ -411,7 +411,7 @@ Architecture notes:
   Hull>Reg guardrail -- Hull+Reg co-entry -> only the Hull combo fires, the Reg combo exits
     the pool. Applied to all 3 families: FBQ (FBQRegistrationNumber), QB (QBRegistrationNumber),
     BQ (BQRegistrationNumber) all carry BoatHullIdNumber NOT_EXISTS. Hull ID (HIN) is the
-    unique permanent identifier; Reg is reassignable -> Hull wins. [CONFIRMED]
+    unique permanent identifier; Reg is reassignable -> Hull wins. [PENDING]
     evidence: logs/Boat/FL_FCIC_v7.1_FBQBoatHullIdNumber_guardrail_vs_FBQRegistrationNumber.txt
               logs/Boat/FL_FCIC_v7.1_FBQBoatHullIdNumber_guardrail_vs_BQRegistrationNumber.txt
               logs/Boat/FL_FCIC_v7.1_QBBoatHullIdNumber_guardrail_vs_QBRegistrationNumber.txt

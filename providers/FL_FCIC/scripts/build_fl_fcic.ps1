@@ -1,6 +1,19 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.6 (2026-07-16): Article card cosmetic pass (DEX-1281, Gordon Hallof UX feedback) + Boat
+#   direct-feedback restructuring (no ticket, mirrors the Article/Vehicle/Person patterns).
+#   Article: card title -> "ARTICLE QUERY by Serial Number, "OR" Owner Applied Number, "OR"
+#   NCIC Number, "OR" PCN"; split the old 4-field row into Serial Number + Owner Applied Number
+#   (own row) and Article Type + Image (row below); dropped "(required)" from Article Type;
+#   ImageIndicator -> "NCIC Image - if available" (matches Firearm v7.3/Vehicle v7.4). Boat:
+#   collapsed from 2 cards to 1 -- merged CARD_BOA_OPT (DestState+Stolen+Image) into
+#   CARD_BOA_SEARCH as a new bottom row (Boat didn't free up an existing row like Vehicle did,
+#   so this is an added row, not a merge into one); reordered the owner NameLast/NameFirst
+#   fields to First-then-Last (matching Person v7.5); ImageIndicator -> "NCIC Image - if
+#   available". Both label/layout-only, no combo/QIDM/wire change. Article + Boat re-open for
+#   live re-test (first time either has been touched this session); Person/Firearm/Vehicle stay
+#   open/PENDING at v7.5, untouched by this rebuild.
 # v7.5 (2026-07-16): Direct feedback (not a DEX ticket), two layout fixes. (1) Person CARD_DL
 #   ROW_DL2 Name field order was still Last/First/Middle -- inconsistent with CARD_DH's ROW_DH2,
 #   reordered to First/Last/MI in v7.2 (DEX-1278). Swapped NameFirst_Input/NameLast_Input order
@@ -172,7 +185,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.5"
+    [string]$Version = "7.6"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -952,17 +965,21 @@ $firearmsForm = [PSCustomObject]@{
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'ARTICLE QUERY'
+        title = 'ARTICLE QUERY by Serial Number, "OR" Owner Applied Number, "OR" NCIC Number, "OR" PCN'
         rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('4','2','4','2'); fields = @(
+            # v7.6 (DEX-1281): split the old 4-field row -- Serial Number + Owner Applied
+            # Number on their own line, Article Type + Image below.
+            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number (with Article Type)' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
                 @{ id = 'OwnerAppliedNumber_Input';  node = Inp 'ownerAppliedNumber' 'Owner Applied Number (with Article Type)' '20' 'ROW_ART_1' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';           node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_2' }
-                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_2' }
+                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
+                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
+            )}
+            @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
+                @{ id = 'NCICNumber_Input';           node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_3' }
+                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_3' }
             )}
         )
     }
@@ -977,20 +994,9 @@ $articleForm = [PSCustomObject]@{
 }
 
 # --- Boat (2 cards: OPTIONS + SEARCH) ---
-# OPTIONS: DestState+StolenSearch+Image (State routes BQ Nlets OOS; Stolen routes QB vs FBQ)
+# v7.6: collapsed from 2 cards to 1 -- DestState/Stolen/Image moved to a new bottom row.
 # SEARCH: Hull/Reg/CG/Decal/Title/NCIC/PCN + Name/DOB (BQ owner search, restored v4.7)
 $boaLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_BOA_OPT'
-        title = 'Search Options'
-        rows  = @(
-            @{ id = 'ROW_BOA_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'Destination State (blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_O1' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search (Y for NCIC stolen-boat check)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_O1' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_O1' }
-            )}
-        )
-    }
     @{
         id    = 'CARD_BOA_SEARCH'
         title = 'Boat Search'
@@ -1006,16 +1012,25 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'NCICNumber_Input';               node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_2' }
                 @{ id = 'ProcessControlNumber_Input';     node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_2' }
             )}
+            # v7.6: reordered First-before-Last, matching Person's v7.5 fix ("like the others").
             @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Owner Last Name (out-of-state)'  '30' 'ROW_BOA_3' }
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'Owner First Name (out-of-state)' '30' 'ROW_BOA_3' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Owner Last Name (out-of-state)'  '30' 'ROW_BOA_3' }
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Owner DOB (out-of-state)' 'ROW_BOA_3' }
+            )}
+            # v7.6: DestState/Stolen/Image moved here from the now-retired CARD_BOA_OPT
+            # "Search Options" card (Boat didn't free up an existing row like Vehicle did, so
+            # this is a new row, not a merge into one).
+            @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'Destination State (blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_4' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search (Y for NCIC stolen-boat check)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_4' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_4' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- MC 2-card: OPTIONS(DestState/Stolen/Image) + SEARCH(Hull/Reg/CG/Decal/Title/NCIC/PCN/OwnerName/DOB).'
+    description  = 'Boat queries -- 1 card (v7.6, collapsed from 2): Hull/Reg/CG, Decal/Title/NCIC/PCN, OwnerName/DOB, DestState/Stolen/Image bottom row.'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
