@@ -1,4 +1,4 @@
-FL_FCIC v7.3 -- TEST MATRIX
+FL_FCIC v7.4 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-16
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -7,13 +7,13 @@ Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (2 cards, 10 fields):
+Vehicle (2 cards, 9 fields):
   CARD_VEH_OPT (Search Options):
     RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-  CARD_VEH_SEARCH (Vehicle Search):
+  CARD_VEH_SEARCH (Vehicle Registration Search by License Plate, "OR" VIN, "OR" Decal):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8]
+    ROW 3: decalNumber [Inp 10]
 
 Person (2 cards, 18 fields):
   CARD_DL (Driver License):
@@ -43,9 +43,9 @@ Boat (2 cards, 13 fields):
     ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], NCICNumber [Inp 10], processControlNumber [Inp 10]
     ROW 3: NameLast [Inp 30], NameFirst [Inp 30], BirthDate [FormDate]
 
-QIDM SUMMARY (6 QIDMs, 31 combos)
+QIDM SUMMARY (6 QIDMs, 30 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 6 combos (RQ x2, FRQ x4)
+  VehicleRegistrationQuery: 5 combos (RQ x2, FRQ x3)
   DriverLicenseQuery: 4 combos (DQ x2, FDQ x2), autoSelect=true
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 3 combos (QG x3)
@@ -61,7 +61,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (18 tests -- 2 cards, 6 combos)
+ENTITY 1: VEHICLE (15 tests -- 2 cards, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -77,184 +77,178 @@ ENTITY 1: VEHICLE (18 tests -- 2 cards, 6 combos)
               Expected: VehicleRegistrationQuery fires (FRQDecalNumber)
  6  Vehicle     FRQ+Decal          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
- 7  Vehicle     FRQ+TitleLien      titleLienInformation=ABCD1234    [    ]
-              Expected: VehicleRegistrationQuery fires (FRQTitleLienInformation)
- 8  Vehicle     FRQ+TitleLien      + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
- 9  Vehicle     RQ+Plate+State     LicensePlateNumber=TEST123, LicensePl... [    ]
+ 7  Vehicle     RQ+Plate+State     LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber)
-10  Vehicle     RQ+Plate+State     + ImageIndicator                [    ]
+ 8  Vehicle     RQ+Plate+State     + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-11  Vehicle     RQ+VIN+State       VehicleIdentificationNumber=1HGCM8263... [    ]
+ 9  Vehicle     RQ+VIN+State       VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
-12  Vehicle     RQ+VIN+State       + VehicleMakeCode, vehicleYear, ImageIndicator [    ]
+10  Vehicle     RQ+VIN+State       + VehicleMakeCode, vehicleYear, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
-13  Vehicle     Guardrail: RQLicensePlateNumber>FRQDecalNumber  RegistrationState=GA, decalNumber=FL1... [    ]
+11  Vehicle     Guardrail: RQLicensePlateNumber>FRQDecalNumber  RegistrationState=GA, decalNumber=FL1... [    ]
               Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber). Decal+LicensePlateYear absent from XML.
-14  Vehicle     Guardrail: RQLicensePlateNumber>FRQLicensePlateNumber  RegistrationState=GA, LicensePlateNum... [    ]
+12  Vehicle     Guardrail: RQLicensePlateNumber>FRQLicensePlateNumber  RegistrationState=GA, LicensePlateNum... [    ]
               Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber). Plate absent from XML.
-15  Vehicle     Guardrail: RQLicensePlateNumber>FRQTitleLienInformation  RegistrationState=GA, titleLienInform... [    ]
-              Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber). TitleLien absent from XML.
-16  Vehicle     Guardrail: RQLicensePlateNumber>FRQVehicleIdentificationNumber  RegistrationState=GA, VehicleIdentifi... [    ]
+13  Vehicle     Guardrail: RQLicensePlateNumber>FRQVehicleIdentificationNumber  RegistrationState=GA, VehicleIdentifi... [    ]
               Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber). VIN absent from XML.
-17  Vehicle     Guardrail: FRQLicensePlateNumber>FRQVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
+14  Vehicle     Guardrail: FRQLicensePlateNumber>FRQVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (FRQLicensePlateNumber). VIN absent from XML.
-18  Vehicle     Guardrail: FRQLicensePlateNumber>RQVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
+15  Vehicle     Guardrail: FRQLicensePlateNumber>RQVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (FRQLicensePlateNumber). RegistrationState absent from XML.
 
 ENTITY 2: BOAT (30 tests -- 2 cards, 12 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-19  Boat        FBQ+Hull           BoatHullIdNumber=FL1234AB56H7    [    ]
+16  Boat        FBQ+Hull           BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (FBQBoatHullIdNumber)
-20  Boat        FBQ+Hull           + ImageIndicator                [    ]
+17  Boat        FBQ+Hull           + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-21  Boat        FBQ+Reg            RegistrationNumber=FL1234AB      [    ]
+18  Boat        FBQ+Reg            RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (FBQRegistrationNumber)
-22  Boat        FBQ+Reg            + ImageIndicator                [    ]
+19  Boat        FBQ+Reg            + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-23  Boat        FBQ+Decal          decalNumber=FL12345678           [    ]
+20  Boat        FBQ+Decal          decalNumber=FL12345678           [    ]
               Expected: BoatQuery fires (FBQDecalNumber)
-24  Boat        FBQ+Decal          + ImageIndicator                [    ]
+21  Boat        FBQ+Decal          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-25  Boat        FBQ+TitleLien      titleLienInformation=ABCD1234    [    ]
+22  Boat        FBQ+TitleLien      titleLienInformation=ABCD1234    [    ]
               Expected: BoatQuery fires (FBQTitleLienInformation)
-26  Boat        FBQ+TitleLien      + ImageIndicator                [    ]
+23  Boat        FBQ+TitleLien      + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-27  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+24  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber)
-28  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
+25  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
               Expected: BoatQuery fires (BQRegistrationNumber)
-29  Boat        BQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+26  Boat        BQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: BoatQuery fires (BQName)
-30  Boat        QB+Hull+Stolen     BoatHullIdNumber=FL1234AB56H7, relate... [    ]
+27  Boat        QB+Hull+Stolen     BoatHullIdNumber=FL1234AB56H7, relate... [    ]
               Expected: BoatQuery fires (QBBoatHullIdNumber)
-31  Boat        QB+Hull+Stolen     + ImageIndicator                [    ]
+28  Boat        QB+Hull+Stolen     + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-32  Boat        QB+Reg+Stolen      RegistrationNumber=FL1234AB, relatedH... [    ]
+29  Boat        QB+Reg+Stolen      RegistrationNumber=FL1234AB, relatedH... [    ]
               Expected: BoatQuery fires (QBRegistrationNumber)
-33  Boat        QB+Reg+Stolen      + ImageIndicator                [    ]
+30  Boat        QB+Reg+Stolen      + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-34  Boat        QB+CG              coastGuardDocumentNumber=CG123456 [    ]
+31  Boat        QB+CG              coastGuardDocumentNumber=CG123456 [    ]
               Expected: BoatQuery fires (QBCoastGuardDocumentNumber)
-35  Boat        QB+CG              + ImageIndicator                [    ]
+32  Boat        QB+CG              + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-36  Boat        QB+NCIC            NCICNumber=X123456789            [    ]
+33  Boat        QB+NCIC            NCICNumber=X123456789            [    ]
               Expected: BoatQuery fires (QBNCICNumber)
-37  Boat        QB+NCIC            + ImageIndicator                [    ]
+34  Boat        QB+NCIC            + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-38  Boat        QB+PCN             processControlNumber=0000012345  [    ]
+35  Boat        QB+PCN             processControlNumber=0000012345  [    ]
               Expected: BoatQuery fires (QBProcessControlNumber)
-39  Boat        QB+PCN             + ImageIndicator                [    ]
+36  Boat        QB+PCN             + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-40  Boat        Guardrail: BQName>FBQBoatHullIdNumber  RegistrationState=GA, BoatHullIdNumbe... [    ]
+37  Boat        Guardrail: BQName>FBQBoatHullIdNumber  RegistrationState=GA, BoatHullIdNumbe... [    ]
               Expected: BoatQuery fires (BQName). Hull absent from XML.
-41  Boat        Guardrail: QBBoatHullIdNumber>FBQBoatHullIdNumber  relatedHitSearchIndicator=Y, BoatHull... [    ]
+38  Boat        Guardrail: QBBoatHullIdNumber>FBQBoatHullIdNumber  relatedHitSearchIndicator=Y, BoatHull... [    ]
               Expected: BoatQuery fires (QBBoatHullIdNumber). Hull absent from XML.
-42  Boat        Guardrail: BQName>FBQDecalNumber  RegistrationState=GA, decalNumber=FL1... [    ]
+39  Boat        Guardrail: BQName>FBQDecalNumber  RegistrationState=GA, decalNumber=FL1... [    ]
               Expected: BoatQuery fires (BQName). Decal absent from XML.
-43  Boat        Guardrail: BQName>FBQRegistrationNumber  RegistrationState=GA, RegistrationNum... [    ]
+40  Boat        Guardrail: BQName>FBQRegistrationNumber  RegistrationState=GA, RegistrationNum... [    ]
               Expected: BoatQuery fires (BQName). Reg absent from XML.
-44  Boat        Guardrail: QBBoatHullIdNumber>FBQRegistrationNumber  relatedHitSearchIndicator=Y, Registra... [    ]
+41  Boat        Guardrail: QBBoatHullIdNumber>FBQRegistrationNumber  relatedHitSearchIndicator=Y, Registra... [    ]
               Expected: BoatQuery fires (QBBoatHullIdNumber). Reg absent from XML.
-45  Boat        Guardrail: FBQBoatHullIdNumber>FBQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+42  Boat        Guardrail: FBQBoatHullIdNumber>FBQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (FBQBoatHullIdNumber). Reg absent from XML.
-46  Boat        Guardrail: BQName>FBQTitleLienInformation  RegistrationState=GA, titleLienInform... [    ]
+43  Boat        Guardrail: BQName>FBQTitleLienInformation  RegistrationState=GA, titleLienInform... [    ]
               Expected: BoatQuery fires (BQName). TitleLien absent from XML.
-47  Boat        Guardrail: FBQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+44  Boat        Guardrail: FBQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (FBQBoatHullIdNumber). relatedHitSearchIndicator absent from XML.
-48  Boat        Guardrail: FBQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+45  Boat        Guardrail: FBQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (FBQBoatHullIdNumber). RegistrationState absent from XML.
 
 ENTITY 3: PERSON (18 tests -- 2 cards, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-49  Person      FDQ+OLN            OperatorLicenseNumber=D999888777 [    ]
+46  Person      FDQ+OLN            OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (FDQOperatorLicenseNumber)
-50  Person      FDQ+OLN            + ImageIndicator                [    ]
+47  Person      FDQ+OLN            + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-51  Person      DQ+OLN+State       OperatorLicenseNumber=D999888777, Reg... [    ]
+48  Person      DQ+OLN+State       OperatorLicenseNumber=D999888777, Reg... [    ]
               Expected: DriverLicenseQuery fires (DQOperatorLicenseNumber)
-52  Person      DQ+OLN+State       + ImageIndicator                [    ]
+49  Person      DQ+OLN+State       + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-53  Person      FDQ+Name           BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+50  Person      FDQ+Name           BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: DriverLicenseQuery fires (FDQName)
-54  Person      FDQ+Name           + ImageIndicator                [    ]
+51  Person      FDQ+Name           + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-55  Person      DQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+52  Person      DQ+Name+State      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: DriverLicenseQuery fires (DQName)
-56  Person      DQ+Name+State      + ImageIndicator                [    ]
+53  Person      DQ+Name+State      + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-57  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [    ]
+54  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQOperatorLicenseNumber)
-58  Person      KQ+OLN             + purposeCodeDH, Attention      [    ]
+55  Person      KQ+OLN             + purposeCodeDH, Attention      [    ]
               Expected: any[] fields present in XML output.
-59  Person      KQ+Name            BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
+56  Person      KQ+Name            BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (KQName)
-60  Person      KQ+Name            + purposeCodeDH, Attention      [    ]
+57  Person      KQ+Name            + purposeCodeDH, Attention      [    ]
               Expected: any[] fields present in XML output.
-61  Person      Guardrail: DQName>FDQName  RegistrationState=GA, BirthDate=01/15... [    ]
+58  Person      Guardrail: DQName>FDQName  RegistrationState=GA, BirthDate=01/15... [    ]
               Expected: DriverLicenseQuery fires (DQName). DOB+LastName+FirstName+SexCode absent from XML.
-62  Person      Guardrail: FDQOperatorLicenseNumber>FDQName  OperatorLicenseNumber=D999888777, Bir... [    ]
+59  Person      Guardrail: FDQOperatorLicenseNumber>FDQName  OperatorLicenseNumber=D999888777, Bir... [    ]
               Expected: DriverLicenseQuery fires (FDQOperatorLicenseNumber). DOB+LastName+FirstName+SexCode absent from XML.
-63  Person      Guardrail: DQName>FDQOperatorLicenseNumber  RegistrationState=GA             [    ]
+60  Person      Guardrail: DQName>FDQOperatorLicenseNumber  RegistrationState=GA             [    ]
               Expected: DriverLicenseQuery fires (DQName). OLN absent from XML.
-64  Person      Guardrail: FDQOperatorLicenseNumber>DQName  OperatorLicenseNumber=D999888777, Bir... [    ]
+61  Person      Guardrail: FDQOperatorLicenseNumber>DQName  OperatorLicenseNumber=D999888777, Bir... [    ]
               Expected: DriverLicenseQuery fires (FDQOperatorLicenseNumber). RegistrationState absent from XML.
-65  Person      Guardrail: KQOperatorLicenseNumber>KQName  OperatorLicenseNumberDH=D999888777, B... [    ]
+62  Person      Guardrail: KQOperatorLicenseNumber>KQName  OperatorLicenseNumberDH=D999888777, B... [    ]
               Expected: DriverHistoryQuery fires (KQOperatorLicenseNumber). DOB+LastName+FirstName+SexCodeDH+RegistrationStateDH absent from XML.
-66  Person      Deselect: DH deselects DL.            [    ]
+63  Person      Deselect: DH deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
 
 ENTITY 4: FIREARM (6 tests -- 1 card, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-67  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+64  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
               Expected: GunQuery fires (QGGunSerialNumber)
-68  Firearm     QG+Serial          + GunMake, ImageIndicator       [    ]
+65  Firearm     QG+Serial          + GunMake, ImageIndicator       [    ]
               Expected: any[] fields present in XML output.
-69  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
+66  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
               Expected: GunQuery fires (QGNCICNumber)
-70  Firearm     QG+NCIC            + GunMake, ImageIndicator       [    ]
+67  Firearm     QG+NCIC            + GunMake, ImageIndicator       [    ]
               Expected: any[] fields present in XML output.
-71  Firearm     QG+PCN             processControlNumber=0000012345  [    ]
+68  Firearm     QG+PCN             processControlNumber=0000012345  [    ]
               Expected: GunQuery fires (QGProcessControlNumber)
-72  Firearm     QG+PCN             + GunMake, ImageIndicator       [    ]
+69  Firearm     QG+PCN             + GunMake, ImageIndicator       [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (8 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-73  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+70  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
-74  Article     QA+Serial          + ImageIndicator                [    ]
+71  Article     QA+Serial          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-75  Article     QA+OAN             ArticleTypeCode=BBICYCL, ownerApplied... [    ]
+72  Article     QA+OAN             ArticleTypeCode=BBICYCL, ownerApplied... [    ]
               Expected: ArticleSingleQuery fires (QAOwnerAppliedNumber)
-76  Article     QA+OAN             + ImageIndicator                [    ]
+73  Article     QA+OAN             + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-77  Article     QA+NCIC            NCICNumber=X123456789            [    ]
+74  Article     QA+NCIC            NCICNumber=X123456789            [    ]
               Expected: ArticleSingleQuery fires (QANCICNumber)
-78  Article     QA+NCIC            + ImageIndicator                [    ]
+75  Article     QA+NCIC            + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-79  Article     QA+PCN             processControlNumber=0000012345  [    ]
+76  Article     QA+PCN             processControlNumber=0000012345  [    ]
               Expected: ArticleSingleQuery fires (QAProcessControlNumber)
-80  Article     QA+PCN             + ImageIndicator                [    ]
+77  Article     QA+PCN             + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 80 tests
+TOTAL: 77 tests
 
-COMBO COVERAGE (31/31):
-  VehicleRegistrationQuery: 6/6 -- T1(FRQ+Plate), T3(FRQ+VIN), T5(FRQ+Decal), T7(FRQ+TitleLien), T9(RQ+Plate), T11(RQ+VIN)
-  DriverLicenseQuery: 4/4 -- T49(FDQ+OLN), T51(DQ+OLN), T53(FDQ+Name), T55(DQ+Name)
-  DriverHistoryQuery: 2/2 -- T57(KQ+OLN), T59(KQ+Name)
-  GunQuery: 3/3 -- T67(Serial), T69(NCIC), T71(PCN)
-  ArticleSingleQuery: 4/4 -- T73(Serial), T75(OAN), T77(NCIC), T79(PCN)
-  BoatQuery: 12/12 -- T19(FBQ+Hull), T21(FBQ+Reg), T23(FBQ+Decal), T25(FBQ+TitleLien), T27(BQ+Hull), T28(BQ+Reg), T29(BQ+Name), T30(QB+Hull), T32(QB+Reg), T34(QB+CG), T36(QB+NCIC), T38(QB+PCN)
+COMBO COVERAGE (30/30):
+  VehicleRegistrationQuery: 5/5 -- T1(FRQ+Plate), T3(FRQ+VIN), T5(FRQ+Decal), T7(RQ+Plate), T9(RQ+VIN)
+  DriverLicenseQuery: 4/4 -- T46(FDQ+OLN), T48(DQ+OLN), T50(FDQ+Name), T52(DQ+Name)
+  DriverHistoryQuery: 2/2 -- T54(KQ+OLN), T56(KQ+Name)
+  GunQuery: 3/3 -- T64(Serial), T66(NCIC), T68(PCN)
+  ArticleSingleQuery: 4/4 -- T70(Serial), T72(OAN), T74(NCIC), T76(PCN)
+  BoatQuery: 12/12 -- T16(FBQ+Hull), T18(FBQ+Reg), T20(FBQ+Decal), T22(FBQ+TitleLien), T24(BQ+Hull), T25(BQ+Reg), T26(BQ+Name), T27(QB+Hull), T29(QB+Reg), T31(QB+CG), T33(QB+NCIC), T35(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.3.json
+IMPORT FILE: FL_FCIC_v7.4.json

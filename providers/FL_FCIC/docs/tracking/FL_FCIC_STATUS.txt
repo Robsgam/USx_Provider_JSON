@@ -3,13 +3,13 @@ FL_FCIC -- Build Status
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated    : 2026-07-16
 Provider        : FL_FCIC
-Current: v7.3 | 92P/0F/0W/0LIM | Updated 2026-07-16
+Current: v7.4 | 91P/0F/0W/0LIM | Updated 2026-07-16
 
 LIVE TEST RESULTS (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
-  (none yet -- v7.3 USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v7.3/)
+  (none yet -- v7.4 USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v7.4/)
   ---   2026-07-02 Boat       Boat:BQRegistrationNumber PASS     BQRegistrationNumber (auto)
   ---   2026-07-02 Boat       Boat:BQBoatHullIdNumber PASS     BQBoatHullIdNumber (auto)
   ---   2026-07-02 Boat       Boat:BQName_any      PASS     BQName_any (auto)
@@ -66,35 +66,8 @@ LIVE TEST RESULTS (post_test.ps1)
   ---   2026-07-02 Article    Article:QAArticleSerialNumber_any PASS     QAArticleSerialNumber_any (auto)
   ---   2026-07-02 Article    Article:QAArticleSerialNumber_af_ImageIndicator PASS     QAArticleSerialNumber_af_ImageIndicator (auto)
   ---   2026-07-02 Article    Article:QAArticleSerialNumber PASS     QAArticleSerialNumber (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQVehicleIdentificationNumber_any PASS     RQVehicleIdentificationNumber_any (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQVehicleIdentificationNumber_af_ImageIndicator PASS     RQVehicleIdentificationNumber_af_ImageIndicator (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQVehicleIdentificationNumber_af_vehicleYear PASS     RQVehicleIdentificationNumber_af_vehicleYear (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQVehicleIdentificationNumber_af_VehicleMakeCode PASS     RQVehicleIdentificationNumber_af_VehicleMakeCode (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQVehicleIdentificationNumber PASS     RQVehicleIdentificationNumber (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQLicensePlateNumber_any PASS     RQLicensePlateNumber_any (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQLicensePlateNumber_af_ImageIndicator PASS     RQLicensePlateNumber_af_ImageIndicator (auto)
-  ---   2026-07-02 Vehicle    VehReg:RQLicensePlateNumber PASS     RQLicensePlateNumber (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQVehicleIdentificationNumber_any PASS     FRQVehicleIdentificationNumber_any (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQVehicleIdentificationNumber_af_ImageIndicator PASS     FRQVehicleIdentificationNumber_af_ImageIndicator (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQVehicleIdentificationNumber_af_vehicleYear PASS     FRQVehicleIdentificationNumber_af_vehicleYear (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQVehicleIdentificationNumber_af_VehicleMakeCode PASS     FRQVehicleIdentificationNumber_af_VehicleMakeCode (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQVehicleIdentificationNumber PASS     FRQVehicleIdentificationNumber (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQTitleLienInformation_any PASS     FRQTitleLienInformation_any (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQTitleLienInformation_af_ImageIndicator PASS     FRQTitleLienInformation_af_ImageIndicator (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQTitleLienInformation PASS     FRQTitleLienInformation (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber_any PASS     FRQLicensePlateNumber_any (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber_af_ImageIndicator PASS     FRQLicensePlateNumber_af_ImageIndicator (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber_af_vehicleYear PASS     FRQLicensePlateNumber_af_vehicleYear (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber_af_VehicleMakeCode PASS     FRQLicensePlateNumber_af_VehicleMakeCode (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber_af_LicensePlateYear PASS     FRQLicensePlateNumber_af_LicensePlateYear (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber PASS     FRQLicensePlateNumber (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQDecalNumber_any PASS     FRQDecalNumber_any (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQDecalNumber_af_ImageIndicator PASS     FRQDecalNumber_af_ImageIndicator (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQDecalNumber PASS     FRQDecalNumber (auto)
   ---   2026-07-02 Boat       Boat:FBQBoatHullIdNumber_guardrail_vs_BQRegistrationNumber PASS     FBQBoatHullIdNumber_guardrail_vs_BQRegistrationNumber (auto)
   ---   2026-07-02 Boat       Boat:QBBoatHullIdNumber_guardrail_vs_QBRegistrationNumber PASS     QBBoatHullIdNumber_guardrail_vs_QBRegistrationNumber (auto)
   ---   2026-07-02 Boat       Boat:FBQBoatHullIdNumber_guardrail_vs_FBQRegistrationNumber PASS     FBQBoatHullIdNumber_guardrail_vs_FBQRegistrationNumber (auto)
   ---   2026-07-02 Boat       Boat:QBRegistrationNumber_guardrail_vs_FBQRegistrationNumber PASS     QBRegistrationNumber_guardrail_vs_FBQRegistrationNumber (auto)
   ---   2026-07-02 Boat       Boat:QBBoatHullIdNumber_guardrail_vs_FBQBoatHullIdNumber PASS     QBBoatHullIdNumber_guardrail_vs_FBQBoatHullIdNumber (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber_guardrail_vs_RQVehicleIdentificationNumber PASS     FRQLicensePlateNumber_guardrail_vs_RQVehicleIdentificationNumber (auto)
-  ---   2026-07-02 Vehicle    VehReg:FRQLicensePlateNumber_guardrail_vs_FRQVehicleIdentificationNumber PASS     FRQLicensePlateNumber_guardrail_vs_FRQVehicleIdentificationNumber (auto)

@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.3 -- entity forms",
+                        "description":  "Provider configuration for FL_FCIC v7.4 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Person queries -- DL (FDQ/DQ) + DH (KQ, out-of-state only) on separate cards. DH-suffix fields. QW auto-sent by CommSys.",
@@ -1946,7 +1946,7 @@
                                                    "targetEntity":  "Person"
                                                },
                                                {
-                                                   "description":  "Vehicle queries -- MC 2-card: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal/Title).",
+                                                   "description":  "Vehicle queries -- MC 2-card: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal). Title/Lien removed v7.4 (DEX-1279, approved-skip).",
                                                    "label":  "Vehicle",
                                                    "layout":  {
                                                                   "default":  {
@@ -2072,7 +2072,7 @@
                                                                                                                "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "Image (optional)",
+                                                                                                                             "label":  "NCIC Image - if available",
                                                                                                                              "initialValue":  "N",
                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -2093,7 +2093,7 @@
                                                                                                                    },
                                                                                                           "displayName":  "Card",
                                                                                                           "props":  {
-                                                                                                                        "title":  "Vehicle Search"
+                                                                                                                        "title":  "Vehicle Registration Search by License Plate, \"OR\" VIN, \"OR\" Decal"
                                                                                                                     },
                                                                                                           "isCanvas":  true,
                                                                                                           "hidden":  false,
@@ -2138,7 +2138,7 @@
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "LicensePlateNumber",
-                                                                                                                                 "label":  "Plate Number (or search by VIN/Decal)",
+                                                                                                                                 "label":  "Plate Number",
                                                                                                                                  "maxLength":  "10"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
@@ -2158,7 +2158,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                   "label":  "Plate Type (out-of-state plates)",
+                                                                                                                                   "label":  "Plate Type (out-of-state)",
                                                                                                                                    "initialValue":  "PC",
                                                                                                                                    "codeTypeSource":  "NCIC",
                                                                                                                                    "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -2180,7 +2180,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "LicensePlateYear",
-                                                                                                                               "label":  "Plate Year (out-of-state plates)",
+                                                                                                                               "label":  "Plate Year (out-of-state)",
                                                                                                                                "maxLength":  "4",
                                                                                                                                "initialValue":  "2026"
                                                                                                                            },
@@ -2245,7 +2245,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "VehicleMakeCode",
-                                                                                                                              "label":  "Vehicle Make (optional)",
+                                                                                                                              "label":  "Vehicle Make (By VIN optional)",
                                                                                                                               "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                               "codeTypeProvider":  "NCIC"
                                                                                                                           },
@@ -2266,7 +2266,7 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "vehicleYear",
-                                                                                                                          "label":  "Vehicle Year (optional)",
+                                                                                                                          "label":  "Vehicle Year (By VIN optional)",
                                                                                                                           "maxLength":  "4"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -2286,15 +2286,13 @@
                                                                                                     "displayName":  "Row",
                                                                                                     "props":  {
                                                                                                                   "templateColumns":  [
-                                                                                                                                          "6",
-                                                                                                                                          "6"
+                                                                                                                                          "12"
                                                                                                                                       ]
                                                                                                               },
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
-                                                                                                                  "DecalNumber_Input",
-                                                                                                                  "TitleLienInformation_Input"
+                                                                                                                  "DecalNumber_Input"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
 
@@ -2320,27 +2318,7 @@
 
                                                                                                                             },
                                                                                                             "parent":  "ROW_VEH_3"
-                                                                                                        },
-                                                                                  "TitleLienInformation_Input":  {
-                                                                                                                     "type":  {
-                                                                                                                                  "resolvedName":  "FormInput"
-                                                                                                                              },
-                                                                                                                     "displayName":  "Input",
-                                                                                                                     "props":  {
-                                                                                                                                   "fieldId":  "titleLienInformation",
-                                                                                                                                   "label":  "Title/Lien Info",
-                                                                                                                                   "maxLength":  "8"
-                                                                                                                               },
-                                                                                                                     "isCanvas":  false,
-                                                                                                                     "hidden":  false,
-                                                                                                                     "nodes":  [
-
-                                                                                                                               ],
-                                                                                                                     "linkedNodes":  {
-
-                                                                                                                                     },
-                                                                                                                     "parent":  "ROW_VEH_3"
-                                                                                                                 }
+                                                                                                        }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -2466,7 +2444,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "Image (optional)",
+                                                                                                                                  "label":  "NCIC Image - if available",
                                                                                                                                   "initialValue":  "N",
                                                                                                                                   "codeTypeSource":  "NCIC",
                                                                                                                                   "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -2487,7 +2465,7 @@
                                                                                                                         },
                                                                                                                "displayName":  "Card",
                                                                                                                "props":  {
-                                                                                                                             "title":  "Vehicle Search"
+                                                                                                                             "title":  "Vehicle Registration Search by License Plate, \"OR\" VIN, \"OR\" Decal"
                                                                                                                          },
                                                                                                                "isCanvas":  true,
                                                                                                                "hidden":  false,
@@ -2532,7 +2510,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "LicensePlateNumber",
-                                                                                                                                      "label":  "Plate Number (or search by VIN/Decal)",
+                                                                                                                                      "label":  "Plate Number",
                                                                                                                                       "maxLength":  "10"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -2552,7 +2530,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                        "label":  "Plate Type (out-of-state plates)",
+                                                                                                                                        "label":  "Plate Type (out-of-state)",
                                                                                                                                         "initialValue":  "PC",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -2574,7 +2552,7 @@
                                                                                                                       "displayName":  "Input",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "LicensePlateYear",
-                                                                                                                                    "label":  "Plate Year (out-of-state plates)",
+                                                                                                                                    "label":  "Plate Year (out-of-state)",
                                                                                                                                     "maxLength":  "4",
                                                                                                                                     "initialValue":  "2026"
                                                                                                                                 },
@@ -2639,7 +2617,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "VehicleMakeCode",
-                                                                                                                                   "label":  "Vehicle Make (optional)",
+                                                                                                                                   "label":  "Vehicle Make (By VIN optional)",
                                                                                                                                    "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                                    "codeTypeProvider":  "NCIC"
                                                                                                                                },
@@ -2660,7 +2638,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "vehicleYear",
-                                                                                                                               "label":  "Vehicle Year (optional)",
+                                                                                                                               "label":  "Vehicle Year (By VIN optional)",
                                                                                                                                "maxLength":  "4"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -2680,15 +2658,13 @@
                                                                                                          "displayName":  "Row",
                                                                                                          "props":  {
                                                                                                                        "templateColumns":  [
-                                                                                                                                               "6",
-                                                                                                                                               "6"
+                                                                                                                                               "12"
                                                                                                                                            ]
                                                                                                                    },
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
-                                                                                                                       "DecalNumber_Input",
-                                                                                                                       "TitleLienInformation_Input"
+                                                                                                                       "DecalNumber_Input"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
@@ -2715,26 +2691,6 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_VEH_3"
                                                                                                              },
-                                                                                       "TitleLienInformation_Input":  {
-                                                                                                                          "type":  {
-                                                                                                                                       "resolvedName":  "FormInput"
-                                                                                                                                   },
-                                                                                                                          "displayName":  "Input",
-                                                                                                                          "props":  {
-                                                                                                                                        "fieldId":  "titleLienInformation",
-                                                                                                                                        "label":  "Title/Lien Info",
-                                                                                                                                        "maxLength":  "8"
-                                                                                                                                    },
-                                                                                                                          "isCanvas":  false,
-                                                                                                                          "hidden":  false,
-                                                                                                                          "nodes":  [
-
-                                                                                                                                    ],
-                                                                                                                          "linkedNodes":  {
-
-                                                                                                                                          },
-                                                                                                                          "parent":  "ROW_VEH_3"
-                                                                                                                      },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -2941,7 +2897,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "Image (optional)",
+                                                                                                                                     "label":  "NCIC Image - if available",
                                                                                                                                      "initialValue":  "N",
                                                                                                                                      "codeTypeSource":  "NCIC",
                                                                                                                                      "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -2962,7 +2918,7 @@
                                                                                                                            },
                                                                                                                   "displayName":  "Card",
                                                                                                                   "props":  {
-                                                                                                                                "title":  "Vehicle Search"
+                                                                                                                                "title":  "Vehicle Registration Search by License Plate, \"OR\" VIN, \"OR\" Decal"
                                                                                                                             },
                                                                                                                   "isCanvas":  true,
                                                                                                                   "hidden":  false,
@@ -3007,7 +2963,7 @@
                                                                                                                            "displayName":  "Input",
                                                                                                                            "props":  {
                                                                                                                                          "fieldId":  "LicensePlateNumber",
-                                                                                                                                         "label":  "Plate Number (or search by VIN/Decal)",
+                                                                                                                                         "label":  "Plate Number",
                                                                                                                                          "maxLength":  "10"
                                                                                                                                      },
                                                                                                                            "isCanvas":  false,
@@ -3027,7 +2983,7 @@
                                                                                                                              "displayName":  "Select",
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                           "label":  "Plate Type (out-of-state plates)",
+                                                                                                                                           "label":  "Plate Type (out-of-state)",
                                                                                                                                            "initialValue":  "PC",
                                                                                                                                            "codeTypeSource":  "NCIC",
                                                                                                                                            "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -3049,7 +3005,7 @@
                                                                                                                          "displayName":  "Input",
                                                                                                                          "props":  {
                                                                                                                                        "fieldId":  "LicensePlateYear",
-                                                                                                                                       "label":  "Plate Year (out-of-state plates)",
+                                                                                                                                       "label":  "Plate Year (out-of-state)",
                                                                                                                                        "maxLength":  "4",
                                                                                                                                        "initialValue":  "2026"
                                                                                                                                    },
@@ -3114,7 +3070,7 @@
                                                                                                                         "displayName":  "Select",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "VehicleMakeCode",
-                                                                                                                                      "label":  "Vehicle Make (optional)",
+                                                                                                                                      "label":  "Vehicle Make (By VIN optional)",
                                                                                                                                       "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                                       "codeTypeProvider":  "NCIC"
                                                                                                                                   },
@@ -3135,7 +3091,7 @@
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "vehicleYear",
-                                                                                                                                  "label":  "Vehicle Year (optional)",
+                                                                                                                                  "label":  "Vehicle Year (By VIN optional)",
                                                                                                                                   "maxLength":  "4"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -3155,15 +3111,13 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "6",
-                                                                                                                                                  "6"
+                                                                                                                                                  "12"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
-                                                                                                                          "DecalNumber_Input",
-                                                                                                                          "TitleLienInformation_Input"
+                                                                                                                          "DecalNumber_Input"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
@@ -3190,26 +3144,6 @@
                                                                                                                                     },
                                                                                                                     "parent":  "ROW_VEH_3"
                                                                                                                 },
-                                                                                          "TitleLienInformation_Input":  {
-                                                                                                                             "type":  {
-                                                                                                                                          "resolvedName":  "FormInput"
-                                                                                                                                      },
-                                                                                                                             "displayName":  "Input",
-                                                                                                                             "props":  {
-                                                                                                                                           "fieldId":  "titleLienInformation",
-                                                                                                                                           "label":  "Title/Lien Info",
-                                                                                                                                           "maxLength":  "8"
-                                                                                                                                       },
-                                                                                                                             "isCanvas":  false,
-                                                                                                                             "hidden":  false,
-                                                                                                                             "nodes":  [
-
-                                                                                                                                       ],
-                                                                                                                             "linkedNodes":  {
-
-                                                                                                                                             },
-                                                                                                                             "parent":  "ROW_VEH_3"
-                                                                                                                         },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -7557,14 +7491,6 @@
                                                                           "codeTypeProvider":  "NCIC"
                                                                       },
                                                                       {
-                                                                          "name":  "TitleLienInformation",
-                                                                          "size":  8,
-                                                                          "sourceField":  [
-                                                                                              "titleLienInformation"
-                                                                                          ],
-                                                                          "targetField":  "TitleLienInformation"
-                                                                      },
-                                                                      {
                                                                           "name":  "VehicleIdentificationNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
@@ -7654,33 +7580,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "FRQLicensePlateNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "titleLienInformation"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "N"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "TitleLienInformation",
-                                                                            "keyReference":  "FRQTitleLienInformation",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -7787,7 +7686,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- devdoc order: FRQ (Decal, plate, Title, VIN; State NOT_EXISTS), RQ (plate+state, VIN+state). 6 combos.",
+                                                   "description":  "VehicleRegistrationQuery -- devdoc order: FRQ (Decal, plate, VIN; State NOT_EXISTS), RQ (plate+state, VIN+state). 5 combos (FRQ Title/Lien removed v7.4, approved-skip).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "FL_FCIC_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -8846,13 +8745,13 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for FL_FCIC v7.3",
+                        "description":  "Provider configuration for FL_FCIC v7.4",
                         "name":  "FL_FCIC",
                         "type":  "BUNDLE",
                         "provider":  "FL_FCIC"
                     },
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.3 -- RMS bundle",
+                        "description":  "Provider configuration for FL_FCIC v7.4 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

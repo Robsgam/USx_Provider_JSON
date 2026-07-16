@@ -1,6 +1,23 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.4 (2026-07-16): Vehicle card cosmetic pass + intentional combo removal (DEX-1279, Gordon
+#   Hallof UX feedback). Card title "Vehicle Search" -> "Vehicle Registration Search by License
+#   Plate, "OR" VIN, "OR" Decal". Dropped "(or search by VIN/Decal)" from Plate Number (card
+#   title now carries that context); "(out-of-state plates)" -> "(out-of-state)" on Plate
+#   Type/Year; "(optional)" -> "(By VIN optional)" on Vehicle Make/Year. ImageIndicator "Image
+#   (optional)" -> "NCIC Image - if available" -- FL-ONLY, deliberately NOT a global
+#   verify_build/BUILD_RULES change this time (Gordon flagged this one has portfolio-wide
+#   implications for Vehicle image labeling across all USx regions and wants to discuss before
+#   it's rolled out anywhere else; hyphenated wording chosen to match the already-shipped
+#   Firearm v7.3 label and satisfy CHECK 15 Rule 3 without any gate change).
+#   REMOVED TitleLienInformation field + the FRQTitleLienInformation combo entirely (was a
+#   live, devdoc-order-position-3-of-4, 100%-covered combo) -- Gordon's "Remove Title/Lien info
+#   all together" is a deliberate product/UX decision to sunset that whole query path, not a
+#   label cleanup. Documented as an approved-skip divergence (FL_FCIC_ACCEPTED_DIVERGENCES.txt +
+#   FL_FCIC_SQVR.txt), same as the existing QV/QW not-built entries -- combo count 31 -> 30.
+#   Vehicle re-tests from T1; Article/Boat stay preserved blocked at v7.1; Firearm/Person
+#   unaffected (already open/PENDING from v7.3/v7.2).
 # v7.3 (2026-07-16): Firearm card cosmetic pass (DEX-1280, Gordon Hallof UX feedback).
 #   Card title "FIREARM QUERY" -> "FIREARM Query by Serial Number, "OR" NCIC Number, "OR" PCN".
 #   GunSerialNumber label "Serial Number (or use NCIC#/PCN)" -> "Serial Number" (card title now
@@ -102,7 +119,9 @@
 #   comparison (EQUALS/NOT_EQUALS/...) disables its entire conditions array, live-proven
 #   v4.9 T-A/T-B 2026-06-12 (QIDM_REFERENCE Sec 2a). Existence conditions keep later
 #   OOS/stolen combos reachable under first-match AND isolate the serialization pool.
-#   VehicleRegistrationQuery   FRQ (Decal/plate/Title/VIN) + RQ (plate+state/VIN+state) = 6 combos
+#   VehicleRegistrationQuery   FRQ (Decal/plate/VIN) + RQ (plate+state/VIN+state) = 5 combos
+#                              (FRQ Title/Lien REMOVED v7.4 DEX-1279 -- approved-skip, see
+#                              FL_FCIC_ACCEPTED_DIVERGENCES.txt)
 #                              QV (plate/VIN) NOT BUILT -- devdoc "Data-Mined Transactions"
 #                              (QA, QB, QG, QV, QW) = CommSys auto secondaries [PENDING CONFIRMATION]
 #   DriverLicenseQuery         FDQ (Name/OLN) + DQ (Name+state/OLN+state) = 4 combos, autoSelect=true
@@ -118,7 +137,7 @@
 #                              + BQ (name/hull/reg -- Nlets OOS, restored v4.7) = 12 combos
 #
 # ENTITIES (5 QUERYINPUTFORM):
-#   Vehicle  -- 2 cards: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal/Title)
+#   Vehicle  -- 2 cards: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal)
 #   Person   -- 2 cards: DL(OLN/State/Image/Name/DOB/Sex) + DH(OLN/DestState/Purpose/Name/DOB/Sex, OOS-only; Attention auto-populated)
 #   Firearm  -- 1 card: serial + make + NCIC# + PCN + Image (2 rows)
 #   Article  -- 1 card: serial + type + OAN + Image + NCIC# + PCN (2 rows)
@@ -143,7 +162,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.3"
+    [string]$Version = "7.4"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -171,8 +190,8 @@ $qmf = Build-Qmf -ProviderName 'FL_FCIC'
 # 6 COMMSYS QIDMs
 # =====================================================================
 
-# --- 1. VehicleRegistrationQuery (FRQ + RQ) -- 6 combos ---
-# XML: FRQ (plate/VIN/Decal/TitleLien) + RQ (plate+state/VIN+state)
+# --- 1. VehicleRegistrationQuery (FRQ + RQ) -- 5 combos ---
+# XML: FRQ (plate/VIN/Decal) + RQ (plate+state/VIN+state)
 # FRQ = FCIC-only (no NCIC/Nlets), RQ = with state routing
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'FRQ' and 'RQ' for multiple combos each; field-name suffixes
@@ -186,13 +205,13 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';         size = 2;  sourceField = @('LicensePlateTypeCode');         targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';             size = 4;  sourceField = @('LicensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'TitleLienInformation';         size = 8;  sourceField = @('titleLienInformation');         targetField = 'TitleLienInformation' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 20; sourceField = @('VehicleIdentificationNumber');  targetField = 'VehicleIdentificationNumber' }
         [PSCustomObject]@{ name = 'VehicleMakeCode';              size = 24; sourceField = @('VehicleMakeCode');              targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                  size = 4;  sourceField = @('vehicleYear');                  targetField = 'VehicleYear' }
     )
     combinations = @(
-        # Devdoc order: FRQ Decal(1), FRQ Plate(2), FRQ TitleLien(3), FRQ VIN(4), [QV 5-6 not built], RQ Plate(7), RQ VIN(8)
+        # Devdoc order: FRQ Decal(1), FRQ Plate(2), [FRQ TitleLien(3) REMOVED v7.4 DEX-1279 --
+        # see FL_FCIC_ACCEPTED_DIVERGENCES.txt], FRQ VIN(4), [QV 5-6 not built], RQ Plate(7), RQ VIN(8)
         # FRQ combos carry State NOT_EXISTS: devdoc lists FRQ first, so a State-filled OOS
         # query must fall through to RQ; the condition also keeps State out of the FRQ pool.
         [PSCustomObject]@{
@@ -220,17 +239,6 @@ $vehRegQuery = [PSCustomObject]@{
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'FRQLicensePlateNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('titleLienInformation')
-                any        = @('ImageIndicator')
-                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
-            }
-            primaryFieldReference = 'TitleLienInformation'
-            keyReference          = 'FRQTitleLienInformation'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
@@ -278,7 +286,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'VehicleRegistrationQuery -- devdoc order: FRQ (Decal, plate, Title, VIN; State NOT_EXISTS), RQ (plate+state, VIN+state). 6 combos.'
+    description     = 'VehicleRegistrationQuery -- devdoc order: FRQ (Decal, plate, VIN; State NOT_EXISTS), RQ (plate+state, VIN+state). 5 combos (FRQ Title/Lien removed v7.4, approved-skip).'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_VehicleRegistrationQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -803,7 +811,7 @@ $providerBundle = [PSCustomObject]@{
 
 # --- Vehicle (2 cards: OPTIONS + SEARCH) ---
 # OPTIONS: State+Image (routing for VehReg RQ combos)
-# SEARCH: Plate/VIN/Decal/Title (VehicleRegistrationQuery fields only)
+# SEARCH: Plate/VIN/Decal (VehicleRegistrationQuery fields only)
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH_OPT'
@@ -811,33 +819,35 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_O1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
             )}
         )
     }
     @{
         id    = 'CARD_VEH_SEARCH'
-        title = 'Vehicle Search'
+        title = 'Vehicle Registration Search by License Plate, "OR" VIN, "OR" Decal'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumber_Input';  node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN/Decal)' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state plates)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';    node = Inp 'LicensePlateYear' 'Plate Year (out-of-state plates)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateNumber_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';    node = Inp 'LicensePlateYear' 'Plate Year (out-of-state)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('5','4','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (or search by Plate)' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input';              node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input';              node = Sel 'VehicleMakeCode' 'Vehicle Make (By VIN optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year (By VIN optional)' '4' 'ROW_VEH_2' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
+            # v7.4 (DEX-1279): TitleLienInformation field + FRQTitleLienInformation combo REMOVED
+            # entirely (approved-skip, not a coverage gap -- see FL_FCIC_ACCEPTED_DIVERGENCES.txt).
+            # Decal is now the row's only field.
+            @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
                 @{ id = 'DecalNumber_Input';                  node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
-                @{ id = 'TitleLienInformation_Input';         node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_VEH_3' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC 2-card: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal/Title).'
+    description  = 'Vehicle queries -- MC 2-card: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal). Title/Lien removed v7.4 (DEX-1279, approved-skip).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'

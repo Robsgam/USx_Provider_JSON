@@ -1,7 +1,7 @@
-﻿FL_FCIC_v7.3 METADATA REFERENCE
+﻿FL_FCIC_v7.4 METADATA REFERENCE
 ================================
 Generated: 2026-07-16
-Source: FL_FCIC.xml (metadata) + FL_FCIC_v7.3.json
+Source: FL_FCIC.xml (metadata) + FL_FCIC_v7.4.json
 Metadata: 177 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -206,13 +206,13 @@ METADATA COMBINATIONS (8 total):
   RQ            LicensePlateNumber      LicensePlateNumber, LicensePlateTypeCode, LicenseP...  Requestor, State2, State3, ...
   RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, State                     Requestor, State2, State3, ...
 
-BUILD COVERAGE (6 of 8 built):
+BUILD COVERAGE (5 of 8 built):
   BUILT   FRQDecalNumber set[decalNumber, LicensePlateYear]
   BUILT   FRQLicensePlateNumber set[LicensePlateNumber]
-  BUILT   FRQTitleLienInformation set[titleLienInformation]
   BUILT   FRQVehicleIdentificationNumber set[VehicleIdentificationNumber]
   BUILT   RQLicensePlateNumber set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
   BUILT   RQVehicleIdentificationNumber set[VehicleIdentificationNumber, RegistrationState]
+  UNBUILT FRQ            TitleLienInformation
   UNBUILT QV             LicensePlateNumber
   UNBUILT QV             VehicleIdentificationNumber
 
@@ -227,16 +227,17 @@ BUILD SUMMARY
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         6      4     2  67%
   GunQuery                                   3      3     0  100% (COMPLETE)
-  VehicleRegistrationQuery                   8      6     2  75%
+  VehicleRegistrationQuery                   8      5     3  62%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   35     31     4  89%
+  TOTAL                                   35     30     5  86%
 
 ================================================================================
-UNBUILT METADATA COMBOS (4 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (5 combos in metadata, not in JSON)
 ================================================================================
 
   QW             Name                     (DriverLicenseQuery)
   QW             OperatorLicenseNumber    (DriverLicenseQuery)
+  FRQ            TitleLienInformation     (VehicleRegistrationQuery)
   QV             LicensePlateNumber       (VehicleRegistrationQuery)
   QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
 

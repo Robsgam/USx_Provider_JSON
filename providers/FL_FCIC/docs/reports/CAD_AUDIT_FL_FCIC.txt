@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.3.json
-  Generated: 2026-07-16 11:33
+  Source: FL_FCIC_v7.4.json
+  Generated: 2026-07-16 12:08
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: FL_FCIC_v7.3
+ CAD AUDIT: FL_FCIC_v7.4
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -31,7 +31,6 @@ CAD AUDIT
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] decalNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] titleLienInformation: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
@@ -158,7 +157,6 @@ CAD AUDIT
 --- CHECK 6: CAD Defaults Coverage ---
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQDecalNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQLicensePlateNumber -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQTitleLienInformation -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo FRQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQLicensePlateNumber -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'FL_FCIC_VehicleRegistrationQuery' combo RQVehicleIdentificationNumber -- defaults cover all initialValue any[] fields
@@ -194,6 +192,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 83 PASS / 0 FAIL / 0 WARN / 79 INFO
+Total: 82 PASS / 0 FAIL / 0 WARN / 78 INFO
 
 
