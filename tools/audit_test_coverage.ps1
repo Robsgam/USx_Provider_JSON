@@ -114,7 +114,11 @@ function Get-TestLogFiles($provDir) {
         $entityDirs = Get-ChildItem $logsRoot -Directory -ErrorAction SilentlyContinue |
             Where-Object { $_.Name -notlike '_archive_pre_v*' }
         foreach ($ed in $entityDirs) {
-            $logs += @(Get-ChildItem $ed.FullName -Filter "*.txt" -File -ErrorAction SilentlyContinue)
+            $entityLogs = @(Get-ChildItem $ed.FullName -Filter "*.txt" -File -ErrorAction SilentlyContinue)
+            foreach ($l in $entityLogs) {
+                $l | Add-Member -NotePropertyName 'Entity' -NotePropertyValue $ed.Name -Force
+            }
+            $logs += $entityLogs
         }
     }
     if ($logs.Count -eq 0) {
@@ -304,6 +308,12 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
             $matchFile = ""
 
             foreach ($log in $testLogs) {
+                # Logs scanned from a migrated logs/<Entity>/ folder carry an Entity tag -- a combo
+                # can only be satisfied by a log from its OWN entity folder. Cross-entity keyRef
+                # reuse (e.g. NY_NYSPIN_EJUSTICE Boat's RVEH/RCAR vs Vehicle's RVEH/RCAR) otherwise
+                # lets a Vehicle log false-positive-match a same-named Boat combo. Legacy flat
+                # tests/ logs carry no Entity tag -- fall back to unscoped matching for those.
+                if ($log.PSObject.Properties['Entity'] -and $log.Entity -ne $ent) { continue }
                 if (Match-TestLogToCombo $log.Name $c $provName) {
                     $matched = $true
                     $matchFile = $log.Name
