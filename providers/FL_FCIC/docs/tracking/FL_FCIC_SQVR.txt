@@ -2,7 +2,7 @@ FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-16
-JSON version: v7.2
+JSON version: v7.3
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: COMPLETE + INTEGRITY-CERTIFIED -- v7.1 zero-error pass 2026-07-02: 121/121
   submitted+captured, 0 skipped, 0 unmatched, content audit 121/121, XML consistency PASS
@@ -234,21 +234,21 @@ Architecture notes:
   Combos: QG by Serial(1), QG by NCIC#(2), QG by PCN(3) = 3 combos
   Optional fields: GunMake, ImageIndicator
 
-  QGGunSerialNumber -- Serial Number [CONFIRMED]
+  QGGunSerialNumber -- Serial Number [PENDING]
     set: GunSerialNumber
     any: GunMake, ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QGGunSerialNumber
     evidence: logs/Firearm/FL_FCIC_v7.1_QGGunSerialNumber.txt
 
-  QGNCICNumber -- NCIC Number [CONFIRMED]
+  QGNCICNumber -- NCIC Number [PENDING]
     set: NCICNumber
     any: GunMake, ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QGNCICNumber
     evidence: logs/Firearm/FL_FCIC_v7.1_QGNCICNumber.txt
 
-  QGProcessControlNumber -- Process Control Number [CONFIRMED]
+  QGProcessControlNumber -- Process Control Number [PENDING]
     set: processControlNumber
     any: GunMake, ImageIndicator
     defaults: ImageIndicator=N

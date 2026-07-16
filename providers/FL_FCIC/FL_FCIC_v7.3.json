@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.2 -- entity forms",
+                        "description":  "Provider configuration for FL_FCIC v7.3 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Person queries -- DL (FDQ/DQ) + DH (KQ, out-of-state only) on separate cards. DH-suffix fields. QW auto-sent by CommSys.",
@@ -3319,7 +3319,7 @@
                                                                                                             },
                                                                                                    "displayName":  "Card",
                                                                                                    "props":  {
-                                                                                                                 "title":  "FIREARM QUERY"
+                                                                                                                 "title":  "FIREARM Query by Serial Number, \"OR\" NCIC Number, \"OR\" PCN"
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
@@ -3361,7 +3361,7 @@
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "GunSerialNumber",
-                                                                                                                              "label":  "Serial Number (or use NCIC#/PCN)",
+                                                                                                                              "label":  "Serial Number",
                                                                                                                               "maxLength":  "11"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
@@ -3381,7 +3381,7 @@
                                                                                                         "displayName":  "Select",
                                                                                                         "props":  {
                                                                                                                       "fieldId":  "GunMake",
-                                                                                                                      "label":  "Gun Make (optional)",
+                                                                                                                      "label":  "Gun Make (incl w/Serial Num only - optional)",
                                                                                                                       "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                       "codeTypeSource":  "NCIC"
                                                                                                                   },
@@ -3466,7 +3466,7 @@
                                                                                                                "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "Image (optional)",
+                                                                                                                             "label":  "NCIC Image - if available",
                                                                                                                              "initialValue":  "N",
                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -3544,7 +3544,7 @@
                                                                                                                  },
                                                                                                         "displayName":  "Card",
                                                                                                         "props":  {
-                                                                                                                      "title":  "FIREARM QUERY"
+                                                                                                                      "title":  "FIREARM Query by Serial Number, \"OR\" NCIC Number, \"OR\" PCN"
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
@@ -3586,7 +3586,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "GunSerialNumber",
-                                                                                                                                   "label":  "Serial Number (or use NCIC#/PCN)",
+                                                                                                                                   "label":  "Serial Number",
                                                                                                                                    "maxLength":  "11"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -3606,7 +3606,7 @@
                                                                                                              "displayName":  "Select",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "GunMake",
-                                                                                                                           "label":  "Gun Make (optional)",
+                                                                                                                           "label":  "Gun Make (incl w/Serial Num only - optional)",
                                                                                                                            "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                            "codeTypeSource":  "NCIC"
                                                                                                                        },
@@ -3691,7 +3691,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "Image (optional)",
+                                                                                                                                  "label":  "NCIC Image - if available",
                                                                                                                                   "initialValue":  "N",
                                                                                                                                   "codeTypeSource":  "NCIC",
                                                                                                                                   "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -3850,7 +3850,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "FIREARM QUERY"
+                                                                                                                         "title":  "FIREARM Query by Serial Number, \"OR\" NCIC Number, \"OR\" PCN"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -3892,7 +3892,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "GunSerialNumber",
-                                                                                                                                      "label":  "Serial Number (or use NCIC#/PCN)",
+                                                                                                                                      "label":  "Serial Number",
                                                                                                                                       "maxLength":  "11"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -3912,7 +3912,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "GunMake",
-                                                                                                                              "label":  "Gun Make (optional)",
+                                                                                                                              "label":  "Gun Make (incl w/Serial Num only - optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -3997,7 +3997,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "Image (optional)",
+                                                                                                                                     "label":  "NCIC Image - if available",
                                                                                                                                      "initialValue":  "N",
                                                                                                                                      "codeTypeSource":  "NCIC",
                                                                                                                                      "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -8846,13 +8846,13 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for FL_FCIC v7.2",
+                        "description":  "Provider configuration for FL_FCIC v7.3",
                         "name":  "FL_FCIC",
                         "type":  "BUNDLE",
                         "provider":  "FL_FCIC"
                     },
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.2 -- RMS bundle",
+                        "description":  "Provider configuration for FL_FCIC v7.3 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

@@ -1,6 +1,15 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.3 (2026-07-16): Firearm card cosmetic pass (DEX-1280, Gordon Hallof UX feedback).
+#   Card title "FIREARM QUERY" -> "FIREARM Query by Serial Number, "OR" NCIC Number, "OR" PCN".
+#   GunSerialNumber label "Serial Number (or use NCIC#/PCN)" -> "Serial Number" (card title now
+#   carries that context, same pattern as v7.2's Person DH change). GunMake "Gun Make
+#   (optional)" -> "Gun Make (incl w/Serial Num only - optional)". ImageIndicator "Image
+#   (optional)" -> "NCIC Image - if available". No gate conflicts (GunSerialNumber is in set[]
+#   so exempt from the any[]-only hint rule regardless of wording; GunMake/ImageIndicator keep a
+#   qualifier). Label-only, no combo/QIDM/wire change. Firearm re-tests from T1; Vehicle/Article/
+#   Boat stay preserved blocked at v7.1; Person unaffected (already open/PENDING from v7.2).
 # v7.2 (2026-07-16): Person DH card cosmetic pass (DEX-1278, Gordon Hallof UX feedback).
 #   Card title "Driver History (Out-of-State Only)" -> "Driver History (Out-of-State) By
 #   Name "OR" Drivers License Number". Dropped "(DH)"/"required with Name" qualifiers from
@@ -134,7 +143,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.2"
+    [string]$Version = "7.3"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -904,16 +913,16 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'FIREARM QUERY'
+        title = 'FIREARM Query by Serial Number, "OR" NCIC Number, "OR" PCN'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number (or use NCIC#/PCN)' '11' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (incl w/Serial Num only - optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCICNumber_Input';         node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_GUN_2' }
                 @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
+                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
         )
     }

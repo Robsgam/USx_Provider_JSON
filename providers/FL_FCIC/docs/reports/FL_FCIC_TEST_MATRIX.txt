@@ -1,4 +1,4 @@
-FL_FCIC v7.2 -- TEST MATRIX
+FL_FCIC v7.3 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-16
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -26,7 +26,7 @@ Person (2 cards, 18 fields):
     ROW 3: Attention [Inp X, 30]
 
 Firearm (1 card, 5 fields):
-  CARD_GUN (FIREARM QUERY):
+  CARD_GUN (FIREARM Query by Serial Number, "OR" NCIC Number, "OR" PCN):
     ROW 1: GunSerialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: NCICNumber [Inp 10], processControlNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
@@ -257,4 +257,4 @@ COMBO COVERAGE (31/31):
   ArticleSingleQuery: 4/4 -- T73(Serial), T75(OAN), T77(NCIC), T79(PCN)
   BoatQuery: 12/12 -- T19(FBQ+Hull), T21(FBQ+Reg), T23(FBQ+Decal), T25(FBQ+TitleLien), T27(BQ+Hull), T28(BQ+Reg), T29(BQ+Name), T30(QB+Hull), T32(QB+Reg), T34(QB+CG), T36(QB+NCIC), T38(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.2.json
+IMPORT FILE: FL_FCIC_v7.3.json
