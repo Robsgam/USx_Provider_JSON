@@ -1,6 +1,16 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.5 (2026-07-16): Direct feedback (not a DEX ticket), two layout fixes. (1) Person CARD_DL
+#   ROW_DL2 Name field order was still Last/First/Middle -- inconsistent with CARD_DH's ROW_DH2,
+#   reordered to First/Last/MI in v7.2 (DEX-1278). Swapped NameFirst_Input/NameLast_Input order
+#   to match (First, Last, Middle) -- label/fieldId/sourceField unchanged, pure visual reorder;
+#   wire Name format (Last-first, FormatStringRuleHandler) unaffected either way. (2) Vehicle
+#   collapsed from 2 cards to 1 -- merged CARD_VEH_OPT (State+Image) into CARD_VEH_SEARCH,
+#   moved RegistrationState_Input + ImageIndicator_Input onto the bottom row alongside
+#   DecalNumber_Input (freed up solo by v7.4's Title/Lien removal). No combo/QIDM/label change,
+#   pure card/row restructuring. Person + Vehicle re-test from T1; Firearm stays open/PENDING at
+#   v7.3 untouched; Article/Boat preserved blocked at v7.1.
 # v7.4 (2026-07-16): Vehicle card cosmetic pass + intentional combo removal (DEX-1279, Gordon
 #   Hallof UX feedback). Card title "Vehicle Search" -> "Vehicle Registration Search by License
 #   Plate, "OR" VIN, "OR" Decal". Dropped "(or search by VIN/Decal)" from Plate Number (card
@@ -162,7 +172,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.4"
+    [string]$Version = "7.5"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -809,20 +819,10 @@ $providerBundle = [PSCustomObject]@{
 # BUNDLE 2: ENTITIES (5 QUERYINPUTFORM)
 # =====================================================================
 
-# --- Vehicle (2 cards: OPTIONS + SEARCH) ---
-# OPTIONS: State+Image (routing for VehReg RQ combos)
-# SEARCH: Plate/VIN/Decal (VehicleRegistrationQuery fields only)
+# --- Vehicle (1 card, v7.5: collapsed from 2 -- direct feedback) ---
+# Plate/VIN/Decal (VehicleRegistrationQuery fields only); State+Image moved to the bottom row
+# alongside Decal (v7.5 -- was its own "Search Options" card through v7.4).
 $vehLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_VEH_OPT'
-        title = 'Search Options'
-        rows  = @(
-            @{ id = 'ROW_VEH_O1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
-            )}
-        )
-    }
     @{
         id    = 'CARD_VEH_SEARCH'
         title = 'Vehicle Registration Search by License Plate, "OR" VIN, "OR" Decal'
@@ -837,17 +837,19 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'VehicleMakeCode_Input';              node = Sel 'VehicleMakeCode' 'Vehicle Make (By VIN optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year (By VIN optional)' '4' 'ROW_VEH_2' }
             )}
-            # v7.4 (DEX-1279): TitleLienInformation field + FRQTitleLienInformation combo REMOVED
-            # entirely (approved-skip, not a coverage gap -- see FL_FCIC_ACCEPTED_DIVERGENCES.txt).
-            # Decal is now the row's only field.
-            @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
-                @{ id = 'DecalNumber_Input';                  node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
+            # v7.5: bottom row now carries Decal + State + Image together (was Decal alone
+            # after v7.4's Title/Lien removal; State/Image moved down from the now-retired
+            # CARD_VEH_OPT "Search Options" card).
+            @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'DecalNumber_Input';        node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC 2-card: OPTIONS(State/Image) + SEARCH(Plate/VIN/Decal). Title/Lien removed v7.4 (DEX-1279, approved-skip).'
+    description  = 'Vehicle queries -- 1 card (v7.5, collapsed from 2): Plate/VIN row, Make/Year row, Decal+State+Image bottom row. Title/Lien removed v7.4 (DEX-1279, approved-skip).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -868,8 +870,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'ImageIndicator_Input';         node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL1' }
             )}
             @{ id = 'ROW_DL2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL2' }
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL2' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL2' }
                 @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_DL2' }
             )}
             @{ id = 'ROW_DL3'; cols = @('4','4','4'); fields = @(
