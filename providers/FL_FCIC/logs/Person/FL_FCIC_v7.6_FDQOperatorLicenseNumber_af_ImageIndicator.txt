@@ -1,0 +1,82 @@
+﻿================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQOperatorLicenseNumber_af_ImageIndicator (FDQOperatorLicenseNumber_af_ImageIndicator (auto))
+Date: 2026-07-16 17:03:13
+Result: PASS
+JSON Version: 7.6
+Entity Fingerprint: 1185801a45b3f61c27a38e6d1be48b99294819cb66b4260b225b360a031629ae
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","ImageIndicator":"N","OperatorLicenseNumber":"D999888777"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXNYZM95HZFQ6QQHESMYFDJC">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KXNYZM95HZFQ6QQHESMYFDJC</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KXNYZM95HZFQ6QQHESMYFDJC
+  ImageIndicator                 N
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01KXNYZM95HZFQ6QQHESMYFDJC). kind=any-field; anyField=ImageIndicator; expectedKeyRef=FDQOperatorLicenseNumber; firedMessageType=DriverLicenseQuery.
+
+RESULT: PASS
