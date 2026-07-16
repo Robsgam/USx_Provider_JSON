@@ -1,6 +1,18 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.2 (2026-07-16): Person DH card cosmetic pass (DEX-1278, Gordon Hallof UX feedback).
+#   Card title "Driver History (Out-of-State Only)" -> "Driver History (Out-of-State) By
+#   Name "OR" Drivers License Number". Dropped "(DH)"/"required with Name" qualifiers from
+#   all 6 DH-suffix field labels (License Number, Destination State, Purpose Code, Last/First
+#   Name, DOB, Sex) -- the new card title now carries the DH-vs-DL disambiguation that the
+#   per-field tags used to (verify_build CHECK 15 Rule 2 downgraded FAIL->Info this session,
+#   see BUILD_RULES Section 11 point 7). Reordered ROW_DH2 to First/Last/MI/DOB/Sex (was
+#   Last/First/DOB/Sex) and added a new nameMiddleDH field ("MI") -- visible-only, NOT wired
+#   into the KQName combo or the Name attribute's sourceField, mirroring the DL card's
+#   existing unwired nameMiddle/nameSuffix fields. Label-only + one new unwired field --
+#   no combo/QIDM/wire behavior change. Person re-tests from T1; Vehicle/Article/Boat/Firearm
+#   fingerprints unchanged, preserved blocked at v7.1.
 # v7.0 (2026-06-29): OOS-gate symmetry hardening (defense-in-depth, NO behavior/XML change).
 #   Added RegistrationState EXISTS to the 3 zero-condition OOS combos -- RQLicensePlateNumber +
 #   DQOperatorLicenseNumber (RegistrationState) and KQOperatorLicenseNumber (RegistrationStateDH).
@@ -122,7 +134,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.1"
+    [string]$Version = "7.2"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -850,18 +862,22 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_DH'
-        title = 'Driver History (Out-of-State Only)'
+        title = 'Driver History (Out-of-State) By Name "OR" Drivers License Number'
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_DH1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'Destination State (DH, not FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
-                @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code (DH, optional)' '1' 'ROW_DH1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'Driver License Number' '20' 'ROW_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
+                @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
-            @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_DH2' }
-                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_DH2' }
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'DOB (DH, required with Name)' 'ROW_DH2' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH' 'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
+            # v7.2 (DEX-1278): reordered First/Last/MI/DOB/Sex (was Last/First/DOB/Sex);
+            # nameMiddleDH added visible-only, mirrors DL card's unwired nameMiddle/nameSuffix
+            # (not in the KQName combo's set[]/any[] or the Name attribute's sourceField).
+            @{ id = 'ROW_DH2'; cols = @('3','3','2','2','2'); fields = @(
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_DH2' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_DH2' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'         '1'  'ROW_DH2' }
+                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'DOB' 'ROW_DH2' }
+                @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH'    'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
             # v6.0: hidden Attention gate-feeder (HI v2.9 live-proven pattern). The DH Attention
             # attribute (CommsysGetLastNameFirstNameInitialRuleHandler, sourceField=['Attention'])
@@ -1003,9 +1019,12 @@ $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $providerBundle, $rmsBundle)
 }
 
-$phaseDate = Get-Date -Format "yyyy-MM-dd"
+# phases/ snapshot mechanism retired 2026-07-13 (commit 3a458757, Tier B/C docs migration) --
+# every version is already fully recoverable from git commit history. The directory itself was
+# removed then but this -PhasePath call was missed, so this v7.2 build is the first to hit it
+# (WriteAllText fails when the parent dir doesn't exist). Matches NJ_NJCJIS's already-migrated
+# Write-ProviderJson call (no -PhasePath).
 Write-ProviderJson -BundleObject $output -OutPath $outPath `
-    -PhasePath "$PSScriptRoot\..\phases\FL_FCIC_v${Version}_${phaseDate}.json" `
     -Label "Built FL_FCIC v${Version}" `
     -Version $Version
 

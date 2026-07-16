@@ -1,8 +1,8 @@
 FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-07-02
-JSON version: v7.1
+Last updated: 2026-07-16
+JSON version: v7.2
 Validator: 92 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: COMPLETE + INTEGRITY-CERTIFIED -- v7.1 zero-error pass 2026-07-02: 121/121
   submitted+captured, 0 skipped, 0 unmatched, content audit 121/121, XML consistency PASS
@@ -131,7 +131,7 @@ Architecture notes:
     through to DQ). DQ = Nlets out-of-state (State EXISTS). OLN>Name guardrail: Name combos
     carry OperatorLicenseNumber NOT_EXISTS, so an OLN entry excludes Name/DOB/Sex from the pool.
 
-  FDQName -- in-state Name + DOB + Sex [CONFIRMED]
+  FDQName -- in-state Name + DOB + Sex [PENDING]
     set: BirthDate, NameLast, NameFirst, SexCode
     any: ImageIndicator
     conditions: RegistrationState NOT_EXISTS AND OperatorLicenseNumber NOT_EXISTS (OLN>Name)
@@ -141,7 +141,7 @@ Architecture notes:
     BirthDate uses CommsysParseDateRuleHandler yyyy-MM-dd -> yyyyMMdd
     evidence: logs/Person/FL_FCIC_v7.1_FDQName.txt
 
-  FDQOperatorLicenseNumber -- in-state OLN [CONFIRMED]
+  FDQOperatorLicenseNumber -- in-state OLN [PENDING]
     set: OperatorLicenseNumber
     any: ImageIndicator
     conditions: RegistrationState NOT_EXISTS
@@ -149,7 +149,7 @@ Architecture notes:
     keyReference: FDQOperatorLicenseNumber
     evidence: logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber.txt
 
-  DQName -- OOS Name + DOB + Sex + State [CONFIRMED]
+  DQName -- OOS Name + DOB + Sex + State [PENDING]
     set: BirthDate, NameLast, NameFirst, SexCode, RegistrationState
     any: ImageIndicator
     conditions: OperatorLicenseNumber NOT_EXISTS (OLN>Name)
@@ -157,7 +157,7 @@ Architecture notes:
     keyReference: DQName
     evidence: logs/Person/FL_FCIC_v7.1_DQName.txt
 
-  DQOperatorLicenseNumber -- OOS OLN + State [CONFIRMED]
+  DQOperatorLicenseNumber -- OOS OLN + State [PENDING]
     set: OperatorLicenseNumber, RegistrationState
     any: ImageIndicator
     conditions: RegistrationState EXISTS (explicit OOS gate, v7.0)
@@ -166,7 +166,7 @@ Architecture notes:
     evidence: logs/Person/FL_FCIC_v7.1_DQOperatorLicenseNumber.txt
 
   OLN>Name guardrail -- OLN+Name co-entry -> only the OLN combo fires, Name combos exit the
-    pool (OperatorLicenseNumber NOT_EXISTS on FDQName + DQName). [CONFIRMED]
+    pool (OperatorLicenseNumber NOT_EXISTS on FDQName + DQName). [PENDING]
     evidence: logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber_guardrail_vs_FDQName.txt
               logs/Person/FL_FCIC_v7.1_FDQOperatorLicenseNumber_guardrail_vs_DQName.txt
 
@@ -195,7 +195,7 @@ Architecture notes:
     platform escalation); dropdown + card title carry the officer-facing guard. OLN>Name:
     KQName carries OperatorLicenseNumberDH NOT_EXISTS (unique DH attr name, v5.1 fix).
 
-  KQName -- OOS Name + DOB + Sex + DestState [CONFIRMED]
+  KQName -- OOS Name + DOB + Sex + DestState [PENDING]
     set: BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH, RegistrationStateDH
     any: purposeCodeDH, Attention
     conditions: OperatorLicenseNumberDH NOT_EXISTS (OLN>Name; unique DH attr name, v5.1)
@@ -204,7 +204,7 @@ Architecture notes:
     Name uses FormatStringRuleHandler arguments=[', ']; BirthDate yyyy-MM-dd -> yyyyMMdd
     evidence: logs/Person/FL_FCIC_v7.1_KQName.txt
 
-  KQOperatorLicenseNumber -- OOS OLN + DestState [CONFIRMED]
+  KQOperatorLicenseNumber -- OOS OLN + DestState [PENDING]
     set: OperatorLicenseNumberDH, RegistrationStateDH
     any: purposeCodeDH, Attention
     conditions: RegistrationStateDH EXISTS (explicit OOS gate, v7.0)
@@ -213,7 +213,7 @@ Architecture notes:
     evidence: logs/Person/FL_FCIC_v7.1_KQOperatorLicenseNumber.txt
 
   OLN>Name guardrail (DH) -- OLN+Name co-entry -> only KQOperatorLicenseNumber fires, KQName
-    exits the pool (OperatorLicenseNumberDH NOT_EXISTS on KQName). [CONFIRMED]
+    exits the pool (OperatorLicenseNumberDH NOT_EXISTS on KQName). [PENDING]
     evidence: logs/Person/FL_FCIC_v7.1_KQOperatorLicenseNumber_guardrail_vs_KQName.txt
 
   Priority order: KQ OLN before KQ Name -- CONFIRMED (OLN>Name guardrail).
