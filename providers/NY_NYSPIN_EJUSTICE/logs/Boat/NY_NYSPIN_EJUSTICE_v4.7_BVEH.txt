@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Boat BoatQuery
+Combo: BVEH (BVEH (auto))
+Date: 2026-07-16 10:33:02
+Result: PASS
+JSON Version: 4.7
+Entity Fingerprint: e5cf9a2085923e3c48ac3d1b69b1294134533789fd8e0090564364fe8d3180ed
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","RegistrationNumber":"FL1234AB","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXNNDS537FT06EBF3FXF8RDZ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KXNNDS537FT06EBF3FXF8RDZ</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KXNNDS537FT06EBF3FXF8RDZ
+  ImageIndicator                 N
+  State                          GA
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01KXNNDS537FT06EBF3FXF8RDZ). kind=combo; anyField=; expectedKeyRef=BVEH; firedMessageType=BoatQuery.
+
+RESULT: PASS
