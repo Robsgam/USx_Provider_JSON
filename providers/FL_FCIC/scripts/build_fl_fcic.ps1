@@ -1,6 +1,15 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.7 (2026-07-16): Boat label cleanup (direct feedback, no ticket). RegistrationState_Input
+#   "Destination State (blank for FL, required for name/DOB)" -> "State (leave blank for FL)"
+#   (kept the minimal hint verify_build CHECK 15 Rule 1 requires on every State-suffixed field --
+#   still enforced, unlike the relaxed DH-tag rule -- confirmed with Rob rather than dropping it
+#   to a bare "State" which would FAIL). RelatedHitSearchIndicator_Input "Stolen Search (Y for
+#   NCIC stolen-boat check)" -> "Y for NCIC stolen-boat check" (label becomes what was in the
+#   parens). Dropped "Owner" from NameFirst_Input/NameLast_Input/BirthDate_Input ("Owner First
+#   Name (out-of-state)" -> "First Name (out-of-state)", etc.). Label-only. Boat re-tests from
+#   T1; Person/Vehicle/Article stay blocked at v7.6; Firearm stays open/PENDING at v7.6.
 # v7.6 (2026-07-16): Article card cosmetic pass (DEX-1281, Gordon Hallof UX feedback) + Boat
 #   direct-feedback restructuring (no ticket, mirrors the Article/Vehicle/Person patterns).
 #   Article: card title -> "ARTICLE QUERY by Serial Number, "OR" Owner Applied Number, "OR"
@@ -185,7 +194,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.6"
+    [string]$Version = "7.7"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -1014,16 +1023,16 @@ $boaLayout = MakeLayouts @(
             )}
             # v7.6: reordered First-before-Last, matching Person's v7.5 fix ("like the others").
             @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'Owner First Name (out-of-state)' '30' 'ROW_BOA_3' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Owner Last Name (out-of-state)'  '30' 'ROW_BOA_3' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Owner DOB (out-of-state)' 'ROW_BOA_3' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state)' '30' 'ROW_BOA_3' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state)'  '30' 'ROW_BOA_3' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'DOB (out-of-state)' 'ROW_BOA_3' }
             )}
             # v7.6: DestState/Stolen/Image moved here from the now-retired CARD_BOA_OPT
             # "Search Options" card (Boat didn't free up an existing row like Vehicle did, so
             # this is a new row, not a merge into one).
             @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'Destination State (blank for FL, required for name/DOB)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_4' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Search (Y for NCIC stolen-boat check)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_4' }
+                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_4' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-boat check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_4' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_4' }
             )}
         )
