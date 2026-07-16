@@ -826,13 +826,17 @@ if ($providerBundle) {
 }
 
 # ── CHECK 15: Form field label hints ─────────────────────────────────────────
-# BUILD_RULES.txt Section 11. Three rules enforced:
+# BUILD_RULES.txt Section 11. Rules enforced:
 #   1. State fields (fieldId ends in 'State'): label must contain 'leave blank for'
 #      (tells officers to leave blank for in-state vs fill for OOS)
-#   2. DH-suffix fields (fieldId ends in 'DH'): label must contain '(DH)'
-#      (disambiguates DH from DL fields when both are on the same card)
+#   2. DH-suffix fields (fieldId ends in 'DH'): advisory only -- '(DH)' recommended
+#      when DH shares a card with DL, but no longer required when the DH field lives
+#      on its own separate, distinctly-titled card (the card title disambiguates).
+#      Downgraded FAIL->Info 2026-07-16, DEX-1278 (see BUILD_RULES Section 11 point 7).
 #   3. any[]-only sourceFields (never appear in set[]): label must contain '(' or ' - '
-#      (at minimum an '(optional)' qualifier or a routing context hint)
+#      (at minimum an '(optional)' qualifier or a routing context hint) -- EXCEPT
+#      Purpose Code fields, exempted regardless of auto-filled/officer-entered status
+#      (BUILD_RULES Section 11 implementation notes; wired in 2026-07-16, DEX-1278).
 Write-Host ""
 Write-Host "--- CHECK 15: Form Field Label Hints ---" -ForegroundColor Yellow
 
@@ -876,20 +880,23 @@ foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match '(?i)State$'
     }
 }
 
-# Rule 2: DH-suffix fields must carry a '(DH...' qualifier in the label.
-# Accept '(DH)' AND richer forms like '(DH, optional)' / '(DH) - required with Name' -- the goal is
-# DH-vs-DL disambiguation, which '(DH, optional)' satisfies. Match '(DH' at a word boundary so '(DHL)'
-# or a bare 'DH' (no paren) still fail. (Refined 2026-06-26, RND-62365: old '\(DH\)' rejected HI's
-# design-correct '(DH, optional)' labels; purely permissive -- no previously-passing provider regresses.)
+# Rule 2: DH-suffix fields -- '(DH...' qualifier is now ADVISORY only (Info), not a gate.
+# A DH field living on its own separate, distinctly-titled card (the card title itself
+# disambiguates from DL) no longer needs a per-field tag; same-card/single-card DH designs
+# (e.g. AZ_AZDPS) still benefit from one. Downgraded 2026-07-16 (DEX-1278) -- does not count
+# toward $labelViolations, so it can never fail or hold a build back from Pass.
+$dhAdvisoryCount = 0
 foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match 'DH$' })) {
     $lbl = $formFieldLabels[$fid]
     if ($lbl -notmatch '\(DH\b') {
-        Fail "Field '$fid' label='$lbl' missing '(DH...' qualifier (DH disambiguation -- BUILD_RULES Section 11)"
-        $labelViolations++
+        Info "Field '$fid' label='$lbl' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)"
+        $dhAdvisoryCount++
     }
 }
 
-# Rule 3: any[]-only sourceFields must have a hint qualifier ('(' or ' - ')
+# Rule 3: any[]-only sourceFields must have a hint qualifier ('(' or ' - '), EXCEPT Purpose
+# Code fields (exempted regardless of auto-filled/officer-entered -- BUILD_RULES Section 11
+# implementation notes; wired in 2026-07-16, DEX-1278).
 # Collect fields that appear in any[] and those that appear in set[]; pure any[] = in any[], never in set[]
 $everInSet  = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 $everInAny  = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -902,7 +909,7 @@ if ($providerBundle) {
         }
     }
 }
-$pureAnyFields = @($everInAny | Where-Object { -not $everInSet.Contains($_) })
+$pureAnyFields = @($everInAny | Where-Object { -not $everInSet.Contains($_) -and $_ -notmatch '(?i)purposeCode' })
 foreach ($fid in $pureAnyFields) {
     if (-not $formFieldLabels.ContainsKey($fid)) { continue }
     $lbl = $formFieldLabels[$fid]
@@ -913,7 +920,8 @@ foreach ($fid in $pureAnyFields) {
 }
 
 if ($labelViolations -eq 0) {
-    Pass "All form field labels have required routing hint qualifiers ($($formFieldLabels.Count) fields scanned)"
+    $dhNote = if ($dhAdvisoryCount -gt 0) { " ($dhAdvisoryCount DH field(s) untagged -- advisory only, see Info above)" } else { "" }
+    Pass "All form field labels have required routing hint qualifiers ($($formFieldLabels.Count) fields scanned)$dhNote"
 } else {
     Info "$labelViolations field(s) need label hint fixes"
 }

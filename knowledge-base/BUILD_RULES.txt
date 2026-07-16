@@ -870,15 +870,28 @@ See also:
          "SSN - criminal records (no OLN)"
          "Owner Applied Number (OAN)"
          "License Number (DH) - or Name + DOB + Sex"
-       DH suffix ENFORCED: verify_build CHECK 15 FAILs if a DH-suffix fieldId
-       label lacks a "(DH..." qualifier. Accepts "(DH)" and richer forms like
-       "(DH, optional)" or "(DH) - required with Name" (matched at a word boundary,
-       so "(DHL)" or a bare "DH" still fail). (Refined 2026-06-26, RND-62365.)
+       DH suffix RECOMMENDED, not enforced when the DH field lives on its own
+       separate, distinctly-titled card -- the card title itself disambiguates
+       DH from DL (e.g. FL_FCIC v7.2's "Driver History (Out-of-State) By Name
+       "OR" Drivers License Number" card, DEX-1278, 2026-07-16: Gordon Hallof's
+       explicit UX feedback dropped the per-field "(DH)" tags in favor of the
+       card title alone). Same-card / single-card DH designs (e.g. AZ_AZDPS,
+       "single QIF with all paths on one card") should still tag fields --
+       there the DH and DL inputs are visually interleaved with no card-title
+       separation to rely on. verify_build CHECK 15 downgraded this from FAIL
+       to advisory (Info) 2026-07-16 -- it no longer blocks a build either way.
+       (Prior: FAILed if a DH-suffix fieldId label lacked a "(DH..." qualifier,
+       word-boundary matched. Refined 2026-06-26, RND-62365.)
 
     IMPLEMENTATION NOTES:
     - Hints embedded in the label string only -- no separate helperText/placeholder
     - One-sentence max per label; avoid redundancy
-    - "Purpose Code" fields need no hint (auto-filled, not officer-entered)
+    - "Purpose Code" fields need no hint -- exempted from rule 5's any[]-only
+      qualifier requirement regardless of whether the field is auto-filled or
+      officer-entered (verify_build CHECK 15 Rule 3 exemption added 2026-07-16,
+      DEX-1278 -- previously documented here but never actually implemented in
+      the validator, so a manually-entered Purpose Code field like FL_FCIC's
+      DH one still WARNed; the code now matches this long-standing KB note)
     - "First Name" / "Last Name" on a primary entity (Person) need no hint;
       only cross-entity or context-specific uses need qualifiers
     - All verified as of CA_CLETS v2.8; prior providers need label audit on rebuild
