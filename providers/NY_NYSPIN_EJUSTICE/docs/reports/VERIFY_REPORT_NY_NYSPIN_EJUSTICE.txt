@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE_v4.7.json
-  Generated: 2026-07-13 14:36
+  Source: NY_NYSPIN_EJUSTICE_v4.8.json
+  Generated: 2026-07-16 14:40
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: NY_NYSPIN_EJUSTICE_v4.7
+ POST-BUILD VERIFICATION: NY_NYSPIN_EJUSTICE_v4.8
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -61,7 +61,19 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (51 fields scanned)
+  [INFO] Field 'OperatorLicenseNumberDH' label='License Number (or search by Name)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'RegistrationStateDH' label='State (leave blank for NY)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'ImageIndicatorDH' label='Image (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameFirstDH' label='First Name (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameLastDH' label='Last Name (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameMiddleDH' label='MI (opt)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffixDH' label='Suffix (opt)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'BirthDateDH' label='Date of Birth (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'SexCodeDH' label='Sex (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'purposeCodeDH' label='Purpose Code (out-of-state)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nyNyspinTransactionNameDH' label='Transaction Type (opt)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'requestorDH' label='Requestor (auto-populated from officer profile)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [PASS] All form field labels have required routing hint qualifiers (51 fields scanned) (12 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

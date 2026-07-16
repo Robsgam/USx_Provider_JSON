@@ -41,6 +41,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v4.8 (2026-07-16)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NY_NYSPIN_EJUSTICE_v4.8.json | v4.8 | Current | 80P/0F/0W/0LIM. |
 ## v4.7 (2026-07-13)
 
 | File | Version | Status | Notes |

@@ -60,7 +60,7 @@
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
 
 param(
-    [string]$Version = "4.7"
+    [string]$Version = "4.8"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -612,6 +612,19 @@ $vehicleForm = [PSCustomObject]@{
 # OPTIONS: RegistrationState + ImageIndicator (shared by all DL/DH/DGRP combos)
 # DRIVER LICENSE: OLN + Name fields (DL + DGRP combos)
 # DRIVER HISTORY: OLN-DH + Name-DH fields (DH-suffix isolation)
+#
+# v4.8 (direct feedback, mirrors FL_FCIC DEX-1278): dropped the "(DH..." qualifier from every
+# CARD_PER_DH field label -- the card's own "DRIVER HISTORY" title already disambiguates it from
+# "DRIVER LICENSE" (verify_build CHECK 15 Rule 2 downgraded FAIL->Info portfolio-wide this
+# session; same structural argument as FL's Person DH card). Each DH label lands on its DL
+# counterpart's exact phrasing minus the DH tag (e.g. "Last Name (DH, Name search)" ->
+# "Last Name (Name search)", matching NameLast_Input's existing wording); DH-only fields
+# (PurposeCode/TransactionType/Requestor) just lose the "DH, " prefix. Also reordered the Name
+# fields on ALL THREE Person cards (DL/DH/DGRP) to First-before-Last (was Last-first),
+# matching FL's now-established First/Last convention. Label/order-only -- no combo/QIDM/wire
+# change (Name attributes still format Last-first on the wire via FormatStringRuleHandler
+# regardless of visual field order). Person re-tests from T1; Vehicle/Firearm/Article/Boat
+# preserved blocked at v4.7.
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
@@ -625,8 +638,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DL_1' }
             )}
             @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name (Name search)'  '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name (Name search)' '35' 'ROW_PER_DL_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name (Name search)'  '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'MI (opt)'     '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (opt)' '10' 'ROW_PER_DL_2' }
             )}
@@ -642,21 +655,21 @@ $perLayout = MakeLayouts @(
         rows  = @(
             # Row 1: primary identifier + DH-own State/Image folded in (self-contained card, v4.5).
             @{ id = 'ROW_PER_DH_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or search by Name' '20' 'ROW_PER_DH_1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (DH, leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
-                @{ id = 'ImageIndicatorDH_Input';        node = Sel 'ImageIndicatorDH' 'Image (DH, optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (or search by Name)' '20' 'ROW_PER_DH_1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
+                @{ id = 'ImageIndicatorDH_Input';        node = Sel 'ImageIndicatorDH' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1' }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (DH, Name search)'  '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (DH, Name search)' '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (DH, opt)'         '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH, opt)'     '10' 'ROW_PER_DH_2' }
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (Name search)' '35' 'ROW_PER_DH_2' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (Name search)'  '35' 'ROW_PER_DH_2' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (opt)'         '35' 'ROW_PER_DH_2' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (opt)'     '10' 'ROW_PER_DH_2' }
             )}
             @{ id = 'ROW_PER_DH_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH, Name search)'                                 'ROW_PER_DH_3' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH, Name search)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (DH, out-of-state)' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
-                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (DH, opt)' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (Name search)'                                 'ROW_PER_DH_3' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (Name search)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (out-of-state)' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
+                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (opt)' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
             )}
             # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
             # field (set[] on DALHOUT/DALLOUT), so BUILD_RULES Section 14's default rule would
@@ -669,7 +682,7 @@ $perLayout = MakeLayouts @(
             # v2.9 live-proven recipe): non-empty sourceField + field listed in the combo's set[]
             # (already true here) + hidden field with non-empty initialValue.
             @{ id = 'ROW_PER_DH_5B'; cols = @('12'); fields = @(
-                @{ id = 'RequestorDH_Input'; node = InpH 'requestorDH' 'Requestor (DH, auto-populated from officer profile)' '35' 'ROW_PER_DH_5B' @{ initialValue = 'X' } }
+                @{ id = 'RequestorDH_Input'; node = InpH 'requestorDH' 'Requestor (auto-populated from officer profile)' '35' 'ROW_PER_DH_5B' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -680,8 +693,8 @@ $perLayout = MakeLayouts @(
         title = 'DL NAME SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_DGRP_1'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameLastDGRP_Input';   node = Inp 'NameLastDGRP'   'Last Name'  '35' 'ROW_PER_DGRP_1' }
                 @{ id = 'NameFirstDGRP_Input';  node = Inp 'NameFirstDGRP'  'First Name' '35' 'ROW_PER_DGRP_1' }
+                @{ id = 'NameLastDGRP_Input';   node = Inp 'NameLastDGRP'   'Last Name'  '35' 'ROW_PER_DGRP_1' }
                 @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'MI (opt)'     '35' 'ROW_PER_DGRP_1' }
                 @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (opt)' '10' 'ROW_PER_DGRP_1' }
             )}

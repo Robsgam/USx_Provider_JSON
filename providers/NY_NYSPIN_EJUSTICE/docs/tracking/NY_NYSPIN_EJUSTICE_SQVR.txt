@@ -1,8 +1,8 @@
-﻿NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ===============================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-16
-JSON version: v4.7
+JSON version: v4.8
 Validator: 81 PASS / 0 FAIL / 0 WARN / 0 LIM
 Simulation: 17/17 combos FIRE
 Prior live test: All 13 original combos CONFIRMED (2026-04-24, v1.0)
@@ -80,7 +80,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=Y
   CAD defaults: ImageIndicator=Y on DLICN and DLIC
 
-  DLICN -- Name + DOB [CONFIRMED]
+  DLICN -- Name + DOB [PENDING]
     set: birthDate, nameLast, nameFirst, sexCode
     any: imageIndicator, registrationState, nameMiddle, nameSuffix
     defaults: ImageIndicator=Y
@@ -88,7 +88,7 @@ v2.1 changes from v2.0:
     Name format: FormatStringRuleHandler "LAST, FIRST MIDDLE SUFFIX"
     Date format: CommsysParseDateRuleHandler yyyy-MM-dd -> MMddyyyy
 
-  DLIC -- OLN [CONFIRMED]
+  DLIC -- OLN [PENDING]
     set: operatorLicenseNumber
     any: imageIndicator, registrationState
     defaults: ImageIndicator=Y
@@ -106,7 +106,7 @@ v2.1 changes from v2.0:
   queryLabel: DL Name Search
   Combos: DGRP (Name+DOB)
 
-  DGRP -- Name search (broader DL lookup) [CONFIRMED]
+  DGRP -- Name search (broader DL lookup) [PENDING]
     set: nameLast, nameFirst
     any: nameMiddle, nameSuffix, birthDate, sexCode
     defaults: (none)
@@ -133,27 +133,27 @@ v2.1 changes from v2.0:
     CommsysGetLastNameFirstNameInitialRuleHandler -> officer identity). Handler confirmed working.
   See LIMITATION #36 (Choice-set OOS combos)
 
-  DALHOUT -- Name + DOB + OOS fields [CONFIRMED]
+  DALHOUT -- Name + DOB + OOS fields [PENDING]
     set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState
     any: imageIndicator, nameMiddleDH, nameSuffixDH
     defaults: ImageIndicator=Y
     keyReference: DALHOUT
     Fires when: all name fields + purposeCodeDH + requestorDH + State filled
 
-  DALH -- Name + DOB (in-state) [CONFIRMED]
+  DALH -- Name + DOB (in-state) [PENDING]
     set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH
     any: imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
     keyReference: DALH
 
-  DALLOUT -- OLN + OOS fields [CONFIRMED]
+  DALLOUT -- OLN + OOS fields [PENDING]
     set: operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState
     any: imageIndicator
     defaults: ImageIndicator=Y
     keyReference: DALLOUT
     Fires when: OLN + purposeCodeDH + requestorDH + State all filled
 
-  DALL -- OLN (in-state) [CONFIRMED]
+  DALL -- OLN (in-state) [PENDING]
     set: operatorLicenseNumberDH
     any: imageIndicator, registrationState, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
