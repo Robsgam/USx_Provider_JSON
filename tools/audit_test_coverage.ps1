@@ -464,24 +464,55 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
         $entFp = @{}
         try { $entFp = Get-EntityFingerprints -Path $jsonPath } catch { $entFp = @{} }
 
+        # Blocked entities may be legitimately PRESERVED at an older version than the
+        # current global build (reset_test_package.ps1 keeps an entity blocked across a
+        # rebuild as long as its fingerprint is unchanged -- see block_entity.ps1). Their
+        # still-valid pre-rebuild logs are stamped with that preserved version, not the
+        # current one, so provenance must accept EITHER version for a blocked entity, or a
+        # legitimately-preserved entity gets misflagged as stale/INCONSISTENT.
+        $stateJsonPath = Join-Path (Join-Path $provDir "logs") ".test_state.json"
+        if (-not (Test-Path $stateJsonPath)) { $stateJsonPath = Join-Path (Join-Path $provDir "tests") ".test_state.json" }
+        $blockedVersions = @{}
+        if (Test-Path $stateJsonPath) {
+            try {
+                $ts = Get-Content $stateJsonPath -Raw | ConvertFrom-Json
+                if ($ts.entities) {
+                    foreach ($p in $ts.entities.PSObject.Properties) {
+                        if ($p.Value.status -eq 'blocked' -and $p.Value.version) { $blockedVersions[$p.Name] = "$($p.Value.version)" }
+                    }
+                }
+            } catch { $blockedVersions = @{} }
+        }
+
         # PROVENANCE PASS -- the core integrity fix. A combo is "validly backed" only
         # when at least one log matching it passes Test-LogProvenance: stamped version ==
-        # build version, stamped fingerprint == the entity's current fingerprint, and XML
-        # present. Stale or unstamped logs do NOT count, so a [CONFIRMED] marker can never
-        # rest on a pre-rebuild or hand-edited log again (the NJ v4.7 failure mode).
+        # build version (or the entity's preserved blocked version), stamped fingerprint ==
+        # the entity's current fingerprint, and XML present. Stale or unstamped logs do NOT
+        # count, so a [CONFIRMED] marker can never rest on a pre-rebuild or hand-edited log
+        # again (the NJ v4.7 failure mode).
         $validBackedCombos = 0
         $staleBackedCombos = 0
         $provenanceNotes = @()
         foreach ($ent in ($combosByEntity.Keys | Sort-Object)) {
             $fpE = $null; if ($entFp.Contains($ent)) { $fpE = $entFp[$ent] }
+            $acceptVers = @($buildVer)
+            if ($blockedVersions.ContainsKey($ent) -and ($blockedVersions[$ent] -ne $buildVer)) { $acceptVers += $blockedVersions[$ent] }
             foreach ($c in $combosByEntity[$ent]) {
-                $matched = @($testLogs | Where-Object { Match-TestLogToCombo $_.Name $c $provName })
+                # Entity-scoped: a log tagged with a DIFFERENT entity's folder can never back
+                # this combo, even if its filename happens to contain the same keyRef (e.g.
+                # NY_NYSPIN_EJUSTICE Boat's RVEH/RCAR vs Vehicle's RVEH/RCAR).
+                $matched = @($testLogs | Where-Object {
+                    (-not $_.PSObject.Properties['Entity'] -or $_.Entity -eq $ent) -and (Match-TestLogToCombo $_.Name $c $provName)
+                })
                 if ($matched.Count -eq 0) { continue }
                 $valid = $false; $firstReason = $null
                 foreach ($log in $matched) {
-                    $pr = Test-LogProvenance $log.FullName $buildVer $fpE
-                    if ($pr.Valid) { $valid = $true; break }
-                    elseif (-not $firstReason) { $firstReason = ($pr.Reasons -join '; ') }
+                    foreach ($v in $acceptVers) {
+                        $pr = Test-LogProvenance $log.FullName $v $fpE
+                        if ($pr.Valid) { $valid = $true; break }
+                        elseif (-not $firstReason) { $firstReason = ($pr.Reasons -join '; ') }
+                    }
+                    if ($valid) { break }
                 }
                 if ($valid) { $validBackedCombos++ }
                 else {
