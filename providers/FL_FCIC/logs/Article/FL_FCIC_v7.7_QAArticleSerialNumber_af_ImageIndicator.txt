@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QAArticleSerialNumber_af_ImageIndicator (QAArticleSerialNumber_af_ImageIndicator (auto))
+Date: 2026-07-16 19:16:33
+Result: PASS
+JSON Version: 7.7
+Entity Fingerprint: 15a0084685b482522aa62dd2b054ffef4191871127d2299a786aaea092337b9b
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ArticleSerialNumber":"ART99999","ArticleTypeCode":"BBICYCL","ImageIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXPK551K9ZD4FD3PX6V3JDSD">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01KXPK551K9ZD4FD3PX6V3JDSD</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KXPK551K9ZD4FD3PX6V3JDSD
+  ImageIndicator                 N
+  ArticleTypeCode                BBICYCL
+  ArticleSerialNumber            ART99999
+
+NOTES
+-----
+Automated capture (txId 01KXPK551K9ZD4FD3PX6V3JDSD). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QAArticleSerialNumber; firedMessageType=ArticleSingleQuery.
+
+RESULT: PASS
