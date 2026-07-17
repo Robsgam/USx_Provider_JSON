@@ -168,7 +168,7 @@ foreach ($file in $files) {
             Combo = $comboLabel; Result = $result; Description = $desc
             XmlRequest = $r.requestXml; Notes = $note; NoCommit = $true
         }
-        if ($r.formState) { $ptArgs['FormState'] = $r.formState }
+        if ($r.formState) { $ptArgs['FormState'] = ($r.formState | ConvertTo-Json -Depth 8 -Compress) }
         if ($r.tier)      { $ptArgs['Tier'] = $r.tier }
         # RMS pair (Person/Vehicle only -- absent for Gun/Article/Boat/DH is normal, not a gap).
         if ($r.rmsRequestJson) { $ptArgs['RmsRequestJson'] = ($r.rmsRequestJson | ConvertTo-Json -Depth 8 -Compress) }

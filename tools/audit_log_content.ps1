@@ -33,7 +33,8 @@ foreach ($t in $plan.tests) { $lbl = Get-CmPlanLabel $t; if (-not $byLabel[$lbl]
 $familyFillable = Build-CmFamilyFillable $plan
 
 # Collect logs + parse snapshots first (defaults need the full population).
-$logs = @(Get-ChildItem (Join-Path $provDir 'logs') -Recurse -Filter "${Provider}_v${version}_*.txt" -ErrorAction SilentlyContinue)
+$logs = @(Get-ChildItem (Join-Path $provDir 'logs') -Recurse -Filter "${Provider}_v${version}_*.txt" -ErrorAction SilentlyContinue |
+    Where-Object { $_.FullName -notmatch '[\\/]_archive_' })
 $parsed = @()
 foreach ($f in $logs) {
     $label = $f.BaseName -replace "^$([regex]::Escape("${Provider}_v${version}_"))", ''
