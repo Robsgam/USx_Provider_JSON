@@ -589,19 +589,22 @@ $vehLayout = MakeLayouts @(
             # minimal '(auto)' marker is kept purely to satisfy that gate -- it is NOT the
             # auto-generated hint suggest_field_labels.ps1 would produce, and isn't meant to be
             # "fixed" back to something longer by a future automated labeling pass.
-            @{ id = 'ROW_VEH_1'; cols = @('4','2','2','2'); fields = @(
+            @{ id = 'ROW_VEH_1'; cols = @('4','2','2'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN)' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (auto)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (auto)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
-            )}
-            @{ id = 'ROW_VEH_1B'; cols = @('4'); fields = @(
-                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_VEH_1B' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (or search by Plate)' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (with VIN, optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (with VIN, optional)' '4' 'ROW_VEH_2' }
+            )}
+            # Last row (Rob-confirmed 2026-07-17): State + Image share the final row, each with
+            # half the row's width -- neither crammed with the identifier fields nor stranded
+            # alone on its own line.
+            @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_VEH_3' }
             )}
         )
     }

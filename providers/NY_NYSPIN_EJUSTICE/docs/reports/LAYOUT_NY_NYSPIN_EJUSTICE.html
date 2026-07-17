@@ -69,7 +69,7 @@
 <div class="container">
   <div class="header">
     <h1>NY_NYSPIN_EJUSTICE_v4.9</h1>
-    <div class="meta">Source: NY_NYSPIN_EJUSTICE_v4.9.json | Generated: 2026-07-17 10:47</div>
+    <div class="meta">Source: NY_NYSPIN_EJUSTICE_v4.9.json | Generated: 2026-07-17 10:58</div>
   </div>
   <div class="content">
     <div class='summary-grid'>
@@ -89,7 +89,7 @@
       <div class="legend-item"><span class="tag tag-default">default</span></div>
       <div class="legend-item"><span class="tag tag-rule">ruleHandler</span></div>
     </div>
-    <div class='entity-section'><h2>Vehicle <span class='entity-meta'>1 card(s), 8 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_VEH</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 2, 2, 2</span><div class='field field-text'>
+    <div class='entity-section'><h2>Vehicle <span class='entity-meta'>1 card(s), 8 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_VEH</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 2, 2</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>LicensePlateNumber</span>
     <span class='field-type'>Text Input</span>
@@ -107,18 +107,6 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=4</span> <span class='tag tag-default'>default=2026</span></div>
-</div><div class='field field-dropdown'>
-  <div class='field-header'>
-    <span class='field-id'>RegistrationState</span>
-    <span class='field-type'>Dropdown</span>
-  </div>
-  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=STATE</span></div>
-</div></div><div class='row-container'><span class='row-cols'>columns: 4</span><div class='field field-dropdown'>
-  <div class='field-header'>
-    <span class='field-id'>ImageIndicator</span>
-    <span class='field-type'>Dropdown</span>
-  </div>
-  <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=YES_NO_UNKNOWN</span> <span class='tag tag-code'>codeTypeSource=NCIC</span> <span class='tag tag-default'>default=N</span></div>
 </div></div><div class='row-container'><span class='row-cols'>columns: 6, 3, 3</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>VehicleIdentificationNumber</span>
@@ -137,6 +125,18 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=4</span></div>
+</div></div><div class='row-container'><span class='row-cols'>columns: 6, 6</span><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>RegistrationState</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-attr'>attributeTypeId=STATE</span></div>
+</div><div class='field field-dropdown'>
+  <div class='field-header'>
+    <span class='field-id'>ImageIndicator</span>
+    <span class='field-type'>Dropdown</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=YES_NO_UNKNOWN</span> <span class='tag tag-code'>codeTypeSource=NCIC</span> <span class='tag tag-default'>default=N</span></div>
 </div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>LicensePlateNumber</td><td class='mono'>LicensePlateNumber</td><td>-</td></tr><tr><td class='mono'>LicensePlateTypeCode</td><td class='mono'>LicensePlateTypeCode</td><td>-</td></tr><tr><td class='mono'>LicensePlateYear</td><td class='mono'>LicensePlateYear</td><td>-</td></tr><tr><td class='mono'>RegistrationState</td><td class='mono'>State</td><td><span class='tag tag-prov'>codeTypeProvider=NCIC</span></td></tr><tr><td class='mono'>VehicleIdentificationNumber</td><td class='mono'>VehicleIdentificationNumber</td><td>-</td></tr><tr><td class='mono'>VehicleMakeCode</td><td class='mono'>VehicleMakeCode</td><td>-</td></tr><tr><td class='mono'>vehicleYear</td><td class='mono'>VehicleYear</td><td>-</td></tr><tr><td class='mono'>ImageIndicator</td><td class='mono'>ImageIndicator</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>RVIN</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>VehicleIdentificationNumber</span> <span class='combo-field combo-set'>RegistrationState</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>ImageIndicator</span> <span class='combo-field combo-any'>VehicleMakeCode</span> <span class='combo-field combo-any'>vehicleYear</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>RVEHOUT</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>LicensePlateNumber</span> <span class='combo-field combo-set'>RegistrationState</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>ImageIndicator</span> <span class='combo-field combo-any'>LicensePlateTypeCode</span> <span class='combo-field combo-any'>LicensePlateYear</span></div></div><div class='combo'><span class='combo-idx'>#3</span> <strong>RVEH</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>LicensePlateNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>ImageIndicator</span> <span class='combo-field combo-any'>LicensePlateTypeCode</span> <span class='combo-field combo-any'>LicensePlateYear</span> <span class='combo-field combo-any'>RegistrationState</span></div></div><div class='combo'><span class='combo-idx'>#4</span> <strong>RCAR</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>VehicleIdentificationNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>ImageIndicator</span></div></div></div></div></div><div class='entity-section'><h2>Person <span class='entity-meta'>3 card(s), 31 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_PER_DL</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 3, 3</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>OperatorLicenseNumber</span>
