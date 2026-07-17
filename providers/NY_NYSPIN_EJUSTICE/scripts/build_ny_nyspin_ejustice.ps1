@@ -824,13 +824,16 @@ $boaLayout = MakeLayouts @(
         id    = 'CARD_BOA'
         title = 'BOAT QUERY'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('4','4','2'); fields = @(
+            # State moved off row 1 onto its own row with Image (Rob-confirmed 2026-07-17) --
+            # sharing row 1 with both identifier fields left State's label wrapping. Row 1 now
+            # balanced 6/6; State+Image share row 2 at 6/6, mirroring Vehicle/Person DL/DH.
+            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '10' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_1B'; cols = @('4'); fields = @(
-                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_BOA_1B' }
+            @{ id = 'ROW_BOA_1B'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1B' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_BOA_1B' }
             )}
         )
     }
