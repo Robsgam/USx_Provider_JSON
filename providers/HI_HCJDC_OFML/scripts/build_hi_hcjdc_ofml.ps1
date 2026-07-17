@@ -741,27 +741,24 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DL'
         title = 'DRIVER LICENSE'
         rows  = @(
-            @{ id = 'ROW_PER_DL1'; cols = @('12'); fields = @(
+            # State shares the License Number row (Rob-confirmed 2026-07-17) -- unchanged field
+            # (still plain RegistrationState, still feeds DriverLicenseQuery.State + the RMS
+            # Person QIDM); DH gets its own dedicated RegistrationStateDH field (CARD_PER_DH below).
+            @{ id = 'ROW_PER_DL1'; cols = @('7','5'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_PER_DL1' }
+                @{ id = 'registrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL1' }
             )}
-            # State moved here from the (now-deleted) "SEARCH OPTIONS" card (Rob-confirmed
-            # 2026-07-17) -- unchanged field (still plain RegistrationState, still feeds
-            # DriverLicenseQuery.State + the RMS Person QIDM); DH gets its own dedicated
-            # RegistrationStateDH field instead (see CARD_PER_DH below).
-            @{ id = 'ROW_PER_DL_STATE'; cols = @('12'); fields = @(
-                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_STATE' }
-            )}
-            @{ id = 'ROW_PER_DL2'; cols = @('6','6'); fields = @(
+            # First/Last/MI/Suffix on one line (Rob-confirmed 2026-07-17) -- MI/Suffix labels
+            # shortened to fit the narrower columns.
+            @{ id = 'ROW_PER_DL2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'nameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL2' }
                 @{ id = 'nameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL2' }
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'  '30' 'ROW_PER_DL2' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Sfx' '30' 'ROW_PER_DL2' }
             )}
-            @{ id = 'ROW_PER_DL3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'M.I.'    '30' 'ROW_PER_DL3' }
-                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'  '30' 'ROW_PER_DL3' }
-                @{ id = 'birthDate_Input';  node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_PER_DL3' }
-            )}
-            @{ id = 'ROW_PER_DL4'; cols = @('4'); fields = @(
-                @{ id = 'sexCode_Input';   node = Sel 'SexCode'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL4' }
+            @{ id = 'ROW_PER_DL3'; cols = @('6','6'); fields = @(
+                @{ id = 'birthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_PER_DL3' }
+                @{ id = 'sexCode_Input';   node = Sel 'SexCode'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL3' }
             )}
         )
     }
@@ -772,29 +769,27 @@ $perLayout = MakeLayouts @(
             # DH "(DH)" qualifier dropped from labels (Rob-confirmed 2026-07-17, mirrors FL_FCIC/
             # NY_NYSPIN_EJUSTICE) -- the card's own "DRIVER HISTORY" title already disambiguates
             # it from "DRIVER LICENSE"; each label now matches its DL counterpart's phrasing.
-            @{ id = 'ROW_PER_DH1'; cols = @('8','4'); fields = @(
+            # State sits between License Number and Purpose Code (Rob-confirmed 2026-07-17). DH
+            # gets its OWN dedicated State field, matching every other DH field on this card (all
+            # already DH-suffixed) and matching FL/NY's self-contained DH cards. QIDM:
+            # DriverHistoryQuery's State attribute is sourced from RegistrationStateDH (see
+            # $dhQuery below), not the shared RegistrationState the DL card keeps.
+            @{ id = 'ROW_PER_DH1'; cols = @('5','4','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (or Name + DOB + Sex)' '20' 'ROW_PER_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_PER_DH2'; cols = @('6','6'); fields = @(
+            # First/Last/MI/Suffix on one line (Rob-confirmed 2026-07-17) -- MI/Suffix labels
+            # shortened to fit the narrower columns, same treatment as CARD_PER_DL.
+            @{ id = 'ROW_PER_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name'  '30' 'ROW_PER_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH2' }
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'  '30' 'ROW_PER_DH2' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Sfx' '30' 'ROW_PER_DH2' }
             )}
-            @{ id = 'ROW_PER_DH3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'M.I.'   '30' 'ROW_PER_DH3' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DH3' }
-                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH' 'Date of Birth - required with Name' 'ROW_PER_DH3' }
-            )}
-            @{ id = 'ROW_PER_DH4'; cols = @('4'); fields = @(
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH4' }
-            )}
-            # State moved here from the (now-deleted) Person "SEARCH OPTIONS" card (Rob-confirmed
-            # 2026-07-17): DH gets its OWN dedicated State field, matching every other DH field on
-            # this card (all already DH-suffixed) and matching FL/NY's self-contained DH cards.
-            # QIDM: DriverHistoryQuery's State attribute now sourced from RegistrationStateDH
-            # (see $dhQuery below), not the shared RegistrationState the DL card keeps.
-            @{ id = 'ROW_PER_DH_STATE'; cols = @('12'); fields = @(
-                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_STATE' }
+            @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth - required with Name' 'ROW_PER_DH3' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
             )}
             # v2.7: hidden Attention gate-feeder. The DH QIDM Attention attribute
             # (CommsysGetLastNameFirstNameInitialRuleHandler) is gated out of
@@ -825,12 +820,12 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'gunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number (required)' '20' 'ROW_GUN_1' }
-                @{ id = 'gunMake_Input';         node = Sel 'GunMake' 'Make (with Serial Number, optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'gunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
+                @{ id = 'gunMake_Input';         node = Sel 'GunMake' 'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'gunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (with Serial Number, optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'gunModel_Input';                  node = Inp 'GunModel' 'Model (with Serial Number, optional)' '20' 'ROW_GUN_2' }
+                @{ id = 'gunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                @{ id = 'gunModel_Input';                  node = Inp 'GunModel' 'Model (optional)' '20' 'ROW_GUN_2' }
                 @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' '(Y) for NCIC stolen-gun check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
@@ -852,7 +847,7 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'articleSerialNumber_Input';       node = Inp 'ArticleSerialNumber' 'Serial Number (required)' '20' 'ROW_ART_1' }
+                @{ id = 'articleSerialNumber_Input';       node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'articleTypeCode_Input';           node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6'); fields = @(
