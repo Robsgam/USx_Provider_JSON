@@ -182,10 +182,22 @@ if (Test-Path $statusFile) {
         $changed = $true
     }
 
+    # Safety net (2026-07-17, HI_HCJDC_OFML incident): a STATUS.txt with neither a "Current:"
+    # header nor a "Provider :" legacy header (a third format the two branches above don't
+    # recognize) can flip $changed=true from an unrelated regex (BASE/MC score, "Last updated")
+    # while the version string itself never actually lands anywhere in the file -- this used to
+    # print a false "[UPDATED] -- v${version}" even though grep for v${version} would still fail.
+    # Verify the version string is actually present in the new text before claiming success.
+    $versionActuallyPresent = $text -match [regex]::Escape("v${version}")
+
     if ($changed -and -not $DryRun) {
         $enc = New-Object System.Text.UTF8Encoding($false)
         [System.IO.File]::WriteAllText($statusFile, $text, $enc)
-        Updated "STATUS.txt -- v${version}, BASE $baseScore$(if ($mcScore) { ", MC $mcScore" })"
+        if ($versionActuallyPresent) {
+            Updated "STATUS.txt -- v${version}, BASE $baseScore$(if ($mcScore) { ", MC $mcScore" })"
+        } else {
+            Write-Host "  [WARN] STATUS.txt -- other fields updated but 'v${version}' string never matched any known header format (verify manually, add a 'Current: v${version} | ...' line)" -ForegroundColor Yellow
+        }
     } elseif ($changed) {
         Updated "(dry) STATUS.txt -- v${version}"
     } else {

@@ -70,7 +70,7 @@ Current: **v4.8** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) 
 
 ## HI_HCJDC_OFML
 
-Current: **v4.8** — 65P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `HI_HCJDC_OFML_v4.8.json`
+Current: **v4.9** — 65P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `HI_HCJDC_OFML_v4.9.json`
 
 ### v4.6 (2026-06-26) — VehicleMakeName code source corrected (RND-62365) + State label (CHECK 15)
 - VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName)

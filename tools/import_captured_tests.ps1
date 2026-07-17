@@ -168,7 +168,16 @@ foreach ($file in $files) {
             Combo = $comboLabel; Result = $result; Description = $desc
             XmlRequest = $r.requestXml; Notes = $note; NoCommit = $true
         }
-        if ($r.formState) { $ptArgs['FormState'] = ($r.formState | ConvertTo-Json -Depth 8 -Compress) }
+        # formState is a STRING already containing JSON in the standard bulk-fetch capture batch
+        # (verified against the raw capture file: "formState": "{\"Key\":\"Value\"}") -- pass it
+        # through as-is. Only ConvertTo-Json if some other capture path (e.g. individual popup
+        # captures) ever hands us a live PSCustomObject/hashtable instead of a pre-serialized
+        # string -- ConvertTo-Json on an already-JSON string double-encodes it (wraps + escapes),
+        # which is exactly what broke HI_HCJDC_OFML's v4.9 retest batch (46/46 "no parseable
+        # QUERY STRING" -- caught 2026-07-17, see feedback_no_double_json_encode_formstate).
+        if ($r.formState) {
+            $ptArgs['FormState'] = if ($r.formState -is [string]) { $r.formState } else { $r.formState | ConvertTo-Json -Depth 8 -Compress }
+        }
         if ($r.tier)      { $ptArgs['Tier'] = $r.tier }
         # RMS pair (Person/Vehicle only -- absent for Gun/Article/Boat/DH is normal, not a gap).
         if ($r.rmsRequestJson) { $ptArgs['RmsRequestJson'] = ($r.rmsRequestJson | ConvertTo-Json -Depth 8 -Compress) }
