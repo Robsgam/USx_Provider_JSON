@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: DPSIStickerNumber (DPSIStickerNumber (auto))
+Date: 2026-07-17 16:46:35
+Result: PASS
+JSON Version: 4.5
+Entity Fingerprint: 4c79aaa2f49363a7763e1426e0222a4e3c870cbca570e1163a5f8f7be9fe94c2
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","financialResponsibilityType":"E","stickerNumber":"STK1234567"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXRWR53KYQK0HGM6JT21RYHC">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
+            <Id>01KXRWR53KYQK0HGM6JT21RYHC</Id>
+            <StickerNumber>STK1234567</StickerNumber>
+            <State>TX</State>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KXRWR53KYQK0HGM6JT21RYHC
+  StickerNumber                  STK1234567
+  State                          TX
+
+NOTES
+-----
+Automated capture (txId 01KXRWR53KYQK0HGM6JT21RYHC). kind=combo; anyField=; expectedKeyRef=DPSIStickerNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
+
+RESULT: PASS

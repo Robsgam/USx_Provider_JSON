@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: TX_TLETS Boat BoatQuery
+Combo: QBNCICNumber_any (QBNCICNumber_any (auto))
+Date: 2026-07-17 16:46:19
+Result: PASS
+JSON Version: 4.5
+Entity Fingerprint: 6f4422c524986a6fc0a46358b9de35d3ca7362600424a43988e48753da6fad06
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","NCICNumber":"X123456789","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXRX3773AN0MQMQHHGMYEEAV">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KXRX3773AN0MQMQHHGMYEEAV</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KXRX3773AN0MQMQHHGMYEEAV
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  NCICNumber                     X123456789
+
+NOTES
+-----
+Automated capture (txId 01KXRX3773AN0MQMQHHGMYEEAV). kind=any; anyField=; expectedKeyRef=QBNCICNumber; firedMessageType=BoatQuery.
+
+RESULT: PASS
