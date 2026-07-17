@@ -1,104 +1,57 @@
 TX_TLETS -- Build Status
-========================
+Current: v4.3 | 80P/0F/0W/0LIM | Updated 2026-07-17
+
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated    : 2026-07-15
-Current: v4.2 | 80P/0F/0W/0LIM | Updated 2026-07-15
-Current version : v4.2
-Provider: TX_TLETS
-Phase: Single JSON (multi-card)
-
-BUILD RESULTS (v3.6)
-====================
-  Validator: 81 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
-  Verify:    CLEAN
-  Test:      35/35 test matrix (test conductor)
-  Lint:      CLEAN
-
-  Import:    v3.6 imported USx TLETS tenant 2026-06-16 (v3.5 never imported; re-import required
-             for ImageIndicator=Y revert on DH; v3.4 was last imported version).
-  ---   2026-06-17 Person     RENDER:RENDER        PASS     Person RENDER gate
-             VIN+VIN (T17) PASS. T15 RQ+VIN PENDING re-run (see PICKUP below).
-             QV VIN (T16) = LIMITATION (permanently shadowed by RQ VIN).
-
-PICKUP -- 2026-06-16 (next session resumes here)
-=================================================
-  Completed: T1 Person RENDER, T2 Vehicle RENDER, T3 Boat RENDER, T4 Firearm RENDER,
-             T5 Article RENDER, T6 DQ+Name, T7 QW+Name, T8 DQ+OLN, T9 CPL+Name,
-             T10 KQ+Name, T11 KQ+OLN, T12 RQ+Plate, T13 QV+Plate, T14 REG+Plate,
-             T17 VIN+VIN (form had FinancialResponsibilityType=Y; fired VINVehicleIdentificationNumber).
-
-  FIRST TASK: T15 RQ+VIN re-run.
-    Fill: VIN=1HGCM82633A123456, FinancialResponsibilityType=BLANK (must be empty), all else blank.
-    Expected: VehicleInsuranceRegistrationQuery fires; XML has VIN + State=TX only (no FinancialResponsibilityType).
-    keyRef=RQVehicleIdentificationNumber.
-
-  SKIP: T16 QV+VIN -- LIMITATION documented in SQVR. QVVehicleIdentificationNumber same set[] as
-        RQ; combo position 7 vs RQ at position 6; permanently shadowed. No test possible.
-
-  NEXT AFTER T15: T18 DPSI+Sticker, T19-T23 Boat, T24-T25 Firearm, T26-T27 Article,
-                  T28-T32 any[], T33 deselect, T34-T35 negatives.
-                  Then: enforce, final SQVR, commit/push.
-
-  WARNING: mislabeled T15 log was deleted (git rm). The correct VIN+VIN log is:
-           TX_TLETS_Vehicle_VehReg_VIN+VIN_VehReg_VIN+FinancialResponsibilityType_search_2026-06-16.txt
-
-LIVE TEST FINDINGS (v3.1)
-=========================
-  FRT label: "FRT" unclear to officers. Renamed to "Fin. Resp. Type" in build script. FIXED.
-  VehicleMakeCode: Was FormInput, should be FormSelect (VEHICLE_MAKE/NCIC dropdown). FIXED.
-  Both fixes applied in rebuild. Re-import needed for v3.1+fixes.
-
-PENDING PLATFORM FEATURES
-==========================
-  EmailAddress handler: TX expects a handler that reads email from user profile and
-  auto-fills the EmailAddress field on DL and DH forms. Currently manual entry.
-  When handler is available: wire into EmailAddress (DL) and EmailAddressDH (DH) attributes.
-  Until then, officers must manually type their email for DL/DH queries.
-
-ARCHITECTURE (v3.4)
-===================
-  Bundles: 3 (ENTITIES first, TX_TLETS second, RMS third)
-  Entities: Vehicle, Person, Firearm, Article, Boat
-
-  TX_TLETS Configurations (9):
-    TX_TLETS                                        AUTHENTICATION
-    TX_TLETS_Results                                QUERYRESULTDATAMAPPING
-    TX_TLETS_QueryMessageFormat                     QUERYMESSAGEFORMAT
-    TX_TLETS_VehicleInsuranceRegistrationQuery      QUERYINPUTDATAMAPPING  (7 combos)
-    TX_TLETS_DriverLicenseQuery                     QUERYINPUTDATAMAPPING  (4 combos)
-    TX_TLETS_DriverHistoryQuery                     QUERYINPUTDATAMAPPING  (2 combos)
-    TX_TLETS_GunQuery                               QUERYINPUTDATAMAPPING  (2 combos)
-    TX_TLETS_ArticleSingleQuery                     QUERYINPUTDATAMAPPING  (2 combos)
-    TX_TLETS_BoatQuery                              QUERYINPUTDATAMAPPING  (5 combos)
-
-  RMS: Built from KB specs via _build_rms_bundle.ps1 (-SkipRace)
-
-  Total CommSys combos: 22
-  Total RMS combos: ~6 (2 Vehicle + 4 Person)
-
-WARN/LIMITATION STATUS (v3.4)
-=============================
-  0 WARN / 1 LIMITATION / 0 FAIL
-  LIM: EmailAddress is QIDM-only on DL+DH (manual entry; auto-fill handler pending).
-
-LAYOUT (v3.4)
-=============
-  Vehicle: 1 card (VEHICLE QUERY)
-  Person:  3 cards (DRIVER HISTORY / DRIVER LICENSE / SEARCH OPTIONS)
-  Firearm: 1 card (FIREARM QUERY)
-  Article: 1 card (ARTICLE QUERY)
-  Boat:    1 card (BOAT QUERY)
-
-TEST MATRIX
-===========
-  See TX_TLETS_TEST_MATRIX.txt (auto-generated, 35 tests, 22/22 combo coverage)
-  v3.4 imported USx TLETS tenant 2026-06-15 -- testing in progress (from T1)
-
-LIVE TEST RESULTS (v3.4)
-========================
+LIVE TEST RESULTS -- MC (post_test.ps1)
+--------------------------------------------------
+  #     Date        Entity      Combo                Result    Notes
+  ---   ----------  ----------  -------------------  --------  -----
+  (none yet -- v4.3 USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v4.3/)
 
 BUILD LOG (newest first)
 ========================
+  v4.3  2026-07-17  Stacked-up labeling backlog + FRT default (direct feedback)
+    FinancialResponsibilityType defaults to 'E' (devdoc's stated default) on REG/VIN combos
+    (combo defaults[] + form initialValue); field stays visible/plain, no dropdown/hiding.
+    Fixed Name-order regression (Person DL/DH were Last-before-First, the one outlier vs
+    NJ/CA/HI/NY/FL). Dropped "(DH...)" qualifier from every DH label. Image labels ->
+    "NCIC Image - if available"; Related Hit Search reworded to name the actual check.
+    Cleared remaining bare "(opt)" abbreviations; merely-defaulted fields (Plate Type/Year,
+    Purpose Code, Reason Code) went fully bare per the NY_NYSPIN_EJUSTICE precedent; Article
+    Serial Number dropped its "(with Article Type)" cross-reference, same precedent. Card
+    titles reworded to FL/NY-style descriptive titles (Vehicle/Firearm/Article/Boat). Person's
+    "SEARCH OPTIONS" card fold-in evaluated, deliberately deferred (TX's DH QIDM shares 4
+    unsuffixed fields with DL, a bigger change than HI's single-field case). Label/layout/
+    default-only -- no combo removal, no routing change. 80P/0F/0W/0LIM.
+
+  v4.2  2026-07-15  Removed QWName combo (platform-auto-sent shadow query)
+    DriverLicenseQuery now 3 combos (DQName, CPLName, DQOLN). Removed 3 now-orphaned fields
+    (RaceCode, ExpandedBirthDateSearchCode, RegionId). TX_TLETS_CCH intentionally not touched.
+    80P/0F/0W/0LIM.
+
+  v4.1  2026-07-15  EmailAddress automated-handler pattern (RND-57165)
+    EmailAddress converted from manually-typed to GetUserProfileSingleValueRuleHandler +
+    hidden gate-feeder, matching the Attention mechanism. CJIS policy requires the actual
+    signed-in officer's email. 81P/0F/0W/0LIM.
+
+  v4.0  2026-07-09  Rebuild under current methodology
+    PascalCase USx fieldIds; versioned root filename; cleared PENDING_UPDATES flags
+    (VehicleMakeName QRDM RND-62365, ParseCommsysName args); condensed FL-style UI + full
+    CHECK-15 label-hint pass; exposed MessageKey on DL; CHECK-16 reachability EXISTS-gates;
+    DH image-variant split merged to 2 combos; docs 4-category migration. TESTED 2026-07-10:
+    full automation pass all 5 entities, enforce 25P/0F/0W, 95/95 logs verified.
+
+  v3.13  2026-06-24  Gap-audit remediation
+    Hull>Reg guardrail completed (OOS Nlets Reg combo). CAD plate-default gap fixed
+    (LicensePlateYear/LicensePlateTypeCode combo defaults for REG/RQ).
+
+  v3.12  2026-06-23  Identifier-priority guardrail (all 3 pairs)
+    Plate>VIN, OLN>Name (DL+DH), Hull>Reg. Attention gate-feeder added.
+
+  v3.8  2026-06-15  Restore 4-combo DH structure (corrected mechanism)
+    Image/plain variant pairs per identifier; ImageIndicator=Y triggers reasonCode+email
+    serialization via any[] (union-exclusion semantics).
+
   v3.4  2026-06-14  Poisoned-array fix (DL+DH conditions)
     Removed inert ImageIndicator EQUALS Y conditions from DL+DH combos (value-comparison
     conditions are wholly inert on the platform; QIDM_REFERENCE Sec 2a). Merged Img/catchall
@@ -110,212 +63,49 @@ BUILD LOG (newest first)
 
   v3.2  2026-05-26  Conditional image/email routing
     Conditions routing on DL+DH: ImageIndicator EQUALS Y selects image-path combos.
-    Email moved to shared OPTIONS card. DL 4ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢7 combos, DH 2ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢4 combos.
-    90P/0F/0W/0LIM.
+    Email moved to shared OPTIONS card. DL 4->3 combos, DH 2->2 combos.
 
   v3.1  2026-05-22  Single JSON rebuild (BASE/MC merge)
-    Merged BASE+MC into single build script + single JSON output
-    Added CPL Name combo (DL: 3ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢4 combos, total 23ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢24)
-    Reordered DL+DH combos to most-specific first (eliminated 2 LIMs)
-    Removed _MC suffix from JSON filename
-    85P/0F/0W/0LIM, Verify CLEAN, 37/37 test conductor PASS
+    Merged BASE+MC into single build script + single JSON output.
+    Added CPL Name combo (DL: 3->4 combos, total 23->24).
+    Reordered DL+DH combos to most-specific first (eliminated 2 LIMs).
+    Removed _MC suffix from JSON filename.
+    85P/0F/0W/0LIM, Verify CLEAN, 37/37 test conductor PASS.
 
   v3.0  2026-05-20  Complete rewrite from scratch
-    Tightened layouts, full CAD defaults, all metadata fields wired in
-    85P/0F/0W/2LIM
+    Tightened layouts, full CAD defaults, all metadata fields wired in.
+    85P/0F/0W/2LIM.
 
   v2.7  2026-05-18  One-directional queriesToDeselect fix
-    VehReg+DL: removed queriesToDeselect (default queries)
-    VehStolen+DH: kept queriesToDeselect (opt-in deselects default)
-    Folder renamed: TX_TLETS_BLK -> TX_TLETS
-    84P/0F/0W (both BASE+MC), Verify CLEAN, 36/36 test PASS
+    VehReg+DL: removed queriesToDeselect (default queries).
+    VehStolen+DH: kept queriesToDeselect (opt-in deselects default).
+    Folder renamed: TX_TLETS_BLK -> TX_TLETS.
+    84P/0F/0W (both BASE+MC), Verify CLEAN, 36/36 test PASS.
 
   v2.6  2026-05-18  EmailAddress user-fillable + Attention fix + DH-suffix
-    EmailAddress added to DL combo any[] arrays with form field
-    Attention: removed handler, sourceField=attentionDH, visible FormInput
-    EmailAddress DH: sourceField=emailAddressDH, form field, in DH combo any[]
-    MC casing fix: aligned all fieldIds/sourceFields to camelCase matching BASE
-    84P/0F/0W (both BASE+MC), Verify CLEAN, 36/36 test PASS
+    EmailAddress added to DL combo any[] arrays with form field.
+    Attention: removed handler, sourceField=attentionDH, visible FormInput.
+    EmailAddress DH: sourceField=emailAddressDH, form field, in DH combo any[].
+    MC casing fix: aligned all fieldIds/sourceFields to camelCase matching BASE.
+    84P/0F/0W (both BASE+MC), Verify CLEAN, 36/36 test PASS.
 
   v2.2  2026-05-07  Add VehicleStolenQuery (metadata gap fix)
-    Added VehicleStolenQuery QIDM (QV.P plate, QV.V VIN)
-    queriesToDeselect mutual exclusion with VehicleInsuranceRegistrationQuery
-    78P/0F/13W/3LIM (was 73P at v2.1)
+    Added VehicleStolenQuery QIDM (QV.P plate, QV.V VIN).
+    queriesToDeselect mutual exclusion with VehicleInsuranceRegistrationQuery.
+    78P/0F/13W/3LIM (was 73P at v2.1).
 
   v2.1  2026-05-06  PlateType/PlateYear defaults (cross-provider audit)
-    PlateType=PC, PlateYear=2026 on both BASE+MC
-    WARN 14->13 (PlateYear missing initialValue resolved)
-    Build scripts, JSONs, reports all regenerated
+    PlateType=PC, PlateYear=2026 on both BASE+MC.
+    WARN 14->13 (PlateYear missing initialValue resolved).
 
   v2.0-mc  2026-05-05  MC build -- multi-card layout variant
-    Build script: scripts/build_tx_tlets_mc.ps1
-    Output: TX_TLETS_MC.json
-    Reports: docs/mc/ (6 files)
-    QIDMs: identical to v2.0 BASE
+    Build script: scripts/build_tx_tlets_mc.ps1. Output: TX_TLETS_MC.json. QIDMs identical to
+    v2.0 BASE.
 
   v2.0  2026-05-05  Complete rebuild from scratch (build script)
-    Build script: scripts/build_tx_tlets.ps1
-    Output: TX_TLETS_BASE.json
-    Reports: docs/base/ (6 files)
-    Fixes from v1.0: ENTITIES first, NCIC state pattern, NIBRS sex+race,
-      3 layout variants, RMS patches 1/3/6/7/8, CAD_DISPATCH fix,
-      AP #11 race fix, EmailAddress QIDM-only field
+    Build script: scripts/build_tx_tlets.ps1. Output: TX_TLETS_BASE.json.
+    Fixes from v1.0: ENTITIES first, NCIC state pattern, NIBRS sex+race, 3 layout variants,
+    RMS patches 1/3/6/7/8, CAD_DISPATCH fix, AP #11 race fix, EmailAddress QIDM-only field.
 
   v1.0  2026-04-23  queryLabel standardization
   v1.0  2026-04-21  Initial standup
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
-
-LIVE TEST RESULTS (v3.4)
-========================
