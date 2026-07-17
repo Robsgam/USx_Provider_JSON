@@ -864,6 +864,24 @@ if ($entitiesBundle) {
 
 $labelViolations = 0
 
+# Manual label overrides: the build script may declare, on any comment line,
+#   # LABEL-OVERRIDE: <fieldId> -- <reason>
+# to mark a field's bare/short label as an intentional, explicitly-approved cosmetic choice.
+# When present, Rule 1 (State routing hint) and Rule 3 (any[]-only qualifier) downgrade that
+# field's violation to Info instead of Fail/Warn. Added 2026-07-17 per standing instruction:
+# cosmetic label edits explicitly called for should not block the pipeline with FAIL/WARN
+# noise -- only actual query/routing breakage should. This does NOT exempt a field from CHECK
+# 15 silently; every override still prints so it stays visible and auditable, it just doesn't
+# count toward $labelViolations or fail the build.
+$labelOverrides = @{}
+if ($scriptLines) {
+    foreach ($line in $scriptLines) {
+        if ($line -match '#\s*LABEL-OVERRIDE:\s*(\S+)\s*--\s*(.+?)\s*$') {
+            $labelOverrides[$Matches[1]] = $Matches[2]
+        }
+    }
+}
+
 # Rule 1: State fields must give OOS routing guidance. TWO valid patterns:
 #   - State NOT defaulted (blank routes to the OOS keyRef): label says 'leave blank for'.
 #   - State defaulted to home in combo defaults[] (the approved pattern, e.g. NJ State=NJ): the officer
@@ -875,8 +893,12 @@ foreach ($fid in @($formFieldLabels.Keys | Where-Object { $_ -match '(?i)State$'
     $lbl = $formFieldLabels[$fid]
     $hasStateHint = ($lbl -match 'leave blank for') -or ($lbl -match '(?i)out[- ]of[- ]state') -or ($lbl -match '(?i)change\b.*\bfor\b')
     if (-not $hasStateHint) {
-        Fail "Field '$fid' label='$lbl' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11"
-        $labelViolations++
+        if ($labelOverrides.ContainsKey($fid)) {
+            Info "Field '$fid' label='$lbl' -- manual label override accepted ($($labelOverrides[$fid]))"
+        } else {
+            Fail "Field '$fid' label='$lbl' missing State routing hint -- need 'leave blank for' (when State is not defaulted) or 'change for out-of-state' (when State is defaulted). BUILD_RULES Section 11"
+            $labelViolations++
+        }
     }
 }
 
@@ -914,8 +936,12 @@ foreach ($fid in $pureAnyFields) {
     if (-not $formFieldLabels.ContainsKey($fid)) { continue }
     $lbl = $formFieldLabels[$fid]
     if ($lbl -notmatch '\(' -and $lbl -notmatch ' - ') {
-        Warn "Field '$fid' (any[]-only) label='$lbl' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)"
-        $labelViolations++
+        if ($labelOverrides.ContainsKey($fid)) {
+            Info "Field '$fid' (any[]-only) label='$lbl' -- manual label override accepted ($($labelOverrides[$fid]))"
+        } else {
+            Warn "Field '$fid' (any[]-only) label='$lbl' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)"
+            $labelViolations++
+        }
     }
 }
 

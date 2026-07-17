@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.3.json
-  Generated: 2026-07-17 15:54
+  Source: TX_TLETS_v4.4.json
+  Generated: 2026-07-17 16:24
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_v4.3
+ POST-BUILD VERIFICATION: TX_TLETS_v4.4
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -60,6 +60,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
+  [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (Rob's explicit v4.4 call while evaluating queries)
   [INFO] Field 'OperatorLicenseNumberDH' label='License Number (or search by Name + DOB + Sex)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -68,14 +69,15 @@ POST-BUILD VERIFICATION
   [INFO] Field 'nameSuffixDH' label='Suffix (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex (required with Name)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [WARN] Field 'reasonCode' (any[]-only) label='Reason Code' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
-  [INFO] 1 field(s) need label hint fixes
+  [INFO] Field 'regionId' (any[]-only) label='Region ID' -- manual label override accepted (Rob's explicit v4.4 call while evaluating queries live;)
+  [INFO] Field 'reasonCode' (any[]-only) label='Reason Code' -- manual label override accepted (merely-defaulted (initialValue=C), officer-editable, bare)
+  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
 ========================================
- VERIFICATION PASSED (with warnings): 14 PASS / 1 WARN / 0 FAIL
+ VERIFICATION PASSED: 15 PASS / 0 WARN / 0 FAIL
 ========================================
 
 
