@@ -583,18 +583,17 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH'
         title = 'Vehicle Registration Search by Plate, "OR" VIN'
         rows  = @(
-            # NOTE (v4.9, manual/Rob-confirmed): Plate Type/Year are deliberately near-bare -- both
-            # are prefilled via initialValue and officer-editable (NOT hidden/rule-handler
-            # automation, so never label these "(auto)" -- that word is reserved for true
-            # automated fields like Attention/Email). verify_build CHECK 15 rule 3 mechanically
-            # requires a '(' or ' - ' on any[]-only fields, so a minimal "(default X)" marker
-            # names the actual prefilled value and satisfies that gate -- it is NOT the
-            # auto-generated hint suggest_field_labels.ps1 would produce, and isn't meant to be
-            # "fixed" back to something longer by a future automated labeling pass.
+            # NOTE (v4.9, manual/Rob-confirmed): Plate Type/Year are deliberately bare, no
+            # parenthetical at all -- both are prefilled via initialValue and officer-editable.
+            # verify_build CHECK 15 rule 3 will WARN on these (any[]-only field with no '('/' - '
+            # in its label) -- that WARN is Rob-confirmed as accepted, not a defect to chase:
+            # CHECK 15's suggested hint is a bootstrapping aid for initial build/standup, not a
+            # mandate on final officer-facing wording. Do not "fix" this back to "(auto)" or
+            # "(default X)" in a future automated labeling pass.
             @{ id = 'ROW_VEH_1'; cols = @('4','2','2'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN)' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (default PC)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (default current year)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (or search by Plate)' '20' 'ROW_VEH_2' }
@@ -682,11 +681,11 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (Name search)'                                 'ROW_PER_DH_3' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (Name search)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
                 @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (out-of-state)' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
-                # NOTE (v4.9, manual/Rob-confirmed): prefilled via initialValue, officer-editable
-                # (not hidden/rule-handler automation, so never "(auto)" -- see Vehicle's Plate
-                # Type/Year above). "(default DALL)" names the actual prefilled value and
-                # satisfies verify_build CHECK 15 rule 3's mechanical '(' / ' - ' requirement.
-                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (default DALL)' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
+                # NOTE (v4.9, manual/Rob-confirmed): bare label, no parenthetical -- prefilled via
+                # initialValue, officer-editable. verify_build CHECK 15 rule 3 WARN is accepted
+                # (see Vehicle's Plate Type/Year above) -- do not "fix" this to "(auto)" or
+                # "(default X)" in a future automated labeling pass.
+                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
             )}
             # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
             # field (set[] on DALHOUT/DALLOUT), so BUILD_RULES Section 14's default rule would

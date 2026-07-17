@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
   Source: NY_NYSPIN_EJUSTICE_v4.9.json
-  Generated: 2026-07-17 11:28
+  Generated: 2026-07-17 11:39
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -71,15 +71,18 @@ POST-BUILD VERIFICATION
   [INFO] Field 'BirthDateDH' label='Date of Birth (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex (Name search)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code (out-of-state)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'nyNyspinTransactionNameDH' label='Transaction Type (default DALL)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nyNyspinTransactionNameDH' label='Transaction Type' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'requestorDH' label='Requestor (auto-populated from officer profile)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [PASS] All form field labels have required routing hint qualifiers (51 fields scanned) (12 DH field(s) untagged -- advisory only, see Info above)
+  [WARN] Field 'LicensePlateTypeCode' (any[]-only) label='Plate Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'LicensePlateYear' (any[]-only) label='Plate Year' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [WARN] Field 'nyNyspinTransactionNameDH' (any[]-only) label='Transaction Type' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] 3 field(s) need label hint fixes
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
 ========================================
- VERIFICATION PASSED: 15 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED (with warnings): 14 PASS / 3 WARN / 0 FAIL
 ========================================
 
 
