@@ -896,6 +896,21 @@ See also:
       only cross-entity or context-specific uses need qualifiers
     - All verified as of CA_CLETS v2.8; prior providers need label audit on rebuild
 
+    8. LABEL-OVERRIDE ESCAPE HATCH (added 2026-07-17, TX_TLETS v4.4/v4.5, Rob's standing
+       directive): cosmetic label edits explicitly called for by Rob must not block the
+       pipeline with FAIL/WARN noise -- only actual query/routing breakage should. When a
+       user-directed bare/short label trips rule 4 (State routing hint, a FAIL) or rule 5
+       (any[]-only qualifier, a WARN), do NOT silently restore wording just to satisfy the
+       tool. Add a comment anywhere in the provider's build script:
+         # LABEL-OVERRIDE: <fieldId> -- <short reason>
+       verify_build CHECK 15 scans the build script's own source lines for this tag (not
+       proximity-based -- one tag anywhere in the file covers every occurrence of that
+       fieldId) and downgrades the finding to an accepted, visible [INFO] line instead of
+       FAIL/WARN. Still auditable, just doesn't block. Scoped to CHECK 15 rules 4/5 only --
+       never use it to wave off a finding that indicates a real query/routing problem. See
+       tools/verify_build.ps1 CHECK 15 for the implementation; TX_TLETS's
+       RegistrationState/regionId/reasonCode fields are the reference example.
+
   OPTIONS CARD TITLE:
     Use "Options" as the card title. Keep it simple and generic.
     The "leave blank for [STATE]" hint belongs on the FIELD LABEL, not the card title.
