@@ -174,7 +174,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.8",
+    [string]$Version = "4.9",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -748,13 +748,13 @@ $perLayout = MakeLayouts @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_PER_DL1' }
                 @{ id = 'registrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL1' }
             )}
-            # First/Last/MI/Suffix on one line (Rob-confirmed 2026-07-17) -- MI/Suffix labels
-            # shortened to fit the narrower columns.
+            # First/Last/MI/Suffix on one line (Rob-confirmed 2026-07-17) -- MI shortened (no
+            # periods) to fit its narrow column; Suffix kept as the full word (Rob-confirmed).
             @{ id = 'ROW_PER_DL2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'nameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL2' }
                 @{ id = 'nameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL2' }
                 @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'  '30' 'ROW_PER_DL2' }
-                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Sfx' '30' 'ROW_PER_DL2' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_DL2' }
             )}
             @{ id = 'ROW_PER_DL3'; cols = @('6','6'); fields = @(
                 @{ id = 'birthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_PER_DL3' }
@@ -779,13 +779,13 @@ $perLayout = MakeLayouts @(
                 @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH1' @{ initialValue = 'C' } }
             )}
-            # First/Last/MI/Suffix on one line (Rob-confirmed 2026-07-17) -- MI/Suffix labels
-            # shortened to fit the narrower columns, same treatment as CARD_PER_DL.
+            # First/Last/MI/Suffix on one line (Rob-confirmed 2026-07-17) -- same treatment as
+            # CARD_PER_DL (MI shortened, Suffix kept as the full word).
             @{ id = 'ROW_PER_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name'  '30' 'ROW_PER_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH2' }
                 @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'  '30' 'ROW_PER_DH2' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Sfx' '30' 'ROW_PER_DH2' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DH2' }
             )}
             @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth - required with Name' 'ROW_PER_DH3' }
