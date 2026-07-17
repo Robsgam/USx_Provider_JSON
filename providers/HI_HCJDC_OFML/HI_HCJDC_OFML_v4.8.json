@@ -155,7 +155,7 @@
                                                                                                                "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "NCIC Image - include image (Y/N)",
+                                                                                                                             "label":  "NCIC Image - if available",
                                                                                                                              "initialValue":  "N",
                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -541,7 +541,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "NCIC Image - include image (Y/N)",
+                                                                                                                                  "label":  "NCIC Image - if available",
                                                                                                                                   "initialValue":  "N",
                                                                                                                                   "codeTypeSource":  "NCIC",
                                                                                                                                   "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -1008,7 +1008,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "NCIC Image - include image (Y/N)",
+                                                                                                                                     "label":  "NCIC Image - if available",
                                                                                                                                      "initialValue":  "N",
                                                                                                                                      "codeTypeSource":  "NCIC",
                                                                                                                                      "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -1340,7 +1340,6 @@
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
-                                                                                                                  "CARD_PER_OPT",
                                                                                                                   "CARD_PER_DL",
                                                                                                                   "CARD_PER_DH"
                                                                                                               ],
@@ -1349,64 +1348,6 @@
                                                                                                                     },
                                                                                                     "parent":  "FORM_ROOT"
                                                                                                 },
-                                                                                  "CARD_PER_OPT":  {
-                                                                                                       "type":  {
-                                                                                                                    "resolvedName":  "Card"
-                                                                                                                },
-                                                                                                       "displayName":  "Card",
-                                                                                                       "props":  {
-                                                                                                                     "title":  "SEARCH OPTIONS"
-                                                                                                                 },
-                                                                                                       "isCanvas":  true,
-                                                                                                       "hidden":  false,
-                                                                                                       "nodes":  [
-                                                                                                                     "ROW_PER_OPT1"
-                                                                                                                 ],
-                                                                                                       "linkedNodes":  {
-
-                                                                                                                       },
-                                                                                                       "parent":  "ROOT_PAGE"
-                                                                                                   },
-                                                                                  "ROW_PER_OPT1":  {
-                                                                                                       "type":  {
-                                                                                                                    "resolvedName":  "Row"
-                                                                                                                },
-                                                                                                       "displayName":  "Row",
-                                                                                                       "props":  {
-                                                                                                                     "templateColumns":  [
-                                                                                                                                             "12"
-                                                                                                                                         ]
-                                                                                                                 },
-                                                                                                       "isCanvas":  true,
-                                                                                                       "hidden":  false,
-                                                                                                       "nodes":  [
-                                                                                                                     "registrationState_Input"
-                                                                                                                 ],
-                                                                                                       "linkedNodes":  {
-
-                                                                                                                       },
-                                                                                                       "parent":  "CARD_PER_OPT"
-                                                                                                   },
-                                                                                  "registrationState_Input":  {
-                                                                                                                  "type":  {
-                                                                                                                               "resolvedName":  "FormSelect"
-                                                                                                                           },
-                                                                                                                  "displayName":  "Select",
-                                                                                                                  "props":  {
-                                                                                                                                "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State (leave blank for Hawaii)",
-                                                                                                                                "attributeTypeId":  "STATE"
-                                                                                                                            },
-                                                                                                                  "isCanvas":  false,
-                                                                                                                  "hidden":  false,
-                                                                                                                  "nodes":  [
-
-                                                                                                                            ],
-                                                                                                                  "linkedNodes":  {
-
-                                                                                                                                  },
-                                                                                                                  "parent":  "ROW_PER_OPT1"
-                                                                                                              },
                                                                                   "CARD_PER_DL":  {
                                                                                                       "type":  {
                                                                                                                    "resolvedName":  "Card"
@@ -1419,6 +1360,7 @@
                                                                                                       "hidden":  false,
                                                                                                       "nodes":  [
                                                                                                                     "ROW_PER_DL1",
+                                                                                                                    "ROW_PER_DL_STATE",
                                                                                                                     "ROW_PER_DL2",
                                                                                                                     "ROW_PER_DL3",
                                                                                                                     "ROW_PER_DL4"
@@ -1468,6 +1410,46 @@
                                                                                                                                       },
                                                                                                                       "parent":  "ROW_PER_DL1"
                                                                                                                   },
+                                                                                  "ROW_PER_DL_STATE":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "Row"
+                                                                                                                    },
+                                                                                                           "displayName":  "Row",
+                                                                                                           "props":  {
+                                                                                                                         "templateColumns":  [
+                                                                                                                                                 "12"
+                                                                                                                                             ]
+                                                                                                                     },
+                                                                                                           "isCanvas":  true,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+                                                                                                                         "registrationState_Input"
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "CARD_PER_DL"
+                                                                                                       },
+                                                                                  "registrationState_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Select",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "RegistrationState",
+                                                                                                                                "label":  "State (leave blank for Hawaii)",
+                                                                                                                                "attributeTypeId":  "STATE"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_PER_DL_STATE"
+                                                                                                              },
                                                                                   "ROW_PER_DL2":  {
                                                                                                       "type":  {
                                                                                                                    "resolvedName":  "Row"
@@ -1669,6 +1651,7 @@
                                                                                                                     "ROW_PER_DH2",
                                                                                                                     "ROW_PER_DH3",
                                                                                                                     "ROW_PER_DH4",
+                                                                                                                    "ROW_PER_DH_STATE",
                                                                                                                     "ROW_PER_DH_ATTN"
                                                                                                                 ],
                                                                                                       "linkedNodes":  {
@@ -1705,7 +1688,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                      "label":  "License Number (DH) - or Name + DOB + Sex",
+                                                                                                                                      "label":  "License Number (or Name + DOB + Sex)",
                                                                                                                                       "maxLength":  "20"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -1725,7 +1708,7 @@
                                                                                                               "displayName":  "Input",
                                                                                                               "props":  {
                                                                                                                             "fieldId":  "purposeCodeDH",
-                                                                                                                            "label":  "Purpose Code (DH) - optional",
+                                                                                                                            "label":  "Purpose Code",
                                                                                                                             "maxLength":  "1",
                                                                                                                             "initialValue":  "C"
                                                                                                                         },
@@ -1768,7 +1751,7 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "NameFirstDH",
-                                                                                                                          "label":  "First Name (DH)",
+                                                                                                                          "label":  "First Name",
                                                                                                                           "maxLength":  "30"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -1788,7 +1771,7 @@
                                                                                                            "displayName":  "Input",
                                                                                                            "props":  {
                                                                                                                          "fieldId":  "NameLastDH",
-                                                                                                                         "label":  "Last Name (DH)",
+                                                                                                                         "label":  "Last Name",
                                                                                                                          "maxLength":  "30"
                                                                                                                      },
                                                                                                            "isCanvas":  false,
@@ -1832,7 +1815,7 @@
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "nameMiddleDH",
-                                                                                                                           "label":  "M.I. (DH)",
+                                                                                                                           "label":  "M.I.",
                                                                                                                            "maxLength":  "30"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
@@ -1852,7 +1835,7 @@
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "nameSuffixDH",
-                                                                                                                           "label":  "Suffix (DH)",
+                                                                                                                           "label":  "Suffix",
                                                                                                                            "maxLength":  "30"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
@@ -1872,7 +1855,7 @@
                                                                                                             "displayName":  "Date",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "BirthDateDH",
-                                                                                                                          "label":  "Date of Birth (DH) - required with Name"
+                                                                                                                          "label":  "Date of Birth - required with Name"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
                                                                                                             "hidden":  false,
@@ -1911,7 +1894,7 @@
                                                                                                           "displayName":  "Select",
                                                                                                           "props":  {
                                                                                                                         "fieldId":  "SexCodeDH",
-                                                                                                                        "label":  "Sex (DH) - required with Name",
+                                                                                                                        "label":  "Sex - required with Name",
                                                                                                                         "attributeTypeId":  "SEX",
                                                                                                                         "codeTypeProvider":  "NIBRS"
                                                                                                                     },
@@ -1925,6 +1908,46 @@
                                                                                                                           },
                                                                                                           "parent":  "ROW_PER_DH4"
                                                                                                       },
+                                                                                  "ROW_PER_DH_STATE":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "Row"
+                                                                                                                    },
+                                                                                                           "displayName":  "Row",
+                                                                                                           "props":  {
+                                                                                                                         "templateColumns":  [
+                                                                                                                                                 "12"
+                                                                                                                                             ]
+                                                                                                                     },
+                                                                                                           "isCanvas":  true,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+                                                                                                                         "RegistrationStateDH_Input"
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "CARD_PER_DH"
+                                                                                                       },
+                                                                                  "RegistrationStateDH_Input":  {
+                                                                                                                    "type":  {
+                                                                                                                                 "resolvedName":  "FormSelect"
+                                                                                                                             },
+                                                                                                                    "displayName":  "Select",
+                                                                                                                    "props":  {
+                                                                                                                                  "fieldId":  "RegistrationStateDH",
+                                                                                                                                  "label":  "State (leave blank for Hawaii)",
+                                                                                                                                  "attributeTypeId":  "STATE"
+                                                                                                                              },
+                                                                                                                    "isCanvas":  false,
+                                                                                                                    "hidden":  false,
+                                                                                                                    "nodes":  [
+
+                                                                                                                              ],
+                                                                                                                    "linkedNodes":  {
+
+                                                                                                                                    },
+                                                                                                                    "parent":  "ROW_PER_DH_STATE"
+                                                                                                                },
                                                                                   "ROW_PER_DH_ATTN":  {
                                                                                                           "type":  {
                                                                                                                        "resolvedName":  "Row"
@@ -2016,7 +2039,6 @@
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "CONTEXT_INFO_CARD",
-                                                                                                                       "CARD_PER_OPT",
                                                                                                                        "CARD_PER_DL",
                                                                                                                        "CARD_PER_DH"
                                                                                                                    ],
@@ -2025,64 +2047,6 @@
                                                                                                                          },
                                                                                                          "parent":  "FORM_ROOT"
                                                                                                      },
-                                                                                       "CARD_PER_OPT":  {
-                                                                                                            "type":  {
-                                                                                                                         "resolvedName":  "Card"
-                                                                                                                     },
-                                                                                                            "displayName":  "Card",
-                                                                                                            "props":  {
-                                                                                                                          "title":  "SEARCH OPTIONS"
-                                                                                                                      },
-                                                                                                            "isCanvas":  true,
-                                                                                                            "hidden":  false,
-                                                                                                            "nodes":  [
-                                                                                                                          "ROW_PER_OPT1"
-                                                                                                                      ],
-                                                                                                            "linkedNodes":  {
-
-                                                                                                                            },
-                                                                                                            "parent":  "ROOT_PAGE"
-                                                                                                        },
-                                                                                       "ROW_PER_OPT1":  {
-                                                                                                            "type":  {
-                                                                                                                         "resolvedName":  "Row"
-                                                                                                                     },
-                                                                                                            "displayName":  "Row",
-                                                                                                            "props":  {
-                                                                                                                          "templateColumns":  [
-                                                                                                                                                  "12"
-                                                                                                                                              ]
-                                                                                                                      },
-                                                                                                            "isCanvas":  true,
-                                                                                                            "hidden":  false,
-                                                                                                            "nodes":  [
-                                                                                                                          "registrationState_Input"
-                                                                                                                      ],
-                                                                                                            "linkedNodes":  {
-
-                                                                                                                            },
-                                                                                                            "parent":  "CARD_PER_OPT"
-                                                                                                        },
-                                                                                       "registrationState_Input":  {
-                                                                                                                       "type":  {
-                                                                                                                                    "resolvedName":  "FormSelect"
-                                                                                                                                },
-                                                                                                                       "displayName":  "Select",
-                                                                                                                       "props":  {
-                                                                                                                                     "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State (leave blank for Hawaii)",
-                                                                                                                                     "attributeTypeId":  "STATE"
-                                                                                                                                 },
-                                                                                                                       "isCanvas":  false,
-                                                                                                                       "hidden":  false,
-                                                                                                                       "nodes":  [
-
-                                                                                                                                 ],
-                                                                                                                       "linkedNodes":  {
-
-                                                                                                                                       },
-                                                                                                                       "parent":  "ROW_PER_OPT1"
-                                                                                                                   },
                                                                                        "CARD_PER_DL":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "Card"
@@ -2095,6 +2059,7 @@
                                                                                                            "hidden":  false,
                                                                                                            "nodes":  [
                                                                                                                          "ROW_PER_DL1",
+                                                                                                                         "ROW_PER_DL_STATE",
                                                                                                                          "ROW_PER_DL2",
                                                                                                                          "ROW_PER_DL3",
                                                                                                                          "ROW_PER_DL4"
@@ -2144,6 +2109,46 @@
                                                                                                                                            },
                                                                                                                            "parent":  "ROW_PER_DL1"
                                                                                                                        },
+                                                                                       "ROW_PER_DL_STATE":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "Row"
+                                                                                                                         },
+                                                                                                                "displayName":  "Row",
+                                                                                                                "props":  {
+                                                                                                                              "templateColumns":  [
+                                                                                                                                                      "12"
+                                                                                                                                                  ]
+                                                                                                                          },
+                                                                                                                "isCanvas":  true,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+                                                                                                                              "registrationState_Input"
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "CARD_PER_DL"
+                                                                                                            },
+                                                                                       "registrationState_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormSelect"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Select",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "RegistrationState",
+                                                                                                                                     "label":  "State (leave blank for Hawaii)",
+                                                                                                                                     "attributeTypeId":  "STATE"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_PER_DL_STATE"
+                                                                                                                   },
                                                                                        "ROW_PER_DL2":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "Row"
@@ -2345,6 +2350,7 @@
                                                                                                                          "ROW_PER_DH2",
                                                                                                                          "ROW_PER_DH3",
                                                                                                                          "ROW_PER_DH4",
+                                                                                                                         "ROW_PER_DH_STATE",
                                                                                                                          "ROW_PER_DH_ATTN"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
@@ -2381,7 +2387,7 @@
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                           "label":  "License Number (DH) - or Name + DOB + Sex",
+                                                                                                                                           "label":  "License Number (or Name + DOB + Sex)",
                                                                                                                                            "maxLength":  "20"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
@@ -2401,7 +2407,7 @@
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "purposeCodeDH",
-                                                                                                                                 "label":  "Purpose Code (DH) - optional",
+                                                                                                                                 "label":  "Purpose Code",
                                                                                                                                  "maxLength":  "1",
                                                                                                                                  "initialValue":  "C"
                                                                                                                              },
@@ -2444,7 +2450,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "NameFirstDH",
-                                                                                                                               "label":  "First Name (DH)",
+                                                                                                                               "label":  "First Name",
                                                                                                                                "maxLength":  "30"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -2464,7 +2470,7 @@
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "NameLastDH",
-                                                                                                                              "label":  "Last Name (DH)",
+                                                                                                                              "label":  "Last Name",
                                                                                                                               "maxLength":  "30"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
@@ -2508,7 +2514,7 @@
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "nameMiddleDH",
-                                                                                                                                "label":  "M.I. (DH)",
+                                                                                                                                "label":  "M.I.",
                                                                                                                                 "maxLength":  "30"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -2528,7 +2534,7 @@
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "nameSuffixDH",
-                                                                                                                                "label":  "Suffix (DH)",
+                                                                                                                                "label":  "Suffix",
                                                                                                                                 "maxLength":  "30"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -2548,7 +2554,7 @@
                                                                                                                  "displayName":  "Date",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "BirthDateDH",
-                                                                                                                               "label":  "Date of Birth (DH) - required with Name"
+                                                                                                                               "label":  "Date of Birth - required with Name"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
                                                                                                                  "hidden":  false,
@@ -2587,7 +2593,7 @@
                                                                                                                "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "SexCodeDH",
-                                                                                                                             "label":  "Sex (DH) - required with Name",
+                                                                                                                             "label":  "Sex - required with Name",
                                                                                                                              "attributeTypeId":  "SEX",
                                                                                                                              "codeTypeProvider":  "NIBRS"
                                                                                                                          },
@@ -2601,6 +2607,46 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_PER_DH4"
                                                                                                            },
+                                                                                       "ROW_PER_DH_STATE":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "Row"
+                                                                                                                         },
+                                                                                                                "displayName":  "Row",
+                                                                                                                "props":  {
+                                                                                                                              "templateColumns":  [
+                                                                                                                                                      "12"
+                                                                                                                                                  ]
+                                                                                                                          },
+                                                                                                                "isCanvas":  true,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+                                                                                                                              "RegistrationStateDH_Input"
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "CARD_PER_DH"
+                                                                                                            },
+                                                                                       "RegistrationStateDH_Input":  {
+                                                                                                                         "type":  {
+                                                                                                                                      "resolvedName":  "FormSelect"
+                                                                                                                                  },
+                                                                                                                         "displayName":  "Select",
+                                                                                                                         "props":  {
+                                                                                                                                       "fieldId":  "RegistrationStateDH",
+                                                                                                                                       "label":  "State (leave blank for Hawaii)",
+                                                                                                                                       "attributeTypeId":  "STATE"
+                                                                                                                                   },
+                                                                                                                         "isCanvas":  false,
+                                                                                                                         "hidden":  false,
+                                                                                                                         "nodes":  [
+
+                                                                                                                                   ],
+                                                                                                                         "linkedNodes":  {
+
+                                                                                                                                         },
+                                                                                                                         "parent":  "ROW_PER_DH_STATE"
+                                                                                                                     },
                                                                                        "ROW_PER_DH_ATTN":  {
                                                                                                                "type":  {
                                                                                                                             "resolvedName":  "Row"
@@ -2773,7 +2819,6 @@
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "CONTEXT_INFO_CARD",
-                                                                                                                          "CARD_PER_OPT",
                                                                                                                           "CARD_PER_DL",
                                                                                                                           "CARD_PER_DH"
                                                                                                                       ],
@@ -2782,64 +2827,6 @@
                                                                                                                             },
                                                                                                             "parent":  "FORM_ROOT"
                                                                                                         },
-                                                                                          "CARD_PER_OPT":  {
-                                                                                                               "type":  {
-                                                                                                                            "resolvedName":  "Card"
-                                                                                                                        },
-                                                                                                               "displayName":  "Card",
-                                                                                                               "props":  {
-                                                                                                                             "title":  "SEARCH OPTIONS"
-                                                                                                                         },
-                                                                                                               "isCanvas":  true,
-                                                                                                               "hidden":  false,
-                                                                                                               "nodes":  [
-                                                                                                                             "ROW_PER_OPT1"
-                                                                                                                         ],
-                                                                                                               "linkedNodes":  {
-
-                                                                                                                               },
-                                                                                                               "parent":  "ROOT_PAGE"
-                                                                                                           },
-                                                                                          "ROW_PER_OPT1":  {
-                                                                                                               "type":  {
-                                                                                                                            "resolvedName":  "Row"
-                                                                                                                        },
-                                                                                                               "displayName":  "Row",
-                                                                                                               "props":  {
-                                                                                                                             "templateColumns":  [
-                                                                                                                                                     "12"
-                                                                                                                                                 ]
-                                                                                                                         },
-                                                                                                               "isCanvas":  true,
-                                                                                                               "hidden":  false,
-                                                                                                               "nodes":  [
-                                                                                                                             "registrationState_Input"
-                                                                                                                         ],
-                                                                                                               "linkedNodes":  {
-
-                                                                                                                               },
-                                                                                                               "parent":  "CARD_PER_OPT"
-                                                                                                           },
-                                                                                          "registrationState_Input":  {
-                                                                                                                          "type":  {
-                                                                                                                                       "resolvedName":  "FormSelect"
-                                                                                                                                   },
-                                                                                                                          "displayName":  "Select",
-                                                                                                                          "props":  {
-                                                                                                                                        "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State (leave blank for Hawaii)",
-                                                                                                                                        "attributeTypeId":  "STATE"
-                                                                                                                                    },
-                                                                                                                          "isCanvas":  false,
-                                                                                                                          "hidden":  false,
-                                                                                                                          "nodes":  [
-
-                                                                                                                                    ],
-                                                                                                                          "linkedNodes":  {
-
-                                                                                                                                          },
-                                                                                                                          "parent":  "ROW_PER_OPT1"
-                                                                                                                      },
                                                                                           "CARD_PER_DL":  {
                                                                                                               "type":  {
                                                                                                                            "resolvedName":  "Card"
@@ -2852,6 +2839,7 @@
                                                                                                               "hidden":  false,
                                                                                                               "nodes":  [
                                                                                                                             "ROW_PER_DL1",
+                                                                                                                            "ROW_PER_DL_STATE",
                                                                                                                             "ROW_PER_DL2",
                                                                                                                             "ROW_PER_DL3",
                                                                                                                             "ROW_PER_DL4"
@@ -2901,6 +2889,46 @@
                                                                                                                                               },
                                                                                                                               "parent":  "ROW_PER_DL1"
                                                                                                                           },
+                                                                                          "ROW_PER_DL_STATE":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "Row"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Row",
+                                                                                                                   "props":  {
+                                                                                                                                 "templateColumns":  [
+                                                                                                                                                         "12"
+                                                                                                                                                     ]
+                                                                                                                             },
+                                                                                                                   "isCanvas":  true,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+                                                                                                                                 "registrationState_Input"
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "CARD_PER_DL"
+                                                                                                               },
+                                                                                          "registrationState_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Select",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "RegistrationState",
+                                                                                                                                        "label":  "State (leave blank for Hawaii)",
+                                                                                                                                        "attributeTypeId":  "STATE"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_PER_DL_STATE"
+                                                                                                                      },
                                                                                           "ROW_PER_DL2":  {
                                                                                                               "type":  {
                                                                                                                            "resolvedName":  "Row"
@@ -3102,6 +3130,7 @@
                                                                                                                             "ROW_PER_DH2",
                                                                                                                             "ROW_PER_DH3",
                                                                                                                             "ROW_PER_DH4",
+                                                                                                                            "ROW_PER_DH_STATE",
                                                                                                                             "ROW_PER_DH_ATTN"
                                                                                                                         ],
                                                                                                               "linkedNodes":  {
@@ -3138,7 +3167,7 @@
                                                                                                                                 "displayName":  "Input",
                                                                                                                                 "props":  {
                                                                                                                                               "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                              "label":  "License Number (DH) - or Name + DOB + Sex",
+                                                                                                                                              "label":  "License Number (or Name + DOB + Sex)",
                                                                                                                                               "maxLength":  "20"
                                                                                                                                           },
                                                                                                                                 "isCanvas":  false,
@@ -3158,7 +3187,7 @@
                                                                                                                       "displayName":  "Input",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "purposeCodeDH",
-                                                                                                                                    "label":  "Purpose Code (DH) - optional",
+                                                                                                                                    "label":  "Purpose Code",
                                                                                                                                     "maxLength":  "1",
                                                                                                                                     "initialValue":  "C"
                                                                                                                                 },
@@ -3201,7 +3230,7 @@
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "NameFirstDH",
-                                                                                                                                  "label":  "First Name (DH)",
+                                                                                                                                  "label":  "First Name",
                                                                                                                                   "maxLength":  "30"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -3221,7 +3250,7 @@
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "NameLastDH",
-                                                                                                                                 "label":  "Last Name (DH)",
+                                                                                                                                 "label":  "Last Name",
                                                                                                                                  "maxLength":  "30"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
@@ -3265,7 +3294,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "nameMiddleDH",
-                                                                                                                                   "label":  "M.I. (DH)",
+                                                                                                                                   "label":  "M.I.",
                                                                                                                                    "maxLength":  "30"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -3285,7 +3314,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "nameSuffixDH",
-                                                                                                                                   "label":  "Suffix (DH)",
+                                                                                                                                   "label":  "Suffix",
                                                                                                                                    "maxLength":  "30"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -3305,7 +3334,7 @@
                                                                                                                     "displayName":  "Date",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "BirthDateDH",
-                                                                                                                                  "label":  "Date of Birth (DH) - required with Name"
+                                                                                                                                  "label":  "Date of Birth - required with Name"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
                                                                                                                     "hidden":  false,
@@ -3344,7 +3373,7 @@
                                                                                                                   "displayName":  "Select",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "SexCodeDH",
-                                                                                                                                "label":  "Sex (DH) - required with Name",
+                                                                                                                                "label":  "Sex - required with Name",
                                                                                                                                 "attributeTypeId":  "SEX",
                                                                                                                                 "codeTypeProvider":  "NIBRS"
                                                                                                                             },
@@ -3358,6 +3387,46 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_PER_DH4"
                                                                                                               },
+                                                                                          "ROW_PER_DH_STATE":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "Row"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Row",
+                                                                                                                   "props":  {
+                                                                                                                                 "templateColumns":  [
+                                                                                                                                                         "12"
+                                                                                                                                                     ]
+                                                                                                                             },
+                                                                                                                   "isCanvas":  true,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+                                                                                                                                 "RegistrationStateDH_Input"
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "CARD_PER_DH"
+                                                                                                               },
+                                                                                          "RegistrationStateDH_Input":  {
+                                                                                                                            "type":  {
+                                                                                                                                         "resolvedName":  "FormSelect"
+                                                                                                                                     },
+                                                                                                                            "displayName":  "Select",
+                                                                                                                            "props":  {
+                                                                                                                                          "fieldId":  "RegistrationStateDH",
+                                                                                                                                          "label":  "State (leave blank for Hawaii)",
+                                                                                                                                          "attributeTypeId":  "STATE"
+                                                                                                                                      },
+                                                                                                                            "isCanvas":  false,
+                                                                                                                            "hidden":  false,
+                                                                                                                            "nodes":  [
+
+                                                                                                                                      ],
+                                                                                                                            "linkedNodes":  {
+
+                                                                                                                                            },
+                                                                                                                            "parent":  "ROW_PER_DH_STATE"
+                                                                                                                        },
                                                                                           "ROW_PER_DH_ATTN":  {
                                                                                                                   "type":  {
                                                                                                                                "resolvedName":  "Row"
@@ -3570,7 +3639,7 @@
                                                                                                         "displayName":  "Select",
                                                                                                         "props":  {
                                                                                                                       "fieldId":  "GunMake",
-                                                                                                                      "label":  "Make (optional)",
+                                                                                                                      "label":  "Make (with Serial Number, optional)",
                                                                                                                       "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                       "codeTypeSource":  "NCIC"
                                                                                                                   },
@@ -3615,7 +3684,7 @@
                                                                                                            "displayName":  "Select",
                                                                                                            "props":  {
                                                                                                                          "fieldId":  "GunCaliber",
-                                                                                                                         "label":  "Caliber (optional)",
+                                                                                                                         "label":  "Caliber (with Serial Number, optional)",
                                                                                                                          "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                          "codeTypeSource":  "NCIC"
                                                                                                                      },
@@ -3636,7 +3705,7 @@
                                                                                                          "displayName":  "Input",
                                                                                                          "props":  {
                                                                                                                        "fieldId":  "GunModel",
-                                                                                                                       "label":  "Model (optional)",
+                                                                                                                       "label":  "Model (with Serial Number, optional)",
                                                                                                                        "maxLength":  "20"
                                                                                                                    },
                                                                                                          "isCanvas":  false,
@@ -3656,7 +3725,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                        "label":  "Search Hit (optional)",
+                                                                                                                                        "label":  "(Y) for NCIC stolen-gun check",
                                                                                                                                         "initialValue":  "Y",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -3796,7 +3865,7 @@
                                                                                                              "displayName":  "Select",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "GunMake",
-                                                                                                                           "label":  "Make (optional)",
+                                                                                                                           "label":  "Make (with Serial Number, optional)",
                                                                                                                            "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                            "codeTypeSource":  "NCIC"
                                                                                                                        },
@@ -3841,7 +3910,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "GunCaliber",
-                                                                                                                              "label":  "Caliber (optional)",
+                                                                                                                              "label":  "Caliber (with Serial Number, optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -3862,7 +3931,7 @@
                                                                                                               "displayName":  "Input",
                                                                                                               "props":  {
                                                                                                                             "fieldId":  "GunModel",
-                                                                                                                            "label":  "Model (optional)",
+                                                                                                                            "label":  "Model (with Serial Number, optional)",
                                                                                                                             "maxLength":  "20"
                                                                                                                         },
                                                                                                               "isCanvas":  false,
@@ -3882,7 +3951,7 @@
                                                                                                                                "displayName":  "Select",
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                             "label":  "Search Hit (optional)",
+                                                                                                                                             "label":  "(Y) for NCIC stolen-gun check",
                                                                                                                                              "initialValue":  "Y",
                                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4103,7 +4172,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "GunMake",
-                                                                                                                              "label":  "Make (optional)",
+                                                                                                                              "label":  "Make (with Serial Number, optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -4148,7 +4217,7 @@
                                                                                                                    "displayName":  "Select",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "GunCaliber",
-                                                                                                                                 "label":  "Caliber (optional)",
+                                                                                                                                 "label":  "Caliber (with Serial Number, optional)",
                                                                                                                                  "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                                  "codeTypeSource":  "NCIC"
                                                                                                                              },
@@ -4169,7 +4238,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "GunModel",
-                                                                                                                               "label":  "Model (optional)",
+                                                                                                                               "label":  "Model (with Serial Number, optional)",
                                                                                                                                "maxLength":  "20"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -4189,7 +4258,7 @@
                                                                                                                                   "displayName":  "Select",
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                                "label":  "Search Hit (optional)",
+                                                                                                                                                "label":  "(Y) for NCIC stolen-gun check",
                                                                                                                                                 "initialValue":  "Y",
                                                                                                                                                 "codeTypeSource":  "NCIC",
                                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4416,7 +4485,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                        "label":  "Search Hit (optional)",
+                                                                                                                                        "label":  "(Y) for NCIC stolen-article check",
                                                                                                                                         "initialValue":  "Y",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4597,7 +4666,7 @@
                                                                                                                                "displayName":  "Select",
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                             "label":  "Search Hit (optional)",
+                                                                                                                                             "label":  "(Y) for NCIC stolen-article check",
                                                                                                                                              "initialValue":  "Y",
                                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4859,7 +4928,7 @@
                                                                                                                                   "displayName":  "Select",
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                                "label":  "Search Hit (optional)",
+                                                                                                                                                "label":  "(Y) for NCIC stolen-article check",
                                                                                                                                                 "initialValue":  "Y",
                                                                                                                                                 "codeTypeSource":  "NCIC",
                                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -5045,7 +5114,7 @@
                                                                                                                   "displayName":  "Select",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "RegistrationState",
-                                                                                                                                "label":  "State (optional)",
+                                                                                                                                "label":  "State (leave blank for Hawaii)",
                                                                                                                                 "attributeTypeId":  "STATE"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -5107,7 +5176,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                        "label":  "Search Hit (optional)",
+                                                                                                                                        "label":  "(Y) for NCIC stolen-boat check",
                                                                                                                                         "initialValue":  "Y",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -5247,7 +5316,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "RegistrationState",
-                                                                                                                                     "label":  "State (optional)",
+                                                                                                                                     "label":  "State (leave blank for Hawaii)",
                                                                                                                                      "attributeTypeId":  "STATE"
                                                                                                                                  },
                                                                                                                        "isCanvas":  false,
@@ -5309,7 +5378,7 @@
                                                                                                                                "displayName":  "Select",
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                             "label":  "Search Hit (optional)",
+                                                                                                                                             "label":  "(Y) for NCIC stolen-boat check",
                                                                                                                                              "initialValue":  "Y",
                                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -5530,7 +5599,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "RegistrationState",
-                                                                                                                                        "label":  "State (optional)",
+                                                                                                                                        "label":  "State (leave blank for Hawaii)",
                                                                                                                                         "attributeTypeId":  "STATE"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
@@ -5592,7 +5661,7 @@
                                                                                                                                   "displayName":  "Select",
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                                "label":  "Search Hit (optional)",
+                                                                                                                                                "label":  "(Y) for NCIC stolen-boat check",
                                                                                                                                                 "initialValue":  "Y",
                                                                                                                                                 "codeTypeSource":  "NCIC",
                                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -7145,7 +7214,7 @@
                                                                           "name":  "State",
                                                                           "size":  2,
                                                                           "sourceField":  [
-                                                                                              "RegistrationState"
+                                                                                              "RegistrationStateDH"
                                                                                           ],
                                                                           "targetField":  "State",
                                                                           "codeTypeProvider":  "NCIC"
@@ -7161,7 +7230,7 @@
                                                                                                              "NameFirstDH"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState",
+                                                                                                             "RegistrationStateDH",
                                                                                                              "purposeCodeDH",
                                                                                                              "Attention"
                                                                                                          ],
@@ -7194,7 +7263,7 @@
                                                                                                              "OperatorLicenseNumberDH"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState",
+                                                                                                             "RegistrationStateDH",
                                                                                                              "purposeCodeDH",
                                                                                                              "Attention"
                                                                                                          ],

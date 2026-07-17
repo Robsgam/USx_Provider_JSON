@@ -463,7 +463,7 @@ if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
 # emits the officer's profile name (e.g. "SGAMBELLONE R"). So Attention is in any[]
 # for production AND the passthrough/handler diagnostics; only the (dead, import-
 # rejected) dochandler sourceField=[] variant omits it.
-$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'dochandler') { @('RegistrationState','purposeCodeDH') } else { @('RegistrationState','purposeCodeDH','Attention') }
+$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'dochandler') { @('RegistrationStateDH','purposeCodeDH') } else { @('RegistrationStateDH','purposeCodeDH','Attention') }
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         $attnAttr
@@ -480,7 +480,9 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');           targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCodeDH');              targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        # DH gets its own dedicated State field (Rob-confirmed 2026-07-17) -- no longer the
+        # shared RegistrationState the DL card/RMS QIDM still use.
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # KQ: Name path -- 4 set[], most specific. DH-suffix. State+PurposeCode optional.
@@ -669,7 +671,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_OPT1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type - Auto (Hawaii queries)' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
                 @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
-                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - include image (Y/N)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
+                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
             )}
         )
     }
@@ -708,16 +710,21 @@ $vehicleForm = [PSCustomObject]@{
     targetEntity = 'Vehicle'
 }
 
-# Person -- 3 cards (current design; full note below). Serves DriverLicenseQuery
-# (DQN/DQ/QW) and DriverHistoryQuery (KQN/KQ); DH adds Attention + PurposeCode and uses
-# DH-suffix fieldIds. Deselect is ONE-DIRECTIONAL: only DriverHistoryQuery carries
-# queriesToDeselect=['DriverLicenseQuery'] (DH deselects DL; DL never deselects DH --
-# live-confirmed v4.5). Cards are visual only -- field population is form-wide, not
-# card-scoped; registrationState on the SEARCH OPTIONS card is shared by the DH State attr.
-# Person -- 3 cards: SEARCH OPTIONS (shared State) + DRIVER LICENSE (DQ/QW/DQN, plain
-# fieldIds) + DRIVER HISTORY (KQ/KQN, DH-suffix + Purpose Code). Separate cards need
-# distinct fieldIds (duplicate fieldId across cards = ISE), hence DH-suffix on the DH card.
-# registrationState lives on the Options card and is shared by both DL and DH QIDMs.
+# Person -- 2 cards (Rob-confirmed 2026-07-17 collapse, was 3 through v4.8). Serves
+# DriverLicenseQuery (DQN/DQ/QW) and DriverHistoryQuery (KQN/KQ); DH adds Attention +
+# PurposeCode and uses DH-suffix fieldIds. Deselect is ONE-DIRECTIONAL: only
+# DriverHistoryQuery carries queriesToDeselect=['DriverLicenseQuery'] (DH deselects DL; DL
+# never deselects DH -- live-confirmed v4.5). Cards are visual only -- field population is
+# form-wide, not card-scoped.
+# Person -- 2 cards: DRIVER LICENSE (DQ/QW/DQN, plain fieldIds, own RegistrationState) +
+# DRIVER HISTORY (KQ/KQN, DH-suffix + Purpose Code, own RegistrationStateDH). The standalone
+# "SEARCH OPTIONS" card (v4.8 and earlier) existed only to hold ONE shared RegistrationState
+# field feeding both QIDMs' State attribute -- collapsed by giving DH its own dedicated
+# RegistrationStateDH field (matching every other DH field, all already DH-suffixed) instead
+# of sharing one field across two cards. DriverHistoryQuery's State attribute sourceField
+# changed from RegistrationState to RegistrationStateDH accordingly (see $dhQuery below).
+# Separate cards still need distinct fieldIds (duplicate fieldId across cards = ISE), hence
+# DH-suffix on the DH card.
 # Attention field on the DH card: normally hidden (gate-feeder for the auto-handler);
 # in -AttnDiagnostic it is VISIBLE passthrough (type a value, expect it verbatim in XML).
 # Visible Attention field only for the passthrough diagnostic (officer types a value).
@@ -731,20 +738,18 @@ if ($AttnDiagnostic -and ($AttnMode -eq 'passthrough' -or $AttnMode -eq 'handler
 }
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER_OPT'
-        title = 'SEARCH OPTIONS'
-        rows  = @(
-            @{ id = 'ROW_PER_OPT1'; cols = @('12'); fields = @(
-                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT1' }
-            )}
-        )
-    }
-    @{
         id    = 'CARD_PER_DL'
         title = 'DRIVER LICENSE'
         rows  = @(
             @{ id = 'ROW_PER_DL1'; cols = @('12'); fields = @(
                 @{ id = 'operatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_PER_DL1' }
+            )}
+            # State moved here from the (now-deleted) "SEARCH OPTIONS" card (Rob-confirmed
+            # 2026-07-17) -- unchanged field (still plain RegistrationState, still feeds
+            # DriverLicenseQuery.State + the RMS Person QIDM); DH gets its own dedicated
+            # RegistrationStateDH field instead (see CARD_PER_DH below).
+            @{ id = 'ROW_PER_DL_STATE'; cols = @('12'); fields = @(
+                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_STATE' }
             )}
             @{ id = 'ROW_PER_DL2'; cols = @('6','6'); fields = @(
                 @{ id = 'nameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL2' }
@@ -764,21 +769,32 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY'
         rows  = @(
+            # DH "(DH)" qualifier dropped from labels (Rob-confirmed 2026-07-17, mirrors FL_FCIC/
+            # NY_NYSPIN_EJUSTICE) -- the card's own "DRIVER HISTORY" title already disambiguates
+            # it from "DRIVER LICENSE"; each label now matches its DL counterpart's phrasing.
             @{ id = 'ROW_PER_DH1'; cols = @('8','4'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_PER_DH1' }
-                @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code (DH) - optional' '1' 'ROW_PER_DH1' @{ initialValue = 'C' } }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (or Name + DOB + Sex)' '20' 'ROW_PER_DH1' }
+                @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DH2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (DH)'  '30' 'ROW_PER_DH2' }
-                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (DH)'   '30' 'ROW_PER_DH2' }
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name'  '30' 'ROW_PER_DH2' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH2' }
             )}
             @{ id = 'ROW_PER_DH3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'M.I. (DH)'   '30' 'ROW_PER_DH3' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (DH)' '30' 'ROW_PER_DH3' }
-                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name' 'ROW_PER_DH3' }
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'M.I.'   '30' 'ROW_PER_DH3' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DH3' }
+                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH' 'Date of Birth - required with Name' 'ROW_PER_DH3' }
             )}
             @{ id = 'ROW_PER_DH4'; cols = @('4'); fields = @(
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH4' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH4' }
+            )}
+            # State moved here from the (now-deleted) Person "SEARCH OPTIONS" card (Rob-confirmed
+            # 2026-07-17): DH gets its OWN dedicated State field, matching every other DH field on
+            # this card (all already DH-suffixed) and matching FL/NY's self-contained DH cards.
+            # QIDM: DriverHistoryQuery's State attribute now sourced from RegistrationStateDH
+            # (see $dhQuery below), not the shared RegistrationState the DL card keeps.
+            @{ id = 'ROW_PER_DH_STATE'; cols = @('12'); fields = @(
+                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_STATE' }
             )}
             # v2.7: hidden Attention gate-feeder. The DH QIDM Attention attribute
             # (CommsysGetLastNameFirstNameInitialRuleHandler) is gated out of
@@ -810,12 +826,12 @@ $faLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'gunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number (required)' '20' 'ROW_GUN_1' }
-                @{ id = 'gunMake_Input';         node = Sel 'GunMake' 'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'gunMake_Input';         node = Sel 'GunMake' 'Make (with Serial Number, optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'gunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'gunModel_Input';                  node = Inp 'GunModel' 'Model (optional)' '20' 'ROW_GUN_2' }
-                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' 'Search Hit (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
+                @{ id = 'gunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (with Serial Number, optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                @{ id = 'gunModel_Input';                  node = Inp 'GunModel' 'Model (with Serial Number, optional)' '20' 'ROW_GUN_2' }
+                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' '(Y) for NCIC stolen-gun check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -840,7 +856,7 @@ $artLayout = MakeLayouts @(
                 @{ id = 'articleTypeCode_Input';           node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6'); fields = @(
-                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' 'Search Hit (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
+                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' '(Y) for NCIC stolen-article check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
             )}
         )
     }
@@ -863,11 +879,11 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
                 @{ id = 'registrationNumber_Input';        node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '8' 'ROW_BOA_1' }
-                @{ id = 'registrationState_Input';         node = Sel 'RegistrationState' 'State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'registrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('8','4'); fields = @(
                 @{ id = 'boatHullIdNumber_Input';          node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }
-                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' 'Search Hit (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
+                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' '(Y) for NCIC stolen-boat check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
         )
     }
