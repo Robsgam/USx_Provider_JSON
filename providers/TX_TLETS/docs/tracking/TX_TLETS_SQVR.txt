@@ -3,9 +3,10 @@ TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-17
 JSON version: v4.5
-Live test: v3.8 imported 2026-06-17
-Validator: 81 PASS / 0 FAIL / 0 WARN / 1 LIM (v3.8)
-Verify: CLEAN (0 FAIL)
+Live test: v4.5 full re-test 2026-07-17 (first live pass since v4.0; single-day batch import,
+           all 21 combos across all 5 entities, EmailAddress automation confirmed live)
+Validator: 80 PASS / 0 FAIL / 0 WARN / 0 LIM (v4.5)
+Verify: CLEAN (0 FAIL, 0 WARN -- 3 fields carry accepted LABEL-OVERRIDE tags, see build script)
 
 NOTE: v3.8 imported 2026-06-17. DH redesigned: 4 combos (KQNameImg/KQName/KQOLNImg/KQOLN).
       Image-variant split enforces devdoc: email required only when Image=Y.
@@ -106,13 +107,6 @@ v3.4 CHANGES (from v3.3):
     set: SexCode, BirthDate, NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
-    state: In/Out
-
-  QW Name -- NCIC Wanted (Name+DOB) [PENDING]
-    keyReference: QWName  (MessageKey QW)
-    set: BirthDate, NameLast, NameFirst
-    any: ExpandedBirthDateSearchCode, NameMiddle, NameSuffix, RaceCode, RegionId, SexCode
-    defaults: (none)
     state: In/Out
 
   CPL Name -- Criminal History (Name) [CONFIRMED]
@@ -274,16 +268,22 @@ SUMMARY
 
   CommSys QIDMs: 6 (VehicleInsuranceReg, DriverLicense, DriverHistory,
                      GunQuery, ArticleSingle, BoatQuery)
-  Total CommSys combos: 24 (7+4+4+2+2+5)
+  Total CommSys combos: 21 (7 Vehicle + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
-  CONFIRMED (v3.6 testing in progress 2026-06-16):
-    Vehicle: REGLicensePlateNumber, RQLicensePlateNumber, QVLicensePlateNumber, VINVehicleIdentificationNumber
-    Person DL: DQName, QWName, CPLName, DQOLN
-    Person DH: KQNameImg, KQName, KQOLNImg, KQOLN (all 4 v3.8 combos)
-    PENDING: any[] tests (T29-T32), deselect (T33), negatives (T34-T35)
-    CONFIRMED (added): Boat T19-T23, Firearm T24-T25, Article T26-T27, T28 any[] Vehicle
-    LIMITATION: QVVehicleIdentificationNumber (permanently shadowed by RQ VIN)
-    NOTE: T28 VehicleMakeCode -- form sent FORD, XML serialized PASS_FORD. Platform NCIC VEHICLE_MAKE
-          code type adds PASS_ prefix internally. devdoc maxLen=4; PASS_FORD is 9 chars.
+  CONFIRMED (v4.5 full re-test, single-day batch import, 2026-07-17):
+    Vehicle (7/7): REGLicensePlateNumber, RQLicensePlateNumber, VINVehicleIdentificationNumber,
+      DPSIStickerNumber, QVLicensePlateNumber, QVVehicleIdentificationNumber, RQVehicleIdentificationNumber
+    Person DL (3/3): DQName, CPLName, DQOLN (QWName removed v4.2 -- platform-auto-sent shadow query)
+    Person DH (2/2): KQName, KQOLN -- EmailAddress automation (RND-57165) confirmed live: KQName.txt
+      shows <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress> in the captured XML, resolved
+      from the emailAddress="X" gate-feeder via GetUserProfileSingleValueRuleHandler.
+    Firearm (2/2): QGGunSerialNumber, QGNCICNumber
+    Article (2/2): QAArticleSerialNumber, QANCICNumber
+    Boat (5/5): BQRegistrationNumber, BQBoatHullIdNumber, QBRegistrationNumber, QBBoatHullIdNumber, QBNCICNumber
+    Coverage: 21/21 combos (100%), 87 test logs, audit_log_content.ps1 87/87 content-verified.
+    LIMITATION: QVVehicleIdentificationNumber (permanently shadowed by RQ VIN, form routing --
+      still exercised directly via any[]-af test, see log).
+    NOTE (legacy, v3.6): VehicleMakeCode form sent FORD, XML serialized PASS_FORD. Platform NCIC
+          VEHICLE_MAKE code type adds PASS_ prefix internally. devdoc maxLen=4; PASS_FORD is 9 chars.
           Not fixable config-side (FormSelect attributeTypeId=VEHICLE_MAKE is the correct pattern --
           confirmed across all providers). TX TLETS server-side handling unknown. Flag for Cringer.
