@@ -1,6 +1,6 @@
-NY_NYSPIN_EJUSTICE v4.8 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.9 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-16
+Generated: 2026-07-17
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -8,9 +8,10 @@ Validator: unknown
 FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 8 fields):
-  CARD_VEH (VEHICLE QUERY):
-    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+  CARD_VEH (Vehicle Registration Search by Plate, "OR" VIN):
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE]
+    ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 3: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
 
 Person (3 cards, 34 fields):
   CARD_PER_DL (DRIVER LICENSE):
@@ -40,7 +41,8 @@ Article (1 card, 4 fields):
 
 Boat (1 card, 4 fields):
   CARD_BOA (BOAT QUERY):
-    RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE]
+    ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 QIDM SUMMARY (7 QIDMs, 17 combos)
 ----------------------------------------
@@ -186,4 +188,4 @@ COMBO COVERAGE (17/17):
   ArticleSingleQuery: 1/1 -- T43(AINQ)
   BoatQuery: 4/4 -- T31(RCAR+Hull), T33(BVIN+BVIN), T35(BVEH+BVEH), T37(RVEH+RVEH)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.8.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.9.json

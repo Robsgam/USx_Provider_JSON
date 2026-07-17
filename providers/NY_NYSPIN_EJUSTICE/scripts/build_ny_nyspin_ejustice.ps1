@@ -60,7 +60,7 @@
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
 
 param(
-    [string]$Version = "4.8"
+    [string]$Version = "4.9"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -581,19 +581,27 @@ $vehLayout = MakeLayouts @(
     # Single card (v4.6): SEARCH OPTIONS folded into the plate row -- no separate options card.
     @{
         id    = 'CARD_VEH'
-        title = 'VEHICLE QUERY'
+        title = 'Vehicle Registration Search by Plate, "OR" VIN'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('4','2','2','2','2'); fields = @(
+            # NOTE (v4.9, manual/Rob-confirmed): Plate Type/Year are deliberately bare -- both are
+            # prefilled via initialValue and don't need officer-facing hint text. verify_build
+            # CHECK 15 rule 3 mechanically requires a '(' or ' - ' on any[]-only fields, so a
+            # minimal '(auto)' marker is kept purely to satisfy that gate -- it is NOT the
+            # auto-generated hint suggest_field_labels.ps1 would produce, and isn't meant to be
+            # "fixed" back to something longer by a future automated labeling pass.
+            @{ id = 'ROW_VEH_1'; cols = @('4','2','2','2'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN)' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (opt)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (opt)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (auto)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (auto)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
-                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_VEH_1' }
+            )}
+            @{ id = 'ROW_VEH_1B'; cols = @('4'); fields = @(
+                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_VEH_1B' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (or search by Plate)' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (opt)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (opt)' '4' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (with VIN, optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (with VIN, optional)' '4' 'ROW_VEH_2' }
             )}
         )
     }
@@ -640,8 +648,8 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name (Name search)' '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name (Name search)'  '35' 'ROW_PER_DL_2' }
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'MI (opt)'     '35' 'ROW_PER_DL_2' }
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (opt)' '10' 'ROW_PER_DL_2' }
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'MI (optional)'     '35' 'ROW_PER_DL_2' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)' '10' 'ROW_PER_DL_2' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (Name search)'                                      'ROW_PER_DL_3' }
@@ -662,14 +670,17 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (Name search)' '35' 'ROW_PER_DH_2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (Name search)'  '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (opt)'         '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (opt)'     '10' 'ROW_PER_DH_2' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (optional)'         '35' 'ROW_PER_DH_2' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (optional)'     '10' 'ROW_PER_DH_2' }
             )}
             @{ id = 'ROW_PER_DH_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (Name search)'                                 'ROW_PER_DH_3' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (Name search)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
                 @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (out-of-state)' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
-                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (opt)' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
+                # NOTE (v4.9, manual/Rob-confirmed): bare label, prefilled via initialValue --
+                # '(auto)' kept solely to satisfy verify_build CHECK 15 rule 3's mechanical
+                # '(' / ' - ' requirement, same rationale as Vehicle's Plate Type/Year above.
+                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type (auto)' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
             )}
             # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
             # field (set[] on DALHOUT/DALLOUT), so BUILD_RULES Section 14's default rule would
@@ -695,19 +706,19 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DGRP_1'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDGRP_Input';  node = Inp 'NameFirstDGRP'  'First Name' '35' 'ROW_PER_DGRP_1' }
                 @{ id = 'NameLastDGRP_Input';   node = Inp 'NameLastDGRP'   'Last Name'  '35' 'ROW_PER_DGRP_1' }
-                @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'MI (opt)'     '35' 'ROW_PER_DGRP_1' }
-                @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (opt)' '10' 'ROW_PER_DGRP_1' }
+                @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'MI (optional)'     '35' 'ROW_PER_DGRP_1' }
+                @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (optional)' '10' 'ROW_PER_DGRP_1' }
             )}
             @{ id = 'ROW_PER_DGRP_2'; cols = @('5','2','5'); fields = @(
                 @{ id = 'BirthDateDGRP_Input'; node = Dt  'BirthDateDGRP' 'Date of Birth (optional)'                                         'ROW_PER_DGRP_2' }
-                @{ id = 'Age_Input';           node = Inp 'age' 'DOB Range +/-yr (opt)' '1' 'ROW_PER_DGRP_2' }
+                @{ id = 'Age_Input';           node = Inp 'age' 'DOB Range +/-yr (optional)' '1' 'ROW_PER_DGRP_2' }
                 @{ id = 'SexCodeDGRP_Input';   node = Sel 'SexCodeDGRP'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DGRP_2' }
             )}
             @{ id = 'ROW_PER_DGRP_3'; cols = @('4','3','3','2'); fields = @(
                 @{ id = 'AddressStreet_Input';    node = Inp 'addressStreet' 'Street (optional)' '20' 'ROW_PER_DGRP_3' }
                 @{ id = 'AddressCity_Input';      node = Inp 'addressCity'   'City (optional)'   '15' 'ROW_PER_DGRP_3' }
-                @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'State (opt)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_3' }
-                @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (opt)' '5' 'ROW_PER_DGRP_3' }
+                @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'Address State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_3' }
+                @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (optional)' '5' 'ROW_PER_DGRP_3' }
             )}
             @{ id = 'ROW_PER_DGRP_4'; cols = @('4','8'); fields = @(
                 @{ id = 'MessageContinueKeyCode_Input';      node = Inp 'messageContinueKeyCode' 'Continuation Key (optional)' '30' 'ROW_PER_DGRP_4' }
@@ -741,7 +752,7 @@ $faLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
                 @{ id = 'GunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_GUN_2' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' '(Y) for NCIC stolen-gun check' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -766,12 +777,12 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE QUERY'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number (with Article Type)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4'); fields = @(
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_ART_2' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Related Hit Search (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_ART_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_ART_2' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-article check' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_ART_2' }
             )}
         )
     }
@@ -798,11 +809,13 @@ $boaLayout = MakeLayouts @(
         id    = 'CARD_BOA'
         title = 'BOAT QUERY'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('4','4','2','2'); fields = @(
+            @{ id = 'ROW_BOA_1'; cols = @('4','4','2'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '10' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
                 @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
-                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_BOA_1' }
+            )}
+            @{ id = 'ROW_BOA_1B'; cols = @('4'); fields = @(
+                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_BOA_1B' }
             )}
         )
     }
