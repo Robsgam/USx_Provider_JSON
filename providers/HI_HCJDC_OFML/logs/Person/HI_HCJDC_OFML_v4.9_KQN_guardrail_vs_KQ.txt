@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: KQN_guardrail_vs_KQ (KQN_guardrail_vs_KQ (auto))
+Date: 2026-07-17 15:00:25
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: 870f691342b9bf3a2feeb52aa68be139b46662bb04aca1985af89d4dca8830a0
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+"{\"Attention\":\"X\",\"BirthDateDH\":\"1990-01-15\",\"NameFirstDH\":\"JOHN\",\"NameLastDH\":\"DOE\",\"OperatorLicenseNumberDH\":\"D999888777\",\"SexCodeDH\":\"Male\",\"purposeCodeDH\":\"C\"}"
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXRQ2SYFGGYSVT7JDV2P27N6">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KXRQ2SYFGGYSVT7JDV2P27N6</Id>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <PurposeCode>C</PurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KXRQ2SYFGGYSVT7JDV2P27N6
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  PurposeCode                    C
+
+NOTES
+-----
+Automated capture (txId 01KXRQ2SYFGGYSVT7JDV2P27N6). kind=guardrail; anyField=; expectedKeyRef=KQN; firedMessageType=DriverHistoryQuery.
+
+RESULT: PASS

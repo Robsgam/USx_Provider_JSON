@@ -1,0 +1,87 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverLicenseQuery
+Combo: DQ (DQ (auto))
+Date: 2026-07-17 15:00:31
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: 870f691342b9bf3a2feeb52aa68be139b46662bb04aca1985af89d4dca8830a0
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+"{\"Attention\":\"X\",\"BirthDate\":\"1990-01-15\",\"NameFirst\":\"JOHN\",\"NameLast\":\"DOE\",\"SexCode\":\"Male\",\"purposeCodeDH\":\"C\"}"
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXRQ0FRH3V05EP8HQYV5ZTYG">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KXRQ0FRH3V05EP8HQYV5ZTYG</Id>
+            <SexCode>M</SexCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "sexAttrId": "69510720597",
+    "dateOfBirth": "1990-01-15"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KXRQ0FRH3V05EP8HQYV5ZTYG
+  SexCode                        M
+  BirthDate                      01151990
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KXRQ0FRH3V05EP8HQYV5ZTYG). kind=combo; anyField=; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery.
+
+RESULT: PASS
