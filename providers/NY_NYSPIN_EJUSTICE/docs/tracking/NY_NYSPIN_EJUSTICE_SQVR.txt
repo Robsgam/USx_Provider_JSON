@@ -38,28 +38,28 @@ v2.1 changes from v2.0:
   Choice-set: metadata RVEH has Choice(in-state plate / OOS plate+type+year+state).
     OOS option built as RVEHOUT with State in set[] (LIMITATION #36). See QIDM_REFERENCE.
 
-  RVIN -- VIN + State (OOS / NCIC/Nlets) [PENDING]
+  RVIN -- VIN + State (OOS / NCIC/Nlets) [CONFIRMED]
     set: vehicleIdentificationNumber, registrationState
     any: imageIndicator, vehicleMakeCode, vehicleYear
     defaults: ImageIndicator=N
     keyReference: RVIN
     Fires when: VIN + State both filled
 
-  RVEHOUT -- Plate + State (OOS / Nlets) [PENDING]
+  RVEHOUT -- Plate + State (OOS / Nlets) [CONFIRMED]
     set: licensePlateNumber, registrationState
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
     defaults: ImageIndicator=N, LicensePlateTypeCode=PC, LicensePlateYear=2026
     keyReference: RVEHOUT (invented; provider routes by content per NY v1.19)
     Fires when: Plate + State both filled. New in v2.3 -- needs live OOS-plate test.
 
-  RVEH -- Plate, in-state (NY DMV) [PENDING]
+  RVEH -- Plate, in-state (NY DMV) [CONFIRMED]
     set: licensePlateNumber
     any: imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState
     defaults: ImageIndicator=N, LicensePlateTypeCode=PC, LicensePlateYear=2026
     keyReference: RVEH
     Fires when: Plate filled, State blank
 
-  RCAR -- VIN only (NY DMV, no state) [PENDING]
+  RCAR -- VIN only (NY DMV, no state) [CONFIRMED]
     set: vehicleIdentificationNumber
     any: imageIndicator
     defaults: ImageIndicator=N
@@ -80,7 +80,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=Y
   CAD defaults: ImageIndicator=Y on DLICN and DLIC
 
-  DLICN -- Name + DOB [PENDING]
+  DLICN -- Name + DOB [CONFIRMED]
     set: birthDate, nameLast, nameFirst, sexCode
     any: imageIndicator, registrationState, nameMiddle, nameSuffix
     defaults: ImageIndicator=Y
@@ -88,7 +88,7 @@ v2.1 changes from v2.0:
     Name format: FormatStringRuleHandler "LAST, FIRST MIDDLE SUFFIX"
     Date format: CommsysParseDateRuleHandler yyyy-MM-dd -> MMddyyyy
 
-  DLIC -- OLN [PENDING]
+  DLIC -- OLN [CONFIRMED]
     set: operatorLicenseNumber
     any: imageIndicator, registrationState
     defaults: ImageIndicator=Y
@@ -106,7 +106,7 @@ v2.1 changes from v2.0:
   queryLabel: DL Name Search
   Combos: DGRP (Name+DOB)
 
-  DGRP -- Name search (broader DL lookup) [PENDING]
+  DGRP -- Name search (broader DL lookup) [CONFIRMED]
     set: nameLast, nameFirst
     any: nameMiddle, nameSuffix, birthDate, sexCode
     defaults: (none)
@@ -133,27 +133,27 @@ v2.1 changes from v2.0:
     CommsysGetLastNameFirstNameInitialRuleHandler -> officer identity). Handler confirmed working.
   See LIMITATION #36 (Choice-set OOS combos)
 
-  DALHOUT -- Name + DOB + OOS fields [PENDING]
+  DALHOUT -- Name + DOB + OOS fields [CONFIRMED]
     set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState
     any: imageIndicator, nameMiddleDH, nameSuffixDH
     defaults: ImageIndicator=Y
     keyReference: DALHOUT
     Fires when: all name fields + purposeCodeDH + requestorDH + State filled
 
-  DALH -- Name + DOB (in-state) [PENDING]
+  DALH -- Name + DOB (in-state) [CONFIRMED]
     set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH
     any: imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
     keyReference: DALH
 
-  DALLOUT -- OLN + OOS fields [PENDING]
+  DALLOUT -- OLN + OOS fields [CONFIRMED]
     set: operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState
     any: imageIndicator
     defaults: ImageIndicator=Y
     keyReference: DALLOUT
     Fires when: OLN + purposeCodeDH + requestorDH + State all filled
 
-  DALL -- OLN (in-state) [PENDING]
+  DALL -- OLN (in-state) [CONFIRMED]
     set: operatorLicenseNumberDH
     any: imageIndicator, registrationState, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
@@ -171,7 +171,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
   CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on GINQ
 
-  GINQ -- Serial Number [PENDING]
+  GINQ -- Serial Number [CONFIRMED]
     set: gunSerialNumber
     any: imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
@@ -187,7 +187,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
   CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on AINQ
 
-  AINQ -- Serial + ArticleType [PENDING]
+  AINQ -- Serial + ArticleType [CONFIRMED]
     set: articleSerialNumber, articleTypeCode
     any: imageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
@@ -205,19 +205,19 @@ v2.1 changes from v2.0:
   CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on all 4 combos
   LIMITATION #30 applies (no State default)
 
-  BVEH -- Registration Number + State OOS [PENDING]
+  BVEH -- Registration Number + State OOS [CONFIRMED]
     set: registrationNumber, registrationState
     any: imageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: BVEH
 
-  BVIN -- Hull ID + State OOS [PENDING]
+  BVIN -- Hull ID + State OOS [CONFIRMED]
     set: boatHullIdNumber, registrationState
     any: imageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: BVIN
 
-  RVEH -- Registration Number, NY (no state) [PENDING]
+  RVEH -- Registration Number, NY (no state) [CONFIRMED]
     set: registrationNumber
     any: imageIndicator
     defaults: ImageIndicator=Y
@@ -228,7 +228,7 @@ v2.1 changes from v2.0:
       (v4.1/v4.3/v4.4/v4.6). NOTE: recurring bookkeeping cost of the shared RVEH/RCAR keyRefs --
       candidate for a post_test/SQVR entity-disambiguation fix.
 
-  RCAR -- Hull ID, NY (no state) [PENDING]
+  RCAR -- Hull ID, NY (no state) [CONFIRMED]
     set: boatHullIdNumber
     any: imageIndicator
     defaults: ImageIndicator=Y
