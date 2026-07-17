@@ -644,10 +644,14 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER LICENSE'
         rows  = @(
             # Row 1: primary identifier + search options folded in (OPTIONS card dumped v4.5).
-            @{ id = 'ROW_PER_DL_1'; cols = @('6','3','3'); fields = @(
+            # State+Image split to their own row (Rob-confirmed 2026-07-17, mirrors Vehicle's
+            # fix) -- sharing a row with License Number left State's label wrapping.
+            @{ id = 'ROW_PER_DL_1'; cols = @('12'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name)' '20' 'ROW_PER_DL_1' }
-                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
-                @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DL_1' }
+            )}
+            @{ id = 'ROW_PER_DL_1B'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1B' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DL_1B' }
             )}
             @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name (Name search)' '35' 'ROW_PER_DL_2' }
@@ -666,10 +670,14 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER HISTORY'
         rows  = @(
             # Row 1: primary identifier + DH-own State/Image folded in (self-contained card, v4.5).
-            @{ id = 'ROW_PER_DH_1'; cols = @('6','3','3'); fields = @(
+            # State+Image split to their own row (Rob-confirmed 2026-07-17, mirrors Vehicle's
+            # fix) -- sharing a row with License Number left State's label wrapping.
+            @{ id = 'ROW_PER_DH_1'; cols = @('12'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (or search by Name)' '20' 'ROW_PER_DH_1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
-                @{ id = 'ImageIndicatorDH_Input';        node = Sel 'ImageIndicatorDH' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1' }
+            )}
+            @{ id = 'ROW_PER_DH_1B'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1B' }
+                @{ id = 'ImageIndicatorDH_Input';    node = Sel 'ImageIndicatorDH' 'Image (optional)' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1B' }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (Name search)' '35' 'ROW_PER_DH_2' }
@@ -714,7 +722,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'MI (optional)'     '35' 'ROW_PER_DGRP_1' }
                 @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (optional)' '10' 'ROW_PER_DGRP_1' }
             )}
-            @{ id = 'ROW_PER_DGRP_2'; cols = @('5','2','5'); fields = @(
+            # Rebalanced to equal thirds (Rob-confirmed 2026-07-17) -- DOB Range was squeezed to
+            # col=2 (1/6 of the row) for one of the longer labels here and was wrapping.
+            @{ id = 'ROW_PER_DGRP_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDateDGRP_Input'; node = Dt  'BirthDateDGRP' 'Date of Birth (optional)'                                         'ROW_PER_DGRP_2' }
                 @{ id = 'Age_Input';           node = Inp 'age' 'DOB Range +/-yr (optional)' '1' 'ROW_PER_DGRP_2' }
                 @{ id = 'SexCodeDGRP_Input';   node = Sel 'SexCodeDGRP'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DGRP_2' }
