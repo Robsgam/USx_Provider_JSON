@@ -1,6 +1,11 @@
-# build_tx_tlets.ps1  -- TX_TLETS v4.4
+# build_tx_tlets.ps1  -- TX_TLETS v4.5
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
 # 21 CommSys combos: 7 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v4.5 (2026-07-17, direct feedback): Person DL card's Name-search helpers dropped -- First Name/
+#   Last Name/Date of Birth all go bare (were "(Name search)"), Sex goes bare (was "(required with
+#   Name)"). None of these are any[]-only (all set[]-required on DQName), so no CHECK-15 exposure.
+#   DH's equivalents (NameFirstDH/NameLastDH/BirthDateDH/SexCodeDH) mirrored to match, same reasoning
+#   (set[]-required on KQName only). Label-only, no combo/routing change.
 # v4.4 (2026-07-17, direct feedback): second round of cosmetic label cleanup on top of v4.3.
 #   Vehicle+Person State labels went bare ("State", default TX still set via initialValue) --
 #   same merely-defaulted-field convention as Plate Type/Year/Reason Code (Boat's State is
@@ -105,7 +110,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.4"
+    [string]$Version = "4.5"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -407,14 +412,17 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_L1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB + Sex)' '20' 'ROW_PER_L1' }
-                @{ id = 'BirthDate_Input';             node = Dt  'BirthDate' 'Date of Birth (Name search)' 'ROW_PER_L1' }
-                @{ id = 'SexCode_Input';               node = Sel 'SexCode'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_L1' }
+                @{ id = 'BirthDate_Input';             node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_L1' }
+                @{ id = 'SexCode_Input';               node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_L1' }
             )}
             # Name order First-before-Last (Rob-confirmed 2026-07-17 -- was Last-before-First,
             # the one regression that contradicted every other reviewed provider NJ/CA/HI/NY/FL).
+            # "(Name search)"/"(required with Name)" helpers dropped (Rob-confirmed 2026-07-17) --
+            # NameFirst/NameLast/BirthDate/SexCode are all set[]-required on DQName, never any[]-only
+            # anywhere else, so bare labels carry no CHECK-15 exposure.
             @{ id = 'ROW_PER_N1'; cols = @('3','3','2','2','2'); fields = @(
-                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name (Name search)' '30' 'ROW_PER_N1' }
-                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name (Name search)'  '30' 'ROW_PER_N1' }
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name' '30' 'ROW_PER_N1' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '30' 'ROW_PER_N1' }
                 @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI (optional)'     '30' 'ROW_PER_N1' }
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)' '30' 'ROW_PER_N1' }
                 @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'Message Key (CPL/DWI/RDL, optional)' '3' 'ROW_PER_N1' }
@@ -441,15 +449,18 @@ $perLayout = MakeLayouts @(
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DHL1' @{ initialValue = 'C' } }
             )}
             # Name order First-before-Last (Rob-confirmed 2026-07-17), matches DL.
+            # "(Name search)"/"(required with Name)" helpers dropped (Rob-confirmed 2026-07-17),
+            # mirrors DL -- NameFirstDH/NameLastDH/BirthDateDH/SexCodeDH are all set[]-required on
+            # KQName, never any[]-only anywhere else, so bare labels carry no CHECK-15 exposure.
             @{ id = 'ROW_PER_DHN1'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name (Name search)' '30' 'ROW_PER_DHN1' }
-                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name (Name search)'  '30' 'ROW_PER_DHN1' }
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_PER_DHN1' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_PER_DHN1' }
                 @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (optional)'     '30' 'ROW_PER_DHN1' }
                 @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (optional)' '30' 'ROW_PER_DHN1' }
             )}
             @{ id = 'ROW_PER_DHN2'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDateDH_Input';    node = Dt  'BirthDateDH' 'Date of Birth (Name search)' 'ROW_PER_DHN2' }
-                @{ id = 'SexCodeDH_Input';      node = Sel 'SexCodeDH'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DHN2' }
+                @{ id = 'BirthDateDH_Input';    node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DHN2' }
+                @{ id = 'SexCodeDH_Input';      node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DHN2' }
             )}
         )
     }
