@@ -692,11 +692,10 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH_VIN'
         title = 'VIN SEARCH'
         rows  = @(
-            @{ id = 'ROW_VEH_VIN1'; cols = @('12'); fields = @(
-                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number (VIN)' '20' 'ROW_VEH_VIN1' }
-            )}
-            @{ id = 'ROW_VEH_VIN2'; cols = @('12'); fields = @(
-                @{ id = 'vehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year - optional' '4' 'ROW_VEH_VIN2' }
+            # VIN + Year on one line, "VIN" dropped from the label (Rob-confirmed 2026-07-17).
+            @{ id = 'ROW_VEH_VIN1'; cols = @('8','4'); fields = @(
+                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_VIN1' }
+                @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year - optional' '4' 'ROW_VEH_VIN1' }
             )}
         )
     }
