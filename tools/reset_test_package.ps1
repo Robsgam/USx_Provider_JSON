@@ -194,14 +194,14 @@ $sqvrReset = 0
 $sqvrPath = Join-Path $trackingDir "${Provider}_SQVR.txt"
 if (Test-Path $sqvrPath) {
     if ($fullReset) {
-        $sqvr = Get-Content $sqvrPath -Raw
+        $sqvr = Get-Content $sqvrPath -Raw -Encoding UTF8
         $sqvrReset += ([regex]::Matches($sqvr, '\[CONFIRMED\]')).Count
         $sqvrReset += ([regex]::Matches($sqvr, '\[FAILED[^\]]*\]')).Count
         $sqvr = $sqvr -replace '\[CONFIRMED\]', '[PENDING]'
         $sqvr = $sqvr -replace '\[FAILED[^\]]*\]', '[PENDING]'
         Set-Content -Path $sqvrPath -Value $sqvr -NoNewline -Encoding UTF8
     } else {
-        $lines = Get-Content $sqvrPath
+        $lines = Get-Content $sqvrPath -Encoding UTF8
         $curEntity = $null          # $null = cross-cutting (reset when anything resets)
         $out = New-Object System.Collections.Generic.List[string]
         foreach ($line in $lines) {
