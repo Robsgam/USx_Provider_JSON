@@ -62,6 +62,12 @@ Architecture notes:
     defaults: ImageIndicator=N, LicensePlateYear=<current year> (CAD ignores initialValue, CHECK 6)
     keyReference: FRQDecalNumber
     evidence: logs/Vehicle/FL_FCIC_v7.1_FRQDecalNumber.txt
+    NOTE (2026-07-20): the CommSys XML payload is correct + metadata-valid. The RMS panel shows
+    "invalid message payload" on decal queries because decalNumber has NO RMS mapping -- the RMS
+    Vehicle QIDM only searches LicensePlateNumber / RegistrationState / VehicleIdentificationNumber
+    (Mark43/RMS vehicle search is plate/VIN, not FL decal). Expected, not a defect; surfaced by the
+    tenant's RMS simulation mode. Deploy the CommSys-correct JSON (commsys-priority rule). Do not
+    re-flag on the next re-test.
 
   FRQLicensePlateNumber -- in-state Plate [CONFIRMED]
     set: LicensePlateNumber
@@ -97,8 +103,8 @@ Architecture notes:
 
   Plate>VIN guardrail -- Plate+VIN co-entry -> only the plate path fires, VIN combos exit
     the pool (LicensePlateNumber NOT_EXISTS on FRQVehicleIdentificationNumber +
-    RQVehicleIdentificationNumber). [PENDING]
-    evidence: logs/Vehicle/FL_FCIC_v7.6_FRQLicensePlateNumber_guardrail_vs_FRQVehicleIdentificationNumber.txt
+    RQVehicleIdentificationNumber). [CONFIRMED]
+    evidence: logs/Vehicle/FL_FCIC_v7.7_FRQLicensePlateNumber_guardrail_vs_FRQVehicleIdentificationNumber.txt (v7.7 live-proven 2026-07-20; hand-reconciled -- auto-updater matches keyReference: lines, not guardrail variants)
               logs/Vehicle/FL_FCIC_v7.6_FRQLicensePlateNumber_guardrail_vs_RQVehicleIdentificationNumber.txt
 
   Priority order: FRQ (in-state) before RQ (OOS); within each, Plate before VIN -- CONFIRMED.
@@ -168,8 +174,8 @@ Architecture notes:
     evidence: logs/Person/FL_FCIC_v7.1_DQOperatorLicenseNumber.txt
 
   OLN>Name guardrail -- OLN+Name co-entry -> only the OLN combo fires, Name combos exit the
-    pool (OperatorLicenseNumber NOT_EXISTS on FDQName + DQName). [PENDING]
-    evidence: logs/Person/FL_FCIC_v7.6_FDQOperatorLicenseNumber_guardrail_vs_FDQName.txt
+    pool (OperatorLicenseNumber NOT_EXISTS on FDQName + DQName). [CONFIRMED]
+    evidence: logs/Person/FL_FCIC_v7.7_FDQOperatorLicenseNumber_guardrail_vs_FDQName.txt (v7.7 live-proven 2026-07-20; hand-reconciled)
               logs/Person/FL_FCIC_v7.6_FDQOperatorLicenseNumber_guardrail_vs_DQName.txt
 
   Priority order: FDQ (in-state) before DQ (OOS); within each, OLN before Name -- CONFIRMED.
@@ -215,8 +221,8 @@ Architecture notes:
     evidence: logs/Person/FL_FCIC_v7.1_KQOperatorLicenseNumber.txt
 
   OLN>Name guardrail (DH) -- OLN+Name co-entry -> only KQOperatorLicenseNumber fires, KQName
-    exits the pool (OperatorLicenseNumberDH NOT_EXISTS on KQName). [PENDING]
-    evidence: logs/Person/FL_FCIC_v7.6_KQOperatorLicenseNumber_guardrail_vs_KQName.txt
+    exits the pool (OperatorLicenseNumberDH NOT_EXISTS on KQName). [CONFIRMED]
+    evidence: logs/Person/FL_FCIC_v7.7_KQOperatorLicenseNumber_guardrail_vs_KQName.txt (v7.7 live-proven 2026-07-20; hand-reconciled)
 
   Priority order: KQ OLN before KQ Name -- CONFIRMED (OLN>Name guardrail).
 
@@ -411,8 +417,8 @@ Architecture notes:
   Hull>Reg guardrail -- Hull+Reg co-entry -> only the Hull combo fires, the Reg combo exits
     the pool. Applied to all 3 families: FBQ (FBQRegistrationNumber), QB (QBRegistrationNumber),
     BQ (BQRegistrationNumber) all carry BoatHullIdNumber NOT_EXISTS. Hull ID (HIN) is the
-    unique permanent identifier; Reg is reassignable -> Hull wins. [PENDING]
-    evidence: logs/Boat/FL_FCIC_v7.7_FBQBoatHullIdNumber_guardrail_vs_FBQRegistrationNumber.txt
+    unique permanent identifier; Reg is reassignable -> Hull wins. [CONFIRMED]
+    evidence: logs/Boat/FL_FCIC_v7.7_FBQBoatHullIdNumber_guardrail_vs_FBQRegistrationNumber.txt (v7.7 live-proven 2026-07-20; hand-reconciled)
               logs/Boat/FL_FCIC_v7.7_FBQBoatHullIdNumber_guardrail_vs_BQRegistrationNumber.txt
               logs/Boat/FL_FCIC_v7.7_QBBoatHullIdNumber_guardrail_vs_QBRegistrationNumber.txt
               logs/Boat/FL_FCIC_v7.1_QBBoatHullIdNumber_guardrail_vs_FBQBoatHullIdNumber.txt
