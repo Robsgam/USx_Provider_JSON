@@ -1,0 +1,10 @@
+# TEST_VALUE_OVERRIDES.txt -- NY_NYSPIN_EJUSTICE
+# Per-provider test values where the tenant/metadata field constraints differ from the global
+# default. Read by emit_test_plan.ps1 + generate_test_matrix.ps1 (fieldId=value; '#' comments).
+#
+# age: DGRP (Name Search) combo's "DOB Range +/-yr" field is Alphanumeric maxLen=1 per metadata
+# (NY_NYSPIN_EJUSTICE_METADATA_REFERENCE.txt WMPIPersonWINQQuery/DGRP -- a single +/- year
+# tolerance digit, not a 2-digit person age). The shared resolver's generic '^age' case ('35')
+# is correct everywhere else (CA_CLETS/CA_eSUN/CA_VENTURA_COUNTY/AZ_AZDPS/CA_CONTRA_COSTA all
+# define Age as maxLen=2 "age of person") but overflows NY's 1-char field. Confirmed 2026-07-20.
+age=5
