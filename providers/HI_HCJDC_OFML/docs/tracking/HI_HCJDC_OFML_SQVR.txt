@@ -117,9 +117,10 @@ Architecture notes:
 
   M55L_guardrail -- plate-wins: Plate+VIN co-entry -> plate path wins (bare plate -> M55L per
     v4.7 CHECK 16 routing; +Type -> RQ), VIN absent from XML. Was mislabelled RQ_guardrail
-    until the 2026-07-02 content-based relabel (sim expectation corrected). [PENDING]
-    v4.9 live-proven 2026-07-17: M55L_guardrail_vs_M55S + M55L_guardrail_vs_RQV both PASS
-    (captured combo names carry a _vs_<loser> suffix the SQVR line's generic label predates).
+    until the 2026-07-02 content-based relabel (sim expectation corrected). [CONFIRMED]
+    v4.10 live-proven 2026-07-20: M55L_guardrail_vs_M55S + M55L_guardrail_vs_RQV both PASS
+    (captured combo names carry a _vs_<loser> suffix the SQVR line's generic label predates;
+    hand-reconciled -- auto-updater matches keyReference: lines, not guardrail variants).
 
   Priority order: RQ > RQV > M55L > M55S > QVV > QVP -- CONFIRMED (live v3.6 T1-T7)
     OOS-first (add fields to reach OOS); in-state plate/VIN next; stolen dormant last.
@@ -254,8 +255,8 @@ Architecture notes:
     any: (empty)
     keyReference: QG
 
-  QG_any -- Serial + Make + Caliber + Model + RelatedSearchHitIndicator all present [PENDING]
-    v4.9 live-proven 2026-07-17: HI_HCJDC_OFML_v4.9_QG_any.txt PASS.
+  QG_any -- Serial + Make + Caliber + Model + RelatedSearchHitIndicator all present [CONFIRMED]
+    v4.10 live-proven 2026-07-20: HI_HCJDC_OFML_v4.10_QG_any.txt PASS.
 
 ================================================================================
 5. ArticleSingleQuery -- Article Entity
@@ -291,8 +292,8 @@ Architecture notes:
     any: (empty)
     keyReference: QB
 
-  QB_guardrail -- Hull>Reg: Hull+Reg co-entry -> only QB fires, BQ exits pool [PENDING]
-    v4.9 live-proven 2026-07-17: HI_HCJDC_OFML_v4.9_QB_guardrail_vs_BQ.txt PASS.
+  QB_guardrail -- Hull>Reg: Hull+Reg co-entry -> only QB fires, BQ exits pool [CONFIRMED]
+    v4.10 live-proven 2026-07-20: HI_HCJDC_OFML_v4.10_QB_guardrail_vs_BQ.txt PASS.
 
   Priority order: BQ > QB -- CONFIRMED (note; backed by live v3.5 T22/T23)
     Registration before Hull. T22: RegistrationNumber filled -> BQ. T23: Hull filled -> QB.
