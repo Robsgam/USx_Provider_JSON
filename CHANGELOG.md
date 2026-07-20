@@ -7,7 +7,7 @@ not every build bump. Routine pipeline rebuilds are omitted unless they carry fu
 
 ## NJ_NJCJIS
 
-Current: **v4.8** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `NJ_NJCJIS_v4.8.json`
+Current: **v4.9** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `NJ_NJCJIS_v4.9.json`
 
 ### v4.8 (2026-07-01) — Metadata-driven keyRef rename (DQ/DQN/RQ/RQN did not exist in devdoc)
 - DriverLicenseQuery `DQ`→`FULL`, `DQN`→`FULLN` (devdoc keyReference is `FULL` for both combos, confirmed in raw devdoc XML)

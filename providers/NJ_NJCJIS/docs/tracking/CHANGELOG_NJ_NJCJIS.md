@@ -2,9 +2,14 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.8** | Generated: 2026-07-06
+Current: **v4.9** | Generated: 2026-07-20
 
 ---
+
+## v4.9 -- 2026-07-20 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v4.8 -- 2026-07-01 -- Metadata-driven keyRef rename (DQ/DQN/RQ/RQN did not exist in devdoc)
 

@@ -34,7 +34,7 @@ Status table instead (this table's Notes column is intentionally terse).
 
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
-| 1 | NJ_NJCJIS | v4.8 |  | 61P/0F/0W | 0 | in-scope, single-JSON |
+| 1 | NJ_NJCJIS | v4.9 |  | 61P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 2 | HI_HCJDC_OFML | v4.9 |  | 65P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 3 | NY_NYSPIN_EJUSTICE | v4.9 |  | 80P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
 | 4 | AZ_AZDPS | v2.3 | 71P/0F/0W | 71P/0F/0W | 0 | out of scope |
