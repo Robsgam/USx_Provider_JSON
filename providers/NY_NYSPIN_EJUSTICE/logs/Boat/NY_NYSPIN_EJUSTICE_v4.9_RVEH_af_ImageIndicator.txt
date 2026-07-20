@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Boat BoatQuery
+Combo: RVEH_af_ImageIndicator (RVEH_af_ImageIndicator (auto))
+Date: 2026-07-20 10:52:06
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: 8c0d965993652dd6a6309f0b88625683531c06d0f4e8de5f3311f3caac924006
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","RegistrationNumber":"FL1234AB"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KXZY99GB22EA7J7BZW4HM7R3">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KXZY99GB22EA7J7BZW4HM7R3</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KXZY99GB22EA7J7BZW4HM7R3
+  ImageIndicator                 N
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01KXZY99GB22EA7J7BZW4HM7R3). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RVEH; firedMessageType=BoatQuery.
+
+RESULT: PASS
