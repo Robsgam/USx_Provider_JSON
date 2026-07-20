@@ -1,0 +1,84 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Vehicle VehicleRegistrationQuery
+Combo: RCAR (RCAR (auto))
+Date: 2026-07-20 13:58:17
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: 6ec0e770ccbe562e8ee23d92d6be047986234194aa4b835900126766b093cc02
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY0AT230WPKP6J40NCC46CV4">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KY0AT230WPKP6J40NCC46CV4</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>N</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KY0AT230WPKP6J40NCC46CV4
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
+
+NOTES
+-----
+Automated capture (txId 01KY0AT230WPKP6J40NCC46CV4). kind=combo; anyField=; expectedKeyRef=RCAR; firedMessageType=VehicleRegistrationQuery.
+
+RESULT: PASS
