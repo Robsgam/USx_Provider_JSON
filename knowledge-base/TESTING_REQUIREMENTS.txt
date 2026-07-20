@@ -755,6 +755,43 @@ SECTION 11b -- SQVR FORMAT STANDARD
   markers go back to [PENDING] -- a rebuild can never leave a stale CONFIRMED.
 
 ================================================================================
+SECTION 11c -- ANY-FIELD TOGGLE TESTS MUST DIFFER FROM THE DEFAULT
+================================================================================
+
+  An any-field (`_af_<field>`) test exists to prove an officer CAN change an
+  OPTIONAL field away from what the form already sends by default, and that the
+  changed value transmits. It therefore proves nothing unless the value it fills
+  DIFFERS from that field's effective default. The effective default for the
+  manual USx-tenant test = the QIF form `initialValue` (what the base combo test
+  leaves on the wire) -- NOT the combo `requirements.defaults[]` (that is a CAD-
+  dispatch concern and does not appear on the default-bundle manual wire; proven
+  2026-07-20: FL_FCIC Boat base QBNCICNumber wire shows ImageIndicator=N from the
+  form default but NOT relatedHitSearchIndicator, which has only a combo default).
+
+  SILENT-HOLLOW BUG (found 2026-07-20, 6 providers): emit_test_plan.ps1's any-field
+  value came from a resolver constant that, for the toggle-prone fields, happened
+  to EQUAL the field's real default -- imageIndicator 'N', relatedHitSearchIndicator
+  'Y', reasonCode/purposeCode 'C', licensePlateTypeCode 'PC', licensePlateYear
+  '2026'. The `_af_` test re-sent the default and proved nothing, silently, for
+  weeks -- 5 of 6 "finished"/block_entity-locked providers (NJ 10, HI 10, FL 22,
+  TX 25, CA 2 hollow logs) rested partly on empty toggle coverage. The tell: the
+  toggle test's wire value == the base combo test's wire value for that field.
+
+  RULE: the toggle value MUST differ from the field's form default. Derivation
+  (tools/_combo_value_resolver.ps1 Get-ComboToggleValue, applied by
+  emit_test_plan.ps1 only when the resolved value == the form default):
+    - binary Y/N (inferred from the default itself): invert Y<->N;
+    - picklist-backed select (scoped tenant options): first option code != default;
+    - 4-digit year: default - 1;
+    - standard code FormInputs (purpose/reason): curated valid alternate ('C'->'F');
+    - per-provider escape: `<fieldId>.toggle=<value>` line in TEST_VALUE_OVERRIDES.txt.
+  A field with NO form default is already load-bearing (base sends nothing, the
+  toggle adds a value) -- leave it. A field where no distinct valid value can be
+  derived is FLAGGED (emit "Toggle coverage: N ... K hollow") -- never emitted
+  silently. Cross-check: a toggle whose value equals the base combo's value for
+  that field is hollow, full stop, regardless of PASS.
+
+================================================================================
 SECTION 12 -- STANDARD TEST SEQUENCE
 ================================================================================
 

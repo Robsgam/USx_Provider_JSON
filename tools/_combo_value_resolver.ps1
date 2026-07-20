@@ -180,3 +180,75 @@ function Get-ComboTestValue {
         }
     }
 }
+
+function Get-ComboToggleValue {
+    <#
+      Returns a value GUARANTEED distinct from $Default and valid for the field, for use as the
+      "toggled" value in an any-field (`_af_`) test -- whose entire purpose is to prove an officer
+      CAN change an optional field away from its default and have that change transmit. The base
+      combo test already sends the field at its default (via form initialValue / combo defaults[]),
+      so a toggle value equal to the default proves nothing (the "hollow toggle" bug: every
+      Get-ComboTestValue constant that happens to equal a provider's real default -- imageIndicator
+      'N', relatedHitSearchIndicator 'Y', reasonCode/purposeCode 'C', licensePlateTypeCode 'PC',
+      licensePlateYear '2026' -- produced a toggle test that re-sent the default; found 2026-07-20
+      across 6 providers). Returns $null when no distinct valid value can be safely derived -- the
+      caller must then FLAG the test as non-load-bearing rather than emit it silently.
+
+      Derivation order (first match wins):
+        1. Per-provider override: TEST_VALUE_OVERRIDES.txt '<fieldId>.toggle=<value>' (escape hatch
+           for domain-specific fields; loaded by Get-ComboValueOverrides, same file as base values).
+        2. Binary Y/N (keyed off the DEFAULT value, not the field name -- covers every Y/N field:
+           imageIndicator, related(Hit)?Search(Hit)?Indicator, randomRequest, appsRequestIndicator,
+           expandedBirthDateSearchCode, ...): invert Y<->N.
+        3. Picklist-backed select (>=2 scoped tenant options): first option whose leading code
+           token != $Default (usx_lib matches ^CODE) -- guaranteed tenant-valid.
+        4. Four-digit year (licensePlateYear / $Default ~ ^\d{4}$): $Default - 1.
+        5. Known standard code FormInputs with no tenant picklist (purposeCode/purposeCodeDH/
+           reasonCode): curated Nlets-standard alternate ('C' -> 'F'); overridable by step 1.
+        6. Else $null (caller flags hollow).
+    #>
+    param(
+        [Parameter(Mandatory)][string]$FieldId,
+        [string]$Default = $null,
+        [string[]]$PicklistOptions = @(),
+        [bool]$IsOOS = $false,
+        [hashtable]$Overrides = @{}
+    )
+
+    # 1. Per-provider toggle override (<fieldId>.toggle=<value>).
+    $toggleKey = "$FieldId.toggle"
+    foreach ($k in $Overrides.Keys) {
+        if ($k -ieq $toggleKey) { return $Overrides[$k] }
+    }
+
+    $def = "$Default".Trim()
+
+    # 2. Binary Y/N -- invert against the default (domain inferred from the default value).
+    if ($def -ieq 'Y') { return 'N' }
+    if ($def -ieq 'N') { return 'Y' }
+
+    # 3. Picklist-backed select -- first scoped option whose leading code token differs.
+    if (@($PicklistOptions).Count -ge 2) {
+        foreach ($opt in $PicklistOptions) {
+            $code = ("$opt" -split '\s')[0]        # usx_lib matches ^CODE; option text is "CODE - Label"
+            if ($code -and $code -ine $def) { return $code }
+        }
+    }
+
+    # 4. Four-digit year.
+    if ($FieldId -match '(?i)licensePlateYear' -or $def -match '^\d{4}$') {
+        $yr = 0
+        if ([int]::TryParse($def, [ref]$yr) -and $yr -gt 1) { return "$($yr - 1)" }
+    }
+
+    # 5. Known standard code FormInputs (no tenant picklist). Nlets purpose/reason codes:
+    #    'C' (criminal justice) is the near-universal default; 'F' (firearms-related) is a
+    #    standard, widely-valid alternate. Overridable via step 1 for any tenant that rejects it.
+    if ($FieldId -match '(?i)^(caRequestPurposeCode|purposeCode|reasonCode)') {
+        if ($def -ieq 'C') { return 'F' }
+        if ($def -and $def -ine 'C') { return 'C' }
+    }
+
+    # 6. No distinct valid value derivable -- caller flags as hollow.
+    return $null
+}

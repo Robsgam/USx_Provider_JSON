@@ -120,6 +120,24 @@ if (Test-Path $ovResult.Path) {
     Write-Host "[emit] $($script:ValueOverrides.Count) test-value override(s) loaded from $($ovResult.Path)"
 }
 
+# Tenant picklists (docs/reference/TENANT_PICKLISTS.json) loaded ONCE up front. Used both by the
+# any-field toggle-value derivation below (to pick a tenant-valid alternate for a select field)
+# and by the tenant-picklist gate at the end of this script. Absent for un-scoped providers.
+$script:TenantPicklists = $null
+$tpPathUp = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TENANT_PICKLISTS.json'
+if (Test-Path $tpPathUp) {
+    $script:TenantPicklists = Get-Content $tpPathUp -Raw | ConvertFrom-Json
+}
+# Scoped dropdown options for an (entity, fieldId), or @() if not a scoped select.
+function Get-ScopedOptions([string]$entity, [string]$fid) {
+    if (-not $script:TenantPicklists -or -not $script:TenantPicklists.entities) { return @() }
+    $entObj = $script:TenantPicklists.entities.PSObject.Properties[$entity].Value
+    if (-not $entObj -or -not $entObj.fields) { return @() }
+    $fldObj = $entObj.fields.PSObject.Properties[$fid].Value
+    if (-not $fldObj -or $fldObj.error) { return @() }
+    return @($fldObj.options)
+}
+
 # Test value per DOM fieldId (case-insensitive). Delegates to the shared resolver
 # (tools/_combo_value_resolver.ps1) -- see that module's header for the documented
 # behavioral differences from generate_test_matrix.ps1's copy of this same-named function.
@@ -136,6 +154,30 @@ function Note-IfUnresolved([string]$ctx, [string]$fid, $val) {
     if (($null -eq $val -or $val -eq '') -and $fid -notmatch $script:KnownEmpty) {
         $script:Unresolved.Add("${ctx}: '$fid' has no test value (unmapped in Get-TestValue)")
     }
+}
+
+# Toggle-coverage tracking + derivation for any[] fields. An any-field test only proves the
+# officer can change an optional field AWAY from its default if the value it fills DIFFERS from
+# that field's form default (the base combo test already sends the default). When the resolved
+# base value equals the default, derive a distinct valid toggle value (or flag the test hollow).
+$script:ToggleStats = @{ anyField = 0; inverted = 0; hollow = 0 }
+function Get-AnyFillValue([string]$ent, [string]$ff, [bool]$isOOS, $formDefaults, [bool]$CountStats = $true) {
+    $val = Get-TestValue $ff $isOOS
+    $default = $null
+    if ($formDefaults -and $formDefaults.Contains($ff)) { $default = "$($formDefaults[$ff])" }
+    if ($default -and "$val" -eq "$default") {
+        $opts = Get-ScopedOptions $ent $ff
+        $toggle = Get-ComboToggleValue -FieldId $ff -Default $default -PicklistOptions $opts -IsOOS $isOOS -Overrides $script:ValueOverrides
+        if ($toggle -and "$toggle" -ne "$default") {
+            if ($CountStats) { $script:ToggleStats.inverted++ }
+            return "$toggle"
+        }
+        if ($CountStats) {
+            $script:ToggleStats.hollow++
+            $script:Unresolved.Add("${ent} any[]: '$ff' toggle value '$val' == form default '$default' -- hollow toggle test (add '$ff.toggle=<value>' to TEST_VALUE_OVERRIDES.txt)")
+        }
+    }
+    return $val
 }
 
 # Field DOM ids present in an entity's QIF (Craft.js flat layout -> props.fieldId).
@@ -287,13 +329,16 @@ foreach ($ent in $entities) {
             # individual any[] field tests + all-together (full pass)
             $anyNames = @($c.requirements.any | Where-Object { $_ })
             if ($anyNames.Count -gt 0) {
-                # One test per individual any[] field
+                $entFormDefaults = $formDefaultsByEntity[$ent]
+                # One test per individual any[] field. Value must DIFFER from the field's form
+                # default (else the toggle proves nothing -- base combo already sends the default).
                 foreach ($af in $anyNames) {
                     $ff  = Resolve-FieldId $af $q $fieldIds
                     if (@($hiddenIds) -icontains $ff) { continue }   # hidden gate-feeder (e.g. automated Attention): nothing to type
-                    $val = Get-TestValue $ff $isOOS
+                    $val = Get-AnyFillValue $ent $ff $isOOS $entFormDefaults
                     Note-IfUnresolved "$ent $kr any[]" $ff $val
                     if ($null -ne $val -and $val -ne '') {
+                        $script:ToggleStats.anyField++
                         $n++
                         $tests.Add([ordered]@{
                             n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
@@ -303,8 +348,16 @@ foreach ($ent in $entities) {
                         })
                     }
                 }
-                # All any[] fields together
-                $anyFills = Build-Fills ($setNames + $anyNames) $q $fieldIds $true $hiddenIds
+                # All any[] fields together. Reuse the same toggle-aware derivation so the combined
+                # test also carries non-default optionals (CountStats=$false -- the per-field loop
+                # above already counted/flagged each field, don't double-count here).
+                $anyFills = @(@($fills))
+                foreach ($af in $anyNames) {
+                    $ff = Resolve-FieldId $af $q $fieldIds
+                    if (@($hiddenIds) -icontains $ff) { continue }
+                    $v = Get-AnyFillValue $ent $ff $true $entFormDefaults $false
+                    if ($null -ne $v -and $v -ne '') { $anyFills += [ordered]@{ fieldId = $ff; value = "$v" } }
+                }
                 if (@($anyFills).Count -gt @($fills).Count) {
                     $n++
                     $tests.Add([ordered]@{
@@ -397,6 +450,14 @@ if (-not $OutFile) {
 Write-Host "[PASS] Test plan written: $OutFile ($($tests.Count) tests, full pass)" -ForegroundColor Green
 $tests | Where-Object { $_.kind -eq 'combo' } | ForEach-Object { "  T$($_.n) $($_.entity) $($_.comboKeyRef): $((@($_.fills | ForEach-Object { $_.fieldId + '=' + $_.value })) -join ', ')" } | Select-Object -First 12 | ForEach-Object { Write-Host $_ -ForegroundColor Gray }
 
+# Toggle-coverage summary -- any-field tests only prove a toggle if their value differs from the
+# field default. Report inversions + any residual hollow tests so a hollow toggle never again
+# passes unnoticed (the 6-provider silent-hollow bug, 2026-07-20).
+Write-Host ("[{0}] Toggle coverage: {1} any-field test(s), {2} inverted from default, {3} hollow (flagged below)" -f `
+    $(if ($script:ToggleStats.hollow -gt 0) { 'WARN' } else { 'PASS' }), `
+    $script:ToggleStats.anyField, $script:ToggleStats.inverted, $script:ToggleStats.hollow) `
+    -ForegroundColor $(if ($script:ToggleStats.hollow -gt 0) { 'Yellow' } else { 'Green' })
+
 # Trust summary -- surface any unmapped fields / missing guardrails loudly (non-silent).
 if ($script:Unresolved.Count -gt 0) {
     Write-Host ""
@@ -411,9 +472,8 @@ if ($script:Unresolved.Count -gt 0) {
 # (docs/reference/TENANT_PICKLISTS.json via __usxScopePicklists + import_picklists), every
 # select fill value must match a tenant option the way usx_lib matches it (^CODE anchored).
 # Catches the CA-gunTypeCode / NJ-GunMake class BEFORE any browser run. Hard FAIL (exit 1).
-$tpPath = Join-Path (Split-Path (Resolve-Path $Path) -Parent) 'docs\reference\TENANT_PICKLISTS.json'
-if (Test-Path $tpPath) {
-    $tp = Get-Content $tpPath -Raw | ConvertFrom-Json
+$tp = $script:TenantPicklists   # loaded once up front (also used by the toggle-value derivation)
+if ($tp) {
     $tpFails = @(); $tpWarns = @()
     foreach ($t in $tests) {
         $entObj = if ($tp.entities) { $tp.entities.PSObject.Properties[$t.entity].Value } else { $null }
