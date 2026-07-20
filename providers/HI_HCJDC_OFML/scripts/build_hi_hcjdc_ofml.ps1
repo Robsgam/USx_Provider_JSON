@@ -174,7 +174,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.9",
+    [string]$Version = "4.10",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -669,9 +669,9 @@ $vehLayout = MakeLayouts @(
         title = 'SEARCH OPTIONS'
         rows  = @(
             @{ id = 'ROW_VEH_OPT1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type - Auto (Hawaii queries)' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
+                @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
                 @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
-                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
+                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image (if available)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
             )}
         )
     }
@@ -683,8 +683,8 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'licensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'License Plate Number' '10' 'ROW_VEH_PLATE1' }
             )}
             @{ id = 'ROW_VEH_PLATE2'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type - out-of-state plates only' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_PLATE2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year - out-of-state plates only' '4' 'ROW_VEH_PLATE2' }
+                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state plates only)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_PLATE2' }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (out-of-state plates only)' '4' 'ROW_VEH_PLATE2' }
             )}
         )
     }
@@ -757,7 +757,7 @@ $perLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_PER_DL3'; cols = @('6','6'); fields = @(
                 @{ id = 'birthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_PER_DL3' }
-                @{ id = 'sexCode_Input';   node = Sel 'SexCode'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL3' }
+                @{ id = 'sexCode_Input';   node = Sel 'SexCode'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL3' }
             )}
         )
     }
@@ -787,8 +787,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DH2' }
             )}
             @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth - required with Name' 'ROW_PER_DH3' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (required with Name)' 'ROW_PER_DH3' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
             )}
             # v2.7: hidden Attention gate-feeder. The DH QIDM Attention attribute
             # (CommsysGetLastNameFirstNameInitialRuleHandler) is gated out of
