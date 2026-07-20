@@ -205,19 +205,19 @@ v2.1 changes from v2.0:
   CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on all 4 combos
   LIMITATION #30 applies (no State default)
 
-  BVEH -- Registration Number + State OOS [PENDING]
+  BVEH -- Registration Number + State OOS [CONFIRMED]
     set: registrationNumber, registrationState
     any: imageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: BVEH
 
-  BVIN -- Hull ID + State OOS [PENDING]
+  BVIN -- Hull ID + State OOS [CONFIRMED]
     set: boatHullIdNumber, registrationState
     any: imageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
     keyReference: BVIN
 
-  RVEH -- Registration Number, NY (no state) [PENDING]
+  RVEH -- Registration Number, NY (no state) [CONFIRMED]
     set: registrationNumber
     any: imageIndicator
     defaults: ImageIndicator=Y
@@ -228,7 +228,7 @@ v2.1 changes from v2.0:
       (v4.1/v4.3/v4.4/v4.6). NOTE: recurring bookkeeping cost of the shared RVEH/RCAR keyRefs --
       candidate for a post_test/SQVR entity-disambiguation fix.
 
-  RCAR -- Hull ID, NY (no state) [PENDING]
+  RCAR -- Hull ID, NY (no state) [CONFIRMED]
     set: boatHullIdNumber
     any: imageIndicator
     defaults: ImageIndicator=Y
