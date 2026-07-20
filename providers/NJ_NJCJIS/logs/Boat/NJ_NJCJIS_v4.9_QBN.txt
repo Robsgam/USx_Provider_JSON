@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: NJ_NJCJIS Boat BoatQuery
+Combo: QBN (QBN (auto))
+Date: 2026-07-20 13:47:18
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: 535ce6b3e5e16837b1d5e29de9c1c33a91efd34bbab064bdf7977ca8fbd90d4d
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY0A6QDQ7R6G3JG1ZVM4J08A">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KY0A6QDQ7R6G3JG1ZVM4J08A</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY0A6QDQ7R6G3JG1ZVM4J08A
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 N
+
+NOTES
+-----
+Automated capture (txId 01KY0A6QDQ7R6G3JG1ZVM4J08A). kind=combo; anyField=; expectedKeyRef=QBN; firedMessageType=BoatQuery.
+
+RESULT: PASS
