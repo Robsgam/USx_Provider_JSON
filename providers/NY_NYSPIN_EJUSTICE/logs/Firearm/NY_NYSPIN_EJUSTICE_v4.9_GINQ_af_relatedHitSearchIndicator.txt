@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Firearm GunQuery
+Combo: GINQ_af_relatedHitSearchIndicator (GINQ_af_relatedHitSearchIndicator (auto))
+Date: 2026-07-20 14:03:12
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: cb45e07434595653963bee41d044a7a6fcc9e3fd3360119a2df4a29b106b6798
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunSerialNumber":"GUN12345","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY0B2VQWNMCXT683HTBJPGKZ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KY0B2VQWNMCXT683HTBJPGKZ</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KY0B2VQWNMCXT683HTBJPGKZ
+  RelatedHitSearchIndicator      N
+  GunSerialNumber                GUN12345
+
+NOTES
+-----
+Automated capture (txId 01KY0B2VQWNMCXT683HTBJPGKZ). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=GINQ; firedMessageType=GunQuery.
+
+RESULT: PASS
