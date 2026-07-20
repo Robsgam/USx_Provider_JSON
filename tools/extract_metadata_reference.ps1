@@ -64,7 +64,11 @@ if ($providerBundle) {
                 $anyFields = @()
                 if ($combo.requirements -and $combo.requirements.set) { $setFields = @($combo.requirements.set) }
                 if ($combo.requirements -and $combo.requirements.any) { $anyFields = @($combo.requirements.any) }
-                $builtCombos[$kr] = @{
+                # Keyed by (query, keyRef), not bare keyRef: two QIDMs in the same provider can
+                # reuse a keyRef name with different field semantics (NY_NYSPIN_EJUSTICE's Boat
+                # vs Vehicle both define RVEH/RCAR) -- a bare-keyRef key lets whichever QIDM is
+                # processed last silently overwrite the other's entry.
+                $builtCombos["$query::$kr"] = @{
                     query = $query
                     set = $setFields
                     any = $anyFields
@@ -327,7 +331,7 @@ foreach ($qName in $includeQueries) {
 
         foreach ($kr in $builtKrs) {
             $baseKr = $kr -replace '\.[A-Z0-9]+$', ''
-            $comboData = $builtCombos[$kr]
+            $comboData = $builtCombos["$qName::$kr"]
             $setStr = if ($comboData.set.Count -gt 0) { "set[$($comboData.set -join ', ')]" } else { "" }
             [void]$sb.AppendLine("  BUILT   $($kr.PadRight(14)) $setStr")
         }
