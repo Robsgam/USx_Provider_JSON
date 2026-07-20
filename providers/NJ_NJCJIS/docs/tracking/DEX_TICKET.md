@@ -6,5 +6,6 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status (2026-06-25): In Progress
 Post the changelog here on every version bump (dump first, then per-version diff, led by the
 🤖 auto-update attribution line; release line after that version's live testing passes).
 
-**Posted so far:** initial dump pending — attach the NJ changelog dump on the next NJ
-rebuild/retest pass, then per-version updates from there.
+**Posted so far:**
+- 2026-07-20 — comment 782204: initial changelog dump + v4.9 cosmetic-relabel release line
+  (all 5 entities re-tested/blocked, enforce 28P/0F/0W). Bert Anzini USx test tenant note included.
