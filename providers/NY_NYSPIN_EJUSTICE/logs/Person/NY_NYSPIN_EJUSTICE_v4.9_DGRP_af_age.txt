@@ -1,7 +1,7 @@
 ﻿================================================================
-TEST LOG: NY_NYSPIN_EJUSTICE Person DriverLicenseQuery
-Combo: DLIC (DLIC (auto))
-Date: 2026-07-20 11:42:11
+TEST LOG: NY_NYSPIN_EJUSTICE Person NyNyspinDriverLicenseNameQuery
+Combo: DGRP_af_age (DGRP_af_age (auto))
+Date: 2026-07-20 11:42:05
 Result: PASS
 JSON Version: 4.9
 Entity Fingerprint: 5610e1a16407cd0f7c8ca6f1fd6522e42ba30070ea1bd19404f641097cb26db4
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"Y","ImageIndicatorDH":"Y","OperatorLicenseNumber":"D999888777","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C","requestorDH":"X"}
+{"ImageIndicator":"Y","ImageIndicatorDH":"Y","NameFirstDGRP":"JOHN","NameLastDGRP":"DOE","age":"5","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C","requestorDH":"X"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KY02T6DACQTX8PYFTKRAXH6H">
+    <api:Transaction id="01KY02V4PS8H25EMT3703Y9YET">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -35,10 +35,10 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KY02T6DACQTX8PYFTKRAXH6H</Id>
-            <ImageIndicator>Y</ImageIndicator>
-            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <MessageType>NyNyspinDriverLicenseNameQuery</MessageType>
+            <Id>01KY02V4PS8H25EMT3703Y9YET</Id>
+            <Age>5</Age>
+            <Name>DOE, JOHN</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -52,17 +52,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "dlNumber":  "D999888777"
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -71,12 +61,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KY02T6DACQTX8PYFTKRAXH6H
-  ImageIndicator                 Y
-  OperatorLicenseNumber          D999888777
+  Id                             01KY02V4PS8H25EMT3703Y9YET
+  Age                            5
+  Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01KY02T6DACQTX8PYFTKRAXH6H). kind=combo; anyField=; expectedKeyRef=DLIC; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KY02V4PS8H25EMT3703Y9YET). kind=any-field; anyField=age; expectedKeyRef=DGRP; firedMessageType=NyNyspinDriverLicenseNameQuery.
 
 RESULT: PASS
