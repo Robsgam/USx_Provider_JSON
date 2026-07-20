@@ -317,7 +317,7 @@ Architecture notes:
     non-FL rule is a LIMITATION -- dropdown + card hint only). Hull>Reg guardrail applied
     across all 3 families: Reg combos carry BoatHullIdNumber NOT_EXISTS.
 
-  FBQBoatHullIdNumber -- in-state Hull ID [PENDING]
+  FBQBoatHullIdNumber -- in-state Hull ID [CONFIRMED]
     set: BoatHullIdNumber
     any: decalNumber, titleLienInformation, ImageIndicator (Reg removed v7.1, LIMIT #1 de-bleed)
     conditions: RegistrationState NOT_EXISTS AND relatedHitSearchIndicator NOT_EXISTS
@@ -325,7 +325,7 @@ Architecture notes:
     keyReference: FBQBoatHullIdNumber
     evidence: logs/Boat/FL_FCIC_v7.1_FBQBoatHullIdNumber.txt
 
-  FBQDecalNumber -- in-state Decal [PENDING]
+  FBQDecalNumber -- in-state Decal [CONFIRMED]
     set: decalNumber
     any: BoatHullIdNumber, titleLienInformation, ImageIndicator (Reg removed v7.1)
     conditions: RegistrationState NOT_EXISTS
@@ -333,7 +333,7 @@ Architecture notes:
     keyReference: FBQDecalNumber
     evidence: logs/Boat/FL_FCIC_v7.1_FBQDecalNumber.txt
 
-  FBQRegistrationNumber -- in-state Registration [PENDING]
+  FBQRegistrationNumber -- in-state Registration [CONFIRMED]
     set: RegistrationNumber
     any: decalNumber, titleLienInformation, ImageIndicator
     conditions: RegistrationState NOT_EXISTS AND relatedHitSearchIndicator NOT_EXISTS
@@ -342,7 +342,7 @@ Architecture notes:
     keyReference: FBQRegistrationNumber
     evidence: logs/Boat/FL_FCIC_v7.1_FBQRegistrationNumber.txt
 
-  FBQTitleLienInformation -- in-state Title/Lien [PENDING]
+  FBQTitleLienInformation -- in-state Title/Lien [CONFIRMED]
     set: titleLienInformation
     any: BoatHullIdNumber, decalNumber, ImageIndicator (Reg removed v7.1)
     conditions: RegistrationState NOT_EXISTS
@@ -350,7 +350,7 @@ Architecture notes:
     keyReference: FBQTitleLienInformation
     evidence: logs/Boat/FL_FCIC_v7.1_FBQTitleLienInformation.txt
 
-  QBBoatHullIdNumber -- stolen Hull ID [PENDING]
+  QBBoatHullIdNumber -- stolen Hull ID [CONFIRMED]
     set: BoatHullIdNumber, relatedHitSearchIndicator
     any: ImageIndicator (Reg removed v6.9)
     conditions: relatedHitSearchIndicator EXISTS (explicit Stolen gate, v6.9)
@@ -358,28 +358,28 @@ Architecture notes:
     keyReference: QBBoatHullIdNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBBoatHullIdNumber.txt
 
-  QBCoastGuardDocumentNumber -- stolen Coast Guard Doc [PENDING]
+  QBCoastGuardDocumentNumber -- stolen Coast Guard Doc [CONFIRMED]
     set: coastGuardDocumentNumber
     any: ImageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N
     keyReference: QBCoastGuardDocumentNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBCoastGuardDocumentNumber.txt
 
-  QBNCICNumber -- stolen NCIC Number [PENDING]
+  QBNCICNumber -- stolen NCIC Number [CONFIRMED]
     set: NCICNumber
     any: ImageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N
     keyReference: QBNCICNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBNCICNumber.txt
 
-  QBProcessControlNumber -- stolen Process Control Number [PENDING]
+  QBProcessControlNumber -- stolen Process Control Number [CONFIRMED]
     set: processControlNumber
     any: ImageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N
     keyReference: QBProcessControlNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBProcessControlNumber.txt
 
-  QBRegistrationNumber -- stolen Registration [PENDING]
+  QBRegistrationNumber -- stolen Registration [CONFIRMED]
     set: RegistrationNumber, relatedHitSearchIndicator
     any: ImageIndicator
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg, QB family)
@@ -388,20 +388,20 @@ Architecture notes:
     keyReference: QBRegistrationNumber
     evidence: logs/Boat/FL_FCIC_v7.1_QBRegistrationNumber.txt
 
-  BQName -- OOS Name + DOB + DestState [PENDING]
+  BQName -- OOS Name + DOB + DestState [CONFIRMED]
     set: BirthDate, NameLast, NameFirst, RegistrationState
     any: BoatHullIdNumber, RegistrationNumber
     keyReference: BQName
     Name uses FormatStringRuleHandler arguments=[', ']; BirthDate yyyy-MM-dd -> yyyyMMdd
     evidence: logs/Boat/FL_FCIC_v7.1_BQName.txt
 
-  BQBoatHullIdNumber -- OOS Hull + DestState [PENDING]
+  BQBoatHullIdNumber -- OOS Hull + DestState [CONFIRMED]
     set: BoatHullIdNumber, RegistrationState
     any: (empty; Reg removed v6.9)
     keyReference: BQBoatHullIdNumber
     evidence: logs/Boat/FL_FCIC_v7.1_BQBoatHullIdNumber.txt
 
-  BQRegistrationNumber -- OOS Registration + DestState [PENDING]
+  BQRegistrationNumber -- OOS Registration + DestState [CONFIRMED]
     set: RegistrationNumber, RegistrationState
     any: (empty)
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg, BQ OOS family)
