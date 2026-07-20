@@ -590,6 +590,11 @@ $vehLayout = MakeLayouts @(
             # CHECK 15's suggested hint is a bootstrapping aid for initial build/standup, not a
             # mandate on final officer-facing wording. Do not "fix" this back to "(auto)" or
             # "(default X)" in a future automated labeling pass.
+            # LABEL-OVERRIDE: LicensePlateTypeCode -- Rob's explicit exception; bare "Plate Type" is
+            # the intended officer-facing wording. Merely-defaulted (initialValue=PC), officer-editable,
+            # any[] optional -- CHECK 15 Rule 3's "(optional)" qualifier is not wanted here.
+            # LABEL-OVERRIDE: LicensePlateYear -- Rob's explicit exception; bare "Plate Year" intended
+            # (initialValue=current year, officer-editable, any[] optional).
             @{ id = 'ROW_VEH_1'; cols = @('4','2','2'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN)' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
@@ -689,10 +694,10 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (Name search)'                                 'ROW_PER_DH_3' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (Name search)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
                 @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code (out-of-state)' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
-                # NOTE (v4.9, manual/Rob-confirmed): bare label, no parenthetical -- prefilled via
-                # initialValue, officer-editable. verify_build CHECK 15 rule 3 WARN is accepted
-                # (see Vehicle's Plate Type/Year above) -- do not "fix" this to "(auto)" or
-                # "(default X)" in a future automated labeling pass.
+                # LABEL-OVERRIDE: nyNyspinTransactionNameDH -- Rob's explicit exception; bare
+                # "Transaction Type" is the intended wording (prefilled initialValue=DALL,
+                # officer-editable, any[] optional). CHECK 15 Rule 3's "(optional)" qualifier is not
+                # wanted -- do not "fix" this to "(auto)"/"(default X)" in a future labeling pass.
                 @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
             )}
             # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
