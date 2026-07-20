@@ -1,10 +1,10 @@
-================================================================
+﻿================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Vehicle VehicleRegistrationQuery
 Combo: RCAR_af_ImageIndicator (RCAR_af_ImageIndicator (auto))
-Date: 2026-07-17 11:17:41
+Date: 2026-07-20 11:37:17
 Result: PASS
 JSON Version: 4.9
-Entity Fingerprint: f2d61e643ca94c0c2c74896ffdfb804fb9c20897b14c0018c5d73212c91ed1b0
+Entity Fingerprint: 6ec0e770ccbe562e8ee23d92d6be047986234194aa4b835900126766b093cc02
 Tier: Full
 ================================================================
 
@@ -17,26 +17,26 @@ COMMSYS XML
 <?xml version="1.0" encoding="UTF-8"?>
 <api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
   <api:Route>
-    <api:Source>MK43RS</api:Source>
+    <api:Source>XX1234567</api:Source>
     <api:Destinations>
       <api:Destination>ConnectCic</api:Destination>
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KXR92YVPS4A7HWY3G2KVPFD5">
+    <api:Transaction id="01KY02QNN9AE37FH27P4HYZJPX">
       <LawEnforcementTransaction version="1.0">
         <Session>
-          <Id>MK43RS</Id>
+          <Id>XX1234567</Id>
           <Authentication>
             <UserName>MK43RS</UserName>
-            <ORI>MK1234567</ORI>
-            <Mnemonic>MK1234567</Mnemonic>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
           </Authentication>
         </Session>
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KXR92YVPS4A7HWY3G2KVPFD5</Id>
+            <Id>01KY02QNN9AE37FH27P4HYZJPX</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <ImageIndicator>N</ImageIndicator>
           </Request>
@@ -54,13 +54,13 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "vinNumber": "1HGCM82633A123456"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -69,16 +69,16 @@ No results were created
 FIELD ANALYSIS
 --------------
 AUTO-EXTRACTED FROM COMMSYS XML:
-  Id                             MK43RS
+  Id                             XX1234567
   UserName                       MK43RS
-  ORI                            MK1234567
-  Mnemonic                       MK1234567
-  Id                             01KXR92YVPS4A7HWY3G2KVPFD5
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KY02QNN9AE37FH27P4HYZJPX
   VehicleIdentificationNumber    1HGCM82633A123456
   ImageIndicator                 N
 
 NOTES
 -----
-Automated capture (txId 01KXR92YVPS4A7HWY3G2KVPFD5). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RCAR; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KY02QNN9AE37FH27P4HYZJPX). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RCAR; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

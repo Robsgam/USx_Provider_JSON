@@ -1,10 +1,10 @@
-================================================================
+﻿================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Person DriverLicenseQuery
 Combo: DLICN_any (DLICN_any (auto))
-Date: 2026-07-17 11:17:40
+Date: 2026-07-20 11:42:12
 Result: PASS
 JSON Version: 4.9
-Entity Fingerprint: c5e6a9df72530326eb127c3c8302bd07114fcff1f79f843abee33ef2ea9d200c
+Entity Fingerprint: 5610e1a16407cd0f7c8ca6f1fd6522e42ba30070ea1bd19404f641097cb26db4
 Tier: Full
 ================================================================
 
@@ -17,26 +17,26 @@ COMMSYS XML
 <?xml version="1.0" encoding="UTF-8"?>
 <api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
   <api:Route>
-    <api:Source>MK43RS</api:Source>
+    <api:Source>XX1234567</api:Source>
     <api:Destinations>
       <api:Destination>ConnectCic</api:Destination>
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KXRA4KVJKCK5W7Z2X1WX0AGV">
+    <api:Transaction id="01KY02T36850R5PNM2V8EEX3C1">
       <LawEnforcementTransaction version="1.0">
         <Session>
-          <Id>MK43RS</Id>
+          <Id>XX1234567</Id>
           <Authentication>
             <UserName>MK43RS</UserName>
-            <ORI>MK1234567</ORI>
-            <Mnemonic>MK1234567</Mnemonic>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
           </Authentication>
         </Session>
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KXRA4KVJKCK5W7Z2X1WX0AGV</Id>
+            <Id>01KY02T36850R5PNM2V8EEX3C1</Id>
             <ImageIndicator>N</ImageIndicator>
             <State>GA</State>
             <SexCode>M</SexCode>
@@ -57,15 +57,15 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "lastName": "DOE",
-    "firstName": "JOHN",
-    "sexAttrId": "69509804595",
-    "dateOfBirth": "1990-01-15",
-    "registrationStateAttrId": "69509801326"
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "sexAttrId":  "69509804595",
+                         "dateOfBirth":  "1990-01-15",
+                         "registrationStateAttrId":  "69509801326"
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -74,11 +74,11 @@ No results were created
 FIELD ANALYSIS
 --------------
 AUTO-EXTRACTED FROM COMMSYS XML:
-  Id                             MK43RS
+  Id                             XX1234567
   UserName                       MK43RS
-  ORI                            MK1234567
-  Mnemonic                       MK1234567
-  Id                             01KXRA4KVJKCK5W7Z2X1WX0AGV
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KY02T36850R5PNM2V8EEX3C1
   ImageIndicator                 N
   State                          GA
   SexCode                        M
@@ -87,6 +87,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KXRA4KVJKCK5W7Z2X1WX0AGV). kind=any; anyField=; expectedKeyRef=DLICN; firedMessageType=DriverLicenseQuery.
+Automated capture (txId 01KY02T36850R5PNM2V8EEX3C1). kind=any; anyField=; expectedKeyRef=DLICN; firedMessageType=DriverLicenseQuery.
 
 RESULT: PASS

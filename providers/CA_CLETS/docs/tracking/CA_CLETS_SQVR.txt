@@ -36,30 +36,30 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   5 live combos (2 NLTS OOS, 2 IA in-state, 1 IN name) + 13 DELETED (IV.4*/IL.A1 conditions
   plate-type routing, v2.5 poisoned-array, server routes via IA.QV instead)
 
-  NLTS.RQ.P -- OOS Plate query (Nlets) [CONFIRMED]
+  NLTS.RQ.P -- OOS Plate query (Nlets) [PENDING]
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
     keyReference: NLTS.RQ.P
 
-  NLTS.RQ.V -- OOS VIN query (Nlets) [CONFIRMED]
+  NLTS.RQ.V -- OOS VIN query (Nlets) [PENDING]
     set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
     keyReference: NLTS.RQ.V
 
-  IA.QV -- In-state Plate query (catchall) [CONFIRMED]
+  IA.QV -- In-state Plate query (catchall) [PENDING]
     set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
     keyReference: IA.QV
 
-  IA.QV_guardrail -- Plate>VIN: Plate+VIN co-entry (no State) -> only IA.QV fires, VIN absent from XML [CONFIRMED]
+  IA.QV_guardrail -- Plate>VIN: Plate+VIN co-entry (no State) -> only IA.QV fires, VIN absent from XML [PENDING]
 
-  IA.QVK -- In-state VIN query [CONFIRMED]
+  IA.QVK -- In-state VIN query [PENDING]
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
     keyReference: IA.QVK
 
-  IN.VP -- Owner Name query (cross-entity) [CONFIRMED]
+  IN.VP -- Owner Name query (cross-entity) [PENDING]
     set: PurposeCode, NameLast, NameFirst
     any: AddressCity, AddressStreetNumber
     keyReference: IN.VP
@@ -78,53 +78,53 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Name cascade: Name+State -> NLTS.DQ.N ; Name+Sex(no State) -> IR.QVC.N ; Name-only -> IN.L1
   (OLN>Name priority: all Name combos gated OLN NOT_EXISTS)
 
-  NLTS.DQ -- OOS OLN query (Nlets) [CONFIRMED]
+  NLTS.DQ -- OOS OLN query (Nlets) [PENDING]
     set: PurposeCode, OperatorLicenseNumber, RegistrationState
     any: (none)
     conditions: RegistrationState EXISTS
     keyReference: NLTS.DQ
 
-  NLTS.DQ.N -- OOS Name query (Nlets) [CONFIRMED]
+  NLTS.DQ.N -- OOS Name query (Nlets) [PENDING]
     set: PurposeCode, NameLast, NameFirst, RegistrationState
     any: BirthDate
     conditions: OLN NOT_EXISTS, RegistrationState EXISTS
     keyReference: NLTS.DQ.N
 
-  IR.QVC.O -- Criminal records by OLN+CII [CONFIRMED]
+  IR.QVC.O -- Criminal records by OLN+CII [PENDING]
     set: PurposeCode, OperatorLicenseNumber, criminalIdNumber
     any: socialSecurityNumber, age
     conditions: RegistrationState NOT_EXISTS, criminalIdNumber EXISTS
     keyReference: IR.QVC.O
 
-  IR.QVC.C -- Criminal records by CII [CONFIRMED]
+  IR.QVC.C -- Criminal records by CII [PENDING]
     set: PurposeCode, criminalIdNumber
     any: socialSecurityNumber, age
     conditions: OLN NOT_EXISTS
     keyReference: IR.QVC.C
 
-  IR.QVC.S -- Criminal records by SSN [CONFIRMED]
+  IR.QVC.S -- Criminal records by SSN [PENDING]
     set: PurposeCode, SocialSecurityNumber
     any: criminalIdNumber, age
     conditions: OLN NOT_EXISTS
     keyReference: IR.QVC.S
 
-  IR.QVC.N -- Criminal records by Name+Sex [CONFIRMED]
+  IR.QVC.N -- Criminal records by Name+Sex [PENDING]
     set: PurposeCode, NameLast, NameFirst, SexCode
     any: BirthDate, age, addressCounty, height, raceCode, appsRequestIndicator
     conditions: OLN NOT_EXISTS, RegistrationState NOT_EXISTS, SexCode EXISTS
     keyReference: IR.QVC.N
 
-  ID.L1 -- In-state OLN query (catchall) [CONFIRMED]
+  ID.L1 -- In-state OLN query (catchall) [PENDING]
     set: PurposeCode, OperatorLicenseNumber
     any: (none)
     conditions: RegistrationState NOT_EXISTS, criminalIdNumber NOT_EXISTS
     keyReference: ID.L1   (real devdoc keyRef; restored v2.12)
 
-  ID.L1_guardrail -- OLN>Name: OLN+Name co-entry (no State/CII) -> only ID.L1 fires, Name absent from XML [CONFIRMED]
-  IR.QVC.O_guardrail -- OLN+CII co-entry (no State) -> IR.QVC.O fires (criminal-records path wins over plain OLN) [CONFIRMED]
-  IR.QVC.N_guardrail -- Name+Sex co-entry (no OLN/State) -> IR.QVC.N fires per documented cascade [CONFIRMED]
+  ID.L1_guardrail -- OLN>Name: OLN+Name co-entry (no State/CII) -> only ID.L1 fires, Name absent from XML [PENDING]
+  IR.QVC.O_guardrail -- OLN+CII co-entry (no State) -> IR.QVC.O fires (criminal-records path wins over plain OLN) [PENDING]
+  IR.QVC.N_guardrail -- Name+Sex co-entry (no OLN/State) -> IR.QVC.N fires per documented cascade [PENDING]
 
-  IN.L1 -- In-state Name query (catchall) [CONFIRMED]
+  IN.L1 -- In-state Name query (catchall) [PENDING]
     set: PurposeCode, NameLast, NameFirst
     any: BirthDate
     conditions: OLN NOT_EXISTS, RegistrationState NOT_EXISTS, SexCode NOT_EXISTS
@@ -137,14 +137,14 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Person | QIDM: CA_CLETS_DriverHistoryQuery | autoSelect: true | queriesToDeselect: DriverLicenseQuery
   2 combos
 
-  NLTS.KQ.N -- Name+DOB+Sex query [CONFIRMED]
+  NLTS.KQ.N -- Name+DOB+Sex query [PENDING]
     set: PurposeCodeDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
     any: RegistrationState
     keyReference: NLTS.KQ.N
 
-  NLTS.KQ.O_guardrail -- OLN>Name DH: OLN+Name+DOB+Sex co-entry -> only NLTS.KQ.O fires, Name absent from XML [CONFIRMED]
+  NLTS.KQ.O_guardrail -- OLN>Name DH: OLN+Name+DOB+Sex co-entry -> only NLTS.KQ.O fires, Name absent from XML [PENDING]
 
-  NLTS.KQ.O -- OLN query [CONFIRMED]
+  NLTS.KQ.O -- OLN query [PENDING]
     set: PurposeCodeDH, OperatorLicenseNumberDH
     any: RegistrationState
     NOTE: BirthDateDH not in any[]; NLTS.KQ.N (Name path) requires BirthDateDH in set[].
@@ -157,12 +157,12 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
   2 combos
 
-  IG.QGH -- Owner Name query (cross-entity) [CONFIRMED]
+  IG.QGH -- Owner Name query (cross-entity) [PENDING]
     set: PurposeCode, NameLast, NameFirst
     any: (none)
     keyReference: IG.QGH
 
-  IG.QGB -- Serial Number query [CONFIRMED]
+  IG.QGB -- Serial Number query [PENDING]
     set: PurposeCode, SerialNumber
     any: FirearmMake, GunCaliber, GunTypeCode
     keyReference: IG.QGB
@@ -174,12 +174,12 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: true
   2 combos
 
-  IP.QA.S -- Serial Number query [CONFIRMED]
+  IP.QA.S -- Serial Number query [PENDING]
     set: PurposeCode, SerialNumber
     any: ArticleTypeCode, ArticleBrand
     keyReference: IP.QA.S
 
-  IP.QA.O -- OAN query [CONFIRMED]
+  IP.QA.O -- OAN query [PENDING]
     set: PurposeCode, OwnerAppliedNumber
     any: ArticleTypeCode, ArticleBrand
     keyReference: IP.QA.O
@@ -191,34 +191,34 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: true
   6 live combos (3 NLTS OOS, 3 IA in-state) + 1 DELETED (IV.4B DMV vessel)
 
-  NLTS.BQ.N -- OOS Owner Name+DOB query (cross-entity) [CONFIRMED]
+  NLTS.BQ.N -- OOS Owner Name+DOB query (cross-entity) [PENDING]
     set: PurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
     any: (none)
     keyReference: NLTS.BQ.N
 
-  NLTS.BQ.H -- OOS Hull ID query [CONFIRMED]
+  NLTS.BQ.H -- OOS Hull ID query [PENDING]
     set: PurposeCode, BoatHullIdNumber, RegistrationState
     any: (none)
     keyReference: NLTS.BQ.H
 
-  NLTS.BQ.R -- OOS Registration query [CONFIRMED]
+  NLTS.BQ.R -- OOS Registration query [PENDING]
     set: PurposeCode, RegistrationNumber, RegistrationState
     any: (none)
     keyReference: NLTS.BQ.R
 
-  IA.QB.H -- In-state Hull ID query [CONFIRMED]
+  IA.QB.H -- In-state Hull ID query [PENDING]
     set: PurposeCode, BoatHullIdNumber
     any: RegistrationState
     keyReference: IA.QB.H
 
-  IA.QB.H_guardrail -- Hull>Reg: Hull+Reg co-entry (no State) -> only IA.QB.H fires, RegistrationNumber absent from XML [CONFIRMED]
+  IA.QB.H_guardrail -- Hull>Reg: Hull+Reg co-entry (no State) -> only IA.QB.H fires, RegistrationNumber absent from XML [PENDING]
 
-  IA.QB.O -- In-state OAN query [CONFIRMED]
+  IA.QB.O -- In-state OAN query [PENDING]
     set: PurposeCode, OwnerAppliedNumber
     any: RegistrationState
     keyReference: IA.QB.O
 
-  IA.QB.R -- In-state Registration query [CONFIRMED]
+  IA.QB.R -- In-state Registration query [PENDING]
     set: PurposeCode, RegistrationNumber
     any: RegistrationState
     keyReference: IA.QB.R

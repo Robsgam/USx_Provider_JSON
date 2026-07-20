@@ -1,10 +1,10 @@
-================================================================
+﻿================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Vehicle VehicleRegistrationQuery
 Combo: RVEHOUT_af_LicensePlateTypeCode (RVEHOUT_af_LicensePlateTypeCode (auto))
-Date: 2026-07-17 11:17:43
+Date: 2026-07-20 11:37:27
 Result: PASS
 JSON Version: 4.9
-Entity Fingerprint: f2d61e643ca94c0c2c74896ffdfb804fb9c20897b14c0018c5d73212c91ed1b0
+Entity Fingerprint: 6ec0e770ccbe562e8ee23d92d6be047986234194aa4b835900126766b093cc02
 Tier: Full
 ================================================================
 
@@ -17,26 +17,26 @@ COMMSYS XML
 <?xml version="1.0" encoding="UTF-8"?>
 <api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
   <api:Route>
-    <api:Source>MK43RS</api:Source>
+    <api:Source>XX1234567</api:Source>
     <api:Destinations>
       <api:Destination>ConnectCic</api:Destination>
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KXR91YRK8MQ00BGTTKFF2961">
+    <api:Transaction id="01KY02PKSRS2EWQ4ZD5D7KA01W">
       <LawEnforcementTransaction version="1.0">
         <Session>
-          <Id>MK43RS</Id>
+          <Id>XX1234567</Id>
           <Authentication>
             <UserName>MK43RS</UserName>
-            <ORI>MK1234567</ORI>
-            <Mnemonic>MK1234567</Mnemonic>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
           </Authentication>
         </Session>
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KXR91YRK8MQ00BGTTKFF2961</Id>
+            <Id>01KY02PKSRS2EWQ4ZD5D7KA01W</Id>
             <ImageIndicator>N</ImageIndicator>
             <LicensePlateYear>2026</LicensePlateYear>
             <State>GA</State>
@@ -57,16 +57,16 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "registrationStateAttrIds": [
-        69509801326
-      ],
-      "tag": "TEST123"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69509801326
+                                                                      ],
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -75,11 +75,11 @@ No results were created
 FIELD ANALYSIS
 --------------
 AUTO-EXTRACTED FROM COMMSYS XML:
-  Id                             MK43RS
+  Id                             XX1234567
   UserName                       MK43RS
-  ORI                            MK1234567
-  Mnemonic                       MK1234567
-  Id                             01KXR91YRK8MQ00BGTTKFF2961
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KY02PKSRS2EWQ4ZD5D7KA01W
   ImageIndicator                 N
   LicensePlateYear               2026
   State                          GA
@@ -88,6 +88,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KXR91YRK8MQ00BGTTKFF2961). kind=any-field; anyField=LicensePlateTypeCode; expectedKeyRef=RVEHOUT; firedMessageType=VehicleRegistrationQuery.
+Automated capture (txId 01KY02PKSRS2EWQ4ZD5D7KA01W). kind=any-field; anyField=LicensePlateTypeCode; expectedKeyRef=RVEHOUT; firedMessageType=VehicleRegistrationQuery.
 
 RESULT: PASS

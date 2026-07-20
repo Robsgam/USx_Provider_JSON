@@ -1,10 +1,10 @@
-================================================================
+﻿================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
 Combo: DALHOUT (DALHOUT (auto))
-Date: 2026-07-17 11:17:37
+Date: 2026-07-20 11:42:02
 Result: PASS
 JSON Version: 4.9
-Entity Fingerprint: c5e6a9df72530326eb127c3c8302bd07114fcff1f79f843abee33ef2ea9d200c
+Entity Fingerprint: 5610e1a16407cd0f7c8ca6f1fd6522e42ba30070ea1bd19404f641097cb26db4
 Tier: Full
 ================================================================
 
@@ -17,26 +17,26 @@ COMMSYS XML
 <?xml version="1.0" encoding="UTF-8"?>
 <api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
   <api:Route>
-    <api:Source>MK43RS</api:Source>
+    <api:Source>XX1234567</api:Source>
     <api:Destinations>
       <api:Destination>ConnectCic</api:Destination>
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KXRA64F0K15PR3KMRH8QM4R4">
+    <api:Transaction id="01KY02VNQY9G7YMGXYYKQFH15H">
       <LawEnforcementTransaction version="1.0">
         <Session>
-          <Id>MK43RS</Id>
+          <Id>XX1234567</Id>
           <Authentication>
             <UserName>MK43RS</UserName>
-            <ORI>MK1234567</ORI>
-            <Mnemonic>MK1234567</Mnemonic>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
           </Authentication>
         </Session>
         <Transaction>
           <Request>
             <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01KXRA64F0K15PR3KMRH8QM4R4</Id>
+            <Id>01KY02VNQY9G7YMGXYYKQFH15H</Id>
             <ImageIndicator>Y</ImageIndicator>
             <State>NJ</State>
             <NyNyspinTransactionName>DALL</NyNyspinTransactionName>
@@ -63,11 +63,11 @@ Not captured
 FIELD ANALYSIS
 --------------
 AUTO-EXTRACTED FROM COMMSYS XML:
-  Id                             MK43RS
+  Id                             XX1234567
   UserName                       MK43RS
-  ORI                            MK1234567
-  Mnemonic                       MK1234567
-  Id                             01KXRA64F0K15PR3KMRH8QM4R4
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KY02VNQY9G7YMGXYYKQFH15H
   ImageIndicator                 Y
   State                          NJ
   NyNyspinTransactionName        DALL
@@ -79,6 +79,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KXRA64F0K15PR3KMRH8QM4R4). kind=combo; anyField=; expectedKeyRef=DALHOUT; firedMessageType=DriverHistoryQuery.
+Automated capture (txId 01KY02VNQY9G7YMGXYYKQFH15H). kind=combo; anyField=; expectedKeyRef=DALHOUT; firedMessageType=DriverHistoryQuery.
 
 RESULT: PASS

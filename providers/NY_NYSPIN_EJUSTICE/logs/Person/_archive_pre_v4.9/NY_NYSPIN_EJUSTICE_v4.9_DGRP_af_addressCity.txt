@@ -1,10 +1,10 @@
-================================================================
+﻿================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Person NyNyspinDriverLicenseNameQuery
 Combo: DGRP_af_addressCity (DGRP_af_addressCity (auto))
-Date: 2026-07-17 11:17:38
+Date: 2026-07-20 11:42:06
 Result: PASS
 JSON Version: 4.9
-Entity Fingerprint: c5e6a9df72530326eb127c3c8302bd07114fcff1f79f843abee33ef2ea9d200c
+Entity Fingerprint: 5610e1a16407cd0f7c8ca6f1fd6522e42ba30070ea1bd19404f641097cb26db4
 Tier: Full
 ================================================================
 
@@ -17,26 +17,26 @@ COMMSYS XML
 <?xml version="1.0" encoding="UTF-8"?>
 <api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
   <api:Route>
-    <api:Source>MK43RS</api:Source>
+    <api:Source>XX1234567</api:Source>
     <api:Destinations>
       <api:Destination>ConnectCic</api:Destination>
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KXRA5G6CB27K5NQW6VW8KAAB">
+    <api:Transaction id="01KY02V0R6H27MQVS9T98MF72P">
       <LawEnforcementTransaction version="1.0">
         <Session>
-          <Id>MK43RS</Id>
+          <Id>XX1234567</Id>
           <Authentication>
             <UserName>MK43RS</UserName>
-            <ORI>MK1234567</ORI>
-            <Mnemonic>MK1234567</Mnemonic>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
           </Authentication>
         </Session>
         <Transaction>
           <Request>
             <MessageType>NyNyspinDriverLicenseNameQuery</MessageType>
-            <Id>01KXRA5G6CB27K5NQW6VW8KAAB</Id>
+            <Id>01KY02V0R6H27MQVS9T98MF72P</Id>
             <AddressCity>RENO</AddressCity>
             <Name>DOE, JOHN</Name>
           </Request>
@@ -57,16 +57,16 @@ Not captured
 FIELD ANALYSIS
 --------------
 AUTO-EXTRACTED FROM COMMSYS XML:
-  Id                             MK43RS
+  Id                             XX1234567
   UserName                       MK43RS
-  ORI                            MK1234567
-  Mnemonic                       MK1234567
-  Id                             01KXRA5G6CB27K5NQW6VW8KAAB
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KY02V0R6H27MQVS9T98MF72P
   AddressCity                    RENO
   Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01KXRA5G6CB27K5NQW6VW8KAAB). kind=any-field; anyField=addressCity; expectedKeyRef=DGRP; firedMessageType=NyNyspinDriverLicenseNameQuery.
+Automated capture (txId 01KY02V0R6H27MQVS9T98MF72P). kind=any-field; anyField=addressCity; expectedKeyRef=DGRP; firedMessageType=NyNyspinDriverLicenseNameQuery.
 
 RESULT: PASS
