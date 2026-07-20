@@ -1,4 +1,4 @@
-NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿NJ_NJCJIS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-20
@@ -33,7 +33,7 @@ USER-APPROVED SKIPS:
     keyRefs renamed v4.8 (formerly RQ/RQN -- did not exist in devdoc; RANDFULL/RANDFULLN names
     BOTH real devdoc keyRefs (RAND + FULL) the merged combo serves -- see BUILD_NOTES v4.8).
 
-  RANDFULL -- Plate search [PENDING]
+  RANDFULL -- Plate search [CONFIRMED]
     set: licensePlateNumber
     any: randomRequest, registrationState, licensePlateTypeCode, imageIndicator, licensePlateYear
     keyReference: RANDFULL
@@ -41,7 +41,7 @@ USER-APPROVED SKIPS:
     T2 (2026-06-29, pre-v4.8 as RQ): Plate=TEST123 -- VehicleRegistrationQuery/RQ fired. Defaults serialized: State=NJ, LicensePlateTypeCode=PC, LicensePlateYear=2026, RandomRequest=N, ImageIndicator=N.
     T3 (2026-06-29, pre-v4.8 as RQ): any[] -- RandomRequest=Y, Image=Y, State=NJ (from "New Jersey" dropdown; NCIC reverse-lookup confirmed). All serialize.
 
-  RANDFULLN -- VIN search [PENDING]
+  RANDFULLN -- VIN search [CONFIRMED]
     set: vehicleIdentificationNumber
     any: randomRequest, registrationState, imageIndicator
     keyReference: RANDFULLN
