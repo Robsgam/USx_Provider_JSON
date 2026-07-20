@@ -1616,3 +1616,48 @@ See also:
     codes) stay per-state.
   - An empty tenant table found during scoping is a platform/tenant-admin item
     (Leo's attribute-mapping runbook; 1h cache), NOT a JSON fix.
+
+================================================================================
+13. SHARED-TOOL KEYREF SCOPING (cross-QIDM collision) -- added 2026-07-20
+================================================================================
+
+  keyReference is only required to be unique WITHIN a single QIDM (platform
+  rejects duplicates there -- AP #5/#10 above). The platform does NOT require
+  keyRefs to be unique ACROSS a provider's different QIDMs, and providers
+  legitimately reuse short keyRef names for unrelated combos (NY_NYSPIN_EJUSTICE's
+  Boat and Vehicle entities both define RVEH/RCAR -- Boat's RVEH is a
+  RegistrationNumber lookup, Vehicle's RVEH is a LicensePlateNumber lookup;
+  same string, different fields, different QIDM).
+
+  This is fine for the platform. It is NOT fine for any shared tool that builds
+  a lookup table keyed purely on the bare keyRef string without also scoping by
+  the owning query/entity -- whichever QIDM's combo is processed last silently
+  overwrites the other's entry, and the tool then reports/acts on the wrong
+  QIDM's data for one of the two colliding combos.
+
+  CONFIRMED instances of this exact bug, found and fixed independently (no
+  shared helper was ever extracted -- each tool solved it its own way):
+  - tools/audit_test_coverage.ps1 (fixed 2026-07-16): tagged each scanned log
+    file with its logs/<Entity>/ folder name; coverage-matrix matching skips
+    any log whose Entity tag doesn't match the combo's own entity.
+  - tools/post_test.ps1: parses SQVR.txt into entity-scoped line ranges via the
+    section-header regex ('^\s*\d+[a-z]?\.\s+.*--\s+(\w+)\s+Entity'); SQVR
+    marker updates only search within the target -Entity's range.
+  - tools/reset_test_package.ps1: same SQVR-header-regex entity scoping, applied
+    when resetting [CONFIRMED]/[FAILED] markers back to [PENDING] on rebuild.
+  - tools/audit_log_content.ps1: filters guardrail-winner lookups by the test
+    plan's own structured .entity field before falling back to unscoped.
+  - tools/extract_metadata_reference.ps1 (fixed 2026-07-20): $builtCombos was
+    keyed by bare keyRef string across the WHOLE provider JSON; two QIDMs
+    reusing a keyRef silently overwrote each other, so the BUILD COVERAGE
+    section for one query printed the OTHER query's fields (Vehicle's
+    RVEH/RCAR rows showed Boat's RegistrationNumber/BoatHullIdNumber instead
+    of Vehicle's own LicensePlateNumber/VehicleIdentificationNumber). Fixed by
+    keying on (query, keyRef) instead of bare keyRef.
+
+  RULE: any new tool that builds a lookup/index over a provider's combos by
+  keyRef MUST scope that key by query name or entity from the start (e.g. a
+  composite "$query::$keyRef" key, or a first-class .entity/.query field
+  carried on every record) -- do not assume keyRef alone is unique across a
+  provider. Do not wait to discover this the hard way on the next tool built
+  against combo data.
