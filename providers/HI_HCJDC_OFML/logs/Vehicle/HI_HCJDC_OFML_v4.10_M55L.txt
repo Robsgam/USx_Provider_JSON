@@ -1,0 +1,86 @@
+﻿================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: M55L (M55L (auto))
+Date: 2026-07-20 14:32:41
+Result: PASS
+JSON Version: 4.10
+Entity Fingerprint: 6243d19a319877d97e66ba7599b9c18c9623f1c46883c6c7979a46d4c16e979c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","vehicleTypeCode":"1"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY0CRTWSCKNB38B39X2D2RQK">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KY0CRTWSCKNB38B39X2D2RQK</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <VehicleTypeCode>1</VehicleTypeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KY0CRTWSCKNB38B39X2D2RQK
+  ImageIndicator                 N
+  LicensePlateNumber             TEST123
+  VehicleTypeCode                1
+
+NOTES
+-----
+Automated capture (txId 01KY0CRTWSCKNB38B39X2D2RQK). kind=combo; anyField=; expectedKeyRef=M55L; firedMessageType=VehicleRegistrationQuery.
+
+RESULT: PASS
