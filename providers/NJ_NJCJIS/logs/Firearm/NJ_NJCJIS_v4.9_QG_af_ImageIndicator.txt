@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: NJ_NJCJIS Firearm GunQuery
+Combo: QG_af_ImageIndicator (QG_af_ImageIndicator (auto))
+Date: 2026-07-20 13:46:01
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: 190b9db8c49320c5d2961c1c03a7d598398470298adf1d9cd9496b006dfb2ad6
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunSerialNumber":"GUN12345","ImageIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY0A48T9VTSNJPSVXMMKVSD8">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KY0A48T9VTSNJPSVXMMKVSD8</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY0A48T9VTSNJPSVXMMKVSD8
+  ImageIndicator                 Y
+  GunSerialNumber                GUN12345
+
+NOTES
+-----
+Automated capture (txId 01KY0A48T9VTSNJPSVXMMKVSD8). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QG; firedMessageType=GunQuery.
+
+RESULT: PASS

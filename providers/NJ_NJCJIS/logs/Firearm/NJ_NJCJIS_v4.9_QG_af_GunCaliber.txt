@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: NJ_NJCJIS Firearm GunQuery
+Combo: QG_af_GunCaliber (QG_af_GunCaliber (auto))
+Date: 2026-07-20 13:46:03
+Result: PASS
+JSON Version: 4.9
+Entity Fingerprint: 190b9db8c49320c5d2961c1c03a7d598398470298adf1d9cd9496b006dfb2ad6
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunCaliber":"11","GunSerialNumber":"GUN12345","ImageIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY0A3YCF4MEW1F7WDMFXV1JH">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KY0A3YCF4MEW1F7WDMFXV1JH</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunCaliber>11</GunCaliber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY0A3YCF4MEW1F7WDMFXV1JH
+  ImageIndicator                 N
+  GunSerialNumber                GUN12345
+  GunCaliber                     11
+
+NOTES
+-----
+Automated capture (txId 01KY0A3YCF4MEW1F7WDMFXV1JH). kind=any-field; anyField=GunCaliber; expectedKeyRef=QG; firedMessageType=GunQuery.
+
+RESULT: PASS
