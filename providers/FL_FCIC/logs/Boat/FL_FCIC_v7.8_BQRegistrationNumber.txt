@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQRegistrationNumber (BQRegistrationNumber (auto))
+Date: 2026-07-21 11:02:57
+Result: PASS
+JSON Version: 7.8
+Entity Fingerprint: b1e1cf699060f404273a7bbbf3b922a78d9db2dd4a51eb18195b2bf971c3e0f8
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","RegistrationNumber":"FL1234AB","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2K01V4Q53VQMXT3R2YNVJ5">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KY2K01V4Q53VQMXT3R2YNVJ5</Id>
+            <State>GA</State>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KY2K01V4Q53VQMXT3R2YNVJ5
+  State                          GA
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01KY2K01V4Q53VQMXT3R2YNVJ5). kind=combo; anyField=; expectedKeyRef=BQRegistrationNumber; firedMessageType=BoatQuery.
+
+RESULT: PASS

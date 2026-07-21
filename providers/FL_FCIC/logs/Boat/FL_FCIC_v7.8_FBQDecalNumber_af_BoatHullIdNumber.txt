@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQDecalNumber_af_BoatHullIdNumber (FBQDecalNumber_af_BoatHullIdNumber (auto))
+Date: 2026-07-21 11:03:14
+Result: PASS
+JSON Version: 7.8
+Entity Fingerprint: b1e1cf699060f404273a7bbbf3b922a78d9db2dd4a51eb18195b2bf971c3e0f8
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N","decalNumber":"FL12345678"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2JVBPXW4J3JV1VG3N1HZXD">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KY2JVBPXW4J3JV1VG3N1HZXD</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+            <DecalNumber>FL12345678</DecalNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KY2JVBPXW4J3JV1VG3N1HZXD
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 N
+  DecalNumber                    FL12345678
+
+NOTES
+-----
+Automated capture (txId 01KY2JVBPXW4J3JV1VG3N1HZXD). kind=any-field; anyField=BoatHullIdNumber; expectedKeyRef=FBQDecalNumber; firedMessageType=BoatQuery.
+
+RESULT: PASS
