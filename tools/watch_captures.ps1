@@ -111,21 +111,14 @@ foreach ($e in @($preExisting | Where-Object { $_.Length -le 4 })) {
 $preExisting = @($preExisting | Where-Object { $_.Length -gt 4 })
 if ($preExisting.Count -gt 0) {
     Write-Host "[WATCH] startup sweep: found $($preExisting.Count) non-empty capture file(s) in Downloads." -ForegroundColor Magenta
-    # batch_labeled files are CUMULATIVE (each bulk fetch re-downloads the whole accumulated batch)
-    # -> keep only the largest. Individual ULID-named popup captures are DISTINCT combos -> import
-    # each (import_captured_tests dedupes by transactionId, so any true overlap collapses safely).
-    $batches     = @($preExisting | Where-Object { $_.Name -like 'usx_captured_batch*' })
-    $individuals = @($preExisting | Where-Object { $_.Name -notlike 'usx_captured_batch*' })
-    $toImport = @()
-    if ($batches.Count -gt 0) {
-        $largestBatch = $batches | Sort-Object Length -Descending | Select-Object -First 1
-        $toImport += $largestBatch
-        foreach ($d in @($batches | Where-Object { $_.FullName -ne $largestBatch.FullName })) {
-            Remove-Item $d.FullName -Force -ErrorAction SilentlyContinue
-            Write-Host "[WATCH] discarded redundant cumulative batch: $($d.Name) ($($d.Length) bytes)" -ForegroundColor DarkYellow
-        }
-    }
-    $toImport += $individuals
+    # Import EVERY non-empty capture. Previously we kept only the largest usx_captured_batch*
+    # file, assuming batches are CUMULATIVE re-fetches (each bulk fetch re-downloads the whole
+    # accumulated set). That silently discarded real captures whenever the user grabs DISTINCT
+    # per-entity / per-page batches of differing size (NJ full retest 2026-07-21: 5 distinct
+    # entity batches -> 4 would have been discarded, keeping only the 11-record Vehicle set).
+    # import_captured_tests dedups by transactionId, so re-importing a true cumulative superset
+    # collapses harmlessly -- importing all is strictly safe and never loses a distinct batch.
+    $toImport = @($preExisting)
     $sweepSummary = $null
     foreach ($f in $toImport) {
         Write-Host "[WATCH] importing: $($f.Name) ($($f.Length) bytes)" -ForegroundColor Magenta
