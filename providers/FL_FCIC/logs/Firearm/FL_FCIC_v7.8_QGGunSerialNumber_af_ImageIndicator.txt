@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGGunSerialNumber_af_ImageIndicator (QGGunSerialNumber_af_ImageIndicator (auto))
+Date: 2026-07-21 10:44:55
+Result: PASS
+JSON Version: 7.8
+Entity Fingerprint: e25b7309e0fcd20da9b634a00c30675c1861ea299e7c4985643afe47017d6af4
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2J3ZD9FKSRG00RHDWXD648">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KY2J3ZD9FKSRG00RHDWXD648</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KY2J3ZD9FKSRG00RHDWXD648
+  ImageIndicator                 Y
+  GunSerialNumber                GUN12345
+
+NOTES
+-----
+Automated capture (txId 01KY2J3ZD9FKSRG00RHDWXD648). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QGGunSerialNumber; firedMessageType=GunQuery.
+
+RESULT: PASS

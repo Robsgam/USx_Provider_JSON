@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGNCICNumber_any (QGNCICNumber_any (auto))
+Date: 2026-07-21 10:44:51
+Result: PASS
+JSON Version: 7.8
+Entity Fingerprint: e25b7309e0fcd20da9b634a00c30675c1861ea299e7c4985643afe47017d6af4
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunMake":"IMI","ImageIndicator":"Y","NCICNumber":"X123456789"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2J4HFF5B1G4MYAFS5NYJ8Q">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KY2J4HFF5B1G4MYAFS5NYJ8Q</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
+            <GunMake>IMI</GunMake>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KY2J4HFF5B1G4MYAFS5NYJ8Q
+  ImageIndicator                 Y
+  NCICNumber                     X123456789
+  GunMake                        IMI
+
+NOTES
+-----
+Automated capture (txId 01KY2J4HFF5B1G4MYAFS5NYJ8Q). kind=any; anyField=; expectedKeyRef=QGNCICNumber; firedMessageType=GunQuery.
+
+RESULT: PASS
