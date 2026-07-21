@@ -1,0 +1,88 @@
+================================================================
+TEST LOG: CA_CLETS Person DriverLicenseQuery
+Combo: IR.QVC.N_af_age (IR.QVC.N_af_age (auto))
+Date: 2026-07-21 14:19:47
+Result: PASS
+JSON Version: 2.15
+Entity Fingerprint: df025a7c7df0b6518b47c34508fdc293bef03503f6c2a700ffb5908e91eab022
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","NameFirst":"JOHN","NameLast":"DOE","SexCode":"Male","age":"35","purposeCode":"C","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2Y72BK8A7TJW2NF71F40AT">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KY2Y72BK8A7TJW2NF71F40AT</Id>
+            <SexCode>M</SexCode>
+            <Age>35</Age>
+            <Name>DOE, JOHN</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "sexAttrId": "69586249083"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY2Y72BK8A7TJW2NF71F40AT
+  SexCode                        M
+  Age                            35
+  Name                           DOE, JOHN
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KY2Y72BK8A7TJW2NF71F40AT). kind=any-field; anyField=age; expectedKeyRef=IR.QVC.N; firedMessageType=DriverLicenseQuery.
+
+RESULT: PASS

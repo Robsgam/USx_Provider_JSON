@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: CA_CLETS Person DriverHistoryQuery
+Combo: NLTS.KQ.O (NLTS.KQ.O (auto))
+Date: 2026-07-21 14:19:41
+Result: PASS
+JSON Version: 2.15
+Entity Fingerprint: df025a7c7df0b6518b47c34508fdc293bef03503f6c2a700ffb5908e91eab022
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","OperatorLicenseNumberDH":"D999888777","purposeCode":"C","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2YAQ3VW8YY6JCNDRC0A34C">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KY2YAQ3VW8YY6JCNDRC0A34C</Id>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY2YAQ3VW8YY6JCNDRC0A34C
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KY2YAQ3VW8YY6JCNDRC0A34C). kind=combo; anyField=; expectedKeyRef=NLTS.KQ.O; firedMessageType=DriverHistoryQuery.
+
+RESULT: PASS
