@@ -1,0 +1,91 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: RQV_af_vehicleYear (RQV_af_vehicleYear (auto))
+Date: 2026-07-21 12:46:53
+Result: PASS
+JSON Version: 4.11
+Entity Fingerprint: 6243d19a319877d97e66ba7599b9c18c9623f1c46883c6c7979a46d4c16e979c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleTypeCode":"1","vehicleYear":"2023"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2S1G5VQQ97JZC7S70M592F">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KY2S1G5VQQ97JZC7S70M592F</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <VehicleYear>2023</VehicleYear>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69510726097
+      ],
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KY2S1G5VQQ97JZC7S70M592F
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
+  State                          GA
+  VehicleYear                    2023
+
+NOTES
+-----
+Automated capture (txId 01KY2S1G5VQQ97JZC7S70M592F). kind=any-field; anyField=vehicleYear; expectedKeyRef=RQV; firedMessageType=VehicleRegistrationQuery.
+
+RESULT: PASS
