@@ -1,0 +1,76 @@
+================================================================
+TEST LOG: TX_TLETS Boat BoatQuery
+Combo: BQBoatHullIdNumber (BQBoatHullIdNumber (auto))
+Date: 2026-07-21 17:14:01
+Result: PASS
+JSON Version: 4.7
+Entity Fingerprint: 6f4422c524986a6fc0a46358b9de35d3ca7362600424a43988e48753da6fad06
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N","RegistrationState":"Georgia","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY38C27PWYR6R39BC12J22TD">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KY38C27PWYR6R39BC12J22TD</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MKRS$#
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY38C27PWYR6R39BC12J22TD
+  RelatedHitSearchIndicator      Y
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 N
+  State                          GA
+
+NOTES
+-----
+Automated capture (txId 01KY38C27PWYR6R39BC12J22TD). kind=combo; anyField=; expectedKeyRef=BQBoatHullIdNumber; firedMessageType=BoatQuery.
+
+RESULT: PASS
