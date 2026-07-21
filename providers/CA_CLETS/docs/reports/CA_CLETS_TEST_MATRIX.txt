@@ -1,19 +1,18 @@
-CA_CLETS v2.13 -- TEST MATRIX
+CA_CLETS v2.14 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-20
+Generated: 2026-07-21
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (2 cards, 12 fields):
-  CARD_VEH_OPT (Search Options):
-    RegistrationState [Sel STATE], purposeCode [Inp C, 1]
+Vehicle (1 card, 12 fields):
   CARD_VEH_SEARCH (VEHICLE SEARCH):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-    ROW 2: VehicleIdentificationNumber [Inp 30], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: NameFirst [Inp 30], NameLast [Inp 30], addressCity [Inp 13], addressStreetNumber [Inp 3]
+    ROW 2: RegistrationState [Sel STATE], purposeCode [Inp C, 1]
+    ROW 3: VehicleIdentificationNumber [Inp 30], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+    ROW 4: NameFirst [Inp 30], NameLast [Inp 30], addressCity [Inp 13], addressStreetNumber [Inp 3]
 
 Person (3 cards, 21 fields):
   CARD_PER_OPT (Search Options):
@@ -128,7 +127,7 @@ ENTITY 1: PERSON (31 tests -- 3 cards, 10 combos)
 31  Person      Deselect: DH deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
 
-ENTITY 2: VEHICLE (12 tests -- 2 cards, 5 combos)
+ENTITY 2: VEHICLE (12 tests -- 1 card, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -215,4 +214,4 @@ COMBO COVERAGE (25/25):
   ArticleSingleQuery: 2/2 -- T56(IP.QA.O), T58(IP.QA.S)
   BoatQuery: 6/6 -- T44(IA.QB.+IA.QB.H), T45(IA.QB.+IA.QB.O), T46(IA.QB.+IA.QB.R), T47(NLTS+.BQ.N), T48(NLTS+.BQ.H), T49(NLTS+.BQ.R)
 
-IMPORT FILE: CA_CLETS_v2.13.json
+IMPORT FILE: CA_CLETS_v2.14.json

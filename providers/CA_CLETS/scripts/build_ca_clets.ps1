@@ -1,4 +1,14 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.14 (2026-07-21): cosmetic layout + helper pass (NO functional change). Vehicle collapsed from
+#   2 cards (Search Options + Vehicle Search) to 1 -- Plate/Type/Year stays row 1, State+Purpose
+#   moves onto row 2, VIN/Make/Year and Name/City/StreetNumber shift down to rows 3-4. Added
+#   '(optional)' helpers to genuinely-optional any[]-only fields that had none: Vehicle Make/Year,
+#   City/Street Number ('with Name, optional'; only relevant to the IN.VP name path); DL Date of
+#   Birth/Age/Height/County/Race; Article Type/Brand/Category (Article previously had zero helpers).
+#   DL Sex stays bare -- it's set[]-required for the IR.QVC.N criminal-name combo (not purely
+#   optional), same reasoning as the TX_TLETS precedent for dual-role fields. DH card unchanged --
+#   Name/DOB/Sex are a required trio for NLTS.KQ.N, not optional. Boat unchanged (already has
+#   helpers). Label/layout-only, no combo/QIDM/routing change. All 5 entities reopened for retest.
 # v2.13 (2026-07-20): cosmetic label cleanup pass (NO functional change). Stripped cross-reference
 #   helpers from all entities: Vehicle Plate Number/VIN/Name bare, VIN spelled out "Vehicle
 #   Identification Number"; Person DL License Number/CII/SSN/Sex/APPS bare, DH labels dropped
@@ -44,7 +54,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.13"
+    [string]$Version = "2.14"
 )
 
 $ErrorActionPreference = "Stop"
@@ -61,21 +71,11 @@ $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
 . "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
-# LABEL-OVERRIDE: VehicleMakeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: vehicleYear -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: addressCity -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: addressStreetNumber -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: age -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: addressCounty -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: height -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: raceCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: appsRequestIndicator -- v2.13 cosmetic pass, any[]-only defaulted N, Rob-directed bare label
 # LABEL-OVERRIDE: gunCaliber -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: GunMake -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: gunTypeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: articleBrand -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: ArticleTypeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
-# LABEL-OVERRIDE: articleCategory -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: SexCode -- v2.14 cosmetic pass, set[]-required on IR.QVC.N (not purely optional), bare label kept (TX_TLETS precedent)
 
 # =====================================================================
 # BUNDLE 1: CA_CLETS PROVIDER (PascalCase sourceField / combo refs)
@@ -742,34 +742,25 @@ $caBundle = [PSCustomObject]@{
 # =====================================================================
 # BUNDLE 2: ENTITIES (5 QIFs, collapsed card layouts)
 #
-# Vehicle:  2 cards (OPTIONS + VEHICLE SEARCH)
+# Vehicle:  1 card  (VEHICLE SEARCH -- State + Purpose merged in, v2.14 collapse)
 # Person:   3 cards (OPTIONS + DRIVER LICENSE SEARCH + DRIVER HISTORY SEARCH)
 # Firearm:  1 card  (FIREARM SEARCH -- Purpose merged in)
 # Article:  1 card  (ARTICLE SEARCH -- Purpose merged in)
 # Boat:     1 card  (BOAT SEARCH -- State + Purpose merged in)
 #
-# Shared OPTIONS card: fields used by multiple combos (RegistrationState,
-# CaRequestPurposeCode) live on a separate card to avoid duplicate fieldId
-# across cards (= ISE). NCIC state pattern: visible RegistrationState,
-# NO initialValue (blank default -- LIMITATION #30).
+# Person's shared OPTIONS card: RegistrationState + CaRequestPurposeCode live on a
+# separate card because DL and DH are two distinct cards sharing the same fieldId
+# (avoids duplicate fieldId across cards = ISE). Vehicle/Firearm/Article/Boat have
+# only one search card each, so State/Purpose fold directly into it. NCIC state
+# pattern: visible RegistrationState, NO initialValue (blank default -- LIMITATION #30).
 # =====================================================================
 
 # ------------------------------------------------------------------
-# Vehicle -- 2 cards (MC collapsed)
-# OPTIONS: RegistrationState + CaRequestPurposeCode (shared by all combos)
-# VEHICLE SEARCH: Plate + PlateType + PlateYear + VIN + Make + Year + Name + City + StreetNum
+# Vehicle -- 1 card (v2.14 collapse: Search Options folded into Vehicle Search, matching
+# Firearm/Article/Boat's single-card pattern). Plate/Type/Year stays row 1; State+Purpose
+# moves to row 2; VIN/Make/Year and Name/City/StreetNumber shift down to rows 3-4.
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_VEH_OPT'
-        title = 'Search Options'
-        rows  = @(
-            @{ id = 'ROW_VEH_OPT_1'; cols = @('6','4'); fields = @(
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' @{ initialValue = 'C' } }
-            )}
-        )
-    }
     @{
         id    = 'CARD_VEH_SEARCH'
         title = 'VEHICLE SEARCH'
@@ -779,22 +770,26 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '30' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year' '4' 'ROW_VEH_2' }
+            @{ id = 'ROW_VEH_2'; cols = @('6','4'); fields = @(
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_2' }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_VEH_2' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_3' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_3' }
-                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City'          '13' 'ROW_VEH_3' }
-                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number' '3'  'ROW_VEH_3' }
+            @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '30' 'ROW_VEH_3' }
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year (optional)' '4' 'ROW_VEH_3' }
+            )}
+            @{ id = 'ROW_VEH_4'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_4' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_4' }
+                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City (with Name, optional)'          '13' 'ROW_VEH_4' }
+                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number (with Name, optional)' '3'  'ROW_VEH_4' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC collapsed: OPTIONS (State + Purpose) + SEARCH (Plate/VIN/Name all on one card)'
+    description  = 'Vehicle queries -- v2.14 collapsed to 1 card (State+Purpose folded onto row 2, was a separate Options card): Plate/Type/Year, State/Purpose, VIN/Make/Year, Name/City/StreetNumber.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -832,14 +827,14 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DL_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_DL_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'                                              'ROW_PER_DL_2' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)'                                    'ROW_PER_DL_2' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_2' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('2','2','2','3','3'); fields = @(
-                @{ id = 'Age_Input';            node = Inp 'age'            'Age'    '2' 'ROW_PER_DL_3' }
-                @{ id = 'Height_Input';         node = Inp 'height'         'Height' '3' 'ROW_PER_DL_3' }
-                @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County' '3' 'ROW_PER_DL_3' }
-                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
+                @{ id = 'Age_Input';            node = Inp 'age'            'Age (optional)'    '2' 'ROW_PER_DL_3' }
+                @{ id = 'Height_Input';         node = Inp 'height'         'Height (optional)' '3' 'ROW_PER_DL_3' }
+                @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County (optional)' '3' 'ROW_PER_DL_3' }
+                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
                 @{ id = 'AppsRequestIndicator_Input'; node = Sel 'appsRequestIndicator' 'APPS' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_PER_DL_3' }
             )}
         )
@@ -922,15 +917,15 @@ $artLayout = MakeLayouts @(
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ArticleTypeCode_Input';  node = Sel 'ArticleTypeCode'  'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ArticleBrand_Input';     node = Inp 'articleBrand'     'Brand'        '6'                                                                     'ROW_ART_2' }
-                @{ id = 'ArticleCategory_Input';  node = Inp 'articleCategory'  'Category'     '1'                                                                     'ROW_ART_2' }
+                @{ id = 'ArticleTypeCode_Input';  node = Sel 'ArticleTypeCode'  'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
+                @{ id = 'ArticleBrand_Input';     node = Inp 'articleBrand'     'Brand (optional)'        '6'                                                                     'ROW_ART_2' }
+                @{ id = 'ArticleCategory_Input';  node = Inp 'articleCategory'  'Category (optional)'     '1'                                                                     'ROW_ART_2' }
             )}
         )
     }
 )
 $articleForm = [PSCustomObject]@{
-    description  = 'Article query -- MC collapsed: single card (Serial/OAN/Purpose/Type/Brand). v2.6: PascalCase fieldIds (ArticleSerialNumber, ArticleTypeCode), CAD defaults on all combos.'
+    description  = 'Article query -- MC collapsed: single card (Serial/OAN/Purpose/Type/Brand). v2.6: PascalCase fieldIds (ArticleSerialNumber, ArticleTypeCode), CAD defaults on all combos. v2.14: added (optional) helpers to Type/Brand/Category (previously had none).'
     label        = 'Article'
     layout       = $artLayout
     name         = 'ENTITY_Article'
