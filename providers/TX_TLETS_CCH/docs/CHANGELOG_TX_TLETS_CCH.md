@@ -2,9 +2,14 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.1** | Generated: 2026-07-15
+Current: **v1.2** | Generated: 2026-07-21
 
 ---
+
+## v1.2 -- 2026-07-21 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.1 -- 2026-07-15 -- Base-6 QIDMs rebuilt to match TX_TLETS main exactly + CCH QH metadata fix
 

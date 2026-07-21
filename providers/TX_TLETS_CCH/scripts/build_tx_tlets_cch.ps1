@@ -1,6 +1,18 @@
-# build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.1
+# build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.2
 # Separate provider: full base TLETS query package (6 QIDMs) PLUS all 8 Computerized Criminal
 # History (CCH) transactions on Person.
+#
+# v1.2 (2026-07-21, Firearm CAD fix): GunQuery serial-number form fieldId + QIDM sourceField +
+#       combo set[] GunSerialNumber -> serialNumber (CAD sends camelCase serialNumber, so the
+#       USx-query button now populates the Firearm form; attribute name + targetField +
+#       primaryFieldReference stay GunSerialNumber, wire unchanged). Ported from TX_TLETS main
+#       v4.6 (same class of fix already applied to NJ_NJCJIS v4.10, FL_FCIC v7.8, HI_HCJDC_OFML
+#       v4.11) -- this provider's own design rule is "identical to TX_TLETS main except for the
+#       CCH addition," and these are separate build scripts/files, so the fix does not
+#       auto-propagate; a second, explicit edit was required here. Structural/validator check
+#       only -- this provider remains NOT live-tested (first-ever live test deferred to a later
+#       session; this bug is invisible to the validator since it's internally self-consistent,
+#       only a live CAD-dispatch test would ever catch it).
 #
 # v1.1: Base 6 QIDMs rebuilt to match TX_TLETS v4.0 exactly -- this provider's explicit design
 #       rule is "identical to TX_TLETS main except for the CCH addition." Brings: PascalCase
@@ -35,7 +47,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.1"
+    [string]$Version = "1.2"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -174,13 +186,13 @@ $gunQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'GunCaliber'; size = 4; sourceField = @('GunCaliber'); targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake'; size = 23; sourceField = @('GunMake'); targetField = 'GunMake' }
-        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 20; sourceField = @('GunSerialNumber'); targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 20; sourceField = @('serialNumber'); targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'NCICNumber'; size = 10; sourceField = @('NCICNumber'); targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1; sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('GunSerialNumber'); any = @('GunCaliber','GunMake','ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }; primaryFieldReference = 'GunSerialNumber'; keyReference = 'QGGunSerialNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('serialNumber'); any = @('GunCaliber','GunMake','ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }; primaryFieldReference = 'GunSerialNumber'; keyReference = 'QGGunSerialNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }; primaryFieldReference = 'NCICNumber'; keyReference = 'QGNCICNumber'; state = 'In/Out' }
     )
     description = 'GunQuery -- 2 combos (Serial, NCIC).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_GunQuery'; type = 'QUERYINPUTDATAMAPPING'; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'GunQuery'; queryLabel = 'Firearm'; targetEntity = 'Firearm'
@@ -628,7 +640,7 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM QUERY'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number (or use NCIC#)' '20' 'ROW_GUN_1' }
+                @{ id = 'GunSerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number (or use NCIC#)' '20' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (opt)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('3','3','3','3'); fields = @(
