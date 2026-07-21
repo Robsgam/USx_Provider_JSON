@@ -407,6 +407,23 @@ TOOLS
     0 guardrail-wire failures.
     Usage: .\tools\audit_log_content.ps1 -Provider <name> [-Quiet]
 
+  tools/audit_log_metadata.ps1
+    DIRECT log-vs-metadata integrity audit: parses each saved test log's COMMSYS wire XML and
+    validates it against the metadata XML -- every <Request> field must be a metadata-defined
+    field for that query (or a known form-only field), and the present field-set must satisfy a
+    real metadata combination's required set[] (Choice/OR alternatives expanded). This is the
+    direct proof the CommSys query is 100% metadata-correct, vs the transitive metadata<->JSON
+    (audit_metadata) + JSON<->plan (audit_log_content) chain. Wired into enforce.ps1 PHASE 6d;
+    providers without current-version logs or metadata XML pass by absence. Uses _metadata_parse.ps1.
+    Usage: .\tools\audit_log_metadata.ps1 -Provider <name> [-Quiet]
+
+  tools/_metadata_parse.ps1
+    Shared metadata-XML parser (dot-sourced by audit_log_metadata): Get-MetadataTransactions
+    returns per-query fields + combos with requiredSets (alternative required-field arrays,
+    expanding <Choice> OR-branches and nested <Set> AND-groups). Also $MetaFormOnlyFields,
+    $MetaFieldAliases (mirrors audit_metadata.ps1 + State<->RegistrationState wire alias),
+    Test-MetaFieldEquiv. One source of truth so the log-metadata and JSON-metadata gates agree.
+
   tools/emit_picklist_scope.ps1
     Emits providers/<P>/logs/<P>_PICKLIST_SCOPE.json -- every visible FormSelect per entity
     (fieldId + category/source) -- for the browser's __usxScopePicklists, which opens each

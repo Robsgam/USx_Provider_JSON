@@ -11,6 +11,16 @@ documents (devdoc PDF or metadata XML) changed for a provider that's already bui
 
 ## Part A — Live testing loop
 
+**Why the capture package exists:** to strictly prove the CommSys query is 100% metadata-correct
+and that every combination is logged and accounted for. That proof rests on TWO independent gates,
+both in enforce PHASE 6, neither skippable:
+- **6c `audit_log_content.ps1`** — each log's QUERY STRING satisfies its plan test's full fill-set;
+  guardrails show winner-only wire (log ↔ JSON-derived plan).
+- **6d `audit_log_metadata.ps1`** — each log's COMMSYS wire XML validated DIRECTLY against the
+  metadata: every `<Request>` field is a metadata-defined field for that query, and the present
+  field-set satisfies a real metadata combination's required `set[]` (log ↔ metadata). This is the
+  direct check; do not treat the transitive metadata↔JSON↔plan chain as a substitute for it.
+
 ### A0. GATE 1 check, always first
 
 Any version bump restarts testing from Test 1 — full stop, no resuming mid-matrix. Confirm
@@ -99,9 +109,13 @@ Never write an unconfirmed hypothesis into the KB as if it were settled fact.
 
 `tools/enforce.ps1 -Provider <NAME>` PHASE 6 verdict must read CLOSED (every combo either
 `[CONFIRMED]` with a backing XML-bearing log at the current version/fingerprint, or an explicit
-`[APPROVED SKIP]`). `tools/verify_claims.ps1` must show no unbacked live-proven claims. All docs
-current, everything committed and pushed. If any of this fails, the session is not done — fix
-what's flagged, don't declare victory around it.
+`[APPROVED SKIP]`). Both PHASE 6 log gates must PASS: **6c Log-content integrity**
+(`audit_log_content.ps1`, log ↔ plan fill-set) AND **6d Log-metadata integrity**
+(`audit_log_metadata.ps1`, log ↔ metadata field/combo). A green 6c with a failing/absent 6d is
+NOT done — the direct metadata proof is the whole point of the capture package.
+`tools/verify_claims.ps1` must show no unbacked live-proven claims. All docs current, everything
+committed and pushed. If any of this fails, the session is not done — fix what's flagged, don't
+declare victory around it.
 
 ## Part B — Devdoc or metadata XML changed for an existing provider
 
