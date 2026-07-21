@@ -1,0 +1,96 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RANDFULL_guardrail_vs_RANDFULLN (RANDFULL_guardrail_vs_RANDFULLN (auto))
+Date: 2026-07-21 09:48:35
+Result: PASS
+JSON Version: 4.10
+Entity Fingerprint: ee5848957daefe8ba2ee4bb320a16a778a25bea2a7a7be72bc53da50373b4b8d
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey","VehicleIdentificationNumber":"1HGCM82633A123456"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2EMZ3FG7CSTVNEXG8WZ4TS">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KY2EMZ3FG7CSTVNEXG8WZ4TS</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <State>NJ</State>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <RandomRequest>N</RandomRequest>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69509884952
+      ],
+      "tag": "TEST123",
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY2EMZ3FG7CSTVNEXG8WZ4TS
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  State                          NJ
+  LicensePlateTypeCode           PC
+  RandomRequest                  N
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01KY2EMZ3FG7CSTVNEXG8WZ4TS). kind=guardrail; anyField=; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery.
+
+RESULT: PASS
