@@ -157,12 +157,12 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
   2 combos
 
-  IG.QGH -- Owner Name query (cross-entity) [PENDING]
+  IG.QGH -- Owner Name query (cross-entity) [CONFIRMED]
     set: PurposeCode, NameLast, NameFirst
     any: (none)
     keyReference: IG.QGH
 
-  IG.QGB -- Serial Number query [PENDING]
+  IG.QGB -- Serial Number query [CONFIRMED]
     set: PurposeCode, SerialNumber
     any: FirearmMake, GunCaliber, GunTypeCode
     keyReference: IG.QGB
@@ -174,12 +174,12 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: true
   2 combos
 
-  IP.QA.S -- Serial Number query [PENDING]
+  IP.QA.S -- Serial Number query [CONFIRMED]
     set: PurposeCode, SerialNumber
     any: ArticleTypeCode, ArticleBrand
     keyReference: IP.QA.S
 
-  IP.QA.O -- OAN query [PENDING]
+  IP.QA.O -- OAN query [CONFIRMED]
     set: PurposeCode, OwnerAppliedNumber
     any: ArticleTypeCode, ArticleBrand
     keyReference: IP.QA.O
@@ -191,34 +191,34 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Boat | QIDM: CA_CLETS_BoatQuery | autoSelect: true
   6 live combos (3 NLTS OOS, 3 IA in-state) + 1 DELETED (IV.4B DMV vessel)
 
-  NLTS.BQ.N -- OOS Owner Name+DOB query (cross-entity) [PENDING]
+  NLTS.BQ.N -- OOS Owner Name+DOB query (cross-entity) [CONFIRMED]
     set: PurposeCode, NameLast, NameFirst, BirthDate, RegistrationState
     any: (none)
     keyReference: NLTS.BQ.N
 
-  NLTS.BQ.H -- OOS Hull ID query [PENDING]
+  NLTS.BQ.H -- OOS Hull ID query [CONFIRMED]
     set: PurposeCode, BoatHullIdNumber, RegistrationState
     any: (none)
     keyReference: NLTS.BQ.H
 
-  NLTS.BQ.R -- OOS Registration query [PENDING]
+  NLTS.BQ.R -- OOS Registration query [CONFIRMED]
     set: PurposeCode, RegistrationNumber, RegistrationState
     any: (none)
     keyReference: NLTS.BQ.R
 
-  IA.QB.H -- In-state Hull ID query [PENDING]
+  IA.QB.H -- In-state Hull ID query [CONFIRMED]
     set: PurposeCode, BoatHullIdNumber
     any: RegistrationState
     keyReference: IA.QB.H
 
   IA.QB.H_guardrail -- Hull>Reg: Hull+Reg co-entry (no State) -> only IA.QB.H fires, RegistrationNumber absent from XML [PENDING]
 
-  IA.QB.O -- In-state OAN query [PENDING]
+  IA.QB.O -- In-state OAN query [CONFIRMED]
     set: PurposeCode, OwnerAppliedNumber
     any: RegistrationState
     keyReference: IA.QB.O
 
-  IA.QB.R -- In-state Registration query [PENDING]
+  IA.QB.R -- In-state Registration query [CONFIRMED]
     set: PurposeCode, RegistrationNumber
     any: RegistrationState
     keyReference: IA.QB.R
