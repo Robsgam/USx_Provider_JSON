@@ -2,7 +2,7 @@ CA_CLETS -- Supported Query Validation Report
 ===============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-21
-JSON version: v2.14
+JSON version: v2.15
 Validator: 77 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: COMPLETE + INTEGRITY-CERTIFIED -- v2.12 zero-error pass 2026-07-02: 93/93
   submitted+captured, 0 label corrections, 0 unmatched, content audit 87/87, wire XML
@@ -36,17 +36,17 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   5 live combos (2 NLTS OOS, 2 IA in-state, 1 IN name) + 13 DELETED (IV.4*/IL.A1 conditions
   plate-type routing, v2.5 poisoned-array, server routes via IA.QV instead)
 
-  NLTS.RQ.P -- OOS Plate query (Nlets) [CONFIRMED]
+  NLTS.RQ.P -- OOS Plate query (Nlets) [PENDING]
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
     keyReference: NLTS.RQ.P
 
-  NLTS.RQ.V -- OOS VIN query (Nlets) [CONFIRMED]
+  NLTS.RQ.V -- OOS VIN query (Nlets) [PENDING]
     set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
     keyReference: NLTS.RQ.V
 
-  IA.QV -- In-state Plate query (catchall) [CONFIRMED]
+  IA.QV -- In-state Plate query (catchall) [PENDING]
     set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
@@ -54,12 +54,12 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
 
   IA.QV_guardrail -- Plate>VIN: Plate+VIN co-entry (no State) -> only IA.QV fires, VIN absent from XML [PENDING]
 
-  IA.QVK -- In-state VIN query [CONFIRMED]
+  IA.QVK -- In-state VIN query [PENDING]
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
     keyReference: IA.QVK
 
-  IN.VP -- Owner Name query (cross-entity) [CONFIRMED]
+  IN.VP -- Owner Name query (cross-entity) [PENDING]
     set: PurposeCode, NameLast, NameFirst
     any: AddressCity, AddressStreetNumber
     keyReference: IN.VP

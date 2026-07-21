@@ -1,0 +1,84 @@
+================================================================
+TEST LOG: CA_CLETS Person DriverLicenseQuery
+Combo: ID.L1_guardrail_vs_NLTS.DQ.N (ID.L1_guardrail_vs_NLTS.DQ.N (auto))
+Date: 2026-07-21 14:03:20
+Result: PASS
+JSON Version: 2.14
+Entity Fingerprint: 62e660b4c5d093232fe86391b94f023c5d4ca32620c212eb9535a1b00d5921e1
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777","appsRequestIndicator":"N","purposeCode":"C","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2XE553RHKYKXGV76Y0P09W">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KY2XE553RHKYKXGV76Y0P09W</Id>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "dlNumber": "D999888777",
+    "lastName": "DOE",
+    "firstName": "JOHN"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KY2XE553RHKYKXGV76Y0P09W
+  OperatorLicenseNumber          D999888777
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KY2XE553RHKYKXGV76Y0P09W). kind=guardrail; anyField=; expectedKeyRef=ID.L1; firedMessageType=DriverLicenseQuery.
+
+RESULT: PASS

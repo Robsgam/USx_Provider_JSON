@@ -1,4 +1,16 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.15 (2026-07-21): metadata correctness fix, found by live testing. DriverLicenseQuery IR.QVC.N
+#   combo sent APPSRequestIndicator on the wire (default 'N') -- audit_log_metadata.ps1 FAILed 9/9
+#   IR.QVC.N test logs ("wire field(s) not defined in metadata"). Checked the real metadata XML
+#   (DriverLicenseQuery v36, keyRef IR.QVC, primaryFieldReference=Name): its field list is
+#   CaRequestPurposeCode/Age/BirthDate/CriminalIdNumber/Name/OperatorLicenseNumber/RaceCode/
+#   SexCode/SocialSecurityNumber/State/AddressCounty/Height -- NO APPSRequestIndicator anywhere in
+#   the XML. It was a devdoc-inspired invention (v2.6-era comment: "triggers APPS prohibited-person
+#   check") that violated the field-authority rule (metadata is field-authority, devdoc is
+#   query-authority) and was never metadata-verified until this live-test pass caught it. Removed
+#   entirely: attribute, combo any[]/defaults, form field, form row (rebalanced 5-field row to 4).
+#   This is a functional wire change (IR.QVC.N no longer sends APPSRequestIndicator) -- all 5
+#   entities reopened for full re-test.
 # v2.14 (2026-07-21): cosmetic layout + helper pass (NO functional change). Vehicle collapsed from
 #   2 cards (Search Options + Vehicle Search) to 1 -- Plate/Type/Year stays row 1, State+Purpose
 #   moves onto row 2, VIN/Make/Year and Name/City/StreetNumber shift down to rows 3-4. Added
@@ -54,7 +66,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.14"
+    [string]$Version = "2.15"
 )
 
 $ErrorActionPreference = "Stop"
@@ -71,7 +83,6 @@ $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
 . "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
-# LABEL-OVERRIDE: appsRequestIndicator -- v2.13 cosmetic pass, any[]-only defaulted N, Rob-directed bare label
 # LABEL-OVERRIDE: gunCaliber -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: GunMake -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: gunTypeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
@@ -234,7 +245,6 @@ $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'AddressCounty';        size = 3;  sourceField = @('addressCounty');        targetField = 'AddressCounty' }
         [PSCustomObject]@{ name = 'Age';                   size = 2;  sourceField = @('age');                   targetField = 'Age' }
-        [PSCustomObject]@{ name = 'APPSRequestIndicator';  size = 1;  sourceField = @('appsRequestIndicator');  targetField = 'APPSRequestIndicator' }
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
@@ -288,17 +298,20 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'NLTS.DQ'
             state                 = 'In/Out'
         }
-        # --- IR.QVC.Name: criminal/demographic name search. Devdoc combos #3/#4 require
-        #     Name + SexCode (+ BirthDate/Age + optional APPSRequestIndicator).
-        #     APPSRequestIndicator (devdoc Optional, size 1): triggers APPS prohibited-person check.
+        # --- IR.QVC.Name: criminal/demographic name search. Metadata field-verified 2026-07-21
+        #     (DriverLicenseQuery v36, keyRef IR.QVC, primaryFieldReference=Name): set=[Name,SexCode]
+        #     any=[BirthDate,Age,AddressCounty,Height,RaceCode]. APPSRequestIndicator REMOVED v2.15 --
+        #     it was never a metadata field for this transaction (any transaction in the XML); the
+        #     devdoc-inspired comment that introduced it violated the field-authority rule (metadata
+        #     is field-authority, devdoc is query-authority) and was only caught by live testing
+        #     (audit_log_metadata.ps1 FAIL, 9/9 IR.QVC.N logs, 2026-07-21).
         #     (keyRef IR.QVC = server-routed Supervised Release Super Inquiry; basic per devdoc DL.) ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','NameLast','NameFirst','SexCode')
-                any        = @('BirthDate','age','addressCounty','height','raceCode','appsRequestIndicator')
+                any        = @('BirthDate','age','addressCounty','height','raceCode')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode';           value = 'C' }
-                    [PSCustomObject]@{ field = 'appsRequestIndicator';  value = 'N' }
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
@@ -830,12 +843,11 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)'                                    'ROW_PER_DL_2' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_2' }
             )}
-            @{ id = 'ROW_PER_DL_3'; cols = @('2','2','2','3','3'); fields = @(
+            @{ id = 'ROW_PER_DL_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'Age_Input';            node = Inp 'age'            'Age (optional)'    '2' 'ROW_PER_DL_3' }
                 @{ id = 'Height_Input';         node = Inp 'height'         'Height (optional)' '3' 'ROW_PER_DL_3' }
                 @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County (optional)' '3' 'ROW_PER_DL_3' }
                 @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
-                @{ id = 'AppsRequestIndicator_Input'; node = Sel 'appsRequestIndicator' 'APPS' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_PER_DL_3' }
             )}
         )
     }

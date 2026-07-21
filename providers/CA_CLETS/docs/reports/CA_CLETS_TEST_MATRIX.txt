@@ -1,4 +1,4 @@
-CA_CLETS v2.14 -- TEST MATRIX
+CA_CLETS v2.15 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-21
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -14,13 +14,13 @@ Vehicle (1 card, 12 fields):
     ROW 3: VehicleIdentificationNumber [Inp 30], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 4: NameFirst [Inp 30], NameLast [Inp 30], addressCity [Inp 13], addressStreetNumber [Inp 3]
 
-Person (3 cards, 21 fields):
+Person (3 cards, 20 fields):
   CARD_PER_OPT (Search Options):
     RegistrationState [Sel STATE], purposeCode [Inp C, 1]
   CARD_PER_DL (DRIVER LICENSE SEARCH):
     ROW 1: OperatorLicenseNumber [Inp 20], criminalIdNumber [Inp 11], socialSecurityNumber [Inp 9]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate], SexCode [Sel SEX]
-    ROW 3: age [Inp 2], height [Inp 3], addressCounty [Inp 3], raceCode [Sel NIBRS_RACE/NIBRS], appsRequestIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 3: age [Inp 2], height [Inp 3], addressCounty [Inp 3], raceCode [Sel NIBRS_RACE/NIBRS]
   CARD_PER_DH (DRIVER HISTORY SEARCH):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
@@ -214,4 +214,4 @@ COMBO COVERAGE (25/25):
   ArticleSingleQuery: 2/2 -- T56(IP.QA.O), T58(IP.QA.S)
   BoatQuery: 6/6 -- T44(IA.QB.+IA.QB.H), T45(IA.QB.+IA.QB.O), T46(IA.QB.+IA.QB.R), T47(NLTS+.BQ.N), T48(NLTS+.BQ.H), T49(NLTS+.BQ.R)
 
-IMPORT FILE: CA_CLETS_v2.14.json
+IMPORT FILE: CA_CLETS_v2.15.json

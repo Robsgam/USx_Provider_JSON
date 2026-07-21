@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.14.json
-  Generated: 2026-07-21 13:23
+  Source: CA_CLETS_v2.15.json
+  Generated: 2026-07-21 14:10
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS_v2.14
+ POST-BUILD VERIFICATION: CA_CLETS_v2.15
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 32 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, addressCounty, age, appsRequestIndicator, criminalIdNumber, height, raceCode, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, Attention, gunCaliber, GunMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 31 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, raceCode, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, Attention, gunCaliber, GunMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -44,7 +44,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (40) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (39) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -65,11 +65,10 @@ POST-BUILD VERIFICATION
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'appsRequestIndicator' (any[]-only) label='APPS' -- manual label override accepted (v2.13 cosmetic pass, any[]-only defaulted N, Rob-directed bare label)
   [INFO] Field 'gunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
   [INFO] Field 'GunMake' (any[]-only) label='Make' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
   [INFO] Field 'gunTypeCode' (any[]-only) label='Type' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
-  [PASS] All form field labels have required routing hint qualifiers (43 fields scanned) (6 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned) (6 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
