@@ -1,16 +1,16 @@
 ================================================================
-TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
-Combo: DPSIStickerNumber (DPSIStickerNumber (auto))
-Date: 2026-07-21 17:06:02
+TEST LOG: TX_TLETS Firearm GunQuery
+Combo: QGGunSerialNumber_af_GunMake (QGGunSerialNumber_af_GunMake (auto))
+Date: 2026-07-21 17:06:06
 Result: PASS
 JSON Version: 4.7
-Entity Fingerprint: 138314fd55c036f7bba152a657a23bf7a78d8f1b5d624e1c125fe3de084beac5
+Entity Fingerprint: c7c4c8b958f465e5e3eca8563f6403738994e95492186d9f154b5a5fcbfb2b46
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","financialResponsibilityType":"E","stickerNumber":"STK1234567"}
+{"GunMake":"IMI","ImageIndicator":"N","relatedHitSearchIndicator":"Y","serialNumber":"GUN12345"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KY37R2VDBKCFRM6W5WSY7QR3">
+    <api:Transaction id="01KY36VV2XA8AGRAG9BPRK14TK">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,10 +35,12 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KY37R2VDBKCFRM6W5WSY7QR3</Id>
-            <StickerNumber>STK1234567</StickerNumber>
-            <State>TX</State>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KY36VV2XA8AGRAG9BPRK14TK</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunMake>IMI</GunMake>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -61,12 +63,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KY37R2VDBKCFRM6W5WSY7QR3
-  StickerNumber                  STK1234567
-  State                          TX
+  Id                             01KY36VV2XA8AGRAG9BPRK14TK
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  GunSerialNumber                GUN12345
+  GunMake                        IMI
 
 NOTES
 -----
-Automated capture (txId 01KY37R2VDBKCFRM6W5WSY7QR3). kind=combo; anyField=; expectedKeyRef=DPSIStickerNumber; firedMessageType=VehicleInsuranceRegistrationQuery.
+Automated capture (txId 01KY36VV2XA8AGRAG9BPRK14TK). kind=any-field; anyField=GunMake; expectedKeyRef=QGGunSerialNumber; firedMessageType=GunQuery.
 
 RESULT: PASS
