@@ -54,10 +54,13 @@ The user captures tests via a browser extension that downloads batch files to `~
 logs, updates SQVR, and archives the batch file.
 
 **Standing directives:**
-- **Logs match version.** When entities are reopened for retest but their fingerprint hasn't
-  changed (no functional JSON change), existing logs at the prior version ARE valid evidence.
-  Don't demand re-capture for unchanged entities. But if the user captures new logs anyway,
-  import them — they supersede.
+- **Block by VERSION, not by entity.** Any version bump = retest ALL entities from scratch at the
+  new version — the user re-sends every entity's captures, and the Chrome extension makes that
+  cheap. Do NOT tell the user an entity "doesn't need re-capture because its fingerprint didn't
+  change" (that older per-entity-preservation model is retired). A version is DONE only when every
+  entity has current-version logs that pass both gates. If `reset_test_package` preserved some
+  entities as "blocked (unchanged)", ignore that as a coverage excuse — expect and ingest a full
+  re-send.
 - **Proactive polling.** When the user says they're testing, downloading, or capturing — or when
   you've just imported one batch and more entities remain — immediately check `~/Downloads/` for
   new `usx_captured_batch_labeled*.json` files. Do NOT wait for the user to say "it's downloaded"
