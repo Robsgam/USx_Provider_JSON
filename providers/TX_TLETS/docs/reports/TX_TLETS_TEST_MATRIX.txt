@@ -1,6 +1,6 @@
-TX_TLETS v4.5 -- TEST MATRIX
+TX_TLETS v4.6 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-20
+Generated: 2026-07-21
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -28,7 +28,7 @@ Person (3 cards, 21 fields):
 
 Firearm (1 card, 6 fields):
   CARD_GUN (Firearm Query by Serial Number, "OR" NCIC Number):
-    ROW 1: GunSerialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 5 fields):
@@ -164,7 +164,7 @@ ENTITY 4: FIREARM (4 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-44  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+44  Firearm     QG+Serial          serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QGGunSerialNumber)
 45  Firearm     QG+Serial          + GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
@@ -197,4 +197,4 @@ COMBO COVERAGE (21/21):
   ArticleSingleQuery: 2/2 -- T48(Serial), T50(NCIC)
   BoatQuery: 5/5 -- T32(BQ+Hull), T34(QB+Hull), T36(BQ+Reg), T38(QB+Reg), T40(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.5.json
+IMPORT FILE: TX_TLETS_v4.6.json
