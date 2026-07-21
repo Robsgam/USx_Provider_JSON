@@ -243,7 +243,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "VehicleMakeCode",
-                                                                                                                              "label":  "Vehicle Make (with VIN, optional)",
+                                                                                                                              "label":  "Vehicle Make (optional)",
                                                                                                                               "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                               "codeTypeProvider":  "NCIC"
                                                                                                                           },
@@ -264,7 +264,7 @@
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
                                                                                                                           "fieldId":  "vehicleYear",
-                                                                                                                          "label":  "Vehicle Year (with VIN, optional)",
+                                                                                                                          "label":  "Vehicle Year (optional)",
                                                                                                                           "maxLength":  "4"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -600,7 +600,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "VehicleMakeCode",
-                                                                                                                                   "label":  "Vehicle Make (with VIN, optional)",
+                                                                                                                                   "label":  "Vehicle Make (optional)",
                                                                                                                                    "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                                    "codeTypeProvider":  "NCIC"
                                                                                                                                },
@@ -621,7 +621,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "vehicleYear",
-                                                                                                                               "label":  "Vehicle Year (with VIN, optional)",
+                                                                                                                               "label":  "Vehicle Year (optional)",
                                                                                                                                "maxLength":  "4"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -1038,7 +1038,7 @@
                                                                                                                         "displayName":  "Select",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "VehicleMakeCode",
-                                                                                                                                      "label":  "Vehicle Make (with VIN, optional)",
+                                                                                                                                      "label":  "Vehicle Make (optional)",
                                                                                                                                       "attributeTypeId":  "VEHICLE_MAKE",
                                                                                                                                       "codeTypeProvider":  "NCIC"
                                                                                                                                   },
@@ -1059,7 +1059,7 @@
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "vehicleYear",
-                                                                                                                                  "label":  "Vehicle Year (with VIN, optional)",
+                                                                                                                                  "label":  "Vehicle Year (optional)",
                                                                                                                                   "maxLength":  "4"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -3606,14 +3606,16 @@
                                                                                                     "displayName":  "Row",
                                                                                                     "props":  {
                                                                                                                   "templateColumns":  [
-                                                                                                                                          "6",
-                                                                                                                                          "6"
+                                                                                                                                          "4",
+                                                                                                                                          "4",
+                                                                                                                                          "4"
                                                                                                                                       ]
                                                                                                               },
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
                                                                                                                   "GunSerialNumber_Input",
+                                                                                                                  "NCICNumber_Input",
                                                                                                                   "GunMake_Input"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
@@ -3641,6 +3643,26 @@
                                                                                                                                 },
                                                                                                                 "parent":  "ROW_GUN_1"
                                                                                                             },
+                                                                                  "NCICNumber_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "NCICNumber",
+                                                                                                                         "label":  "NCIC Number",
+                                                                                                                         "maxLength":  "10"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_GUN_1"
+                                                                                                       },
                                                                                   "GunMake_Input":  {
                                                                                                         "type":  {
                                                                                                                      "resolvedName":  "FormSelect"
@@ -3669,17 +3691,15 @@
                                                                                                     "displayName":  "Row",
                                                                                                     "props":  {
                                                                                                                   "templateColumns":  [
-                                                                                                                                          "3",
-                                                                                                                                          "3",
-                                                                                                                                          "3",
-                                                                                                                                          "3"
+                                                                                                                                          "4",
+                                                                                                                                          "4",
+                                                                                                                                          "4"
                                                                                                                                       ]
                                                                                                               },
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
                                                                                                                   "GunCaliber_Input",
-                                                                                                                  "NCICNumber_Input",
                                                                                                                   "ImageIndicator_Input",
                                                                                                                   "relatedHitSearchIndicator_Input"
                                                                                                               ],
@@ -3698,26 +3718,6 @@
                                                                                                                          "label":  "Caliber (optional)",
                                                                                                                          "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                          "codeTypeSource":  "NCIC"
-                                                                                                                     },
-                                                                                                           "isCanvas":  false,
-                                                                                                           "hidden":  false,
-                                                                                                           "nodes":  [
-
-                                                                                                                     ],
-                                                                                                           "linkedNodes":  {
-
-                                                                                                                           },
-                                                                                                           "parent":  "ROW_GUN_2"
-                                                                                                       },
-                                                                                  "NCICNumber_Input":  {
-                                                                                                           "type":  {
-                                                                                                                        "resolvedName":  "FormInput"
-                                                                                                                    },
-                                                                                                           "displayName":  "Input",
-                                                                                                           "props":  {
-                                                                                                                         "fieldId":  "NCICNumber",
-                                                                                                                         "label":  "NCIC Number",
-                                                                                                                         "maxLength":  "10"
                                                                                                                      },
                                                                                                            "isCanvas":  false,
                                                                                                            "hidden":  false,
@@ -3856,14 +3856,16 @@
                                                                                                          "displayName":  "Row",
                                                                                                          "props":  {
                                                                                                                        "templateColumns":  [
-                                                                                                                                               "6",
-                                                                                                                                               "6"
+                                                                                                                                               "4",
+                                                                                                                                               "4",
+                                                                                                                                               "4"
                                                                                                                                            ]
                                                                                                                    },
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "GunSerialNumber_Input",
+                                                                                                                       "NCICNumber_Input",
                                                                                                                        "GunMake_Input"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
@@ -3891,6 +3893,26 @@
                                                                                                                                      },
                                                                                                                      "parent":  "ROW_GUN_1"
                                                                                                                  },
+                                                                                       "NCICNumber_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "NCICNumber",
+                                                                                                                              "label":  "NCIC Number",
+                                                                                                                              "maxLength":  "10"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_GUN_1"
+                                                                                                            },
                                                                                        "GunMake_Input":  {
                                                                                                              "type":  {
                                                                                                                           "resolvedName":  "FormSelect"
@@ -3919,17 +3941,15 @@
                                                                                                          "displayName":  "Row",
                                                                                                          "props":  {
                                                                                                                        "templateColumns":  [
-                                                                                                                                               "3",
-                                                                                                                                               "3",
-                                                                                                                                               "3",
-                                                                                                                                               "3"
+                                                                                                                                               "4",
+                                                                                                                                               "4",
+                                                                                                                                               "4"
                                                                                                                                            ]
                                                                                                                    },
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "GunCaliber_Input",
-                                                                                                                       "NCICNumber_Input",
                                                                                                                        "ImageIndicator_Input",
                                                                                                                        "relatedHitSearchIndicator_Input"
                                                                                                                    ],
@@ -3948,26 +3968,6 @@
                                                                                                                               "label":  "Caliber (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                               "codeTypeSource":  "NCIC"
-                                                                                                                          },
-                                                                                                                "isCanvas":  false,
-                                                                                                                "hidden":  false,
-                                                                                                                "nodes":  [
-
-                                                                                                                          ],
-                                                                                                                "linkedNodes":  {
-
-                                                                                                                                },
-                                                                                                                "parent":  "ROW_GUN_2"
-                                                                                                            },
-                                                                                       "NCICNumber_Input":  {
-                                                                                                                "type":  {
-                                                                                                                             "resolvedName":  "FormInput"
-                                                                                                                         },
-                                                                                                                "displayName":  "Input",
-                                                                                                                "props":  {
-                                                                                                                              "fieldId":  "NCICNumber",
-                                                                                                                              "label":  "NCIC Number",
-                                                                                                                              "maxLength":  "10"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
                                                                                                                 "hidden":  false,
@@ -4187,14 +4187,16 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "6",
-                                                                                                                                                  "6"
+                                                                                                                                                  "4",
+                                                                                                                                                  "4",
+                                                                                                                                                  "4"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "GunSerialNumber_Input",
+                                                                                                                          "NCICNumber_Input",
                                                                                                                           "GunMake_Input"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
@@ -4222,6 +4224,26 @@
                                                                                                                                         },
                                                                                                                         "parent":  "ROW_GUN_1"
                                                                                                                     },
+                                                                                          "NCICNumber_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "NCICNumber",
+                                                                                                                                 "label":  "NCIC Number",
+                                                                                                                                 "maxLength":  "10"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_GUN_1"
+                                                                                                               },
                                                                                           "GunMake_Input":  {
                                                                                                                 "type":  {
                                                                                                                              "resolvedName":  "FormSelect"
@@ -4250,17 +4272,15 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "3",
-                                                                                                                                                  "3",
-                                                                                                                                                  "3",
-                                                                                                                                                  "3"
+                                                                                                                                                  "4",
+                                                                                                                                                  "4",
+                                                                                                                                                  "4"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "GunCaliber_Input",
-                                                                                                                          "NCICNumber_Input",
                                                                                                                           "ImageIndicator_Input",
                                                                                                                           "relatedHitSearchIndicator_Input"
                                                                                                                       ],
@@ -4279,26 +4299,6 @@
                                                                                                                                  "label":  "Caliber (optional)",
                                                                                                                                  "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                                  "codeTypeSource":  "NCIC"
-                                                                                                                             },
-                                                                                                                   "isCanvas":  false,
-                                                                                                                   "hidden":  false,
-                                                                                                                   "nodes":  [
-
-                                                                                                                             ],
-                                                                                                                   "linkedNodes":  {
-
-                                                                                                                                   },
-                                                                                                                   "parent":  "ROW_GUN_2"
-                                                                                                               },
-                                                                                          "NCICNumber_Input":  {
-                                                                                                                   "type":  {
-                                                                                                                                "resolvedName":  "FormInput"
-                                                                                                                            },
-                                                                                                                   "displayName":  "Input",
-                                                                                                                   "props":  {
-                                                                                                                                 "fieldId":  "NCICNumber",
-                                                                                                                                 "label":  "NCIC Number",
-                                                                                                                                 "maxLength":  "10"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
                                                                                                                    "hidden":  false,
@@ -8362,7 +8362,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS v4.6",
+                        "description":  "Provider configuration for TX_TLETS v4.7",
                         "name":  "TX_TLETS",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS"

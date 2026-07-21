@@ -1,6 +1,13 @@
-# build_tx_tlets.ps1  -- TX_TLETS v4.6
+# build_tx_tlets.ps1  -- TX_TLETS v4.7
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
 # 21 CommSys combos: 7 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v4.7 (2026-07-21, direct cosmetic feedback, NO functional change): Vehicle Make/Year helpers
+#   dropped "with VIN" (both fields are any[]-optional across ALL Vehicle combos, not just the
+#   VIN paths -- now just "(optional)"). Firearm row 1 gained NCIC Number between Serial Number
+#   and Gun Make (was on row 2 with Caliber/Image/RelatedHitSearch); row 1 now 3 fields (4/4/4),
+#   row 2 down to 3 (Caliber/Image/RelatedHitSearch, 4/4/4). Label/layout-only, no combo/routing
+#   change. Folded into the same re-test as v4.6 (no v4.6 test data existed yet). All 5 entities
+#   reopened.
 # v4.6 (2026-07-21, Firearm CAD fix): GunQuery serial-number form fieldId + QIDM sourceField +
 #   combo set[] GunSerialNumber -> serialNumber (CAD sends camelCase serialNumber, so the
 #   USx-query button now populates the Firearm form; attribute name + targetField +
@@ -117,7 +124,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.6"
+    [string]$Version = "4.7"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -356,8 +363,8 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_2'; cols = @('5','4','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (with VIN, optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (with VIN, optional)' '4' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
             )}
             # LABEL-OVERRIDE: regionId -- Rob's explicit v4.4 call while evaluating queries live;
             # genuinely any[]-only with no default anywhere (unlike reasonCode/State), so this is
@@ -487,13 +494,13 @@ $faLayout = MakeLayouts @(
         id    = 'CARD_GUN'
         title = 'Firearm Query by Serial Number, "OR" NCIC Number'
         rows  = @(
-            @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'GunSerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number (or use NCIC#)' '20' 'ROW_GUN_1' }
+                @{ id = 'NCICNumber_Input';       node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'GunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'NCICNumber_Input';                node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_GUN_2' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
                 @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' '(Y) for NCIC stolen-gun check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}

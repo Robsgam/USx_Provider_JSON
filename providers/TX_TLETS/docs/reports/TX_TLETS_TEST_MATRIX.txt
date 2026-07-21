@@ -1,4 +1,4 @@
-TX_TLETS v4.6 -- TEST MATRIX
+TX_TLETS v4.7 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-21
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -28,8 +28,8 @@ Person (3 cards, 21 fields):
 
 Firearm (1 card, 6 fields):
   CARD_GUN (Firearm Query by Serial Number, "OR" NCIC Number):
-    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 1: serialNumber [Inp 20], NCICNumber [Inp 10], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 5 fields):
   CARD_ART (Article Query by Serial Number, "OR" NCIC Number):
@@ -197,4 +197,4 @@ COMBO COVERAGE (21/21):
   ArticleSingleQuery: 2/2 -- T48(Serial), T50(NCIC)
   BoatQuery: 5/5 -- T32(BQ+Hull), T34(QB+Hull), T36(BQ+Reg), T38(QB+Reg), T40(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.6.json
+IMPORT FILE: TX_TLETS_v4.7.json
