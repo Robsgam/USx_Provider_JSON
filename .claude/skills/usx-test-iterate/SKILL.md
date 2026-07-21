@@ -73,14 +73,30 @@ logs, updates SQVR, and archives the batch file.
   `.test_state.json`, reopen them (set status to "open", bump version to current) without asking.
   The user saying "retest everything" is sufficient authorization.
 
+**Preferred mechanism — the supervised watcher.** Start `tools/watch_captures.ps1 -Once` as a
+background task (the environment enforces a single watcher; kill any stale one first). It sweeps
+Downloads, **relabels (content-match) → imports → commits+pushes → archives**, then exits `-Once`
+which notifies you. Relaunch it after each batch so every page the user downloads auto-ingests and
+you report the result without being prompted. Persistent (no `-Once`) watchers never notify and get
+killed by the environment — always use `-Once` + relaunch.
+
+**Ingestion is not complete until the batch is VALIDATED.** After each batch imports, run BOTH
+log gates for the provider — do not wait for the final enforce to discover a bad capture:
+- `tools/audit_log_content.ps1 -Provider <NAME>` — log ↔ plan fill-set.
+- `tools/audit_log_metadata.ps1 -Provider <NAME>` — log ↔ metadata (every wire field metadata-valid;
+  field-set satisfies a real metadata combo). This is the direct CommSys-correctness proof.
+Report both results with the PASS/FAIL count. A green import with a failing gate is NOT ingested —
+surface the delta (A5 discrepancy protocol) and resolve before moving on.
+
 **Sequence per batch:**
-1. Check `~/Downloads/` for `usx_captured_batch_labeled*.json` (sorted by modification time,
-   newest first). Skip any that are empty (`[]`).
-2. Inventory: `$f = Get-Content <path> | ConvertFrom-Json` — report count and entity/combo list.
-3. Import: `tools/import_captured_tests.ps1 -InputFile <path> -Provider <NAME>`
+1. Watcher (or manual): a batch lands in `~/Downloads/` as `usx_captured_batch_labeled*.json`
+   (skip empty `[]`). Manual fallback if the watcher is down: `import_captured_tests.ps1 -Provider <NAME>`.
+2. Inventory: report count + entity/query/combo breakdown.
+3. Ingest: relabel + import (the watcher does this; or run `import_captured_tests.ps1`).
 4. Report: N PASS / N FAIL / N skipped.
-5. Coverage check: `tools/audit_test_coverage.ps1 -Path <json>` — report remaining gaps.
-6. If all combos covered and 0 PENDING, proceed to A7 (GATE 5) automatically.
+5. **Validate:** `audit_log_content.ps1` AND `audit_log_metadata.ps1` for the provider → report both.
+6. Coverage: `tools/audit_test_coverage.ps1 -Path <json>` — report remaining gaps.
+7. When all combos covered, 0 PENDING, and both gates green → proceed to A7 (GATE 5).
 
 ### A4. Standard sequence per query path (TESTING_REQUIREMENTS Section 12)
 
