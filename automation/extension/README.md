@@ -10,17 +10,35 @@ field DOM `id` == QIF fieldId; text fill auto-checks the query + enables Send; d
 react-select picked by code; the request XML lives in the dex-log entry's textarea.
 
 ## Files
-- `manifest.json` — MV3, content scripts (MAIN world) on `usx-nj-njcjis.mark43.com/rms/*`
-- `usx_lib.js` — proven primitives: `fillField` (text + react-select), `clickSend`, `extractConnectCicXml`
+- `manifest.json` — MV3, `downloads` permission, background SW, content scripts on the USx tenant allowlist `/rms/*`
+- `usx_lib.js` — proven primitives: `fillField` (text + react-select), `clickSend`, `extractConnectCicXml`, `triggerDownload`
 - `driver.js` — `__usxRunOne(descriptor)` on `/universal-search`
-- `capture.js` — `__usxCapture()` on `/admin/dex-log`
+- `capture.js` — `__usxCapture()` / bulk + watch capture on `/admin/dex-log`
+- `bridge.js` — ISOLATED-world relay: page → background worker (has `chrome.runtime`; MAIN world does not)
+- `background.js` — service worker; downloads via `chrome.downloads.download()`
 - `../../tools/import_captured_tests.ps1` — ingests downloaded records → `post_test.ps1`
+
+## Downloads — why the background worker exists
+`triggerDownload` (usx_lib.js, MAIN world) hands each batch to `background.js` via `bridge.js`,
+which saves it with `chrome.downloads.download({conflictAction:'uniquify'})`. This is deliberate:
+the extension runs in the page (MAIN) world, and a page-initiated anchor-click download hits
+Chrome's **"automatic multiple downloads"** gate — the first download in a burst lands, the
+2nd..Nth are silently blocked (the page's JS still thinks they succeeded). That silently dropped
+every file after the first when a full re-test captured several entities back-to-back.
+`chrome.downloads.download()` from the extension is not subject to that gate, so bursts all land
+as `usx_captured_batch_labeled.json`, `... (1).json`, `... (2).json`, … which
+`import_captured_tests.ps1 -Provider <NAME>` ingests in bulk. If the worker path is unreachable
+(e.g. the unpacked extension wasn't reloaded after this change), `triggerDownload` falls back to
+the original anchor-click after a short grace window — single downloads still work, bursts revert
+to the old blocked-after-first behavior until reloaded.
 
 ## Load it
 `chrome://extensions` → Developer mode → **Load unpacked** → select `automation/extension/`.
-(If install is policy-blocked, paste `usx_lib.js` then `capture.js`/`driver.js` into DevTools
-Snippets — same code. Note: the downloads integration works from snippets; a localhost bridge
-would not, per the plan.)
+After pulling a change that touches `manifest.json` / `background.js` / `bridge.js`, hit
+**Reload** on the extension card (and accept the new "Manage your downloads" permission the first
+time). Confirm the console shows `usx_lib loaded. BUILD 2026-07-21a (downloads via SW bridge)`.
+(DevTools-Snippets fallback: the anchor-click download still runs, but the multiple-download gate
+applies — capture one entity at a time in that mode.)
 
 ## First proof — ONE combo end-to-end (Vehicle RQ+Plate)
 

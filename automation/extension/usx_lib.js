@@ -255,11 +255,40 @@
   }
 
   function triggerDownload(filename, obj) {
-    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    document.body.appendChild(a); a.click(); a.remove();
+    const json = JSON.stringify(obj, null, 2);
+    const nonce = 'usx-' + Date.now() + '-' + Math.floor(Math.random() * 1e6);
+    let done = false;
+    function anchorFallback() {
+      if (done) return; done = true;
+      // Original page-context download. Works for a single download, but Chrome's
+      // "automatic multiple downloads" gate silently blocks the 2nd..Nth in a burst --
+      // which is why per-entity capture bursts used to lose every file after the first.
+      const blob = new Blob([json], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+    // Preferred path: hand the download to the background service worker via bridge.js,
+    // which downloads through chrome.downloads.download() -- immune to that gate, so
+    // back-to-back captures all land (uniquified (1)/(2) suffixes, ingested in bulk by
+    // import_captured_tests.ps1). If no ack arrives within the grace window (old
+    // extension build without the worker/bridge), fall back to the anchor click.
+    try {
+      const onAck = function (ev) {
+        const d = ev && ev.data;
+        if (ev.source !== window || !d || d.__usxDownloadAck !== true || d.nonce !== nonce) return;
+        window.removeEventListener('message', onAck);
+        if (d.ok) { done = true; }
+        else { console.warn('[USx] worker download failed (' + (d.error || '?') + '); using anchor fallback'); anchorFallback(); }
+      };
+      window.addEventListener('message', onAck);
+      const dataUrl = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(json)));
+      window.postMessage({ __usxDownload: true, nonce: nonce, filename: filename, dataUrl: dataUrl }, '*');
+      setTimeout(function () { window.removeEventListener('message', onAck); anchorFallback(); }, 1500);
+    } catch (e) {
+      anchorFallback();
+    }
   }
 
   // Derive the provider folder name from the tenant hostname: usx-nj-njcjis -> NJ_NJCJIS,
@@ -272,5 +301,5 @@
   window.__usxLib = { sleep, q, fillText, selectReactSelect, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost };
   // Build tag: bump on every extension change so console pastes identify the loaded build
   // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
-  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-07-02g');
+  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-07-21a (downloads via SW bridge)');
 })();
