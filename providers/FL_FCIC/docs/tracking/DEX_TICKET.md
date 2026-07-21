@@ -9,5 +9,7 @@ Post the changelog here on every version bump (dump first, then per-version diff
 **Posted so far:**
 - comment 767875 — initial full changelog dump (2026-06-25)
 - comment 767877 — v6.7 changelog (NJ/HI-parity galvanization; PENDING live test)
+- 2026-07-21 — comment 782805: v7.8 Firearm CAD fix (GunSerialNumber->serialNumber) changelog.
+  Release line PENDING live test (Firearm reopened at v7.8; other 4 entities preserved).
 
-v6.7 built + enforce green; all 5 entities open for full re-test. Release line pending live test.
+v7.8 built + enforce green; Firearm open for re-test. Release line pending live test.

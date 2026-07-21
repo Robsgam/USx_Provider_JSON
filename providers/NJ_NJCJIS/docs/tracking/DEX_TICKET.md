@@ -9,3 +9,5 @@ Post the changelog here on every version bump (dump first, then per-version diff
 **Posted so far:**
 - 2026-07-20 — comment 782204: initial changelog dump + v4.9 cosmetic-relabel release line
   (all 5 entities re-tested/blocked, enforce 28P/0F/0W). Bert Anzini USx test tenant note included.
+- 2026-07-21 — comment 782803: v4.10 Firearm CAD fix (GunSerialNumber->serialNumber) changelog
+  + RELEASE LINE — all 5 entities re-tested at v4.10 (35/35 logs verified, enforce 26P/0F/0W CLOSED).
