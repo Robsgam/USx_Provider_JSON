@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Boat BoatQuery
+Combo: QB_af_relatedSearchHitIndicator (QB_af_relatedSearchHitIndicator (auto))
+Date: 2026-07-21 12:53:10
+Result: PASS
+JSON Version: 4.11
+Entity Fingerprint: 41c124be8cd0ae990345ad6607c947ccacebd12383cb0de8926214032c804143
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","relatedSearchHitIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KY2SCAHJ7FBKMWTW5BZGFJ7F">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KY2SCAHJ7FBKMWTW5BZGFJ7F</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <RelatedSearchHitIndicator>N</RelatedSearchHitIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KY2SCAHJ7FBKMWTW5BZGFJ7F
+  BoatHullIdNumber               FL1234AB56H7
+  RelatedSearchHitIndicator      N
+
+NOTES
+-----
+Automated capture (txId 01KY2SCAHJ7FBKMWTW5BZGFJ7F). kind=any-field; anyField=relatedSearchHitIndicator; expectedKeyRef=QB; firedMessageType=BoatQuery.
+
+RESULT: PASS
