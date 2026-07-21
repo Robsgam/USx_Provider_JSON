@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
-  Source: HI_HCJDC_OFML_v4.10.json
-  Generated: 2026-07-20 14:28
+  Source: HI_HCJDC_OFML_v4.11.json
+  Generated: 2026-07-20 19:18
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: HI_HCJDC_OFML_v4.10
+ CAD AUDIT: HI_HCJDC_OFML_v4.11
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -68,7 +68,7 @@ CAD AUDIT
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
-    [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] serialNumber: in QIF and CAD list
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
     [PASS] gunModel: in QIF as 'GunModel' (PascalCase USx fieldIds)
@@ -84,7 +84,6 @@ CAD AUDIT
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] GunSerialNumber: in QIF, not in CAD list (provider-specific)
     [INFO] GunMake: in QIF, not in CAD list (provider-specific)
     [INFO] relatedSearchHitIndicator: in QIF, not in CAD list (provider-specific)
   Article:
@@ -168,6 +167,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 57 PASS / 0 FAIL / 0 WARN / 79 INFO
+Total: 58 PASS / 0 FAIL / 0 WARN / 77 INFO
 
 

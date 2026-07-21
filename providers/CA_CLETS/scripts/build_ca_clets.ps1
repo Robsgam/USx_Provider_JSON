@@ -1,4 +1,10 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.13 (2026-07-20): cosmetic label cleanup pass (NO functional change). Stripped cross-reference
+#   helpers from all entities: Vehicle Plate Number/VIN/Name bare, VIN spelled out "Vehicle
+#   Identification Number"; Person DL License Number/CII/SSN/Sex/APPS bare, DH labels dropped
+#   "(DH)" qualifier per portfolio convention; Firearm Serial/Name bare, Purpose Code moved onto
+#   Name row; Article Serial/OAN bare; Boat Hull/Reg/OAN bare, Name "(out-of-state only)" kept
+#   as minimal hint. Label-only, no combo/QIDM/routing change. All 5 entities reopened for retest.
 # v2.12 (2026-07-01): RESTORED in-state DriverLicenseQuery combos ID.L1 (OLN) + IN.L1 (name),
 #   DL 6 -> 8 combos. v2.11 removed them expecting "CommSys auto-dispatches, consistent with
 #   Vehicle pattern" -- but Vehicle keeps an unconditioned in-state catchall (IA.QV/IA.QVK) and
@@ -38,7 +44,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.12"
+    [string]$Version = "2.13"
 )
 
 $ErrorActionPreference = "Stop"
@@ -54,6 +60,22 @@ $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
 . "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
+
+# LABEL-OVERRIDE: VehicleMakeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: vehicleYear -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: addressCity -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: addressStreetNumber -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: age -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: addressCounty -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: height -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: raceCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: appsRequestIndicator -- v2.13 cosmetic pass, any[]-only defaulted N, Rob-directed bare label
+# LABEL-OVERRIDE: gunCaliber -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: GunMake -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: gunTypeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: articleBrand -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: ArticleTypeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: articleCategory -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 
 # =====================================================================
 # BUNDLE 1: CA_CLETS PROVIDER (PascalCase sourceField / combo refs)
@@ -753,20 +775,20 @@ $vehLayout = MakeLayouts @(
         title = 'VEHICLE SEARCH'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number (or search by VIN or Owner Name)' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state plates)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (out-of-state plates)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (Plate wins if both entered)' '30' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '30' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (vehicle owner search)' '30' 'ROW_VEH_3' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (vehicle owner search)'  '30' 'ROW_VEH_3' }
-                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City (optional)'          '13' 'ROW_VEH_3' }
-                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number (optional)' '3'  'ROW_VEH_3' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_3' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_3' }
+                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City'          '13' 'ROW_VEH_3' }
+                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number' '3'  'ROW_VEH_3' }
             )}
         )
     }
@@ -803,22 +825,22 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER LICENSE SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_DL_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + Sex)' '20' 'ROW_PER_DL_1' }
-                @{ id = 'CriminalIdNumber_Input';     node = Inp 'criminalIdNumber'     'Criminal ID (CII) - criminal records' '11' 'ROW_PER_DL_1' }
-                @{ id = 'SocialSecurityNumber_Input';  node = Inp 'socialSecurityNumber'  'SSN - criminal records (no OLN)'       '9'  'ROW_PER_DL_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_DL_1' }
+                @{ id = 'CriminalIdNumber_Input';     node = Inp 'criminalIdNumber'     'CII' '11' 'ROW_PER_DL_1' }
+                @{ id = 'SocialSecurityNumber_Input';  node = Inp 'socialSecurityNumber'  'SSN' '9'  'ROW_PER_DL_1' }
             )}
             @{ id = 'ROW_PER_DL_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_DL_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)'                                              'ROW_PER_DL_2' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_2' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'                                              'ROW_PER_DL_2' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_2' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('2','2','2','3','3'); fields = @(
-                @{ id = 'Age_Input';            node = Inp 'age'            'Age (optional)'    '2' 'ROW_PER_DL_3' }
-                @{ id = 'Height_Input';         node = Inp 'height'         'Height (optional)' '3' 'ROW_PER_DL_3' }
-                @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County (optional)' '3' 'ROW_PER_DL_3' }
-                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
-                @{ id = 'AppsRequestIndicator_Input'; node = Sel 'appsRequestIndicator' 'APPS Check - prohibited persons (Name search)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_PER_DL_3' }
+                @{ id = 'Age_Input';            node = Inp 'age'            'Age'    '2' 'ROW_PER_DL_3' }
+                @{ id = 'Height_Input';         node = Inp 'height'         'Height' '3' 'ROW_PER_DL_3' }
+                @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County' '3' 'ROW_PER_DL_3' }
+                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
+                @{ id = 'AppsRequestIndicator_Input'; node = Sel 'appsRequestIndicator' 'APPS' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_PER_DL_3' }
             )}
         )
     }
@@ -827,14 +849,14 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER HISTORY SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_DH_1'; cols = @('6','4'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH) - or Name + DOB + Sex' '20' 'ROW_PER_DH_1' }
-                @{ id = 'PurposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number' '20' 'ROW_PER_DH_1' }
+                @{ id = 'PurposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_PER_DH_2' }
-                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH_2' }
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH) - required with Name'                                   'ROW_PER_DH_2' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH) - required with Name' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
+                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name' '30' 'ROW_PER_DH_2' }
+                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_2' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth'                                   'ROW_PER_DH_2' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
             )}
             @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); fields = @(
                 @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
@@ -861,19 +883,17 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM SEARCH'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number (or search by Owner Name)' '20' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';  node = Sel 'GunMake'  'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'GunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type (optional)'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';  node = Sel 'GunMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (owner search)' '30' 'ROW_GUN_2' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (owner search)'  '30' 'ROW_GUN_2' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)'               'ROW_GUN_2' }
-                @{ id = 'Age_Input';       node = Inp 'age'       'Age (optional)' '2'                     'ROW_GUN_2' }
-            )}
-            @{ id = 'ROW_GUN_3'; cols = @('4'); fields = @(
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_3' @{ initialValue = 'C' } }
+            @{ id = 'ROW_GUN_2'; cols = @('3','3','2','2','2'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_GUN_2' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_GUN_2' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'               'ROW_GUN_2' }
+                @{ id = 'Age_Input';       node = Inp 'age'       'Age' '2'                     'ROW_GUN_2' }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_2' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -897,14 +917,14 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE SEARCH'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number (or Owner Applied Number)' '20' 'ROW_ART_1' }
-                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number (OAN)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
+                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ArticleTypeCode_Input';  node = Sel 'ArticleTypeCode'  'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ArticleBrand_Input';     node = Inp 'articleBrand'     'Brand (optional)'        '6'                                                                     'ROW_ART_2' }
-                @{ id = 'ArticleCategory_Input';  node = Inp 'articleCategory'  'Category (optional)'     '1'                                                                     'ROW_ART_2' }
+                @{ id = 'ArticleTypeCode_Input';  node = Sel 'ArticleTypeCode'  'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
+                @{ id = 'ArticleBrand_Input';     node = Inp 'articleBrand'     'Brand'        '6'                                                                     'ROW_ART_2' }
+                @{ id = 'ArticleCategory_Input';  node = Inp 'articleCategory'  'Category'     '1'                                                                     'ROW_ART_2' }
             )}
         )
     }
@@ -928,13 +948,13 @@ $boaLayout = MakeLayouts @(
         title = 'BOAT SEARCH'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber'   'Hull ID (or Reg Number; Hull wins if both)'  '20' 'ROW_BOA_1' }
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or Hull ID)'           '8'  'ROW_BOA_1' }
-                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number (OAN)'                 '20' 'ROW_BOA_1' }
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber'   'Hull ID'             '20' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
+                @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state only; State + DOB required)' '30' 'ROW_BOA_2' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state only; State + DOB required)'  '30' 'ROW_BOA_2' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state only)' '30' 'ROW_BOA_2' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state only)'  '30' 'ROW_BOA_2' }
                 @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth (required with Name)' 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_3'; cols = @('6','4'); fields = @(

@@ -123,6 +123,10 @@ foreach ($file in $files) {
     # 5.1 watcher. Assign-first ($parsed) then @($parsed) yields the correct N records in both.
     try { $parsed = Get-Content $file.FullName -Raw | ConvertFrom-Json; $records = @($parsed) } catch { Write-Host "  [SKIP] bad JSON: $($file.Name)" -ForegroundColor DarkYellow; $skipped++; continue }
 
+    # Content-based relabel: browser labels are unreliable; formState is ground truth.
+    try { & (Join-Path $PSScriptRoot 'relabel_batch.ps1') -BatchPath $file.FullName *>&1 | ForEach-Object { Write-Host "  $_" } } catch { Write-Host "  [WARN] relabel errored (importing as-is): $_" -ForegroundColor DarkYellow }
+    try { $parsed = Get-Content $file.FullName -Raw | ConvertFrom-Json; $records = @($parsed) } catch { Write-Host "  [SKIP] bad JSON after relabel: $($file.Name)" -ForegroundColor DarkYellow; $skipped++; continue }
+
     foreach ($r in $records) {
         $entity = $r.entity; if (-not $entity -and $r.query -and $QueryEntity.ContainsKey($r.query)) { $entity = $QueryEntity[$r.query] }
         $combo = $r.combo

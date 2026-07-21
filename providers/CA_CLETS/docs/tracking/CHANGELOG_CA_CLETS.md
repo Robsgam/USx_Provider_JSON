@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.12** | Generated: 2026-07-13
+Current: **v2.13** | Generated: 2026-07-20
 
 ---
+
+## v2.13 -- 2026-07-20 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.12 -- 2026-07-01 -- Restore in-state DriverLicenseQuery combos (ID.L1 / IN.L1)
 

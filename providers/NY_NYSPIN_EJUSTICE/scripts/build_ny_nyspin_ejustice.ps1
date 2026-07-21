@@ -58,9 +58,15 @@
 #      physical DRIVER LICENSE card fields.
 #   4. Versioned root filename (NY_NYSPIN_EJUSTICE_v4.0.json), matching NJ/HI/FL/CA_CLETS.
 #   ROUTING CHANGE -> full re-test mandate: Vehicle/Person/Boat entities reset to PENDING.
+#
+# v4.10 (2026-07-20): GunQuery fieldId fix -- GunSerialNumber -> serialNumber on form + QIDM
+#   sourceField + combo set[]. CAD sends the serial number as 'serialNumber' (confirmed by Leo
+#   Hisoire on the NY tenant -- serial number was not auto-populating from CAD event firearm
+#   page). QIDM attribute name + targetField stay 'GunSerialNumber' (XML element unchanged).
+#   Same fix CA_CLETS applied at v2.9. Firearm entity reopened for retest.
 
 param(
-    [string]$Version = "4.9"
+    [string]$Version = "4.10"
 )
 
 $currentYear = [string](Get-Date).Year
@@ -422,12 +428,12 @@ $gunQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'GunCaliber';      size = 4;  sourceField = @('GunCaliber');      targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';         size = 23; sourceField = @('GunMake');          targetField = 'GunMake' }
-        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 20; sourceField = @('GunSerialNumber');  targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 20; sourceField = @('serialNumber');  targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1; sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('GunSerialNumber'); any = @('GunMake','GunCaliber','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('GunMake','GunCaliber','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'GINQ'
             state                 = 'In/Out'
@@ -767,7 +773,7 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM QUERY'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';         node = Sel 'GunMake'         'Gun Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(

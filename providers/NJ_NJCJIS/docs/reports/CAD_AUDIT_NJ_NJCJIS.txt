@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS_v4.9.json
-  Generated: 2026-07-20 12:49
+  Source: NJ_NJCJIS_v4.10.json
+  Generated: 2026-07-20 19:18
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: NJ_NJCJIS_v4.9
+ CAD AUDIT: NJ_NJCJIS_v4.10
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -59,7 +59,7 @@ CAD AUDIT
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
   Firearm:
-    [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] serialNumber: in QIF and CAD list
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
     [PASS] gunModel: in QIF as 'GunModel' (PascalCase USx fieldIds)
@@ -75,7 +75,6 @@ CAD AUDIT
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] GunSerialNumber: in QIF, not in CAD list (provider-specific)
     [INFO] GunMake: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -151,6 +150,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 51 PASS / 0 FAIL / 0 WARN / 68 INFO
+Total: 52 PASS / 0 FAIL / 0 WARN / 66 INFO
 
 

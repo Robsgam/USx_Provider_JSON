@@ -1,4 +1,4 @@
-NJ_NJCJIS v4.9 -- TEST MATRIX
+NJ_NJCJIS v4.10 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -26,7 +26,7 @@ Person (3 cards, 7 fields):
 
 Firearm (1 card, 5 fields):
   CARD_GUN (NCIC FIREARM QUERY):
-    ROW 1: GunSerialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NJ_NIBRS]
+    ROW 1: serialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NJ_NIBRS]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NJ_NIBRS], GunModel [Inp 20], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Article (1 card, 3 fields):
@@ -103,9 +103,9 @@ ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-16  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+16  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QG)
-17  Firearm     QG+Serial          + GunCaliber, GunMake, GunModel, ImageIndicator [    ]
+17  Firearm     QG+serialNumber    + GunCaliber, GunMake, GunModel, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
@@ -123,8 +123,8 @@ TOTAL: 19 tests
 COMBO COVERAGE (8/8):
   VehicleRegistrationQuery: 2/2 -- T1(RANDFULL), T3(RANDFULLN)
   DriverLicenseQuery: 2/2 -- T6(FULLN+FULLN), T8(FULL+FULL)
-  GunQuery: 1/1 -- T16(Serial)
+  GunQuery: 1/1 -- T16(serialNumber)
   ArticleSingleQuery: 1/1 -- T18(Serial)
   BoatQuery: 2/2 -- T11(N), T13(Reg)
 
-IMPORT FILE: NJ_NJCJIS_v4.9.json
+IMPORT FILE: NJ_NJCJIS_v4.10.json

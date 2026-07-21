@@ -1,6 +1,6 @@
 ---
 name: usx-test-iterate
-description: Use for live USx Tenant Testing of a provider (paste-XML-and-log loops, one entity/combo at a time), OR when a provider's devdoc/metadata XML has been updated and the existing JSON needs to be reconciled against the change. Covers the GATE 0-5 test protocol and the diff/audit propagation workflow. Trigger on "let's test <PROVIDER>", "here's the XML" (mid test loop), "the devdoc changed", "new metadata for <PROVIDER>", or "what changed vs current build".
+description: Use for live USx Tenant Testing of a provider (batch capture import from Downloads, one entity at a time), OR when a provider's devdoc/metadata XML has been updated and the existing JSON needs to be reconciled against the change. Covers the GATE 0-5 test protocol and the diff/audit propagation workflow. Trigger on "let's test <PROVIDER>", "here's the XML" (mid test loop), "the devdoc changed", "new metadata for <PROVIDER>", or "what changed vs current build".
 ---
 
 # USx Test / Iterate / Metadata-Devdoc Update
@@ -36,17 +36,41 @@ permutations → guardrail/priority tests (e.g. identifier-priority: does Plate 
 when both are entered?) → deselect tests (`queriesToDeselect` mutual exclusion actually
 deselects) → one negative test (empty form, confirm no query fires).
 
-### A3. Per-test loop (GATE 2-3) — never batch, log immediately
+### A3. Capture ingestion loop — AUTOMATED, never wait for the user
 
-1. `tools/new_test_log.ps1 -Provider <NAME> -Entity <E> -Combo <keyRef> ...` — stub the log
-   *before* opening the form.
-2. Open browser DevTools Network tab *before* submitting the query.
-3. Submit, capture the raw XML request (both the CommSys/ConnectCic POST and, where the entity
-   has an RMS mapping, the RMS elasticQuery POST — Vehicle/Person only; Gun/Article/Boat/DH have
-   no RMS mapping, "Not captured" there is correct, not a gap).
-4. Fill the log's FORM STATE / REQUEST SUMMARY / FIELD ANALYSIS / RESULT sections.
-5. `tools/post_test.ps1 -Provider <NAME> -Entity <E> -Query <Q> -Combo <keyRef> -Result <PASS|FAIL> ...`
-   — this commits and pushes automatically. Do not move to the next test before this completes.
+The user captures tests via a browser extension that downloads batch files to `~/Downloads/` as
+`usx_captured_batch_labeled.json` (with numeric suffixes `(1)`, `(2)`, etc. for multiples).
+`tools/import_captured_tests.ps1` reads these, infers combos from the XML, creates versioned test
+logs, updates SQVR, and archives the batch file.
+
+**Standing directives:**
+- **Logs match version.** When entities are reopened for retest but their fingerprint hasn't
+  changed (no functional JSON change), existing logs at the prior version ARE valid evidence.
+  Don't demand re-capture for unchanged entities. But if the user captures new logs anyway,
+  import them — they supersede.
+- **Proactive polling.** When the user says they're testing, downloading, or capturing — or when
+  you've just imported one batch and more entities remain — immediately check `~/Downloads/` for
+  new `usx_captured_batch_labeled*.json` files. Do NOT wait for the user to say "it's downloaded"
+  or "process it". Check, and if nothing is there yet, say so briefly and check again after the
+  user's next message.
+- **Import immediately.** When a batch file is found: inventory it (count + entity/query/combo
+  breakdown), import via `import_captured_tests.ps1 -InputFile <path> -Provider <NAME>`, report
+  the result (N PASS / N FAIL), then immediately run `audit_test_coverage.ps1` to show remaining
+  gaps.
+- **No manual log creation.** Do not use `new_test_log.ps1` or `post_test.ps1` directly — the
+  import tool handles the full pipeline (log creation, SQVR update, STATUS update, archival).
+- **Entity unblocking.** If the user wants a full retest and entities are blocked in
+  `.test_state.json`, reopen them (set status to "open", bump version to current) without asking.
+  The user saying "retest everything" is sufficient authorization.
+
+**Sequence per batch:**
+1. Check `~/Downloads/` for `usx_captured_batch_labeled*.json` (sorted by modification time,
+   newest first). Skip any that are empty (`[]`).
+2. Inventory: `$f = Get-Content <path> | ConvertFrom-Json` — report count and entity/combo list.
+3. Import: `tools/import_captured_tests.ps1 -InputFile <path> -Provider <NAME>`
+4. Report: N PASS / N FAIL / N skipped.
+5. Coverage check: `tools/audit_test_coverage.ps1 -Path <json>` — report remaining gaps.
+6. If all combos covered and 0 PENDING, proceed to A7 (GATE 5) automatically.
 
 ### A4. Standard sequence per query path (TESTING_REQUIREMENTS Section 12)
 

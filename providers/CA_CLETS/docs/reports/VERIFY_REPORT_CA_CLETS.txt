@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.12.json
-  Generated: 2026-07-13 14:35
+  Source: CA_CLETS_v2.13.json
+  Generated: 2026-07-20 16:20
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS_v2.12
+ POST-BUILD VERIFICATION: CA_CLETS_v2.13
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -59,7 +59,28 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (43 fields scanned)
+  [INFO] Field 'OperatorLicenseNumberDH' label='License Number' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'addressCity' (any[]-only) label='City' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'addressStreetNumber' (any[]-only) label='Street Number' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'age' (any[]-only) label='Age' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'addressCounty' (any[]-only) label='County' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'height' (any[]-only) label='Height' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'raceCode' (any[]-only) label='Race' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'appsRequestIndicator' (any[]-only) label='APPS' -- manual label override accepted (v2.13 cosmetic pass, any[]-only defaulted N, Rob-directed bare label)
+  [INFO] Field 'gunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'GunMake' (any[]-only) label='Make' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'gunTypeCode' (any[]-only) label='Type' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'articleBrand' (any[]-only) label='Brand' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'ArticleTypeCode' (any[]-only) label='Article Type' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'articleCategory' (any[]-only) label='Category' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [PASS] All form field labels have required routing hint qualifiers (43 fields scanned) (6 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

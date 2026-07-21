@@ -1,8 +1,8 @@
-﻿NJ_NJCJIS STATUS
+NJ_NJCJIS STATUS
 =================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated    : 2026-07-20
-Current version : v4.9
+Current version : v4.10
 Import status   : v4.8 rebuilt 2026-07-01 (metadata-driven keyRef rename: DQ/DQN/RQ/RQN -> FULL/FULLN/RANDFULL/RANDFULLN); re-import + full re-test from T1 required. v4.7 rebuilt 2026-06-26 (VehicleMakeName codeType fix).
 
   *** TENANT STATE: NJ consolidated to ONE mainline JSON on 2026-06-17 (v4.0). The
@@ -260,6 +260,7 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
 --------------------------------------------------
   #     Date        Entity      Combo                Result    Notes
   ---   ----------  ----------  -------------------  --------  -----
+  (none yet -- v4.10 USx Tenant Testing restarted from Test 1; prior logs archived to logs/<Entity>/_archive_pre_v4.10/)
   ---   2026-07-20 Vehicle    VehReg:RANDFULL_guardrail_vs_RANDFULLN PASS     RANDFULL_guardrail_vs_RANDFULLN (auto)
   ---   2026-07-20 Vehicle    VehReg:RANDFULLN_any PASS     RANDFULLN_any (auto)
   ---   2026-07-20 Vehicle    VehReg:RANDFULLN_af_ImageIndicator PASS     RANDFULLN_af_ImageIndicator (auto)
@@ -279,12 +280,6 @@ LIVE TEST RESULTS -- MC (post_test.ps1)
   ---   2026-07-20 Person     DL:FULL_af_SexCode   PASS     FULL_af_SexCode (auto)
   ---   2026-07-20 Person     DL:FULL_af_ImageIndicator PASS     FULL_af_ImageIndicator (auto)
   ---   2026-07-20 Person     DL:FULL              PASS     FULL (auto)
-  ---   2026-07-20 Firearm    Gun:QG_any           PASS     QG_any (auto)
-  ---   2026-07-20 Firearm    Gun:QG_af_ImageIndicator PASS     QG_af_ImageIndicator (auto)
-  ---   2026-07-20 Firearm    Gun:QG_af_GunModel   PASS     QG_af_GunModel (auto)
-  ---   2026-07-20 Firearm    Gun:QG_af_GunMake    PASS     QG_af_GunMake (auto)
-  ---   2026-07-20 Firearm    Gun:QG_af_GunCaliber PASS     QG_af_GunCaliber (auto)
-  ---   2026-07-20 Firearm    Gun:QG               PASS     QG (auto)
   ---   2026-07-20 Article    Article:QA_any       PASS     QA_any (auto)
   ---   2026-07-20 Article    Article:QA_af_ImageIndicator PASS     QA_af_ImageIndicator (auto)
   ---   2026-07-20 Article    Article:QA           PASS     QA (auto)

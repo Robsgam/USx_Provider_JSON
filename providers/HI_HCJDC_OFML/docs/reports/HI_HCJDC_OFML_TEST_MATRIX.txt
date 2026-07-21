@@ -1,4 +1,4 @@
-HI_HCJDC_OFML v4.10 -- TEST MATRIX
+HI_HCJDC_OFML v4.11 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -29,7 +29,7 @@ Person (2 cards, 18 fields):
 
 Firearm (1 card, 5 fields):
   CARD_GUN (FIREARM):
-    ROW 1: GunSerialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], GunModel [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 3 fields):
@@ -135,9 +135,9 @@ ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-29  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+29  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QG)
-30  Firearm     QG+Serial          + GunMake, GunCaliber, GunModel, relatedSearchHitIndicator [    ]
+30  Firearm     QG+serialNumber    + GunMake, GunCaliber, GunModel, relatedSearchHitIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
@@ -156,8 +156,8 @@ COMBO COVERAGE (12/12):
   VehicleRegistrationQuery: 4/4 -- T1(RQ+V), T3(RQ+Plate), T5(M55S+M55S), T7(M55L+M55L)
   DriverLicenseQuery: 2/2 -- T13(N), T15(SexCode)
   DriverHistoryQuery: 2/2 -- T17(KQ+N), T19(KQ+SexCodeDH)
-  GunQuery: 1/1 -- T29(Serial)
+  GunQuery: 1/1 -- T29(serialNumber)
   ArticleSingleQuery: 1/1 -- T31(Serial)
   BoatQuery: 2/2 -- T24(BQ+Reg), T26(QB+Hull)
 
-IMPORT FILE: HI_HCJDC_OFML_v4.10.json
+IMPORT FILE: HI_HCJDC_OFML_v4.11.json

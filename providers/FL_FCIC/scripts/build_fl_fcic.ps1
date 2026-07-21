@@ -1,6 +1,14 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.8 (2026-07-20): Firearm CAD auto-population fix (direct feedback, mirrors NY_NYSPIN_EJUSTICE
+#   v4.10 + CA_CLETS v2.9 precedent). CAD sends the gun serial number as the camelCase field
+#   'serialNumber', not the PascalCase USx token 'GunSerialNumber' -- so the USx-query button in a
+#   CAD event never populated the Firearm form (worked for Person, failed for Firearm). Changed the
+#   form fieldId, the GunQuery QIDM sourceField, and the combo set[] from 'GunSerialNumber' to
+#   'serialNumber'; the QIDM attribute name + targetField stay 'GunSerialNumber' (the XML element
+#   name is unchanged, so the wire request is identical). Firearm re-tests from T1; Person/Vehicle/
+#   Article/Boat unaffected (no functional change -- fingerprints unchanged, stay preserved).
 # v7.7 (2026-07-16): Boat label cleanup (direct feedback, no ticket). RegistrationState_Input
 #   "Destination State (blank for FL, required for name/DOB)" -> "State (leave blank for FL)"
 #   (kept the minimal hint verify_build CHECK 15 Rule 1 requires on every State-suffixed field --
@@ -194,7 +202,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.7"
+    [string]$Version = "7.8"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -527,14 +535,14 @@ $dhQuery = [PSCustomObject]@{
 $gunQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'GunMake';               size = 23; sourceField = @('GunMake');               targetField = 'GunMake' }
-        [PSCustomObject]@{ name = 'GunSerialNumber';       size = 11; sourceField = @('GunSerialNumber');       targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunSerialNumber';       size = 11; sourceField = @('serialNumber');          targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator';        size = 1;  sourceField = @('ImageIndicator');        targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'NCICNumber';            size = 10; sourceField = @('NCICNumber');            targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'ProcessControlNumber';  size = 10; sourceField = @('processControlNumber');  targetField = 'ProcessControlNumber' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('GunSerialNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'QGGunSerialNumber'
             state                 = 'In/Out'
@@ -950,7 +958,7 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM Query by Serial Number, "OR" NCIC Number, "OR" PCN'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (incl w/Serial Num only - optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(

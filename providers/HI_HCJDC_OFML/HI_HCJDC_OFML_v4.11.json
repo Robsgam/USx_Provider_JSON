@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.10 -- entity forms",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.11 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- 3 cards: SEARCH OPTIONS (Vehicle Type/State/NCIC Image), PLATE SEARCH, VIN SEARCH. OOS-first routing: bare plate-\u003eM55L, +Plate Type+Year-\u003eRQ; bare VIN-\u003eM55S, +State-\u003eRQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.",
@@ -3319,7 +3319,7 @@
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
-                                                                                                                  "gunSerialNumber_Input",
+                                                                                                                  "SerialNumber_Input",
                                                                                                                   "gunMake_Input"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
@@ -3327,26 +3327,26 @@
                                                                                                                     },
                                                                                                     "parent":  "CARD_GUN"
                                                                                                 },
-                                                                                  "gunSerialNumber_Input":  {
-                                                                                                                "type":  {
-                                                                                                                             "resolvedName":  "FormInput"
-                                                                                                                         },
-                                                                                                                "displayName":  "Input",
-                                                                                                                "props":  {
-                                                                                                                              "fieldId":  "GunSerialNumber",
-                                                                                                                              "label":  "Serial Number",
-                                                                                                                              "maxLength":  "20"
-                                                                                                                          },
-                                                                                                                "isCanvas":  false,
-                                                                                                                "hidden":  false,
-                                                                                                                "nodes":  [
+                                                                                  "SerialNumber_Input":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                      },
+                                                                                                             "displayName":  "Input",
+                                                                                                             "props":  {
+                                                                                                                           "fieldId":  "serialNumber",
+                                                                                                                           "label":  "Serial Number",
+                                                                                                                           "maxLength":  "20"
+                                                                                                                       },
+                                                                                                             "isCanvas":  false,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
 
-                                                                                                                          ],
-                                                                                                                "linkedNodes":  {
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
 
-                                                                                                                                },
-                                                                                                                "parent":  "ROW_GUN_1"
-                                                                                                            },
+                                                                                                                             },
+                                                                                                             "parent":  "ROW_GUN_1"
+                                                                                                         },
                                                                                   "gunMake_Input":  {
                                                                                                         "type":  {
                                                                                                                      "resolvedName":  "FormSelect"
@@ -3545,7 +3545,7 @@
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
-                                                                                                                       "gunSerialNumber_Input",
+                                                                                                                       "SerialNumber_Input",
                                                                                                                        "gunMake_Input"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
@@ -3553,26 +3553,26 @@
                                                                                                                          },
                                                                                                          "parent":  "CARD_GUN"
                                                                                                      },
-                                                                                       "gunSerialNumber_Input":  {
-                                                                                                                     "type":  {
-                                                                                                                                  "resolvedName":  "FormInput"
-                                                                                                                              },
-                                                                                                                     "displayName":  "Input",
-                                                                                                                     "props":  {
-                                                                                                                                   "fieldId":  "GunSerialNumber",
-                                                                                                                                   "label":  "Serial Number",
-                                                                                                                                   "maxLength":  "20"
-                                                                                                                               },
-                                                                                                                     "isCanvas":  false,
-                                                                                                                     "hidden":  false,
-                                                                                                                     "nodes":  [
+                                                                                       "SerialNumber_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Input",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "serialNumber",
+                                                                                                                                "label":  "Serial Number",
+                                                                                                                                "maxLength":  "20"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
 
-                                                                                                                               ],
-                                                                                                                     "linkedNodes":  {
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
 
-                                                                                                                                     },
-                                                                                                                     "parent":  "ROW_GUN_1"
-                                                                                                                 },
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_GUN_1"
+                                                                                                              },
                                                                                        "gunMake_Input":  {
                                                                                                              "type":  {
                                                                                                                           "resolvedName":  "FormSelect"
@@ -3852,7 +3852,7 @@
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
-                                                                                                                          "gunSerialNumber_Input",
+                                                                                                                          "SerialNumber_Input",
                                                                                                                           "gunMake_Input"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
@@ -3860,26 +3860,26 @@
                                                                                                                             },
                                                                                                             "parent":  "CARD_GUN"
                                                                                                         },
-                                                                                          "gunSerialNumber_Input":  {
-                                                                                                                        "type":  {
-                                                                                                                                     "resolvedName":  "FormInput"
-                                                                                                                                 },
-                                                                                                                        "displayName":  "Input",
-                                                                                                                        "props":  {
-                                                                                                                                      "fieldId":  "GunSerialNumber",
-                                                                                                                                      "label":  "Serial Number",
-                                                                                                                                      "maxLength":  "20"
-                                                                                                                                  },
-                                                                                                                        "isCanvas":  false,
-                                                                                                                        "hidden":  false,
-                                                                                                                        "nodes":  [
+                                                                                          "SerialNumber_Input":  {
+                                                                                                                     "type":  {
+                                                                                                                                  "resolvedName":  "FormInput"
+                                                                                                                              },
+                                                                                                                     "displayName":  "Input",
+                                                                                                                     "props":  {
+                                                                                                                                   "fieldId":  "serialNumber",
+                                                                                                                                   "label":  "Serial Number",
+                                                                                                                                   "maxLength":  "20"
+                                                                                                                               },
+                                                                                                                     "isCanvas":  false,
+                                                                                                                     "hidden":  false,
+                                                                                                                     "nodes":  [
 
-                                                                                                                                  ],
-                                                                                                                        "linkedNodes":  {
+                                                                                                                               ],
+                                                                                                                     "linkedNodes":  {
 
-                                                                                                                                        },
-                                                                                                                        "parent":  "ROW_GUN_1"
-                                                                                                                    },
+                                                                                                                                     },
+                                                                                                                     "parent":  "ROW_GUN_1"
+                                                                                                                 },
                                                                                           "gunMake_Input":  {
                                                                                                                 "type":  {
                                                                                                                              "resolvedName":  "FormSelect"
@@ -5464,7 +5464,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.10",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.11",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -7042,7 +7042,7 @@
                                                                           "name":  "GunSerialNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "GunSerialNumber"
+                                                                                              "serialNumber"
                                                                                           ],
                                                                           "targetField":  "GunSerialNumber"
                                                                       },
@@ -7059,7 +7059,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "GunSerialNumber"
+                                                                                                             "serialNumber"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "GunMake",
@@ -7250,7 +7250,7 @@
                         "provider":  "HI_HCJDC_OFML"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.10 -- RMS bundle",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.11 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

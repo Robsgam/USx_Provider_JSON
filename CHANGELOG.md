@@ -7,7 +7,7 @@ not every build bump. Routine pipeline rebuilds are omitted unless they carry fu
 
 ## NJ_NJCJIS
 
-Current: **v4.9** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `NJ_NJCJIS_v4.9.json`
+Current: **v4.10** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `NJ_NJCJIS_v4.10.json`
 
 ### v4.8 (2026-07-01) — Metadata-driven keyRef rename (DQ/DQN/RQ/RQN did not exist in devdoc)
 - DriverLicenseQuery `DQ`→`FULL`, `DQN`→`FULLN` (devdoc keyReference is `FULL` for both combos, confirmed in raw devdoc XML)
@@ -70,7 +70,7 @@ Current: **v4.9** — 61P/0F/0W/0LIM | live test PENDING (full re-test from T1) 
 
 ## HI_HCJDC_OFML
 
-Current: **v4.10** — 65P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `HI_HCJDC_OFML_v4.10.json`
+Current: **v4.11** — 65P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `HI_HCJDC_OFML_v4.11.json`
 
 ### v4.6 (2026-06-26) — VehicleMakeName code source corrected (RND-62365) + State label (CHECK 15)
 - VehicleMakeName result-mapping code source corrected VEHICLE/VehicleType → attributeType=VEHICLE_MAKE/codeTypeSource=NCIC (RND-62365; probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName)
@@ -110,7 +110,7 @@ Current: **v4.10** — 65P/0F/0W/0LIM | live test PENDING (full re-test from T1)
 
 ## CA_CLETS (CA_CLETS_OFML)
 
-Current: **v2.12** — 77P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.12.json`
+Current: **v2.13** — 77P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.13.json`
 
 ### v2.12 (2026-07-01) — Restore in-state DriverLicenseQuery combos (ID.L1 / IN.L1)
 - DL 6 → 8 combos: restored `ID.L1` (in-state OLN) + `IN.L1` (in-state Name), the real devdoc keyRefs v2.11 removed

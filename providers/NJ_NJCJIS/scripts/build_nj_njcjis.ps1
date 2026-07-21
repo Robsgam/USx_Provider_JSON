@@ -1,5 +1,13 @@
 # build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
 # =====================================================================
+# v4.10 (2026-07-20): Firearm CAD auto-population fix (direct feedback, mirrors NY_NYSPIN_EJUSTICE
+#   v4.10 + CA_CLETS v2.9 precedent). CAD sends the gun serial number as the camelCase field
+#   'serialNumber', not the PascalCase USx token 'GunSerialNumber' -- so the USx-query button in a
+#   CAD event never populated the Firearm form (worked for Person, failed for Firearm). Changed the
+#   form fieldId, the GunQuery QIDM sourceField, and the combo set[] from 'GunSerialNumber' to
+#   'serialNumber'; the QIDM attribute name + targetField stay 'GunSerialNumber' (the XML element
+#   name is unchanged, so the wire request is identical). Firearm re-tests from T1; all other
+#   entities unaffected (no functional change -- fingerprints unchanged, stay preserved).
 # v4.8 (2026-07-01): Metadata-driven keyRef rename (user audit finding: synthetic keyRefs
 #   DQ/DQN/RQ/RQN did not match NJCJIS devdoc at all -- verified against the raw devdoc XML
 #   (providers/NJ_NJCJIS/source/NJ_NJCJIS.xml), not just the generated METADATA_REFERENCE.txt).
@@ -73,7 +81,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.9"
+    [string]$Version = "4.10"
 )
 
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
@@ -266,13 +274,13 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'GunCaliber';      size = 4;  sourceField = @('GunCaliber');      targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';         size = 23; sourceField = @('GunMake');          targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunModel';        size = 20; sourceField = @('GunModel');         targetField = 'GunModel' }
-        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 11; sourceField = @('GunSerialNumber');  targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunSerialNumber'; size = 11; sourceField = @('serialNumber');     targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator';  size = 1;  sourceField = @('ImageIndicator');   targetField = 'ImageIndicator' }
     )
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('GunSerialNumber')
+                set      = @('serialNumber')
                 any      = @('GunCaliber','GunMake','GunModel','ImageIndicator')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
@@ -505,7 +513,7 @@ $faLayout = MakeLayouts @(
         title = 'NCIC FIREARM QUERY'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';         node = Sel 'GunMake'         'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(

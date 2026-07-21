@@ -1,5 +1,13 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.11 (2026-07-20): Firearm CAD auto-population fix (direct feedback, mirrors NY_NYSPIN_EJUSTICE
+#   v4.10 + CA_CLETS v2.9 precedent). CAD sends the gun serial number as the camelCase field
+#   'serialNumber', not the PascalCase USx token 'GunSerialNumber' -- so the USx-query button in a
+#   CAD event never populated the Firearm form (worked for Person, failed for Firearm). Changed the
+#   form fieldId, the GunQuery QIDM sourceField, and the combo set[] from 'GunSerialNumber' to
+#   'serialNumber'; the QIDM attribute name + targetField stay 'GunSerialNumber' (the XML element
+#   name is unchanged, so the wire request is identical). Firearm re-tests from T1; all other
+#   entities unaffected (no functional change -- fingerprints unchanged, stay preserved).
 # v4.8 (2026-07-15): Person card layout/label feedback pass (Vehicle-consistency + DH parity)
 #   + removed the QW shadow combo from DriverLicenseQuery.
 #   (0) REMOVED: the 'QW' combo (Wanted Person, Name+DOB with Sex optional) from
@@ -174,7 +182,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.10",
+    [string]$Version = "4.11",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -526,7 +534,7 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'GunCaliber';                size = 4;  sourceField = @('GunCaliber');                targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';                   size = 10; sourceField = @('GunMake');                   targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunModel';                  size = 20; sourceField = @('GunModel');                  targetField = 'GunModel' }
-        [PSCustomObject]@{ name = 'GunSerialNumber';           size = 20; sourceField = @('GunSerialNumber');           targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'GunSerialNumber';           size = 20; sourceField = @('serialNumber');              targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'RelatedSearchHitIndicator'; size = 1;  sourceField = @('relatedSearchHitIndicator'); targetField = 'RelatedSearchHitIndicator' }
     )
     combinations = @(
@@ -535,7 +543,7 @@ $gunQuery = [PSCustomObject]@{
         # all optional fields (Make/Caliber/Model/RSH) from XML. FL_FCIC pattern confirmed.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('GunSerialNumber')
+                set      = @('serialNumber')
                 any      = @('GunMake','GunCaliber','GunModel','relatedSearchHitIndicator')
                 defaults = @([PSCustomObject]@{ field = 'relatedSearchHitIndicator'; value = 'Y' })
             }
@@ -819,7 +827,7 @@ $faLayout = MakeLayouts @(
         title = 'FIREARM'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'gunSerialNumber_Input'; node = Inp 'GunSerialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'gunMake_Input';         node = Sel 'GunMake' 'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(

@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE v4.9 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.10 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -33,7 +33,7 @@ Person (3 cards, 34 fields):
 
 Firearm (1 card, 4 fields):
   CARD_GUN (FIREARM QUERY):
-    ROW 1: GunSerialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 4 fields):
@@ -164,7 +164,7 @@ ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-41  Firearm     GINQ+GINQ          GunSerialNumber=GUN12345         [    ]
+41  Firearm     GINQ+GINQ          serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (GINQ)
 42  Firearm     GINQ+GINQ          + GunMake, GunCaliber, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
@@ -190,4 +190,4 @@ COMBO COVERAGE (17/17):
   ArticleSingleQuery: 1/1 -- T43(AINQ)
   BoatQuery: 4/4 -- T31(RCAR+Hull), T33(BVIN+BVIN), T35(BVEH+BVEH), T37(RVEH+RVEH)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.9.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.10.json
