@@ -304,7 +304,7 @@ TOOLS
     JSON. Extracts: field definitions, combination requirements (Set/Any/Choice),
     build coverage map, MC expansion candidates, unbuilt transactions.
     Usage: .\extract_metadata_reference.ps1 -XmlPath <xml> -Path <json> [-OutFile <path>] [-All]
-    Run with -All to regenerate METADATA_REFERENCE.txt for all 18 providers.
+    Run with -All to regenerate METADATA_REFERENCE.txt for all 20 providers.
     Output: docs/<PROVIDER>_METADATA_REFERENCE.txt (per-provider deliverable).
     Cross-references built QIDM combos against metadata combos by keyReference.
     Standard deliverable alongside SQVR.txt and STATUS.txt.
@@ -493,14 +493,6 @@ TOOLS
     Non-silently WARNs on unmapped combo fields / missing guardrails. Mirrors
     generate_test_matrix.ps1 logic in JSON the driver consumes.
     Usage: .\emit_test_plan.ps1 -Path <json> [-OutFile <path.plan.json>]
-
-  tools/compare_captures.ps1
-    Validation-only tool (no import). For each record in an automation capture file, finds
-    the matching reference -- a committed test log (default) or a second capture file -- and
-    diffs the ConnectCic Request field set (normalizing Transaction id). Reports MATCH/DIFF
-    per combo. Use to prove automation reproduces the same queries as trusted reference logs.
-    Usage: .\compare_captures.ps1 -CaptureFile <auto.json> -Provider <name>
-           .\compare_captures.ps1 -CaptureFile <rerun.json> -ReferenceFile <ref.json>
 
   tools/_archive/backfill_log_stamps.ps1  (ARCHIVED 2026-07-06 -- past its migration window)
     One-time migration tool. Stamps pre-existing test logs (written before provenance stamping

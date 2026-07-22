@@ -924,32 +924,36 @@ if ($gateExit -eq 0) {
 
 # 6c: Log-content integrity -- every saved test log's QUERY STRING must satisfy its plan
 # test's FULL fill-set, and guardrail logs must show winner-only XML (audit_log_content.ps1;
-# added 2026-07-02 after identifier-only auditing passed label-rotated logs). Scoped to the
-# single provider when -Provider was given; providers without a TEST_PLAN pass by absence.
-if ($Provider) {
-    $logAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $Provider -Quiet 2>&1 | Out-String
-    if ($LASTEXITCODE -eq 0) {
-        Pass "Log-content integrity: $(($logAuditOut -split "`n" | Where-Object { $_ -match 'PASS|nothing to audit' } | Select-Object -First 1).Trim())"
-    } else {
-        Fail "Log-content integrity: saved logs do not match their plan tests"
+# added 2026-07-02 after identifier-only auditing passed label-rotated logs). Runs for every
+# in-scope provider ($providers is the single provider when -Provider was given, else all);
+# providers without a TEST_PLAN pass by absence.
+$logContentFailed = $false
+foreach ($pd in $providers) {
+    $logAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        $logContentFailed = $true
+        Fail "Log-content integrity ($($pd.Name)): saved logs do not match their plan tests"
         $logAuditOut -split "`n" | Where-Object { $_ -match 'FAIL|STALE|MISMATCH|GUARDRAIL' } | Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
     }
 }
+if (-not $logContentFailed) { Pass "Log-content integrity: all in-scope provider logs match their plan tests (pass-by-absence where no TEST_PLAN)" }
 
 # 6d: Log-metadata integrity -- every saved test log's COMMSYS wire XML validated DIRECTLY against
 # the metadata: each wire field is a metadata-defined field for that query, and the present field-set
 # satisfies a real metadata combination (audit_log_metadata.ps1). This is the direct proof (vs the
 # transitive metadata<->JSON + JSON<->plan chain) that the CommSys query is 100% metadata-correct.
-# Providers without current-version logs or metadata XML pass by absence.
-if ($Provider) {
-    $metaAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_metadata.ps1" -Provider $Provider -Quiet 2>&1 | Out-String
-    if ($LASTEXITCODE -eq 0) {
-        Pass "Log-metadata integrity: $(($metaAuditOut -split "`n" | Where-Object { $_ -match 'PASS|nothing to (audit|validate)|no current-version' } | Select-Object -First 1).Trim())"
-    } else {
-        Fail "Log-metadata integrity: saved logs do not match the metadata"
+# Providers without current-version logs or metadata XML pass by absence. Runs for every
+# in-scope provider ($providers = single provider when -Provider given, else all).
+$logMetaFailed = $false
+foreach ($pd in $providers) {
+    $metaAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_metadata.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        $logMetaFailed = $true
+        Fail "Log-metadata integrity ($($pd.Name)): saved logs do not match the metadata"
         $metaAuditOut -split "`n" | Where-Object { $_ -match 'FAIL|MISMATCH|not defined|satisfies no|not well-formed' } | Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
     }
 }
+if (-not $logMetaFailed) { Pass "Log-metadata integrity: all in-scope provider logs are metadata-correct (pass-by-absence where no current-version logs)" }
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  ADVISORY: picklist-scope reminders -- NON-BLOCKING. A [NOTE] is not a PASS/FAIL/WARN and

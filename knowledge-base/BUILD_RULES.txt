@@ -403,7 +403,7 @@ See also:
       Drop firstNameLastNameDriversLicenseNumber (unreachable under OLN-first).
       KeepSsn providers (AZ, TN): same treatment for the SSN combo at their rebuild.
       Effect: OLN filled -> dlNumber-only elastic query; name searches unchanged.
-      Propagates to all 19 providers on rebuild (shared module).
+      Propagates to all 20 providers on rebuild (shared module).
 
     DO NOT APPLY UNTIL BOTH GATES CLEAR:
       G1 (impact): live RMS test with a record whose OLN matches but name
@@ -1020,7 +1020,7 @@ See also:
     those are silently inert -- QIDM_REFERENCE Sec 2a).
 
     CASING: conditions[].field = the provider's actual form sourceField token (FIELD =
-    SOURCEFIELD rule). PascalCase providers (NJ/FL/HI) use ['LicensePlateNumber'] /
+    SOURCEFIELD rule). PascalCase providers (NJ/FL/HI/NY/CA_CLETS/TX/AZ) use ['LicensePlateNumber'] /
     ['OperatorLicenseNumber']; camelCase providers (TX/CA_CLETS/NY/AZ) use
     ['licensePlateNumber'] / ['operatorLicenseNumber']. Verify the token before editing.
 

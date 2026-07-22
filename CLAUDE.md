@@ -98,7 +98,7 @@ The 22 USx CAD-integration field names (the ones CAD/OnScene auto-populate) are 
 - RMS form-fed fields: pass `-PascalCaseUsxFields` to `Build-RmsBundle`.
 - **NEVER use a whole-tree recase post-transform.** The retired `Convert-UsxCasing` function (NJ ≤ v4.1) recursed the full output object and enumerated each Craft.js `nodes` list, collapsing single-child lists to a bare string and empty lists to `null`. Craft.js requires `nodes` to be an array, so the form body silently failed to render (only tab names showed). Removed 2026-06-18; all casing is now native.
 - The 22 tokens: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RandomRequest, RegistrationState, ImageIndicator, VehicleIdentificationNumber, NCICNumber, VehicleMakeCode, NameFirst, NameLast, BirthDate, SexCode, OperatorLicenseNumber, GunSerialNumber, GunMake, GunCaliber, GunModel, ArticleSerialNumber, ArticleTypeCode, RegistrationNumber, BoatHullIdNumber (+ DH-suffix variants where present).
-- **Rollout status**: NJ, FL, HI are PascalCase. The remaining providers are still camelCase — convert each on its next scheduled rebuild (author PascalCase + add the RMS switch), not in a mass update.
+- **Rollout status**: NJ, FL, HI, NY, CA_CLETS, TX, AZ are PascalCase (the 7 galvanized providers). The remaining 13 legacy providers are still camelCase — convert each on its next scheduled rebuild (author PascalCase + add the RMS switch), not in a mass update.
 
 ### Code Type Pairings (confirmed working)
 
@@ -228,7 +228,7 @@ Most-specific (most set[] fields) first. Less-specific last.
 - `Build-RmsBundle` — returns complete RMS bundle (AUTH, QMF, Vehicle QIDM, Person QIDM, QRDM, ResultsLayout)
 - `Build-CommsysQrdm -ProviderName <name>` — returns CommSys QRDM for the PROVIDER bundle
 
-**Flags**: `Build-RmsBundle -KeepSsn` (AZ, TN) to include socialSecurityNumber. `Build-RmsBundle -SkipRace` (TX, LA, MD, CA_CONTRA_COSTA) to exclude race attr and raceCode from combo any[]. `Build-RmsBundle -PascalCaseUsxFields` (NJ, FL, HI — the PascalCase providers) to emit the form-fed `sourceField`/`set`/`any` USx references in PascalCase so they match the PascalCase form fieldIds; Mark43-internal targetFields stay camelCase. Default off (camelCase) for the not-yet-converted providers.
+**Flags**: `Build-RmsBundle -KeepSsn` (AZ, TN) to include socialSecurityNumber. `Build-RmsBundle -SkipRace` (TX, LA, MD, CA_CONTRA_COSTA) to exclude race attr and raceCode from combo any[]. `Build-RmsBundle -PascalCaseUsxFields` (NJ, FL, HI, NY, CA_CLETS, TX, AZ — the galvanized PascalCase providers) to emit the form-fed `sourceField`/`set`/`any` USx references in PascalCase so they match the PascalCase form fieldIds; Mark43-internal targetFields stay camelCase. Default off (camelCase) for the not-yet-converted providers.
 
 **No post-build patches.** If a new issue is found, update the build script or `_build_rms_bundle.ps1` — never add a JSON patch.
 
@@ -337,7 +337,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (57 scripts + 10 shared modules in `tools/`, + 1 archived one-time migration tool in `tools/_archive/`)
+## Tools (60 scripts + 13 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 1 archived one-time migration tool in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 

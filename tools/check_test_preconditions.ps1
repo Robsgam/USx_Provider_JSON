@@ -44,6 +44,7 @@ if (-not (Test-Path $providerRoot)) { exit 0 }
 
 # docs/ reorg pilot (2026-07-01, NJ_NJCJIS first) -- METADATA_REFERENCE is "reference" category.
 . "$PSScriptRoot\_resolve_docs_path.ps1"
+. "$PSScriptRoot\_resolve_provider_json.ps1"
 
 # ── Load METADATA_REFERENCE.txt to find FIELD CONSTRAINTS ──
 $metaRefPath = Find-DocsPath $providerRoot 'reference' "${Provider}_METADATA_REFERENCE.txt"
@@ -66,9 +67,9 @@ foreach ($ml in $mrLines) {
 
 if ($qidmConstraints.Count -eq 0) { exit 0 }
 
-# ── Load provider JSON ──
-$jsonPath = [System.IO.Path]::Combine($providerRoot, "${Provider}.json")
-if (-not (Test-Path $jsonPath)) { exit 0 }
+# ── Load provider JSON (resolve versioned/_MC/_BASE, not just bare <PROVIDER>.json) ──
+$jsonPath = Get-ProviderRootJson -ProvDir $providerRoot -Provider $Provider
+if (-not $jsonPath -or -not (Test-Path $jsonPath)) { exit 0 }
 
 $json = [System.IO.File]::ReadAllText($jsonPath) | ConvertFrom-Json
 $provBundle = $json.bundles | Where-Object { $_.name -ne 'ENTITIES' -and $_.name -ne 'RMS' }

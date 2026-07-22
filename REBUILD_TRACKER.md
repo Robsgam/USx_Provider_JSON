@@ -233,7 +233,7 @@ NY/NJ/HI/FL_FCIC and all other providers: 0 findings.
 
 Rule (KB BUILD_RULES.txt Sec 11 + AP #14/#23): default query (DL, VehReg) has autoSelect=true and
 NO queriesToDeselect; opt-in query (DH, VehStolen) deselects ONLY the default. NEVER bidirectional
-(mutual cross-deselect -> error popup, see `providers/PLATFORM_BUG_REPORT.txt` BUG 2).
+(mutual cross-deselect -> error popup, see `knowledge-base/PLATFORM_BUG_REPORT.txt` BUG 2).
 
 DL+DH -- remove queriesToDeselect from DriverLicenseQuery:
 - FIXED: CA_CLETS (v1.8), FL_FCIC (since v3.9), TX_TLETS (v3.1), NY_NYSPIN_EJUSTICE (v4.0, DH-suffix + one-directional)
