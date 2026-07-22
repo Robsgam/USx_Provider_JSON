@@ -567,6 +567,15 @@ TOOLS
     status into one snapshot.
     Usage: .\doctor.ps1 [-SkipPoison] [-OutFile <path>]
 
+  tools/report_test_status.ps1
+    Portfolio live-test status from ACTUAL log data. Reads the RESULT: lines of
+    the real logs/<Entity>/<PROVIDER>_v<ver>_*.txt files (version resolved from the
+    active root JSON filename) and reports per-entity PASS/FAIL/PENDING + an
+    ALL-PASS/PARTIAL/NEVER-TESTED/NOT-TRACKED roll-up. Deliberately does NOT read
+    logs/.test_state.json (its status field is block-lock bookkeeping, not a test
+    ledger, and drifts). Use this to answer "what is tested and passing right now".
+    Usage: .\report_test_status.ps1 [-Provider <name>] [-OutFile <path>]
+
   tools/flag_pending_fix.ps1
     Reverse-propagate a shared-module/JSON bug fix as a doc-stub flag. Writes a
     [FLAG:<id>] line into each still-pending provider's PENDING_UPDATES.txt (which

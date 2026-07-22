@@ -21,10 +21,11 @@
 [CmdletBinding()]
 param(
     [string]$Provider,
-    [string]$ProvidersDir = (Join-Path $PSScriptRoot "..\providers"),
+    [string]$ProvidersDir,
     [string]$OutFile
 )
 
+if (-not $ProvidersDir) { $ProvidersDir = Join-Path $PSScriptRoot "..\providers" }
 . (Join-Path $PSScriptRoot "_resolve_provider_json.ps1")
 
 $Entities = @('Vehicle','Person','Firearm','Article','Boat')
@@ -54,7 +55,8 @@ foreach ($pd in $provDirs) {
 
     if (-not (Test-Path $logsDir) -or -not $ver) {
         Emit ""
-        Emit ("{0,-22} v{1,-6} NOT ON LIVE-TEST TRACK (no logs package / legacy build)" -f $name, ($ver ?? '?'))
+        $verShow = if ($ver) { $ver } else { '?' }
+        Emit ("{0,-22} v{1,-6} NOT ON LIVE-TEST TRACK (no logs package / legacy build)" -f $name, $verShow)
         $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State='NOT-TRACKED' })
         continue
     }
@@ -101,7 +103,7 @@ Emit ""
 Emit ("=" * 78)
 Emit "SUMMARY"
 foreach ($grp in ($summary | Group-Object State | Sort-Object Name)) {
-    Emit ("  {0,-13} {1}" -f $grp.Name, (($grp.Group | ForEach-Object { "$($_.Provider) v$($_.Version ?? '?')" }) -join ', '))
+    Emit ("  {0,-13} {1}" -f $grp.Name, (($grp.Group | ForEach-Object { $vv = if ($_.Version) { $_.Version } else { '?' }; "$($_.Provider) v$vv" }) -join ', '))
 }
 
 $out = $lines -join "`n"
