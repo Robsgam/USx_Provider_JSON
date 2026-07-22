@@ -1,7 +1,7 @@
-﻿AZ_AZDPS METADATA REFERENCE
-============================
-Generated: 2026-06-12
-Source: AZ_AZDPS.xml (metadata) + AZ_AZDPS_MC.json
+﻿AZ_AZDPS_v3.0 METADATA REFERENCE
+=================================
+Generated: 2026-07-22
+Source: AZ_AZDPS.xml (metadata) + AZ_AZDPS_v3.0.json
 Metadata: 36 total transactions, 8 queries built in JSON
 
 ================================================================================
@@ -20,7 +20,7 @@ METADATA COMBINATIONS (1 total):
   ACQA          ArticleTypeCode         BadgeNumber, ArticleTypeCode, ArticleSerialNumber      RelatedHitSearchIndicator
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   ACQA           set[dexStateUserId, articleTypeCode, articleSerialNumber]
+  BUILT   ACQA           set[dexStateUserId, ArticleTypeCode, ArticleSerialNumber]
 
 ================================================================================
 2. AzAzdpsDriverLicenseQuery (version 3)
@@ -44,9 +44,9 @@ METADATA COMBINATIONS (4 total):
   ACWL          Name                    BadgeNumber, BirthDate, Name, SexCode                  OperatorLicenseNumber, State
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   ACWL           set[dexStateUserId, birthDate, nameLast, nameFirst, sexCode]
-  BUILT   DQN            set[nameLast, nameFirst, sexCode, birthDate]
-  BUILT   DQ             set[operatorLicenseNumber]
+  BUILT   ACWL           set[dexStateUserId, BirthDate, NameLast, NameFirst, SexCode]
+  BUILT   DQN            set[NameLast, NameFirst, SexCode, BirthDate]
+  BUILT   DQ             set[OperatorLicenseNumber]
   BUILT   DQSS           set[SocialSecurityNumber]
 
 ================================================================================
@@ -69,10 +69,10 @@ METADATA COMBINATIONS (4 total):
   BQ            BoatHullIdNumber        BoatHullIdNumber                                       RegistrationNumber, State
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   ACQB           set[dexStateUserId, registrationNumber]
-  BUILT   ACQBH          set[dexStateUserId, boatHullIdNumber]
-  BUILT   BQ             set[registrationNumber]
-  BUILT   BQH            set[boatHullIdNumber]
+  BUILT   ACQB           set[dexStateUserId, RegistrationNumber]
+  BUILT   ACQBH          set[dexStateUserId, BoatHullIdNumber]
+  BUILT   BQ             set[RegistrationNumber]
+  BUILT   BQH            set[BoatHullIdNumber]
 
 ================================================================================
 4. DriverHistoryQuery (version 3)
@@ -94,8 +94,8 @@ METADATA COMBINATIONS (2 total):
   KQ            Name                    State, Name, BirthDate, SexCode                        PurposeCode, Attention
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQH            set[StateDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH]
-  BUILT   KQ             set[StateDH, operatorLicenseNumberDH]
+  BUILT   KQH            set[RegistrationStateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
+  BUILT   KQ             set[RegistrationStateDH, OperatorLicenseNumberDH]
 
 ================================================================================
 5. GunQuery (version 3)
@@ -115,7 +115,7 @@ METADATA COMBINATIONS (1 total):
   ACQG          GunSerialNumber         BadgeNumber, GunSerialNumber                           GunMake, GunModel, GunCalib...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   ACQG           set[dexStateUserId, gunSerialNumber]
+  BUILT   ACQG           set[dexStateUserId, serialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 5)
@@ -138,8 +138,8 @@ METADATA COMBINATIONS (2 total):
   ACVR          VehicleIdentificationNumber  BadgeNumber, VehicleIdentificationNumber               VehicleMakeCode, VehicleYea...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   ACVR           set[dexStateUserId, licensePlateNumber]
-  BUILT   ACVRV          set[dexStateUserId, vehicleIdentificationNumber]
+  BUILT   ACVR           set[dexStateUserId, LicensePlateNumber]
+  BUILT   ACVRV          set[dexStateUserId, VehicleIdentificationNumber]
 
 ================================================================================
 7. WMPIMissingPersonInquiry (version 1)
@@ -167,8 +167,8 @@ METADATA COMBINATIONS (2 total):
   ACQM          NCICNumber              NCICNumber                                             FormORI, RelatedHitSearchIn...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   ACQM           set[Age, sexCode, RaceCode, Height, Weight, EyeColorCode, HairColorCode, nameLast, nameFirst]
-  BUILT   ACQMN          set[ncicNumber]
+  BUILT   ACQM           set[Age, SexCode, raceCode, Height, Weight, EyeColorCode, HairColorCode, NameLast, NameFirst]
+  BUILT   ACQMN          set[NCICNumber]
 
 ================================================================================
 8. WMPIWantedPersonInquiry (version 1)
@@ -218,8 +218,8 @@ METADATA COMBINATIONS (20 total):
   ACQW          Name                    Name, BirthDate                                        RelatedHitSearchIndicator, ...
 
 BUILD COVERAGE (2 of 20 built):
-  BUILT   ACQW           set[nameLast, nameFirst, birthDate, sexCode, RaceCode]
-  BUILT   ACQWN          set[ncicNumber]
+  BUILT   ACQW           set[NameLast, NameFirst, BirthDate, SexCode, raceCode]
+  BUILT   ACQWN          set[NCICNumber]
 
 ================================================================================
 BUILD SUMMARY

@@ -1,0 +1,38 @@
+# AZ_AZDPS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4). Each non-comment line records a set/any
+# divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+# Matching is on the first three columns (query | keyRef | field), case-insensitive.
+#
+# CONTEXT (v3.0 methodology rebuild, 2026-07-22): AZ splits several multi-identifier metadata
+# transactions into distinct single-identifier combos (invented keyRefs per LIMITATION #21) so the
+# platform serializes ONLY the intended identifier per query and identifier-priority guardrails hold
+# (LIMITATION #1: the platform unions all satisfied combos' set[]+any[]). A metadata field that is
+# the PRIMARY of its own dedicated combo is therefore demoted to any[] in the sibling combos where
+# it is a lower-priority companion. Every demotion below is that pattern -- the field is still
+# reachable (required in its own combo) and never dropped; it simply is not forced into a sibling
+# combo's set[]. All confirmed against docs/reference/AZ_AZDPS_METADATA_REFERENCE.txt.
+
+# --- AzAzdpsDriverLicenseQuery: DQ is the OLN combo; Name/Sex/DOB (DQN) and SSN (DQSS) are their
+#     own combos, so they are companions in DQ's any[]. ---
+AzAzdpsDriverLicenseQuery | DQ | Name                 | demoted-to-any | Name is the primary of the DQN combo; companion in DQ (OLN) any[] | design-decision | 2026-07-22
+AzAzdpsDriverLicenseQuery | DQ | SexCode              | demoted-to-any | Sex is part of the DQN name-search set; companion in DQ (OLN) any[] | design-decision | 2026-07-22
+AzAzdpsDriverLicenseQuery | DQ | BirthDate            | demoted-to-any | DOB is part of the DQN name-search set; companion in DQ (OLN) any[] | design-decision | 2026-07-22
+AzAzdpsDriverLicenseQuery | DQ | SocialSecurityNumber | demoted-to-any | SSN is the primary of the DQSS combo; companion in DQ (OLN) any[] | design-decision | 2026-07-22
+
+# --- BoatQuery: Hull>Reg guardrail. Hull is the primary of ACQBH/BQH; companion in the Reg combos. ---
+BoatQuery | ACQB | BoatHullIdNumber | demoted-to-any | Hull is the primary of ACQBH; companion in ACQB (Reg+Badge) any[] per Hull>Reg guardrail | design-decision | 2026-07-22
+BoatQuery | BQ   | BoatHullIdNumber | demoted-to-any | Hull is the primary of BQH; companion in BQ (Reg, no-Badge) any[] per Hull>Reg guardrail | design-decision | 2026-07-22
+
+# --- DriverHistoryQuery: KQ is the OLN combo; Name/DOB/Sex (KQH) is its own combo. ---
+DriverHistoryQuery | KQ | Name      | demoted-to-any | Name is the primary of the KQH combo; companion in KQ (OLN) any[] | design-decision | 2026-07-22
+DriverHistoryQuery | KQ | BirthDate | demoted-to-any | DOB is part of the KQH name-search set; companion in KQ (OLN) any[] | design-decision | 2026-07-22
+DriverHistoryQuery | KQ | SexCode   | demoted-to-any | Sex is part of the KQH name-search set; companion in KQ (OLN) any[] | design-decision | 2026-07-22
+
+# --- VehicleRegistrationQuery: Plate>VIN guardrail. VIN is the primary of ACVRV; companion in ACVR. ---
+VehicleRegistrationQuery | ACVR | VehicleIdentificationNumber | demoted-to-any | VIN is the primary of ACVRV; companion in ACVR (Plate) any[] per Plate>VIN guardrail | design-decision | 2026-07-22
+
+# --- WMPI Wanted/Missing: NCICNumber is the primary of the invented ACQWN/ACQMN combos; companion
+#     in the Name/descriptor combos' any[]. ---
+WMPIMissingPersonInquiry | ACQM | NCICNumber | demoted-to-any | NCIC is the primary of ACQMN; companion in ACQM (Name+descriptors) any[] | design-decision | 2026-07-22
+WMPIWantedPersonInquiry  | ACQW | NCICNumber | demoted-to-any | NCIC is the primary of ACQWN; companion in ACQW (Name+DOB+Sex+Race) any[] | design-decision | 2026-07-22

@@ -41,6 +41,12 @@ All JSON versions produced for this provider.
 |------|---------|--------|-------|
 | archive/AZ_AZDPS_BASE.json | pre-v1.0 | Archived | Prior build before from-scratch rebuild (2026-04-21). |
 
+
+## v3.0 (2026-07-22)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| AZ_AZDPS_v3.0.json | v3.0 | Current | 71P/0F/0W/0LIM. |
 ## v2.3 (2026-05-11)
 
 | File | Version | Status | Notes |
