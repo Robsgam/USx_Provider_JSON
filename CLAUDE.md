@@ -405,7 +405,8 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 |---|---|---|
 | `build_codetype_test.ps1` | Generates CODETYPE_TEST.json for dropdown validation | `-OutputPath` |
 | `preflight_check.ps1` | Pre-build validation against PROVIDER_CONFIG.txt | (no args) |
-| `render_cad_guide.ps1` | HTML/PDF officer reference: which queries CAD can auto-trigger vs need officer input | `-Path <json>` `-OutFile` `-PdfFile` |
+| `render_officer_guide.ps1` | HTML/PDF officer query reference (required-vs-optional fields per query). **This is the one `build_report.ps1` step 13 runs.** | `-Path <json>` `-OutFile` `-PdfFile` |
+| `render_cad_guide.ps1` | Standalone variant: which queries CAD can auto-trigger vs need officer input. NOT wired into the pipeline — run manually. Overlaps `render_officer_guide`; consolidation candidate. | `-Path <json>` `-OutFile` `-PdfFile` |
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 

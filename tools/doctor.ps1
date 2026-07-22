@@ -41,6 +41,23 @@ try {
     Emit "  [WARN] score_all.ps1 -Quick failed: $($_.Exception.Message)"
 }
 
+# --- 1b. Live-test status from ACTUAL log RESULT lines -------------------------
+# report_test_status.ps1 reads real logs/<Entity>/*.txt RESULT lines (NOT the drift-prone
+# .test_state.json status field or SQVR markers) -- the ground-truth "tested & passing?" view.
+Emit ""
+Emit "--- LIVE-TEST STATUS (report_test_status.ps1 -- actual log RESULT lines) ---"
+try {
+    $ts = & "$tool\report_test_status.ps1" *>&1 | Out-String
+    # Show the SUMMARY roll-up (ALL-PASS / NEVER-TESTED / NOT-TRACKED), not the full per-entity dump.
+    $inSummary = $false
+    foreach ($l in ($ts.TrimEnd() -split "`n")) {
+        if ($l -match '^SUMMARY') { $inSummary = $true; Emit $l; continue }
+        if ($inSummary) { Emit $l }
+    }
+} catch {
+    Emit "  [WARN] report_test_status.ps1 failed: $($_.Exception.Message)"
+}
+
 # --- 2. Poisoned-array sweep (validate G-31) -----------------------------------
 if (-not $SkipPoison) {
     Emit ""
