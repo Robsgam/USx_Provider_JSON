@@ -1,7 +1,7 @@
 ﻿================================================================
-  Build Report: MD_METERS_MC
-  Source: MD_METERS_MC.json
-  Generated: 2026-06-29 08:38
+  Build Report: MD_METERS
+  Source: MD_METERS_v2.0.json
+  Generated: 2026-07-23 16:10
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -27,18 +27,17 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 18 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 17 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 6 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' ImageIndicator default='N' for Boat
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [LIMITATION] QIDM 'MD_METERS_VehicleRegistrationQuery' combo 'ZVEH.V' is unreachable: earlier unconditioned combo 'ZLRG.V' set[] is a subset of its set[] (first match fires; add routing conditions to 'ZLRG.V' or reorder)
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 4 combos
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' ImageIndicator size=1
-  [PASS] QIDM 'MD_METERS_DriverLicenseQuery' -> Person : 9 attrs, 4 combos
+  [PASS] QIDM 'MD_METERS_DriverLicenseQuery' -> Person : 8 attrs, 4 combos
   [PASS] QIDM 'MD_METERS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'MD_METERS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'MD_METERS_DriverLicenseQuery' ImageIndicator size=1
@@ -82,8 +81,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' combo 'ZLRG.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' combo 'ZVEH.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'MD_METERS_VehicleRegistrationQuery' combo 'ZVEH.P': all set[]/any[] fields resolvable
-  [PASS] QIDM 'MD_METERS_DriverLicenseQuery' combo 'ZWAR.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'MD_METERS_DriverLicenseQuery' combo 'ZWAR.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'MD_METERS_DriverLicenseQuery' combo 'ZWAR.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'MD_METERS_DriverLicenseQuery' combo 'ZLDR.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'MD_METERS_DriverLicenseQuery' combo 'ZLDR.O': all set[]/any[] fields resolvable
   [PASS] QIDM 'MD_METERS_DriverHistoryQuery' combo 'ZDRV.N': all set[]/any[] fields resolvable
@@ -94,10 +93,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'MD_METERS_BoatQuery' combo 'ZBOA.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 69 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
+  RESULTS: 69 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-
-  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

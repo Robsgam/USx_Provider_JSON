@@ -2,9 +2,14 @@
 
 Auto-generated from `MD_METERS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.0** | Generated: 2026-06-29
+Current: **v2.0** | Generated: 2026-07-23
 
 ---
+
+## v2.0 -- 2026-07-23 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.0 -- 2026-05-07 -- MC multi-card layout
 

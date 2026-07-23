@@ -1,7 +1,7 @@
-﻿MD_METERS METADATA REFERENCE
-=============================
-Generated: 2026-06-12
-Source: MD_METERS.xml (metadata) + MD_METERS_MC.json
+﻿MD_METERS_v2.0 METADATA REFERENCE
+==================================
+Generated: 2026-07-23
+Source: MD_METERS.xml (metadata) + MD_METERS_v2.0.json
 Metadata: 10 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -18,7 +18,7 @@ METADATA COMBINATIONS (1 total):
   ZART          ArticleSerialNumber     ArticleTypeCode, ArticleSerialNumber                   --
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   ZART           set[SerialNumber, ArticleTypeCode]
+  BUILT   ZART           set[serialNumber, articleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 4)
@@ -85,8 +85,8 @@ METADATA COMBINATIONS (5 total):
   ZLDR          OperatorLicenseNumber   OperatorLicenseNumber                                  State, ImageIndicator
 
 BUILD COVERAGE (4 of 5 built):
-  BUILT   ZWAR.N         set[BirthDate, NameLast, NameFirst, RaceCode, SexCode]
-  BUILT   ZWAR.O         set[NameLast, NameFirst, OperatorLicenseNumber, RaceCode, SexCode]
+  BUILT   ZWAR.O         set[NameLast, NameFirst, OperatorLicenseExpirationYear, OperatorLicenseNumber, raceCode, SexCode]
+  BUILT   ZWAR.N         set[BirthDate, NameLast, NameFirst, raceCode, SexCode]
   BUILT   ZLDR.N         set[BirthDate, NameLast, NameFirst, SexCode]
   BUILT   ZLDR.O         set[OperatorLicenseNumber]
   UNBUILT ZDRV           OperatorLicenseNumber
@@ -106,7 +106,7 @@ METADATA COMBINATIONS (1 total):
   ZGUN          GunMake                 GunCaliber, GunMake, GunSerialNumber                   --
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   ZGUN           set[GunCaliber, FirearmMake, SerialNumber]
+  BUILT   ZGUN           set[gunCaliber, firearmMake, serialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 6)
