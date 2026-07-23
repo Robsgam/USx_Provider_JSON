@@ -19,6 +19,12 @@ All JSON versions produced for this provider.
 | phases/mc/OH_LEADS_MC_v1.0_2026-05-07.json | v1.0 | Snapshot | Initial MC build. |
 | phases/base/OH_LEADS_v1.0_2026-05-06.json | v1.0 | Snapshot | Initial build (first run). |
 
+
+## v2.0 (2026-07-23)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| OH_LEADS_v2.0.json | v2.0 | Current | 76P/0F/0W/0LIM. |
 ## v1.3 (2026-05-11)
 
 | File | Version | Status | Notes |

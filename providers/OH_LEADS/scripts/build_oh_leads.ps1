@@ -1,71 +1,46 @@
-# build_oh_leads.ps1  -- OH_LEADS v1.x BASE
-# Builds OH_LEADS_BASE.json from source\OH_LEADS.xml metadata + KB specs.
+# build_oh_leads.ps1  -- OH_LEADS (galvanized v2.0, single-JSON native PascalCase)
+# Consolidated legacy BASE+MC -> one versioned JSON. Native PascalCase USx CAD fieldIds
+# (Build-RmsBundle -PascalCaseUsxFields). Phase 2 multi-card. DriverHistoryQuery uses
+# DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH, etc.) on separate VISIBLE DH
+# cards + queriesToDeselect. Existence-only OOS/routing gates + identifier-priority guardrails.
+# CAD_DISPATCH + FIRST_RESPONDER context cards.
 #
-# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1 -Version X.X -Phase base
+# OH-SPECIFIC:
+#   No CaRequestPurposeCode -- Ohio, not California.
+#   Date format: MMddyyyy (size=8, Date fields via CommsysParseDateRuleHandler).
+#   Name: composite Last,First via FormatStringRuleHandler.
+#   State: no initialValue (LIMITATION #30). RegistrationState EXISTS/NOT_EXISTS routes
+#     OOS (RQ Nlets / DQ) vs in-state (RP/RV / DL/DN) AND Boat BQ(Nlets)/QB(NCIC).
+#   VehicleRegistrationQuery -- 9 metadata combos collapsed to 7 built:
+#     ATDP (dealer), RP (in-state plate), RQ.P (OOS plate), RV (in-state VIN), RQ.V (OOS VIN),
+#     RS (owner SSN), RN (owner Name). The 2 duplicate-keyRef NCIC national shadows QV.P
+#     ("(Out) LicensePlateNumber,State") and QV.V ("(Out) VehicleIdentificationNumber") are
+#     DROPPED -- they are form-identical to RQ.P (OOS plate) and RV/RQ.V (VIN) under
+#     existence-only gating (only RegistrationState distinguishes In/Out, already consumed).
+#     Documented in docs/OH_LEADS_ACCEPTED_DIVERGENCES.txt (TN/OCATS/CA_CLETS drop precedent).
+#     Owner search (RN/RS) is cross-entity (person fields on Vehicle) + lowest priority
+#     (Plate>VIN>SSN>Name). DealerPlateType routes ATDP.
+#   DriverLicenseQuery -- 4 built (DQ.O/DL OLN, DQ.N/DN Name); OLN>Name + State In/Out gates.
+#     ImageIndicator (Y) only on DQ.O (metadata-faithful). QWA + 2 BMVIMS deferred (non-basic).
+#   DriverHistoryQuery -- KQ.N (Name+DOB+Sex), KQ.O (OLN). DH-suffix. BMVIMS(OLN) dropped
+#     (form-identical OLN shadow of KQ.O; devdoc folds it into the KQ OLN combo's optional
+#     ReasonCode). Attention auto-handler (CommsysGetLastNameFirstNameInitialRuleHandler) via
+#     eSUN hidden 'attention' feeder + defaults[] so the handler output serializes.
+#   GunQuery -- QG (serial; caliber/make/relatedHit optional). No NCICNumber (not in metadata).
+#   ArticleSingleQuery -- QA.S (serial+type), QA.N (NCIC#). serial>NCIC guardrail.
+#   BoatQuery -- BQ.H/BQ.R (Nlets, State), QB.H/QB.R (NCIC, Image/RelatedHit). State-existence
+#     routing + Hull>Reg guardrail. No NCICNumber (not in metadata).
+#   VehicleMakeCode: FormSelect VEHICLE_MAKE dropdown (hard gate -- never FormInput).
+#   RelatedHitSearchIndicator: visible camelCase FormSelect (YES_NO_UNKNOWN) on Gun/Article/Boat.
 #
-# INPUTS:
-#   source\OH_LEADS.xml   -- XML metadata [AUTHORITATIVE]
-#   source\OH_LEADS.pdf   -- CommSys devdoc [CROSS-CHECK]
-#   tools\\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs)
-#
-# METADATA SUMMARY (OH_LEADS v1):
-#   ArticleSingleQuery    -- 2 combos in XML, duplicate keyRef QA -> QA.S (serial), QA.N (NCIC#)
-#   BoatQuery             -- 4 combos in XML, duplicate keyRefs BQ/QB -> BQ.R, BQ.H, QB.R, QB.H
-#   DriverHistoryQuery    -- 3 combos, duplicate keyRef KQ -> KQ.O (OLN), KQ.N (Name) + BMVIMS
-#   DriverLicenseQuery    -- 7 combos in XML, collapsed to 4: DL (in-state OLN), DQ.O (OOS OLN), DN (in-state Name), DQ.N (OOS Name)
-#                            BMVIMS(OLN), BMVIMS(SSN), QWA(Name) -- deferred (not basic queries)
-#   GunQuery              -- 1 combo (QG serial)
-#   VehicleRegistrationQuery -- 9 combos: ATDP, RP, RQ.P, QV.P, RV, RQ.V, QV.V, RS, RN
-#
-# OH_LEADS-SPECIFIC:
-#   NO CaRequestPurposeCode  -- Ohio, not California.
-#   Date format: MMddyyyy    -- DL/DH BirthDate max=8.
-#   No State initialValue    -- LIMITATION #30: separate in-state (DL/RP/RV) vs OOS (DQ/RQ) keyRefs.
-#   Sex: NIBRS pattern (attributeTypeId='SEX', codeTypeProvider='NIBRS')
-#   State: NCIC pattern (attributeTypeId='STATE', codeTypeProvider='NCIC')
-#   ImageIndicator in: ArticleSingleQuery, BoatQuery, DriverLicenseQuery (Y default)
-#   RelatedHitSearchIndicator in: Article, Boat, Gun (Y-only flag, FormInput maxLength=1)
-#   Name: composite FormatStringRuleHandler
-#   DL+DH co-fire: DH uses DH-suffix fieldIds, autoSelect=true
-#   VehReg has owner search combos (RS=SSN, RN=Name) -- person fields on Vehicle entity
-#   DealerPlateType field for ATDP combo
-#   PlateType=PC (default), PlateYear=2026
-#   Attention on DH: CommsysGetLastNameFirstNameInitialRuleHandler
-#
-# QUERYINPUTDATAMAPPING (CommSys -- 6 configs, 23 combos):
-#   ArticleSingleQuery         QA.S (Serial), QA.N (NCIC#)
-#   BoatQuery                  BQ.R (Reg in-state), BQ.H (Hull in-state), QB.R (Reg NCIC), QB.H (Hull NCIC)
-#   DriverHistoryQuery         KQ.O (OLN), KQ.N (Name), BMVIMS (BMV IMS)
-#   DriverLicenseQuery         DL (in-state OLN), DQ.O (OOS OLN), DN (in-state Name), DQ.N (OOS Name)
-#   GunQuery                   QG (Serial)
-#   VehicleRegistrationQuery   ATDP (Dealer), RP (in-state Plate), RQ.P (OOS Plate), QV.P (NCIC Plate),
-#                              RV (in-state VIN), RQ.V (OOS VIN), QV.V (NCIC VIN), RS (SSN), RN (Name)
-#
-# ENTITIES (5 QUERYINPUTFORM):
-#   Vehicle  -- Plate + VIN + State + PlateType + PlateYear + VehMake + VehYear + DealerPlateType + Name + SSN + County
-#   Person   -- OLN + Name + DOB + Sex + State + ImageIndicator
-#   Firearm  -- Serial + Make + Caliber + RelatedHitSearchIndicator
-#   Article  -- Serial + ArticleType + NCICNumber + ImageIndicator + RelatedHitSearchIndicator
-#   Boat     -- Hull + Reg# + State + ImageIndicator + RelatedHitSearchIndicator
-#
-# PERSON (2 QIDMs co-fire by design):
-#   DL + DH share Person entity/form.
-#   Both have autoSelect=true. Officer can uncheck to disable specific queries.
-#   DH uses DH-suffix fieldIds: operatorLicenseNumberDH, nameFirstDH, nameLastDH, birthDateDH, sexCodeDH
+# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
-param(
-    [string]$Version = '1.3',
-    [string]$Phase   = "base"
-)
-
-$DATE        = (Get-Date -Format 'yyyy-MM-dd')
+$ErrorActionPreference = "Stop"
+$Version     = '2.0'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
-$PHASEDIR = "$DIR\phases\$Phase"
-$OUT      = "$DIR\OH_LEADS_BASE.json"
-$VEROUT   = "$PHASEDIR\OH_LEADS_v${Version}_${DATE}.json"
-
-New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
+$OUT      = "$DIR\OH_LEADS_v${Version}.json"
+if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
@@ -75,8 +50,17 @@ New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
 . "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
+# keyRef INVENTORY (LIMITATION #21 -- unique keyRefs per QIDM; OH_LEADS 6 basic queries,
+# DH-suffix, existence-only routing gates + identifier-priority guardrails):
+#   VehicleRegistrationQuery : ATDP (dealer plate), RQ.P (OOS plate), RP (in-state plate), RQ.V (OOS VIN), RV (in-state VIN), RS (owner SSN), RN (owner Name)
+#   DriverLicenseQuery       : DQ.O (OOS OLN), DL (in-state OLN), DQ.N (OOS Name+DOB+Sex), DN (in-state Name)
+#   DriverHistoryQuery       : KQ.N (Name+DOB+Sex), KQ.O (OLN) -- DH-suffix fieldIds, Attention auto-handler
+#   GunQuery                 : QG (serial; caliber/make/relatedHit optional)
+#   ArticleSingleQuery       : QA.S (serial+type), QA.N (NCIC#)
+#   BoatQuery                : BQ.H (Nlets hull+state), QB.H (NCIC hull), BQ.R (Nlets reg+state), QB.R (NCIC reg)
+
 # =====================================================================
-# BUNDLE 1: OH_LEADS PROVIDER
+# BUNDLE 1: OH_LEADS PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
 $auth = Build-Auth -ProviderName 'OH_LEADS'
@@ -86,89 +70,130 @@ $results = Build-ProviderQrdm -ProviderName 'OH_LEADS'
 $qmf = Build-Qmf -ProviderName 'OH_LEADS'
 
 # =====================================================================
-# 1d. VehicleRegistrationQuery
-# XML: 9 combos: ATDP, RP, RQ(plate), QV(plate), RV, RS, RN, RQ(VIN), QV(VIN)
-# Duplicate keyRefs: RQ -> RQ.P, RQ.V; QV -> QV.P, QV.V
-# Owner combos: RS (SSN), RN (Name) -- person fields on Vehicle entity.
-# DealerPlateType for ATDP combo.
-# LIMITATION #30: No State initialValue -- in-state (RP/RV) vs OOS (RQ) routing.
+# VehicleRegistrationQuery -- 7 combos (see header). Plate>VIN>SSN>Name identifier priority;
+# RegistrationState EXISTS/NOT_EXISTS = OOS/in-state; DealerPlateType routes ATDP.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'AddressCounty';               size = 4;  sourceField = @('addressCounty');               targetField = 'AddressCounty' }
-        [PSCustomObject]@{ name = 'DealerPlateType';             size = 1;  sourceField = @('dealerPlateType');              targetField = 'DealerPlateType' }
-        [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('licensePlateNumber');           targetField = 'LicensePlateNumber' }
-        [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('licensePlateTypeCode');         targetField = 'LicensePlateTypeCode' }
-        [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('licensePlateYear');             targetField = 'LicensePlateYear' }
+        [PSCustomObject]@{ name = 'AddressCounty';               size = 4;  sourceField = @('AddressCounty');               targetField = 'AddressCounty' }
+        [PSCustomObject]@{ name = 'DealerPlateType';             size = 1;  sourceField = @('DealerPlateType');              targetField = 'DealerPlateType' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumber');           targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');         targetField = 'LicensePlateTypeCode' }
+        [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('ownerLastName','ownerFirstName'); targetField = 'Name'
+            size = 30; sourceField = @('OwnerLastName','OwnerFirstName'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'SocialSecurityNumber';        size = 9;  sourceField = @('ownerSocialSecurityNumber');    targetField = 'SocialSecurityNumber' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('vehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
-        [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('vehicleMakeCode');              targetField = 'VehicleMakeCode' }
+        [PSCustomObject]@{ name = 'SocialSecurityNumber';        size = 9;  sourceField = @('OwnerSocialSecurityNumber');    targetField = 'SocialSecurityNumber' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
+        [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('VehicleMakeCode');              targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                  targetField = 'VehicleYear' }
     )
     combinations = @(
-        # Most-specific first (LIMITATION #3: first matching combo fires)
+        # ATDP -- dealer plate (most specific: DealerPlateType present)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationState','licensePlateNumber','licensePlateTypeCode','licensePlateYear'); any = @() }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'RQ.P'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateTypeCode','dealerPlateType'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set = @('LicensePlateNumber','LicensePlateTypeCode','DealerPlateType'); any = @()
+                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
+                conditions = @(
+                    [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('DealerPlateType');    operator = 'EXISTS' }
+                )
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'ATDP'
-            state                 = 'In/Out'
+            state                 = 'In'
         }
+        # RQ.P -- OOS plate (Nlets; State present, no dealer)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber','vehicleMakeCode','vehicleYear'); any = @('registrationState') }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'RQ.V'
-            state                 = 'In/Out'
+            requirements          = [PSCustomObject]@{
+                set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('RegistrationState')
+                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
+                conditions = @(
+                    [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');  operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('DealerPlateType');    operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'RQ.P'
+            state                 = 'Out'
         }
+        # RP -- in-state plate (Ohio BMV; no State, no dealer)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateTypeCode'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set = @('LicensePlateNumber','LicensePlateTypeCode'); any = @()
+                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
+                conditions = @(
+                    [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');  operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('DealerPlateType');    operator = 'NOT_EXISTS' }
+                )
+            }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RP'
-            state                 = 'In/Out'
+            state                 = 'In'
         }
+        # RQ.V -- OOS VIN (Nlets; VIN+make+year+state). Plate>VIN guardrail
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ownerLastName','ownerFirstName'); any = @('addressCounty') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'RN'
-            state                 = 'In/Out'
+            requirements          = [PSCustomObject]@{
+                set = @('VehicleIdentificationNumber','VehicleMakeCode','vehicleYear'); any = @('RegistrationState')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('VehicleIdentificationNumber'); operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('LicensePlateNumber');          operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');           operator = 'EXISTS' }
+                )
+            }
+            primaryFieldReference = 'VehicleIdentificationNumber'
+            keyReference          = 'RQ.V'
+            state                 = 'Out'
         }
+        # RV -- in-state VIN (Ohio BMV; no State). Plate>VIN guardrail
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('registrationState') }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QV.P'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set = @('VehicleIdentificationNumber'); any = @()
+                conditions = @(
+                    [PSCustomObject]@{ field = @('VehicleIdentificationNumber'); operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('LicensePlateNumber');          operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');           operator = 'NOT_EXISTS' }
+                )
+            }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RV'
-            state                 = 'In/Out'
+            state                 = 'In'
         }
+        # RS -- owner by SSN (cross-entity; lower than plate/VIN)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @() }
-            primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'QV.V'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ownerSocialSecurityNumber'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set = @('OwnerSocialSecurityNumber'); any = @()
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OwnerSocialSecurityNumber');   operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('LicensePlateNumber');          operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('VehicleIdentificationNumber'); operator = 'NOT_EXISTS' }
+                )
+            }
             primaryFieldReference = 'SocialSecurityNumber'
             keyReference          = 'RS'
             state                 = 'In/Out'
         }
+        # RN -- owner by Name (cross-entity; lowest priority)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('OwnerLastName','OwnerFirstName'); any = @('AddressCounty')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('LicensePlateNumber');          operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('VehicleIdentificationNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('OwnerSocialSecurityNumber');   operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'RN'
+            state                 = 'In/Out'
+        }
     )
-    description        = 'VehicleRegistrationQuery -- ATDP (dealer), RP (plate), RQ.P (OOS plate), QV.P (NCIC plate), RV (VIN), RQ.V (OOS VIN), QV.V (NCIC VIN), RS (SSN), RN (Name).'
+    description        = 'VehicleRegistrationQuery -- ATDP (dealer), RP/RQ.P (in-state/OOS plate), RV/RQ.V (in-state/OOS VIN), RS (owner SSN), RN (owner Name). State-existence routing + Plate>VIN>SSN>Name guardrails. QV.P/QV.V NCIC shadows dropped (ACCEPTED_DIVERGENCES).'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'OH_LEADS_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -181,56 +206,76 @@ $vehRegQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. DriverLicenseQuery
-# XML: 7 combos. Build 4 basic: DL (in-state OLN), DQ.O (OOS OLN),
-#   DN (in-state Name), DQ.N (OOS Name).
-# Duplicate keyRef DQ -> DQ.O, DQ.N. QWA and BMVIMS deferred.
+# DriverLicenseQuery -- DQ.O/DL (OLN), DQ.N/DN (Name). OLN>Name + State In/Out gates.
+# ImageIndicator (Y) only on DQ.O (metadata-faithful).
 # =====================================================================
 $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size = 8; sourceField = @('birthDate'); targetField = 'BirthDate'
+            size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
         }
-        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('imageIndicator'); targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
+            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # Most-specific first (LIMITATION #3): DQ.N (4 set) > DN (2 set) > DQ.O (1 set) > DL (1 set)
+        # DQ.O -- OOS OLN (State present; ImageIndicator optional)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('sexCode','birthDate','nameLast','nameFirst'); any = @('registrationState') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'DQ.N'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('nameLast','nameFirst'); any = @('birthDate') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'DN'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('imageIndicator','registrationState') }
+            requirements          = [PSCustomObject]@{
+                set = @('OperatorLicenseNumber'); any = @('ImageIndicator','RegistrationState')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQ.O'
-            state                 = 'In/Out'
+            state                 = 'Out'
         }
+        # DL -- in-state OLN (no State)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set = @('OperatorLicenseNumber'); any = @()
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DL'
-            state                 = 'In/Out'
+            state                 = 'In'
+        }
+        # DQ.N -- OOS Name+DOB+Sex (State present). OLN>Name guardrail
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('NameLast','NameFirst','BirthDate','SexCode'); any = @('RegistrationState')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'DQ.N'
+            state                 = 'Out'
+        }
+        # DN -- in-state Name (no State). OLN>Name guardrail
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('NameLast','NameFirst'); any = @()
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'DN'
+            state                 = 'In'
         }
     )
-    description     = 'DriverLicenseQuery -- DL (in-state OLN), DQ.O (OOS OLN), DN (in-state Name), DQ.N (OOS Name).'
+    description     = 'DriverLicenseQuery -- DQ.O/DL (OLN), DQ.N/DN (Name). OLN>Name + State In/Out gates. ImageIndicator (Y) only on DQ.O.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'OH_LEADS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -240,64 +285,60 @@ $dlQuery = [PSCustomObject]@{
     query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
     targetEntity    = 'Person'
+    queriesToDeselect = @('DriverHistoryQuery')
 }
 
 # =====================================================================
-# 1f. DriverHistoryQuery
-# XML: 3 combos: KQ(OLN), KQ(Name), BMVIMS(OLN).
-# Duplicate keyRef KQ -> KQ.O, KQ.N.
-# DH uses DH-suffix fieldIds to avoid deadlock with DL co-fire.
-# Attention: CommsysGetLastNameFirstNameInitialRuleHandler (auto-fill).
+# DriverHistoryQuery -- KQ.N (Name+DOB+Sex), KQ.O (OLN). DH-suffix fieldIds isolate from
+# DL field pool (AP #14). OLN>Name guardrail (KQ.N: OperatorLicenseNumberDH NOT_EXISTS).
+# Attention auto-handler via hidden 'attention' feeder + defaults[] (eSUN pattern).
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
-            name        = 'Attention'
-            rule        = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler'; arguments = @() }
-            size        = 30
-            sourceField = @('nameLastDH','nameFirstDH')
-            targetField = 'Attention'
+            name = 'Attention'
+            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler'; arguments = @() }
+            size = 30; sourceField = @('attention'); targetField = 'Attention'
         }
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate'
+            size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLastDH','nameFirstDH'); targetField = 'Name'
+            size = 30; sourceField = @('NameLastDH','NameFirstDH'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'ReasonCode'; size = 30; sourceField = @('reasonCodeDH'); targetField = 'ReasonCode' }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ.N: Name search -- most specific first (4 set fields)
+        # KQ.N: Name+DOB+Sex (Name before OLN)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('sexCodeDH','birthDateDH','nameLastDH','nameFirstDH'); any = @('purposeCodeDH','registrationStateDH') }
+            requirements          = [PSCustomObject]@{
+                set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','RegistrationState','attention')
+                defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' })
+            }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
         }
-        # KQ.O: OLN search (1 set field)
+        # KQ.O: OLN
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('nameLastDH','nameFirstDH','purposeCodeDH','registrationStateDH') }
+            requirements          = [PSCustomObject]@{
+                set = @('OperatorLicenseNumberDH'); any = @('purposeCodeDH','RegistrationState','attention')
+                defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
             state                 = 'In/Out'
         }
-        # BMVIMS: BMV IMS image lookup by OLN (1 set field)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('nameLastDH','nameFirstDH','reasonCodeDH') }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'BMVIMS'
-            state                 = 'In/Out'
-        }
     )
-    description     = 'DriverHistoryQuery -- KQ.O (OLN), KQ.N (Name), BMVIMS (BMV IMS). DH-suffix fieldIds.'
+    description     = 'DriverHistoryQuery -- KQ.N (Name+DOB+Sex), KQ.O (OLN). DH-suffix fields. OLN>Name guardrail. Attention auto-handler. BMVIMS OLN shadow dropped.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'OH_LEADS_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -310,19 +351,15 @@ $dhQuery = [PSCustomObject]@{
     queriesToDeselect = @('DriverLicenseQuery')
 }
 
-# Add queriesToDeselect on DL QIDM too
-$dlQuery | Add-Member -NotePropertyName 'queriesToDeselect' -NotePropertyValue @('DriverHistoryQuery') -Force
-
 # =====================================================================
-# 1g. GunQuery
-# XML: 1 combo (QG serial).
+# GunQuery -- QG (serial required; caliber/make/relatedHit optional any[]).
 # =====================================================================
 $gunQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'GunCaliber';                  size = 4;  sourceField = @('gunCaliber');            targetField = 'GunCaliber' }
-        [PSCustomObject]@{ name = 'GunMake';                     size = 23; sourceField = @('firearmMake');           targetField = 'GunMake' }
-        [PSCustomObject]@{ name = 'GunSerialNumber';             size = 20; sourceField = @('serialNumber');          targetField = 'GunSerialNumber' }
-        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator';   size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
+        [PSCustomObject]@{ name = 'GunCaliber';                size = 4;  sourceField = @('gunCaliber');                targetField = 'GunCaliber' }
+        [PSCustomObject]@{ name = 'GunMake';                   size = 23; sourceField = @('firearmMake');               targetField = 'GunMake' }
+        [PSCustomObject]@{ name = 'GunSerialNumber';           size = 20; sourceField = @('serialNumber');              targetField = 'GunSerialNumber' }
+        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
         [PSCustomObject]@{
@@ -332,7 +369,7 @@ $gunQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description     = 'GunQuery -- QG (serial). Firearm query.'
+    description     = 'GunQuery -- QG (serial; caliber/make/relatedHit optional). NCIC firearm query.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'OH_LEADS_GunQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -344,32 +381,40 @@ $gunQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1h. ArticleSingleQuery
-# XML: 2 combos, BOTH keyRef=QA. Invented: QA.S (serial), QA.N (NCIC#).
+# ArticleSingleQuery -- QA.S (serial+type), QA.N (NCIC#). serial>NCIC guardrail.
 # =====================================================================
 $artQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'ArticleSerialNumber';       size = 20; sourceField = @('serialNumber');                 targetField = 'ArticleSerialNumber' }
-        [PSCustomObject]@{ name = 'ArticleTypeCode';           size = 7;  sourceField = @('articleTypeCode');              targetField = 'ArticleTypeCode' }
-        [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('imageIndicatorArticle');        targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'NCICNumber';                size = 9;  sourceField = @('ncicNumber');                   targetField = 'NCICNumber' }
-        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicatorArticle'); targetField = 'RelatedHitSearchIndicator' }
+        [PSCustomObject]@{ name = 'ArticleSerialNumber';       size = 20; sourceField = @('serialNumber');              targetField = 'ArticleSerialNumber' }
+        [PSCustomObject]@{ name = 'ArticleTypeCode';           size = 7;  sourceField = @('articleTypeCode');           targetField = 'ArticleTypeCode' }
+        [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('ImageIndicator');            targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'NCICNumber';                size = 9;  sourceField = @('NCICNumber');                targetField = 'NCICNumber' }
+        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
+        # QA.S -- serial+type
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('articleTypeCode','serialNumber'); any = @('imageIndicatorArticle','relatedHitSearchIndicatorArticle') }
+            requirements          = [PSCustomObject]@{
+                set = @('articleTypeCode','serialNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+            }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QA.S'
             state                 = 'In/Out'
         }
+        # QA.N -- NCIC# (serial>NCIC guardrail)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ncicNumber'); any = @('imageIndicatorArticle','relatedHitSearchIndicatorArticle') }
+            requirements          = [PSCustomObject]@{
+                set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                conditions = @([PSCustomObject]@{ field = @('serialNumber'); operator = 'NOT_EXISTS' })
+            }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QA.N'
             state                 = 'In/Out'
         }
     )
-    description     = 'ArticleSingleQuery -- QA.S (serial+type), QA.N (NCIC#). Property inquiry.'
+    description     = 'ArticleSingleQuery -- QA.S (serial+type), QA.N (NCIC#). serial>NCIC guardrail.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'OH_LEADS_ArticleSingleQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -381,49 +426,68 @@ $artQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1i. BoatQuery
-# XML: 4 combos, duplicate keyRefs BQ(x2), QB(x2).
-# Invented: BQ.R (reg in-state), BQ.H (hull in-state), QB.R (reg NCIC), QB.H (hull NCIC).
+# BoatQuery -- BQ.H/BQ.R (Nlets, State), QB.H/QB.R (NCIC, Image/RelatedHit).
+# State-existence routing + Hull>Reg guardrail. (metadata: BQ any=State; QB any=Image/RelatedHit)
 # =====================================================================
 $boatQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'BoatHullIdNumber';          size = 20; sourceField = @('boatHullIdNumber');               targetField = 'BoatHullIdNumber' }
-        [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('imageIndicatorBoat');             targetField = 'ImageIndicator' }
-        [PSCustomObject]@{ name = 'RegistrationNumber';        size = 8;  sourceField = @('registrationNumber');             targetField = 'RegistrationNumber' }
-        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicatorBoat'); targetField = 'RelatedHitSearchIndicator' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationStateBoat'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'BoatHullIdNumber';          size = 20; sourceField = @('BoatHullIdNumber');          targetField = 'BoatHullIdNumber' }
+        [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('ImageIndicator');            targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'RegistrationNumber';        size = 8;  sourceField = @('RegistrationNumber');        targetField = 'RegistrationNumber' }
+        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # BQ.R: in-state registration lookup
+        # BQ.H -- Nlets hull (State present)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber'); any = @('registrationStateBoat') }
-            primaryFieldReference = 'RegistrationNumber'
-            keyReference          = 'BQ.R'
-            state                 = 'In/Out'
-        }
-        # BQ.H: in-state hull lookup
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber'); any = @('registrationStateBoat') }
+            requirements          = [PSCustomObject]@{
+                set = @('BoatHullIdNumber'); any = @('RegistrationState')
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQ.H'
             state                 = 'In/Out'
         }
-        # QB.R: NCIC registration lookup
+        # QB.H -- NCIC hull (no State; Image/RelatedHit)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber'); any = @('boatHullIdNumber','imageIndicatorBoat','relatedHitSearchIndicatorBoat') }
-            primaryFieldReference = 'RegistrationNumber'
-            keyReference          = 'QB.R'
-            state                 = 'In/Out'
-        }
-        # QB.H: NCIC hull lookup
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber'); any = @('imageIndicatorBoat','relatedHitSearchIndicatorBoat') }
+            requirements          = [PSCustomObject]@{
+                set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
+            }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'QB.H'
             state                 = 'In/Out'
         }
+        # BQ.R -- Nlets reg (State present). Hull>Reg guardrail
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('RegistrationNumber'); any = @('RegistrationState')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('BoatHullIdNumber');  operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'RegistrationNumber'
+            keyReference          = 'BQ.R'
+            state                 = 'In/Out'
+        }
+        # QB.R -- NCIC reg (no State; Image/RelatedHit). Hull>Reg guardrail
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('BoatHullIdNumber');  operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'RegistrationNumber'
+            keyReference          = 'QB.R'
+            state                 = 'In/Out'
+        }
     )
-    description     = 'BoatQuery -- BQ.R/BQ.H (in-state reg/hull), QB.R/QB.H (NCIC reg/hull).'
+    description     = 'BoatQuery -- BQ.H/BQ.R (Nlets, State), QB.H/QB.R (NCIC). State-existence routing + Hull>Reg guardrail.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'OH_LEADS_BoatQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -436,59 +500,95 @@ $boatQuery = [PSCustomObject]@{
 
 $ohBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for OH_LEADS v${Version}"
+    description    = "Provider configuration for OH_LEADS v${Version} -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, existence-only routing gates + identifier-priority guardrails"
     name           = 'OH_LEADS'
     type           = 'BUNDLE'
     provider       = 'OH_LEADS'
 }
 
 # =====================================================================
-# BUNDLE 2: ENTITIES (QUERYINPUTFORM, provider=MARK43)
-# 5 forms: Vehicle, Person, Firearm, Article, Boat
-# Phase 1: single card per entity.
-# No State initialValue on any form (LIMITATION #30).
+# BUNDLE 2: ENTITIES -- 5 QIFs, multi-card layouts
+#
+# Vehicle:  6 cards (OPTIONS + PLATE + DEALER PLATE + VIN + NAME SEARCH + SSN SEARCH)
+# Person:   5 cards (OPTIONS + DL-OLN + DL-NAME + DH-OLN + DH-NAME) -- DH-suffix visible cards
+# Firearm:  1 card  (QG)
+# Article:  1 card  (QA.S/QA.N)
+# Boat:     3 cards (OPTIONS + HULL SEARCH + REG SEARCH)
 # =====================================================================
 
 # ------------------------------------------------------------------
-# Vehicle -- 1 card
-# VehicleRegistrationQuery: plate, VIN, dealer plate, owner name/SSN, county.
-# State: NO initialValue (LIMITATION #30 -- in-state RP/RV vs OOS RQ routing)
-# PlateType: initialValue=PC. PlateYear: initialValue=2026.
+# Vehicle -- 6 cards
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH'
-        title = 'VEHICLE SEARCH'
+        id    = 'CARD_VEH_OPT'
+        title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateNumber_Input';   node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+            @{ id = 'ROW_VEH_OPT_1'; cols = @('6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_PLATE'
+        title = 'PLATE SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_PLATE_1'; cols = @('12'); fields = @(
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
-                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
-                @{ id = 'dealerPlateType_Input';             node = Inp 'dealerPlateType' 'Dealer Plate Type' '1' 'ROW_VEH_3' }
+            @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_2' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'vehicleMakeCode_Input'; node = Inp 'vehicleMakeCode' 'Vehicle Make' '4' 'ROW_VEH_4' }
-                @{ id = 'vehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year' '4' 'ROW_VEH_4' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_DEALER'
+        title = 'DEALER PLATE'
+        rows  = @(
+            @{ id = 'ROW_VEH_DEALER_1'; cols = @('6'); fields = @(
+                @{ id = 'DealerPlateType_Input'; node = Inp 'DealerPlateType' 'Dealer Plate Type (with Plate Number + Type)' '1' 'ROW_VEH_DEALER_1' }
             )}
-            @{ id = 'ROW_VEH_5'; cols = @('6','6'); fields = @(
-                @{ id = 'ownerFirstName_Input'; node = Inp 'ownerFirstName' 'Owner First Name' '30' 'ROW_VEH_5' }
-                @{ id = 'ownerLastName_Input';  node = Inp 'ownerLastName'  'Owner Last Name'  '30' 'ROW_VEH_5' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_VIN'
+        title = 'VIN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_VIN_1'; cols = @('12'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_VIN_1' }
             )}
-            @{ id = 'ROW_VEH_6'; cols = @('6','6'); fields = @(
-                @{ id = 'ownerSocialSecurityNumber_Input'; node = Inp 'ownerSocialSecurityNumber' 'Owner SSN' '9' 'ROW_VEH_6' }
-                @{ id = 'addressCounty_Input';             node = Inp 'addressCounty' 'County Code' '4' 'ROW_VEH_6' }
+            @{ id = 'ROW_VEH_VIN_2'; cols = @('6','6'); fields = @(
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make (with State, optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_VIN_2' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year (with State, optional)' '4' 'ROW_VEH_VIN_2' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_VEH_NAME'
+        title = 'NAME SEARCH (Vehicle by Owner)'
+        rows  = @(
+            @{ id = 'ROW_VEH_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'OwnerFirstName_Input'; node = Inp 'OwnerFirstName' 'Owner First Name' '30' 'ROW_VEH_NAME_1' }
+                @{ id = 'OwnerLastName_Input';  node = Inp 'OwnerLastName'  'Owner Last Name'  '30' 'ROW_VEH_NAME_1' }
+            )}
+            @{ id = 'ROW_VEH_NAME_2'; cols = @('6'); fields = @(
+                @{ id = 'AddressCounty_Input'; node = Inp 'AddressCounty' 'County Code (optional)' '4' 'ROW_VEH_NAME_2' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_VEH_SSN'
+        title = 'SSN SEARCH (Vehicle by Owner)'
+        rows  = @(
+            @{ id = 'ROW_VEH_SSN_1'; cols = @('6'); fields = @(
+                @{ id = 'OwnerSocialSecurityNumber_Input'; node = Inp 'OwnerSocialSecurityNumber' 'Owner SSN' '9' 'ROW_VEH_SSN_1' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehicleRegistrationQuery (ATDP/RP/RQ/QV plate + RV/RQ.V/QV.V VIN + RS SSN + RN Name).'
+    description  = 'Vehicle queries -- OPTIONS (State) + PLATE (RP/RQ.P) + DEALER (ATDP) + VIN (RV/RQ.V) + NAME (RN) + SSN (RS)'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -497,54 +597,77 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Person -- 1 card
-# Serves 2 QIDMs: DL + DH (co-fire).
-# DH uses DH-suffix fieldIds. Both visible on same card.
-# State: NO initialValue (LIMITATION #30 -- DL vs DQ / KQ routing)
-# ImageIndicator: in DL only, Y default.
+# Person -- 5 cards (DL + DH with DH-suffix visible cards)
+# OPTIONS: State + Image (Image feeds DQ.O only)
+# DL-OLN: OperatorLicenseNumber
+# DL-NAME: NameFirst + NameLast + BirthDate + SexCode
+# DH-OLN: OperatorLicenseNumberDH + PurposeCode + hidden Attention feeder
+# DH-NAME: NameFirstDH + NameLastDH + BirthDateDH + SexCodeDH
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER'
-        title = 'PERSON SEARCH'
+        id    = 'CARD_PER_OPT'
+        title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_PER_1'; cols = @('6','6'); fields = @(
-                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';     node = Sel 'registrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
+            @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (out-of-state OLN, optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
             )}
-            @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
-                @{ id = 'nameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_2' }
-                @{ id = 'nameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_2' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_OLN'
+        title = 'DRIVER LICENSE - OLN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
             )}
-            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
-                @{ id = 'birthDate_Input'; node = Dt  'birthDate' 'Date of Birth' 'ROW_PER_3' }
-                @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_NAME'
+        title = 'DRIVER LICENSE - NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
             )}
-            @{ id = 'ROW_PER_4'; cols = @('12'); fields = @(
-                @{ id = 'imageIndicator_Input'; node = Sel 'imageIndicator' 'Image Indicator' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_4' }
+            @{ id = 'ROW_PER_NAME_2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (out-of-state)' 'ROW_PER_NAME_2' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (out-of-state)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_2' }
             )}
-            # DH-suffix hidden fields -- mirror DL fields for DH QIDM
-            @{ id = 'ROW_PER_DH1'; cols = @('6','6'); hidden = $true; fields = @(
-                @{ id = 'operatorLicenseNumberDH_Input'; node = InpH 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH1' }
-                @{ id = 'registrationStateDH_Input';     node = SelH 'registrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH1' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_DH_OLN'
+        title = 'DRIVER HISTORY - OLN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_DH_OLN_1'; cols = @('6','6'); fields = @(
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number' '20' 'ROW_PER_DH_OLN_1' }
+                @{ id = 'PurposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code (optional)' '1' 'ROW_PER_DH_OLN_1' }
             )}
-            @{ id = 'ROW_PER_DH2'; cols = @('6','6'); hidden = $true; fields = @(
-                @{ id = 'nameFirstDH_Input'; node = InpH 'nameFirstDH' 'First Name (DH)' '30' 'ROW_PER_DH2' }
-                @{ id = 'nameLastDH_Input';  node = InpH 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH2' }
+            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
             )}
-            @{ id = 'ROW_PER_DH3'; cols = @('6','6'); hidden = $true; fields = @(
-                @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'DOB (DH)' 'ROW_PER_DH3' }
-                @{ id = 'sexCodeDH_Input';   node = SelH 'sexCodeDH'   'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH3' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_DH_NAME'
+        title = 'DRIVER HISTORY - NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_DH_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name' '30' 'ROW_PER_DH_NAME_1' }
+                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_NAME_1' }
             )}
-            @{ id = 'ROW_PER_DH4'; cols = @('6','6'); hidden = $true; fields = @(
-                @{ id = 'purposeCodeDH_Input'; node = InpH 'purposeCodeDH' 'Purpose Code (DH)' '1' 'ROW_PER_DH4' }
-                @{ id = 'reasonCodeDH_Input';  node = InpH 'reasonCodeDH'  'Reason Code (DH)'  '30' 'ROW_PER_DH4' }
+            @{ id = 'ROW_PER_DH_NAME_2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DH_NAME_2' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_NAME_2' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (DL/DQ.O/DN/DQ.N) + DH (KQ.O/KQ.N/BMVIMS). DH-suffix fieldIds.'
+    description  = 'Person queries -- OPTIONS + DL-OLN (DQ.O/DL) + DL-NAME (DQ.N/DN) + DH-OLN (KQ.O) + DH-NAME (KQ.N). DH-suffix visible cards.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -553,26 +676,26 @@ $personForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Firearm -- 1 card (QG serial only)
-# =====================================================================
+# Firearm -- 1 card (QG)
+# ------------------------------------------------------------------
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
         title = 'FIREARM SEARCH'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'serialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
-                @{ id = 'firearmMake_Input';  node = Sel 'firearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
+                @{ id = 'FirearmMake_Input';  node = Sel 'firearmMake'  'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
-                @{ id = 'gunCaliber_Input';                  node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'relatedHitSearchIndicator_Input';   node = Inp 'relatedHitSearchIndicator' 'Related Hit Search' '1' 'ROW_GUN_2' }
+                @{ id = 'GunCaliber_Input';                node = Sel 'gunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-gun check (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
             )}
         )
     }
 )
 $firearmsForm = [PSCustomObject]@{
-    description  = 'Firearm query -- QG (serial). No GunTypeCode in OH metadata.'
+    description  = 'Firearm query -- QG (serial; caliber/make/relatedHit optional). Single card.'
     label        = 'Firearm'
     layout       = $faLayout
     name         = 'ENTITY_Firearm'
@@ -581,10 +704,7 @@ $firearmsForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Article -- 1 card
-# ArticleTypeCode: codeTypeSource=NCIC (OH, not CA_CLETS).
-# NCICNumber: for QA.N combo.
-# ImageIndicator + RelatedHitSearchIndicator in any[].
+# Article -- 1 card (QA.S serial+type / QA.N NCIC#)
 # ------------------------------------------------------------------
 $artLayout = MakeLayouts @(
     @{
@@ -592,21 +712,21 @@ $artLayout = MakeLayouts @(
         title = 'ARTICLE SEARCH'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'serialNumber_Input';       node = Inp 'serialNumber'       'Serial Number'  '20' 'ROW_ART_1' }
-                @{ id = 'articleTypeCode_Input';     node = Sel 'articleTypeCode'    'Article Type'   @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'SerialNumber_Input';    node = Inp 'serialNumber'    'Serial Number (with Article Type)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input'; node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
-            @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
-                @{ id = 'ncicNumber_Input';                       node = Inp 'ncicNumber'                       'NCIC Number'          '9' 'ROW_ART_2' }
-                @{ id = 'imageIndicatorArticle_Input';            node = Sel 'imageIndicatorArticle'             'Image Indicator'      @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
+            @{ id = 'ROW_ART_2'; cols = @('12'); fields = @(
+                @{ id = 'NCICNumber_Input'; node = Inp 'NCICNumber' 'NCIC Number' '9' 'ROW_ART_2' }
             )}
-            @{ id = 'ROW_ART_3'; cols = @('12'); fields = @(
-                @{ id = 'relatedHitSearchIndicatorArticle_Input'; node = Inp 'relatedHitSearchIndicatorArticle'  'Related Hit Search'   '1' 'ROW_ART_3' }
+            @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_3' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-article check (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_3' }
             )}
         )
     }
 )
 $articleForm = [PSCustomObject]@{
-    description  = 'Article query -- QA.S (serial+type), QA.N (NCIC#). Property inquiry.'
+    description  = 'Article query -- QA.S (serial+type), QA.N (NCIC#). Single card.'
     label        = 'Article'
     layout       = $artLayout
     name         = 'ENTITY_Article'
@@ -615,31 +735,41 @@ $articleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Boat -- 1 card (BQ hull/reg, QB hull/reg)
-# State: NO initialValue (LIMITATION #30).
-# ImageIndicator + RelatedHitSearchIndicator in QB combos.
+# Boat -- 3 cards
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA'
-        title = 'BOAT SEARCH'
+        id    = 'CARD_BOA_OPT'
+        title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
-                @{ id = 'boatHullIdNumber_Input';    node = Inp 'boatHullIdNumber'   'Hull ID Number'       '20' 'ROW_BOA_1' }
-                @{ id = 'registrationNumber_Input';  node = Inp 'registrationNumber' 'Registration Number'  '8'  'ROW_BOA_1' }
+            @{ id = 'ROW_BOA_OPT_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (in-state blank, optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-boat check (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_OPT_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
-                @{ id = 'registrationStateBoat_Input';           node = Sel 'registrationStateBoat'            'State (leave blank for OH)'  @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
-                @{ id = 'imageIndicatorBoat_Input';              node = Sel 'imageIndicatorBoat'               'Image Indicator'     @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
+        )
+    }
+    @{
+        id    = 'CARD_BOA_HULL'
+        title = 'HULL SEARCH'
+        rows  = @(
+            @{ id = 'ROW_BOA_HULL_1'; cols = @('12'); fields = @(
+                @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_HULL_1' }
             )}
-            @{ id = 'ROW_BOA_3'; cols = @('12'); fields = @(
-                @{ id = 'relatedHitSearchIndicatorBoat_Input';   node = Inp 'relatedHitSearchIndicatorBoat'    'Related Hit Search'  '1'  'ROW_BOA_3' }
+        )
+    }
+    @{
+        id    = 'CARD_BOA_REG'
+        title = 'REGISTRATION SEARCH'
+        rows  = @(
+            @{ id = 'ROW_BOA_REG_1'; cols = @('12'); fields = @(
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_REG_1' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- BQ.R/BQ.H (in-state), QB.R/QB.H (NCIC). State for in-state routing.'
+    description  = 'Boat queries -- OPTIONS (State + Image + RelatedHit) + HULL (BQ.H/QB.H) + REG (BQ.R/QB.R)'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
@@ -647,19 +777,20 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
-        $firearmsForm, $articleForm, $boatForm)
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
-# BUNDLE 3: RMS (from KB specs)
+# BUNDLE 3: RMS (from KB specs -- PascalCase USx form-fed refs)
 # =====================================================================
-$rmsBundle = Build-RmsBundle
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
+
+# =====================================================================
 # WRITE OUTPUT
 # =====================================================================
 $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $ohBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
+Write-ProviderJson -BundleObject $output -OutPath $OUT `
     -Label "Built OH_LEADS v${Version}" `
     -Version $Version

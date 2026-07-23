@@ -1,0 +1,9 @@
+# OH_LEADS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4 / 4d / 5). Each non-comment line records a
+# divergence that is intentional/documented, so the gate treats it as [NOTE] not [FAIL].
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+#
+
+VehicleRegistrationQuery | QV.P | LicensePlateNumber | dropped-combo | Metadata duplicate-keyRef NCIC national plate shadow (devdoc "(Out) LicensePlateNumber, State"). Form-identical to RQ.P (OOS plate) under existence-only gating -- only RegistrationState distinguishes In/Out and it is already consumed to route RQ.P (Out) vs RP (In). No third form distinguisher exists, so keeping QV.P would leave it unreachable (RQ.P set is a subset). Dropped; RQ.P covers the OOS plate path. Restore via a dedicated distinguisher if an NCIC-only plate path is ever required. (TN/OCATS/CA_CLETS drop precedent) | metadata-vs-json | 2026-07-23
+VehicleRegistrationQuery | QV.V | VehicleIdentificationNumber | dropped-combo | Metadata duplicate-keyRef NCIC national VIN shadow (devdoc "(Out) VehicleIdentificationNumber"). Truly form-identical to RV (in-state VIN, both plain VIN-only, no state field) and absorbed by RQ.V (OOS VIN) -- no form field distinguishes RV from QV.V, so keeping it leaves it unreachable (RV set is a subset). Dropped; RV + RQ.V cover the VIN paths. (TN/OCATS/CA_CLETS drop precedent) | metadata-vs-json | 2026-07-23
+DriverHistoryQuery | BMVIMS | OperatorLicenseNumber | dropped-combo | Metadata third DH combo (BMV image-management OLN lookup). Form-identical OLN shadow of KQ.O (both set=OperatorLicenseNumber only) -- devdoc folds it into the single KQ OLN combo's optional [ReasonCode]; no image indicator exists on DriverHistoryQuery to distinguish a photo request from a standard DH-by-OLN. Dropped; KQ.O covers the DH-by-OLN path. | metadata-vs-json | 2026-07-23
