@@ -1,131 +1,104 @@
-# build_ca_san_luis_obispo.ps1  -- CA_SAN_LUIS_OBISPO v1.3 BASE
-# Builds CA_SAN_LUIS_OBISPO_BASE.json from source\CA_SAN_LUIS_OBISPO.xml metadata + KB specs.
+# build_ca_san_luis_obispo.ps1  -- CA_SAN_LUIS_OBISPO (galvanized v2.0)
+# Single-JSON PascalCase build (consolidated from the legacy BASE+MC dual scripts 2026-07-23).
+# Native PascalCase USx CAD fieldIds (was camelCase MC); Build-RmsBundle -PascalCaseUsxFields.
+# Multi-card. NO cross-entity combos (SLO has no VP/QGH/BQ.N in metadata).
+# CAD_DISPATCH + FIRST_RESPONDER context cards. phases/ retired (git history is authoritative).
 #
-# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo.ps1 -Version X.X -Phase base
+# KEY DIFFERENCE FROM CA_CLETS MC / CA_VENTURA_COUNTY MC:
+#   CaRequestPurposeCode    -- added to DH QIDM PurposeCode attr. Visible Inp initialValue='C'.
+#   Regional message switch -- NOT a direct CLETS interface.
+#   No ImageIndicator -- not in SLO metadata.
+#   Shorter keyRefs than CLETS (QV not IA.QV, BQ not IA.QB, etc.)
+#   DriverHistoryQuery has in-state combos (B2.N, B2.O) in addition to KQ OOS.
+#   DL and DH use DH-suffix fieldIds for isolation (AP #14 pattern).
+#   No State initialValue -- LIMITATION #30: separate in-state vs OOS keyRefs.
 #
-# INPUTS:
-#   source\CA_SAN_LUIS_OBISPO.xml   -- XML metadata [AUTHORITATIVE]
-#   source\CA_SAN_LUIS_OBISPO.pdf   -- CommSys devdoc [CROSS-CHECK]
-#   tools\\_build_rms_bundle.ps1 -- RMS bundle + CommSys QRDM (KB specs)
-#
-# METADATA SUMMARY (CA_SAN_LUIS_OBISPO v1):
-#   VehicleRegistrationQuery  -- 6 combos in XML, collapsed to 4 (QV plate/VIN, RQ plate/VIN OOS)
-#   DriverLicenseQuery        -- 6 combos in XML, collapsed to 3 (L1.O, L1.N, DQ.O)
-#   DriverHistoryQuery        -- 4 combos, BUILD ALL (B2.N, B2.O in-state + KQ.N, KQ.O OOS)
-#   GunQuery                  -- 1 combo (QGB serial)
-#   ArticleSingleQuery        -- 1 combo (QA serial)
-#   BoatQuery                 -- 2 combos (BQ hull, QB reg)
-#
-# CA_SAN_LUIS_OBISPO-SPECIFIC:
-#   CaRequestPurposeCode     -- added to DH QIDM PurposeCode attr. Visible Inp initialValue='C'.
-#   Regional message switch   -- NOT a direct CLETS interface.
-#   No ImageIndicator         -- not in SLO metadata.
-#   No State initialValue     -- LIMITATION #30: separate in-state vs OOS keyRefs.
-#   Date format: yyyyMMdd     -- DL BirthDate max=10, DH BirthDate max=8.
-#   Name format: 'Name' composite, max 30 chars (Last, First) -- FormatStringRuleHandler.
-#   Shorter keyRefs than CLETS (QV not IA.QV, etc.)
-#
-# QUERYINPUTDATAMAPPING (CommSys -- 6 configs, 14 combos):
-#   VehicleRegistrationQuery   QV.P (Plate), QV.V (VIN), RQ.P (OOS Plate), RQ.V (OOS VIN)
-#   DriverLicenseQuery         L1.O (OLN), L1.N (Name), DQ.O (OOS OLN)
-#   DriverHistoryQuery         B2.N (Name in-state), B2.O (OLN in-state), KQ.N (Name OOS), KQ.O (OLN OOS)
-#   GunQuery                   QGB (Serial)
-#   ArticleSingleQuery         QA (Serial)
-#   BoatQuery                  BQ (Hull), QB (Reg)
-#
-# ENTITIES (5 QUERYINPUTFORM):
-#   Vehicle  -- Plate + VIN + State + PlateType + PlateYear + VehMake + VehYear
-#   Person   -- OLN + Name + DOB + Sex + State
-#   Firearm  -- Serial + Make + Caliber + Type
-#   Article  -- Serial + ArticleType + ArticleBrand + ArticleCategory
-#   Boat     -- Hull + Reg# + State
-#
-# PERSON (2 QIDMs co-fire with DH-suffix isolation):
-#   DL + DH share Person entity/form.
-#   Both have autoSelect=true + queriesToDeselect (AP #14 pattern).
-#   DH-suffix fieldIds: operatorLicenseNumberDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH, caRequestPurposeCodeDH.
-#   DH QIDM sourceField/combo refs use DH-suffix names.
+# Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '1.3',
-    [string]$Phase   = "base"
+    [string]$Version = '2.0'
 )
 
+$ErrorActionPreference = "Stop"
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
-$PHASEDIR = "$DIR\phases\$Phase"
-$OUT      = "$DIR\CA_SAN_LUIS_OBISPO_BASE.json"
-$VEROUT   = "$PHASEDIR\CA_SAN_LUIS_OBISPO_v${Version}_${DATE}.json"
-
-New-Item -ItemType Directory -Force -Path $PHASEDIR | Out-Null
+$OUT      = "$DIR\CA_SAN_LUIS_OBISPO_v${Version}.json"
+if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 
+# =====================================================================
 # =====================================================================
 # HELPERS -- dot-sourced from tools/_build_layout_helpers.ps1
 # =====================================================================
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
 . "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
+# keyRef INVENTORY (LIMITATION #21 -- ConnectCIC requires unique keyRefs per QIDM; SLO uses regional
+# short keyRefs, most-specific-first, with identifier-priority guardrails NOT_EXISTS conditions):
+#   VehicleRegistrationQuery : RQ.P, RQ.V, QV.P, QV.V   (Plate>VIN guardrail on RQ.V/QV.V)
+#   DriverLicenseQuery       : L1.N, DQ.O, L1.O          (OLN>Name guardrail on L1.N)
+#   DriverHistoryQuery       : KQ.N, B2.N, KQ.O, B2.O    (DH-suffix; OLN>Name guardrail on KQ.N/B2.N)
+#   BoatQuery                : BQ (hull), QB (reg)       (Hull>Reg guardrail on QB)
+
 # =====================================================================
-# BUNDLE 1: CA_SAN_LUIS_OBISPO PROVIDER
+# BUNDLE 1: CA_SAN_LUIS_OBISPO PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
 $auth = Build-Auth -ProviderName 'CA_SAN_LUIS_OBISPO'
 
+# QUERYRESULTDATAMAPPING (from KB specs)
 $results = Build-ProviderQrdm -ProviderName 'CA_SAN_LUIS_OBISPO'
 
 $qmf = Build-Qmf -ProviderName 'CA_SAN_LUIS_OBISPO'
 
 # =====================================================================
-# 1d. VehicleRegistrationQuery
-# XML: 6 combos, collapsed to 4: QV.P (plate in-state), QV.V (VIN in-state),
-#   RQ.P (plate OOS), RQ.V (VIN OOS). 4# and 4V combos COVERED by QV.
-# NO CaRequestPurposeCode -- not in SLO metadata.
-# LIMITATION #30: No State initialValue -- in-state vs OOS routing by State presence.
+# 1d. VehicleRegistrationQuery -- PascalCase, NO cross-entity
+# 4 combos: RQ.P (OOS plate), RQ.V (OOS VIN), QV.V (VIN in-state), QV.P (plate in-state)
+# NO CaRequestPurposeCode.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('licensePlateNumber');          targetField = 'LicensePlateNumber' }
-        [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('licensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
-        [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('licensePlateYear');            targetField = 'LicensePlateYear' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('vehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
-        [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('vehicleMakeCode');             targetField = 'VehicleMakeCode' }
+        [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumber');          targetField = 'LicensePlateNumber' }
+        [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
+        [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');            targetField = 'LicensePlateYear' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
+        [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('VehicleMakeCode');             targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
         # OOS Plate (4 set -- most specific)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber','licensePlateTypeCode','licensePlateYear','registrationState'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState'); any = @('VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ.P'
             state                 = 'In/Out'
         }
         # OOS VIN (2 set)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationState','vehicleIdentificationNumber'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{ set = @('RegistrationState','VehicleIdentificationNumber'); any = @('VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQ.V'
             state                 = 'In/Out'
         }
         # In-state Plate (1 set -- plate before VIN)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('licensePlateNumber'); any = @('licensePlateTypeCode','licensePlateYear') }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode','LicensePlateYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QV.P'
             state                 = 'In/Out'
         }
         # In-state VIN (1 set)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleIdentificationNumber'); any = @('vehicleMakeCode','vehicleYear') }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'QV.V'
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ.P (OOS plate), RQ.V (OOS VIN), QV.P (plate), QV.V (VIN). Most-specific first, plate before VIN.'
+    description        = 'VehicleRegistrationQuery -- RQ.P (OOS plate), RQ.V (OOS VIN), QV.P (plate), QV.V (VIN). Most-specific first, plate before VIN. MC PascalCase.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -138,9 +111,8 @@ $vehRegQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. DriverLicenseQuery
-# XML: 6 combos, collapsed to 3: L1.O (OLN in-state), L1.N (Name in-state),
-#   DQ.O (OLN OOS). QVC combos deferred to Phase 2 (supervised release).
+# 1e. DriverLicenseQuery -- PascalCase, autoSelect + queriesToDeselect DH
+# 3 combos: L1.N (Name), DQ.O (OOS OLN), L1.O (OLN in-state)
 # NO CaRequestPurposeCode.
 # =====================================================================
 $dlQuery = [PSCustomObject]@{
@@ -148,41 +120,41 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
-            size = 10; sourceField = @('birthDate'); targetField = 'BirthDate'
+            size = 10; sourceField = @('BirthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLast','nameFirst'); targetField = 'Name'
+            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 17; sourceField = @('operatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 17; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # Name combo first (2 set, Name before OLN at same count)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('nameLast','nameFirst'); any = @('birthDate') }
+            requirements          = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('BirthDate','SexCode'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'L1.N'
             state                 = 'In/Out'
         }
         # OOS OLN (2 set -- OLN + State)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber','registrationState'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber','RegistrationState'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQ.O'
             state                 = 'In/Out'
         }
         # In-state OLN (1 set)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('RegistrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'L1.O'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- L1.N (Name), DQ.O (OOS OLN), L1.O (OLN). autoSelect+queriesToDeselect DH.'
+    description     = 'DriverLicenseQuery -- L1.N (Name), DQ.O (OOS OLN), L1.O (OLN). autoSelect+queriesToDeselect DH. MC PascalCase.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_SAN_LUIS_OBISPO_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -196,11 +168,9 @@ $dlQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1f. DriverHistoryQuery -- DH-suffix fieldIds (AP #14 pattern)
-# XML: 4 combos, BUILD ALL:
-# DH-suffix fields isolate from DL field pool:
-#   operatorLicenseNumberDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH, caRequestPurposeCodeDH
-# PurposeCode: sourced from caRequestPurposeCodeDH.
+# 1f. DriverHistoryQuery -- PascalCase, DH-suffix fieldIds (AP #14 pattern)
+# DH-suffix fields: OperatorLicenseNumberDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH, CaRequestPurposeCodeDH
+# PurposeCode: sourced from CaRequestPurposeCodeDH.
 # Combo ordering: most set[] first (Name before OLN within each group).
 # =====================================================================
 $dhQuery = [PSCustomObject]@{
@@ -208,49 +178,49 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             name = 'BirthDate'
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
-            size = 8; sourceField = @('birthDateDH'); targetField = 'BirthDate'
+            size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{
             name = 'Name'
             rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('nameLastDH','nameFirstDH'); targetField = 'Name'
+            size = 30; sourceField = @('NameLastDH','NameFirstDH'); targetField = 'Name'
         }
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('operatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('sexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('caRequestPurposeCodeDH'); targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # OOS Name -- most specific (4 DH set + State in any)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('nameLastDH','nameFirstDH','birthDateDH','sexCodeDH'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
         }
         # In-state Name (3 DH set)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('birthDateDH','nameLastDH','nameFirstDH'); any = @('sexCodeDH') }
+            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH'); any = @('SexCodeDH'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'B2.N'
             state                 = 'In/Out'
         }
         # OOS OLN (1 DH set + State in any)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('RegistrationState') }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
             state                 = 'In/Out'
         }
         # In-state OLN (1 DH set)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('operatorLicenseNumberDH'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @() }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'B2.O'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverHistoryQuery -- DH-suffix fields. KQ.N (Name OOS), B2.N (Name in-state), KQ.O (OLN OOS), B2.O (OLN in-state). autoSelect+queriesToDeselect DL.'
+    description     = 'DriverHistoryQuery -- DH-suffix fields. KQ.N (Name OOS), B2.N (Name in-state), KQ.O (OLN OOS), B2.O (OLN in-state). autoSelect+queriesToDeselect DL. MC PascalCase.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -264,26 +234,26 @@ $dhQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1g. GunQuery
-# XML: 1 combo (QGB serial).
+# 1g. GunQuery -- PascalCase, NO cross-entity
+# 1 combo: QGB (serial). No name search for SLO.
 # NO CaRequestPurposeCode.
 # =====================================================================
 $gunQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('gunCaliber');            targetField = 'GunCaliber' }
+        [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('GunCaliber');            targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';              size = 3;  sourceField = @('firearmMake');           targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunSerialNumber';      size = 20; sourceField = @('serialNumber');          targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'GunTypeCode';          size = 2;  sourceField = @('gunTypeCode');           targetField = 'GunTypeCode' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('gunCaliber','firearmMake','gunTypeCode') }
+            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('GunCaliber','firearmMake','gunTypeCode') }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'QGB'
             state                 = 'In/Out'
         }
     )
-    description     = 'GunQuery -- QGB (serial). Firearm query.'
+    description     = 'GunQuery -- QGB (serial). Firearm query. MC PascalCase.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_SAN_LUIS_OBISPO_GunQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -295,10 +265,8 @@ $gunQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1h. ArticleSingleQuery
-# XML: 1 combo (QA serial). Devdoc has 2 but metadata only 1.
-# ArticleTypeCode: codeTypeSource=CA_CLETS (for all CA CLETS-based systems).
-# ArticleCategory: additional field from SLO metadata.
+# 1h. ArticleSingleQuery -- PascalCase
+# 1 combo: QA (serial).
 # NO CaRequestPurposeCode.
 # =====================================================================
 $artQuery = [PSCustomObject]@{
@@ -306,17 +274,17 @@ $artQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ArticleBrand';        size = 6;  sourceField = @('articleBrand');        targetField = 'ArticleBrand' }
         [PSCustomObject]@{ name = 'ArticleCategory';     size = 1;  sourceField = @('articleCategory');     targetField = 'ArticleCategory' }
         [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 20; sourceField = @('serialNumber');        targetField = 'ArticleSerialNumber' }
-        [PSCustomObject]@{ name = 'ArticleTypeCode';     size = 6;  sourceField = @('articleTypeCode');     targetField = 'ArticleTypeCode' }
+        [PSCustomObject]@{ name = 'ArticleTypeCode';     size = 6;  sourceField = @('ArticleTypeCode');     targetField = 'ArticleTypeCode' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('articleBrand','articleCategory','articleTypeCode') }
+            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('articleBrand','articleCategory','ArticleTypeCode') }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QA'
             state                 = 'In/Out'
         }
     )
-    description     = 'ArticleSingleQuery -- QA (serial). Property inquiry.'
+    description     = 'ArticleSingleQuery -- QA (serial). Property inquiry. MC PascalCase.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_SAN_LUIS_OBISPO_ArticleSingleQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -328,31 +296,31 @@ $artQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1i. BoatQuery
-# XML: 2 combos: BQ (hull), QB (reg). Both support OOS via registrationState.
+# 1i. BoatQuery -- PascalCase, NO cross-entity
+# 2 combos: BQ (hull), QB (reg).
 # NO CaRequestPurposeCode.
 # =====================================================================
 $boatQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'BoatHullIdNumber';      size = 20; sourceField = @('boatHullIdNumber');      targetField = 'BoatHullIdNumber' }
-        [PSCustomObject]@{ name = 'RegistrationNumber';    size = 8;  sourceField = @('registrationNumber');    targetField = 'RegistrationNumber' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('registrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'BoatHullIdNumber';      size = 20; sourceField = @('BoatHullIdNumber');      targetField = 'BoatHullIdNumber' }
+        [PSCustomObject]@{ name = 'RegistrationNumber';    size = 8;  sourceField = @('RegistrationNumber');    targetField = 'RegistrationNumber' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('boatHullIdNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('RegistrationState') }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQ'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('registrationNumber'); any = @('registrationState') }
+            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QB'
             state                 = 'In/Out'
         }
     )
-    description     = 'BoatQuery -- BQ (hull), QB (reg). Boat inquiry.'
+    description     = 'BoatQuery -- BQ (hull), QB (reg). Boat inquiry. MC PascalCase.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_SAN_LUIS_OBISPO_BoatQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -365,52 +333,71 @@ $boatQuery = [PSCustomObject]@{
 
 $sloBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for CA_SAN_LUIS_OBISPO v${Version}"
+    description    = "Provider configuration for CA_SAN_LUIS_OBISPO v${Version} MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs"
     name           = 'CA_SAN_LUIS_OBISPO'
     type           = 'BUNDLE'
     provider       = 'CA_SAN_LUIS_OBISPO'
 }
 
 # =====================================================================
-# BUNDLE 2: ENTITIES (QUERYINPUTFORM, provider=MARK43)
-# 5 forms: Vehicle, Person, Firearm, Article, Boat
-# Phase 1: single card per entity.
+# BUNDLE 2: ENTITIES -- MC VARIANT (5 QIFs, multi-card layouts)
+#
+# Vehicle:  3 cards (OPTIONS + PLATE SEARCH + VIN SEARCH)
+# Person:   3 cards (OPTIONS + OLN SEARCH + NAME SEARCH)
+# Firearm:  1 card  (SERIAL SEARCH -- single combo, no OPTIONS needed)
+# Article:  1 card  (SERIAL SEARCH -- single combo, no OPTIONS needed)
+# Boat:     3 cards (OPTIONS + HULL SEARCH + REGISTRATION SEARCH)
+#
 # NO CaRequestPurposeCode on any form (field does not exist for SLO).
-# No State initialValue on any form (LIMITATION #30).
+# NO cross-entity combos (no Name cards on Vehicle/Firearm/Boat).
+# No State initialValue (LIMITATION #30 -- in-state vs OOS routing).
 # =====================================================================
 
 # ------------------------------------------------------------------
-# Vehicle -- 1 card
-# VehicleRegistrationQuery fields. No ImageIndicator (not in SLO metadata).
-# State: NO initialValue (LIMITATION #30 -- in-state QV vs OOS RQ)
-# PlateType: initialValue=PC. PlateYear: initialValue=2026.
-# VIN size=20 (per metadata, not 30 like CLETS).
+# Vehicle -- 3 cards (MC)
+# OPTIONS: RegistrationState + LicensePlateTypeCode + LicensePlateYear
+# PLATE SEARCH: LicensePlateNumber (QV.P / RQ.P)
+# VIN SEARCH: VehicleIdentificationNumber + VehicleMakeCode + VehicleYear (QV.V / RQ.V)
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH'
-        title = 'VEHICLE SEARCH'
+        id    = 'CARD_VEH_OPT'
+        title = 'OPTIONS - Leave blank for CA queries'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateNumber_Input';   node = Inp 'licensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'registrationState_Input';    node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+            @{ id = 'ROW_VEH_OPT_1'; cols = @('6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'licensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'licensePlateYear' 'Plate Year' '4' 'ROW_VEH_2' @{ initialValue = $currentYear } }
+            @{ id = 'ROW_VEH_OPT_2'; cols = @('6','6'); fields = @(
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_OPT_2' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_OPT_2' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('12'); fields = @(
-                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'vehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_3' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_PLATE'
+        title = 'PLATE SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_PLATE_1'; cols = @('12'); fields = @(
+                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
             )}
-            @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'vehicleMakeCode_Input'; node = Inp 'vehicleMakeCode' 'Vehicle Make' '4' 'ROW_VEH_4' }
-                @{ id = 'vehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year' '4' 'ROW_VEH_4' }
+        )
+    }
+    @{
+        id    = 'CARD_VEH_VIN'
+        title = 'VIN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_VEH_VIN_1'; cols = @('12'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_VIN_1' }
+            )}
+            @{ id = 'ROW_VEH_VIN_2'; cols = @('6','6'); fields = @(
+                @{ id = 'VehicleMakeCode_Input'; node = Inp 'VehicleMakeCode' 'Vehicle Make (optional)' '4' 'ROW_VEH_VIN_2' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year (optional)' '4' 'ROW_VEH_VIN_2' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- VehicleRegistrationQuery (QV plate/VIN + RQ OOS plate/VIN).'
+    description  = 'Vehicle queries -- MC: OPTIONS (State + PlateType + PlateYear) + PLATE (QV.P/RQ.P) + VIN (QV.V/RQ.V)'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -419,51 +406,73 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Person -- 2 cards (DL fields + DH-suffix fields)
-# Serves 2 QIDMs: DL + DH with DH-suffix isolation (AP #14).
-# State: shared (NO initialValue -- LIMITATION #30)
-# DH fields: operatorLicenseNumberDH, nameLastDH, nameFirstDH, birthDateDH, sexCodeDH, caRequestPurposeCodeDH
+# Person -- 5 cards (MC) -- DL fields + DH-suffix fields (AP #14)
+# OPTIONS: RegistrationState (shared by all)
+# DL OLN SEARCH: OperatorLicenseNumber
+# DL NAME SEARCH: NameFirst + NameLast + BirthDate + SexCode
+# DH OLN SEARCH: OperatorLicenseNumberDH + CaRequestPurposeCodeDH
+# DH NAME SEARCH: NameFirstDH + NameLastDH + BirthDateDH + SexCodeDH
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER'
-        title = 'DRIVER LICENSE SEARCH'
+        id    = 'CARD_PER_OPT'
+        title = 'OPTIONS - Leave blank for CA queries'
         rows  = @(
-            @{ id = 'ROW_PER_1'; cols = @('6','6'); fields = @(
-                @{ id = 'operatorLicenseNumber_Input';  node = Inp 'operatorLicenseNumber' 'License Number' '20' 'ROW_PER_1' }
-                @{ id = 'registrationState_Input';      node = Sel 'registrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
-            )}
-            @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
-                @{ id = 'nameFirst_Input'; node = Inp 'nameFirst' 'First Name' '30' 'ROW_PER_2' }
-                @{ id = 'nameLast_Input';  node = Inp 'nameLast'  'Last Name'  '30' 'ROW_PER_2' }
-            )}
-            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
-                @{ id = 'birthDate_Input'; node = Dt  'birthDate' 'Date of Birth'                                                          'ROW_PER_3' }
-                @{ id = 'sexCode_Input';   node = Sel 'sexCode'   'Sex'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_3' }
+            @{ id = 'ROW_PER_OPT_1'; cols = @('6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
             )}
         )
     }
     @{
-        id    = 'CARD_PER_DH'
-        title = 'DRIVER HISTORY SEARCH'
+        id    = 'CARD_PER_OLN'
+        title = 'DL - OLN SEARCH'
         rows  = @(
-            @{ id = 'ROW_PER_DH_1'; cols = @('6','6'); fields = @(
-                @{ id = 'operatorLicenseNumberDH_Input'; node = Inp 'operatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH_1' }
-                @{ id = 'caRequestPurposeCodeDH_Input';  node = Inp 'caRequestPurposeCodeDH'  'Purpose Code (DH)'   '1'  'ROW_PER_DH_1' @{ initialValue = 'C' } }
+            @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
             )}
-            @{ id = 'ROW_PER_DH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'nameFirstDH_Input'; node = Inp 'nameFirstDH' 'First Name (DH)' '30' 'ROW_PER_DH_2' }
-                @{ id = 'nameLastDH_Input';  node = Inp 'nameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH_2' }
+        )
+    }
+    @{
+        id    = 'CARD_PER_NAME'
+        title = 'DL - NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
             )}
-            @{ id = 'ROW_PER_DH_3'; cols = @('6','6'); fields = @(
-                @{ id = 'birthDateDH_Input'; node = Dt  'birthDateDH' 'Date of Birth (DH)'                                                          'ROW_PER_DH_3' }
-                @{ id = 'sexCodeDH_Input';   node = Sel 'sexCodeDH'   'Sex (DH)'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_DH_3' }
+            @{ id = 'ROW_PER_NAME_2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)'                                                          'ROW_PER_NAME_2' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (optional)'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_NAME_2' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_PER_DH_OLN'
+        title = 'DH - OLN SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_DH_OLN_1'; cols = @('6','6'); fields = @(
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH_OLN_1' }
+                @{ id = 'CaRequestPurposeCodeDH_Input';  node = Inp 'caRequestPurposeCodeDH'  'Purpose Code (DH)'   '1'  'ROW_PER_DH_OLN_1' @{ initialValue = 'C' } }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_PER_DH_NAME'
+        title = 'DH - NAME SEARCH'
+        rows  = @(
+            @{ id = 'ROW_PER_DH_NAME_1'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '30' 'ROW_PER_DH_NAME_1' }
+                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH_NAME_1' }
+            )}
+            @{ id = 'ROW_PER_DH_NAME_2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth (DH)'                                                          'ROW_PER_DH_NAME_2' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex (DH)'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_DH_NAME_2' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL (L1.O/L1.N/DQ.O) + DH (B2.N/B2.O/KQ.N/KQ.O). DH-suffix fields for isolation.'
+    description  = 'Person queries -- MC: OPTIONS (State) + DL OLN/NAME + DH OLN/NAME (DH-suffix fields). 5 cards.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -472,28 +481,28 @@ $personForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Firearm -- 1 card (QGB serial only)
-# No ImageIndicator (not in SLO metadata).
-# NO CaRequestPurposeCode.
+# Firearm -- 1 card (MC)
+# SERIAL SEARCH: SerialNumber + FirearmMake + GunCaliber + GunTypeCode (QGB)
+# Single combo -- no OPTIONS card needed, no cross-entity name search.
 # ------------------------------------------------------------------
 $faLayout = MakeLayouts @(
     @{
-        id    = 'CARD_GUN'
+        id    = 'CARD_GUN_SERIAL'
         title = 'FIREARM SEARCH'
         rows  = @(
-            @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'serialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
-                @{ id = 'firearmMake_Input';  node = Sel 'firearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+            @{ id = 'ROW_GUN_SERIAL_1'; cols = @('6','6'); fields = @(
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_SERIAL_1' }
+                @{ id = 'FirearmMake_Input';  node = Sel 'firearmMake'  'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_SERIAL_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
-                @{ id = 'gunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'gunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+            @{ id = 'ROW_GUN_SERIAL_2'; cols = @('6','6'); fields = @(
+                @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber'  'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_SERIAL_2' }
+                @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type (optional)'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_SERIAL_2' }
             )}
         )
     }
 )
 $firearmsForm = [PSCustomObject]@{
-    description  = 'Firearm query -- QGB (serial).'
+    description  = 'Firearm query -- MC: SERIAL (QGB). Single combo, no cross-entity.'
     label        = 'Firearm'
     layout       = $faLayout
     name         = 'ENTITY_Firearm'
@@ -502,29 +511,28 @@ $firearmsForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Article -- 1 card (QA serial only)
-# ArticleTypeCode: codeTypeSource=CA_CLETS (for all CA CLETS-based systems).
-# ArticleCategory: text input (1 char).
-# NO CaRequestPurposeCode.
+# Article -- 1 card (MC)
+# SERIAL SEARCH: SerialNumber + ArticleTypeCode + ArticleBrand + ArticleCategory (QA)
+# Single combo -- no OPTIONS card needed.
 # ------------------------------------------------------------------
 $artLayout = MakeLayouts @(
     @{
-        id    = 'CARD_ART'
+        id    = 'CARD_ART_SERIAL'
         title = 'ARTICLE SEARCH'
         rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'serialNumber_Input';       node = Inp 'serialNumber'       'Serial Number'  '20' 'ROW_ART_1' }
-                @{ id = 'articleTypeCode_Input';     node = Sel 'articleTypeCode'    'Article Type'   @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+            @{ id = 'ROW_ART_SERIAL_1'; cols = @('12'); fields = @(
+                @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_ART_SERIAL_1' }
             )}
-            @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
-                @{ id = 'articleBrand_Input';        node = Inp 'articleBrand'       'Brand'          '6' 'ROW_ART_2' }
-                @{ id = 'articleCategory_Input';     node = Inp 'articleCategory'    'Category'       '1' 'ROW_ART_2' }
+            @{ id = 'ROW_ART_SERIAL_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_SERIAL_2' }
+                @{ id = 'ArticleBrand_Input';    node = Inp 'articleBrand'    'Brand (optional)'        '6'                                                                     'ROW_ART_SERIAL_2' }
+                @{ id = 'ArticleCategory_Input'; node = Inp 'articleCategory' 'Category (optional)'     '1'                                                                     'ROW_ART_SERIAL_2' }
             )}
         )
     }
 )
 $articleForm = [PSCustomObject]@{
-    description  = 'Article query -- QA (serial). Property inquiry.'
+    description  = 'Article query -- MC: SERIAL (QA). Single combo.'
     label        = 'Article'
     layout       = $artLayout
     name         = 'ENTITY_Article'
@@ -533,27 +541,42 @@ $articleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Boat -- 1 card (BQ hull, QB reg)
-# State: NO initialValue (LIMITATION #30).
-# NO CaRequestPurposeCode.
+# Boat -- 3 cards (MC)
+# OPTIONS: RegistrationState (shared by BQ + QB)
+# HULL SEARCH: BoatHullIdNumber (BQ)
+# REGISTRATION SEARCH: RegistrationNumber (QB)
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA'
-        title = 'BOAT SEARCH'
+        id    = 'CARD_BOA_OPT'
+        title = 'OPTIONS - Leave blank for CA queries'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
-                @{ id = 'boatHullIdNumber_Input';    node = Inp 'boatHullIdNumber'   'Hull ID Number'       '20' 'ROW_BOA_1' }
-                @{ id = 'registrationNumber_Input';  node = Inp 'registrationNumber' 'Registration Number'  '8'  'ROW_BOA_1' }
+            @{ id = 'ROW_BOA_OPT_1'; cols = @('6'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('12'); fields = @(
-                @{ id = 'registrationState_Input';   node = Sel 'registrationState'  'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
+        )
+    }
+    @{
+        id    = 'CARD_BOA_HULL'
+        title = 'HULL SEARCH'
+        rows  = @(
+            @{ id = 'ROW_BOA_HULL_1'; cols = @('12'); fields = @(
+                @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_HULL_1' }
+            )}
+        )
+    }
+    @{
+        id    = 'CARD_BOA_REG'
+        title = 'REGISTRATION SEARCH'
+        rows  = @(
+            @{ id = 'ROW_BOA_REG_1'; cols = @('12'); fields = @(
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_REG_1' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- BQ (hull), QB (reg). State for OOS.'
+    description  = 'Boat queries -- MC: OPTIONS (State) + HULL (BQ) + REG (QB)'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
@@ -561,19 +584,19 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
-$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
-        $firearmsForm, $articleForm, $boatForm)
+$entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
-# BUNDLE 3: RMS (from KB specs)
+# BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
-$rmsBundle = Build-RmsBundle
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
+# =====================================================================
 # WRITE OUTPUT
 # =====================================================================
 $output = [PSCustomObject]@{
     bundles = @($entitiesBundle, $sloBundle, $rmsBundle)
 }
 
-Write-ProviderJson -BundleObject $output -OutPath $OUT -PhasePath $VEROUT `
-    -Label "Built CA_SAN_LUIS_OBISPO v${Version}" `
+Write-ProviderJson -BundleObject $output -OutPath $OUT `
+    -Label "Built CA_SAN_LUIS_OBISPO v${Version} (galvanized: single-JSON, native PascalCase USx fields)" `
     -Version $Version

@@ -45,7 +45,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 9 | CA_VENTURA_COUNTY | v1.4 | 68P/0F/0W | 72P/0F/0W | 0 | out of scope |
 | 10 | CA_CLETS_OCATS | v1.2 | 63P/0F/0W | 63P/0F/0W | 1 | out of scope |
 | 11 | CA_eSUN | v1.5 | 71P/0F/0W | 71P/0F/1W | 2 | out of scope |
-| 12 | CA_SAN_LUIS_OBISPO | v1.3 | 65P/0F/0W | 65P/0F/0W | 0 | out of scope |
+| 12 | CA_SAN_LUIS_OBISPO | v2.0 |  | 65P/0F/0W/1LIM | 0 | out of scope |
 | 13 | IL_LEADS_OFML | v1.1 | 61P/0F/0W | 61P/0F/0W | 1 | out of scope |
 | 14 | MD_METERS | v1.3 | 69P/0F/0W | 69P/0F/0W | 1 | out of scope |
 | 15 | OH_LEADS | v1.3 | 77P/0F/0W | 77P/0F/1W | 4 | out of scope |
