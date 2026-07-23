@@ -46,7 +46,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 10 | CA_CLETS_OCATS | v2.0 |  | 63P/0F/0W/1LIM | 1 | out of scope |
 | 11 | CA_eSUN | v2.0 |  | 71P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 12 | CA_SAN_LUIS_OBISPO | v2.0 |  | 65P/0F/0W/1LIM | 0 | out of scope |
-| 13 | IL_LEADS_OFML | v1.1 | 61P/0F/0W | 61P/0F/0W | 1 | out of scope |
+| 13 | IL_LEADS_OFML | v2.0 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 14 | MD_METERS | v1.3 | 69P/0F/0W | 69P/0F/0W | 1 | out of scope |
 | 15 | OH_LEADS | v1.3 | 77P/0F/0W | 77P/0F/1W | 4 | out of scope |
 | 16 | NM_NMLETS_OFML | v1.3 | 66P/0F/0W | 66P/0F/0W | 1 | out of scope |
