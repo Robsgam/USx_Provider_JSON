@@ -1,14 +1,14 @@
 ﻿================================================================
-  Build Report: TN_TIES_MC
-  Source: TN_TIES_MC.json
-  Generated: 2026-06-29 08:40
+  Build Report: TN_TIES
+  Source: TN_TIES_v2.0.json
+  Generated: 2026-07-23 16:55
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: TN_TIES
+ CAD AUDIT: TN_TIES_v2.0
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -18,7 +18,7 @@ CAD AUDIT
     [PASS] licensePlateYear: in QIF as 'LicensePlateYear' (PascalCase USx fieldIds)
     [PASS] vehicleIdentificationNumber: in QIF as 'VehicleIdentificationNumber' (PascalCase USx fieldIds)
     [PASS] vehicleMakeCode: in QIF as 'VehicleMakeCode' (PascalCase USx fieldIds)
-    [PASS] vehicleYear: in QIF as 'VehicleYear' (PascalCase USx fieldIds)
+    [PASS] vehicleYear: in QIF and CAD list
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -42,12 +42,12 @@ CAD AUDIT
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
-    [PASS] raceCode: in QIF as 'RaceCode' (PascalCase USx fieldIds)
+    [PASS] raceCode: in QIF and CAD list
     [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
-    [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] attention: in QIF and CAD list
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] relatedHitSearchIndicator: in QIF as 'RelatedHitSearchIndicator' (PascalCase USx fieldIds)
+    [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [PASS] socialSecurityNumber: in QIF as 'SocialSecurityNumber' (PascalCase USx fieldIds)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -64,15 +64,15 @@ CAD AUDIT
     [INFO] InquiryTypeIndicator: in QIF, not in CAD list (provider-specific)
     [INFO] ExpandedNameSearchCode: in QIF, not in CAD list (provider-specific)
     [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
-    [INFO] PurposeCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
-    [PASS] serialNumber: in QIF as 'SerialNumber' (PascalCase USx fieldIds)
-    [PASS] firearmMake: in QIF as 'FirearmMake' (PascalCase USx fieldIds)
-    [PASS] gunCaliber: in QIF as 'GunCaliber' (PascalCase USx fieldIds)
+    [PASS] serialNumber: in QIF and CAD list
+    [PASS] firearmMake: in QIF and CAD list
+    [PASS] gunCaliber: in QIF and CAD list
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -87,8 +87,8 @@ CAD AUDIT
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
   Article:
-    [PASS] serialNumber: in QIF as 'SerialNumber' (PascalCase USx fieldIds)
-    [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
+    [PASS] serialNumber: in QIF and CAD list
+    [PASS] articleTypeCode: in QIF and CAD list
     [INFO] articleBrand: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] articleCategory: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -146,35 +146,27 @@ CAD AUDIT
     [PASS] QIDM 'TN_TIES_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
 
 --- CHECK 6: CAD Defaults Coverage ---
-    [FAIL] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RV -- missing default for LicensePlateYear (form default='2026')
-    [FAIL] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RV -- missing default for LicensePlateTypeCode (form default='PC')
-    [FAIL] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ.P -- missing default for LicensePlateYear (form default='2026')
-    [FAIL] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ.P -- missing default for LicensePlateTypeCode (form default='PC')
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ.P -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ.V -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ01 -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RV01 -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ03 -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RV03 -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ06 -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ05 -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ07 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo QV.V -- defaults cover all initialValue any[] fields
-    [FAIL] QIDM 'TN_TIES_VehicleRegistrationQuery' combo QV.P -- missing default for LicensePlateTypeCode (form default='PC')
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo QV.P -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ05 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo QV.D -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ06 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo RQ07 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ.N -- defaults cover all initialValue any[] fields
-    [FAIL] QIDM 'TN_TIES_DriverLicenseQuery' combo QWA -- missing default for ImageIndicator (form default='Y')
-    [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ02 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ.O -- defaults cover all initialValue any[] fields
-    [FAIL] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ01 -- missing default for ImageIndicator (form default='Y')
-    [FAIL] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ06 -- missing default for ImageIndicator (form default='Y')
+    [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo QWA -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ01 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo DQ06 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo KQ.N -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo KQ.O -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo DQ05 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_GunQuery' combo QG -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_ArticleSingleQuery' combo QA -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_BoatQuery' combo BB.H -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'TN_TIES_BoatQuery' combo BB.R -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_BoatQuery' combo QB.H -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'TN_TIES_BoatQuery' combo BB.R -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'TN_TIES_BoatQuery' combo QB.R -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
@@ -183,6 +175,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 70 PASS / 8 FAIL / 0 WARN / 73 INFO
+Total: 71 PASS / 0 FAIL / 0 WARN / 72 INFO
 
 

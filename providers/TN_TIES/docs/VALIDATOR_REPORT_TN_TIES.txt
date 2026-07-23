@@ -1,7 +1,7 @@
 ﻿================================================================
-  Build Report: TN_TIES_MC
-  Source: TN_TIES_MC.json
-  Generated: 2026-06-29 08:40
+  Build Report: TN_TIES
+  Source: TN_TIES_v2.0.json
+  Generated: 2026-07-23 16:55
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,17 +26,15 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 14 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 21 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 22 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 6 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [LIMITATION] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ.P' is unreachable: earlier unconditioned combo 'RV' set[] is a subset of its set[] (first match fires; add routing conditions to 'RV' or reorder)
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 13 combos
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' -> Vehicle : 11 attrs, 8 combos
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [LIMITATION] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ02' is unreachable: earlier unconditioned combo 'QWA' set[] is a subset of its set[] (first match fires; add routing conditions to 'QWA' or reorder)
-  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' -> Person : 11 attrs, 6 combos
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' -> Person : 11 attrs, 5 combos
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' ImageIndicator size=1
@@ -44,12 +42,9 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' -> Person : 7 attrs, 3 combos
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
-  [WARN] QIDM 'TN_TIES_DriverHistoryQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
-    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'TN_TIES_DriverHistoryQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'TN_TIES_GunQuery' -> Firearm : 3 attrs, 1 combos
   [PASS] QIDM 'TN_TIES_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
-  [LIMITATION] QIDM 'TN_TIES_BoatQuery' combo 'QB.H' is unreachable: earlier unconditioned combo 'BB.H' set[] is a subset of its set[] (first match fires; add routing conditions to 'BB.H' or reorder)
   [PASS] QIDM 'TN_TIES_BoatQuery' -> Boat : 4 attrs, 4 combos
   [PASS] QIDM 'TN_TIES_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
@@ -79,23 +74,17 @@ VALIDATOR RESULTS
   [PASS] RMS QIDM 'RMS Vehicle search query' autoSelect=true
 
 === PHASE 6: Query Simulation ===
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RV': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ01': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RV01': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ03': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RV03': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ06': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ05': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ07': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ05': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'QV.D': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ06': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_VehicleRegistrationQuery' combo 'RQ07': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ.N': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'QWA': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ02': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ.O': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'QWA': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ01': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverLicenseQuery' combo 'DQ06': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_DriverHistoryQuery' combo 'KQ.N': all set[]/any[] fields resolvable
@@ -104,13 +93,13 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TN_TIES_GunQuery' combo 'QG': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_BoatQuery' combo 'BB.H': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TN_TIES_BoatQuery' combo 'BB.R': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TN_TIES_BoatQuery' combo 'BB.R': all set[]/any[] fields resolvable
   [PASS] QIDM 'TN_TIES_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 80 PASS / 0 FAIL / 1 WARN / 3 LIMITATION
+  RESULTS: 74 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Review WARN items -- they may cause runtime issues.
+  Ready for import.
 

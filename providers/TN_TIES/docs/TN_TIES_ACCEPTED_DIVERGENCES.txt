@@ -1,0 +1,44 @@
+TN_TIES ACCEPTED DIVERGENCES
+============================
+Provider: TN_TIES   Version: v2.0 (galvanized 2026-07-23)
+
+These are intentional, reviewed departures from a literal 1:1 metadata->JSON mapping.
+None are metadata violations (audit_metadata = 167 PASS / 0 FAIL / 0 WARN; CHECK 4d
+"no fields over-promoted from metadata any[] to set[]"). Recorded here for audit trail.
+
+--------------------------------------------------------------------------------
+1. DROPPED FORM-IDENTICAL SHADOW COMBOS (28 metadata combos -> 22 built)
+--------------------------------------------------------------------------------
+TN's VehicleRegistrationQuery and DriverLicenseQuery metadata carry multiple keyRefs
+whose form-facing requirements (set[] + any[]) are IDENTICAL -- they differ only in the
+backend keyRef the server routes to. The platform fires the first matching combo, so a
+second combo with an identical form signature can never be reached and cannot be
+distinguished by any officer-visible input. There is no existence-only field that tells
+them apart (value-comparison conditions are banned -- poisoned-array rule, validate G-31).
+Per the OCATS / MD_METERS precedent ("server routes by keyRef; dropped form-identical
+dups"), the redundant twin in each pair is dropped:
+
+  VehicleRegistrationQuery:
+    RQ01  (in-state plate,  set[LicensePlateNumber])            == QV.P (no-state plate)  -> DROPPED (kept QV.P)
+    RV01  (in-state plate,  set[LicensePlateNumber])            == QV.P                   -> DROPPED
+    RQ03  (in-state VIN,    set[VehicleIdentificationNumber])   == QV.V (no-state VIN)    -> DROPPED (kept QV.V)
+    RV03  (in-state VIN,    set[VehicleIdentificationNumber])   == QV.V                   -> DROPPED
+    RV    (OOS plate, set[Plate,Year,Type,State])               == RQ.P (OOS plate)       -> DROPPED (kept RQ.P)
+
+  DriverLicenseQuery:
+    DQ02  (in-state Name, set[Name,BirthDate,SexCode])          == QWA (no-state Name)    -> DROPPED (kept QWA)
+
+Net effect: no loss of officer-reachable query capability -- every distinct form signature
+still fires. "Leave blank for TN" (no State) routes the plate/VIN/Name paths to the NCIC
+national keyRefs (QV.*/QWA), which cover the in-state case; entering a State routes to the
+Nlets OOS keyRefs (RQ.*/DQ.*). This mirrors NM_NMLETS_OFML / MD_METERS RQ-vs-QV routing.
+
+--------------------------------------------------------------------------------
+2. Attention auto-handler feeder (DriverHistoryQuery)
+--------------------------------------------------------------------------------
+DH metadata marks Attention (Name of Requestor) Mandatory on the KQ combos. It carries a
+CommsysGetLastNameFirstNameInitialRuleHandler, so it is auto-populated -- not officer-typed.
+Implemented with the eSUN/AZ feeder pattern: a hidden InpH 'attention' (initialValue='X')
+on the DH-OLN card, 'attention' in each KQ any[], and combo defaults Attention='X' so the
+handler output serializes. This is the only hidden field in the provider (Visible-First
+Mandate otherwise satisfied -- all DH-suffix fields are visible on their own DH cards).
