@@ -88,6 +88,13 @@ foreach ($dir in $providerDirs) {
         $mcJson = Get-ChildItem $dir.FullName -Filter "*_MC_BASE.json" -File -ErrorAction SilentlyContinue |
             Select-Object -First 1
     }
+    # Galvanized single-JSON providers: the versioned root JSON (<provider>_v*.json) IS the
+    # multi-card build -- score it in the MC slot so it doesn't show "--".
+    if (-not $mcJson -and -not $baseJson) {
+        $mcJson = Get-ChildItem $dir.FullName -Filter "*_v*.json" -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notmatch '_(BASE|MC)\.json$' } |
+            Select-Object -First 1
+    }
 
     $baseScore = $null
     $mcScore = $null
@@ -116,8 +123,12 @@ foreach ($dir in $providerDirs) {
     # ── MC ────────────────────────────────────────────────────────────────────
     if ($mcJson) {
         if ($Quick) {
-            $reportPattern = Join-Path $dir.FullName "docs\mc\VALIDATOR_REPORT_*_MC.txt"
-            $reportFile = Get-ChildItem $reportPattern -ErrorAction SilentlyContinue | Select-Object -First 1
+            $reportFile = Get-ChildItem (Join-Path $dir.FullName "docs\mc\VALIDATOR_REPORT_*_MC.txt") -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $reportFile) {
+                # Galvanized single-JSON: flat/4-category VALIDATOR_REPORT_<provider>.txt (no _BASE/_MC suffix)
+                $reportFile = Get-ChildItem (Join-Path $dir.FullName "docs") -Recurse -File -Filter "VALIDATOR_REPORT_*.txt" -ErrorAction SilentlyContinue |
+                    Where-Object { $_.Name -notmatch '_(BASE|MC)\.txt$' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            }
             if ($reportFile) {
                 $reportText = Get-Content $reportFile.FullName -Raw -Encoding UTF8
                 $mcScore = Parse-ValidatorOutput $reportText
