@@ -49,7 +49,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 13 | IL_LEADS_OFML | v2.0 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 14 | MD_METERS | v2.0 |  | 69P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 15 | OH_LEADS | v1.3 | 77P/0F/0W | 77P/0F/1W | 4 | out of scope |
-| 16 | NM_NMLETS_OFML | v1.3 | 66P/0F/0W | 66P/0F/0W | 1 | out of scope |
+| 16 | NM_NMLETS_OFML | v2.0 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 17 | OR_LEDS | v2.0 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/1W | 3 | out of scope |
 | 19 | TX_TLETS_CCH | v1.2 |  | 113P/0F/0W/0LIM | 0 | out of scope, CCH stub |

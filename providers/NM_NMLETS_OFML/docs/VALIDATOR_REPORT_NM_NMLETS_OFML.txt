@@ -1,7 +1,7 @@
 ﻿================================================================
-  Build Report: NM_NMLETS_OFML_MC
-  Source: NM_NMLETS_OFML_MC.json
-  Generated: 2026-06-29 08:38
+  Build Report: NM_NMLETS_OFML
+  Source: NM_NMLETS_OFML_v2.0.json
+  Generated: 2026-07-23 16:37
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,7 +26,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 20 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 18 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
@@ -39,13 +39,12 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' ImageIndicator size=1
   [PASS] QIDM 'NM_NMLETS_OFML_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' -> Person : 8 attrs, 2 combos
+  [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
   [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'NM_NMLETS_OFML_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'NM_NMLETS_OFML_GunQuery' -> Firearm : 4 attrs, 1 combos
   [PASS] QIDM 'NM_NMLETS_OFML_ArticleSingleQuery' -> Article : 2 attrs, 1 combos
-  [LIMITATION] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.H' is unreachable: earlier unconditioned combo 'BQ.H' set[] is a subset of its set[] (first match fires; add routing conditions to 'BQ.H' or reorder)
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' -> Boat : 3 attrs, 4 combos
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
@@ -86,15 +85,13 @@ VALIDATOR RESULTS
   [PASS] QIDM 'NM_NMLETS_OFML_GunQuery' combo 'QG': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'BQ.H': all set[]/any[] fields resolvable
-  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'BQ.R': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'BQ.R': all set[]/any[] fields resolvable
   [PASS] QIDM 'NM_NMLETS_OFML_BoatQuery' combo 'QB.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 66 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
+  RESULTS: 66 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-
-  1 known limitation(s) -- documented, no action needed.
 
   Ready for import.
 

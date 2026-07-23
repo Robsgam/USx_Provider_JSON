@@ -1,7 +1,7 @@
-﻿NM_NMLETS_OFML METADATA REFERENCE
-==================================
-Generated: 2026-06-12
-Source: NM_NMLETS_OFML.xml (metadata) + NM_NMLETS_OFML_MC.json
+﻿NM_NMLETS_OFML_v2.0 METADATA REFERENCE
+=======================================
+Generated: 2026-07-23
+Source: NM_NMLETS_OFML.xml (metadata) + NM_NMLETS_OFML_v2.0.json
 Metadata: 118 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -20,7 +20,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   FormORI, RelatedHitSearchIn...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[SerialNumber, ArticleTypeCode]
+  BUILT   QA             set[ArticleSerialNumber, articleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 4)
@@ -47,8 +47,8 @@ METADATA COMBINATIONS (4 total):
 
 BUILD COVERAGE (4 of 4 built):
   BUILT   BQ.H           set[BoatHullIdNumber]
-  BUILT   BQ.R           set[RegistrationNumber]
   BUILT   QB.H           set[BoatHullIdNumber]
+  BUILT   BQ.R           set[RegistrationNumber]
   BUILT   QB.R           set[RegistrationNumber]
 
 ================================================================================
@@ -122,7 +122,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        FormORI, GunCaliber, GunMak...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[SerialNumber]
+  BUILT   QG             set[serialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 6)
@@ -153,7 +153,7 @@ METADATA COMBINATIONS (4 total):
 
 BUILD COVERAGE (4 of 4 built):
   BUILT   RQ.P           set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
-  BUILT   RQ.V           set[VehicleIdentificationNumber, VehicleMakeCode, VehicleYear]
+  BUILT   RQ.V           set[VehicleIdentificationNumber, VehicleMakeCode, vehicleYear]
   BUILT   QV.V           set[VehicleIdentificationNumber, VehicleMakeCode]
   BUILT   QV.P           set[LicensePlateNumber]
 

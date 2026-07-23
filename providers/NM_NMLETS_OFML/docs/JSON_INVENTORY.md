@@ -17,6 +17,12 @@ All JSON versions produced for this provider.
 | phases/mc/NM_NMLETS_OFML_MC_v1.0_2026-05-07.json | v1.0 | Snapshot | Initial MC build. |
 | phases/base/NM_NMLETS_OFML_v1.0_2026-05-06.json | v1.0 | Snapshot | Initial build (first run). |
 
+
+## v2.0 (2026-07-23)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NM_NMLETS_OFML_v2.0.json | v2.0 | Current | 66P/0F/0W/0LIM. |
 ## v1.3 (2026-05-11)
 
 | File | Version | Status | Notes |
