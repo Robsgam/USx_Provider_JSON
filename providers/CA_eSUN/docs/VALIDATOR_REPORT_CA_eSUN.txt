@@ -1,7 +1,7 @@
 ﻿================================================================
-  Build Report: CA_eSUN_MC
-  Source: CA_eSUN_MC.json
-  Generated: 2026-06-29 08:36
+  Build Report: CA_eSUN
+  Source: CA_eSUN_v2.0.json
+  Generated: 2026-07-23 12:15
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,7 +25,7 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 16 fieldIds
-  [PASS] QIF 'ENTITY_Person' -> Person : 15 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 16 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 13 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 8 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 7 fieldIds
@@ -34,17 +34,13 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_eSUN_ArticleSingleQuery' -> Article : 5 attrs, 1 combos
   [PASS] QIDM 'CA_eSUN_BoatQuery' -> Boat : 4 attrs, 2 combos
   [PASS] QIDM 'CA_eSUN_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [LIMITATION] QIDM 'CA_eSUN_DriverLicenseQuery' combo 'L1.O' is unreachable: earlier unconditioned combo 'DQ.O' set[] is a subset of its set[] (first match fires; add routing conditions to 'DQ.O' or reorder)
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' -> Person : 6 attrs, 4 combos
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'CA_eSUN_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [LIMITATION] QIDM 'CA_eSUN_DriverHistoryQuery' combo 'L1.O.DH' is unreachable: earlier unconditioned combo 'KQ.O' set[] is a subset of its set[] (first match fires; add routing conditions to 'KQ.O' or reorder)
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' -> Person : 8 attrs, 4 combos
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
-  [WARN] QIDM 'CA_eSUN_DriverHistoryQuery' Attention auto-fill handler present but 'Attention' is NOT in any combo set[]/any[] -- the platform will DROP the handler output (it serializes only fired-combo fields)
-    [FIX] In build script: add 'Attention' to the combo any[] arrays in QIDM 'CA_eSUN_DriverHistoryQuery', and keep a populated (hidden) 'Attention' gate-feeder field
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'CA_eSUN_GunQuery' -> Firearm : 9 attrs, 2 combos
   [PASS] QIDM 'CA_eSUN_GunQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
@@ -99,8 +95,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 71 PASS / 0 FAIL / 1 WARN / 2 LIMITATION
+  RESULTS: 71 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Review WARN items -- they may cause runtime issues.
+  Ready for import.
 
