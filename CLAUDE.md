@@ -337,7 +337,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (60 scripts + 13 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 1 archived one-time migration tool in `tools/_archive/`)
+## Tools (62 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 1 archived one-time migration tool in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -375,7 +375,9 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
 | `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |
 | `audit_test_coverage.ps1` | Test coverage matrix (QIDM combos vs test logs, SQVR alignment, orphan detection) | `-Path <json>` `-OutFile` |
-| `score_all.ps1` | Provider scorecard -- runs validator on all providers, sorted table with rebuild flags | `-Quick` (parse existing reports) `-OutFile` |
+| `portfolio_status.ps1` | **CANONICAL PORTFOLIO STATUS** -- the single one-screen fixed-column table (Provider / Ver / Meth / Validator P-F-W-LIM / Live-test state+logs) + totals + git footer. Assembled from the active root JSON, newest VALIDATOR_REPORT, and actual log RESULT lines (log-truth). **Reference THIS verbatim for any "where is everything" question -- never hand-assemble a status table.** Shares its classifier with report_test_status via `_test_status_lib.ps1` so the table + narrative views can't drift. | `-Provider <name>` `-OutFile` |
+| `report_test_status.ps1` | Live-test NARRATIVE view (per-entity log counts + PASS/FAIL/PENDING breakdown). Same `_test_status_lib.ps1` classifier as portfolio_status. Reads log RESULT lines, NOT `.test_state.json`. | `-Provider <name>` `-OutFile` |
+| `score_all.ps1` | Provider scorecard -- runs validator on all providers, sorted table with rebuild flags. NOTE: its BASE/MC columns show `--` for galvanized single-JSON providers; use `portfolio_status.ps1` for the complete picture. | `-Quick` (parse existing reports) `-OutFile` |
 | `lint_build_scripts.ps1` | Static analysis of build scripts for anti-patterns (PlateYear, field types, missing patches, AP #21-23) | `-Path <dir>` `-OutFile` |
 | `sync_provider_table.ps1` | Auto-updates CLAUDE.md provider table scores from validator reports | `-DryRun` `-OutFile` |
 | `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md (versioned filename), REBUILD_TRACKER.md, BUILD_NOTES.txt (date checksum), per-provider CHANGELOG_<PROVIDER>.md, and the repo-root CHANGELOG.md "Current:" line, with current version and scores | `-Provider <name>` `-DryRun` |

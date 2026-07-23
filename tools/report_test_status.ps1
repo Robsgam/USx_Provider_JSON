@@ -26,7 +26,7 @@ param(
 )
 
 if (-not $ProvidersDir) { $ProvidersDir = Join-Path $PSScriptRoot "..\providers" }
-. (Join-Path $PSScriptRoot "_resolve_provider_json.ps1")
+. (Join-Path $PSScriptRoot "_test_status_lib.ps1")   # shared classifier (single source of truth)
 
 $Entities = @('Vehicle','Person','Firearm','Article','Boat')
 $lines = New-Object System.Collections.Generic.List[string]
@@ -42,18 +42,10 @@ $summary = New-Object System.Collections.Generic.List[object]
 
 foreach ($pd in $provDirs) {
     $name = $pd.Name
-    $rootJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $name
-    $logsDir = Join-Path $pd.FullName "logs"
+    $ts   = Get-ProviderTestState -ProvDir $pd.FullName -Name $name
+    $ver  = $ts.Version
 
-    # Resolve current version: root JSON filename _v(X.Y), else logs/.test_version
-    $ver = $null
-    if ($rootJson -and ([IO.Path]::GetFileName($rootJson)) -match '_v([\d.]+)\.json$') { $ver = $Matches[1] }
-    if (-not $ver) {
-        $tv = Join-Path $logsDir ".test_version"
-        if (Test-Path $tv) { $ver = (Get-Content $tv -Raw).Trim() }
-    }
-
-    if (-not (Test-Path $logsDir) -or -not $ver) {
+    if ($ts.State -eq 'NOT-TRACKED') {
         Emit ""
         $verShow = if ($ver) { $ver } else { '?' }
         Emit ("{0,-22} v{1,-6} NOT ON LIVE-TEST TRACK (no logs package / legacy build)" -f $name, $verShow)
@@ -64,39 +56,19 @@ foreach ($pd in $provDirs) {
     Emit ""
     Emit ("{0,-22} current v{1}" -f $name, $ver)
 
-    $provPass=0; $provFail=0; $provPend=0; $provUnk=0; $entitiesTested=0; $entitiesMissing=0
     foreach ($e in $Entities) {
-        $eDir = Join-Path $logsDir $e
-        $files = @()
-        if (Test-Path $eDir) {
-            $files = @(Get-ChildItem $eDir -File -Filter "${name}_v${ver}_*.txt" -ErrorAction SilentlyContinue)
-        }
-        if ($files.Count -eq 0) {
+        $pe = $ts.PerEntity[$e]
+        if ($pe.Count -eq 0) {
             Emit ("    {0,-9} 0 logs @ v{1}   <-- NOT TESTED at current version" -f $e, $ver)
-            $entitiesMissing++
             continue
         }
-        $p=0;$f=0;$pend=0;$u=0
-        foreach ($file in $files) {
-            $txt = Get-Content $file.FullName -Raw
-            if     ($txt -match '(?im)^\s*RESULT:\s*.*FAIL')    { $f++ }
-            elseif ($txt -match '(?im)^\s*RESULT:\s*.*PENDING') { $pend++ }
-            elseif ($txt -match '(?im)^\s*RESULT:\s*.*PASS')    { $p++ }
-            else   { $u++ }
-        }
-        $entitiesTested++
-        $provPass+=$p; $provFail+=$f; $provPend+=$pend; $provUnk+=$u
-        $flag = if ($f -gt 0) { '  <-- FAIL' } elseif ($pend -gt 0 -or $u -gt 0) { '  <-- incomplete' } else { '' }
-        Emit ("    {0,-9} {1,3} logs -> PASS={2} FAIL={3} PENDING={4} UNKNOWN={5}{6}" -f $e,$files.Count,$p,$f,$pend,$u,$flag)
+        $flag = if ($pe.Fail -gt 0) { '  <-- FAIL' } elseif ($pe.Pend -gt 0 -or $pe.Unk -gt 0) { '  <-- incomplete' } else { '' }
+        Emit ("    {0,-9} {1,3} logs -> PASS={2} FAIL={3} PENDING={4} UNKNOWN={5}{6}" -f $e,$pe.Count,$pe.Pass,$pe.Fail,$pe.Pend,$pe.Unk,$flag)
     }
 
-    $state = if ($provFail -gt 0) { 'HAS-FAIL' }
-             elseif ($entitiesMissing -eq $Entities.Count) { 'NEVER-TESTED' }
-             elseif ($entitiesMissing -gt 0 -or $provPend -gt 0 -or $provUnk -gt 0) { 'PARTIAL' }
-             else { 'ALL-PASS' }
     Emit ("    => {0}: {1}/{2} entities tested, PASS={3} FAIL={4} PENDING={5} UNKNOWN={6}" -f `
-          $state, $entitiesTested, $Entities.Count, $provPass, $provFail, $provPend, $provUnk)
-    $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State=$state })
+          $ts.State, $ts.EntitiesTested, $Entities.Count, $ts.Pass, $ts.Fail, $ts.Pending, $ts.Unknown)
+    $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State=$ts.State })
 }
 
 Emit ""
