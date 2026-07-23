@@ -50,7 +50,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 14 | MD_METERS | v1.3 | 69P/0F/0W | 69P/0F/0W | 1 | out of scope |
 | 15 | OH_LEADS | v1.3 | 77P/0F/0W | 77P/0F/1W | 4 | out of scope |
 | 16 | NM_NMLETS_OFML | v1.3 | 66P/0F/0W | 66P/0F/0W | 1 | out of scope |
-| 17 | OR_LEDS | v1.3 | 58P/0F/0W | 58P/0F/0W | 0 | out of scope |
+| 17 | OR_LEDS | v2.0 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/1W | 3 | out of scope |
 | 19 | TX_TLETS_CCH | v1.2 |  | 113P/0F/0W/0LIM | 0 | out of scope, CCH stub |
 | 20 | CA_CONTRA_COSTA | v2.0 | 77P/0F/0W | 77P/0F/0W | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT live-tested |

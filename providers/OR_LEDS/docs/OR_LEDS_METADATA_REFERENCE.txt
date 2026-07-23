@@ -1,7 +1,7 @@
-﻿OR_LEDS METADATA REFERENCE
-===========================
-Generated: 2026-06-12
-Source: OR_LEDS.xml (metadata) + OR_LEDS_MC.json
+﻿OR_LEDS_v2.0 METADATA REFERENCE
+================================
+Generated: 2026-07-23
+Source: OR_LEDS.xml (metadata) + OR_LEDS_v2.0.json
 Metadata: 45 total transactions, 5 queries built in JSON
 
 ================================================================================
@@ -18,7 +18,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber, ArticleTypeCode                   --
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[SerialNumber, ArticleTypeCode]
+  BUILT   QA             set[serialNumber, articleTypeCode]
 
 ================================================================================
 2. BoatQuery (version 3)
@@ -36,8 +36,8 @@ METADATA COMBINATIONS (2 total):
   BQ            BoatHullIdNumber        BoatHullIdNumber                                       State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   BQ.R           set[RegistrationNumber]
   BUILT   BQ.H           set[BoatHullIdNumber]
+  BUILT   BQ.R           set[RegistrationNumber]
 
 ================================================================================
 3. DriverLicenseQuery (version 3)
@@ -57,10 +57,8 @@ METADATA COMBINATIONS (2 total):
   DQ            Name                    BirthDate, Name, SexCode                               ImageIndicator, State
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  ImageIndicator, State
 
-BUILD COVERAGE (4 of 2 built):
-  BUILT   DQ.NO          set[BirthDate, NameLast, NameFirst, RegistrationState]
+BUILD COVERAGE (2 of 2 built):
   BUILT   DQ.N           set[BirthDate, NameLast, NameFirst]
-  BUILT   DQ.OO          set[OperatorLicenseNumber, RegistrationState]
   BUILT   DQ.O           set[OperatorLicenseNumber]
 
 ================================================================================
@@ -78,7 +76,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        GunCaliber, GunMake
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[SerialNumber]
+  BUILT   QG             set[serialNumber]
 
 ================================================================================
 5. VehicleRegistrationQuery (version 3)
@@ -97,9 +95,8 @@ METADATA COMBINATIONS (2 total):
   RQ            LicensePlateNumber      LicensePlateNumber                                     LicensePlateTypeCode, Licen...
   RQ            VehicleIdentificationNumber  VehicleIdentificationNumber                            State
 
-BUILD COVERAGE (4 of 2 built):
-  BUILT   RQ.PO          set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-  BUILT   RQ.VO          set[VehicleIdentificationNumber, RegistrationState]
+BUILD COVERAGE (3 of 2 built):
+  BUILT   RQ.PO          set[LicensePlateNumber]
   BUILT   RQ.V           set[VehicleIdentificationNumber]
   BUILT   RQ.P           set[LicensePlateNumber]
 
@@ -111,11 +108,11 @@ BUILD SUMMARY
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         1      1     0  100% (COMPLETE)
   BoatQuery                                  2      2     0  100% (COMPLETE)
-  DriverLicenseQuery                         2      4     0  200%
+  DriverLicenseQuery                         2      2     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                   2      4     0  200%
+  VehicleRegistrationQuery                   2      3     0  150%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                    8     12     0  150%
+  TOTAL                                    8      9     0  112%
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (40 of 45 in metadata)

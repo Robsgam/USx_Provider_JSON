@@ -1,6 +1,7 @@
 {
     "bundles":  [
                     {
+                        "description":  "Entity form configurations",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- MC: OPTIONS (State) + PLATE (RQ.P/RQ.PO) + VIN (RQ.V/RQ.VO)",
@@ -209,7 +210,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                   "label":  "Plate Type",
+                                                                                                                                   "label":  "Plate Type (optional)",
                                                                                                                                    "initialValue":  "PC",
                                                                                                                                    "codeTypeSource":  "NCIC",
                                                                                                                                    "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -231,7 +232,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "LicensePlateYear",
-                                                                                                                               "label":  "Plate Year",
+                                                                                                                               "label":  "Plate Year (optional)",
                                                                                                                                "maxLength":  "4",
                                                                                                                                "initialValue":  "2026"
                                                                                                                            },
@@ -328,13 +329,14 @@
                                                                                                     },
                                                                                   "VehicleMakeCode_Input":  {
                                                                                                                 "type":  {
-                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                             "resolvedName":  "FormSelect"
                                                                                                                          },
-                                                                                                                "displayName":  "Input",
+                                                                                                                "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "VehicleMakeCode",
-                                                                                                                              "label":  "Vehicle Make",
-                                                                                                                              "maxLength":  "4"
+                                                                                                                              "label":  "Vehicle Make (optional)",
+                                                                                                                              "attributeTypeId":  "VEHICLE_MAKE",
+                                                                                                                              "codeTypeProvider":  "NCIC"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
                                                                                                                 "hidden":  false,
@@ -352,8 +354,8 @@
                                                                                                                      },
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
-                                                                                                                          "fieldId":  "VehicleYear",
-                                                                                                                          "label":  "Vehicle Year",
+                                                                                                                          "fieldId":  "vehicleYear",
+                                                                                                                          "label":  "Vehicle Year (optional)",
                                                                                                                           "maxLength":  "4"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -571,7 +573,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                        "label":  "Plate Type",
+                                                                                                                                        "label":  "Plate Type (optional)",
                                                                                                                                         "initialValue":  "PC",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -593,7 +595,7 @@
                                                                                                                       "displayName":  "Input",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "LicensePlateYear",
-                                                                                                                                    "label":  "Plate Year",
+                                                                                                                                    "label":  "Plate Year (optional)",
                                                                                                                                     "maxLength":  "4",
                                                                                                                                     "initialValue":  "2026"
                                                                                                                                 },
@@ -690,13 +692,14 @@
                                                                                                          },
                                                                                        "VehicleMakeCode_Input":  {
                                                                                                                      "type":  {
-                                                                                                                                  "resolvedName":  "FormInput"
+                                                                                                                                  "resolvedName":  "FormSelect"
                                                                                                                               },
-                                                                                                                     "displayName":  "Input",
+                                                                                                                     "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "VehicleMakeCode",
-                                                                                                                                   "label":  "Vehicle Make",
-                                                                                                                                   "maxLength":  "4"
+                                                                                                                                   "label":  "Vehicle Make (optional)",
+                                                                                                                                   "attributeTypeId":  "VEHICLE_MAKE",
+                                                                                                                                   "codeTypeProvider":  "NCIC"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -714,8 +717,8 @@
                                                                                                                           },
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
-                                                                                                                               "fieldId":  "VehicleYear",
-                                                                                                                               "label":  "Vehicle Year",
+                                                                                                                               "fieldId":  "vehicleYear",
+                                                                                                                               "label":  "Vehicle Year (optional)",
                                                                                                                                "maxLength":  "4"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -1014,7 +1017,7 @@
                                                                                                                              "displayName":  "Select",
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                           "label":  "Plate Type",
+                                                                                                                                           "label":  "Plate Type (optional)",
                                                                                                                                            "initialValue":  "PC",
                                                                                                                                            "codeTypeSource":  "NCIC",
                                                                                                                                            "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -1036,7 +1039,7 @@
                                                                                                                          "displayName":  "Input",
                                                                                                                          "props":  {
                                                                                                                                        "fieldId":  "LicensePlateYear",
-                                                                                                                                       "label":  "Plate Year",
+                                                                                                                                       "label":  "Plate Year (optional)",
                                                                                                                                        "maxLength":  "4",
                                                                                                                                        "initialValue":  "2026"
                                                                                                                                    },
@@ -1133,13 +1136,14 @@
                                                                                                             },
                                                                                           "VehicleMakeCode_Input":  {
                                                                                                                         "type":  {
-                                                                                                                                     "resolvedName":  "FormInput"
+                                                                                                                                     "resolvedName":  "FormSelect"
                                                                                                                                  },
-                                                                                                                        "displayName":  "Input",
+                                                                                                                        "displayName":  "Select",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "VehicleMakeCode",
-                                                                                                                                      "label":  "Vehicle Make",
-                                                                                                                                      "maxLength":  "4"
+                                                                                                                                      "label":  "Vehicle Make (optional)",
+                                                                                                                                      "attributeTypeId":  "VEHICLE_MAKE",
+                                                                                                                                      "codeTypeProvider":  "NCIC"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
                                                                                                                         "hidden":  false,
@@ -1157,8 +1161,8 @@
                                                                                                                              },
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
-                                                                                                                                  "fieldId":  "VehicleYear",
-                                                                                                                                  "label":  "Vehicle Year",
+                                                                                                                                  "fieldId":  "vehicleYear",
+                                                                                                                                  "label":  "Vehicle Year (optional)",
                                                                                                                                   "maxLength":  "4"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -1216,7 +1220,7 @@
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
-                                                   "description":  "Person queries -- MC: OPTIONS (State + Image + RelatedHit) + OLN (DQ.O/DQ.OO) + NAME (DQ.N/DQ.NO)",
+                                                   "description":  "Person queries -- MC: OPTIONS (State + Image) + OLN (DQ.O) + NAME (DQ.N)",
                                                    "label":  "Person",
                                                    "layout":  {
                                                                   "default":  {
@@ -1302,16 +1306,14 @@
                                                                                                         "props":  {
                                                                                                                       "templateColumns":  [
                                                                                                                                               "6",
-                                                                                                                                              "3",
-                                                                                                                                              "3"
+                                                                                                                                              "6"
                                                                                                                                           ]
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
                                                                                                         "nodes":  [
                                                                                                                       "RegistrationState_Input",
-                                                                                                                      "ImageIndicator_Input",
-                                                                                                                      "RelatedHitSearchIndicator_Input"
+                                                                                                                      "ImageIndicator_Input"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -1345,7 +1347,7 @@
                                                                                                                "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "Image (Y)",
+                                                                                                                             "label":  "Image (optional)",
                                                                                                                              "initialValue":  "Y",
                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -1360,26 +1362,6 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_PER_OPT_1"
                                                                                                            },
-                                                                                  "RelatedHitSearchIndicator_Input":  {
-                                                                                                                          "type":  {
-                                                                                                                                       "resolvedName":  "FormInput"
-                                                                                                                                   },
-                                                                                                                          "displayName":  "Input",
-                                                                                                                          "props":  {
-                                                                                                                                        "fieldId":  "RelatedHitSearchIndicator",
-                                                                                                                                        "label":  "Related Hit (Y)",
-                                                                                                                                        "maxLength":  "1"
-                                                                                                                                    },
-                                                                                                                          "isCanvas":  false,
-                                                                                                                          "hidden":  false,
-                                                                                                                          "nodes":  [
-
-                                                                                                                                    ],
-                                                                                                                          "linkedNodes":  {
-
-                                                                                                                                          },
-                                                                                                                          "parent":  "ROW_PER_OPT_1"
-                                                                                                                      },
                                                                                   "CARD_PER_OLN":  {
                                                                                                        "type":  {
                                                                                                                     "resolvedName":  "Card"
@@ -1548,8 +1530,8 @@
                                                                                                                     },
                                                                                                            "displayName":  "Input",
                                                                                                            "props":  {
-                                                                                                                         "fieldId":  "NameMiddle",
-                                                                                                                         "label":  "Middle Name",
+                                                                                                                         "fieldId":  "nameMiddle",
+                                                                                                                         "label":  "Middle Name (optional)",
                                                                                                                          "maxLength":  "30"
                                                                                                                      },
                                                                                                            "isCanvas":  false,
@@ -1568,8 +1550,8 @@
                                                                                                                     },
                                                                                                            "displayName":  "Input",
                                                                                                            "props":  {
-                                                                                                                         "fieldId":  "NameSuffix",
-                                                                                                                         "label":  "Suffix",
+                                                                                                                         "fieldId":  "nameSuffix",
+                                                                                                                         "label":  "Suffix (optional)",
                                                                                                                          "maxLength":  "5"
                                                                                                                      },
                                                                                                            "isCanvas":  false,
@@ -1632,7 +1614,7 @@
                                                                                                         "displayName":  "Select",
                                                                                                         "props":  {
                                                                                                                       "fieldId":  "SexCode",
-                                                                                                                      "label":  "Sex",
+                                                                                                                      "label":  "Sex (optional)",
                                                                                                                       "attributeTypeId":  "SEX",
                                                                                                                       "codeTypeProvider":  "NIBRS"
                                                                                                                   },
@@ -1652,8 +1634,8 @@
                                                                                                                   },
                                                                                                          "displayName":  "Select",
                                                                                                          "props":  {
-                                                                                                                       "fieldId":  "RaceCode",
-                                                                                                                       "label":  "Race",
+                                                                                                                       "fieldId":  "raceCode",
+                                                                                                                       "label":  "Race (optional)",
                                                                                                                        "attributeTypeId":  "RACE",
                                                                                                                        "codeTypeProvider":  "NIBRS"
                                                                                                                    },
@@ -1752,16 +1734,14 @@
                                                                                                              "props":  {
                                                                                                                            "templateColumns":  [
                                                                                                                                                    "6",
-                                                                                                                                                   "3",
-                                                                                                                                                   "3"
+                                                                                                                                                   "6"
                                                                                                                                                ]
                                                                                                                        },
                                                                                                              "isCanvas":  true,
                                                                                                              "hidden":  false,
                                                                                                              "nodes":  [
                                                                                                                            "RegistrationState_Input",
-                                                                                                                           "ImageIndicator_Input",
-                                                                                                                           "RelatedHitSearchIndicator_Input"
+                                                                                                                           "ImageIndicator_Input"
                                                                                                                        ],
                                                                                                              "linkedNodes":  {
 
@@ -1795,7 +1775,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "Image (Y)",
+                                                                                                                                  "label":  "Image (optional)",
                                                                                                                                   "initialValue":  "Y",
                                                                                                                                   "codeTypeSource":  "NCIC",
                                                                                                                                   "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -1810,26 +1790,6 @@
                                                                                                                                     },
                                                                                                                     "parent":  "ROW_PER_OPT_1"
                                                                                                                 },
-                                                                                       "RelatedHitSearchIndicator_Input":  {
-                                                                                                                               "type":  {
-                                                                                                                                            "resolvedName":  "FormInput"
-                                                                                                                                        },
-                                                                                                                               "displayName":  "Input",
-                                                                                                                               "props":  {
-                                                                                                                                             "fieldId":  "RelatedHitSearchIndicator",
-                                                                                                                                             "label":  "Related Hit (Y)",
-                                                                                                                                             "maxLength":  "1"
-                                                                                                                                         },
-                                                                                                                               "isCanvas":  false,
-                                                                                                                               "hidden":  false,
-                                                                                                                               "nodes":  [
-
-                                                                                                                                         ],
-                                                                                                                               "linkedNodes":  {
-
-                                                                                                                                               },
-                                                                                                                               "parent":  "ROW_PER_OPT_1"
-                                                                                                                           },
                                                                                        "CARD_PER_OLN":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "Card"
@@ -1998,8 +1958,8 @@
                                                                                                                          },
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
-                                                                                                                              "fieldId":  "NameMiddle",
-                                                                                                                              "label":  "Middle Name",
+                                                                                                                              "fieldId":  "nameMiddle",
+                                                                                                                              "label":  "Middle Name (optional)",
                                                                                                                               "maxLength":  "30"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
@@ -2018,8 +1978,8 @@
                                                                                                                          },
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
-                                                                                                                              "fieldId":  "NameSuffix",
-                                                                                                                              "label":  "Suffix",
+                                                                                                                              "fieldId":  "nameSuffix",
+                                                                                                                              "label":  "Suffix (optional)",
                                                                                                                               "maxLength":  "5"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
@@ -2082,7 +2042,7 @@
                                                                                                              "displayName":  "Select",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "SexCode",
-                                                                                                                           "label":  "Sex",
+                                                                                                                           "label":  "Sex (optional)",
                                                                                                                            "attributeTypeId":  "SEX",
                                                                                                                            "codeTypeProvider":  "NIBRS"
                                                                                                                        },
@@ -2102,8 +2062,8 @@
                                                                                                                        },
                                                                                                               "displayName":  "Select",
                                                                                                               "props":  {
-                                                                                                                            "fieldId":  "RaceCode",
-                                                                                                                            "label":  "Race",
+                                                                                                                            "fieldId":  "raceCode",
+                                                                                                                            "label":  "Race (optional)",
                                                                                                                             "attributeTypeId":  "RACE",
                                                                                                                             "codeTypeProvider":  "NIBRS"
                                                                                                                         },
@@ -2283,16 +2243,14 @@
                                                                                                                 "props":  {
                                                                                                                               "templateColumns":  [
                                                                                                                                                       "6",
-                                                                                                                                                      "3",
-                                                                                                                                                      "3"
+                                                                                                                                                      "6"
                                                                                                                                                   ]
                                                                                                                           },
                                                                                                                 "isCanvas":  true,
                                                                                                                 "hidden":  false,
                                                                                                                 "nodes":  [
                                                                                                                               "RegistrationState_Input",
-                                                                                                                              "ImageIndicator_Input",
-                                                                                                                              "RelatedHitSearchIndicator_Input"
+                                                                                                                              "ImageIndicator_Input"
                                                                                                                           ],
                                                                                                                 "linkedNodes":  {
 
@@ -2326,7 +2284,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "Image (Y)",
+                                                                                                                                     "label":  "Image (optional)",
                                                                                                                                      "initialValue":  "Y",
                                                                                                                                      "codeTypeSource":  "NCIC",
                                                                                                                                      "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -2341,26 +2299,6 @@
                                                                                                                                        },
                                                                                                                        "parent":  "ROW_PER_OPT_1"
                                                                                                                    },
-                                                                                          "RelatedHitSearchIndicator_Input":  {
-                                                                                                                                  "type":  {
-                                                                                                                                               "resolvedName":  "FormInput"
-                                                                                                                                           },
-                                                                                                                                  "displayName":  "Input",
-                                                                                                                                  "props":  {
-                                                                                                                                                "fieldId":  "RelatedHitSearchIndicator",
-                                                                                                                                                "label":  "Related Hit (Y)",
-                                                                                                                                                "maxLength":  "1"
-                                                                                                                                            },
-                                                                                                                                  "isCanvas":  false,
-                                                                                                                                  "hidden":  false,
-                                                                                                                                  "nodes":  [
-
-                                                                                                                                            ],
-                                                                                                                                  "linkedNodes":  {
-
-                                                                                                                                                  },
-                                                                                                                                  "parent":  "ROW_PER_OPT_1"
-                                                                                                                              },
                                                                                           "CARD_PER_OLN":  {
                                                                                                                "type":  {
                                                                                                                             "resolvedName":  "Card"
@@ -2529,8 +2467,8 @@
                                                                                                                             },
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
-                                                                                                                                 "fieldId":  "NameMiddle",
-                                                                                                                                 "label":  "Middle Name",
+                                                                                                                                 "fieldId":  "nameMiddle",
+                                                                                                                                 "label":  "Middle Name (optional)",
                                                                                                                                  "maxLength":  "30"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
@@ -2549,8 +2487,8 @@
                                                                                                                             },
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
-                                                                                                                                 "fieldId":  "NameSuffix",
-                                                                                                                                 "label":  "Suffix",
+                                                                                                                                 "fieldId":  "nameSuffix",
+                                                                                                                                 "label":  "Suffix (optional)",
                                                                                                                                  "maxLength":  "5"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
@@ -2613,7 +2551,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "SexCode",
-                                                                                                                              "label":  "Sex",
+                                                                                                                              "label":  "Sex (optional)",
                                                                                                                               "attributeTypeId":  "SEX",
                                                                                                                               "codeTypeProvider":  "NIBRS"
                                                                                                                           },
@@ -2633,8 +2571,8 @@
                                                                                                                           },
                                                                                                                  "displayName":  "Select",
                                                                                                                  "props":  {
-                                                                                                                               "fieldId":  "RaceCode",
-                                                                                                                               "label":  "Race",
+                                                                                                                               "fieldId":  "raceCode",
+                                                                                                                               "label":  "Race (optional)",
                                                                                                                                "attributeTypeId":  "RACE",
                                                                                                                                "codeTypeProvider":  "NIBRS"
                                                                                                                            },
@@ -2798,9 +2736,9 @@
                                                                                                                       },
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
-                                                                                                                           "fieldId":  "SerialNumber",
+                                                                                                                           "fieldId":  "serialNumber",
                                                                                                                            "label":  "Serial Number",
-                                                                                                                           "maxLength":  "23"
+                                                                                                                           "maxLength":  "11"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
                                                                                                              "hidden":  false,
@@ -2818,8 +2756,8 @@
                                                                                                                  },
                                                                                                         "displayName":  "Select",
                                                                                                         "props":  {
-                                                                                                                      "fieldId":  "GunMake",
-                                                                                                                      "label":  "Make",
+                                                                                                                      "fieldId":  "gunMake",
+                                                                                                                      "label":  "Make (optional)",
                                                                                                                       "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                       "codeTypeSource":  "NCIC"
                                                                                                                   },
@@ -2861,8 +2799,8 @@
                                                                                                                     },
                                                                                                            "displayName":  "Select",
                                                                                                            "props":  {
-                                                                                                                         "fieldId":  "GunCaliber",
-                                                                                                                         "label":  "Caliber",
+                                                                                                                         "fieldId":  "gunCaliber",
+                                                                                                                         "label":  "Caliber (optional)",
                                                                                                                          "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                          "codeTypeSource":  "NCIC"
                                                                                                                      },
@@ -2882,8 +2820,8 @@
                                                                                                                      },
                                                                                                             "displayName":  "Select",
                                                                                                             "props":  {
-                                                                                                                          "fieldId":  "GunTypeCode",
-                                                                                                                          "label":  "Type",
+                                                                                                                          "fieldId":  "gunTypeCode",
+                                                                                                                          "label":  "Type (optional)",
                                                                                                                           "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                           "codeTypeSource":  "NCIC"
                                                                                                                       },
@@ -3001,9 +2939,9 @@
                                                                                                                            },
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
-                                                                                                                                "fieldId":  "SerialNumber",
+                                                                                                                                "fieldId":  "serialNumber",
                                                                                                                                 "label":  "Serial Number",
-                                                                                                                                "maxLength":  "23"
+                                                                                                                                "maxLength":  "11"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
                                                                                                                   "hidden":  false,
@@ -3021,8 +2959,8 @@
                                                                                                                       },
                                                                                                              "displayName":  "Select",
                                                                                                              "props":  {
-                                                                                                                           "fieldId":  "GunMake",
-                                                                                                                           "label":  "Make",
+                                                                                                                           "fieldId":  "gunMake",
+                                                                                                                           "label":  "Make (optional)",
                                                                                                                            "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                            "codeTypeSource":  "NCIC"
                                                                                                                        },
@@ -3064,8 +3002,8 @@
                                                                                                                          },
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
-                                                                                                                              "fieldId":  "GunCaliber",
-                                                                                                                              "label":  "Caliber",
+                                                                                                                              "fieldId":  "gunCaliber",
+                                                                                                                              "label":  "Caliber (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -3085,8 +3023,8 @@
                                                                                                                           },
                                                                                                                  "displayName":  "Select",
                                                                                                                  "props":  {
-                                                                                                                               "fieldId":  "GunTypeCode",
-                                                                                                                               "label":  "Type",
+                                                                                                                               "fieldId":  "gunTypeCode",
+                                                                                                                               "label":  "Type (optional)",
                                                                                                                                "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                                "codeTypeSource":  "NCIC"
                                                                                                                            },
@@ -3285,9 +3223,9 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "SerialNumber",
+                                                                                                                                   "fieldId":  "serialNumber",
                                                                                                                                    "label":  "Serial Number",
-                                                                                                                                   "maxLength":  "23"
+                                                                                                                                   "maxLength":  "11"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -3305,8 +3243,8 @@
                                                                                                                          },
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
-                                                                                                                              "fieldId":  "GunMake",
-                                                                                                                              "label":  "Make",
+                                                                                                                              "fieldId":  "gunMake",
+                                                                                                                              "label":  "Make (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -3348,8 +3286,8 @@
                                                                                                                             },
                                                                                                                    "displayName":  "Select",
                                                                                                                    "props":  {
-                                                                                                                                 "fieldId":  "GunCaliber",
-                                                                                                                                 "label":  "Caliber",
+                                                                                                                                 "fieldId":  "gunCaliber",
+                                                                                                                                 "label":  "Caliber (optional)",
                                                                                                                                  "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                                  "codeTypeSource":  "NCIC"
                                                                                                                              },
@@ -3369,8 +3307,8 @@
                                                                                                                              },
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
-                                                                                                                                  "fieldId":  "GunTypeCode",
-                                                                                                                                  "label":  "Type",
+                                                                                                                                  "fieldId":  "gunTypeCode",
+                                                                                                                                  "label":  "Type (optional)",
                                                                                                                                   "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                                   "codeTypeSource":  "NCIC"
                                                                                                                               },
@@ -3533,9 +3471,9 @@
                                                                                                                       },
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
-                                                                                                                           "fieldId":  "SerialNumber",
+                                                                                                                           "fieldId":  "serialNumber",
                                                                                                                            "label":  "Serial Number",
-                                                                                                                           "maxLength":  "23"
+                                                                                                                           "maxLength":  "20"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
                                                                                                              "hidden":  false,
@@ -3553,7 +3491,7 @@
                                                                                                                          },
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
-                                                                                                                              "fieldId":  "ArticleTypeCode",
+                                                                                                                              "fieldId":  "articleTypeCode",
                                                                                                                               "label":  "Article Type",
                                                                                                                               "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                               "codeTypeSource":  "CA_CLETS"
@@ -3671,9 +3609,9 @@
                                                                                                                            },
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
-                                                                                                                                "fieldId":  "SerialNumber",
+                                                                                                                                "fieldId":  "serialNumber",
                                                                                                                                 "label":  "Serial Number",
-                                                                                                                                "maxLength":  "23"
+                                                                                                                                "maxLength":  "20"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
                                                                                                                   "hidden":  false,
@@ -3691,7 +3629,7 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "ArticleTypeCode",
+                                                                                                                                   "fieldId":  "articleTypeCode",
                                                                                                                                    "label":  "Article Type",
                                                                                                                                    "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                                    "codeTypeSource":  "CA_CLETS"
@@ -3890,9 +3828,9 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "SerialNumber",
+                                                                                                                                   "fieldId":  "serialNumber",
                                                                                                                                    "label":  "Serial Number",
-                                                                                                                                   "maxLength":  "23"
+                                                                                                                                   "maxLength":  "20"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -3910,7 +3848,7 @@
                                                                                                                                  },
                                                                                                                         "displayName":  "Select",
                                                                                                                         "props":  {
-                                                                                                                                      "fieldId":  "ArticleTypeCode",
+                                                                                                                                      "fieldId":  "articleTypeCode",
                                                                                                                                       "label":  "Article Type",
                                                                                                                                       "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                                       "codeTypeSource":  "CA_CLETS"
@@ -4796,7 +4734,6 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Entity form configurations for OR_LEDS MC",
                         "name":  "ENTITIES",
                         "type":  "BUNDLE",
                         "order":  {
@@ -4865,7 +4802,7 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "ORI",
-                                                                                                             "mnemonic"
+                                                                                                             "Mnemonic"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "dexStateUserId"
@@ -5138,7 +5075,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "height"
                                                                                                      ]
@@ -5154,7 +5093,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "feet"
                                                                                                      ]
@@ -5170,7 +5111,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "inches"
                                                                                                      ]
@@ -5194,7 +5137,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "total"
                                                                                                      ]
@@ -5548,8 +5493,8 @@
                                                                                               "VehicleMakeCode"
                                                                                           ],
                                                                           "targetField":  "VehicleMakeName",
-                                                                          "codeTypeCategory":  "NCIC_FIREARM_MAKE",
-                                                                          "codeTypeSource":  "NJ_NIBRS"
+                                                                          "attributeType":  "VEHICLE_MAKE",
+                                                                          "codeTypeSource":  "NCIC"
                                                                       },
                                                                       {
                                                                           "name":  "VehicleMakeCode",
@@ -5929,7 +5874,7 @@
                                                                           "name":  "VehicleYear",
                                                                           "size":  4,
                                                                           "sourceField":  [
-                                                                                              "VehicleYear"
+                                                                                              "vehicleYear"
                                                                                           ],
                                                                           "targetField":  "VehicleYear"
                                                                       }
@@ -5938,33 +5883,36 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "LicensePlateNumber",
-                                                                                                             "LicensePlateTypeCode",
-                                                                                                             "LicensePlateYear",
-                                                                                                             "RegistrationState"
+                                                                                                             "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "LicensePlateTypeCode",
+                                                                                                             "LicensePlateYear",
                                                                                                              "VehicleMakeCode",
-                                                                                                             "VehicleYear"
-                                                                                                         ]
+                                                                                                             "vehicleYear",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateTypeCode",
+                                                                                                                      "value":  "PC"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateYear",
+                                                                                                                      "value":  "2026"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ.PO",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "VehicleYear"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "RQ.VO",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -5974,9 +5922,17 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "VehicleMakeCode",
-                                                                                                             "VehicleYear",
+                                                                                                             "vehicleYear",
                                                                                                              "RegistrationState"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "LicensePlateNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "RQ.V",
@@ -5991,16 +5947,33 @@
                                                                                                              "LicensePlateTypeCode",
                                                                                                              "LicensePlateYear",
                                                                                                              "VehicleMakeCode",
-                                                                                                             "VehicleYear",
-                                                                                                             "RegistrationState"
-                                                                                                         ]
+                                                                                                             "vehicleYear"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateTypeCode",
+                                                                                                                      "value":  "PC"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateYear",
+                                                                                                                      "value":  "2026"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ.P",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- RQ (In plate/VIN, Out plate+State/VIN+State). MC PascalCase.",
+                                                   "description":  "VehicleRegistrationQuery -- RQ.PO (OOS plate), RQ.V (VIN), RQ.P (in-state plate). EXISTS/NOT_EXISTS routing + Plate\u003eVIN guardrail. Single-JSON PascalCase.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "OR_LEDS_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6084,47 +6057,30 @@
                                                                                                  "set":  [
                                                                                                              "BirthDate",
                                                                                                              "NameLast",
-                                                                                                             "NameFirst",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "SexCode",
-                                                                                                             "ImageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "DQ.NO",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "BirthDate",
-                                                                                                             "NameLast",
                                                                                                              "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "SexCode",
                                                                                                              "RegistrationState",
                                                                                                              "ImageIndicator"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "DQ.N",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "OperatorLicenseNumber",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQ.OO",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -6135,14 +6091,20 @@
                                                                                                  "any":  [
                                                                                                              "RegistrationState",
                                                                                                              "ImageIndicator"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "DQ.O",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- DQ (In OLN/Name, Out OLN+State/Name+State). ImageIndicator supported. MC PascalCase.",
+                                                   "description":  "DriverLicenseQuery -- DQ.N (Name+DOB), DQ.O (OLN). OLN\u003eName guardrail; State any[] in/out routing. Single-JSON PascalCase.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "OR_LEDS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6159,7 +6121,7 @@
                                                                           "name":  "GunCaliber",
                                                                           "size":  4,
                                                                           "sourceField":  [
-                                                                                              "GunCaliber"
+                                                                                              "gunCaliber"
                                                                                           ],
                                                                           "targetField":  "GunCaliber"
                                                                       },
@@ -6167,7 +6129,7 @@
                                                                           "name":  "GunMake",
                                                                           "size":  23,
                                                                           "sourceField":  [
-                                                                                              "GunMake"
+                                                                                              "gunMake"
                                                                                           ],
                                                                           "targetField":  "GunMake"
                                                                       },
@@ -6175,7 +6137,7 @@
                                                                           "name":  "GunSerialNumber",
                                                                           "size":  11,
                                                                           "sourceField":  [
-                                                                                              "SerialNumber"
+                                                                                              "serialNumber"
                                                                                           ],
                                                                           "targetField":  "GunSerialNumber"
                                                                       }
@@ -6184,11 +6146,11 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "SerialNumber"
+                                                                                                             "serialNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "GunCaliber",
-                                                                                                             "GunMake"
+                                                                                                             "gunCaliber",
+                                                                                                             "gunMake"
                                                                                                          ]
                                                                                              },
                                                                             "primaryFieldReference":  "GunSerialNumber",
@@ -6212,7 +6174,7 @@
                                                                           "name":  "ArticleSerialNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "SerialNumber"
+                                                                                              "serialNumber"
                                                                                           ],
                                                                           "targetField":  "ArticleSerialNumber"
                                                                       },
@@ -6220,7 +6182,7 @@
                                                                           "name":  "ArticleTypeCode",
                                                                           "size":  7,
                                                                           "sourceField":  [
-                                                                                              "ArticleTypeCode"
+                                                                                              "articleTypeCode"
                                                                                           ],
                                                                           "targetField":  "ArticleTypeCode"
                                                                       }
@@ -6229,8 +6191,8 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "SerialNumber",
-                                                                                                             "ArticleTypeCode"
+                                                                                                             "serialNumber",
+                                                                                                             "articleTypeCode"
                                                                                                          ],
                                                                                                  "any":  [
 
@@ -6283,19 +6245,6 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "RegistrationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "RegistrationState"
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "RegistrationNumber",
-                                                                            "keyReference":  "BQ.R",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "BoatHullIdNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -6305,9 +6254,30 @@
                                                                             "primaryFieldReference":  "BoatHullIdNumber",
                                                                             "keyReference":  "BQ.H",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "RegistrationNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "BoatHullIdNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "RegistrationNumber",
+                                                                            "keyReference":  "BQ.R",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "BoatQuery -- BQ (Reg, Hull). NCIC boat query. MC PascalCase.",
+                                                   "description":  "BoatQuery -- BQ.H (hull), BQ.R (reg). Hull\u003eReg guardrail. Single-JSON PascalCase.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "OR_LEDS_BoatQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6318,12 +6288,16 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for OR_LEDS v1.3 MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat)",
+                        "description":  "Provider configuration for OR_LEDS v2.0 -- 5 QIDMs (VehReg + DL + Gun + Article + Boat)",
                         "name":  "OR_LEDS",
                         "type":  "BUNDLE",
                         "provider":  "OR_LEDS"
                     },
                     {
+                        "description":  "Provider configuration for RMS",
+                        "name":  "RMS",
+                        "type":  "BUNDLE",
+                        "provider":  "RMS",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -6432,7 +6406,7 @@
                                                                                        "function":  "AttributeArrayWrapperRuleHandler"
                                                                                    },
                                                                           "sourceField":  [
-                                                                                              "RaceCode"
+                                                                                              "raceCode"
                                                                                           ],
                                                                           "targetField":  "raceAttrIds",
                                                                           "useAttributeId":  true
@@ -6446,7 +6420,7 @@
                                                                           "useAttributeId":  true
                                                                       },
                                                                       {
-                                                                          "name":  "RegistrationState",
+                                                                          "name":  "registrationState",
                                                                           "sourceField":  [
                                                                                               "RegistrationState"
                                                                                           ],
@@ -6463,7 +6437,7 @@
                                                                                                              "NameLast"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -6480,7 +6454,7 @@
                                                                                                              "BirthDate"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -6496,7 +6470,7 @@
                                                                                                              "NameLast"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -6511,7 +6485,7 @@
                                                                                                              "OperatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -6521,7 +6495,7 @@
                                                                             "keyReference":  "driversLicenseNumber"
                                                                         }
                                                                     ],
-                                                   "description":  "Configuration for handling elastic query with various attributes.",
+                                                   "description":  "Configuration for handling elastic query with various attributes",
                                                    "handlerFunction":  "RmsRestPayloadHandler",
                                                    "name":  "RMS Person Search query",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6534,14 +6508,6 @@
                                                {
                                                    "attributes":  [
                                                                       {
-                                                                          "name":  "yearOfManufacture",
-                                                                          "size":  60,
-                                                                          "sourceField":  [
-                                                                                              "VehicleYear"
-                                                                                          ],
-                                                                          "targetField":  "vehicle.yearOfManufacture"
-                                                                      },
-                                                                      {
                                                                           "name":  "vinNumber",
                                                                           "sourceField":  [
                                                                                               "VehicleIdentificationNumber"
@@ -6549,28 +6515,14 @@
                                                                           "targetField":  "vehicle.vinNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "makeNcicCode",
-                                                                          "sourceField":  [
-                                                                                              "VehicleMakeCode"
-                                                                                          ],
-                                                                          "targetField":  "vehicle.makeNcicCode"
-                                                                      },
-                                                                      {
-                                                                          "name":  "modelNcicCode",
-                                                                          "sourceField":  [
-                                                                                              "VehicleModelCode"
-                                                                                          ],
-                                                                          "targetField":  "vehicle.modelNcicCode"
-                                                                      },
-                                                                      {
-                                                                          "name":  "LicensePlateNumber",
+                                                                          "name":  "licensePlateNumber",
                                                                           "sourceField":  [
                                                                                               "LicensePlateNumber"
                                                                                           ],
                                                                           "targetField":  "vehicle.tag"
                                                                       },
                                                                       {
-                                                                          "name":  "RegistrationState",
+                                                                          "name":  "registrationState",
                                                                           "rule":  {
                                                                                        "function":  "AttributeArrayWrapperRuleHandler"
                                                                                    },
@@ -6588,9 +6540,6 @@
                                                                                                              "VehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "VehicleYear",
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "VehicleModelCode",
                                                                                                              "LicensePlateNumber",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -6605,9 +6554,6 @@
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "VehicleYear",
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "VehicleModelCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
                                                                                                  "conditions":  null,
@@ -6616,7 +6562,7 @@
                                                                             "keyReference":  "licensePlateIn"
                                                                         }
                                                                     ],
-                                                   "description":  "Configuration for handling elastic query with various attributes.",
+                                                   "description":  "Configuration for handling elastic query with various attributes",
                                                    "handlerFunction":  "RmsRestPayloadHandler",
                                                    "name":  "RMS Vehicle search query",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6657,7 +6603,7 @@
                                                                           "targetField":  "AddressZipCode"
                                                                       },
                                                                       {
-                                                                          "name":  "BirthDate",
+                                                                          "name":  "birthDate",
                                                                           "sourceField":  [
                                                                                               "dateOfBirth"
                                                                                           ],
@@ -6678,14 +6624,14 @@
                                                                           "targetField":  "HairColorCode"
                                                                       },
                                                                       {
-                                                                          "name":  "NameFirst",
+                                                                          "name":  "nameFirst",
                                                                           "sourceField":  [
                                                                                               "firstName"
                                                                                           ],
                                                                           "targetField":  "NameFirst"
                                                                       },
                                                                       {
-                                                                          "name":  "NameLast",
+                                                                          "name":  "nameLast",
                                                                           "sourceField":  [
                                                                                               "lastName"
                                                                                           ],
@@ -6699,7 +6645,7 @@
                                                                           "targetField":  "RaceCode"
                                                                       },
                                                                       {
-                                                                          "name":  "SexCode",
+                                                                          "name":  "sexCode",
                                                                           "sourceField":  [
                                                                                               "sexAttrDetail.displayValue"
                                                                                           ],
@@ -6720,14 +6666,14 @@
                                                                           "targetField":  "VehicleColorCode"
                                                                       },
                                                                       {
-                                                                          "name":  "VehicleIdentificationNumber",
+                                                                          "name":  "vehicleIdentificationNumber",
                                                                           "sourceField":  [
                                                                                               "vinNumber"
                                                                                           ],
                                                                           "targetField":  "VehicleIdentificationNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "VehicleMakeCode",
+                                                                          "name":  "vehicleMakeCode",
                                                                           "sourceField":  [
                                                                                               "makeNcicCode"
                                                                                           ],
@@ -6741,7 +6687,7 @@
                                                                           "targetField":  "VehicleModelCode"
                                                                       },
                                                                       {
-                                                                          "name":  "VehicleYear",
+                                                                          "name":  "vehicleYear",
                                                                           "sourceField":  [
                                                                                               "yearOfManufacture"
                                                                                           ],
@@ -6762,7 +6708,7 @@
                                                                           "targetField":  "BodyStyle"
                                                                       },
                                                                       {
-                                                                          "name":  "LicensePlateNumber",
+                                                                          "name":  "licensePlateNumber",
                                                                           "sourceField":  [
                                                                                               "tag"
                                                                                           ],
@@ -6804,7 +6750,7 @@
                                                                           "targetField":  "Weight"
                                                                       },
                                                                       {
-                                                                          "name":  "OperatorLicenseNumber",
+                                                                          "name":  "operatorLicenseNumber",
                                                                           "sourceField":  [
                                                                                               "dlNumber"
                                                                                           ],
@@ -7146,8 +7092,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "height"
                                                                                                      ]
@@ -7163,8 +7111,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "feet"
                                                                                                      ]
@@ -7180,8 +7130,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "inches"
                                                                                                      ]
@@ -7197,8 +7149,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "total"
                                                                                                      ]
@@ -7258,7 +7212,7 @@
                                                                           "targetField":  "SexAttrId"
                                                                       },
                                                                       {
-                                                                          "name":  "NameMiddle",
+                                                                          "name":  "nameMiddle",
                                                                           "sourceField":  [
                                                                                               "middleNameAnalyzed"
                                                                                           ],
@@ -7409,11 +7363,7 @@
                                                    "provider":  "RMS",
                                                    "providerType":  "RMS"
                                                }
-                                           ],
-                        "description":  "Provider configuration for RMS",
-                        "name":  "RMS",
-                        "type":  "BUNDLE",
-                        "provider":  "RMS"
+                                           ]
                     }
                 ]
 }

@@ -1,7 +1,7 @@
 ﻿================================================================
-  Build Report: OR_LEDS_MC
-  Source: OR_LEDS_MC.json
-  Generated: 2026-06-29 08:39
+  Build Report: OR_LEDS
+  Source: OR_LEDS_v2.0.json
+  Generated: 2026-07-23 15:47
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -26,15 +26,15 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 10 fieldIds
   [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
-  [PASS] QIF 'ENTITY_Person' -> Person : 14 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 13 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 5 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 6 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 4 combos
+  [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' -> Vehicle : 7 attrs, 3 combos
   [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' -> Person : 6 attrs, 4 combos
+  [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' -> Person : 6 attrs, 2 combos
   [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' ImageIndicator size=1
@@ -67,20 +67,17 @@ VALIDATOR RESULTS
 
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo 'RQ.PO': all set[]/any[] fields resolvable
-  [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo 'RQ.VO': all set[]/any[] fields resolvable
   [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'OR_LEDS_VehicleRegistrationQuery' combo 'RQ.P': all set[]/any[] fields resolvable
-  [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' combo 'DQ.NO': all set[]/any[] fields resolvable
   [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' combo 'DQ.N': all set[]/any[] fields resolvable
-  [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' combo 'DQ.OO': all set[]/any[] fields resolvable
   [PASS] QIDM 'OR_LEDS_DriverLicenseQuery' combo 'DQ.O': all set[]/any[] fields resolvable
   [PASS] QIDM 'OR_LEDS_GunQuery' combo 'QG': all set[]/any[] fields resolvable
   [PASS] QIDM 'OR_LEDS_ArticleSingleQuery' combo 'QA': all set[]/any[] fields resolvable
-  [PASS] QIDM 'OR_LEDS_BoatQuery' combo 'BQ.R': all set[]/any[] fields resolvable
   [PASS] QIDM 'OR_LEDS_BoatQuery' combo 'BQ.H': all set[]/any[] fields resolvable
+  [PASS] QIDM 'OR_LEDS_BoatQuery' combo 'BQ.R': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 58 PASS / 0 FAIL / 0 WARN
+  RESULTS: 55 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.
