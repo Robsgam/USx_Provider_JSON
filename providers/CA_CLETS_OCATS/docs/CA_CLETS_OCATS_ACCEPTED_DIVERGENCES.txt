@@ -1,0 +1,16 @@
+# CA_CLETS_OCATS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1. Format: query | keyRef | field | rule | reason | source | date
+# Matching is on the first three columns (query | keyRef | field), case-insensitive.
+#
+# CONTEXT (v2.0 galvanization, 2026-07-23): the OOS combos promote RegistrationState to set[]
+# (metadata has it in any[]). This is intentional -- OOS routing requires State present, and the
+# combo also carries a RegistrationState EXISTS condition so the OOS vs in-state pair is mutually
+# exclusive (same class as CA_CLETS's purposeCode promoted-to-set divergences). State remaining in
+# any[] would let the OOS combo fire without State and shadow the in-state combo.
+
+VehicleRegistrationQuery | RQ.P | RegistrationState | promoted-to-set | OOS plate combo requires State; EXISTS-gated for in/out mutual exclusion | design-decision | 2026-07-23
+VehicleRegistrationQuery | RQ.V | RegistrationState | promoted-to-set | OOS VIN combo requires State; EXISTS-gated | design-decision | 2026-07-23
+DriverLicenseQuery | DQ.N | RegistrationState | promoted-to-set | OOS Name combo requires State; EXISTS-gated | design-decision | 2026-07-23
+DriverLicenseQuery | DQ.O | RegistrationState | promoted-to-set | OOS OLN combo requires State; EXISTS-gated | design-decision | 2026-07-23
+BoatQuery | BQ.H | RegistrationState | promoted-to-set | OOS Hull combo requires State; EXISTS-gated | design-decision | 2026-07-23
+BoatQuery | BQ.R | RegistrationState | promoted-to-set | OOS Reg combo requires State; EXISTS-gated | design-decision | 2026-07-23

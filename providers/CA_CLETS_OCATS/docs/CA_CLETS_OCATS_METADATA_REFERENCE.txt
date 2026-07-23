@@ -1,7 +1,7 @@
-﻿CA_CLETS_OCATS METADATA REFERENCE
-==================================
-Generated: 2026-06-12
-Source: CA_CLETS_OCATS.xml (metadata) + CA_CLETS_OCATS_MC.json
+﻿CA_CLETS_OCATS_v2.0 METADATA REFERENCE
+=======================================
+Generated: 2026-07-23
+Source: CA_CLETS_OCATS.xml (metadata) + CA_CLETS_OCATS_v2.0.json
 Metadata: 110 total transactions, 5 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -27,8 +27,8 @@ METADATA COMBINATIONS (2 total):
   QA            OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               ArticleCategory, ArticleTyp...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   QA.S           set[CaRequestPurposeCode, SerialNumber]
-  BUILT   QA.O           set[CaRequestPurposeCode, OwnerAppliedNumber]
+  BUILT   QA.S           set[caRequestPurposeCode, serialNumber]
+  BUILT   QA.O           set[caRequestPurposeCode, ownerAppliedNumber]
 
 ================================================================================
 2. BoatQuery (version 25)
@@ -52,14 +52,12 @@ METADATA COMBINATIONS (7 total):
   QB            BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber                 --
   QB            OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               --
 
-BUILD COVERAGE (7 of 7 built):
-  BUILT   BQ.H           set[CaRequestPurposeCode, BoatHullIdNumber, RegistrationState]
-  BUILT   BQ.R           set[CaRequestPurposeCode, RegistrationNumber, RegistrationState]
-  BUILT   4V.B           set[CaRequestPurposeCode, BoatHullIdNumber]
-  BUILT   QB.O           set[CaRequestPurposeCode, OwnerAppliedNumber]
-  BUILT   4B             set[CaRequestPurposeCode, RegistrationNumber]
-  BUILT   QB.H           set[CaRequestPurposeCode, BoatHullIdNumber]
-  BUILT   QB.R           set[CaRequestPurposeCode, RegistrationNumber]
+BUILD COVERAGE (5 of 7 built):
+  BUILT   BQ.H           set[caRequestPurposeCode, BoatHullIdNumber, RegistrationState]
+  BUILT   BQ.R           set[caRequestPurposeCode, RegistrationNumber, RegistrationState]
+  BUILT   4V.B           set[caRequestPurposeCode, BoatHullIdNumber]
+  BUILT   QB.O           set[caRequestPurposeCode, ownerAppliedNumber]
+  BUILT   4B             set[caRequestPurposeCode, RegistrationNumber]
 
 ================================================================================
 3. DriverLicenseQuery (version 23)
@@ -84,10 +82,10 @@ METADATA COMBINATIONS (5 total):
   DQ            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            State
 
 BUILD COVERAGE (4 of 5 built):
-  BUILT   DQ.N           set[CaRequestPurposeCode, NameLast, NameFirst, BirthDate, SexCode, RegistrationState]
-  BUILT   DQ.O           set[CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
-  BUILT   L1.N           set[CaRequestPurposeCode, NameLast, NameFirst]
-  BUILT   L1.O           set[CaRequestPurposeCode, OperatorLicenseNumber]
+  BUILT   DQ.N           set[caRequestPurposeCode, NameLast, NameFirst, BirthDate, SexCode, RegistrationState]
+  BUILT   DQ.O           set[caRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
+  BUILT   L1.N           set[caRequestPurposeCode, NameLast, NameFirst]
+  BUILT   L1.O           set[caRequestPurposeCode, OperatorLicenseNumber]
   UNBUILT OCNAMQ         Name
 
 ================================================================================
@@ -107,7 +105,7 @@ METADATA COMBINATIONS (1 total):
   QGB           GunSerialNumber         CaRequestPurposeCode, GunSerialNumber                  GunMake, GunCaliber, GunTyp...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QGB            set[CaRequestPurposeCode, SerialNumber]
+  BUILT   QGB            set[caRequestPurposeCode, serialNumber]
 
 ================================================================================
 5. VehicleRegistrationQuery (version 22)
@@ -145,11 +143,11 @@ METADATA COMBINATIONS (10 total):
   VC            Name                    CaRequestPurposeCode, Name, BusinessIndicator          --
 
 BUILD COVERAGE (5 of 10 built):
-  BUILT   RQ.P           set[CaRequestPurposeCode, LicensePlateNumber, RegistrationState]
-  BUILT   RQ.V           set[CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
-  BUILT   VP             set[CaRequestPurposeCode, NameLast, NameFirst]
-  BUILT   4V             set[CaRequestPurposeCode, VehicleIdentificationNumber]
-  BUILT   4              set[CaRequestPurposeCode, LicensePlateNumber]
+  BUILT   RQ.P           set[caRequestPurposeCode, LicensePlateNumber, RegistrationState]
+  BUILT   RQ.V           set[caRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
+  BUILT   VP             set[caRequestPurposeCode, NameLast, NameFirst]
+  BUILT   4V             set[caRequestPurposeCode, VehicleIdentificationNumber]
+  BUILT   4              set[caRequestPurposeCode, LicensePlateNumber]
   UNBUILT 4K             LicensePlateNumber
   UNBUILT AWVEHQ         LicensePlateNumber
   UNBUILT QV             LicensePlateNumber
@@ -163,12 +161,12 @@ BUILD SUMMARY
   Query                             Metadata  Built  Skip  Coverage
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
-  BoatQuery                                  7      7     0  100% (COMPLETE)
+  BoatQuery                                  7      5     2  71%
   DriverLicenseQuery                         5      4     1  80%
   GunQuery                                   1      1     0  100% (COMPLETE)
   VehicleRegistrationQuery                  10      5     5  50%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   25     19     6  76%
+  TOTAL                                   25     17     8  68%
 
 ================================================================================
 UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)

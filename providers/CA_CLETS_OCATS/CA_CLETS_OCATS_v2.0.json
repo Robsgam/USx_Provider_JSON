@@ -1,6 +1,7 @@
 {
     "bundles":  [
                     {
+                        "description":  "Entity form configurations",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- MC: OPTIONS (State + Purpose) + PLATE (4/RQ.P) + VIN (4V/RQ.V) + NAME (VP cross-entity)",
@@ -130,10 +131,9 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                   "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1",
-                                                                                                                                   "initialValue":  "C"
+                                                                                                                                   "maxLength":  "1"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -233,7 +233,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                   "label":  "Plate Type",
+                                                                                                                                   "label":  "Plate Type (optional)",
                                                                                                                                    "initialValue":  "PC",
                                                                                                                                    "codeTypeSource":  "NCIC",
                                                                                                                                    "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -255,7 +255,7 @@
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "LicensePlateYear",
-                                                                                                                               "label":  "Plate Year",
+                                                                                                                               "label":  "Plate Year (optional)",
                                                                                                                                "maxLength":  "4",
                                                                                                                                "initialValue":  "2026"
                                                                                                                            },
@@ -357,7 +357,7 @@
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "VehicleMakeCode",
-                                                                                                                              "label":  "Vehicle Make",
+                                                                                                                              "label":  "Vehicle Make (optional)",
                                                                                                                               "maxLength":  "4"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
@@ -376,8 +376,8 @@
                                                                                                                      },
                                                                                                             "displayName":  "Input",
                                                                                                             "props":  {
-                                                                                                                          "fieldId":  "VehicleYear",
-                                                                                                                          "label":  "Vehicle Year",
+                                                                                                                          "fieldId":  "vehicleYear",
+                                                                                                                          "label":  "Vehicle Year (optional)",
                                                                                                                           "maxLength":  "4"
                                                                                                                       },
                                                                                                             "isCanvas":  false,
@@ -596,10 +596,9 @@
                                                                                                                                    },
                                                                                                                           "displayName":  "Input",
                                                                                                                           "props":  {
-                                                                                                                                        "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                        "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1",
-                                                                                                                                        "initialValue":  "C"
+                                                                                                                                        "maxLength":  "1"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -699,7 +698,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                        "label":  "Plate Type",
+                                                                                                                                        "label":  "Plate Type (optional)",
                                                                                                                                         "initialValue":  "PC",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -721,7 +720,7 @@
                                                                                                                       "displayName":  "Input",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "LicensePlateYear",
-                                                                                                                                    "label":  "Plate Year",
+                                                                                                                                    "label":  "Plate Year (optional)",
                                                                                                                                     "maxLength":  "4",
                                                                                                                                     "initialValue":  "2026"
                                                                                                                                 },
@@ -823,7 +822,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "VehicleMakeCode",
-                                                                                                                                   "label":  "Vehicle Make",
+                                                                                                                                   "label":  "Vehicle Make (optional)",
                                                                                                                                    "maxLength":  "4"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -842,8 +841,8 @@
                                                                                                                           },
                                                                                                                  "displayName":  "Input",
                                                                                                                  "props":  {
-                                                                                                                               "fieldId":  "VehicleYear",
-                                                                                                                               "label":  "Vehicle Year",
+                                                                                                                               "fieldId":  "vehicleYear",
+                                                                                                                               "label":  "Vehicle Year (optional)",
                                                                                                                                "maxLength":  "4"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
@@ -1143,10 +1142,9 @@
                                                                                                                                       },
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
-                                                                                                                                           "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                           "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1",
-                                                                                                                                           "initialValue":  "C"
+                                                                                                                                           "maxLength":  "1"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -1246,7 +1244,7 @@
                                                                                                                              "displayName":  "Select",
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                           "label":  "Plate Type",
+                                                                                                                                           "label":  "Plate Type (optional)",
                                                                                                                                            "initialValue":  "PC",
                                                                                                                                            "codeTypeSource":  "NCIC",
                                                                                                                                            "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
@@ -1268,7 +1266,7 @@
                                                                                                                          "displayName":  "Input",
                                                                                                                          "props":  {
                                                                                                                                        "fieldId":  "LicensePlateYear",
-                                                                                                                                       "label":  "Plate Year",
+                                                                                                                                       "label":  "Plate Year (optional)",
                                                                                                                                        "maxLength":  "4",
                                                                                                                                        "initialValue":  "2026"
                                                                                                                                    },
@@ -1370,7 +1368,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "VehicleMakeCode",
-                                                                                                                                      "label":  "Vehicle Make",
+                                                                                                                                      "label":  "Vehicle Make (optional)",
                                                                                                                                       "maxLength":  "4"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -1389,8 +1387,8 @@
                                                                                                                              },
                                                                                                                     "displayName":  "Input",
                                                                                                                     "props":  {
-                                                                                                                                  "fieldId":  "VehicleYear",
-                                                                                                                                  "label":  "Vehicle Year",
+                                                                                                                                  "fieldId":  "vehicleYear",
+                                                                                                                                  "label":  "Vehicle Year (optional)",
                                                                                                                                   "maxLength":  "4"
                                                                                                                               },
                                                                                                                     "isCanvas":  false,
@@ -1654,10 +1652,9 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                   "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1",
-                                                                                                                                   "initialValue":  "C"
+                                                                                                                                   "maxLength":  "1"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -1995,10 +1992,9 @@
                                                                                                                                    },
                                                                                                                           "displayName":  "Input",
                                                                                                                           "props":  {
-                                                                                                                                        "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                        "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1",
-                                                                                                                                        "initialValue":  "C"
+                                                                                                                                        "maxLength":  "1"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -2417,10 +2413,9 @@
                                                                                                                                       },
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
-                                                                                                                                           "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                           "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1",
-                                                                                                                                           "initialValue":  "C"
+                                                                                                                                           "maxLength":  "1"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -2781,10 +2776,9 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                   "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1",
-                                                                                                                                   "initialValue":  "C"
+                                                                                                                                   "maxLength":  "1"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -2843,7 +2837,7 @@
                                                                                                                       },
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
-                                                                                                                           "fieldId":  "SerialNumber",
+                                                                                                                           "fieldId":  "serialNumber",
                                                                                                                            "label":  "Serial Number",
                                                                                                                            "maxLength":  "20"
                                                                                                                        },
@@ -2863,8 +2857,8 @@
                                                                                                                      },
                                                                                                             "displayName":  "Select",
                                                                                                             "props":  {
-                                                                                                                          "fieldId":  "FirearmMake",
-                                                                                                                          "label":  "Make",
+                                                                                                                          "fieldId":  "firearmMake",
+                                                                                                                          "label":  "Make (optional)",
                                                                                                                           "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                           "codeTypeSource":  "NCIC"
                                                                                                                       },
@@ -2907,7 +2901,7 @@
                                                                                                            "displayName":  "Select",
                                                                                                            "props":  {
                                                                                                                          "fieldId":  "GunCaliber",
-                                                                                                                         "label":  "Caliber",
+                                                                                                                         "label":  "Caliber (optional)",
                                                                                                                          "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                          "codeTypeSource":  "NCIC"
                                                                                                                      },
@@ -2927,8 +2921,8 @@
                                                                                                                      },
                                                                                                             "displayName":  "Select",
                                                                                                             "props":  {
-                                                                                                                          "fieldId":  "GunTypeCode",
-                                                                                                                          "label":  "Type",
+                                                                                                                          "fieldId":  "gunTypeCode",
+                                                                                                                          "label":  "Type (optional)",
                                                                                                                           "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                           "codeTypeSource":  "NCIC"
                                                                                                                       },
@@ -3044,10 +3038,9 @@
                                                                                                                                    },
                                                                                                                           "displayName":  "Input",
                                                                                                                           "props":  {
-                                                                                                                                        "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                        "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1",
-                                                                                                                                        "initialValue":  "C"
+                                                                                                                                        "maxLength":  "1"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -3106,7 +3099,7 @@
                                                                                                                            },
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
-                                                                                                                                "fieldId":  "SerialNumber",
+                                                                                                                                "fieldId":  "serialNumber",
                                                                                                                                 "label":  "Serial Number",
                                                                                                                                 "maxLength":  "20"
                                                                                                                             },
@@ -3126,8 +3119,8 @@
                                                                                                                           },
                                                                                                                  "displayName":  "Select",
                                                                                                                  "props":  {
-                                                                                                                               "fieldId":  "FirearmMake",
-                                                                                                                               "label":  "Make",
+                                                                                                                               "fieldId":  "firearmMake",
+                                                                                                                               "label":  "Make (optional)",
                                                                                                                                "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                                "codeTypeSource":  "NCIC"
                                                                                                                            },
@@ -3170,7 +3163,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "GunCaliber",
-                                                                                                                              "label":  "Caliber",
+                                                                                                                              "label":  "Caliber (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                               "codeTypeSource":  "NCIC"
                                                                                                                           },
@@ -3190,8 +3183,8 @@
                                                                                                                           },
                                                                                                                  "displayName":  "Select",
                                                                                                                  "props":  {
-                                                                                                                               "fieldId":  "GunTypeCode",
-                                                                                                                               "label":  "Type",
+                                                                                                                               "fieldId":  "gunTypeCode",
+                                                                                                                               "label":  "Type (optional)",
                                                                                                                                "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                                "codeTypeSource":  "NCIC"
                                                                                                                            },
@@ -3388,10 +3381,9 @@
                                                                                                                                       },
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
-                                                                                                                                           "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                           "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1",
-                                                                                                                                           "initialValue":  "C"
+                                                                                                                                           "maxLength":  "1"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -3450,7 +3442,7 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "SerialNumber",
+                                                                                                                                   "fieldId":  "serialNumber",
                                                                                                                                    "label":  "Serial Number",
                                                                                                                                    "maxLength":  "20"
                                                                                                                                },
@@ -3470,8 +3462,8 @@
                                                                                                                              },
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
-                                                                                                                                  "fieldId":  "FirearmMake",
-                                                                                                                                  "label":  "Make",
+                                                                                                                                  "fieldId":  "firearmMake",
+                                                                                                                                  "label":  "Make (optional)",
                                                                                                                                   "codeTypeCategory":  "NCIC_FIREARM_MAKE",
                                                                                                                                   "codeTypeSource":  "NCIC"
                                                                                                                               },
@@ -3514,7 +3506,7 @@
                                                                                                                    "displayName":  "Select",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "GunCaliber",
-                                                                                                                                 "label":  "Caliber",
+                                                                                                                                 "label":  "Caliber (optional)",
                                                                                                                                  "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
                                                                                                                                  "codeTypeSource":  "NCIC"
                                                                                                                              },
@@ -3534,8 +3526,8 @@
                                                                                                                              },
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
-                                                                                                                                  "fieldId":  "GunTypeCode",
-                                                                                                                                  "label":  "Type",
+                                                                                                                                  "fieldId":  "gunTypeCode",
+                                                                                                                                  "label":  "Type (optional)",
                                                                                                                                   "codeTypeCategory":  "NCIC_FIREARM_TYPE",
                                                                                                                                   "codeTypeSource":  "NCIC"
                                                                                                                               },
@@ -3698,10 +3690,9 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                   "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1",
-                                                                                                                                   "initialValue":  "C"
+                                                                                                                                   "maxLength":  "1"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -3758,7 +3749,7 @@
                                                                                                                       },
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
-                                                                                                                           "fieldId":  "SerialNumber",
+                                                                                                                           "fieldId":  "serialNumber",
                                                                                                                            "label":  "Serial Number",
                                                                                                                            "maxLength":  "20"
                                                                                                                        },
@@ -3801,7 +3792,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "ArticleTypeCode",
-                                                                                                                              "label":  "Article Type",
+                                                                                                                              "label":  "Article Type (optional)",
                                                                                                                               "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                               "codeTypeSource":  "CA_CLETS_OCATS"
                                                                                                                           },
@@ -3821,8 +3812,8 @@
                                                                                                                       },
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
-                                                                                                                           "fieldId":  "ArticleBrand",
-                                                                                                                           "label":  "Brand",
+                                                                                                                           "fieldId":  "articleBrand",
+                                                                                                                           "label":  "Brand (optional)",
                                                                                                                            "maxLength":  "6"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
@@ -3879,7 +3870,7 @@
                                                                                                                             },
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
-                                                                                                                                 "fieldId":  "OwnerAppliedNumber",
+                                                                                                                                 "fieldId":  "ownerAppliedNumber",
                                                                                                                                  "label":  "Owner Applied Number",
                                                                                                                                  "maxLength":  "20"
                                                                                                                              },
@@ -3996,10 +3987,9 @@
                                                                                                                                    },
                                                                                                                           "displayName":  "Input",
                                                                                                                           "props":  {
-                                                                                                                                        "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                        "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1",
-                                                                                                                                        "initialValue":  "C"
+                                                                                                                                        "maxLength":  "1"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -4056,7 +4046,7 @@
                                                                                                                            },
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
-                                                                                                                                "fieldId":  "SerialNumber",
+                                                                                                                                "fieldId":  "serialNumber",
                                                                                                                                 "label":  "Serial Number",
                                                                                                                                 "maxLength":  "20"
                                                                                                                             },
@@ -4099,7 +4089,7 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "ArticleTypeCode",
-                                                                                                                                   "label":  "Article Type",
+                                                                                                                                   "label":  "Article Type (optional)",
                                                                                                                                    "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                                    "codeTypeSource":  "CA_CLETS_OCATS"
                                                                                                                                },
@@ -4119,8 +4109,8 @@
                                                                                                                            },
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
-                                                                                                                                "fieldId":  "ArticleBrand",
-                                                                                                                                "label":  "Brand",
+                                                                                                                                "fieldId":  "articleBrand",
+                                                                                                                                "label":  "Brand (optional)",
                                                                                                                                 "maxLength":  "6"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -4177,7 +4167,7 @@
                                                                                                                                  },
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
-                                                                                                                                      "fieldId":  "OwnerAppliedNumber",
+                                                                                                                                      "fieldId":  "ownerAppliedNumber",
                                                                                                                                       "label":  "Owner Applied Number",
                                                                                                                                       "maxLength":  "20"
                                                                                                                                   },
@@ -4375,10 +4365,9 @@
                                                                                                                                       },
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
-                                                                                                                                           "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                           "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1",
-                                                                                                                                           "initialValue":  "C"
+                                                                                                                                           "maxLength":  "1"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -4435,7 +4424,7 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "SerialNumber",
+                                                                                                                                   "fieldId":  "serialNumber",
                                                                                                                                    "label":  "Serial Number",
                                                                                                                                    "maxLength":  "20"
                                                                                                                                },
@@ -4478,7 +4467,7 @@
                                                                                                                         "displayName":  "Select",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "ArticleTypeCode",
-                                                                                                                                      "label":  "Article Type",
+                                                                                                                                      "label":  "Article Type (optional)",
                                                                                                                                       "codeTypeCategory":  "NCIC_ARTICLE_TYPE",
                                                                                                                                       "codeTypeSource":  "CA_CLETS_OCATS"
                                                                                                                                   },
@@ -4498,8 +4487,8 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "ArticleBrand",
-                                                                                                                                   "label":  "Brand",
+                                                                                                                                   "fieldId":  "articleBrand",
+                                                                                                                                   "label":  "Brand (optional)",
                                                                                                                                    "maxLength":  "6"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -4556,7 +4545,7 @@
                                                                                                                                     },
                                                                                                                            "displayName":  "Input",
                                                                                                                            "props":  {
-                                                                                                                                         "fieldId":  "OwnerAppliedNumber",
+                                                                                                                                         "fieldId":  "ownerAppliedNumber",
                                                                                                                                          "label":  "Owner Applied Number",
                                                                                                                                          "maxLength":  "20"
                                                                                                                                      },
@@ -4742,10 +4731,9 @@
                                                                                                                               },
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
-                                                                                                                                   "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                   "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1",
-                                                                                                                                   "initialValue":  "C"
+                                                                                                                                   "maxLength":  "1"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -4917,7 +4905,7 @@
                                                                                                                             },
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
-                                                                                                                                 "fieldId":  "OwnerAppliedNumber",
+                                                                                                                                 "fieldId":  "ownerAppliedNumber",
                                                                                                                                  "label":  "Owner Applied Number",
                                                                                                                                  "maxLength":  "20"
                                                                                                                              },
@@ -5057,10 +5045,9 @@
                                                                                                                                    },
                                                                                                                           "displayName":  "Input",
                                                                                                                           "props":  {
-                                                                                                                                        "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                        "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1",
-                                                                                                                                        "initialValue":  "C"
+                                                                                                                                        "maxLength":  "1"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -5232,7 +5219,7 @@
                                                                                                                                  },
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
-                                                                                                                                      "fieldId":  "OwnerAppliedNumber",
+                                                                                                                                      "fieldId":  "ownerAppliedNumber",
                                                                                                                                       "label":  "Owner Applied Number",
                                                                                                                                       "maxLength":  "20"
                                                                                                                                   },
@@ -5453,10 +5440,9 @@
                                                                                                                                       },
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
-                                                                                                                                           "fieldId":  "CaRequestPurposeCode",
+                                                                                                                                           "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1",
-                                                                                                                                           "initialValue":  "C"
+                                                                                                                                           "maxLength":  "1"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -5628,7 +5614,7 @@
                                                                                                                                     },
                                                                                                                            "displayName":  "Input",
                                                                                                                            "props":  {
-                                                                                                                                         "fieldId":  "OwnerAppliedNumber",
+                                                                                                                                         "fieldId":  "ownerAppliedNumber",
                                                                                                                                          "label":  "Owner Applied Number",
                                                                                                                                          "maxLength":  "20"
                                                                                                                                      },
@@ -5687,7 +5673,6 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Entity form configurations for CA_CLETS_OCATS MC",
                         "name":  "ENTITIES",
                         "type":  "BUNDLE",
                         "order":  {
@@ -6029,7 +6014,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "height"
                                                                                                      ]
@@ -6045,7 +6032,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "feet"
                                                                                                      ]
@@ -6061,7 +6050,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "inches"
                                                                                                      ]
@@ -6085,7 +6076,9 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "Height"
+                                                                                                             [
+                                                                                                                 "Height"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "total"
                                                                                                      ]
@@ -6439,8 +6432,8 @@
                                                                                               "VehicleMakeCode"
                                                                                           ],
                                                                           "targetField":  "VehicleMakeName",
-                                                                          "codeTypeCategory":  "NCIC_FIREARM_MAKE",
-                                                                          "codeTypeSource":  "NJ_NIBRS"
+                                                                          "attributeType":  "VEHICLE_MAKE",
+                                                                          "codeTypeSource":  "NCIC"
                                                                       },
                                                                       {
                                                                           "name":  "VehicleMakeCode",
@@ -6771,7 +6764,7 @@
                                                                           "name":  "CaRequestPurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "CaRequestPurposeCode"
+                                                                                              "caRequestPurposeCode"
                                                                                           ],
                                                                           "targetField":  "CaRequestPurposeCode"
                                                                       },
@@ -6843,7 +6836,7 @@
                                                                           "name":  "VehicleYear",
                                                                           "size":  4,
                                                                           "sourceField":  [
-                                                                                              "VehicleYear"
+                                                                                              "vehicleYear"
                                                                                           ],
                                                                           "targetField":  "VehicleYear"
                                                                       }
@@ -6852,7 +6845,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "LicensePlateNumber",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -6860,8 +6853,18 @@
                                                                                                              "LicensePlateTypeCode",
                                                                                                              "LicensePlateYear",
                                                                                                              "VehicleMakeCode",
-                                                                                                             "VehicleYear"
-                                                                                                         ]
+                                                                                                             "vehicleYear"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateTypeCode",
+                                                                                                                      "value":  "PC"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateYear",
+                                                                                                                      "value":  "2026"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ.P",
@@ -6870,14 +6873,28 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "VehicleIdentificationNumber",
                                                                                                              "RegistrationState"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "VehicleMakeCode",
-                                                                                                             "VehicleYear"
-                                                                                                         ]
+                                                                                                             "vehicleYear"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "LicensePlateNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "RQ.V",
@@ -6886,7 +6903,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "NameLast",
                                                                                                              "NameFirst"
                                                                                                          ],
@@ -6901,13 +6918,26 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "VehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "RegistrationState"
-                                                                                                         ]
+                                                                                                             "VehicleMakeCode"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "LicensePlateNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "4V",
@@ -6916,7 +6946,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -6924,8 +6954,18 @@
                                                                                                              "LicensePlateTypeCode",
                                                                                                              "LicensePlateYear",
                                                                                                              "VehicleMakeCode",
-                                                                                                             "VehicleYear"
-                                                                                                         ]
+                                                                                                             "vehicleYear"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateTypeCode",
+                                                                                                                      "value":  "PC"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "LicensePlateYear",
+                                                                                                                      "value":  "2026"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "4",
@@ -6964,7 +7004,7 @@
                                                                           "name":  "CaRequestPurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "CaRequestPurposeCode"
+                                                                                              "caRequestPurposeCode"
                                                                                           ],
                                                                           "targetField":  "CaRequestPurposeCode"
                                                                       },
@@ -7014,7 +7054,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "NameLast",
                                                                                                              "NameFirst",
                                                                                                              "BirthDate",
@@ -7023,7 +7063,21 @@
                                                                                                          ],
                                                                                                  "any":  [
 
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "DQ.N",
@@ -7032,7 +7086,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "OperatorLicenseNumber",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -7047,14 +7101,27 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "NameLast",
                                                                                                              "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "BirthDate",
-                                                                                                             "RegistrationState"
-                                                                                                         ]
+                                                                                                             "BirthDate"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "L1.N",
@@ -7063,7 +7130,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "OperatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -7092,7 +7159,7 @@
                                                                           "name":  "CaRequestPurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "CaRequestPurposeCode"
+                                                                                              "caRequestPurposeCode"
                                                                                           ],
                                                                           "targetField":  "CaRequestPurposeCode"
                                                                       },
@@ -7108,7 +7175,7 @@
                                                                           "name":  "GunMake",
                                                                           "size":  3,
                                                                           "sourceField":  [
-                                                                                              "FirearmMake"
+                                                                                              "firearmMake"
                                                                                           ],
                                                                           "targetField":  "GunMake"
                                                                       },
@@ -7116,7 +7183,7 @@
                                                                           "name":  "GunSerialNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "SerialNumber"
+                                                                                              "serialNumber"
                                                                                           ],
                                                                           "targetField":  "GunSerialNumber"
                                                                       },
@@ -7124,7 +7191,7 @@
                                                                           "name":  "GunTypeCode",
                                                                           "size":  2,
                                                                           "sourceField":  [
-                                                                                              "GunTypeCode"
+                                                                                              "gunTypeCode"
                                                                                           ],
                                                                           "targetField":  "GunTypeCode"
                                                                       }
@@ -7133,13 +7200,13 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
-                                                                                                             "SerialNumber"
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "serialNumber"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "GunCaliber",
-                                                                                                             "FirearmMake",
-                                                                                                             "GunTypeCode"
+                                                                                                             "firearmMake",
+                                                                                                             "gunTypeCode"
                                                                                                          ]
                                                                                              },
                                                                             "primaryFieldReference":  "GunSerialNumber",
@@ -7163,7 +7230,7 @@
                                                                           "name":  "ArticleBrand",
                                                                           "size":  6,
                                                                           "sourceField":  [
-                                                                                              "ArticleBrand"
+                                                                                              "articleBrand"
                                                                                           ],
                                                                           "targetField":  "ArticleBrand"
                                                                       },
@@ -7171,7 +7238,7 @@
                                                                           "name":  "ArticleSerialNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "SerialNumber"
+                                                                                              "serialNumber"
                                                                                           ],
                                                                           "targetField":  "ArticleSerialNumber"
                                                                       },
@@ -7187,7 +7254,7 @@
                                                                           "name":  "CaRequestPurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "CaRequestPurposeCode"
+                                                                                              "caRequestPurposeCode"
                                                                                           ],
                                                                           "targetField":  "CaRequestPurposeCode"
                                                                       },
@@ -7195,7 +7262,7 @@
                                                                           "name":  "OwnerAppliedNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "OwnerAppliedNumber"
+                                                                                              "ownerAppliedNumber"
                                                                                           ],
                                                                           "targetField":  "OwnerAppliedNumber"
                                                                       }
@@ -7204,11 +7271,11 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
-                                                                                                             "SerialNumber"
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "serialNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "ArticleBrand",
+                                                                                                             "articleBrand",
                                                                                                              "ArticleTypeCode"
                                                                                                          ]
                                                                                              },
@@ -7219,11 +7286,11 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
-                                                                                                             "OwnerAppliedNumber"
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "ownerAppliedNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "ArticleBrand",
+                                                                                                             "articleBrand",
                                                                                                              "ArticleTypeCode"
                                                                                                          ]
                                                                                              },
@@ -7256,7 +7323,7 @@
                                                                           "name":  "CaRequestPurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "CaRequestPurposeCode"
+                                                                                              "caRequestPurposeCode"
                                                                                           ],
                                                                           "targetField":  "CaRequestPurposeCode"
                                                                       },
@@ -7264,7 +7331,7 @@
                                                                           "name":  "OwnerAppliedNumber",
                                                                           "size":  20,
                                                                           "sourceField":  [
-                                                                                              "OwnerAppliedNumber"
+                                                                                              "ownerAppliedNumber"
                                                                                           ],
                                                                           "targetField":  "OwnerAppliedNumber"
                                                                       },
@@ -7290,7 +7357,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "BoatHullIdNumber",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -7305,13 +7372,27 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "RegistrationNumber",
                                                                                                              "RegistrationState"
                                                                                                          ],
                                                                                                  "any":  [
 
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "BoatHullIdNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "BQ.R",
@@ -7320,7 +7401,7 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "BoatHullIdNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -7334,8 +7415,8 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
-                                                                                                             "OwnerAppliedNumber"
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "ownerAppliedNumber"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "RegistrationState"
@@ -7348,47 +7429,33 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "CaRequestPurposeCode",
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "RegistrationNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState"
-                                                                                                         ]
+
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "BoatHullIdNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "4B",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "CaRequestPurposeCode",
-                                                                                                             "BoatHullIdNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "BoatHullIdNumber",
-                                                                            "keyReference":  "QB.H",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "CaRequestPurposeCode",
-                                                                                                             "RegistrationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "RegistrationNumber",
-                                                                            "keyReference":  "QB.R",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "BoatQuery -- 4B (reg), 4V.B (hull), BQ (OOS hull/reg), QB (stolen hull/reg/OAN). OCATS boat inquiry.",
+                                                   "description":  "BoatQuery -- 4B (reg), 4V.B (hull), BQ.H/BQ.R (OOS), QB.O (OAN). v2.0: dropped stolen QB.H/QB.R (form-identical to 4V.B/4B; server routes by keyRef -- CA_CLETS IV.4* precedent).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_CLETS_OCATS_BoatQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7399,12 +7466,16 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS_OCATS v1.2 MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat), no DH",
+                        "description":  "Provider configuration for CA_CLETS_OCATS v2.0 MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat), no DH",
                         "name":  "CA_CLETS_OCATS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS_OCATS"
                     },
                     {
+                        "description":  "Provider configuration for RMS",
+                        "name":  "RMS",
+                        "type":  "BUNDLE",
+                        "provider":  "RMS",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -7513,7 +7584,7 @@
                                                                                        "function":  "AttributeArrayWrapperRuleHandler"
                                                                                    },
                                                                           "sourceField":  [
-                                                                                              "RaceCode"
+                                                                                              "raceCode"
                                                                                           ],
                                                                           "targetField":  "raceAttrIds",
                                                                           "useAttributeId":  true
@@ -7527,7 +7598,7 @@
                                                                           "useAttributeId":  true
                                                                       },
                                                                       {
-                                                                          "name":  "RegistrationState",
+                                                                          "name":  "registrationState",
                                                                           "sourceField":  [
                                                                                               "RegistrationState"
                                                                                           ],
@@ -7544,7 +7615,7 @@
                                                                                                              "NameLast"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -7561,7 +7632,7 @@
                                                                                                              "BirthDate"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -7577,7 +7648,7 @@
                                                                                                              "NameLast"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -7592,7 +7663,7 @@
                                                                                                              "OperatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RaceCode",
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -7602,7 +7673,7 @@
                                                                             "keyReference":  "driversLicenseNumber"
                                                                         }
                                                                     ],
-                                                   "description":  "Configuration for handling elastic query with various attributes.",
+                                                   "description":  "Configuration for handling elastic query with various attributes",
                                                    "handlerFunction":  "RmsRestPayloadHandler",
                                                    "name":  "RMS Person Search query",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7615,14 +7686,6 @@
                                                {
                                                    "attributes":  [
                                                                       {
-                                                                          "name":  "yearOfManufacture",
-                                                                          "size":  60,
-                                                                          "sourceField":  [
-                                                                                              "VehicleYear"
-                                                                                          ],
-                                                                          "targetField":  "vehicle.yearOfManufacture"
-                                                                      },
-                                                                      {
                                                                           "name":  "vinNumber",
                                                                           "sourceField":  [
                                                                                               "VehicleIdentificationNumber"
@@ -7630,28 +7693,14 @@
                                                                           "targetField":  "vehicle.vinNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "makeNcicCode",
-                                                                          "sourceField":  [
-                                                                                              "VehicleMakeCode"
-                                                                                          ],
-                                                                          "targetField":  "vehicle.makeNcicCode"
-                                                                      },
-                                                                      {
-                                                                          "name":  "modelNcicCode",
-                                                                          "sourceField":  [
-                                                                                              "VehicleModelCode"
-                                                                                          ],
-                                                                          "targetField":  "vehicle.modelNcicCode"
-                                                                      },
-                                                                      {
-                                                                          "name":  "LicensePlateNumber",
+                                                                          "name":  "licensePlateNumber",
                                                                           "sourceField":  [
                                                                                               "LicensePlateNumber"
                                                                                           ],
                                                                           "targetField":  "vehicle.tag"
                                                                       },
                                                                       {
-                                                                          "name":  "RegistrationState",
+                                                                          "name":  "registrationState",
                                                                           "rule":  {
                                                                                        "function":  "AttributeArrayWrapperRuleHandler"
                                                                                    },
@@ -7669,9 +7718,6 @@
                                                                                                              "VehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "VehicleYear",
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "VehicleModelCode",
                                                                                                              "LicensePlateNumber",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -7686,9 +7732,6 @@
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "VehicleYear",
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "VehicleModelCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
                                                                                                  "conditions":  null,
@@ -7697,7 +7740,7 @@
                                                                             "keyReference":  "licensePlateIn"
                                                                         }
                                                                     ],
-                                                   "description":  "Configuration for handling elastic query with various attributes.",
+                                                   "description":  "Configuration for handling elastic query with various attributes",
                                                    "handlerFunction":  "RmsRestPayloadHandler",
                                                    "name":  "RMS Vehicle search query",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7738,7 +7781,7 @@
                                                                           "targetField":  "AddressZipCode"
                                                                       },
                                                                       {
-                                                                          "name":  "BirthDate",
+                                                                          "name":  "birthDate",
                                                                           "sourceField":  [
                                                                                               "dateOfBirth"
                                                                                           ],
@@ -7759,14 +7802,14 @@
                                                                           "targetField":  "HairColorCode"
                                                                       },
                                                                       {
-                                                                          "name":  "NameFirst",
+                                                                          "name":  "nameFirst",
                                                                           "sourceField":  [
                                                                                               "firstName"
                                                                                           ],
                                                                           "targetField":  "NameFirst"
                                                                       },
                                                                       {
-                                                                          "name":  "NameLast",
+                                                                          "name":  "nameLast",
                                                                           "sourceField":  [
                                                                                               "lastName"
                                                                                           ],
@@ -7780,7 +7823,7 @@
                                                                           "targetField":  "RaceCode"
                                                                       },
                                                                       {
-                                                                          "name":  "SexCode",
+                                                                          "name":  "sexCode",
                                                                           "sourceField":  [
                                                                                               "sexAttrDetail.displayValue"
                                                                                           ],
@@ -7801,14 +7844,14 @@
                                                                           "targetField":  "VehicleColorCode"
                                                                       },
                                                                       {
-                                                                          "name":  "VehicleIdentificationNumber",
+                                                                          "name":  "vehicleIdentificationNumber",
                                                                           "sourceField":  [
                                                                                               "vinNumber"
                                                                                           ],
                                                                           "targetField":  "VehicleIdentificationNumber"
                                                                       },
                                                                       {
-                                                                          "name":  "VehicleMakeCode",
+                                                                          "name":  "vehicleMakeCode",
                                                                           "sourceField":  [
                                                                                               "makeNcicCode"
                                                                                           ],
@@ -7822,7 +7865,7 @@
                                                                           "targetField":  "VehicleModelCode"
                                                                       },
                                                                       {
-                                                                          "name":  "VehicleYear",
+                                                                          "name":  "vehicleYear",
                                                                           "sourceField":  [
                                                                                               "yearOfManufacture"
                                                                                           ],
@@ -7843,7 +7886,7 @@
                                                                           "targetField":  "BodyStyle"
                                                                       },
                                                                       {
-                                                                          "name":  "LicensePlateNumber",
+                                                                          "name":  "licensePlateNumber",
                                                                           "sourceField":  [
                                                                                               "tag"
                                                                                           ],
@@ -7885,7 +7928,7 @@
                                                                           "targetField":  "Weight"
                                                                       },
                                                                       {
-                                                                          "name":  "OperatorLicenseNumber",
+                                                                          "name":  "operatorLicenseNumber",
                                                                           "sourceField":  [
                                                                                               "dlNumber"
                                                                                           ],
@@ -8227,8 +8270,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "height"
                                                                                                      ]
@@ -8244,8 +8289,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "feet"
                                                                                                      ]
@@ -8261,8 +8308,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "inches"
                                                                                                      ]
@@ -8278,8 +8327,10 @@
                                                                                        "function":  "HeightParserRuleHandler",
                                                                                        "arguments":  [
                                                                                                          [
-                                                                                                             "heightFeet",
-                                                                                                             "heightInches"
+                                                                                                             [
+                                                                                                                 "heightFeet",
+                                                                                                                 "heightInches"
+                                                                                                             ]
                                                                                                          ],
                                                                                                          "total"
                                                                                                      ]
@@ -8339,7 +8390,7 @@
                                                                           "targetField":  "SexAttrId"
                                                                       },
                                                                       {
-                                                                          "name":  "NameMiddle",
+                                                                          "name":  "nameMiddle",
                                                                           "sourceField":  [
                                                                                               "middleNameAnalyzed"
                                                                                           ],
@@ -8490,11 +8541,7 @@
                                                    "provider":  "RMS",
                                                    "providerType":  "RMS"
                                                }
-                                           ],
-                        "description":  "Provider configuration for RMS",
-                        "name":  "RMS",
-                        "type":  "BUNDLE",
-                        "provider":  "RMS"
+                                           ]
                     }
                 ]
 }
