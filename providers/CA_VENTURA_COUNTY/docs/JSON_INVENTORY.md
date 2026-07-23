@@ -18,6 +18,12 @@ All JSON versions produced for this provider.
 | phases/base/CA_VENTURA_COUNTY_v1.0_2026-05-06.json | v1.0 | Snapshot | Initial standup. 6 QIDMs, 19 combos. |
 | phases/mc/CA_VENTURA_COUNTY_MC_v1.2_2026-05-07.json | v1.2 | Snapshot | MC multi-card + cross-entity combos. |
 
+
+## v2.0 (2026-07-23)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_VENTURA_COUNTY_v2.0.json | v2.0 | Current | 73P/0F/1W/1LIM. |
 ## v1.4 (2026-05-11)
 
 | File | Version | Status | Notes |

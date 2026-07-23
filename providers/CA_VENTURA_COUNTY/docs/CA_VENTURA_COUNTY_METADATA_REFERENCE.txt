@@ -1,7 +1,7 @@
-﻿CA_VENTURA_COUNTY METADATA REFERENCE
-=====================================
-Generated: 2026-06-12
-Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_MC.json
+﻿CA_VENTURA_COUNTY_v2.0 METADATA REFERENCE
+==========================================
+Generated: 2026-07-23
+Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_v2.0.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -27,8 +27,8 @@ METADATA COMBINATIONS (2 total):
   IP.QA         OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               ArticleBrand, ArticleCatego...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   IP.QA.S        set[CaRequestPurposeCode, SerialNumber]
-  BUILT   IP.QA.O        set[CaRequestPurposeCode, OwnerAppliedNumber]
+  BUILT   IP.QA.S        set[caRequestPurposeCode, serialNumber]
+  BUILT   IP.QA.O        set[caRequestPurposeCode, ownerAppliedNumber]
 
 ================================================================================
 2. BoatQuery (version 1)
@@ -55,12 +55,12 @@ METADATA COMBINATIONS (7 total):
   NLTS.BQ       RegistrationNumber      CaRequestPurposeCode, RegistrationNumber, State        --
 
 BUILD COVERAGE (6 of 7 built):
-  BUILT   NLTS.BQ.N      set[CaRequestPurposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
-  BUILT   NLTS.BQ.H      set[CaRequestPurposeCode, BoatHullIdNumber, RegistrationState]
-  BUILT   NLTS.BQ.R      set[CaRequestPurposeCode, RegistrationNumber, RegistrationState]
-  BUILT   IA.QB.H        set[CaRequestPurposeCode, BoatHullIdNumber]
-  BUILT   IA.QB.O        set[CaRequestPurposeCode, OwnerAppliedNumber]
-  BUILT   IA.QB.R        set[CaRequestPurposeCode, RegistrationNumber]
+  BUILT   NLTS.BQ.N      set[caRequestPurposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+  BUILT   NLTS.BQ.H      set[caRequestPurposeCode, BoatHullIdNumber, RegistrationState]
+  BUILT   NLTS.BQ.R      set[caRequestPurposeCode, RegistrationNumber, RegistrationState]
+  BUILT   IA.QB.H        set[caRequestPurposeCode, BoatHullIdNumber]
+  BUILT   IA.QB.O        set[caRequestPurposeCode, ownerAppliedNumber]
+  BUILT   IA.QB.R        set[caRequestPurposeCode, RegistrationNumber]
   UNBUILT IV.4B          RegistrationNumber
 
 ================================================================================
@@ -86,10 +86,10 @@ METADATA COMBINATIONS (4 total):
   NLTS.KQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            Attention, PurposeCode, State
 
 BUILD COVERAGE (4 of 4 built):
-  BUILT   NLTS.KQ.N      set[CaRequestPurposeCodeDH, BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
-  BUILT   IN.B2          set[CaRequestPurposeCodeDH, NameLastDH, NameFirstDH]
-  BUILT   NLTS.KQ.O      set[CaRequestPurposeCodeDH, OperatorLicenseNumberDH]
-  BUILT   ID.B2          set[CaRequestPurposeCodeDH, OperatorLicenseNumberDH]
+  BUILT   NLTS.KQ.N      set[caRequestPurposeCodeDH, BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+  BUILT   IN.B2          set[caRequestPurposeCodeDH, NameLastDH, NameFirstDH]
+  BUILT   NLTS.KQ.O      set[caRequestPurposeCodeDH, OperatorLicenseNumberDH]
+  BUILT   ID.B2          set[caRequestPurposeCodeDH, OperatorLicenseNumberDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 1)
@@ -122,9 +122,9 @@ METADATA COMBINATIONS (8 total):
   NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
 
 BUILD COVERAGE (3 of 8 built):
-  BUILT   IN.L1          set[CaRequestPurposeCode, NameLast, NameFirst]
-  BUILT   NLTS.DQ        set[CaRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
-  BUILT   ID.L1          set[CaRequestPurposeCode, OperatorLicenseNumber]
+  BUILT   IN.L1          set[caRequestPurposeCode, NameLast, NameFirst]
+  BUILT   NLTS.DQ        set[caRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
+  BUILT   ID.L1          set[caRequestPurposeCode, OperatorLicenseNumber]
   UNBUILT IR.QVC         Name
   UNBUILT IR.QVC         OperatorLicenseNumber
   UNBUILT IR.QVC         CriminalIdNumber
@@ -151,8 +151,8 @@ METADATA COMBINATIONS (2 total):
   IG.QGH        Name                    CaRequestPurposeCode, Name                             --
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   IG.QGH         set[CaRequestPurposeCode, NameLast, NameFirst]
-  BUILT   IG.QGB         set[CaRequestPurposeCode, SerialNumber]
+  BUILT   IG.QGH         set[caRequestPurposeCode, NameLast, NameFirst]
+  BUILT   IG.QGB         set[caRequestPurposeCode, serialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 1)
@@ -177,18 +177,30 @@ METADATA COMBINATIONS (20 total):
   IA.QV         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               State
   IA.QVK        VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      VehicleMakeCode
   IV.4I         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AP'
   IV.4C         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'CO', 'TK', or 'TR'
   IV.4M         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'MC'
   IV.4L         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'RE' or 'PE'
   IV.4T         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'TL'
   IV.4A         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               LicensePlateTypeCode
   IV.4F         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AT'
   IV.4S         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'DX'
   IV.4E         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'EX'
   IL.A1         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'DL'
   IV.4H         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AR'
   IV.4P         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'IP'
   IV.4K         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'TM'
   IV.4V         VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      --
   IV.4          LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, MessageK...  --
   NLTS.RQ       LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  VehicleMakeCode, VehicleYear
@@ -196,11 +208,11 @@ METADATA COMBINATIONS (20 total):
   IN.VP         Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
 
 BUILD COVERAGE (5 of 20 built):
-  BUILT   NLTS.RQ.P      set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-  BUILT   NLTS.RQ.V      set[CaRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
-  BUILT   IN.VP          set[CaRequestPurposeCode, NameLast, NameFirst]
-  BUILT   IA.QV          set[CaRequestPurposeCode, LicensePlateNumber]
-  BUILT   IA.QVK         set[CaRequestPurposeCode, VehicleIdentificationNumber]
+  BUILT   NLTS.RQ.P      set[caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   NLTS.RQ.V      set[caRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
+  BUILT   IN.VP          set[caRequestPurposeCode, NameLast, NameFirst]
+  BUILT   IA.QV          set[caRequestPurposeCode, LicensePlateNumber]
+  BUILT   IA.QVK         set[caRequestPurposeCode, VehicleIdentificationNumber]
   UNBUILT IV.4I          LicensePlateNumber
   UNBUILT IV.4C          LicensePlateNumber
   UNBUILT IV.4M          LicensePlateNumber
