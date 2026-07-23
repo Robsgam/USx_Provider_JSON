@@ -566,7 +566,23 @@ TOOLS
     ALL-PASS/PARTIAL/NEVER-TESTED/NOT-TRACKED roll-up. Deliberately does NOT read
     logs/.test_state.json (its status field is block-lock bookkeeping, not a test
     ledger, and drifts). Use this to answer "what is tested and passing right now".
+    Shares its classifier with portfolio_status.ps1 via tools/_test_status_lib.ps1.
     Usage: .\report_test_status.ps1 [-Provider <name>] [-OutFile <path>]
+
+  tools/portfolio_status.ps1
+    THE canonical one-screen portfolio status table. One fixed-column table --
+    Provider / Ver / Meth (GALV|LEGACY) / Validator (P/F/W/LIM) / Live-test
+    (state tested/5 (#logs)) -- plus totals and a git footer. Assembled from the
+    active root JSON filename, the newest VALIDATOR_REPORT, and actual log RESULT
+    lines (log-truth), never hand-typed. Reference this verbatim for any "where is
+    everything" question instead of hand-assembling a status table (which drifts).
+    Usage: .\portfolio_status.ps1 [-Provider <name>] [-OutFile <path>]
+
+  tools/_test_status_lib.ps1  (shared module, dot-sourced)
+    Single source of truth for per-provider status classification, consumed by both
+    report_test_status.ps1 (narrative view) and portfolio_status.ps1 (table view) so
+    the two cannot drift. Exports Get-ProviderTestState / Get-ProviderValidatorScore /
+    Get-ProviderMethodology.
 
   tools/flag_pending_fix.ps1
     Reverse-propagate a shared-module/JSON bug fix as a doc-stub flag. Writes a

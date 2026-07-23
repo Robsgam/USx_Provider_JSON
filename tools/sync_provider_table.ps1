@@ -51,10 +51,22 @@ function Parse-ValidatorResults {
 
 function Find-ValidatorReport {
     <#
-      Finds the validator report file for a provider folder and variant (base/mc).
+      Finds the validator report file for a provider folder and variant.
+        base/mc -> legacy dual-JSON report in docs\<variant>\VALIDATOR_REPORT_*_<VARIANT>.txt
+        single  -> galvanized single-JSON report VALIDATOR_REPORT_<PROVIDER>.txt anywhere under
+                   docs\ (flat or 4-category reports\), EXCLUDING the _BASE/_MC-suffixed variants.
       Returns the path or $null.
     #>
     param([string]$ProviderDir, [string]$Variant)
+
+    if ($Variant -eq 'single') {
+        $docsRoot = Join-Path $ProviderDir "docs"
+        if (-not (Test-Path $docsRoot)) { return $null }
+        $reports = Get-ChildItem $docsRoot -Recurse -File -Filter "VALIDATOR_REPORT_*.txt" -ErrorAction SilentlyContinue |
+                   Where-Object { $_.Name -notmatch '_(BASE|MC)\.txt$' }
+        if (-not $reports -or $reports.Count -eq 0) { return $null }
+        return ($reports | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
+    }
 
     $docsDir = Join-Path $ProviderDir "docs\$Variant"
     if (-not (Test-Path $docsDir)) { return $null }
@@ -172,7 +184,11 @@ for ($i = ($headerLineIdx + 2); $i -lt $tableEnd; $i++) {
     $baseScore = if ($baseReport) { Parse-ValidatorResults -ReportPath $baseReport } else { $null }
     $mcScore = if ($mcReport) { Parse-ValidatorResults -ReportPath $mcReport } else { $null }
 
-    if (-not $baseScore -and -not $mcScore) {
+    # Galvanized single-JSON providers: report is VALIDATOR_REPORT_<PROVIDER>.txt (no BASE/MC suffix)
+    $singleReport = Find-ValidatorReport -ProviderDir $providerDir -Variant "single"
+    $singleScore  = if ($singleReport) { Parse-ValidatorResults -ReportPath $singleReport } else { $null }
+
+    if (-not $baseScore -and -not $mcScore -and -not $singleScore) {
         Write-Host "  $($providerName):".PadRight(25) -NoNewline -ForegroundColor White
         Write-Host "skipped (no validator reports)" -ForegroundColor Yellow
         $changes += @{ Provider = $providerName; Result = "skipped (no reports)" }
@@ -198,10 +214,12 @@ for ($i = ($headerLineIdx + 2); $i -lt $tableEnd; $i++) {
         # Only MC report available -- update just the MC score
         $newStatus = $statusCol -replace "($scoreRx)( \(MC\))", "$mcScore`$2"
     }
-    elseif (-not $isDualRow -and $baseScore) {
-        # Single score row: replace the first score occurrence
-        # But be careful not to touch test results like "14/14"
-        $newStatus = $statusCol -replace $scoreRx, $baseScore
+    elseif (-not $isDualRow -and ($singleScore -or $baseScore)) {
+        # Single score row (galvanized single-JSON, or a legacy single-report provider):
+        # replace the FIRST score occurrence only (the leading P/F/W/LIM), so we don't touch
+        # any score-shaped text later in the rich narrative cell.
+        $useScore = if ($singleScore) { $singleScore } else { $baseScore }
+        $newStatus = [regex]::Replace($statusCol, $scoreRx, $useScore, 1)
     }
 
     # ── Report changes ──
