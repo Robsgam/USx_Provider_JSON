@@ -97,8 +97,6 @@ function SectionHeader($title) {
 # ── Provider discovery ────────────────────────────────────────────────────────
 function Get-ProviderList {
     $dirs = Get-ChildItem $provDir -Directory | Where-Object {
-        $_.Name -ne 'CA_CONTRA_COSTA' -and
-        $_.Name -ne 'CA_CONTRA_COSTA' -and
         (Test-Path (Join-Path $_.FullName "scripts"))
     }
     if ($Provider) {

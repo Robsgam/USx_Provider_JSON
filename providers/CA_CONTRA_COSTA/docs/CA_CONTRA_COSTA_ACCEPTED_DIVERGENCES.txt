@@ -1,0 +1,37 @@
+# CA_CLETS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4 / 4d). Each non-comment line records a
+# set/any divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+#
+
+DriverHistoryQuery | NLTS.KQ.N | purposeCodeDH | promoted-to-set | purposeCodeDH in set[] ensures KQ query always includes purpose code; any[]/defaulted would silently omit it if CAD doesn't send it; combo default purposeCodeDH='C' handles CAD auto-populate | design-decision | 2026-06-26
+DriverHistoryQuery | NLTS.KQ.O | purposeCodeDH | promoted-to-set | purposeCodeDH in set[] ensures KQ query always includes purpose code; any[]/defaulted would silently omit it if CAD doesn't send it; combo default purposeCodeDH='C' handles CAD auto-populate | design-decision | 2026-06-26
+
+# REMOVED 2026-07-21 (v2.15): DriverLicenseQuery | IR.QVC.N | APPSRequestIndicator | extra-field-in-json
+# This divergence's own reasoning was backwards -- "devdoc is sole authority for supported fields"
+# inverts the actual rule (metadata is field-authority, devdoc is query-authority; see CLAUDE.md
+# Source Authority Lookup Table). Live USx Tenant Testing at v2.14 caught it: audit_log_metadata.ps1
+# FAILed 9/9 IR.QVC.N logs ("wire field(s) not defined in metadata"). The field was removed entirely
+# in v2.15 (attribute, combo any[]/defaults, form field/row). DEX-976 comment 783180.
+
+# keyRef-level not-built declarations (tools/_metadata_keyref_match.ps1, added 2026-07-06):
+# these 14 VehicleRegistrationQuery + 1 BoatQuery devdoc sub-variant keyRefs were previously
+# mis-reported [PASS] "covered by invented variants" via coincidental field overlap with
+# NLTS.RQ.P/NLTS.RQ.V (Vehicle) or the NLTS.BQ.*/IA.QB.* family (Boat) -- both families are
+# intentionally not built as separate combos; CA's Vehicle/Boat queries route via the
+# combos already covering these fields. Corrected to report honestly as not-built-by-design.
+VehicleRegistrationQuery | IV.4I | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4C | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4M | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4L | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4T | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4A | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4F | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4S | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4E | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IL.A1 | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4H | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4P | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4K | * | not-built | Extra devdoc plate-type sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+VehicleRegistrationQuery | IV.4V | * | not-built | Extra devdoc VIN sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.RQ.P/NLTS.RQ.V | build-notes | 2026-07-06
+BoatQuery | IV.4B | * | not-built | Extra devdoc boat sub-variant, not built as a separate combo -- coincidental field overlap with NLTS.BQ.N/NLTS.BQ.H/NLTS.BQ.R/IA.QB.H/IA.QB.O/IA.QB.R | build-notes | 2026-07-06

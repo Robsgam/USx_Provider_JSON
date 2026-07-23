@@ -1,61 +1,228 @@
-﻿CA_CONTRA_COSTA METADATA REFERENCE
-===================================
-Generated: 2026-06-12
-Source: CA_CONTRA_COSTA.xml (metadata) + CA_CONTRA_COSTA_BASE.json
-Metadata: 2 total transactions, 2 queries built in JSON
+﻿CA_CONTRA_COSTA_v2.0 METADATA REFERENCE
+========================================
+Generated: 2026-07-23
+Source: CA_CONTRA_COSTA.xml (metadata) + CA_CONTRA_COSTA_v2.0.json
+Metadata: 181 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
   Values: C (Criminal Justice), I (Immigration Enforcement), U (Title 8 violations)
   Default: C
 
 ================================================================================
-1. CaContraCostaJawsPersonQuery (version 9)
+1. ArticleSingleQuery (version 20)
 ================================================================================
 
-METADATA FIELDS (10):
-  Address              Alphanumeric  maxLen= 3  Address
-  AddressCity          Alphanumeric  maxLen=13  Address City
-  Age                  Alphanumeric  maxLen= 2  Age
-  BirthDate            Date          maxLen= 8  Birth Date
+METADATA FIELDS (6):
+  ArticleBrand         Alphanumeric  maxLen= 6  A mandatory field used to identify the brand name of the ...
+  ArticleCategory      Alphanumeric  maxLen= 1  major category of the property
+  ArticleSerialNumber  Alphanumeric  maxLen=20  A mandatory field if the OAN is not used. It provides the...
+  ArticleTypeCode      Alphanumeric  maxLen= 6  identifies the article of property
   CaRequestPurposeCode Alphabetic    maxLen= 1  CA Request Purpose Code
-  Name                 Name          maxLen=30  Name
-  RaceCode             Alphanumeric  maxLen= 1  Race Code
-  RequestingAgencyId   Alphabetic    maxLen= 2  Requesting Agency Identifier
-  SexCode              Alphanumeric  maxLen= 1  Sex Code
-  State                Alphanumeric  maxLen= 2  State
+  OwnerAppliedNumber   Alphanumeric  maxLen=20  A unique identification number or inscription which is pe...
 
-METADATA COMBINATIONS (5 total):
+METADATA COMBINATIONS (2 total):
   KeyRef      Primary                 Set                                                    Any
   ------------  ----------------------  -----------------------------------------------------  ------------------------------
-  IR.QVC        Name                    CaRequestPurposeCode, Name, RequestingAgencyId         SexCode, RaceCode
-  IW.N          Name                    Name, RequestingAgencyId                               BirthDate
-  INL1          Name                    CaRequestPurposeCode, Name, RequestingAgencyId         Address, AddressCity, Birth...
-  DQ            Name                    CaRequestPurposeCode, Name, BirthDate, SexCode, St...  --
-  DNQ           Name                    CaRequestPurposeCode, Name, State, RequestingAgencyId  Age, AddressCity, SexCode
+  IP.QA         ArticleSerialNumber     CaRequestPurposeCode, ArticleSerialNumber              ArticleBrand, ArticleCatego...
+  IP.QA         OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               ArticleBrand, ArticleCatego...
 
-BUILD COVERAGE (5 of 5 built):
-  BUILT   DQ             set[caRequestPurposeCode, nameLast, nameFirst, birthDate, sexCode, registrationState, requestingAgencyId]
-  BUILT   DNQ            set[caRequestPurposeCode, nameLast, nameFirst, registrationState, requestingAgencyId]
-  BUILT   INL1           set[caRequestPurposeCode, nameLast, nameFirst, requestingAgencyId]
-  BUILT   IR.QVC         set[caRequestPurposeCode, nameLast, nameFirst, requestingAgencyId]
-  BUILT   IW.N           set[nameLast, nameFirst, birthDate, requestingAgencyId]
+BUILD COVERAGE (2 of 2 built):
+  BUILT   IP.QA.S        set[purposeCode, ArticleSerialNumber]
+  BUILT   IP.QA.O        set[purposeCode, ownerAppliedNumber]
 
 ================================================================================
-2. CaContraCostaJawsWarrantQuery (version 4)
+2. BoatQuery (version 35)
 ================================================================================
 
-METADATA FIELDS (3):
-  BirthDate          Date          maxLen= 8  Birth Date
-  Name               Name          maxLen=30  Name
-  RequestingAgencyId Alphabetic    maxLen= 2  Requesting Agency Identifier
+METADATA FIELDS (7):
+  BirthDate            Date          maxLen= 8  Date of birth
+  BoatHullIdNumber     Alphanumeric  maxLen=20  The Builders hull identification numbers
+  CaRequestPurposeCode Alphabetic    maxLen= 1  CA Request Purpose Code
+  Name                 Name          maxLen=30  The name of the person associated to this record.
+  OwnerAppliedNumber   Alphanumeric  maxLen=20  An identification number which is permanently engraved, e...
+  RegistrationNumber   Alphanumeric  maxLen= 8  The vessel registration number (Certification of Registra...
+  State                Alphanumeric  maxLen= 2  identifying state
 
-METADATA COMBINATIONS (1 total):
+METADATA COMBINATIONS (7 total):
   KeyRef      Primary                 Set                                                    Any
   ------------  ----------------------  -----------------------------------------------------  ------------------------------
-  IW.N          Name                    Name, BirthDate, RequestingAgencyId                    --
+  IA.QB         BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber                 --
+  IA.QB         OwnerAppliedNumber      CaRequestPurposeCode, OwnerAppliedNumber               --
+  IA.QB         RegistrationNumber      CaRequestPurposeCode, RegistrationNumber               State
+  IV.4B         RegistrationNumber      CaRequestPurposeCode, RegistrationNumber               --
+  NLTS.BQ       Name                    CaRequestPurposeCode, Name, BirthDate, State           --
+  NLTS.BQ       BoatHullIdNumber        CaRequestPurposeCode, BoatHullIdNumber, State          --
+  NLTS.BQ       RegistrationNumber      CaRequestPurposeCode, RegistrationNumber, State        --
 
-BUILD COVERAGE (1 of 1 built):
-  BUILT   IW.N           set[nameLast, nameFirst, birthDate, requestingAgencyId]
+BUILD COVERAGE (6 of 7 built):
+  BUILT   NLTS.BQ.N      set[purposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+  BUILT   NLTS.BQ.H      set[purposeCode, BoatHullIdNumber, RegistrationState]
+  BUILT   NLTS.BQ.R      set[purposeCode, RegistrationNumber, RegistrationState]
+  BUILT   IA.QB.H        set[purposeCode, BoatHullIdNumber]
+  BUILT   IA.QB.O        set[purposeCode, ownerAppliedNumber]
+  BUILT   IA.QB.R        set[purposeCode, RegistrationNumber]
+  UNBUILT IV.4B          RegistrationNumber
+
+================================================================================
+3. DriverHistoryQuery (version 22)
+================================================================================
+
+METADATA FIELDS (8):
+  Attention             Text          maxLen=30  Name of requester
+  BirthDate             Date          maxLen= 8  Date of birth
+  CaRequestPurposeCode  Alphabetic    maxLen= 1  CA Request Purpose Code
+  Name                  Name          maxLen=30  The name of the person associated to this record.
+  OperatorLicenseNumber Alphanumeric  maxLen=20  An field used as a personal identifier number denoting th...
+  PurposeCode           Alphabetic    maxLen= 1  purpose
+  SexCode               Alphabetic    maxLen= 1  The gender of the person.
+  State                 Alphanumeric  maxLen= 2  identifying state
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  NLTS.KQ       Name                    CaRequestPurposeCode, BirthDate, Name, SexCode         Attention, PurposeCode, State
+  NLTS.KQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            Attention, PurposeCode, State
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   NLTS.KQ.N      set[purposeCodeDH, BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+  BUILT   NLTS.KQ.O      set[purposeCodeDH, OperatorLicenseNumberDH]
+
+================================================================================
+4. DriverLicenseQuery (version 36)
+================================================================================
+
+METADATA FIELDS (12):
+  AddressCounty         Alphanumeric  maxLen= 3  county for address
+  Age                   Numeric       maxLen= 2  age of person
+  BirthDate             Date          maxLen= 8  Date of birth
+  CaRequestPurposeCode  Alphabetic    maxLen= 1  CA Request Purpose Code
+  CriminalIdNumber      Alphanumeric  maxLen=11  criminal id number
+  Height                Numeric       maxLen= 3  The person's height, expressed in feet and inches.
+  Name                  Name          maxLen=30  The name of the person associated to this record.
+  OperatorLicenseNumber Text          maxLen=20  An field used as a personal identifier number denoting th...
+  RaceCode              Alphabetic    maxLen= 1  The race or ethnicity that most closely describes the per...
+  SexCode               Alphabetic    maxLen= 1  The gender of the person.
+  SocialSecurityNumber  Numeric       maxLen= 9  The person's Social Security System identification number.
+  State                 Text          maxLen= 2  identifying state
+
+METADATA COMBINATIONS (8 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IN.L1         Name                    CaRequestPurposeCode, Name                             BirthDate
+  ID.L1         OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            --
+  IR.QVC        Name                    CaRequestPurposeCode                                   AddressCounty, Height, Race...
+  IR.QVC        OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            CriminalIdNumber, SocialSec...
+  IR.QVC        CriminalIdNumber        CaRequestPurposeCode, CriminalIdNumber                 OperatorLicenseNumber, Soci...
+  IR.QVC        SocialSecurityNumber    CaRequestPurposeCode, SocialSecurityNumber             CriminalIdNumber, OperatorL...
+  NLTS.DQ       Name                    CaRequestPurposeCode                                   --
+  NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
+
+BUILD COVERAGE (8 of 8 built):
+  BUILT   NLTS.DQ.N      set[purposeCode, NameLast, NameFirst, RegistrationState]
+  BUILT   NLTS.DQ        set[purposeCode, OperatorLicenseNumber, RegistrationState]
+  BUILT   IR.QVC.N       set[purposeCode, NameLast, NameFirst, SexCode]
+  BUILT   IR.QVC.O       set[purposeCode, OperatorLicenseNumber, criminalIdNumber]
+  BUILT   IR.QVC.C       set[purposeCode, criminalIdNumber]
+  BUILT   IR.QVC.S       set[purposeCode, socialSecurityNumber]
+  BUILT   ID.L1          set[purposeCode, OperatorLicenseNumber]
+  BUILT   IN.L1          set[purposeCode, NameLast, NameFirst]
+
+================================================================================
+5. GunQuery (version 21)
+================================================================================
+
+METADATA FIELDS (8):
+  Age                  Numeric       maxLen= 2  age of person
+  BirthDate            Date          maxLen= 8  Date of birth
+  CaRequestPurposeCode Alphabetic    maxLen= 1  CA Request Purpose Code
+  GunCaliber           Numeric       maxLen= 4  Caliber is the diameter of the bore and refers to the siz...
+  GunMake              Alphanumeric  maxLen= 3  A mandatory field containing the name, brand, or make of ...
+  GunSerialNumber      Alphanumeric  maxLen=20  The serial number on a firearm is a mandatory field. The ...
+  GunTypeCode          Alphabetic    maxLen= 2  category and class of the gun
+  Name                 Name          maxLen=30  The name of the person associated to this record.
+
+METADATA COMBINATIONS (2 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IG.QGB        GunSerialNumber         CaRequestPurposeCode, GunSerialNumber                  GunCaliber, GunMake, GunTyp...
+  IG.QGH        Name                    CaRequestPurposeCode, Name                             --
+
+BUILD COVERAGE (2 of 2 built):
+  BUILT   IG.QGH         set[purposeCode, NameLast, NameFirst]
+  BUILT   IG.QGB         set[purposeCode, serialNumber]
+
+================================================================================
+6. VehicleRegistrationQuery (version 59)
+================================================================================
+
+METADATA FIELDS (11):
+  AddressCity                 Text          maxLen=13  The city of residence of the person in the record.
+  AddressStreetNumber         Text          maxLen= 3  street number of address
+  CaRequestPurposeCode        Alphabetic    maxLen= 1  CA Request Purpose Code
+  LicensePlateNumber          Alphanumeric  maxLen=10  The license plate number.
+  LicensePlateTypeCode        Alphabetic    maxLen= 2  A code which shows the type of use generally expected of ...
+  LicensePlateYear            Year          maxLen= 4  The year a vehicle registration expires; or, if not curre...
+  Name                        Name          maxLen=35  The name of the person associated to this record.
+  State                       Alphanumeric  maxLen= 2  identifying state
+  VehicleIdentificationNumber Alphanumeric  maxLen=30  The manufacturer's assigned vehicle identification number...
+  VehicleMakeCode             Alphanumeric  maxLen= 4  The brand or manufacturer's name of a vehicle.
+  VehicleYear                 Year          maxLen= 4  The model year of a vehicle.
+
+METADATA COMBINATIONS (19 total):
+  KeyRef      Primary                 Set                                                    Any
+  ------------  ----------------------  -----------------------------------------------------  ------------------------------
+  IA.QV         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               State
+  IA.QVK        VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      VehicleMakeCode
+  IV.4I         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AP'
+  IV.4C         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'CO', 'TK', or 'TR'
+  IV.4M         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'MC'
+  IV.4L         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'RE' or 'PE'
+  IV.4T         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'TL'
+  IV.4A         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber               LicensePlateTypeCode
+  IV.4F         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AT'
+  IV.4S         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'DX'
+  IV.4E         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'EX'
+  IL.A1         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'DL'
+  IV.4H         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'AR'
+  IV.4P         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'IP'
+  IV.4K         LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  --
+                -> server-routes on LicensePlateTypeCode: LicensePlateTypeCode has a value of 'TM'
+  IV.4V         VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber      --
+  NLTS.RQ       LicensePlateNumber      CaRequestPurposeCode, LicensePlateNumber, LicenseP...  VehicleMakeCode, VehicleYear
+  NLTS.RQ       VehicleIdentificationNumber  CaRequestPurposeCode, VehicleIdentificationNumber,...  VehicleMakeCode, VehicleYear
+  IN.VP         Name                    CaRequestPurposeCode, Name                             AddressCity, AddressStreetN...
+
+BUILD COVERAGE (5 of 19 built):
+  BUILT   NLTS.RQ.P      set[purposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+  BUILT   NLTS.RQ.V      set[purposeCode, VehicleIdentificationNumber, RegistrationState]
+  BUILT   IN.VP          set[purposeCode, NameLast, NameFirst]
+  BUILT   IA.QVK         set[purposeCode, VehicleIdentificationNumber]
+  BUILT   IA.QV          set[purposeCode, LicensePlateNumber]
+  UNBUILT IV.4I          LicensePlateNumber
+  UNBUILT IV.4C          LicensePlateNumber
+  UNBUILT IV.4M          LicensePlateNumber
+  UNBUILT IV.4L          LicensePlateNumber
+  UNBUILT IV.4T          LicensePlateNumber
+  UNBUILT IV.4A          LicensePlateNumber
+  UNBUILT IV.4F          LicensePlateNumber
+  UNBUILT IV.4S          LicensePlateNumber
+  UNBUILT IV.4E          LicensePlateNumber
+  UNBUILT IL.A1          LicensePlateNumber
+  UNBUILT IV.4H          LicensePlateNumber
+  UNBUILT IV.4P          LicensePlateNumber
+  UNBUILT IV.4K          LicensePlateNumber
+  UNBUILT IV.4V          VehicleIdentificationNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -63,9 +230,213 @@ BUILD SUMMARY
 
   Query                             Metadata  Built  Skip  Coverage
   ----------------------------------  --------  -----  ----  --------
-  CaContraCostaJawsPersonQuery               5      5     0  100% (COMPLETE)
-  CaContraCostaJawsWarrantQuery              1      1     0  100% (COMPLETE)
+  ArticleSingleQuery                         2      2     0  100% (COMPLETE)
+  BoatQuery                                  7      6     1  86%
+  DriverHistoryQuery                         2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         8      8     0  100% (COMPLETE)
+  GunQuery                                   2      2     0  100% (COMPLETE)
+  VehicleRegistrationQuery                  19      5    14  26%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                    6      6     0  100%
+  TOTAL                                   40     25    15  62%
+
+================================================================================
+UNBUILT METADATA COMBOS (15 combos in metadata, not in JSON)
+================================================================================
+
+  IV.4B          RegistrationNumber       (BoatQuery)
+  IV.4I          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4C          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4M          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4L          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4T          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4A          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4F          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4S          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4E          LicensePlateNumber       (VehicleRegistrationQuery)
+  IL.A1          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4H          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4P          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4K          LicensePlateNumber       (VehicleRegistrationQuery)
+  IV.4V          VehicleIdentificationNumber (VehicleRegistrationQuery)
+
+================================================================================
+ALL UNBUILT TRANSACTIONS (175 of 181 in metadata)
+================================================================================
+
+  AlarmExchangeResponse                    v13   1 combos
+  AOSHazardousMaterialQuery                v4    1 combos
+  APPSIdentificationNumberQuery            v12   1 combos
+  APPSNameQuery                            v12   1 combos
+  APPSSerialNumberQuery                    v11   1 combos
+  BEArticleCancel                          v17   1 combos
+  BEArticleClear                           v17   1 combos
+  BEArticleEntry                           v19   1 combos
+  BEArticleGroupCancel                     v17   1 combos
+  BEArticleGroupClear                      v17   1 combos
+  BEArticleGroupEntry                      v19   1 combos
+  BEArticleGroupLocate                     v19   2 combos
+  BEArticleLocate                          v19   2 combos
+  BEArticleModify                          v19   1 combos
+  BEBoatCancel                             v17   1 combos
+  BEBoatClear                              v19   2 combos
+  BEBoatEntry                              v17   1 combos
+  BEBoatLocate                             v19   2 combos
+  BEBoatModify                             v18   1 combos
+  BEGunCancel                              v18   1 combos
+  BEGunClear                               v17   1 combos
+  BEGunEntry                               v21   1 combos
+  BEGunLocate                              v20   2 combos
+  BEGunModify                              v20   1 combos
+  BELicensePlateEntry                      v18   1 combos
+  BEVehicleCancel                          v18   1 combos
+  BEVehicleClear                           v20   2 combos
+  BEVehicleEntry                           v19   1 combos
+  BEVehicleLocate                          v24   2 combos
+  BEVehicleModify                          v21   1 combos
+  BEVehiclePartLocate                      v3    1 combos
+  BEWantedPersonCancel                     v18   1 combos
+  BEWantedPersonClear                      v18   1 combos
+  BEWantedPersonEntry                      v19   1 combos
+  BEWantedPersonLocate                     v20   2 combos
+  BEWantedPersonModify                     v20   1 combos
+  BEWantedPersonSupplementalModify         v18   1 combos
+  CAAAdministrativeMessage                 v19   2 combos
+  CAAHitConfirmationRequest                v20   1 combos
+  CAAHitConfirmationResponse               v18   1 combos
+  CAAOrion                                 v21   3 combos
+  CaCletsArmedProhibitedPersonQuery        v19   4 combos
+  CaCletsIn4c                              v1    1 combos
+  CaCletsIn4p                              v1    1 combos
+  CaCletsInVp                              v1    1 combos
+  CaCletsLapdPersonQuery                   v17   1 combos
+  CaCletsLapdRetrieveResponses             v14   1 combos
+  CaCletsLapdVehicleQuery                  v15   1 combos
+  CaCletsLca                               v2    1 combos
+  CaContraCostaJawsPersonQuery             v9    5 combos
+  CaContraCostaJawsWarrantQuery            v4    1 combos
+  CAEArticleEntry                          v20   1 combos
+  CAEBoatPartEntry                         v19   1 combos
+  CAEGunHistoricalEntry                    v20   1 combos
+  CAEMissingPersonSuspectCancel            v19   1 combos
+  CAEMissingPersonSuspectDescriptorModify  v18   1 combos
+  CAEMissingPersonSuspectModify            v18   1 combos
+  CAEPawnedPropertyEntry                   v12   1 combos
+  CAERestrainingOrderCancel                v19   1 combos
+  CAERestrainingOrderEntry                 v19   1 combos
+  CAERestrainingOrderModify                v20   1 combos
+  CAERestrainingOrderServiceEntry          v19   1 combos
+  CAERestrainingOrderViolationClear        v18   1 combos
+  CAERestrainingOrderViolationEntry        v19   1 combos
+  CAERestrainingOrderViolationModify       v18   1 combos
+  CAEStolenGunEntry                        v15   1 combos
+  CAESupervisedReleaseContact              v20   2 combos
+  CAESupervisedReleaseEntry                v19   1 combos
+  CAESupervisedReleaseModify               v20   1 combos
+  CAEVehicleClear                          v17   1 combos
+  CAEVehicleEntry                          v19   1 combos
+  CAEVehicleStolenPartEntry                v18   1 combos
+  CaGunViolenceRestrainingOrderEntry       v13   1 combos
+  CaGunViolenceRestrainingOrderModify      v13   1 combos
+  CAIArticleSingleQuery                    v22   3 combos
+  CAIBoatCheckQuery                        v27   6 combos
+  CAIBoatRegistrationQuery                 v22   3 combos
+  CAIDriverHistoryQuery                    v23   2 combos
+  CAIDriverLicenseQuery                    v30   5 combos
+  CAIGunQuery                              v24   4 combos
+  CAIHazardousMaterialQuery                v16   1 combos
+  CAILojackQuery                           v13   1 combos
+  CAIMissingPersonQuery                    v39   11 combos
+  CAIOregonBoatQuery                       v16   1 combos
+  CAIOregonDriverLicenseQuery              v20   2 combos
+  CAIOregonVehicleRegistrationQuery        v16   2 combos
+  CAIRestrainingOrderQuery                 v28   5 combos
+  CAISecuritiesQuery                       v23   4 combos
+  CAISnowMobileRegistrationQuery           v22   3 combos
+  CAISupervisedReleaseQuery                v24   3 combos
+  CAIVCINEntry                             v20   1 combos
+  CAIVCINModify                            v20   1 combos
+  CAIVCINQuery                             v33   8 combos
+  CAIVehicleCheckQuery                     v30   7 combos
+  CAIVehicleRegistrationPlateQuery         v21   3 combos
+  CAIVehicleRegistrationQuery              v34   8 combos
+  CAIWantedPersonQuery                     v39   10 combos
+  CaPersonSuperQuery                       v40   17 combos
+  CBIArticleSingleQuery                    v5    1 combos
+  CBIBoatQuery                             v13   5 combos
+  CBIDriverLicenseQuery                    v7    2 combos
+  CBIGunQuery                              v5    1 combos
+  CBISecuritiesStolenQuery                 v11   4 combos
+  CBIVehicleRegistrationQuery              v7    2 combos
+  CCHCaliforniaOnlyCriminalHistoryQuery    v10   1 combos
+  CCHCriminalHistoryAQQuery                v10   1 combos
+  CCHCriminalHistoryEntry                  v10   1 combos
+  CCHCriminalHistoryFQQuery                v10   1 combos
+  CCHCriminalHistoryIQQuery                v11   1 combos
+  CCHCriminalHistoryQHQuery                v14   3 combos
+  CCHCriminalHistoryQHTQuery               v10   1 combos
+  CCHCriminalHistoryQHYQuery               v10   2 combos
+  CCHCriminalHistoryQuery                  v42   13 combos
+  CCHCriminalHistoryZRQuery                v10   1 combos
+  CCHMentalHealthFirearmProhibitQuery      v10   1 combos
+  CLETSPersonSuperQuery                    v21   7 combos
+  CriminalGangTerroristGroupQuery          v11   1 combos
+  CriminalGangTerroristMemberQuery         v12   1 combos
+  DmvDriverLicenseQuery                    v14   4 combos
+  DmvVehicleRegistrationQuery              v39   17 combos
+  EISDriverQuery                           v30   8 combos
+  HazardousMaterialQuery                   v16   1 combos
+  NLTSHitConfirmationRequest               v19   1 combos
+  NLTSHitConfirmationResponse              v19   1 combos
+  P1BoatRegistration                       v30   6 combos
+  P1OperatorLicense                        v23   4 combos
+  P1PersonName                             v31   6 combos
+  P1StolenArticle                          v20   3 combos
+  P1StolenBoat                             v20   3 combos
+  P1StolenGun                              v23   4 combos
+  P1VehiclePlate                           v50   15 combos
+  P1VehicleVIN                             v24   4 combos
+  QueryPassThrough                         v17   2 combos
+  WMPEMissingPersonCancel                  v18   1 combos
+  WMPEMissingPersonClear                   v22   3 combos
+  WMPEMissingPersonDescriptorsModify       v18   1 combos
+  WMPEMissingPersonEntry                   v18   1 combos
+  WMPEMissingPersonIdentifiersEntry        v18   1 combos
+  WMPEMissingPersonIdentifiersModify       v18   1 combos
+  WMPEMissingPersonLocate                  v20   2 combos
+  WMPEMissingPersonModify                  v18   1 combos
+  WMPEMissingPersonSuspectDescriptionModify v18   1 combos
+  WMPEMissingPersonSuspectEntry            v18   1 combos
+  WMPEMissingPersonSuspectModify           v18   1 combos
+  WMPEMissingPersonVehicleCancel           v18   1 combos
+  WMPEMissingPersonVehicleEntry            v18   1 combos
+  WMPEMissingPersonVehicleModify           v18   1 combos
+  WMPEProtectionOrderCancel                v18   1 combos
+  WMPEProtectionOrderEnter                 v18   1 combos
+  WMPEProtectionOrderModify                v19   1 combos
+  WMPESexOffenderEntry                     v18   1 combos
+  WMPESexOffenderUpdate                    v18   1 combos
+  WMPESupervisedReleaseCancel              v18   1 combos
+  WMPESupervisedReleaseContact             v1    2 combos
+  WMPESupervisedReleaseEnter               v18   1 combos
+  WMPESupervisedReleaseModify              v18   1 combos
+  WMPEUnidentifiedPersonCancel             v18   1 combos
+  WMPEUnidentifiedPersonClear              v18   1 combos
+  WMPEUnidentifiedPersonDescriptionModify  v18   1 combos
+  WMPEUnidentifiedPersonEntry              v18   1 combos
+  WMPEUnidentifiedPersonIdentifiersEntry   v18   1 combos
+  WMPEUnidentifiedPersonIdentifiersModify  v18   1 combos
+  WMPEUnidentifiedPersonModify             v18   1 combos
+  WMPEWantedPersonCancel                   v18   1 combos
+  WMPEWantedPersonClear                    v18   1 combos
+  WMPEWantedPersonEntry                    v18   1 combos
+  WMPEWantedPersonLocate                   v20   2 combos
+  WMPEWantedPersonModify                   v18   1 combos
+  WMPEWarrantAbstractEntry                 v2    1 combos
+  WMPIMissingPersonQuery                   v33   10 combos
+  WMPIProtectionOrderQuery                 v23   6 combos
+  WMPISexOffenderQuery                     v27   8 combos
+  WMPISupervisedReleaseQuery               v8    2 combos
+  WMPIUnidentifiedPersonQuery              v29   8 combos
+  WMPIWantedPersonQuery                    v49   18 combos
 
 

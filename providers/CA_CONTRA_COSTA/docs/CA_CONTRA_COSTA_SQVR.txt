@@ -1,11 +1,36 @@
-CA_CONTRA_COSTA SUPPORTED QUERY VALIDATION REPORT
-=====================================================
-Last Updated: 2026-05-06
+CA_CONTRA_COSTA -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+===========================================================
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
+Last updated: 2026-07-23
+JSON version: v2.0
+Validator: 77 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Live test: PENDING (import not yet performed)
 
-QUERIES (pending metadata review)
-==================================
-  (populate from devdoc "Basic Queries Supported" after metadata review)
+Framework = CA_CLETS copy (6 basic-supported families) + CC JAWS (expanded, carried in metadata,
+NOT built). Query paths mirrored from CA_CLETS v2.15.
 
 QUERY PATHS
 ===========
-  (populate after build -- one PENDING or CONFIRMED per combo)
+  Vehicle Registration | LicensePlateNumber           | [PENDING]
+  Vehicle Registration | VehicleIdentificationNumber   | [PENDING]
+  Vehicle Registration | Name                          | [PENDING]
+  Driver License       | OperatorLicenseNumber         | [PENDING]
+  Driver License       | Name                          | [PENDING]
+  Driver License       | CriminalIdNumber              | [PENDING]
+  Driver License       | SocialSecurityNumber          | [PENDING]
+  Driver History       | OperatorLicenseNumber         | [PENDING]
+  Driver History       | Name                          | [PENDING]
+  Firearm              | GunSerialNumber               | [PENDING]
+  Firearm              | Name                          | [PENDING]
+  Article              | ArticleSerialNumber           | [PENDING]
+  Article              | OwnerAppliedNumber            | [PENDING]
+  Boat                 | BoatHullIdNumber              | [PENDING]
+  Boat                 | RegistrationNumber            | [PENDING]
+  Boat                 | Name                          | [PENDING]
+  Boat                 | OwnerAppliedNumber            | [PENDING]
+
+EXPANDED (NOT BUILT -- backfill if promoted to basic in CC devdoc)
+==================================================================
+  CaContraCostaJawsPersonQuery   (5 combos)  -- CC metadata
+  CaContraCostaJawsWarrantQuery  (1 combo)   -- CC metadata; warrants module off pending eWarrants
+  CLETSPersonSuperQuery          (3 combos)  -- via CA_CLETS metadata

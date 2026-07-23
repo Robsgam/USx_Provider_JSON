@@ -53,7 +53,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 17 | OR_LEDS | v1.3 | 58P/0F/0W | 58P/0F/0W | 0 | out of scope |
 | 18 | TN_TIES | v1.4 | 80P/0F/0W | 80P/0F/1W | 3 | out of scope |
 | 19 | TX_TLETS_CCH | v1.2 |  | 113P/0F/0W/0LIM | 0 | out of scope, CCH stub |
-| 20 | CA_CONTRA_COSTA | -- |  |  |  | out of scope, incomplete (awaiting devdoc) |
+| 20 | CA_CONTRA_COSTA | v2.0 | 77P/0F/0W | 77P/0F/0W | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT live-tested |
 
 ---
 
@@ -297,7 +297,7 @@ On first test of each remaining provider: (1) delete old BASE script, rename MC-
 | NM_NMLETS_OFML | YES | NO | Standard cleanup |
 | OR_LEDS | YES | NO | Standard cleanup |
 | TN_TIES | YES | YES (DH only) | Keep SSN |
-| CA_CONTRA_COSTA | NO | NO | Incomplete -- awaiting updated devdoc/metadata |
+| CA_CONTRA_COSTA | DONE | NO | v2.0 framework built as CA_CLETS copy 2026-07-23; JAWS expanded/unbuilt (backfill if devdoc changes) |
 
 (HI_HCJDC_OFML and NY_NYSPIN_EJUSTICE were on this list originally -- both since fully merged
 and rebuilt under the current methodology; removed from the table 2026-07-06.)

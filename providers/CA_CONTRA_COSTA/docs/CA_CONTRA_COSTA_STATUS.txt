@@ -1,40 +1,40 @@
-CA_CONTRA_COSTA STATUS
-======================
-Last Updated: 2026-05-13
+CA_CONTRA_COSTA -- Build Status
+================================
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
+Last updated    : 2026-07-23
+Current: v2.0 | 77P/0F/0W/0LIM | Updated 2026-07-23
+Current version : v2.0
+Provider: CA_CONTRA_COSTA
 
-STATUS: BLOCKED
-REASON: Metadata contains only JAWS person queries (2 transactions,
-        6 combos, Person entity only). No Vehicle/Boat/Gun/Article.
-        No OperatorLicenseNumber field. Devdoc lists CLETSPersonSuperQuery
-        (which HAS OLN) under "Expanded Queries" but it is NOT in
-        the metadata XML. Waiting for updated metadata/docs from CommSys
-        that includes CLETSPersonSuperQuery or additional transactions.
-BLOCKED SINCE: 2026-05-13
+SPECIAL CASE (framework build)
+------------------------------
+Built as a CA_CLETS COPY: CA_CLETS's metadata is the template for the 6 basic-supported families.
+CC's own metadata + the 6 CA_CLETS families are merged into source/CA_CONTRA_COSTA.xml (CC's
+original 2-transaction metadata preserved as source/CA_CONTRA_COSTA_JAWS_ONLY.xml).
+CC's own JAWS transactions (CaContraCostaJawsPersonQuery, CaContraCostaJawsWarrantQuery) and
+CLETSPersonSuperQuery are Contra Costa's "Expanded Queries Supported" -- they are carried in the
+merged metadata but NOT built (CC's devdoc lists "Basic Queries Supported: None"). Backfill these
+if/when CC's devdoc promotes them to basic. See memory project_ca_contra_costa_special_case.
 
-METADATA SUMMARY (CA_CONTRA_COSTA.xml, System v6)
-==================================================
-  Transaction 1: CaContraCostaJawsPersonQuery (v9) — 5 combos
-    IR.QVC  CLETS Multipurpose   set[CaPurpose, Name, ReqAgId, Choice(DOB|Age)]  any[Sex, Race]
-    IW.N    JAWS Person          set[Name, ReqAgId]                               any[DOB]
-    INL1    DMV Driver by Name   set[CaPurpose, Name, ReqAgId]                    any[Addr, City, DOB, Age]
-    DQ      Nlets Driver+DOB     set[CaPurpose, Name, DOB, Sex, State, ReqAgId]   (none)
-    DNQ     Nlets Driver Name    set[CaPurpose, Name, State, ReqAgId]             any[Age, City, Sex]
+ARCHITECTURE (v2.0) -- identical to CA_CLETS v2.15
+--------------------------------------------------
+Entities: Vehicle, Person, Firearm, Article, Boat
+QIDMs:    6 CommSys + 2 RMS + AUTH
+Combos:   40 (all FIRE), mirrored from CA_CLETS
 
-  Transaction 2: CaContraCostaJawsWarrantQuery (v4) — 1 combo
-    IW.N    JAWS Warrant         set[Name, DOB, ReqAgId]                          (none)
+  VehicleRegistrationQuery   NLTS.RQ(P/V) + IN.VP + IV.4V + IA.QVK + IA.QV
+  DriverLicenseQuery         NLTS.DQ(N/O) + IR.QVC(OLN/Name/CriminalId/SSN) + ID.L1 + IN.L1
+  DriverHistoryQuery         NLTS.KQ(N/O)
+  GunQuery                   IG.QGH (name) + IG.QGB (serial)
+  ArticleSingleQuery         IP.QA(S/O)
+  BoatQuery                  NLTS.BQ(N/H/R) + IA.QB(H/O/R) + IV.4B
 
-  MISSING from metadata (in devdoc only):
-    CLETSPersonSuperQuery — OLN queries, Name+Sex+Age, Name+Sex+DOB
+Basic Queries Supported (BUILT): the 6 families above (CA_CLETS basic set).
+Expanded (in metadata, NOT built -- backfill): CaContraCostaJawsPersonQuery,
+          CaContraCostaJawsWarrantQuery, CLETSPersonSuperQuery.
 
-ARCHITECTURE
-============
-  Bundles: 3 (ENTITIES first, CA_CONTRA_COSTA second, RMS third)
-  Entities: Person only (no Vehicle, Boat, Firearm, Article)
+Live test: NOT PERFORMED (framework build; import not yet done).
 
 BUILD LOG (newest first)
 ========================
-  (no builds — BLOCKED)
-
-TEST MATRIX
-===========
-  (no tests — BLOCKED)
+  v2.0 (2026-07-23) -- framework build: CA_CLETS copy (6 families) + derived merged metadata.
