@@ -1,53 +1,59 @@
-LA_LEMS v2.5 -- TEST MATRIX
+LA_LEMS v3.0 -- TEST MATRIX
 ==================================================
-Generated: 2026-06-29
+Generated: 2026-07-23
+Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 5 fields):
+Vehicle (3 cards, 6 fields):
   CARD_VEH_OPT (OPTIONS):
-    RegistrationState [Sel STATE], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    RegistrationState [Sel STATE]
+    attention [Inp X, 30]
   CARD_VEH_PLATE (PLATE SEARCH):
     LicensePlateNumber [Inp 10]
+    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
   CARD_VEH_VIN (VIN SEARCH):
     VehicleIdentificationNumber [Inp 17]
 
-Person (5 cards, 18 fields):
+Person (5 cards, 15 fields):
   CARD_PER_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], PurposeCodeDH [Sel DEX_INQUIRY_PURPOSE_CODE, C]
-  CARD_PER_OLN (LICENSE NUMBER):
-    OperatorLicenseNumber [Inp 20]
-  CARD_PER_NAME (NAME SEARCH):
-    ROW 1: NameFirst [Inp 30], NameLast [Inp 30], NameMiddle [Inp 30], NameSuffix [Inp 30]
-    ROW 2: BirthDate [FormDate], SexCode [Sel SEX], RaceCode [Sel NIBRS_RACE/NIBRS]
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    attention [Inp X, 30]
+  CARD_PER_OLN (DRIVER LICENSE - LICENSE NUMBER):
+    OperatorLicenseNumber [Inp 17]
+  CARD_PER_NAME (DRIVER LICENSE - NAME SEARCH):
+    ROW 1: NameFirst [Inp 30], NameLast [Inp 30]
+    ROW 2: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel NIBRS_RACE/NIBRS]
   CARD_PER_DH_OLN (DRIVER HISTORY - LICENSE NUMBER):
-    OperatorLicenseNumberDH [Inp 20]
+    OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
   CARD_PER_DH_NAME (DRIVER HISTORY - NAME SEARCH):
-    ROW 1: NameFirstDH [Inp 30], NameLastDH [Inp 30], NameMiddleDH [Inp 30], NameSuffixDH [Inp 30]
+    ROW 1: NameFirstDH [Inp 30], NameLastDH [Inp 30]
     ROW 2: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
 
-Firearm (1 card, 3 fields):
-  CARD_GUN (NCIC FIREARM QUERY):
-    GunSerialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    GunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
+Firearm (1 card, 4 fields):
+  CARD_GUN (FIREARM SEARCH):
+    serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
+    attention [Inp X, 30]
 
-Article (1 card, 2 fields):
-  CARD_ART (NCIC ARTICLE QUERY):
-    ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
+Article (1 card, 3 fields):
+  CARD_ART (ARTICLE SEARCH):
+    serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
+    attention [Inp X, 30]
 
-Boat (2 cards, 3 fields):
-  CARD_BOA_REG (REGISTRATION):
-    RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
+Boat (2 cards, 4 fields):
   CARD_BOA_HULL (HULL SEARCH):
     BoatHullIdNumber [Inp 20]
+    attention [Inp X, 30]
+  CARD_BOA_REG (REGISTRATION SEARCH):
+    RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
 
 QIDM SUMMARY (6 QIDMs, 12 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 2 combos (RQ x2)
+  VehicleRegistrationQuery: 2 combos (RQ x2), autoSelect=true
   DriverLicenseQuery: 4 combos (DQ x1, QW x2, DP x1), autoSelect=true, deselects: [DH]
-  DriverHistoryQuery: 2 combos (KQ x2), deselects: [DL]
+  DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (QG x1)
   ArticleSingleQuery: 1 combos (QA x1)
   BoatQuery: 2 combos (BQ x1, QB x1)
@@ -57,124 +63,108 @@ TEST MATRIX
 ================================================================================
 
 Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
-(render -> combos+any[] per combo -> guardrail routing -> deselect -> negative), then blocked out.
+(combos+any[] per combo -> guardrail routing -> deselect), then blocked out.
+(render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (15 tests -- 5 cards, 6 combos)
+ENTITY 1: PERSON (18 tests -- 5 cards, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      Render form. Verify 5 cards:                        [    ]
-              CARD_PER_OPT: titled "OPTIONS".
-              State dropdown (no default), Image dropdown=Y, Purpose Code (DH) dropdown=C.
-              CARD_PER_OLN: titled "LICENSE NUMBER".
-              License Number.
-              CARD_PER_NAME: titled "NAME SEARCH".
-              First Name, Last Name, Middle Name, Suffix.
-              Date of Birth, Sex dropdown (no default), Race dropdown (no default).
-              CARD_PER_DH_OLN: titled "DRIVER HISTORY - LICENSE NUMBER".
-              OLN (DH).
-              CARD_PER_DH_NAME: titled "DRIVER HISTORY - NAME SEARCH".
-              First Name (DH), Last Name (DH), Middle Name (DH), Suffix (DH).
-              DOB (DH), Sex (DH) dropdown (no default).
- 2  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
+ 1  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (DQ)
- 3  Person      DQ+OLN             + RegistrationState             [    ]
+ 2  Person      DQ+OLN             + RegistrationState, attention  [    ]
               Expected: any[] fields present in XML output.
- 4  Person      QW+DN              SexCode=M, BirthDate=01/15/1990, Name... [    ]
+ 3  Person      QW+DN              SexCode=M, BirthDate=01/15/1990, Name... [    ]
               Expected: DriverLicenseQuery fires (QWDN)
- 5  Person      QW+DN              + RegistrationState, NameMiddle, NameSuffix [    ]
+ 4  Person      QW+DN              + RegistrationState, attention  [    ]
               Expected: any[] fields present in XML output.
- 6  Person      QW+A               SexCode=M, BirthDate=01/15/1990, Name... [    ]
+ 5  Person      QW+A               SexCode=M, BirthDate=01/15/1990, Name... [    ]
               Expected: DriverLicenseQuery fires (QWA)
- 7  Person      QW+A               + RegistrationState, NameMiddle, NameSuffix [    ]
+ 6  Person      QW+A               + attention                     [    ]
               Expected: any[] fields present in XML output.
- 8  Person      DP+DP              OperatorLicenseNumber=D999888777, Ima... [    ]
+ 7  Person      DP+DP              OperatorLicenseNumber=D999888777, Ima... [    ]
               Expected: DriverLicenseQuery fires (DP)
- 9  Person      DP+DP              + RegistrationState             [    ]
+ 8  Person      DP+DP              + RegistrationState, attention  [    ]
               Expected: any[] fields present in XML output.
-10  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777, P... [    ]
+ 9  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777, p... [    ]
               Expected: DriverHistoryQuery fires (KQOperatorLicenseNumber)
-11  Person      KQ+OLN             + RegistrationState             [    ]
+10  Person      KQ+OLN             + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-12  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
+11  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQName)
-13  Person      KQ+Name            + RegistrationState, NameMiddleDH, NameSuffixDH [    ]
+12  Person      KQ+Name            + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-14  Person      Deselect: DL deselects DH.            [    ]
+13  Person      Guardrail: DP>QWDN  OperatorLicenseNumber=D999888777, Sex... [    ]
+              Expected: DriverLicenseQuery fires (DP). SexCode+DOB+LastName+FirstName+raceCode absent from XML.
+14  Person      Guardrail: DP>QWA  OperatorLicenseNumber=D999888777, Sex... [    ]
+              Expected: DriverLicenseQuery fires (DP). SexCode+DOB+LastName+FirstName absent from XML.
+15  Person      Guardrail: QWDN>QWA  raceCode=W, SexCode=M, BirthDate=01/1... [    ]
+              Expected: DriverLicenseQuery fires (QWDN). SexCode+DOB+LastName+FirstName absent from XML.
+16  Person      Guardrail: DP>DQ   ImageIndicator=Y, OperatorLicenseNumb... [    ]
+              Expected: DriverLicenseQuery fires (DP). OLN absent from XML.
+17  Person      Guardrail: KQOperatorLicenseNumber>KQName  OperatorLicenseNumberDH=D999888777, S... [    ]
+              Expected: DriverHistoryQuery fires (KQOperatorLicenseNumber). SexCodeDH+DOB+LastName+FirstName+purposeCodeDH absent from XML.
+18  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
-15  Person      Empty form, verify no Send button / no request.    [    ]
 
 ENTITY 2: VEHICLE (5 tests -- 3 cards, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-16  Vehicle     Render form. Verify 3 cards:                        [    ]
-              CARD_VEH_OPT: titled "OPTIONS".
-              State dropdown (no default), Plate Type dropdown=PC, Plate Year=2026.
-              CARD_VEH_PLATE: titled "PLATE SEARCH".
-              Plate Number.
-              CARD_VEH_VIN: titled "VIN SEARCH".
-              VIN.
-17  Vehicle     RQ+SVehicleIdentificationNumber+State  VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (RQSVehicleIdentificationNumber)
-18  Vehicle     RQ+SLicensePlateNumber+State  LicensePlateNumber=TEST123, Registrat... [    ]
+19  Vehicle     RQ+SLicensePlateNumber+State  LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RQSLicensePlateNumber)
-19  Vehicle     RQ+SLicensePlateNumber+State  + LicensePlateTypeCode, LicensePlateYear [    ]
+20  Vehicle     RQ+SLicensePlateNumber+State  + attention                     [    ]
               Expected: any[] fields present in XML output.
-20  Vehicle     Empty form, verify no Send button / no request.    [    ]
+21  Vehicle     RQ+SVehicleIdentificationNumber+State  VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RQSVehicleIdentificationNumber)
+22  Vehicle     RQ+SVehicleIdentificationNumber+State  + attention                     [    ]
+              Expected: any[] fields present in XML output.
+23  Vehicle     Guardrail: RQSLicensePlateNumber>RQSVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
+              Expected: VehicleRegistrationQuery fires (RQSLicensePlateNumber). VIN+RegistrationState absent from XML.
 
-ENTITY 3: BOAT (4 tests -- 2 cards, 2 combos)
+ENTITY 3: BOAT (5 tests -- 2 cards, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-21  Boat        Render form. Verify 2 cards:                        [    ]
-              CARD_BOA_REG: titled "REGISTRATION".
-              Registration Number, State dropdown (no default).
-              CARD_BOA_HULL: titled "HULL SEARCH".
-              Hull ID Number.
-22  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
+24  Boat        BQ+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (BQ)
-23  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
+25  Boat        BQ+Reg             + RegistrationState             [    ]
+              Expected: any[] fields present in XML output.
+26  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QB)
-24  Boat        Empty form, verify no Send button / no request.    [    ]
+27  Boat        QB+Hull            + attention                     [    ]
+              Expected: any[] fields present in XML output.
+28  Boat        Guardrail: QB>BQ   BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+              Expected: BoatQuery fires (QB). Reg absent from XML.
 
-ENTITY 4: FIREARM (4 tests -- 1 card, 1 combo)
+ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-25  Firearm     Render form. Verify 1 card:                        [    ]
-              CARD_GUN: titled "NCIC FIREARM QUERY".
-              Serial Number, Make dropdown (no default).
-              Firearm Type dropdown (no default).
-26  Firearm     QG+Serial          GunSerialNumber=GUN12345         [    ]
+29  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QG)
-27  Firearm     QG+Serial          + GunMake, GunTypeCode          [    ]
+30  Firearm     QG+serialNumber    + attention, firearmMake, gunTypeCode [    ]
               Expected: any[] fields present in XML output.
-28  Firearm     Empty form, verify no Send button / no request.    [    ]
 
-ENTITY 5: ARTICLE (4 tests -- 1 card, 1 combo)
+ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-29  Article     Render form. Verify 1 card:                        [    ]
-              CARD_ART: titled "NCIC ARTICLE QUERY".
-              Serial Number, Article Type dropdown (no default).
-30  Article     QA+Serial          ArticleSerialNumber=ART99999     [    ]
+31  Article     QA+serialNumber    serialNumber=GUN12345            [    ]
               Expected: ArticleSingleQuery fires (QA)
-31  Article     QA+Serial          + ArticleTypeCode               [    ]
+32  Article     QA+serialNumber    + attention, articleTypeCode    [    ]
               Expected: any[] fields present in XML output.
-32  Article     Empty form, verify no Send button / no request.    [    ]
 
 ================================================================================
 TOTAL: 32 tests
 
 COMBO COVERAGE (12/12):
-  VehicleRegistrationQuery: 2/2 -- T17(SVehicleIdentificationNumber), T18(SLicensePlateNumber)
-  DriverLicenseQuery: 4/4 -- T2(DQ+OLN), T4(QW+DN), T6(QW+A), T8(DP+DP)
-  DriverHistoryQuery: 2/2 -- T10(KQ+OLN), T12(KQ+Name)
-  GunQuery: 1/1 -- T26(Serial)
-  ArticleSingleQuery: 1/1 -- T30(Serial)
-  BoatQuery: 2/2 -- T22(BQ+Reg), T23(QB+Hull)
+  VehicleRegistrationQuery: 2/2 -- T19(SLicensePlateNumber), T21(SVehicleIdentificationNumber)
+  DriverLicenseQuery: 4/4 -- T1(DQ+OLN), T3(QW+DN), T5(QW+A), T7(DP+DP)
+  DriverHistoryQuery: 2/2 -- T9(KQ+OLN), T11(KQ+Name)
+  GunQuery: 1/1 -- T29(serialNumber)
+  ArticleSingleQuery: 1/1 -- T31(serialNumber)
+  BoatQuery: 2/2 -- T24(BQ+Reg), T26(QB+Hull)
 
-IMPORT FILE: LA_LEMS_MC.json
+IMPORT FILE: LA_LEMS_v3.0.json

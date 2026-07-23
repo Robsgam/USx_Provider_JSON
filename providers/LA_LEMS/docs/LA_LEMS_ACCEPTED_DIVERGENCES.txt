@@ -1,0 +1,28 @@
+# LA_LEMS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1. Format: query | keyRef | field | rule | reason | source | date
+# Matching is on the first three columns (query | keyRef | field), case-insensitive.
+#
+# CONTEXT (v3.0 galvanization, 2026-07-23): several metadata queries expose two combination
+# VARIANTS under one keyRef (a Name/OLN pair, or a Hull/Reg pair). The two variants have
+# DIFFERENT primaryFieldReference but overlapping/identical set[] shapes -- they are
+# form-identical shadows: the client form cannot distinguish which variant the officer intends
+# from field content alone, and the server routes by keyRef, not by which variant matched. Per
+# the CA_CLETS IV.4* / CA_eSUN Boat precedent, only ONE variant per keyRef is built; the other
+# is dropped. audit_metadata reports the dropped variant's set field as "missing from JSON set[]"
+# (WARN, informational -- does not gate enforce, which counts metadata FAILs only). These are the
+# accepted, intentional drops:
+#
+#   BoatQuery      QB  -> built Hull variant  (set BoatHullIdNumber); dropped Reg variant
+#   BoatQuery      BQ  -> built Reg variant   (set RegistrationNumber); dropped Hull variant
+#   DriverLicense  QWDN-> built Name variant  (Name+DOB+Sex+Race);     dropped OLN variant (shadow of DQ-OLN)
+#   DriverLicense  DQ  -> built OLN variant   (set OperatorLicenseNumber); dropped Name variant (shadow of QWA)
+#
+# Hull>Reg (Boat) and OLN>Name (DL) identifier-priority guardrails make the built variants
+# mutually exclusive by co-entry; QWDN vs QWA is isolated by raceCode EXISTS/NOT_EXISTS.
+
+BoatQuery            | QB   | RegistrationNumber    | not-built | form-identical shadow of built QB-Hull; server routes by keyRef | design-decision | 2026-07-23
+BoatQuery            | BQ   | BoatHullIdNumber      | not-built | form-identical shadow of built BQ-Reg; server routes by keyRef  | design-decision | 2026-07-23
+DriverLicenseQuery   | QWDN | OperatorLicenseNumber | not-built | QWDN-OLN is a shadow of DQ-OLN (identical set[OperatorLicenseNumber]) | design-decision | 2026-07-23
+DriverLicenseQuery   | DQ   | BirthDate             | not-built | DQ-Name is a shadow of QWA (identical set Name+DOB+Sex) | design-decision | 2026-07-23
+DriverLicenseQuery   | DQ   | Name                  | not-built | DQ-Name is a shadow of QWA (identical set Name+DOB+Sex) | design-decision | 2026-07-23
+DriverLicenseQuery   | DQ   | SexCode               | not-built | DQ-Name is a shadow of QWA (identical set Name+DOB+Sex) | design-decision | 2026-07-23

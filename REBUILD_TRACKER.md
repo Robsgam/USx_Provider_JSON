@@ -40,7 +40,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 4 | AZ_AZDPS | v3.0 |  | 72P/0F/0W/0LIM | 0 | out of scope |
 | 5 | FL_FCIC | v7.8 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v4.7 |  | 80P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
-| 7 | LA_LEMS | v2.5 | 63P/0F/0W | 63P/0F/6W | 0 | out of scope |
+| 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 8 | CA_CLETS | v2.15 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v2.0 |  | 72P/0F/1W/1LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
 | 10 | CA_CLETS_OCATS | v2.0 |  | 63P/0F/0W/1LIM | 1 | out of scope |

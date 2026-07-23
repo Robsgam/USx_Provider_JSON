@@ -22,6 +22,12 @@ All JSON versions produced for this provider.
 |------|---------|--------|-------|
 | (v1.0 BASE) | v1.0 | Superseded | Pre-KB build. 39P/7F/53W. Replaced by v2.0 rebuild. |
 
+
+## v3.0 (2026-07-23)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| LA_LEMS_v3.0.json | v3.0 | Current | 64P/0F/0W/0LIM. |
 ## v2.4 (2026-05-11)
 
 | File | Version | Status | Notes |

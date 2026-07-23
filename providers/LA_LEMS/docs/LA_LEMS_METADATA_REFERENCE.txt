@@ -1,7 +1,7 @@
-﻿LA_LEMS METADATA REFERENCE
-===========================
-Generated: 2026-06-12
-Source: LA_LEMS.xml (metadata) + LA_LEMS_MC.json
+﻿LA_LEMS_v3.0 METADATA REFERENCE
+================================
+Generated: 2026-07-23
+Source: LA_LEMS.xml (metadata) + LA_LEMS_v3.0.json
 Metadata: 84 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -19,7 +19,7 @@ METADATA COMBINATIONS (1 total):
   QA            ArticleSerialNumber     ArticleSerialNumber                                    ArticleTypeCode, Attention
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QA             set[ArticleSerialNumber]
+  BUILT   QA             set[serialNumber]
 
 ================================================================================
 2. BoatQuery (version 6)
@@ -40,8 +40,12 @@ METADATA COMBINATIONS (4 total):
   BQ            RegistrationNumber      RegistrationNumber                                     State
 
 BUILD COVERAGE (2 of 4 built):
-  BUILT   BQ             set[RegistrationNumber, RegistrationState]
   BUILT   QB             set[BoatHullIdNumber]
+  BUILT   BQ             set[RegistrationNumber]
+  UNBUILT QB             BoatHullIdNumber
+  UNBUILT BQ             BoatHullIdNumber
+  UNBUILT QB             RegistrationNumber
+  UNBUILT BQ             RegistrationNumber
 
 ================================================================================
 3. DriverHistoryQuery (version 7)
@@ -62,8 +66,8 @@ METADATA COMBINATIONS (2 total):
   KQ            OperatorLicenseNumber   OperatorLicenseNumber, PurposeCode                     State
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   KQName         set[SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH, PurposeCodeDH]
-  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumberDH, PurposeCodeDH]
+  BUILT   KQName         set[SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH, purposeCodeDH]
+  BUILT   KQOperatorLicenseNumber set[OperatorLicenseNumberDH, purposeCodeDH]
 
 ================================================================================
 4. DriverLicenseQuery (version 8)
@@ -94,10 +98,14 @@ METADATA COMBINATIONS (6 total):
   DQ            OperatorLicenseNumber   OperatorLicenseNumber                                  State, State2, State3, Stat...
 
 BUILD COVERAGE (4 of 6 built):
-  BUILT   QWDN           set[SexCode, BirthDate, NameLast, NameFirst, RaceCode]
+  BUILT   QWDN           set[SexCode, BirthDate, NameLast, NameFirst, raceCode]
   BUILT   QWA            set[SexCode, BirthDate, NameLast, NameFirst]
   BUILT   DP             set[OperatorLicenseNumber, ImageIndicator]
   BUILT   DQ             set[OperatorLicenseNumber]
+  UNBUILT QWDN           Name
+  UNBUILT QWDN           OperatorLicenseNumber
+  UNBUILT DQ             Name
+  UNBUILT DQ             OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 6)
@@ -115,7 +123,7 @@ METADATA COMBINATIONS (1 total):
   QG            GunSerialNumber         GunSerialNumber                                        Attention, GunMake, GunType...
 
 BUILD COVERAGE (1 of 1 built):
-  BUILT   QG             set[GunSerialNumber]
+  BUILT   QG             set[serialNumber]
 
 ================================================================================
 6. VehicleRegistrationQuery (version 7)
@@ -140,7 +148,7 @@ METADATA COMBINATIONS (2 total):
   RQS           VehicleIdentificationNumber  VehicleIdentificationNumber, State                     Attention, State2, State3, ...
 
 BUILD COVERAGE (2 of 2 built):
-  BUILT   RQSLicensePlateNumber set[LicensePlateNumber, RegistrationState]
+  BUILT   RQSLicensePlateNumber set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
   BUILT   RQSVehicleIdentificationNumber set[VehicleIdentificationNumber, RegistrationState]
 
 ================================================================================
@@ -157,6 +165,19 @@ BUILD SUMMARY
   VehicleRegistrationQuery                   2      2     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
   TOTAL                                   16     12     4  75%
+
+================================================================================
+UNBUILT METADATA COMBOS (8 combos in metadata, not in JSON)
+================================================================================
+
+  QB             BoatHullIdNumber         (BoatQuery)
+  BQ             BoatHullIdNumber         (BoatQuery)
+  QB             RegistrationNumber       (BoatQuery)
+  BQ             RegistrationNumber       (BoatQuery)
+  QWDN           Name                     (DriverLicenseQuery)
+  QWDN           OperatorLicenseNumber    (DriverLicenseQuery)
+  DQ             Name                     (DriverLicenseQuery)
+  DQ             OperatorLicenseNumber    (DriverLicenseQuery)
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (78 of 84 in metadata)
