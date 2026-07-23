@@ -420,6 +420,35 @@ foreach ($hf in $uniqueHidden) {
     }
 }
 
+# ── VehicleMakeCode field-type gate ──────────────────────────────────────────
+# CLAUDE.md Code Type Pairings: VEHICLE_MAKE MUST be FormSelect (Sel) with
+# attributeTypeId=VEHICLE_MAKE, NEVER FormInput. A free-text make breaks the dropdown
+# and the QRDM VehicleMakeName lookup. This was a lint-only WARN; promoted to a hard gate
+# 2026-07-23 after it was found shipped as FormInput on multiple galvanized CA providers.
+$vmFields = New-Object System.Collections.Generic.List[object]
+function Find-VehicleMakeFields($node) {
+    if ($null -eq $node) { return }
+    if ($node -is [System.Collections.IEnumerable] -and $node -isnot [string]) {
+        foreach ($item in $node) { Find-VehicleMakeFields $item }
+        return
+    }
+    if ($node -is [psobject]) {
+        if ($node.props -and $node.props.fieldId -and ($node.props.fieldId -in @('VehicleMakeCode','vehicleMakeCode'))) {
+            $rn = if ($node.type -and $node.type.resolvedName) { $node.type.resolvedName } else { '' }
+            $vmFields.Add([pscustomobject]@{ fieldId = $node.props.fieldId; type = $rn }) | Out-Null
+        }
+        foreach ($p in $node.PSObject.Properties) { Find-VehicleMakeFields $p.Value }
+    }
+}
+if ($entitiesBundle) { Find-VehicleMakeFields $entitiesBundle }
+foreach ($vm in ($vmFields | Sort-Object fieldId -Unique)) {
+    if ($vm.type -eq 'FormInput') {
+        Fail "VehicleMakeCode field '$($vm.fieldId)' is FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE (CLAUDE.md Code Type Pairings; free-text make breaks the dropdown + QRDM VehicleMakeName lookup)"
+    } elseif ($vm.type -eq 'FormSelect') {
+        Pass "VehicleMakeCode field '$($vm.fieldId)' is FormSelect (VEHICLE_MAKE dropdown)"
+    }
+}
+
 # Auto-populate handler -- APPROVED STANDARD (user decision 2026-06-22; extended to
 # Requestor 2026-07-06, NY_NYSPIN_EJUSTICE). Wherever one of these identity attributes is
 # part of a query it is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler
