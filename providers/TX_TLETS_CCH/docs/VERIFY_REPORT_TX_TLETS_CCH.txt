@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH_v1.2.json
-  Generated: 2026-07-21 15:55
+  Source: TX_TLETS_CCH_v1.3.json
+  Generated: 2026-07-24 11:52
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_CCH_v1.2
+ POST-BUILD VERIFICATION: TX_TLETS_CCH_v1.3
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 65 [financialResponsibilityType, LicensePlateTypeCode, LicensePlateYear, regionId, stickerNumber, VehicleMakeCode, vehicleYear, emailAddress, expandedBirthDateSearchCode, ImageIndicator, messageKey, nameMiddle, nameSuffix, raceCode, reasonCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, serialNumber, NCICNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber, attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, nletsDestination2CCH, nletsDestination3CCH, nletsDestination4CCH, nletsDestination5CCH, purposeCodeCCH, addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, stateCCH, stateIdNumberCCH, birthDateCCH, miscellaneousNumberCCH, nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH, raceCodeCCH, sexCodeCCH, socialSecurityNumberCCH, fbiNumberCCH, operatorCCH, requestorCCH, expandedBirthDateSearchCodeCCH, expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH]
+  [INFO] CommSys-only: 63 [financialResponsibilityType, LicensePlateTypeCode, LicensePlateYear, regionId, stickerNumber, VehicleMakeCode, vehicleYear, emailAddress, ImageIndicator, messageKey, nameMiddle, nameSuffix, reasonCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, serialNumber, NCICNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber, attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, nletsDestination2CCH, nletsDestination3CCH, nletsDestination4CCH, nletsDestination5CCH, purposeCodeCCH, addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, stateCCH, stateIdNumberCCH, birthDateCCH, miscellaneousNumberCCH, nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH, raceCodeCCH, sexCodeCCH, socialSecurityNumberCCH, fbiNumberCCH, operatorCCH, requestorCCH, expandedBirthDateSearchCodeCCH, expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: camelCase Enforcement ---
@@ -37,6 +37,8 @@ POST-BUILD VERIFICATION
 
 --- CHECK 8: Visible-First Mandate ---
   [INFO] Hidden field 'Attention' (FormInput) -- documented exception, allowed
+  [INFO] Hidden field 'emailAddress' (FormInput) -- documented exception, allowed
+  [PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect (VEHICLE_MAKE dropdown)
   [INFO] QIDM 'TX_TLETS_CCH_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
   [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryAQQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
   [INFO] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryARQuery' attr 'Attention' is required (set[]) -- officer-supplied visible field, exempt from automated standard
@@ -51,7 +53,7 @@ POST-BUILD VERIFICATION
   [PASS] All 10 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 10: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (73) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (71) (RMS-generic allowed)
 
 --- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -66,13 +68,24 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 15: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (76 fields scanned)
+  [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (merely-defaulted (initialValue=TX), officer-editable, bare label (TX_TLETS main convention).)
+  [INFO] Field 'OperatorLicenseNumberDH' label='License Number (or search by Name + DOB + Sex)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameMiddleDH' label='MI (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffixDH' label='Suffix (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'regionId' (any[]-only) label='Region ID' -- manual label override accepted (genuinely any[]-only with no default anywhere (TX_TLETS main)
+  [INFO] Field 'reasonCode' (any[]-only) label='Reason Code' -- manual label override accepted (merely-defaulted (initialValue=C), officer-editable, bare label (TX_TLETS main convention).)
+  [PASS] All form field labels have required routing hint qualifiers (74 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 16: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
 ========================================
- VERIFICATION PASSED: 15 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED: 16 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

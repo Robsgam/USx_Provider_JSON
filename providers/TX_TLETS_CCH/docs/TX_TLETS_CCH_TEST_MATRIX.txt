@@ -1,6 +1,6 @@
-TX_TLETS_CCH v1.2 -- TEST MATRIX
+TX_TLETS_CCH v1.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-21
+Generated: 2026-07-24
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -8,22 +8,22 @@ Validator: unknown
 FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 10 fields):
-  CARD_VEH (VEHICLE QUERY):
+  CARD_VEH (Vehicle Registration Search by Plate, "OR" VIN, "OR" Sticker):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE, TX]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: stickerNumber [Inp 10], financialResponsibilityType [Inp 1], regionId [Inp 4]
+    ROW 3: stickerNumber [Inp 10], financialResponsibilityType [Inp E, 1], regionId [Inp 4]
 
-Person (6 cards, 56 fields):
+Person (6 cards, 53 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
-    RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1], emailAddress [Inp 80]
+    emailAddress [Inp X, 80]
+    RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
   CARD_PER_DL (DRIVER LICENSE):
     ROW 1: OperatorLicenseNumber [Inp 20], BirthDate [FormDate], SexCode [Sel SEX]
-    ROW 2: NameLast [Inp 30], NameFirst [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
-    ROW 3: raceCode [Sel NIBRS_RACE/NIBRS], expandedBirthDateSearchCode [Inp 1], regionId [Inp 4], messageKey [Inp 3]
+    ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30], messageKey [Inp 3]
   CARD_PER_DH (DRIVER HISTORY):
     ROW 1: Attention [Inp X, 30]
     ROW 2: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
-    ROW 3: NameLastDH [Inp 30], NameFirstDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
+    ROW 3: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
   CARD_PER_CCH_OPT (CCH OPTIONS (RESTRICTED -- Criminal History)):
     attentionCCH [Inp 30], inquiryReasonCCH [Inp 75], purposeCodeCCH [Inp 1]
@@ -40,24 +40,24 @@ Person (6 cards, 56 fields):
     ROW 4: nletsDestination4CCH [Inp 2], nletsDestination5CCH [Inp 2], freeTextCCH [Inp 14400]
 
 Firearm (1 card, 6 fields):
-  CARD_GUN (FIREARM QUERY):
-    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+  CARD_GUN (Firearm Query by Serial Number, "OR" NCIC Number):
+    ROW 1: serialNumber [Inp 20], NCICNumber [Inp 10], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
+    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 5 fields):
-  CARD_ART (ARTICLE QUERY):
+  CARD_ART (Article Query by Serial Number, "OR" NCIC Number):
     ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 6 fields):
-  CARD_BOA (BOAT QUERY):
+  CARD_BOA (Boat Search by Registration Number, "OR" Hull ID, "OR" NCIC Number):
     ROW 1: RegistrationNumber [Inp 11], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE]
     ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-QIDM SUMMARY (14 QIDMs, 37 combos)
+QIDM SUMMARY (14 QIDMs, 36 combos)
 ----------------------------------------
   VehicleInsuranceRegistrationQuery: 7 combos (RQ x2, QV x2, REG x1, DPSI x1, VIN x1), autoSelect=true
-  DriverLicenseQuery: 4 combos (DQ x2, QW x1, CPLNam x1), autoSelect=true
+  DriverLicenseQuery: 3 combos (DQ x2, CPLNam x1), autoSelect=true
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 2 combos (QG x2)
   ArticleSingleQuery: 2 combos (QA x2)
@@ -80,7 +80,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (33 tests -- 6 cards, 21 combos -- CCHCriminalHistoryAQ/CCHCriminalHistoryAR/CCHCriminalHistoryFQ/CCHCriminalHistoryIQ/CCHCriminalHistoryQH/CCHCriminalHistoryQR/CCHCriminalHistoryQWI/CCHCriminalHistoryZR co-fires with DL)
+ENTITY 1: PERSON (30 tests -- 6 cards, 20 combos -- CCHCriminalHistoryAQ/CCHCriminalHistoryAR/CCHCriminalHistoryFQ/CCHCriminalHistoryIQ/CCHCriminalHistoryQH/CCHCriminalHistoryQR/CCHCriminalHistoryQWI/CCHCriminalHistoryZR co-fires with DL)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -88,180 +88,174 @@ ENTITY 1: PERSON (33 tests -- 6 cards, 21 combos -- CCHCriminalHistoryAQ/CCHCrim
               Expected: DriverLicenseQuery fires (DQName)
  2  Person      DQ+Name            + emailAddress, ImageIndicator, nameMiddle, nameSuffix [    ]
               Expected: any[] fields present in XML output.
- 3  Person      QW+Name            BirthDate=01/15/1990, NameLast=DOE, N... [    ]
-              Expected: DriverLicenseQuery fires (QWName)
- 4  Person      QW+Name            + expandedBirthDateSearchCode, nameMiddle, nameSuffix, raceCode [    ]
-              Expected: any[] fields present in XML output.
- 5  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
+ 3  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (DQOLN)
- 6  Person      DQ+OLN             + emailAddress, ImageIndicator, reasonCode, RegistrationState [    ]
+ 4  Person      DQ+OLN             + emailAddress, ImageIndicator, reasonCode, RegistrationState [    ]
               Expected: any[] fields present in XML output.
- 7  Person      CPLNam+CPLName     NameLast=DOE, NameFirst=JOHN     [    ]
+ 5  Person      CPLNam+CPLName     NameLast=DOE, NameFirst=JOHN     [    ]
               Expected: DriverLicenseQuery fires (CPLName)
- 8  Person      CPLNam+CPLName     + emailAddress, ImageIndicator, messageKey, nameMiddle [    ]
+ 6  Person      CPLNam+CPLName     + emailAddress, ImageIndicator, messageKey, nameMiddle [    ]
               Expected: any[] fields present in XML output.
- 9  Person      AQ+AQ              attentionCCH=SGAMBELLONE, freeTextCCH... [    ]
+ 7  Person      AQ+AQ              attentionCCH=SGAMBELLONE, freeTextCCH... [    ]
               Expected: CCHCriminalHistoryAQQuery co-fires (AQ)
-10  Person      AR+AR              attentionCCH=SGAMBELLONE, freeTextCCH... [    ]
+ 8  Person      AR+AR              attentionCCH=SGAMBELLONE, freeTextCCH... [    ]
               Expected: CCHCriminalHistoryARQuery co-fires (AR)
-11  Person      FQ+FQ              attentionCCH=SGAMBELLONE, inquiryReas... [    ]
+ 9  Person      FQ+FQ              attentionCCH=SGAMBELLONE, inquiryReas... [    ]
               Expected: CCHCriminalHistoryFQQuery co-fires (FQ)
-12  Person      IQ+IQ              attentionCCH=SGAMBELLONE, birthDateCC... [    ]
+10  Person      IQ+IQ              attentionCCH=SGAMBELLONE, birthDateCC... [    ]
               Expected: CCHCriminalHistoryIQQuery co-fires (IQ)
-13  Person      QH.BDO+QH.BDOB     requestorCCH=SGAMBELLONE, operatorCCH... [    ]
+11  Person      QH.BDO+QH.BDOB     requestorCCH=SGAMBELLONE, operatorCCH... [    ]
               Expected: CCHCriminalHistoryQHQuery co-fires (QH.BDO)
-14  Person      QH.NAM+QH.NAME     requestorCCH=SGAMBELLONE, operatorCCH... [    ]
+12  Person      QH.NAM+QH.NAME     requestorCCH=SGAMBELLONE, operatorCCH... [    ]
               Expected: CCHCriminalHistoryQHQuery co-fires (QH.NAM)
-15  Person      QH.SID+QH.SID      inquiryReasonCCH=TRAFFIC STOP, reques... [    ]
+13  Person      QH.SID+QH.SID      inquiryReasonCCH=TRAFFIC STOP, reques... [    ]
               Expected: CCHCriminalHistoryQHQuery co-fires (QH.SID)
-16  Person      QH.FBI+QH.FBI      inquiryReasonCCH=TRAFFIC STOP, reques... [    ]
+14  Person      QH.FBI+QH.FBI      inquiryReasonCCH=TRAFFIC STOP, reques... [    ]
               Expected: CCHCriminalHistoryQHQuery co-fires (QH.FBI)
-17  Person      QR.FBI+QR.FBI      attentionCCH=SGAMBELLONE, fbiNumberCC... [    ]
+15  Person      QR.FBI+QR.FBI      attentionCCH=SGAMBELLONE, fbiNumberCC... [    ]
               Expected: CCHCriminalHistoryQRQuery co-fires (QR.FBI)
-18  Person      QR.SID+QR.SID      attentionCCH=SGAMBELLONE, inquiryReas... [    ]
+16  Person      QR.SID+QR.SID      attentionCCH=SGAMBELLONE, inquiryReas... [    ]
               Expected: CCHCriminalHistoryQRQuery co-fires (QR.SID)
-19  Person      QW+I.DOB           inquiryReasonCCH=TRAFFIC STOP, nameLa... [    ]
+17  Person      QW+I.DOB           inquiryReasonCCH=TRAFFIC STOP, nameLa... [    ]
               Expected: CCHCriminalHistoryQWIQuery co-fires (QW)
-20  Person      QW+I.MISC          inquiryReasonCCH=TRAFFIC STOP, nameLa... [    ]
+18  Person      QW+I.MISC          inquiryReasonCCH=TRAFFIC STOP, nameLa... [    ]
               Expected: CCHCriminalHistoryQWIQuery co-fires (QW)
-21  Person      QW+I.SSN           inquiryReasonCCH=TRAFFIC STOP, nameLa... [    ]
+19  Person      QW+I.SSN           inquiryReasonCCH=TRAFFIC STOP, nameLa... [    ]
               Expected: CCHCriminalHistoryQWIQuery co-fires (QW)
-22  Person      ZR.FBI+ZR.FBI      fbiNumberCCH=123456789, inquiryReason... [    ]
+20  Person      ZR.FBI+ZR.FBI      fbiNumberCCH=123456789, inquiryReason... [    ]
               Expected: CCHCriminalHistoryZRQuery co-fires (ZR.FBI)
-23  Person      ZR.SID+ZR.SID      stateIdNumberCCH=TX1234567, inquiryRe... [    ]
+21  Person      ZR.SID+ZR.SID      stateIdNumberCCH=TX1234567, inquiryRe... [    ]
               Expected: CCHCriminalHistoryZRQuery co-fires (ZR.SID)
-24  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
+22  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQName)
-25  Person      KQ+Name            + Attention, ImageIndicator, emailAddress, nameMiddleDH [    ]
+23  Person      KQ+Name            + Attention, ImageIndicator, emailAddress, nameMiddleDH [    ]
               Expected: any[] fields present in XML output.
-26  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [    ]
+24  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQOLN)
-27  Person      KQ+OLN             + Attention, ImageIndicator, emailAddress, purposeCodeDH [    ]
+25  Person      KQ+OLN             + Attention, ImageIndicator, emailAddress, purposeCodeDH [    ]
               Expected: any[] fields present in XML output.
-28  Person      Guardrail: DQOLN>DQName  OperatorLicenseNumber=D999888777, Sex... [    ]
+26  Person      Guardrail: DQOLN>DQName  OperatorLicenseNumber=D999888777, Sex... [    ]
               Expected: DriverLicenseQuery fires (DQOLN). SexCode+DOB+LastName+FirstName absent from XML.
-29  Person      Guardrail: DQOLN>QWName  OperatorLicenseNumber=D999888777, Bir... [    ]
-              Expected: DriverLicenseQuery fires (DQOLN). DOB+LastName+FirstName absent from XML.
-30  Person      Guardrail: DQOLN>CPLName  OperatorLicenseNumber=D999888777, Nam... [    ]
+27  Person      Guardrail: DQOLN>CPLName  OperatorLicenseNumber=D999888777, Nam... [    ]
               Expected: DriverLicenseQuery fires (DQOLN). LastName+FirstName absent from XML.
-31  Person      Guardrail: KQOLN>KQName  OperatorLicenseNumberDH=D999888777, S... [    ]
+28  Person      Guardrail: KQOLN>KQName  OperatorLicenseNumberDH=D999888777, S... [    ]
               Expected: DriverHistoryQuery fires (KQOLN). SexCodeDH+DOB+LastName+FirstName absent from XML.
-32  Person      Deselect: DH deselects DL.            [    ]
+29  Person      Deselect: DH deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
-33  Person      Priority routing: verify more-specific combo wins.  [    ]
+30  Person      Priority routing: verify more-specific combo wins.  [    ]
               Fill fields that match multiple combos, verify correct one fires.
 
 ENTITY 2: VEHICLE (17 tests -- 1 card, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-34  Vehicle     RQ+Plate           LicensePlateNumber=TEST123, LicensePl... [    ]
+31  Vehicle     RQ+Plate           LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
-35  Vehicle     RQ+Plate           + RegistrationState             [    ]
+32  Vehicle     RQ+Plate           + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-36  Vehicle     QV+Plate           LicensePlateNumber=TEST123       [    ]
+33  Vehicle     QV+Plate           LicensePlateNumber=TEST123       [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (QVLicensePlateNumber)
-37  Vehicle     QV+Plate           + regionId, RegistrationState   [    ]
+34  Vehicle     QV+Plate           + regionId, RegistrationState   [    ]
               Expected: any[] fields present in XML output.
-38  Vehicle     REG+Plate          LicensePlateNumber=TEST123, LicensePl... [    ]
+35  Vehicle     REG+Plate          LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
-39  Vehicle     REG+Plate          + RegistrationState             [    ]
+36  Vehicle     REG+Plate          + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-40  Vehicle     RQ+VIN             VehicleIdentificationNumber=1HGCM8263... [    ]
+37  Vehicle     RQ+VIN             VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
-41  Vehicle     RQ+VIN             + RegistrationState, VehicleMakeCode, vehicleYear [    ]
+38  Vehicle     RQ+VIN             + RegistrationState, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-42  Vehicle     QV+VIN             VehicleIdentificationNumber=1HGCM8263... [    ]
+39  Vehicle     QV+VIN             VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (QVVehicleIdentificationNumber)
-43  Vehicle     QV+VIN             + regionId                      [    ]
+40  Vehicle     QV+VIN             + regionId                      [    ]
               Expected: any[] fields present in XML output.
-44  Vehicle     VIN+VIN            VehicleIdentificationNumber=1HGCM8263... [    ]
+41  Vehicle     VIN+VIN            VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
-45  Vehicle     VIN+VIN            + RegistrationState, vehicleYear [    ]
+42  Vehicle     VIN+VIN            + RegistrationState, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-46  Vehicle     DPSI+StickerNumber  stickerNumber=STK1234567         [    ]
+43  Vehicle     DPSI+StickerNumber  stickerNumber=STK1234567         [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
-47  Vehicle     DPSI+StickerNumber  + RegistrationState             [    ]
+44  Vehicle     DPSI+StickerNumber  + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-48  Vehicle     Guardrail: REGLicensePlateNumber>VINVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
+45  Vehicle     Guardrail: REGLicensePlateNumber>VINVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber). VIN+financialResponsibilityType absent from XML.
-49  Vehicle     Guardrail: REGLicensePlateNumber>QVVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
+46  Vehicle     Guardrail: REGLicensePlateNumber>QVVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber). VIN absent from XML.
-50  Vehicle     Guardrail: REGLicensePlateNumber>RQVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
+47  Vehicle     Guardrail: REGLicensePlateNumber>RQVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber). VIN absent from XML.
 
 ENTITY 3: BOAT (12 tests -- 1 card, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-51  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+48  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber)
-52  Boat        BQ+Hull+State      + ImageIndicator, relatedHitSearchIndicator [    ]
+49  Boat        BQ+Hull+State      + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-53  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
+50  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QBBoatHullIdNumber)
-54  Boat        QB+Hull            + ImageIndicator, relatedHitSearchIndicator [    ]
+51  Boat        QB+Hull            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-55  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
+52  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
               Expected: BoatQuery fires (BQRegistrationNumber)
-56  Boat        BQ+Reg+State       + ImageIndicator, relatedHitSearchIndicator [    ]
+53  Boat        BQ+Reg+State       + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-57  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
+54  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QBRegistrationNumber)
-58  Boat        QB+Reg             + ImageIndicator, relatedHitSearchIndicator [    ]
+55  Boat        QB+Reg             + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-59  Boat        QB+NCIC            NCICNumber=X123456789            [    ]
+56  Boat        QB+NCIC            NCICNumber=X123456789            [    ]
               Expected: BoatQuery fires (QBNCICNumber)
-60  Boat        QB+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
+57  Boat        QB+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-61  Boat        Guardrail: BQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+58  Boat        Guardrail: BQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber). Reg+RegistrationState absent from XML.
-62  Boat        Guardrail: BQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+59  Boat        Guardrail: BQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber). Reg absent from XML.
 
 ENTITY 4: FIREARM (4 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-63  Firearm     QG+Serial          serialNumber=GUN12345            [    ]
+60  Firearm     QG+Serial          serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QGGunSerialNumber)
-64  Firearm     QG+Serial          + GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator [    ]
+61  Firearm     QG+Serial          + GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-65  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
+62  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
               Expected: GunQuery fires (QGNCICNumber)
-66  Firearm     QG+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
+63  Firearm     QG+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (4 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-67  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+64  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
-68  Article     QA+Serial          + ImageIndicator, relatedHitSearchIndicator [    ]
+65  Article     QA+Serial          + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-69  Article     QA+NCIC            NCICNumber=X123456789            [    ]
+66  Article     QA+NCIC            NCICNumber=X123456789            [    ]
               Expected: ArticleSingleQuery fires (QANCICNumber)
-70  Article     QA+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
+67  Article     QA+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 70 tests
+TOTAL: 67 tests
 
-COMBO COVERAGE (37/37):
-  VehicleInsuranceRegistrationQuery: 7/7 -- T34(RQ+Plate), T36(QV+Plate), T38(REG+Plate), T40(RQ+VIN), T42(QV+VIN), T44(VIN+VIN), T46(DPSI+StickerNumber)
-  DriverLicenseQuery: 4/4 -- T1(DQ+Name), T3(QW+Name), T5(DQ+OLN), T7(CPLNam+CPLName)
-  DriverHistoryQuery: 2/2 -- T24(KQ+Name), T26(KQ+OLN)
-  GunQuery: 2/2 -- T63(Serial), T65(NCIC)
-  ArticleSingleQuery: 2/2 -- T67(Serial), T69(NCIC)
-  BoatQuery: 5/5 -- T51(BQ+Hull), T53(QB+Hull), T55(BQ+Reg), T57(QB+Reg), T59(QB+NCIC)
-  CCHCriminalHistoryAQQuery: 1/1 -- T9(AQ+AQ co-fire)
-  CCHCriminalHistoryARQuery: 1/1 -- T10(AR+AR co-fire)
-  CCHCriminalHistoryFQQuery: 1/1 -- T11(FQ+FQ co-fire)
-  CCHCriminalHistoryIQQuery: 1/1 -- T12(IQ+IQ co-fire)
-  CCHCriminalHistoryQHQuery: 4/4 -- T13(QH.BDO+QH.BDOB co-fire), T14(QH.NAM+QH.NAME co-fire), T15(QH.SID+QH.SID co-fire), T16(QH.FBI+QH.FBI co-fire)
-  CCHCriminalHistoryQRQuery: 2/2 -- T17(QR.FBI+QR.FBI co-fire), T18(QR.SID+QR.SID co-fire)
-  CCHCriminalHistoryQWIQuery: 3/3 -- T19(QW+I.DOB co-fire), T20(QW+I.MISC co-fire), T21(QW+I.SSN co-fire)
-  CCHCriminalHistoryZRQuery: 2/2 -- T22(ZR.FBI+ZR.FBI co-fire), T23(ZR.SID+ZR.SID co-fire)
+COMBO COVERAGE (36/36):
+  VehicleInsuranceRegistrationQuery: 7/7 -- T31(RQ+Plate), T33(QV+Plate), T35(REG+Plate), T37(RQ+VIN), T39(QV+VIN), T41(VIN+VIN), T43(DPSI+StickerNumber)
+  DriverLicenseQuery: 3/3 -- T1(DQ+Name), T3(DQ+OLN), T5(CPLNam+CPLName)
+  DriverHistoryQuery: 2/2 -- T22(KQ+Name), T24(KQ+OLN)
+  GunQuery: 2/2 -- T60(Serial), T62(NCIC)
+  ArticleSingleQuery: 2/2 -- T64(Serial), T66(NCIC)
+  BoatQuery: 5/5 -- T48(BQ+Hull), T50(QB+Hull), T52(BQ+Reg), T54(QB+Reg), T56(QB+NCIC)
+  CCHCriminalHistoryAQQuery: 1/1 -- T7(AQ+AQ co-fire)
+  CCHCriminalHistoryARQuery: 1/1 -- T8(AR+AR co-fire)
+  CCHCriminalHistoryFQQuery: 1/1 -- T9(FQ+FQ co-fire)
+  CCHCriminalHistoryIQQuery: 1/1 -- T10(IQ+IQ co-fire)
+  CCHCriminalHistoryQHQuery: 4/4 -- T11(QH.BDO+QH.BDOB co-fire), T12(QH.NAM+QH.NAME co-fire), T13(QH.SID+QH.SID co-fire), T14(QH.FBI+QH.FBI co-fire)
+  CCHCriminalHistoryQRQuery: 2/2 -- T15(QR.FBI+QR.FBI co-fire), T16(QR.SID+QR.SID co-fire)
+  CCHCriminalHistoryQWIQuery: 3/3 -- T17(QW+I.DOB co-fire), T18(QW+I.MISC co-fire), T19(QW+I.SSN co-fire)
+  CCHCriminalHistoryZRQuery: 2/2 -- T20(ZR.FBI+ZR.FBI co-fire), T21(ZR.SID+ZR.SID co-fire)
 
-IMPORT FILE: TX_TLETS_CCH_v1.2.json
+IMPORT FILE: TX_TLETS_CCH_v1.3.json
