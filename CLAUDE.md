@@ -68,6 +68,16 @@ One build script per provider → one `<PROVIDER>.json`. Always multi-card. No s
 
 ---
 
+## Provider Variants (CCH / "supported-stuff") — Source Sharing
+
+**Base providers** (`TX_TLETS`, `NJ_NJCJIS`, …) are built **directly from their own devdoc + metadata** — `source/<PROVIDER>.pdf`/`.xml` are authoritative for the base.
+
+**Variant providers** — `<BASE>_CCH` today, and other "supported-stuff" variants going forward (the expectation is a CCH variant for **every** provider eventually) — **reuse the BASE provider's devdoc + metadata by default, unless explicitly given their own.** Example: `TX_TLETS_CCH`'s devdoc IS the TLETS manual `source/TX_TLETS.pdf` (carried in its own `source/`), not a separate `TX_TLETS_CCH.pdf`. A variant may carry its own merged metadata XML (base + variant transactions), but the **devdoc (query authority) is the base's** unless told otherwise.
+
+**Tooling must honor this** — do NOT demand a variant-named source doc or duplicate the base PDF under the variant name. `audit_structure.ps1`'s devdoc-PDF check accepts a base-prefixed PDF when the variant name strips (on `_`) to a sibling base provider directory (added 2026-07-24). Any future devdoc/metadata-resolution logic should follow the same base↔variant fallback.
+
+---
+
 ## 3-Bundle Structure
 
 Every provider JSON has exactly 3 bundles in this order:

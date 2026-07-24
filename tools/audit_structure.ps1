@@ -465,17 +465,33 @@ foreach ($provFolder in $providerFolders) {
         Write-Fail "source/${provName}.xml missing (metadata XML)"
     }
 
-    # Devdoc PDF (either <PROVIDER>.pdf or <PROVIDER>_OFML.pdf)
+    # Devdoc PDF. Base providers carry source/<PROVIDER>*.pdf (e.g. <PROVIDER>.pdf or
+    # <PROVIDER>_OFML.pdf). VARIANT providers -- CCH, and other "supported stuff" variants --
+    # reuse the BASE provider's devdoc by default (they carry the base's source/<BASE>*.pdf, not a
+    # variant-named copy). ARCHITECTURE: a variant shares the base provider's devdoc + metadata
+    # unless explicitly given its own (see CLAUDE.md "Provider Variants (CCH / supported-stuff)").
+    # So: accept an own-named PDF, else accept a base-prefixed PDF when the variant name strips
+    # (on '_') to a sibling BASE provider directory that the base PDF is named for.
     $pdfExists = $false
+    $pdfVia = $null
     if (Test-Path $sourceDir) {
-        $pdfMatch = Get-ChildItem $sourceDir -File -Filter '*.pdf' | Where-Object {
-            $_.Name -imatch "^${provName}"
+        $pdfs = @(Get-ChildItem $sourceDir -File -Filter '*.pdf')
+        if ($pdfs | Where-Object { $_.Name -imatch "^${provName}" }) { $pdfExists = $true }
+        if (-not $pdfExists -and $pdfs.Count -gt 0) {
+            $providersRoot = Split-Path $provRoot -Parent
+            $parts = $provName -split '_'
+            for ($pi = $parts.Count - 1; $pi -ge 2; $pi--) {
+                $base = ($parts[0..($pi - 1)] -join '_')
+                if ((Test-Path (Join-Path $providersRoot $base)) -and ($pdfs | Where-Object { $_.Name -imatch "^${base}" })) {
+                    $pdfExists = $true; $pdfVia = $base; break
+                }
+            }
         }
-        if ($pdfMatch) { $pdfExists = $true }
     }
 
     if ($pdfExists) {
-        Write-Pass "source/${provName}*.pdf exists (devdoc)"
+        if ($pdfVia) { Write-Pass "source devdoc PDF present via base provider '$pdfVia' (variant shares base devdoc)" }
+        else         { Write-Pass "source/${provName}*.pdf exists (devdoc)" }
     } else {
         Write-Warn "source/${provName}*.pdf missing (devdoc PDF)"
     }
