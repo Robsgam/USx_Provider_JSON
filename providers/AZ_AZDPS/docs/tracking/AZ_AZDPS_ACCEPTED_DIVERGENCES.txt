@@ -4,35 +4,39 @@
 # Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
 # Matching is on the first three columns (query | keyRef | field), case-insensitive.
 #
-# CONTEXT (v3.0 methodology rebuild, 2026-07-22): AZ splits several multi-identifier metadata
-# transactions into distinct single-identifier combos (invented keyRefs per LIMITATION #21) so the
-# platform serializes ONLY the intended identifier per query and identifier-priority guardrails hold
-# (LIMITATION #1: the platform unions all satisfied combos' set[]+any[]). A metadata field that is
-# the PRIMARY of its own dedicated combo is therefore demoted to any[] in the sibling combos where
-# it is a lower-priority companion. Every demotion below is that pattern -- the field is still
-# reachable (required in its own combo) and never dropped; it simply is not forced into a sibling
-# combo's set[]. All confirmed against docs/reference/AZ_AZDPS_METADATA_REFERENCE.txt.
+# CONTEXT (v3.1 guardrail hardening, 2026-07-24): identifier priority is now enforced by
+# existence-only EXISTS/NOT_EXISTS conditions on the CommSys combos -- NOT by set->any demotion
+# alone. This corrects the v3.0 doc, which FALSELY claimed the demotion by itself made the platform
+# "serialize ONLY the intended identifier." It does not: the platform unions the set[]+any[] of
+# EVERY combo whose set[] is satisfied (LIMITATION #1), so a lower-priority identifier left in a
+# sibling combo's any[] still bleeds into the serialized pool. v3.0 had ZERO conditions and therefore
+# over-sent on every multi-identifier input (plate query also serialized VIN, DL name query also
+# serialized OLN+SSN, DH name also OLN, boat reg also Hull, WMPI name also NCIC). v3.1 adds the
+# proven CA_VENTURA/CA_eSUN existence-gate pattern:
+#   Vehicle Plate>VIN   : ACVRV -> LicensePlateNumber NOT_EXISTS
+#   DL      OLN>SSN>Name: DQSS -> OLN NOT_EXISTS; ACWL/DQN -> OLN + SSN NOT_EXISTS
+#   DH      OLN>Name     : KQH -> OperatorLicenseNumberDH NOT_EXISTS
+#   Boat    Hull>Reg     : ACQB/BQ -> BoatHullIdNumber NOT_EXISTS
+#   WMPI    NCIC>Name    : ACQW/ACQM -> NCICNumber NOT_EXISTS
+# The higher-priority identifier is ALSO dropped from every sibling combo's any[] (gate-xor-companion,
+# verify_build CHECK 14), so the fired combo's serialized pool excludes it -- confirmed with
+# test_commsys (e.g. plate+VIN -> ACVR fires, VIN not in pool). The badge combos (ACWL/ACQB/ACQBH)
+# additionally carry dexStateUserId EXISTS so they do not shadow the no-badge fallback combos
+# (DQN/BQ/BQH) whose payloads have no badge (verify_build CHECK 16); this is metadata-faithful --
+# only ACWL/ACQB(H) require BadgeNumber in metadata, the DQ-Name/BQ/BQH transactions do not.
+#
+# The four remaining demote entries below are LEGITIMATE companions, NOT identifiers: SexCode and
+# BirthDate are name-search descriptors that metadata carries in the DQ-Name / KQ-Name set[]. They
+# ride along in the OLN combo's any[] (a query for an OLN may still usefully carry an entered DOB/Sex)
+# without being forced into its set[]. They are not priority identifiers, so no existence gate applies.
+# All confirmed against docs/reference/AZ_AZDPS_METADATA_REFERENCE.txt.
 
-# --- AzAzdpsDriverLicenseQuery: DQ is the OLN combo; Name/Sex/DOB (DQN) and SSN (DQSS) are their
-#     own combos, so they are companions in DQ's any[]. ---
-AzAzdpsDriverLicenseQuery | DQ | Name                 | demoted-to-any | Name is the primary of the DQN combo; companion in DQ (OLN) any[] | design-decision | 2026-07-22
-AzAzdpsDriverLicenseQuery | DQ | SexCode              | demoted-to-any | Sex is part of the DQN name-search set; companion in DQ (OLN) any[] | design-decision | 2026-07-22
-AzAzdpsDriverLicenseQuery | DQ | BirthDate            | demoted-to-any | DOB is part of the DQN name-search set; companion in DQ (OLN) any[] | design-decision | 2026-07-22
-AzAzdpsDriverLicenseQuery | DQ | SocialSecurityNumber | demoted-to-any | SSN is the primary of the DQSS combo; companion in DQ (OLN) any[] | design-decision | 2026-07-22
+# --- AzAzdpsDriverLicenseQuery: DQ is the OLN combo. Name (DQN) and SSN (DQSS) are now gated OUT of
+#     DQ's pool by existence conditions (not listed here). SexCode/BirthDate stay as any[] companions. ---
+AzAzdpsDriverLicenseQuery | DQ | SexCode   | demoted-to-any | Sex is part of the DQN name-search set; harmless companion in DQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24
+AzAzdpsDriverLicenseQuery | DQ | BirthDate | demoted-to-any | DOB is part of the DQN name-search set; harmless companion in DQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24
 
-# --- BoatQuery: Hull>Reg guardrail. Hull is the primary of ACQBH/BQH; companion in the Reg combos. ---
-BoatQuery | ACQB | BoatHullIdNumber | demoted-to-any | Hull is the primary of ACQBH; companion in ACQB (Reg+Badge) any[] per Hull>Reg guardrail | design-decision | 2026-07-22
-BoatQuery | BQ   | BoatHullIdNumber | demoted-to-any | Hull is the primary of BQH; companion in BQ (Reg, no-Badge) any[] per Hull>Reg guardrail | design-decision | 2026-07-22
-
-# --- DriverHistoryQuery: KQ is the OLN combo; Name/DOB/Sex (KQH) is its own combo. ---
-DriverHistoryQuery | KQ | Name      | demoted-to-any | Name is the primary of the KQH combo; companion in KQ (OLN) any[] | design-decision | 2026-07-22
-DriverHistoryQuery | KQ | BirthDate | demoted-to-any | DOB is part of the KQH name-search set; companion in KQ (OLN) any[] | design-decision | 2026-07-22
-DriverHistoryQuery | KQ | SexCode   | demoted-to-any | Sex is part of the KQH name-search set; companion in KQ (OLN) any[] | design-decision | 2026-07-22
-
-# --- VehicleRegistrationQuery: Plate>VIN guardrail. VIN is the primary of ACVRV; companion in ACVR. ---
-VehicleRegistrationQuery | ACVR | VehicleIdentificationNumber | demoted-to-any | VIN is the primary of ACVRV; companion in ACVR (Plate) any[] per Plate>VIN guardrail | design-decision | 2026-07-22
-
-# --- WMPI Wanted/Missing: NCICNumber is the primary of the invented ACQWN/ACQMN combos; companion
-#     in the Name/descriptor combos' any[]. ---
-WMPIMissingPersonInquiry | ACQM | NCICNumber | demoted-to-any | NCIC is the primary of ACQMN; companion in ACQM (Name+descriptors) any[] | design-decision | 2026-07-22
-WMPIWantedPersonInquiry  | ACQW | NCICNumber | demoted-to-any | NCIC is the primary of ACQWN; companion in ACQW (Name+DOB+Sex+Race) any[] | design-decision | 2026-07-22
+# --- DriverHistoryQuery: KQ is the OLN combo. Name (KQH) is gated OUT by OperatorLicenseNumberDH
+#     NOT_EXISTS (not listed here). SexCode/BirthDate stay as DH-suffix any[] companions. ---
+DriverHistoryQuery | KQ | BirthDate | demoted-to-any | DOB is part of the KQH name-search set; harmless companion in KQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24
+DriverHistoryQuery | KQ | SexCode   | demoted-to-any | Sex is part of the KQH name-search set; harmless companion in KQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24

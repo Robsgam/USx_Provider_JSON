@@ -4,6 +4,22 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_az_azdps.ps1
 #
+# v3.1 (2026-07-24): identifier-priority guardrails HARDENED from demotion-only to existence-gate.
+#   v3.0 had ZERO conditions on its CommSys combos -- "priority" was implemented only by demoting the
+#   lower identifier to any[], which does NOT create mutual exclusivity (LIMITATION #1: any[] fields
+#   still enter the union pool). Multi-identifier input over-sent (plate query also serialized VIN; DL
+#   name query also serialized OLN+SSN; DH name also OLN; boat reg also Hull; WMPI name also NCIC).
+#   v3.1 adds existence-only EXISTS/NOT_EXISTS conditions (the proven CA_VENTURA/CA_eSUN pattern):
+#     Vehicle Plate>VIN   : ACVRV gets LicensePlateNumber NOT_EXISTS (+ VIN dropped from ACVR any[])
+#     DL      OLN>SSN>Name: DQSS gets OLN NOT_EXISTS; ACWL/DQN get OLN+SSN NOT_EXISTS
+#                           (+ Name/SSN dropped from DQ any[], Name dropped from DQSS any[])
+#     DH      OLN>Name     : KQH gets OperatorLicenseNumberDH NOT_EXISTS (DH-suffix pool)
+#     Boat    Hull>Reg     : ACQB/BQ get BoatHullIdNumber NOT_EXISTS (+ Hull dropped from their any[])
+#     WMPI    NCIC>Name    : ACQW/ACQM get NCICNumber NOT_EXISTS (+ NCIC dropped from their any[])
+#   No State gates added: AZ has NO in-state/OOS keyRef split (single combo per identifier, State
+#   default AZ in any[]) -- LIMITATION #30 does not apply. Query set/keyRefs/DH-suffix/badge/Attention
+#   feeder/-KeepSsn all unchanged. Guardrail-hardening only. NOT yet live-tested at v3.1.
+#
 # METHODOLOGY (v3.0 rebuild, 2026-07-22):
 #   - USx CAD-integration field names authored in PascalCase DIRECTLY (layout fieldIds, QIDM
 #     sourceField, combo set[]/any[]) to match Cringer's reference. Mark43/RMS-internal keys
@@ -59,7 +75,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.0'
+$Version = '3.1'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -100,8 +116,10 @@ $vehQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # Plate>VIN guardrail: VIN removed from any[] so the plate combo's serialized
+                # pool never carries VehicleIdentificationNumber (VIN has its own combo ACVRV).
                 set = @('dexStateUserId','LicensePlateNumber')
-                any = @('LicensePlateYear','LicensePlateTypeCode','RegistrationState','VehicleIdentificationNumber','VehicleMakeCode','vehicleYear')
+                any = @('LicensePlateYear','LicensePlateTypeCode','RegistrationState','VehicleMakeCode','vehicleYear')
                 defaults = @(
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
@@ -114,12 +132,18 @@ $vehQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # Plate>VIN guardrail: LicensePlateNumber NOT_EXISTS gates this VIN combo OUT when
+                # a plate is present, so plate+VIN co-entry fires ACVR (plate) only and VIN is not
+                # double-sent. Plate removed from any[] per gate-xor-companion (CHECK 14).
                 set = @('dexStateUserId','VehicleIdentificationNumber')
-                any = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState','VehicleMakeCode','vehicleYear')
+                any = @('LicensePlateTypeCode','LicensePlateYear','RegistrationState','VehicleMakeCode','vehicleYear')
                 defaults = @(
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
                     [PSCustomObject]@{ field = 'State';                value = 'AZ' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -162,9 +186,22 @@ $dlQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # OLN>SSN>Name cascade: this Name combo is gated OUT when OLN or SSN is present, so
+                # the higher-priority identifier's combo (DQ/DQSS) fires alone. OLN+SSN removed from
+                # any[] per gate-xor-companion (CHECK 14).
                 set = @('dexStateUserId','BirthDate','NameLast','NameFirst','SexCode')
-                any = @('nameMiddle','nameSuffix','OperatorLicenseNumber','RegistrationState','SocialSecurityNumber')
+                any = @('nameMiddle','nameSuffix','RegistrationState')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    # Badge-present gate: ACWL is the metadata badge+Name transaction; DQN is the
+                    # no-badge Name fallback (metadata DQ-Name has no BadgeNumber). dexStateUserId
+                    # EXISTS makes ACWL fire only when the badge is present, so it no longer shadows
+                    # DQN's badge-absent path (CHECK 16). Badge is auto-populated, so in practice
+                    # ACWL is the live name-search combo; DQN is the metadata-faithful fallback.
+                    [PSCustomObject]@{ field = @('dexStateUserId');        operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('SocialSecurityNumber');  operator = 'NOT_EXISTS' }
+                )
             }
             primaryFieldReference = 'Name'
             keyReference          = 'ACWL'
@@ -172,9 +209,15 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # OLN>SSN>Name cascade: gated OUT when OLN or SSN is present (higher-priority combo
+                # fires alone). OLN+SSN removed from any[] per gate-xor-companion (CHECK 14).
                 set = @('NameLast','NameFirst','SexCode','BirthDate')
-                any = @('dexStateUserId','nameMiddle','nameSuffix','OperatorLicenseNumber','RegistrationState','SocialSecurityNumber')
+                any = @('dexStateUserId','nameMiddle','nameSuffix','RegistrationState')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('SocialSecurityNumber');  operator = 'NOT_EXISTS' }
+                )
             }
             primaryFieldReference = 'Name'
             keyReference          = 'DQN'
@@ -182,8 +225,12 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # OLN is the top of the OLN>SSN>Name cascade -- no NOT_EXISTS gate needed (it always
+                # wins). Lower-priority identifiers (Name-composite + SSN) removed from any[] so the
+                # OLN combo's serialized pool never carries Name or SSN. SexCode/BirthDate kept as
+                # demoted-to-any companions (metadata DQ-Name descriptors; see ACCEPTED_DIVERGENCES).
                 set = @('OperatorLicenseNumber')
-                any = @('dexStateUserId','BirthDate','NameFirst','NameLast','nameMiddle','nameSuffix','RegistrationState','SexCode','SocialSecurityNumber')
+                any = @('dexStateUserId','BirthDate','RegistrationState','SexCode')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -192,9 +239,15 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # OLN>SSN>Name cascade: SSN sits below OLN, above Name. OperatorLicenseNumber
+                # NOT_EXISTS gates this combo OUT when OLN is present (DQ fires alone). Name-composite
+                # removed from any[] so the SSN pool never carries Name; OLN removed per CHECK 14.
                 set = @('SocialSecurityNumber')
-                any = @('dexStateUserId','BirthDate','NameFirst','NameLast','nameMiddle','nameSuffix','OperatorLicenseNumber','RegistrationState','SexCode')
+                any = @('dexStateUserId','BirthDate','RegistrationState','SexCode')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                )
             }
             primaryFieldReference = 'SocialSecurityNumber'
             keyReference          = 'DQSS'
@@ -243,11 +296,17 @@ $dhistQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # OLN>Name guardrail (DH-suffix pool): OperatorLicenseNumberDH NOT_EXISTS gates this
+                # DH Name combo OUT when a DH OLN is present, so KQ (OLN) fires alone. OLN-DH removed
+                # from any[] per gate-xor-companion (CHECK 14).
                 set = @('RegistrationStateDH','NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH')
-                any = @('attention','NameMiddleDH','NameSuffixDH','OperatorLicenseNumberDH','purposeCode')
+                any = @('attention','NameMiddleDH','NameSuffixDH','purposeCode')
                 defaults = @(
                     [PSCustomObject]@{ field = 'Attention'; value = 'X' }
                     [PSCustomObject]@{ field = 'State';     value = 'AZ' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -256,8 +315,11 @@ $dhistQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # OLN is top of the DH OLN>Name pair -- no gate needed. Name-composite (DH-suffix)
+                # removed from any[] so the OLN pool never carries the DH Name. BirthDateDH/SexCodeDH
+                # kept as demoted-to-any companions (metadata KQ-Name descriptors; see DIVERGENCES).
                 set = @('RegistrationStateDH','OperatorLicenseNumberDH')
-                any = @('attention','BirthDateDH','NameFirstDH','NameLastDH','NameMiddleDH','NameSuffixDH','purposeCode','SexCodeDH')
+                any = @('attention','BirthDateDH','purposeCode','SexCodeDH')
                 defaults = @(
                     [PSCustomObject]@{ field = 'Attention'; value = 'X' }
                     [PSCustomObject]@{ field = 'State';     value = 'AZ' }
@@ -363,9 +425,18 @@ $boatQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # Hull>Reg guardrail: BoatHullIdNumber NOT_EXISTS gates this Reg combo OUT when a
+                # hull is present (ACQBH fires alone). Hull removed from any[] per CHECK 14.
                 set = @('dexStateUserId','RegistrationNumber')
-                any = @('BoatHullIdNumber','RegistrationState','relatedHitSearchIndicator')
+                any = @('RegistrationState','relatedHitSearchIndicator')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    # Badge-present gate (see ACWL): ACQB/ACQBH are the badge boat transactions;
+                    # BQ/BQH are the no-badge fallbacks. dexStateUserId EXISTS stops the badge combo
+                    # shadowing the no-badge combo's payload (CHECK 16).
+                    [PSCustomObject]@{ field = @('dexStateUserId');    operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
+                )
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'ACQB'
@@ -373,9 +444,15 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # Hull is top of the Hull>Reg pair -- no Hull/Reg gate. RegistrationNumber removed
+                # from any[] so the hull pool never carries the reg number. Badge-present gate (see
+                # ACQB) keeps the badge/no-badge routing symmetric (ACQBH is badge, BQH is fallback).
                 set = @('dexStateUserId','BoatHullIdNumber')
-                any = @('RegistrationNumber','RegistrationState','relatedHitSearchIndicator')
+                any = @('RegistrationState','relatedHitSearchIndicator')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('dexStateUserId'); operator = 'EXISTS' }
+                )
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'ACQBH'
@@ -383,9 +460,14 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # Hull>Reg guardrail (no-Badge path): BoatHullIdNumber NOT_EXISTS gates this Reg
+                # combo OUT when a hull is present (BQH fires alone). Hull removed from any[].
                 set = @('RegistrationNumber')
-                any = @('dexStateUserId','BoatHullIdNumber','RegistrationState','relatedHitSearchIndicator')
+                any = @('dexStateUserId','RegistrationState','relatedHitSearchIndicator')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
+                )
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQ'
@@ -393,8 +475,10 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # Hull is top of the Hull>Reg pair (no-Badge path) -- no gate. RegistrationNumber
+                # removed from any[] so the hull pool never carries the reg number.
                 set = @('BoatHullIdNumber')
-                any = @('dexStateUserId','RegistrationNumber','RegistrationState','relatedHitSearchIndicator')
+                any = @('dexStateUserId','RegistrationState','relatedHitSearchIndicator')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -438,8 +522,14 @@ $wantedQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # NCIC>Name guardrail: NCICNumber NOT_EXISTS gates this Name+descriptors combo OUT
+                # when an NCIC number is present (ACQWN fires alone). NCIC removed from any[] per
+                # gate-xor-companion (CHECK 14).
                 set = @('NameLast','NameFirst','BirthDate','SexCode','raceCode')
-                any = @('ExpandedBirthDateSearchCode','ExpandedNameSearchCode','nameMiddle','nameSuffix','NCICNumber','relatedHitSearchIndicator')
+                any = @('ExpandedBirthDateSearchCode','ExpandedNameSearchCode','nameMiddle','nameSuffix','relatedHitSearchIndicator')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('NCICNumber'); operator = 'NOT_EXISTS' }
+                )
             }
             primaryFieldReference = 'Name'
             keyReference          = 'ACQW'
@@ -447,8 +537,10 @@ $wantedQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # NCIC is top of the NCIC>Name pair -- no gate. Name-composite removed from any[] so
+                # the NCIC pool never carries the person name.
                 set = @('NCICNumber')
-                any = @('BirthDate','ExpandedBirthDateSearchCode','ExpandedNameSearchCode','NameFirst','NameLast','nameMiddle','nameSuffix','raceCode','relatedHitSearchIndicator','SexCode')
+                any = @('BirthDate','ExpandedBirthDateSearchCode','ExpandedNameSearchCode','raceCode','relatedHitSearchIndicator','SexCode')
             }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'ACQWN'
@@ -492,8 +584,14 @@ $missingQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # NCIC>Name guardrail: NCICNumber NOT_EXISTS gates this Name+descriptors combo OUT
+                # when an NCIC number is present (ACQMN fires alone). NCIC removed from any[] per
+                # gate-xor-companion (CHECK 14).
                 set = @('Age','SexCode','raceCode','Height','Weight','EyeColorCode','HairColorCode','NameLast','NameFirst')
-                any = @('AreaCode','ExpandedNameSearchCode','FormORI','nameMiddle','nameSuffix','NCICNumber','relatedHitSearchIndicator')
+                any = @('AreaCode','ExpandedNameSearchCode','FormORI','nameMiddle','nameSuffix','relatedHitSearchIndicator')
+                conditions = @(
+                    [PSCustomObject]@{ field = @('NCICNumber'); operator = 'NOT_EXISTS' }
+                )
             }
             primaryFieldReference = 'Name'
             keyReference          = 'ACQM'
@@ -501,8 +599,10 @@ $missingQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
+                # NCIC is top of the NCIC>Name pair -- no gate. Name-composite removed from any[] so
+                # the NCIC pool never carries the person name.
                 set = @('NCICNumber')
-                any = @('Age','AreaCode','ExpandedNameSearchCode','EyeColorCode','FormORI','HairColorCode','Height','NameFirst','NameLast','nameMiddle','nameSuffix','raceCode','relatedHitSearchIndicator','SexCode','Weight')
+                any = @('Age','AreaCode','ExpandedNameSearchCode','EyeColorCode','FormORI','HairColorCode','Height','raceCode','relatedHitSearchIndicator','SexCode','Weight')
             }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'ACQMN'
