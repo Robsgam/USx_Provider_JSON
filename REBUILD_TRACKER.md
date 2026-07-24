@@ -40,20 +40,20 @@ Status table instead (this table's Notes column is intentionally terse).
 | 4 | AZ_AZDPS | v3.0 |  | 72P/0F/0W/0LIM | 0 | out of scope |
 | 5 | FL_FCIC | v7.8 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v4.7 |  | 80P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
-| 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
+| 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 8 | CA_CLETS | v2.15 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
-| 9 | CA_VENTURA_COUNTY | v2.0 |  | 72P/0F/1W/1LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
+| 9 | CA_VENTURA_COUNTY | v2.0 |  | 72P/0F/1W/1LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 10 | CA_CLETS_OCATS | v2.0 |  | 63P/0F/0W/1LIM | 1 | out of scope |
-| 11 | CA_eSUN | v2.0 |  | 71P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
+| 11 | CA_eSUN | v2.0 |  | 71P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 12 | CA_SAN_LUIS_OBISPO | v2.0 |  | 65P/0F/0W/1LIM | 0 | out of scope |
-| 13 | IL_LEADS_OFML | v2.0 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
-| 14 | MD_METERS | v2.0 |  | 69P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
-| 15 | OH_LEADS | v2.0 |  | 76P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
-| 16 | NM_NMLETS_OFML | v2.0 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
-| 17 | OR_LEDS | v2.0 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
-| 18 | TN_TIES | v2.0 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT live-tested) |
+| 13 | IL_LEADS_OFML | v2.0 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 14 | MD_METERS | v2.0 |  | 69P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 15 | OH_LEADS | v2.0 |  | 76P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 16 | NM_NMLETS_OFML | v2.0 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 17 | OR_LEDS | v2.0 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 18 | TN_TIES | v2.0 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 19 | TX_TLETS_CCH | v1.2 |  | 113P/0F/0W/0LIM | 0 | out of scope, CCH stub |
-| 20 | CA_CONTRA_COSTA | v2.0 | 77P/0F/0W | 77P/0F/0W | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT live-tested |
+| 20 | CA_CONTRA_COSTA | v2.0 | 77P/0F/0W | 77P/0F/0W | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT USx-tenant-tested |
 
 ---
 
@@ -164,7 +164,7 @@ confidence (TX 40/40, CA_CLETS 40/40 both pre-finding). The static guard (`valid
 
 ## ImageIndicator set[] anomaly -- LA_LEMS (flagged 2026-06-15)
 
-Repo-wide scan (all 24 provider JSONs, during FL_FCIC v5.0 live testing) found `imageIndicator`
+Repo-wide scan (all 24 provider JSONs, during FL_FCIC v5.0 USx tenant testing) found `imageIndicator`
 in a combo `set[]` (i.e. REQUIRED) in exactly ONE place: **`LA_LEMS_MC.json` combo `DP`**.
 Everywhere else it is `any[]`/`defaults[]` only. ImageIndicator should not be required (FCIC-class
 metadata defaults blank->N; it is a query modifier, not a search key). **At LA_LEMS's next rebuild:

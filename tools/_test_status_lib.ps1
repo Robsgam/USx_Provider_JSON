@@ -7,7 +7,7 @@
 #
 #  Exports:
 #    Get-ProviderTestState -ProvDir <dir> -Name <provider>
-#        Live-test state from ACTUAL log RESULT: lines (NOT .test_state.json).
+#        USx-tenant-test state from ACTUAL log RESULT: lines (NOT .test_state.json).
 #        Returns: Version, State (ALL-PASS/PARTIAL/NEVER-TESTED/HAS-FAIL/NOT-TRACKED),
 #                 Pass, Fail, Pending, Unknown, EntitiesTested, EntitiesMissing,
 #                 PerEntity (ordered hashtable entity -> @{Count,Pass,Fail,Pend,Unk}).

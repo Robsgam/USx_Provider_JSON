@@ -1,7 +1,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
-#  report_test_status.ps1 -- portfolio live-test status from ACTUAL log data
+#  report_test_status.ps1 -- portfolio USx-tenant-test status from ACTUAL log data
 #
-#  Answers "which providers/entities are live-tested at their CURRENT version,
+#  Answers "which providers/entities are USx-tenant-tested at their CURRENT version,
 #  and did they PASS" by reading the RESULT: lines of the real test-log files
 #  under logs/<Entity>/<PROVIDER>_v<version>_*.txt. It DELIBERATELY does NOT read
 #  logs/.test_state.json -- that file's `status` field (open/blocked) is
@@ -11,7 +11,7 @@
 #  Version per provider is taken from the active root JSON filename
 #  (<PROVIDER>_v<X.Y>.json) via the shared resolver, falling back to
 #  logs/.test_version. Legacy _MC/_BASE providers with no logs/ package are
-#  reported as "not on live-test track".
+#  reported as "not on USx-tenant-test track".
 #
 #  Usage:
 #    tools/report_test_status.ps1                 # whole portfolio
@@ -35,7 +35,7 @@ function Emit([string]$s){ $lines.Add($s) | Out-Null }
 $provDirs = Get-ChildItem $ProvidersDir -Directory -ErrorAction Stop |
     Where-Object { -not $Provider -or $_.Name -eq $Provider } | Sort-Object Name
 
-Emit "PORTFOLIO LIVE-TEST STATUS  (source: actual log RESULT lines, NOT .test_state.json)"
+Emit "PORTFOLIO USx-TENANT-TEST STATUS  (source: actual log RESULT lines, NOT .test_state.json)"
 Emit ("=" * 78)
 
 $summary = New-Object System.Collections.Generic.List[object]
@@ -48,7 +48,7 @@ foreach ($pd in $provDirs) {
     if ($ts.State -eq 'NOT-TRACKED') {
         Emit ""
         $verShow = if ($ver) { $ver } else { '?' }
-        Emit ("{0,-22} v{1,-6} NOT ON LIVE-TEST TRACK (no logs package / legacy build)" -f $name, $verShow)
+        Emit ("{0,-22} v{1,-6} NOT ON USx-TENANT-TEST TRACK (no logs package / legacy build)" -f $name, $verShow)
         $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State='NOT-TRACKED' })
         continue
     }

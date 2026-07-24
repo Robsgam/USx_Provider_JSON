@@ -3,14 +3,14 @@
 #
 #  One command, one fixed-column table. This is the single authoritative view of
 #  "where is every provider" -- version, methodology, validator score, and
-#  live-test state -- assembled from the real sources (active root JSON filename,
+#  USx-tenant-test state -- assembled from the real sources (active root JSON filename,
 #  newest VALIDATOR_REPORT, and actual log RESULT lines), never hand-typed.
 #
 #  All classification logic lives in tools/_test_status_lib.ps1 (shared with
 #  report_test_status.ps1) so the table view and the narrative view cannot drift.
 #
 #  Columns:
-#    Provider | Ver | Meth | Validator (P/F/W/LIM) | Live-test (state tested/5 (#logs))
+#    Provider | Ver | Meth | Validator (P/F/W/LIM) | USx-tenant-test (state tested/5 (#logs))
 #  Footer: totals + git state (branch, ahead-of-main, unpushed, uncommitted).
 #
 #  Usage:
@@ -65,7 +65,7 @@ Emit ("=" * 84)
 Emit "  USx PROVIDER PORTFOLIO STATUS"
 Emit ("  source: active root JSON + newest VALIDATOR_REPORT + log RESULT lines (log-truth)")
 Emit ("=" * 84)
-Emit ($fmt -f "Provider","Ver","Meth","Validator","Live-test (state tested/5 (#logs))")
+Emit ($fmt -f "Provider","Ver","Meth","Validator","USx-tenant-test (state tested/5 (#logs))")
 Emit ("-" * 84)
 foreach ($r in $rows) { Emit ($fmt -f $r.Provider, $r.Ver, $r.Meth, $r.Score, $r.Live) }
 Emit ("-" * 84)
@@ -84,7 +84,7 @@ $liveLogs = ($allpass + $partial | Measure-Object -Property _logs -Sum).Sum
 
 Emit ("  Providers: {0}  ({1} GALV / {2} LEGACY)   Validator FAILs: {3}   total WARNs: {4}" -f `
       $rows.Count, $galv, $legacy, $fails, ([int]$warns))
-Emit ("  Live-test: {0} ALL-PASS, {1} PARTIAL, {2} HAS-FAIL, {3} NEVER-TESTED, {4} NOT-TRACKED  ({5} logs)" -f `
+Emit ("  USx-tenant-test: {0} ALL-PASS, {1} PARTIAL, {2} HAS-FAIL, {3} NEVER-TESTED, {4} NOT-TRACKED  ({5} logs)" -f `
       $allpass.Count, $partial.Count, $hasfail.Count, $never.Count, $untrack.Count, ([int]$liveLogs))
 if ($allpass.Count) { Emit ("    ALL-PASS:     " + (($allpass | ForEach-Object { "$($_.Provider) $($_.Ver)" }) -join ', ')) }
 if ($never.Count)   { Emit ("    NEVER-TESTED: " + (($never   | ForEach-Object { "$($_.Provider) $($_.Ver)" }) -join ', ')) }
