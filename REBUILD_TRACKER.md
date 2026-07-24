@@ -160,7 +160,7 @@ own rebuild, one at a time (never a mass sweep).
 
 Process lesson: simulator/combo-match tests PASS without exercising conditions live -- false
 confidence (TX 40/40, CA_CLETS 40/40 both pre-finding). The static guard (`validate.ps1` G-31,
-`verify_build.ps1` CHECK 11) + request-side live test close that gap.
+`verify_build.ps1` CHECK 11) + request-side USx tenant test close that gap.
 
 ## ImageIndicator set[] anomaly -- LA_LEMS (flagged 2026-06-15)
 
@@ -329,7 +329,7 @@ BUILD_RULES.txt Section 13 for full checklist.
 ### 4A -- verify_build.ps1: DH-suffix fieldId isolation CHECK
   Validate all DH card fieldIds end with DH suffix.
   Cross-check DH QIDM sourceFields only reference DH-suffixed tokens.
-  Prevents DL/DH field bleed without needing a live test to detect it.
+  Prevents DL/DH field bleed without needing a USx tenant test to detect it.
   Track: add after TX_TLETS rebuild (TX is the highest-DH-complexity provider).
 
 ### 4B -- audit_cad.ps1 CHECK 6 enhancement: defaults[].field name validation
