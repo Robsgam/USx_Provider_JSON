@@ -6,7 +6,7 @@
 #   . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 #   $rmsBundle = Build-RmsBundle                         # standard (no SSN, with race)
 #   $rmsBundle = Build-RmsBundle -KeepSsn                # AZ, TN
-#   $rmsBundle = Build-RmsBundle -SkipRace               # TX_TLETS, TX_TLETS_CCH, LA_LEMS, MD_METERS, CA_CONTRA_COSTA, CA_CLETS
+#   $rmsBundle = Build-RmsBundle -SkipRace               # TX_TLETS, TX_TLETS_CCH, LA_LEMS, MD_METERS
 #   $results   = Build-CommsysQrdm -ProviderName 'FL_FCIC'
 
 # =====================================================================
@@ -64,7 +64,7 @@ function _U($arr) {
 function Build-RmsBundle {
     param(
         [switch]$KeepSsn,             # AZ, TN: include socialSecurityNumber attr + combo
-        [switch]$SkipRace,            # TX, LA, MD, CA_CONTRA_COSTA: exclude race attr + raceCode from any[]
+        [switch]$SkipRace,            # TX_TLETS, TX_TLETS_CCH, LA_LEMS, MD_METERS: exclude race attr + raceCode from any[]
         [switch]$PascalCaseUsxFields, # NJ, FL, HI: form-fed sourceField/set/any in PascalCase (match PascalCase form fieldIds)
         # Pass a version-stamped string (e.g. "Provider configuration for X v4.6 -- RMS bundle")
         # to embed the version. Defaults to the generic label (no change for callers that don't pass it).

@@ -2,9 +2,21 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.15** | Generated: 2026-07-21
+Current: **v2.16** | Generated: 2026-07-24
 
 ---
+
+## v2.16 -- 2026-07-24 -- Race re-added to RMS person search
+
+**CHANGED:** Dropped -SkipRace from Build-RmsBundle (raceCode now in the RMS Person any[]);
+         switched the raceCode form field from codeTypeCategory='NIBRS_RACE' to  
+         attributeTypeId='RACE'+codeTypeProvider='NIBRS' (mirrors the SexCode dual-consumer  
+         field) so it feeds the RMS race attr (useAttributeId=true) without tripping AP #11  
+         while still sending the code to the CommSys RaceCode wire.  
+**REASON:** Rob (2026-07-24) -- harmonize the CA family so all six providers offer race in the RMS
+        person search (CA_VENTURA/eSUN/SLO/OCATS already keep it). Reverses the v2.x -SkipRace.  
+        ALL 5 entities reset for re-test from Test 1 (was USx-tenant-tested at v2.15).  
+        VERIFY at re-test: RACE dropdown populates + CommSys RaceCode wire unchanged.  
 
 ## v2.15 -- 2026-07-21 -- Pipeline rebuild
 

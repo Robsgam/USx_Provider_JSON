@@ -1833,8 +1833,8 @@
                                                                                                          "props":  {
                                                                                                                        "fieldId":  "raceCode",
                                                                                                                        "label":  "Race (optional)",
-                                                                                                                       "codeTypeCategory":  "NIBRS_RACE",
-                                                                                                                       "codeTypeSource":  "NIBRS"
+                                                                                                                       "attributeTypeId":  "RACE",
+                                                                                                                       "codeTypeProvider":  "NIBRS"
                                                                                                                    },
                                                                                                          "isCanvas":  false,
                                                                                                          "hidden":  false,
@@ -2520,8 +2520,8 @@
                                                                                                               "props":  {
                                                                                                                             "fieldId":  "raceCode",
                                                                                                                             "label":  "Race (optional)",
-                                                                                                                            "codeTypeCategory":  "NIBRS_RACE",
-                                                                                                                            "codeTypeSource":  "NIBRS"
+                                                                                                                            "attributeTypeId":  "RACE",
+                                                                                                                            "codeTypeProvider":  "NIBRS"
                                                                                                                         },
                                                                                                               "isCanvas":  false,
                                                                                                               "hidden":  false,
@@ -3288,8 +3288,8 @@
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "raceCode",
                                                                                                                                "label":  "Race (optional)",
-                                                                                                                               "codeTypeCategory":  "NIBRS_RACE",
-                                                                                                                               "codeTypeSource":  "NIBRS"
+                                                                                                                               "attributeTypeId":  "RACE",
+                                                                                                                               "codeTypeProvider":  "NIBRS"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
                                                                                                                  "hidden":  false,
@@ -6631,12 +6631,12 @@
                                                                                              }
                                                                         }
                                                                     ],
-                                                   "description":  "Authentication configuration for CA CONTRA COSTA",
+                                                   "description":  "Authentication configuration for CA CLETS",
                                                    "handlerFunction":  "CommsysOriAuthenticationHandler",
-                                                   "name":  "CA_CONTRA_COSTA",
+                                                   "name":  "CA_CLETS",
                                                    "type":  "AUTHENTICATION",
                                                    "deviceRegistrationOptional":  false,
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "signInRequired":  false
                                                },
@@ -7583,11 +7583,11 @@
                                                                             "keyReference":  "Firearm"
                                                                         }
                                                                     ],
-                                                   "description":  "Results mapping for CA CONTRA COSTA",
+                                                   "description":  "Results mapping for CA CLETS",
                                                    "handlerFunction":  "CommsysResultsHandler",
-                                                   "name":  "CA_CONTRA_COSTA_Results",
+                                                   "name":  "CA_CLETS_Results",
                                                    "type":  "QUERYRESULTDATAMAPPING",
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "specialResultTypeMapping":  {
                                                                                     "hitDetected":  "1",
@@ -7634,11 +7634,11 @@
                                                {
                                                    "description":  "Configuration for Query format",
                                                    "handlerFunction":  "CommsysWsiOutgoingMessageHandler",
-                                                   "name":  "CA_CONTRA_COSTA_QueryMessageFormat",
+                                                   "name":  "CA_CLETS_QueryMessageFormat",
                                                    "type":  "QUERYMESSAGEFORMAT",
                                                    "authenticationParent":  "LawEnforcementTransaction",
                                                    "payloadParent":  "LawEnforcementTransaction",
-                                                   "provider":  "CA_CONTRA_COSTA"
+                                                   "provider":  "CA_CLETS"
                                                },
                                                {
                                                    "attributes":  [
@@ -7894,10 +7894,10 @@
                                                                     ],
                                                    "description":  "VehicleRegistrationQuery -- 6 combos: NLTS.RQ.P/V (OOS), IN.VP (name), IV.4V/IA.QVK (VIN), IA.QV (plate+optional type; server routes IV.4* by plate-type value). v2.5: 13 IV.4* combos deleted (redundant; server-side value routing), inert State conditions removed. v2.6: PascalCase fieldIds, Plate\u003eVIN guardrail on NLTS.RQ.V+IA.QVK, CAD defaults on all combos.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "CA_CONTRA_COSTA_VehicleRegistrationQuery",
+                                                   "name":  "CA_CLETS_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "query":  "VehicleRegistrationQuery",
                                                    "queryLabel":  "Vehicle Registration",
@@ -8303,10 +8303,10 @@
                                                                     ],
                                                    "description":  "DriverLicenseQuery -- 8 combos: NLTS.DQ.N/NLTS.DQ (OOS name/OLN), IR.QVC.N/IR.QVC.O/IR.QVC.C/IR.QVC.S (criminal records by name/OLN+CII/CII/SSN), ID.L1/IN.L1 (in-state OLN/name). v2.12: restored in-state ID.L1/IN.L1 (real devdoc keyRefs) as catchalls -- v2.11 removal left DL with no OLN-only/name-only backstop (unlike Vehicle IA.QV). OLN cascade: OLN+State-\u003eNLTS.DQ, OLN+CII-\u003eIR.QVC.O, OLN-only-\u003eID.L1. Name cascade: Name+State-\u003eNLTS.DQ.N, Name+Sex-\u003eIR.QVC.N, Name-only-\u003eIN.L1. CII-\u003eIR.QVC.C, SSN-\u003eIR.QVC.S.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "CA_CONTRA_COSTA_DriverLicenseQuery",
+                                                   "name":  "CA_CLETS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverLicenseQuery",
                                                    "queryLabel":  "Driver License",
@@ -8463,10 +8463,10 @@
                                                                     ],
                                                    "description":  "DriverHistoryQuery -- NLTS.KQ (Name+DOB+Sex), NLTS.KQ (OLN). DH-suffix fields. All via Nlets. v2.9: Attention auto-populate (CommsysGetLastNameFirstNameInitialRuleHandler, size 30, gate-feeder on DH card).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "CA_CONTRA_COSTA_DriverHistoryQuery",
+                                                   "name":  "CA_CLETS_DriverHistoryQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "query":  "DriverHistoryQuery",
                                                    "queryLabel":  "Driver History",
@@ -8604,9 +8604,9 @@
                                                                     ],
                                                    "description":  "GunQuery -- IG.QGH (name) + IG.QGB (serial). Most-specific first. MC cross-entity. v2.9: serialNumber fieldId (was GunSerialNumber) enables CAD-triggered IG.QGB; GunSerialNumber targetField (XML element) unchanged.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "CA_CONTRA_COSTA_GunQuery",
+                                                   "name":  "CA_CLETS_GunQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "query":  "GunQuery",
                                                    "queryLabel":  "Firearm",
@@ -8711,9 +8711,9 @@
                                                                     ],
                                                    "description":  "ArticleSingleQuery -- IP.QA (serial, OAN). CA property inquiry. v2.6: PascalCase fieldIds (ArticleSerialNumber, ArticleTypeCode), CAD defaults on all combos.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "CA_CONTRA_COSTA_ArticleSingleQuery",
+                                                   "name":  "CA_CLETS_ArticleSingleQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "query":  "ArticleSingleQuery",
                                                    "queryLabel":  "Article",
@@ -8960,19 +8960,19 @@
                                                                     ],
                                                    "description":  "BoatQuery -- 7 combos: NLTS.BQ OOS (name, hull, reg) + IA.QB (hull, OAN, reg) + IV.4B (covered by IA.QB.R). MC cross-entity. v2.6: PascalCase fieldIds, Hull\u003eReg guardrail on NLTS.BQ.R+IA.QB.R, CAD defaults on all combos.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "CA_CONTRA_COSTA_BoatQuery",
+                                                   "name":  "CA_CLETS_BoatQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
-                                                   "provider":  "CA_CONTRA_COSTA",
+                                                   "provider":  "CA_CLETS",
                                                    "providerType":  "Commsys",
                                                    "query":  "BoatQuery",
                                                    "queryLabel":  "Boat",
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CONTRA_COSTA v2.0 MC -- 6 QIDMs, 40 combos, 100% metadata coverage",
-                        "name":  "CA_CONTRA_COSTA",
+                        "description":  "Provider configuration for CA_CLETS v2.16 MC -- 6 QIDMs, 40 combos, 100% metadata coverage",
+                        "name":  "CA_CLETS",
                         "type":  "BUNDLE",
-                        "provider":  "CA_CONTRA_COSTA"
+                        "provider":  "CA_CLETS"
                     },
                     {
                         "description":  "Provider configuration for RMS",
@@ -9082,6 +9082,17 @@
                                                                           "targetField":  "dateOfBirth"
                                                                       },
                                                                       {
+                                                                          "name":  "race",
+                                                                          "rule":  {
+                                                                                       "function":  "AttributeArrayWrapperRuleHandler"
+                                                                                   },
+                                                                          "sourceField":  [
+                                                                                              "raceCode"
+                                                                                          ],
+                                                                          "targetField":  "raceAttrIds",
+                                                                          "useAttributeId":  true
+                                                                      },
+                                                                      {
                                                                           "name":  "sex",
                                                                           "sourceField":  [
                                                                                               "SexCode"
@@ -9107,6 +9118,7 @@
                                                                                                              "NameLast"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -9123,6 +9135,7 @@
                                                                                                              "BirthDate"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -9138,6 +9151,7 @@
                                                                                                              "NameLast"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],
@@ -9152,6 +9166,7 @@
                                                                                                              "OperatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "raceCode",
                                                                                                              "SexCode",
                                                                                                              "RegistrationState"
                                                                                                          ],

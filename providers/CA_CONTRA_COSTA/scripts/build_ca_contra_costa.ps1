@@ -71,7 +71,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.0"
+    [string]$Version = "2.1"
 )
 
 $ErrorActionPreference = "Stop"
@@ -853,7 +853,11 @@ $perLayout = MakeLayouts @(
                 @{ id = 'Age_Input';            node = Inp 'age'            'Age (optional)'    '2' 'ROW_PER_DL_3' }
                 @{ id = 'Height_Input';         node = Inp 'height'         'Height (optional)' '3' 'ROW_PER_DL_3' }
                 @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County (optional)' '3' 'ROW_PER_DL_3' }
-                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
+                # attributeTypeId='RACE'+codeTypeProvider='NIBRS' mirrors the SexCode field: produces
+                # the attribute ID the RMS race attr (useAttributeId=true) needs AND the code for the
+                # CommSys RaceCode wire (dual-consumer pattern proven by sex). Was code-string-only
+                # (NIBRS_RACE), which tripped AP #11 once race was added to RMS on 2026-07-24.
+                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
         )
     }
@@ -989,9 +993,11 @@ $boatForm = [PSCustomObject]@{
 $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm, $firearmsForm, $articleForm, $boatForm)
 
 # =====================================================================
-# BUNDLE 3: RMS (from KB specs -- PascalCase USx fields, SkipRace, autoSelect)
+# BUNDLE 3: RMS (from KB specs -- PascalCase USx fields, race included, autoSelect)
+# race kept in RMS person any[] (2026-07-24, Rob) -- harmonized with the CA family (was -SkipRace,
+# inherited from the CA_CLETS copy; removed so CC's RMS person search offers race).
 # =====================================================================
-$rmsBundle = Build-RmsBundle -SkipRace -PascalCaseUsxFields
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
 # =====================================================================
 # WRITE OUTPUT
 # =====================================================================
