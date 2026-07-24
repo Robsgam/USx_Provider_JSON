@@ -41,7 +41,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 5 | FL_FCIC | v7.8 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v4.7 |  | 80P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 8 | CA_CLETS | v2.15 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
+| 8 | CA_CLETS | v2.16 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v2.0 |  | 72P/0F/1W/1LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 10 | CA_CLETS_OCATS | v2.0 |  | 63P/0F/0W/1LIM | 1 | out of scope |
 | 11 | CA_eSUN | v2.0 |  | 71P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
@@ -53,7 +53,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 17 | OR_LEDS | v2.0 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 18 | TN_TIES | v2.0 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 19 | TX_TLETS_CCH | v1.3 |  | 112P/0F/0W/0LIM | 0 | base-6 re-synced to TX_TLETS v4.7 (email handler + FRT=E, QWName removed); lockstep restored; CCH stub, NOT USx-tenant-tested |
-| 20 | CA_CONTRA_COSTA | v2.0 | 77P/0F/0W | 77P/0F/0W | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT USx-tenant-tested |
+| 20 | CA_CONTRA_COSTA | v2.1 |  | 77P/0F/0W/0LIM | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT USx-tenant-tested |
 
 ---
 
