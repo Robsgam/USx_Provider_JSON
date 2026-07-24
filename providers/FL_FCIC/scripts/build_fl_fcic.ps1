@@ -208,6 +208,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $provider = 'FL_FCIC'
 $outPath  = "$PSScriptRoot\..\FL_FCIC_v${Version}.json"   # versioned root (NJ/HI parity); Write-ProviderJson removes stale siblings
+if ($env:REPRO_OUTPATH) { $outPath = $env:REPRO_OUTPATH }
 
 $currentYear = [string](Get-Date).Year
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"

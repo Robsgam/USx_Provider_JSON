@@ -205,6 +205,7 @@ $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 if ($AttnDiagnostic) {
     $OUT    = "$DIR\diagnostics\HI_HCJDC_OFML_ATTNTEST_${AttnMode}.json"
+if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
     New-Item -ItemType Directory -Force -Path "$DIR\diagnostics" | Out-Null
 } else {
     # Root JSON name carries the version (<PROVIDER>_v<X.Y>.json). Write-ProviderJson

@@ -90,6 +90,7 @@ $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 # Root JSON name carries the version (<PROVIDER>_v<X.Y>.json). Write-ProviderJson
 # removes any stale bare/versioned sibling so one-JSON-in-root holds on every bump.
 $OUT      = "$DIR\NJ_NJCJIS_v${Version}.json"
+if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 # phases/ snapshot mechanism retired 2026-07-01 (NJ only, pilot for the new standard) -- every
 # version is already fully recoverable from git commit history; phases/ only duplicated that
 # while accumulating same-version-rebuild noise (3 separate v3.6 snapshots, 2x v4.1, 2x v4.5).

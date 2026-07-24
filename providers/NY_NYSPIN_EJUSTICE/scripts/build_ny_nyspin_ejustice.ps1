@@ -72,6 +72,7 @@ param(
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NY_NYSPIN_EJUSTICE_v${Version}.json"
+if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 

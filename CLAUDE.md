@@ -110,7 +110,7 @@ The 22 USx CAD-integration field names (the ones CAD/OnScene auto-populate) are 
 - RMS form-fed fields: pass `-PascalCaseUsxFields` to `Build-RmsBundle`.
 - **NEVER use a whole-tree recase post-transform.** The retired `Convert-UsxCasing` function (NJ ≤ v4.1) recursed the full output object and enumerated each Craft.js `nodes` list, collapsing single-child lists to a bare string and empty lists to `null`. Craft.js requires `nodes` to be an array, so the form body silently failed to render (only tab names showed). Removed 2026-06-18; all casing is now native.
 - The 22 tokens: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RandomRequest, RegistrationState, ImageIndicator, VehicleIdentificationNumber, NCICNumber, VehicleMakeCode, NameFirst, NameLast, BirthDate, SexCode, OperatorLicenseNumber, GunSerialNumber, GunMake, GunCaliber, GunModel, ArticleSerialNumber, ArticleTypeCode, RegistrationNumber, BoatHullIdNumber (+ DH-suffix variants where present).
-- **Rollout status**: NJ, FL, HI, NY, CA_CLETS, TX, AZ are PascalCase (the 7 galvanized providers). The remaining 13 legacy providers are still camelCase — convert each on its next scheduled rebuild (author PascalCase + add the RMS switch), not in a mass update.
+- **Rollout status**: COMPLETE — all 20 providers are galvanized (native PascalCase, single versioned JSON, `Build-RmsBundle -PascalCaseUsxFields`). No camelCase-legacy providers remain. (camelCase persists only for the deliberate exceptions: in-state `licensePlateNumber`, RMS-internal keys, `serialNumber`/`vehicleYear`/`raceCode`/`caRequestPurposeCode` per the token rules.)
 
 ### Code Type Pairings (confirmed working)
 

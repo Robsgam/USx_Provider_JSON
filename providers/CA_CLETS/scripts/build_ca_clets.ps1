@@ -73,6 +73,7 @@ $ErrorActionPreference = "Stop"
 $provider = 'CA_CLETS'
 $currentYear = [string](Get-Date).Year
 $outPath  = "$PSScriptRoot\..\CA_CLETS_v${Version}.json"
+if ($env:REPRO_OUTPATH) { $outPath = $env:REPRO_OUTPATH }
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"

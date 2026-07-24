@@ -131,6 +131,7 @@ $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR         = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT         = "$DIR\TX_TLETS_v${Version}.json"   # versioned root (NJ/HI/FL/NY parity); Write-ProviderJson removes stale siblings
+if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"

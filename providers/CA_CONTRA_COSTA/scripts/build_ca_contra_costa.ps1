@@ -78,6 +78,7 @@ $ErrorActionPreference = "Stop"
 $provider = 'CA_CONTRA_COSTA'
 $currentYear = [string](Get-Date).Year
 $outPath  = "$PSScriptRoot\..\CA_CONTRA_COSTA_v${Version}.json"
+if ($env:REPRO_OUTPATH) { $outPath = $env:REPRO_OUTPATH }
 $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 
 . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
