@@ -1,5 +1,5 @@
-﻿AZ_AZDPS_v3.1 METADATA REFERENCE
-=================================
+﻿AZ_AZDPS METADATA REFERENCE
+============================
 Generated: 2026-07-24
 Source: AZ_AZDPS.xml (metadata) + AZ_AZDPS_v3.1.json
 Metadata: 36 total transactions, 8 queries built in JSON
@@ -96,6 +96,10 @@ METADATA COMBINATIONS (2 total):
 BUILD COVERAGE (2 of 2 built):
   BUILT   KQH            set[RegistrationStateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]
   BUILT   KQ             set[RegistrationStateDH, OperatorLicenseNumberDH]
+
+FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):
+  Must be filled if PurposeCode = CA
+  Must be filled if PurposeCode = CO
 
 ================================================================================
 5. GunQuery (version 3)

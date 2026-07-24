@@ -96,7 +96,12 @@ foreach ($qName in $targetQidms) {
             foreach ($combo in $cfg.combinations) {
                 $kr = if ($combo.keyReference) { $combo.keyReference } else { $combo.keyRef }
                 $defaults = @()
-                if ($combo.defaults) { $defaults = @($combo.defaults) }
+                # CAD combo defaults (the T6 trigger) live under requirements.defaults; the old
+                # $combo.defaults path pointed at nothing relevant, so the gate never fired even
+                # with FIELD CONSTRAINTS populated. Prefer requirements.defaults, fall back to the
+                # legacy path.
+                if ($combo.requirements -and $combo.requirements.defaults) { $defaults = @($combo.requirements.defaults) }
+                elseif ($combo.defaults) { $defaults = @($combo.defaults) }
 
                 $triggerSet = $defaults | Where-Object { $_.field -eq $triggerField -and $_.value -eq $triggerValue }
                 if (-not $triggerSet) { continue }

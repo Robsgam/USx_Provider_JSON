@@ -30,7 +30,7 @@ $ErrorActionPreference = "Stop"
 
 $xmlResolved = Resolve-Path $XmlPath
 $jsonResolved = Resolve-Path $Path
-$providerName = [System.IO.Path]::GetFileNameWithoutExtension($jsonResolved) -replace '_(BASE|MC)$', ''
+$providerName = [System.IO.Path]::GetFileNameWithoutExtension($jsonResolved) -replace '_v[\d.]+$', '' -replace '_(BASE|MC)$', ''
 # Separate, fully-stripped name (version suffix too) for locating <PROVIDER>_ACCEPTED_DIVERGENCES.txt,
 # which is never version-suffixed. Kept distinct from $providerName above (used verbatim in the report
 # header) to avoid changing existing report output for versioned providers.
@@ -182,7 +182,12 @@ foreach ($txNode in $metadata.SelectNodes("//${nsPrefix}Transaction[@name]", $ns
 # Scans each transaction section for "Must be filled if X = Y" lines (PDF-extracted
 # devdocs don't reliably preserve table structure, so we capture raw constraint text
 # within section boundaries and let the reader cross-reference the field list above).
-$devdocConstraints = @{}
+# Collect EVERY conditional constraint provider-wide (trigger field + one value per code), then
+# associate each to the built QIDMs whose field list carries the trigger field (emit loop below).
+# The old per-transaction capture keyed off a bare transaction name landing on its own devdoc line,
+# which pdftotext almost never produces -- so it silently found nothing (no provider ever got a
+# FIELD CONSTRAINTS section). Matches both "Must be filled if" and "Mandatory if" (AZ's synonym).
+$devdocConstraints = New-Object System.Collections.Generic.List[object]
 $devdocResolved = $DevdocPath
 if (-not $devdocResolved) {
     $jsonDir = [System.IO.Path]::GetDirectoryName($jsonResolved)
@@ -190,20 +195,14 @@ if (-not $devdocResolved) {
     if (Test-Path $candidate) { $devdocResolved = $candidate }
 }
 if ($devdocResolved -and (Test-Path $devdocResolved)) {
-    $devdocLines = Get-Content $devdocResolved
-    $knownTxNames = @($transactions.Keys)
-    $currentTx = $null
-    foreach ($dLine in $devdocLines) {
-        $trimmed = $dLine.Trim()
-        if ($knownTxNames -contains $trimmed) {
-            $currentTx = $trimmed
-            continue
-        }
-        if ($currentTx -and ($trimmed -match 'Must be filled if')) {
-            if (-not $devdocConstraints.ContainsKey($currentTx)) {
-                $devdocConstraints[$currentTx] = @()
+    foreach ($dLine in (Get-Content $devdocResolved)) {
+        # Capture the trigger field + a comma-separated list of short codes; the value pattern stops
+        # before trailing possible-values prose (e.g. AZ "= CA, CO CI - ..." -> CA,CO; TX "= Y Y,N..." -> Y).
+        if ($dLine -match '(?:Must be filled if|Mandatory if)\s+(\w+)\s*=\s*([A-Za-z0-9]{1,4}(?:\s*,\s*[A-Za-z0-9]{1,4})*)') {
+            $tField = $Matches[1]
+            foreach ($tv in @($Matches[2] -split '\s*,\s*' | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
+                $devdocConstraints.Add([PSCustomObject]@{ field = $tField; value = $tv })
             }
-            $devdocConstraints[$currentTx] += $trimmed
         }
     }
 }
@@ -360,13 +359,27 @@ foreach ($qName in $includeQueries) {
         [void]$sb.AppendLine("")
     }
 
-    # Field constraints from devdoc
-    if ($devdocConstraints.ContainsKey($qName) -and $devdocConstraints[$qName].Count -gt 0) {
-        [void]$sb.AppendLine("FIELD CONSTRAINTS (from devdoc -- cross-reference field list above for exact field names):")
-        foreach ($c in $devdocConstraints[$qName]) {
-            [void]$sb.AppendLine("  $c")
+    # Field constraints from devdoc -- emit each provider-wide conditional whose trigger field is a
+    # field of THIS built QIDM, in the exact grammar check_test_preconditions.ps1 parses
+    # ("  Must be filled if <Field> = <Value>", 2-space indent). Field match is substring-tolerant
+    # (devdoc "PurposeCode" vs metadata "CaRequestPurposeCode"); we emit the QIDM's actual field name
+    # to give the consumer's exact defaults[].field comparison the best chance. Over-association is
+    # harmless -- the consumer only flags a QIDM whose combo actually defaults the field to the value.
+    if ($isBuilt -and $devdocConstraints.Count -gt 0) {
+        $qidmFieldNames = @($transactions[$qName].fields | ForEach-Object { $_.name })
+        $conLines = @(); $emitted = @{}
+        foreach ($dc in $devdocConstraints) {
+            $hit = $qidmFieldNames | Where-Object { $_ -and (($_ -ieq $dc.field) -or ($_ -like "*$($dc.field)*") -or ($dc.field -like "*$_*")) } | Select-Object -First 1
+            if ($hit) {
+                $key = "$hit=$($dc.value)"
+                if (-not $emitted.ContainsKey($key)) { $emitted[$key] = $true; $conLines += "  Must be filled if $hit = $($dc.value)" }
+            }
         }
-        [void]$sb.AppendLine("")
+        if ($conLines.Count -gt 0) {
+            [void]$sb.AppendLine("FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):")
+            foreach ($cl in $conLines) { [void]$sb.AppendLine($cl) }
+            [void]$sb.AppendLine("")
+        }
     }
 }
 

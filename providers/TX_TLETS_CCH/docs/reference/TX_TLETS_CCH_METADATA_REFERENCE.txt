@@ -1,5 +1,5 @@
-﻿TX_TLETS_CCH_v1.3 METADATA REFERENCE
-=====================================
+﻿TX_TLETS_CCH METADATA REFERENCE
+================================
 Generated: 2026-07-24
 Source: TX_TLETS_CCH.xml (metadata) + TX_TLETS_CCH_v1.3.json
 Metadata: 113 total transactions, 14 queries built in JSON
@@ -23,6 +23,9 @@ METADATA COMBINATIONS (1 total):
 BUILD COVERAGE (2 of 1 built):
   BUILT   QAArticleSerialNumber set[ArticleSerialNumber, ArticleTypeCode]
   BUILT   QANCICNumber   set[NCICNumber]
+
+FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):
+  Must be filled if ImageIndicator = Y
 
 ================================================================================
 2. BoatQuery (version 13)
@@ -51,6 +54,9 @@ BUILD COVERAGE (5 of 5 built):
   BUILT   QBRegistrationNumber set[RegistrationNumber]
   BUILT   QBBoatHullIdNumber set[BoatHullIdNumber]
   BUILT   QBNCICNumber   set[NCICNumber]
+
+FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):
+  Must be filled if ImageIndicator = Y
 
 ================================================================================
 3. CCHCriminalHistoryAQQuery (version 5)
@@ -237,6 +243,9 @@ BUILD COVERAGE (3 of 1 built):
   BUILT   QWI.MISC       set[inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, miscellaneousNumberCCH]
   BUILT   QWI.SSN        set[inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, socialSecurityNumberCCH]
 
+FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):
+  Must be filled if ImageIndicator = Y
+
 ================================================================================
 10. CCHCriminalHistoryZRQuery (version 5)
 ================================================================================
@@ -284,6 +293,9 @@ BUILD COVERAGE (2 of 2 built):
   BUILT   KQOLN          set[OperatorLicenseNumberDH]
   UNBUILT KQ             OperatorLicenseNumber
 
+FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):
+  Must be filled if ImageIndicator = Y
+
 ================================================================================
 12. DriverLicenseQuery (version 15)
 ================================================================================
@@ -319,6 +331,9 @@ BUILD COVERAGE (3 of 5 built):
   UNBUILT RSDWW          OperatorLicenseNumber
   UNBUILT DQ             OperatorLicenseNumber
 
+FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):
+  Must be filled if ImageIndicator = Y
+
 ================================================================================
 13. GunQuery (version 12)
 ================================================================================
@@ -339,6 +354,9 @@ METADATA COMBINATIONS (1 total):
 BUILD COVERAGE (2 of 1 built):
   BUILT   QGGunSerialNumber set[serialNumber]
   BUILT   QGNCICNumber   set[NCICNumber]
+
+FIELD CONSTRAINTS (from devdoc -- conditional requirements; verify the constrained field has a default/handler):
+  Must be filled if ImageIndicator = Y
 
 ================================================================================
 14. VehicleInsuranceRegistrationQuery (version 14)
