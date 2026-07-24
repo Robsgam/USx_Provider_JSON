@@ -1,0 +1,31 @@
+IL_LEADS_OFML -- STATUS
+=======================
+Current: v2.0 | 61P/0F/0W/0LIM | Updated 2026-07-23
+Provider: IL_LEADS_OFML
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, IL_LEADS_OFML second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 5 (VehicleRegistrationQuery, DriverLicenseQuery, GunQuery,
+           ArticleSingleQuery, BoatQuery)
+  Combos: 9 total
+  Provider-specific patterns:
+    - 5 basic queries (no DriverHistory)
+    - Z2/Z5 keyRefs (Z5 = in-state plate, Z2 = OOS)
+    - CDCName in AUTH configuration
+    - OOS RegistrationState EXISTS/NOT_EXISTS gates
+    - Identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg)
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/IL_LEADS_OFML_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_IL_LEADS_OFML.md for full history).
+  NOT yet USx-tenant-tested at v2.0.

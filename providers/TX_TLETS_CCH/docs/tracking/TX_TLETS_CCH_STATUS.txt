@@ -1,0 +1,32 @@
+TX_TLETS_CCH -- STATUS
+======================
+Current: v1.3 | 112P/0F/0W/0LIM | Updated 2026-07-24
+Provider: TX_TLETS_CCH
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, TX_TLETS_CCH second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 14 -- 6 core (VehicleInsuranceRegistrationQuery, DriverLicenseQuery,
+           DriverHistoryQuery, GunQuery, ArticleSingleQuery, BoatQuery)
+           + 8 CCH (AQ/AR/FQ/IQ/QH/QR/QWI/ZR)
+  Combos: 36 total
+  Provider-specific patterns:
+    - Separate CCH-gated provider; kept in lockstep with TX_TLETS (variant of TX_TLETS v4.7)
+    - The 6 core QIDMs identical to TX_TLETS main
+    - All 8 CCH transactions on Person, autoSelect=false (named-checkbox via queryLabel)
+    - Every CCH field CCH-suffixed (full isolation, zero collision); 3 CCH cards
+    - Synthetic keyRefs (QR/QWI/ZR) + Choice splits; QH 4 metadata-exact combos; CCH response QRDM out of scope
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/TX_TLETS_CCH_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_TX_TLETS_CCH.md for full history).
+  NOT yet USx-tenant-tested at v1.3.

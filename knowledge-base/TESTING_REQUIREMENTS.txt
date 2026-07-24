@@ -1035,13 +1035,13 @@ SECTION 16 -- BULK PROVIDER ONBOARDING WORKFLOW
     2. CREATE CANONICAL STRUCTURE: For each provider, create:
        providers/<PROVIDER>/
          docs/  (STATUS.txt, BUILD_NOTES.txt, SQVR.txt, JSON_INVENTORY.md)
-         docs/base/
-         docs/mc/
-         tests/
-         phases/base/
-         phases/mc/
+              (migrated providers split docs/ into tracking/reports/
+               reference/deliverables -- see CLAUDE.md Canonical Structure)
+         logs/  (the only test-log location; tests/ eliminated 2026-07-01)
          scripts/
          source/  (XML, PDF)
+       (single-JSON model: no docs/base, docs/mc, or phases/ -- phases/ retired,
+        git history is authoritative for prior versions.)
 
     3. EXTRACT QUERIES: Run extract_queries.ps1 on every metadata XML:
        foreach ($provider in $providers) {
@@ -1176,9 +1176,13 @@ SECTION 17 -- DEPLOYMENT ENVIRONMENTS
     generate_test_matrix.ps1 → <P>_TEST_MATRIX.txt    (step 9)
     run_test_matrix.ps1 → TEST_VALIDATION_<P>.txt      (step 10)
 
-  LEGACY PROVIDERS (still have _MC.json or _BASE.json filename):
-    Pipeline.ps1 falls back to _MC.json / _BASE.json if <P>.json not found.
-    Full rebuild converts to single-JSON naming (<P>.json, no suffix).
+  ACTIVE JSON RESOLUTION:
+    The active JSON is the versioned <PROVIDER>_v<X.Y>.json, resolved by
+    tools/_resolve_provider_json.ps1 (Get-ProviderRootJson) via the chain
+    bare <PROVIDER>.json -> versioned <PROVIDER>_v<X.Y>.json -> legacy _MC ->
+    legacy _BASE. All 20 providers are galvanized single-JSON (PascalCase), so
+    the _MC/_BASE tail is a fallback for any legacy holdout (none remain).
+    phases/ is retired -- git history is authoritative for prior versions.
 
   RULE: Never let a shared tool change and leave any provider's reports
   reflecting the old tool behavior. Propagate immediately.

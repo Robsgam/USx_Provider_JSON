@@ -46,10 +46,17 @@ See also:
 
   ONE JSON IN ROOT RULE:
     Exactly one JSON file in the provider root folder at all times.
-    - MC active:   <PROVIDER>_MC.json in root, BASE in phases/base/
-    - MC archived:  <PROVIDER>_BASE.json in root
-    NEVER both BASE and MC in root simultaneously. enforce.ps1 checks this.
-    Build scripts must output to the correct location.
+    - Single-JSON model (repo-wide): one build script -> one versioned
+      <PROVIDER>_v<X.Y>.json in root. No BASE/MC split -- it was merged away
+      portfolio-wide (all 20 providers are galvanized single-JSON, PascalCase).
+    - phases/ is retired: every prior version is recoverable from git history
+      (git log / git show is authoritative), not a phases/ snapshot folder.
+    - logs/ is the only test-log location (tests/ eliminated 2026-07-01).
+    NEVER more than one JSON in root. Write-ProviderJson deletes stale siblings
+    on build and enforce.ps1 FAILs on multiples.
+    - Legacy holdout: the bare <PROVIDER>.json name is still accepted, and the
+      JSON resolver keeps a legacy _MC/_BASE fallback for any un-galvanized
+      provider (none remain today).
 
   SOURCE FOLDER SETUP (before any build):
     [ ] Copy metadata XML to source/<PROVIDER>.xml
@@ -447,15 +454,16 @@ See also:
   BASE/MC variants. The build script handles both QIDM definition and
   multi-card layout in a single pass.
 
-  Output: <PROVIDER>.json (no _BASE or _MC suffix).
+  Output: <PROVIDER>_v<X.Y>.json (versioned filename; no _BASE or _MC suffix).
   Reports: docs/ (no docs/base/ or docs/mc/ subdirectories).
 
   HISTORY: Originally builds produced a BASE (single-card proof of concept)
   and then an MC (multi-card). In practice, BASE encouraged skipping queries
   and doubled maintenance (two scripts, two JSONs, two report directories
-  per provider). All QIDMs are identical between BASE and MC; only the layout
-  differs. Multi-card is the standard build model.
-  Merged 2026-05-21 for NJ, FL, CA_CLETS. Other providers merge on rebuild.
+  per provider). All QIDMs were identical between BASE and MC; only the layout
+  differed. Multi-card single-JSON is the standard build model.
+  Merge/galvanization is COMPLETE for all 20 providers (single versioned JSON,
+  native PascalCase USx CAD fields) -- no BASE/MC-split providers remain.
 
   BUILD DISCIPLINE (still applies -- just one JSON now):
 
@@ -524,6 +532,31 @@ See also:
     DL + DH (separate QIFs, NY pre-2026-04-20 pattern): CONFIRMED layout
       complexity causes QIDM isolation issues (LIMITATION #26 shared field
       pool). Prefer single QIF.
+
+  PROVIDER VARIANTS (BASE-SYNC / lockstep):
+    A base provider (TX_TLETS, NJ_NJCJIS, ...) is built directly from its own
+    devdoc + metadata. A VARIANT provider (<BASE>_CCH today, more coming --
+    a CCH variant for every provider eventually) REUSES the base provider's
+    devdoc + metadata by default: the base devdoc is query-authority for the
+    variant; the variant may carry its own merged metadata XML (base + variant
+    transactions) but the devdoc stays the base's unless explicitly given one.
+
+    Base + variants = ONE logical provider kept in LOCKSTEP. A variant is
+    derived from the base (inherits its base-QIDMs), so ANY change to the base
+    JSON -- rebuild, combo edit, label pass, CAD fix -- must propagate to a
+    rebuild of every variant. Variants must never drift independently. When you
+    touch a base provider, rebuild its variants in the same pass and re-run
+    their gates.
+
+    Enforced by convention + check: each variant's build script declares
+      # BASE-SYNC: <BASE> vX.Y
+    (the base version its base-QIDMs are synced to). tools/audit_variant_sync.ps1
+    (composed into doctor.ps1) flags any declared variant whose marker is behind
+    its base's current version. Detection is MARKER-DRIVEN, not name-based, so an
+    independent provider that merely shares a name prefix (e.g. CA_CLETS_OCATS) is
+    NOT mistaken for a variant. When the base bumps: re-sync the variant's
+    base-QIDMs and bump its BASE-SYNC marker. TX_TLETS_CCH (base TX_TLETS) is the
+    only current variant.
 
 ================================================================================
 7. STATE FIELD PATTERNS
@@ -1260,39 +1293,18 @@ See also:
     A version bump invalidates prior live test logs -- routing, set[]/any[],
     conditions, or defaults may have changed, so old logs no longer line up
     with the shipped JSON. pipeline.ps1 runs reset_test_package.ps1 after a
-    successful build: archives tests/*.txt -> tests/_archive_pre_v<ver>/,
+    successful build: archives logs/<Entity>/*.txt -> logs/<Entity>/_archive_pre_v<ver>/,
     resets SQVR markers [CONFIRMED]/[FAILED] -> [PENDING], clears STATUS live
-    rows, stamps tests/.test_version. Re-run the FULL test matrix from Test 1;
+    rows, stamps logs/.test_version. Re-run the FULL test matrix from Test 1;
     never resume mid-matrix across a rebuild. If you ran the build script
     directly (not pipeline), run reset_test_package.ps1 -Provider <NAME>
     manually. See TESTING_REQUIREMENTS.txt Section 11 GATE 1.
 
-  After rebuilding any provider to the single-JSON model, verify these legacy
-  artifacts have been removed. Enforce.ps1 catches some but not all.
-
-  FILES TO DELETE:
-    - docs/{PROVIDER}_BASE_TEST_MATRIX.txt (legacy BASE/MC split)
-    - docs/{PROVIDER}_MC_TEST_MATRIX.txt (legacy BASE/MC split)
-    - tests/BASE_SIM_*, tests/MC_SIM_* (legacy simulation logs)
-    - tests/BASE_LIVE_*, tests/MC_LIVE_* (legacy live test logs)
-
-  FILES TO VERIFY:
-    - docs/{PROVIDER}_METADATA_REFERENCE.txt must NOT contain "MC expansion
-      candidate" or "SKIP" labels. Regenerate with extract_metadata_reference.ps1
-      after the tool fix (2026-06-03).
-    - docs/{PROVIDER}_SQVR.txt combo counts must match current JSON.
-    - Provider root must have exactly ONE JSON (no _BASE + _MC pair).
-
-  JSON RENAME:
-    - Legacy providers may still have _MC or _BASE suffix on their JSON filename.
-      On rebuild, output should be {PROVIDER}.json (no suffix).
-      Update JSON_INVENTORY.md accordingly.
-
-  PROVIDERS STILL NEEDING CLEANUP (as of 2026-06-03):
-    - 14 providers: delete BASE/MC test matrices
-    - AZ_AZDPS, NY_NYSPIN_EJUSTICE: delete legacy test logs
-    - 12 providers: rename _MC suffix JSON on rebuild
-    - HI_HCJDC_OFML: consolidate dual JSON (BASE + MC) to single
+  OBSOLETE: the BASE/MC-era post-rebuild cleanup checklist (delete
+  _BASE/_MC test matrices, rename _MC-suffix JSONs, consolidate dual JSONs)
+  was made obsolete by galvanization -- all 20 providers are already single
+  versioned JSON, PascalCase. No BASE/MC artifacts remain to clean up. The
+  still-live rule is the REBUILD RESTARTS TESTING block above.
 
 ================================================================================
 14. VISIBLE-FIRST MANDATE  (MAJOR DIRECTIVE)
@@ -1485,7 +1497,7 @@ See also:
       STATUS: LIVE-PROVEN <test-log path>            -- confirmed by a COMMITTED log
       STATUS: HYPOTHESIS <named discriminating test>  -- not yet proven
     * LIVE-PROVEN MUST cite a path that exists (archived logs under
-      tests/_archive_pre_v*/ count -- they are committed evidence).
+      logs/<Entity>/_archive_pre_v*/ count -- they are committed evidence).
     * A HYPOTHESIS MUST NOT be encoded in a simulator as fact. Simulate it only
       as an explicit assumption, and do not write the verdict to KB until the
       discriminating test log is committed.
@@ -1498,7 +1510,7 @@ See also:
                                TEST_MATRIX combo count == JSON; version aligned.
       INCOMPLETE-consistent -- combos still [PENDING], no contradiction (a fresh,
                                not-yet-tested build -- legitimate, but NOT done).
-      INCONSISTENT          -- blocks: stale [CONFIRMED] vs tests/.test_version,
+      INCONSISTENT          -- blocks: stale [CONFIRMED] vs logs/.test_version,
                                more [CONFIRMED] markers than XML-bearing logs, or
                                TEST_MATRIX combo count != JSON combo count.
 

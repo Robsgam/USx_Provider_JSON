@@ -1,0 +1,31 @@
+NM_NMLETS_OFML -- STATUS
+========================
+Current: v2.0 | 66P/0F/0W/0LIM | Updated 2026-07-23
+Provider: NM_NMLETS_OFML
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, NM_NMLETS_OFML second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 14 total
+  Provider-specific patterns:
+    - 6 basic queries; DL+DH DH-suffix fieldIds + queriesToDeselect
+    - GunModel field
+    - Existence-only routing gates (Vehicle/Boat NCIC-vs-Nlets by RegistrationState)
+    - Identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg)
+    - DH PurposeCode + RaceCode optional any[]
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/NM_NMLETS_OFML_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_NM_NMLETS_OFML.md for full history).
+  NOT yet USx-tenant-tested at v2.0.

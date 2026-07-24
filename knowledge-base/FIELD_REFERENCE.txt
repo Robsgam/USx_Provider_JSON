@@ -671,10 +671,10 @@ SECTION 9 -- IMAGEINDICATOR
       you'd also have to strip the combo defaults[] and any[] membership. Net: a true
       suppression on a specific path (e.g. OOS BQ only) needs card/combo isolation, not a
       field-default change. Not worth it for a benign redundant field.
-    - REQUIRED-anywhere scan (all 24 provider JSONs, 2026-06-15): imageIndicator appears
-      in a combo set[] exactly ONCE -- LA_LEMS DP (legacy _MC artifact, likely a mistake;
-      flagged in REBUILD_TRACKER for LA's rebuild). Everywhere else it is any[]/defaults
-      only. ImageIndicator is never required in FL.
+    - REQUIRED-anywhere scan (all provider JSONs, 2026-06-15): imageIndicator appeared
+      in a combo set[] exactly ONCE -- LA_LEMS DP (a pre-galvanization artifact, likely
+      a mistake; resolved by LA_LEMS's v3.0 single-JSON rebuild). Everywhere else it is
+      any[]/defaults only. ImageIndicator is never required in FL.
 
 ================================================================================
 SECTION 10 -- OPERATIONAL IDENTITY FIELDS (BadgeNumber / dexStateUserId)

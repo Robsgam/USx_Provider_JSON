@@ -8,7 +8,7 @@ Consolidated: 2026-05-04
 ## Repo Structure
 
 ```
-providers/{PROVIDER}/     -- 20 providers (8 active + 11 new + 1 CCH stub)
+providers/{PROVIDER}/     -- 20 providers (all galvanized to single-JSON, PascalCase; TX_TLETS_CCH is a variant of TX_TLETS)
 knowledge-base/           -- Build rules, anti-patterns, platform limitations
 tools/                     -- Shared scripts (validator, renderers, simulators)
 ```
@@ -349,7 +349,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (62 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 1 archived one-time migration tool in `tools/_archive/`)
+## Tools (60 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -364,7 +364,7 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | 3 | `test_commsys.ps1` | CommSys query simulator (combo matching + XML output; QUERY_REPORT). Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 or audit_repo.ps1 Category 10 | `-Path <json>` `-Entity` `-Combo` `-OutFile` |
 | 4 | `report_picklists.ps1` | Scans FormSelect dropdowns + QRDM/QIDM code types (PICKLIST_REPORT). Opt-in (`-IncludeExtended`) — advisory, not read by enforce.ps1 or audit_repo.ps1 Category 10 | `-Path <json>` `-OutFile` |
 | 5 | `render_html.ps1` | Self-contained HTML layout report with color-coded fields and QIDM tables | `-Path <json>` `-OutFile` |
-| 6 | `verify_build.ps1` | Post-build verification (banned patterns, fieldId consistency, reference patterns, Visible-First Mandate / hidden-field check) | `-Path <json>` `-CamelCase` |
+| 6 | `verify_build.ps1` | Post-build verification (banned patterns, fieldId consistency, reference patterns, Visible-First Mandate / hidden-field check) | `-Path <json>` |
 | 7 | `audit_metadata.ps1` | Validates QIDM configs against authoritative XML metadata | `-Path <json>` `-OutFile` |
 | 8 | `audit_cad.ps1` | CAD dispatch field alignment (camelCase fieldIds, layout variants, Patch 8) | `-Path <json>` `-Variant` `-OutFile` |
 | 9 | `generate_test_matrix.ps1` | Auto-generates test matrix from JSON (render + combo + any[] + deselect + negatives) | `-Path <json>` `-OutFile` |
@@ -396,6 +396,13 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md (versioned filename), REBUILD_TRACKER.md, BUILD_NOTES.txt (date checksum), per-provider CHANGELOG_<PROVIDER>.md, and the repo-root CHANGELOG.md "Current:" line, with current version and scores | `-Provider <name>` `-DryRun` |
 | `generate_changelog.ps1` | Renders per-provider `docs/CHANGELOG_<PROVIDER>.md` (Markdown) from `<PROVIDER>_BUILD_NOTES.txt`. Deterministic. Step 16 of build_report; re-run by sync_version_docs | `-Path <json>` `-Provider <name>` `-OutFile <path>` |
 | `preflight_rebuild.ps1` | Per-provider rebuild action plan (validator WARNs + linter + flags → checklist) | `-Provider <name>` `-All` `-Quick` `-OutFile` |
+| `audit_log_content.ps1` | Saved-log integrity: every test log's QUERY STRING must satisfy its plan test's full fill-set (not identifier-only) | `-Path <json>` `-OutFile` |
+| `audit_supported_queries.ps1` | DEVDOC GROUND-TRUTH GATE: validates the JSON's built queries against the devdoc "Basic Queries Supported" list (build_report step 14) | `-Path <json>` `-OutFile` |
+| `audit_xml_consistency.ps1` | Cross-run XML regression: same combo + same fills must produce identical wire XML run to run | `-Path <json>` `-OutFile` |
+| `audit_simulator_parity.ps1` | Guards that test_commsys.ps1 and run_test_matrix.ps1 share one canonical condition-evaluation path | `-Path <json>` |
+| `audit_picklist_scope.ps1` | ADVISORY picklist-scope reminder (never blocks): flags providers missing the one-time TENANT_PICKLISTS.json capture | `-Path <json>` |
+| `verify_claims.ps1` | Hypothesis Quarantine Gate: blocks unverified platform-behavior claims from driving churn (must cite committed test logs) | `-Path <json>` |
+| `get_entity_fingerprints.ps1` | Computes per-entity canonical fingerprints (via _json_canonical) for test-state tracking / block_entity | `-Path <json>` |
 
 ### Metadata & Extraction
 
@@ -404,6 +411,7 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `extract_metadata_reference.ps1` | Generates METADATA_REFERENCE.txt from XML + JSON (field definitions, combo requirements, coverage) | `-XmlPath <xml>` `-Path <json>` `-OutFile` `-All` |
 | `extract_queries.ps1` | Parses metadata XML into SQVR-ready tracking file | `-XmlPath <xml>` `-OutFile` |
 | `diff_docs.ps1` | Diffs updated engineering docs against KB files (NEW/REMOVED/CONFIRMED per category) | `-NewDoc` `-KbFile` `-OutFile` `-Provider` |
+| `check_test_preconditions.ps1` | Cross-checks combo defaults against devdoc conditional field constraints (the "Must be filled if X=Y" gate) | `-Path <json>` |
 
 ### Provider Lifecycle
 
@@ -421,7 +429,13 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `build_codetype_test.ps1` | Generates CODETYPE_TEST.json for dropdown validation | `-OutputPath` |
 | `preflight_check.ps1` | Pre-build validation against PROVIDER_CONFIG.txt | (no args) |
 | `render_officer_guide.ps1` | HTML/PDF officer query reference (required-vs-optional fields per query). **This is the one `build_report.ps1` step 13 runs.** | `-Path <json>` `-OutFile` `-PdfFile` |
-| `render_cad_guide.ps1` | Standalone variant: which queries CAD can auto-trigger vs need officer input. NOT wired into the pipeline — run manually. Overlaps `render_officer_guide`; consolidation candidate. | `-Path <json>` `-OutFile` `-PdfFile` |
+| `accept_divergence.ps1` | Appends a reasoned entry to a provider's accepted-divergence registry (read by audit_metadata CHECK 4/4d/5) | `-Provider` `-Reason` |
+| `suggest_field_labels.ps1` | Derives required/optional label hints from QIDM combos | `-Path <json>` |
+| `emit_picklist_scope.ps1` | Emits the PICKLIST_SCOPE.json the browser scope tool consumes (one-time-per-provider tenant picklist capture) | `-Path <json>` |
+| `import_picklists.ps1` | Merges usx_picklists_*.json downloads into docs/reference/TENANT_PICKLISTS.json + validates current test values | `-Provider` |
+| `relabel_batch.ps1` | Content-based batch relabeler (pipeline stage before import); fixes unreliable browser-side label pairing | `-Provider` |
+| `serve_plans.ps1` | Localhost HTTP server so the browser extension loads the repo's current test plan / picklist scope itself | (no args) |
+| `watch_captures.ps1` | Start once per test session; watches Downloads for usx_captured_*.json and ingests them | (no args) |
 
 Validator must pass clean (0 FAIL) before import. Verify must pass clean (0 FAIL). Fix all failures before proceeding.
 

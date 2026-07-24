@@ -1,0 +1,31 @@
+CA_VENTURA_COUNTY -- STATUS
+===========================
+Current: v2.0 | 73P/0F/0W/0LIM | Updated 2026-07-23
+Provider: CA_VENTURA_COUNTY
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, CA_VENTURA_COUNTY second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 22 total
+  Provider-specific patterns:
+    - 6 basic queries; CaRequestPurposeCode (visible Inp)
+    - DL+DH DH-suffix fieldIds + queriesToDeselect
+    - Cross-entity combos (IN.VP / IG.QGH / NLTS.BQ.N)
+    - Attention auto-handler
+    - OOS RegistrationState EXISTS/NOT_EXISTS gates + identifier-priority guardrails
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/CA_VENTURA_COUNTY_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_CA_VENTURA_COUNTY.md for full history).
+  NOT yet USx-tenant-tested at v2.0.

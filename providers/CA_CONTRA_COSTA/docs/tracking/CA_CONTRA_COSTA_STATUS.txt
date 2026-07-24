@@ -1,0 +1,30 @@
+CA_CONTRA_COSTA -- STATUS
+=========================
+Current: v2.0 | 77P/0F/0W/0LIM | Updated 2026-07-23
+Provider: CA_CONTRA_COSTA
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, CA_CONTRA_COSTA second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 25 total
+  Provider-specific patterns:
+    - SPECIAL-CASE framework build: CA_CLETS twin (CA_CLETS = template for the 6 basic-supported families)
+    - 6 query families, PascalCase, -SkipRace
+    - JAWS (CaContraCostaJawsPersonQuery / CaContraCostaJawsWarrantQuery) + CLETSPersonSuperQuery carried in merged metadata but NOT built (CC devdoc "Basic Queries Supported: None")
+    - RequestingAgencyId only on the (unbuilt) JAWS combos
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/CA_CONTRA_COSTA_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_CA_CONTRA_COSTA.md for full history).
+  NOT yet USx-tenant-tested at v2.0.

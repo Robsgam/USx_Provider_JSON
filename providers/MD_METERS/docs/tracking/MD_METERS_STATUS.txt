@@ -1,0 +1,31 @@
+MD_METERS -- STATUS
+===================
+Current: v2.0 | 69P/0F/0W/0LIM | Updated 2026-07-23
+Provider: MD_METERS
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, MD_METERS second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 14 total
+  Provider-specific patterns:
+    - 6 basic queries; DL+DH DH-suffix fieldIds + queriesToDeselect
+    - ZVEH/ZLRG/ZWAR/ZLDR/ZDRV/ZBOA keyRefs
+    - OOS RegistrationState EXISTS/NOT_EXISTS gates
+    - Identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg)
+    - State no-default (leave blank for MD)
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/MD_METERS_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_MD_METERS.md for full history).
+  NOT yet USx-tenant-tested at v2.0.

@@ -1,0 +1,31 @@
+LA_LEMS -- STATUS
+=================
+Current: v3.0 | 64P/0F/0W/0LIM | Updated 2026-07-23
+Provider: LA_LEMS
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, LA_LEMS second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 12 total
+  Provider-specific patterns:
+    - DL+DH DH-suffix fieldIds + queriesToDeselect
+    - Attention auto-handler (AP #27, hidden feeder pattern)
+    - DP/DQ routing toggle
+    - OOS RegistrationState EXISTS/NOT_EXISTS gates
+    - Identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg)
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/LA_LEMS_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_LA_LEMS.md for full history).
+  NOT yet USx-tenant-tested at v3.0.

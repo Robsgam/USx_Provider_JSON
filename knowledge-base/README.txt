@@ -2,10 +2,10 @@ CONNECTCIC KNOWLEDGE BASE
 ===========================
 Central reference for all ConnectCIC / CommSys provider JSON projects.
 Last updated: 2026-06-09
-Covers: 20 providers in consolidated monorepo (8 active + 11 new + 1 CCH stub)
-  Active (8): NJ/AZ/FL/NY/HI/TX/LA/CA_CLETS  | CCH stub (1): TX_TLETS_CCH
-  New (11): CA_VENTURA_COUNTY/CA_CONTRA_COSTA/CA_CLETS_OCATS/CA_eSUN/CA_SAN_LUIS_OBISPO/
-            IL_LEADS_OFML/MD_METERS/OH_LEADS/NM_NMLETS_OFML/OR_LEDS/TN_TIES
+Covers: 20 providers in consolidated monorepo (all galvanized to single-JSON, PascalCase)
+  All 20: NJ/AZ/FL/NY/HI/TX/LA/CA_CLETS + TX_TLETS_CCH (variant of TX_TLETS) +
+          CA_VENTURA_COUNTY/CA_CONTRA_COSTA/CA_CLETS_OCATS/CA_eSUN/CA_SAN_LUIS_OBISPO/
+          IL_LEADS_OFML/MD_METERS/OH_LEADS/NM_NMLETS_OFML/OR_LEDS/TN_TIES
 
 CURRENT STATUS: See CLAUDE.md provider table for versions, counts, and import status.
   Each provider JSON is standalone. CLAUDE.md and KB docs are the build authority.
@@ -24,7 +24,7 @@ SOURCE AUTHORITY RULES:
   Document any MetaData vs. DevDoc discrepancies in provider docs.
 
 ================================================================================
-FILES IN THIS FOLDER (10 files, organized by question)
+FILES IN THIS FOLDER (12 files, organized by question)
 ================================================================================
 
   README.txt               This file -- index and overview
@@ -77,6 +77,16 @@ FILES IN THIS FOLDER (10 files, organized by question)
                            providers have built these; blocked pending official
                            devdoc + metadata. Not part of the standard read order --
                            only relevant if/when Canadian queries are prioritized.
+
+  JIRA_REFERENCE.txt       "What DEX ticket maps to this provider?"
+                           Provider -> DEX ticket mapping (cloudId + per-provider
+                           ticket/status/last-comment table). Reference for changelog
+                           comment updates.
+
+  PLATFORM_BUG_REPORT.txt  "What platform bugs are open/worked-around?"
+                           Confirmed CommSys/ConnectCIC platform defects found during
+                           testing that cannot be fixed via JSON config -- reproduction
+                           steps + affected providers, submitted to engineering.
 
   BEFORE ANYTHING ELSE -- NAMING RULE:
     Provider folder name MUST match the metadata XML filename minus .xml.
@@ -146,14 +156,15 @@ TOOLS
       2. QIF fieldId / QIDM sourceField / combo consistency
       3. RMS QIDM name vs sourceField alignment
       4. Cross-bundle fieldId consistency
-      5. camelCase enforcement (opt-in via -CamelCase flag)
-      6. Standard pattern comparison (queryLabel, ImageIndicator, keyReference, state)
-      7. Cross-variant consistency (BASE vs MC field type mismatches)
-      8. Visible-First Mandate (no hidden/auto-populated fields outside approved exceptions)
-      9. Synthetic keyRef documentation -- WARNs on multi-combo QIDMs missing LIMITATION
+      5. Standard pattern comparison (queryLabel, ImageIndicator, keyReference, state)
+      6. Visible-First Mandate (no hidden/auto-populated fields outside approved exceptions)
+      7. Synthetic keyRef documentation -- WARNs on multi-combo QIDMs missing LIMITATION
          #21/#36 comment block in build script (BUILD_RULES.txt Section 15)
+      (14 checks total; also label-hint CHECK 15, reachability CHECK 16, VehicleMakeCode-Sel.
+       The camelCase and BASE-vs-MC cross-variant checks were removed 2026-07-24 -- obsolete
+       under the single-JSON PascalCase model.)
     Called automatically by build_report.ps1 as step 6. Can also run standalone.
-    Usage: -Path <json> [-CamelCase]
+    Usage: -Path <json>
     FAILS the build (exit 1) if any check fails.
 
   tools/banned_patterns.txt
@@ -192,11 +203,9 @@ TOOLS
     (advisory deliverable, not read by enforce.ps1).
     Usage: -Path <json> -OutFile <html> [-PdfFile <pdf>]
 
-  tools/render_cad_guide.ps1
-    Provider CAD auto-dispatch reference: documents the CAD-dispatched query paths and the
-    fields CAD auto-populates per combo, in plain English. HTML + best-effort PDF via Edge
-    headless. A transform of QIDM combos + combo defaults + CAD field alignment.
-    Usage: -Path <providerJson> -OutFile <html> [-PdfFile <pdf>]
+  tools/_archive/render_cad_guide.ps1  (ARCHIVED 2026-07-24 -- overlapped render_officer_guide)
+    Was: provider CAD auto-dispatch reference (CAD-dispatched query paths + fields CAD
+    auto-populates per combo). Consolidated into render_officer_guide.ps1; no longer active.
 
   tools/generate_changelog.ps1
     Per-provider changelog (Markdown) rendered from docs/<PROVIDER>_BUILD_NOTES.txt ->
@@ -251,10 +260,11 @@ TOOLS
     Usage: .\audit_repo.ps1 [-Category <1-18>]
 
   tools/audit_cad.ps1
-    CAD dispatch field alignment auditor. Validates camelCase fieldIds for
-    CAD auto-populate, CAD_DISPATCH/FIRST_RESPONDER layout variants, Patch 8
-    completeness, and QIDM sourceField case alignment.
-    Usage: .\audit_cad.ps1 [-Path <json>] [-Variant <BASE|MC>] [-OutFile <path>]
+    CAD dispatch field alignment auditor. Validates CAD-populated field alignment,
+    CAD_DISPATCH/FIRST_RESPONDER layout variants, combo defaults[] presence for
+    CAD-populated fields, and QIDM sourceField alignment. (5 checks; the legacy
+    Patch-8 camelCase-rename check and -Variant BASE|MC flag were removed 2026-07-24.)
+    Usage: .\audit_cad.ps1 [-Path <json>] [-OutFile <path>]
 
   tools/audit_simulator_parity.ps1
     Tool-integrity gate. Confirms test_commsys.ps1 and run_test_matrix.ps1 both
@@ -463,18 +473,11 @@ TOOLS
     enforce.ps1 surfaces the NOTE without affecting the verdict/exit code.
     Usage: .\tools\audit_picklist_scope.ps1 -Path <provider.json>
 
-  tools/audit_metadata_field_coverage.ps1
-    ADVISORY "form behind the metadata" detector (emits [FIELD-GAP]/[OK], always exits 0). Flags a
-    metadata field only when: (1) it's in the Set/Any of a BUILT combo (source XML +
-    Resolve-XmlKeyRefBuild from _metadata_keyref_match.ps1, so unbuilt/orphan-combo fields don't
-    count), (2) it's not wired into the query's QIDM (attributes[].targetField), and (3) it's not on
-    the curated $SKIP list of optional/non-search modifiers (Requestor/Attention, RelatedHitSearch,
-    State2-5, VINSequenceNumber, MessageContinueKeyCode, ExpandedNameSearchCode, MessageKeyModifier).
-    This is the class that hid on NY DGRP. On-demand, NOT gated -- remaining flags are genuine
-    candidates for a human keep/expose call (a survivor may still be a deliberate provider-specific
-    skip, e.g. HI VehicleMakeCode). Do NOT global-skip-list a real search field (would hide a gap on
-    another provider) -- provider-specific skips belong in that provider's ACCEPTED_DIVERGENCES.
-    Usage: .\tools\audit_metadata_field_coverage.ps1 -Path <provider.json>
+  tools/_archive/audit_metadata_field_coverage.ps1  (ARCHIVED 2026-07-24 -- advisory, never gated)
+    Was: ADVISORY "form behind the metadata" detector ([FIELD-GAP]/[OK], always exit 0) flagging a
+    built-combo metadata field not wired into the query's QIDM and not on the curated skip list.
+    This is the class that hid on NY DGRP. Archived (on-demand, never enforce-gated); the
+    devdoc/metadata coverage gate now lives in audit_supported_queries.ps1 + audit_metadata.ps1.
 
   tools/import_captured_tests.ps1
     Ingests browser-captured test records (usx_captured_*.json from the extension) into
@@ -779,7 +782,8 @@ AUTHORITATIVE SOURCE FILES (read-only)
   providers/NJ_NJCJIS/
     v3.4 imported USx Provider Tenant + Newark Foundation Tenant (2026-05-21).
     Legacy repo (read-only): https://github.com/LooseConnection/NJ_NJCIS_JSON
-    AVOID as template: v3.x series (split entity NJ/OOS); archived in phases/08_split_entities/.
+    AVOID as template: v3.x series (split entity NJ/OOS); recoverable from git history
+    (phases/ retired -- git log/git show is authoritative for prior versions).
 
   providers/NY_NYSPIN_EJUSTICE/
     Phase 1 reboot complete -- v1.1 built (2026-04-20), import PENDING.

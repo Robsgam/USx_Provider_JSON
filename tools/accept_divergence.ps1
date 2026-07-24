@@ -31,9 +31,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+. (Join-Path $PSScriptRoot "_resolve_docs_path.ps1")
 $repoRoot  = Split-Path $PSScriptRoot -Parent
-$docsDir   = Join-Path $repoRoot ("providers\{0}\docs" -f $Provider)
-$registry  = Join-Path $docsDir ("{0}_ACCEPTED_DIVERGENCES.txt" -f $Provider)
+$provDir   = Join-Path $repoRoot ("providers\{0}" -f $Provider)
+$docsDir   = Join-Path $provDir "docs"
+# ACCEPTED_DIVERGENCES is a 'tracking' category doc; the resolver returns docs/tracking/ for
+# migrated providers and falls back to flat docs/ for legacy ones (matches audit_metadata's read).
+$registry  = Get-DocsPath $provDir 'tracking' ("{0}_ACCEPTED_DIVERGENCES.txt" -f $Provider)
 
 # -- Guard: docs/ must exist --
 if (-not (Test-Path $docsDir)) {

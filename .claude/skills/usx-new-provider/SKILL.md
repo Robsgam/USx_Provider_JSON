@@ -17,16 +17,19 @@ MUST equal that filename minus `.xml` — never guess from the devdoc title or a
 abbreviation. State the derived name back to the user before scaffolding. A mismatch here means
 renaming 10+ files later (folder, build script, all doc files, CLAUDE.md, KB README).
 
-## Step 1 — Scaffold + de-stub
+## Step 1 — Scaffold + fill placeholders
 
 ```
 tools/new_provider.ps1 -XmlPath <path\to\provider.xml> -PdfPath <path\to\devdoc.pdf>
 ```
 
-The scaffolder emits legacy BASE+MC stub scripts and generic doc placeholders. Per BUILD_RULES
-Section 16, immediately follow up: delete the stub `build_<provider>_mc.ps1` (single-JSON model
-only, see Section 6), and fill in JSON_INVENTORY.md / STATUS.txt / SQVR.txt for real — the
-scaffolder's placeholders will fail repo audits if left as generic text.
+The scaffolder emits the current single-JSON model directly: one `build_<provider>.ps1` stub
+(dot-sources the 3 shared modules, versioned `<PROVIDER>_v<X.Y>.json` output + REPRO hook,
+`-PascalCaseUsxFields` RMS call), the 4-category `docs/` layout
+(`tracking/`/`reports/`/`reference/`/`deliverables/`), and `logs/`. No BASE/MC stub, no
+`phases/`, no `tests/` — those are retired repo-wide (BUILD_RULES Section 6). Immediately follow
+up: fill in the `docs/tracking/` placeholders (JSON_INVENTORY.md / STATUS.txt / SQVR.txt) for
+real — the scaffolder's generic text will fail repo audits if left as-is.
 
 ## Step 2 — Extract + read source materials
 

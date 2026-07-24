@@ -1,0 +1,31 @@
+CA_CLETS_OCATS -- STATUS
+========================
+Current: v2.0 | 61P/0F/0W/0LIM | Updated 2026-07-23
+Provider: CA_CLETS_OCATS
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, CA_CLETS_OCATS second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 5 (VehicleRegistrationQuery, DriverLicenseQuery, GunQuery,
+           ArticleSingleQuery, BoatQuery)
+  Combos: 17 total
+  Provider-specific patterns:
+    - CLETS_OCATS v21 metadata; 5 basic queries (no DriverHistory)
+    - VP owner search (Vehicle by owner name)
+    - CaRequestPurposeCode on all combos
+    - OCATS-specific queries (warrants/juvenile/LARS) available in metadata, not built
+    - Identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg) + OOS RegistrationState EXISTS/NOT_EXISTS gates
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/CA_CLETS_OCATS_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_CA_CLETS_OCATS.md for full history).
+  NOT yet USx-tenant-tested at v2.0.

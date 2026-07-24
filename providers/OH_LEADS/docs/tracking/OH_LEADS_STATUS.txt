@@ -1,0 +1,31 @@
+OH_LEADS -- STATUS
+==================
+Current: v2.0 | 76P/0F/0W/0LIM | Updated 2026-07-23
+Provider: OH_LEADS
+Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
+USx tenant test: NOT STARTED -- all query paths PENDING
+
+ARCHITECTURE
+============
+  Bundles: 3 (ENTITIES first, OH_LEADS second, RMS third)
+  Entities: Vehicle, Person, Firearm, Article, Boat
+  Queries: 6 (VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery,
+           GunQuery, ArticleSingleQuery, BoatQuery)
+  Combos: 20 total
+  Provider-specific patterns:
+    - 6 basic queries; 7 VehReg combos (9 metadata, 2 NCIC shadows dropped) + owner SSN/Name cross-entity
+    - DL+DH DH-suffix fieldIds + queriesToDeselect
+    - Attention eSUN feeder
+    - Existence-only routing gates + identifier-priority guardrails (Plate>VIN>SSN>Name, OLN>Name, Hull>Reg)
+    - State no-default (leave blank for OH)
+
+TEST MATRIX
+===========
+  Not yet generated. The full USx-tenant-test matrix is produced by
+  reset_test_package.ps1 / emit_test_plan.ps1 when testing begins.
+  All query paths currently PENDING (see docs/tracking/OH_LEADS_SQVR.txt).
+
+NOTES
+=====
+  Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_OH_LEADS.md for full history).
+  NOT yet USx-tenant-tested at v2.0.

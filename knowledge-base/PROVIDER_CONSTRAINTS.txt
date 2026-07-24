@@ -12,11 +12,28 @@ See also:
   BUILD_RULES.txt             -- JSON structural/config rules
   TESTING_REQUIREMENTS.txt    -- Instance-specific verification requirements
 
-Per-provider sections below document EXCEPTIONS ONLY. Providers not listed here
-have been reviewed and follow all cross-provider rules with no exceptions:
-  CA_VENTURA_COUNTY, CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO, IL_LEADS_OFML,
-  MD_METERS, OH_LEADS, NM_NMLETS_OFML, OR_LEDS, TN_TIES
-  (CA_CONTRA_COSTA is FLAGGED -- no basic queries per devdoc, not reviewed)
+================================================================================
+CURRENT PORTFOLIO BASELINE (version snapshot -- CLAUDE.md table is authority)
+================================================================================
+All 20 providers are galvanized: single versioned <PROVIDER>_v<X.Y>.json,
+native PascalCase USx CAD fields. Current versions (see CLAUDE.md for live
+validator counts / USx-tenant-test state):
+
+  NJ_NJCJIS            v4.10      CA_VENTURA_COUNTY    v2.0
+  HI_HCJDC_OFML        v4.11      CA_CONTRA_COSTA      v2.0
+  NY_NYSPIN_EJUSTICE   v4.10      CA_CLETS_OCATS       v2.0
+  AZ_AZDPS             v3.1       CA_eSUN              v2.0
+  FL_FCIC              v7.8       CA_SAN_LUIS_OBISPO   v2.0
+  TX_TLETS             v4.7       IL_LEADS_OFML        v2.0
+  TX_TLETS_CCH         v1.3       MD_METERS            v2.0
+  LA_LEMS              v3.0       OH_LEADS             v2.0
+  CA_CLETS             v2.15      NM_NMLETS_OFML       v2.0
+                                  OR_LEDS              v2.0
+                                  TN_TIES              v2.0
+
+Per-provider sections below document EXCEPTIONS / provider-specific patterns.
+CA_CONTRA_COSTA is a SPECIAL CASE (CA_CLETS twin + unbuilt JAWS/SuperQuery per
+its own section below).
 
 ================================================================================
 NJ_NJCJIS -- New Jersey
@@ -293,6 +310,148 @@ CA_eSUN-3: BirthDate format yyyyMMdd (MIXED: GunQuery uses MMddyyyy)
 
 CA_eSUN-4: CaRequestPurposeCode visible (Inp, not InpH)
   Officers interact with purpose code. Must be visible FormInput.
+
+================================================================================
+TX_TLETS_CCH -- Texas (CCH variant of TX_TLETS)
+================================================================================
+
+TX_CCH-1: Variant of TX_TLETS (BASE-SYNC lockstep)
+  Build script declares `# BASE-SYNC: TX_TLETS v4.7`. Base 6 QIDMs must stay
+  identical to TX_TLETS main; any base change propagates here (audit_variant_sync.ps1
+  gate). Reuses TX_TLETS's devdoc as query authority. See BUILD_RULES.txt Section 6
+  "PROVIDER VARIANTS".
+
+TX_CCH-2: 8 CCH transactions on Person (full field isolation)
+  AQ/AR/FQ/IQ/QH/QR/QWI/ZR, autoSelect=false (named-checkbox via queryLabel).
+  Every CCH field is CCH-suffixed (zero collision with the base 6). 3 CCH cards.
+  Synthetic keyRefs (QR/QWI/ZR) + Choice splits; QH = 4 metadata-exact combos.
+
+TX_CCH-3: CCH response QRDM out of scope; FreeText capped display.
+  NOT USx-tenant-tested.
+
+================================================================================
+CA_VENTURA_COUNTY -- California (special-case CLETS derivative)
+================================================================================
+
+CA_VEN-1: 6 basic queries, CaRequestPurposeCode visible (Inp).
+CA_VEN-2: DL+DH use DH-suffix + queriesToDeselect.
+CA_VEN-3: Cross-entity name combos (IN.VP Vehicle-by-Name, IG.QGH Gun-by-Name,
+  NLTS.BQ.N Boat-by-Name+DOB).
+CA_VEN-4: Attention auto-handler (hidden feeder + defaults[]).
+CA_VEN-5: OOS RegistrationState EXISTS/NOT_EXISTS routing gates + identifier-
+  priority guardrails (Plate>VIN, OLN>Name incl. DH, Hull>Reg). SexCode added to
+  DL IN.L1 any[] (ACCEPTED_DIVERGENCE). NOT USx-tenant-tested at v2.0.
+
+================================================================================
+CA_CONTRA_COSTA -- California (SPECIAL CASE: CA_CLETS twin)
+================================================================================
+
+CA_CC-1: Built as a CA_CLETS COPY (CA_CLETS metadata = template for the 6 basic-
+  supported families). 6 families / 40 combos / PascalCase / -SkipRace.
+CA_CC-2: Derived metadata = CA_CLETS.xml + CC's 2 JAWS transactions merged
+  (CaContraCostaJawsPersonQuery/WarrantQuery); CC original preserved as
+  _JAWS_ONLY.xml.
+CA_CC-3: JAWS + CLETSPersonSuperQuery are CC "Expanded Queries" -- carried in
+  metadata but NOT built (CC devdoc "Basic Queries Supported: None"; devdoc-
+  authority overridden per Rob to build the CA_CLETS basic set). RequestingAgencyId
+  appears only on the (unbuilt) JAWS combos. Backfill JAWS if promoted.
+  NOT USx-tenant-tested.
+
+================================================================================
+CA_CLETS_OCATS -- California (CLETS_OCATS interface)
+================================================================================
+
+CA_OCATS-1: CLETS_OCATS v21 metadata. 5 basic queries (NO DriverHistory).
+CA_OCATS-2: VP owner search; CaRequestPurposeCode on all combos.
+CA_OCATS-3: OCATS-specific queries (warrants/juvenile/LARS) available-not-built.
+CA_OCATS-4: Identifier-priority guardrails + OOS RegistrationState EXISTS/NOT_EXISTS
+  gates; form-identical stolen-boat dups dropped (server routes by keyRef).
+  NOT USx-tenant-tested at v2.0.
+
+================================================================================
+CA_SAN_LUIS_OBISPO -- California (regional interface)
+================================================================================
+
+CA_SLO-1: Regional interface (NOT direct CLETS). Short keyRefs.
+CA_SLO-2: DL+DH use DH-suffix + queriesToDeselect.
+CA_SLO-3: No State initialValue (LIMITATION #30, in/out split). No ImageIndicator.
+CA_SLO-4: Identifier-priority guardrails + OOS EXISTS/NOT_EXISTS gates.
+  NOT USx-tenant-tested. 1 documented LIMITATION.
+
+================================================================================
+IL_LEADS_OFML -- Illinois
+================================================================================
+
+IL-1: 5 basic queries (NO DriverHistory). Z2/Z5 keyRefs.
+IL-2: CDCName carried in AUTH (Build-Auth -ExtraAttributes).
+IL-3: No State initialValue (LIMITATION #30) -- "leave blank for IL" hint;
+  OOS RegistrationState EXISTS/NOT_EXISTS gates + identifier-priority guardrails.
+IL-4: relatedHitSearchIndicator is visible camelCase Sel dropdown (matched Boat).
+  NOT USx-tenant-tested at v2.0.
+
+================================================================================
+MD_METERS -- Maryland
+================================================================================
+
+MD-1: 6 basic queries. keyRefs ZVEH/ZLRG/ZWAR/ZLDR/ZDRV/ZBOA.
+MD-2: -SkipRace on RMS (raceCode is CommSys-only form field, camelCase).
+MD-3: ZWAR (warrant) vs ZLDR (DL) isolated via raceCode EXISTS/NOT_EXISTS
+  (set[] does not gate firing -- CHECK-16 shadow fix).
+MD-4: DH on separate visible DH-suffix cards + queriesToDeselect; no Attention
+  (not in metadata). State no-default (LIMITATION #30). OOS EXISTS/NOT_EXISTS
+  gates + identifier-priority guardrails. NOT USx-tenant-tested at v2.0.
+
+================================================================================
+OH_LEADS -- Ohio
+================================================================================
+
+OH-1: 6 basic queries. VehReg = 7 built combos (9 metadata; 2 NCIC shadows
+  QV.P/QV.V dropped as form-identical, ACCEPTED_DIVERGENCE) + owner SSN/Name
+  cross-entity. Priority Plate>VIN>SSN>Name.
+OH-2: DH KQ.N/KQ.O on separate visible DH-suffix cards + queriesToDeselect;
+  BMVIMS OLN shadow dropped (documented).
+OH-3: Attention auto-handler via the eSUN hidden 'attention' feeder + defaults[].
+OH-4: Existence-only routing gates + identifier-priority guardrails; State no-
+  initialValue (LIMITATION #30) "leave blank for OH". NOT USx-tenant-tested at v2.0.
+
+================================================================================
+NM_NMLETS_OFML -- New Mexico
+================================================================================
+
+NM-1: 6 basic queries. GunModel field (22-token PascalCase).
+NM-2: Article serial = PascalCase ArticleSerialNumber (was shared camelCase
+  serialNumber, which collided with Gun serial -- 11 vs 20 maxLen).
+NM-3: Vehicle RQ(Nlets)/QV(NCIC) + Boat BQ/QB routed by RegistrationState
+  EXISTS/NOT_EXISTS. State no-initialValue (LIMITATION #30) "leave blank for NM".
+NM-4: Attention DROPPED (no rule handler in metadata; MD precedent). raceCode
+  form field feeds RMS person (NOT -SkipRace). DH-suffix + queriesToDeselect +
+  identifier-priority guardrails. NOT USx-tenant-tested at v2.0.
+
+================================================================================
+OR_LEDS -- Oregon
+================================================================================
+
+OR-1: 5 basic queries (NO DriverHistory). Invented keyRefs (RQ/DQ/QG/QA/BQ splits).
+OR-2: OOS RegistrationState EXISTS/NOT_EXISTS gates (RQ.PO OOS / RQ.P in-state) +
+  identifier-priority guardrails; DL collapsed to 2 combos, VehReg to 3.
+OR-3: State already no-initialValue (LIMITATION #30) "leave blank for OR".
+  Gun/Article serialNumber maxLen fixed to XML (11/20). MC multi-card.
+  NOT USx-tenant-tested at v2.0.
+
+================================================================================
+TN_TIES -- Tennessee
+================================================================================
+
+TN-1: 6 basic queries, 22 built combos (8 Veh incl. Dealer/Handicap/Temp
+  specialty, 5 DL, 3 DH, Gun/Article/Boat). 28 metadata combos -> 6 form-identical
+  shadows dropped (ACCEPTED_DIVERGENCE; server routes by keyRef).
+TN-2: -KeepSsn preserved, race kept.
+TN-3: DriverHistory Attention via the eSUN/AZ auto-handler feeder (hidden
+  attention initialValue=X + defaults Attention=X on KQ); purposeCodeDH visible.
+  DH-suffix fields visible on 2 dedicated DH cards + queriesToDeselect.
+TN-4: Existence-only OOS routing gates (RQ Nlets vs QV/QWA/DQ01 NCIC by State;
+  Boat BB vs QB) + identifier-priority guardrails. No State initialValue
+  (LIMITATION #30). NOT USx-tenant-tested at v2.0.
 
 ================================================================================
 CROSS-PROVIDER CONSISTENCY RULES
