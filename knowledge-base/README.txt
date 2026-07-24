@@ -47,7 +47,7 @@ FILES IN THIS FOLDER (12 files, organized by question)
                            A/B/C), known query patterns, field naming constraints
 
   PLATFORM_CONSTRAINTS.txt "What CAN'T I do? What breaks?"
-                           All 31 platform limitations (#1-#31) + all 27 anti-patterns
+                           All 23 platform limitations (non-contiguous, #1-#37) + all 27 anti-patterns
                            (AP #1-#27) organized by category. Anti-patterns folded into
                            their related constraints. Confirmed dead ends.
 
@@ -160,7 +160,7 @@ TOOLS
       6. Visible-First Mandate (no hidden/auto-populated fields outside approved exceptions)
       7. Synthetic keyRef documentation -- WARNs on multi-combo QIDMs missing LIMITATION
          #21/#36 comment block in build script (BUILD_RULES.txt Section 15)
-      (14 checks total; also label-hint CHECK 15, reachability CHECK 16, VehicleMakeCode-Sel.
+      (14 checks total; also label-hint CHECK 13, reachability CHECK 14, VehicleMakeCode-Sel.
        The camelCase and BASE-vs-MC cross-variant checks were removed 2026-07-24 -- obsolete
        under the single-JSON PascalCase model.)
     Called automatically by build_report.ps1 as step 6. Can also run standalone.

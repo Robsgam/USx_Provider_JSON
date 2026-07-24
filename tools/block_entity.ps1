@@ -149,7 +149,7 @@ $state = Get-Content $stateJsonPath -Raw | ConvertFrom-Json
 $global = $state.global
 $entities = [ordered]@{}
 foreach ($p in $state.entities.PSObject.Properties) {
-    $entities[$p.Name] = [ordered]@{ version = $p.Value.version; fingerprint = $p.Value.fingerprint; status = $p.Value.status }
+    $entities[$p.Name] = [ordered]@{ version = $p.Value.version; fingerprint = $p.Value.fingerprint; status = $p.Value.status; forced = [bool]$p.Value.forced }
 }
 if (-not $entities.Contains($Entity)) {
     $entities[$Entity] = [ordered]@{ version = $global; fingerprint = $fp[$Entity]; status = 'open' }
@@ -157,6 +157,10 @@ if (-not $entities.Contains($Entity)) {
 $entities[$Entity].version     = $global
 $entities[$Entity].fingerprint = $fp[$Entity]
 $entities[$Entity].status      = 'blocked'
+# Persist whether this block bypassed a gate via -Force (an evidence-free lock). enforce Check 3h
+# surfaces forced blocks as a WARN so a -Force lock can never masquerade as a genuinely-evidenced
+# one (audit finding: -Force previously left no trace in .test_state.json).
+$entities[$Entity].forced      = [bool]($Force -and (($pending -gt 0 -or $failed -gt 0) -or ($evidenceGaps.Count -gt 0)))
 
 $stateObj = [ordered]@{ global = $global; entities = $entities }
 [System.IO.File]::WriteAllText($stateJsonPath, ([pscustomobject]$stateObj | ConvertTo-Json -Depth 6), (New-Object System.Text.UTF8Encoding($false)))

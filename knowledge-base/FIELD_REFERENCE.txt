@@ -666,7 +666,7 @@ SECTION 9 -- IMAGEINDICATOR
       The field therefore cannot be uniformly blanked -- Person must keep an explicit 'Y'.
     - Serialization model: ImageIndicator also rides in via combo-level defaults[] (the
       CAD/First-Responder mechanism -- those contexts ignore form initialValue, so
-      audit_cad CHECK 6 REQUIRES a combo default for any any[] field that has a form
+      audit_cad CHECK 5 REQUIRES a combo default for any any[] field that has a form
       initialValue). Therefore blanking the form field alone does NOT stop serialization;
       you'd also have to strip the combo defaults[] and any[] membership. Net: a true
       suppression on a specific path (e.g. OOS BQ only) needs card/combo isolation, not a

@@ -722,6 +722,7 @@ foreach ($pd in $providers) {
             if ($info.status -eq 'blocked') {
                 if ($curFp.Contains($ent) -and $curFp[$ent] -eq $info.fingerprint) { $blockedOk++ }
                 else { Fail "$provName -- blocked entity '$ent' fingerprint drifted from build (v${version}); re-validate + re-block (block_entity.ps1) or it is silently stale"; $driftFail++ }
+                if ($info.forced) { Warn "$provName -- blocked entity '$ent' was -Force-blocked (evidence-free lock: SQVR/XML gate overridden); re-validate with real logs to clear" }
             } else {
                 if ($info.version -ne $st.global) { $openMisaligned++ }
             }
@@ -934,7 +935,7 @@ foreach ($pd in $providers) {
         $logAuditOut -split "`n" | Where-Object { $_ -match 'FAIL|STALE|MISMATCH|GUARDRAIL' } | Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
     }
 }
-if (-not $logContentFailed) { Pass "Log-content integrity: all in-scope provider logs match their plan tests (pass-by-absence where no TEST_PLAN)" }
+if (-not $logContentFailed) { Pass "Log-content integrity: in-scope logs match their plan tests -- VERIFIED where logs exist; providers with no TEST_PLAN pass BY ABSENCE (not verified). Per-provider test coverage: portfolio_status.ps1 / report_test_status.ps1" }
 
 # 6d: Log-metadata integrity -- every saved test log's COMMSYS wire XML validated DIRECTLY against
 # the metadata: each wire field is a metadata-defined field for that query, and the present field-set
@@ -951,7 +952,7 @@ foreach ($pd in $providers) {
         $metaAuditOut -split "`n" | Where-Object { $_ -match 'FAIL|MISMATCH|not defined|satisfies no|not well-formed' } | Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
     }
 }
-if (-not $logMetaFailed) { Pass "Log-metadata integrity: all in-scope provider logs are metadata-correct (pass-by-absence where no current-version logs)" }
+if (-not $logMetaFailed) { Pass "Log-metadata integrity: in-scope logs are metadata-correct -- VERIFIED where current-version logs exist; providers with none pass BY ABSENCE (not verified). Per-provider coverage: portfolio_status.ps1" }
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  ADVISORY: picklist-scope reminders -- NON-BLOCKING. A [NOTE] is not a PASS/FAIL/WARN and

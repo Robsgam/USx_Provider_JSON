@@ -142,7 +142,11 @@ if (-not $batchMode) {
             $script:failedStep = "Build"
         } else {
             $output = & powershell -ExecutionPolicy Bypass -File $files.BuildScript.FullName 2>&1 | Out-String
-            if ($output -match '0 FAIL') {
+            $buildExit = $LASTEXITCODE
+            # Gate on BOTH the build script's exit code (Write-ProviderJson exits 1 on validator
+            # FAIL / any terminating error) AND the "0 FAIL" summary -- a stdout string match alone
+            # scored a build that errored AFTER printing an earlier "0 FAIL" as a PASS.
+            if ($buildExit -eq 0 -and $output -match '0 FAIL') {
                 StepPass "Built successfully"
                 $resolvedJson = Get-ProviderRootJson -ProvDir $files.Dir -Provider $provName
                 if ($resolvedJson) { $files.Json = $resolvedJson }
@@ -163,6 +167,23 @@ if (-not $batchMode) {
             }
         }
         if ($script:failedStep) { break pipeline }
+    }
+
+    # Step 1b: Test preconditions (advisory) -- cross-checks combo defaults against devdoc
+    # "Must be filled if X=Y" conditional constraints (the TX_TLETS-T6 class). Dormant until the
+    # METADATA_REFERENCE FIELD CONSTRAINTS extractor is populated; wired here so it fires the moment
+    # constraints exist instead of relying on manual discipline (audit finding: a MANDATORY gate
+    # that no orchestrator invoked). Advisory/non-fatal -- a triggered constraint prints a WARN.
+    if (-not $script:failedStep) {
+        Step "Test preconditions (advisory)"
+        $precOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\check_test_preconditions.ps1" -Provider $provName 2>&1 | Out-String
+        $precHits = $precOut -split "`n" | Where-Object { $_ -match 'WARN|MUST|Must be filled|constraint' }
+        if ($precHits) {
+            Write-Host "  [WARN] combo-default vs devdoc conditional-requirement check flagged:" -ForegroundColor Yellow
+            $precHits | ForEach-Object { Write-Host "       $($_.Trim())" -ForegroundColor Yellow }
+        } else {
+            StepPass "No conditional-requirement violations (none, or FIELD CONSTRAINTS not yet extracted)"
+        }
     }
 
     # Step 2: Build report
@@ -271,9 +292,12 @@ if (-not $batchMode) {
     # Step 8: Enforce
     if (-not $SkipEnforce) {
         Step "Enforce (final gate)"
-        $enforceResult = & powershell -ExecutionPolicy Bypass -File "$toolDir\enforce.ps1" -Provider $provName -SkipGit 2>&1 | Out-String
+        # -Reproducible makes enforce prove committed JSON == a fresh build (phase 2f); without it
+        # the "no post-build patches / reproducible builds" rule was culture-only, never gated.
+        $enforceResult = & powershell -ExecutionPolicy Bypass -File "$toolDir\enforce.ps1" -Provider $provName -SkipGit -Reproducible 2>&1 | Out-String
+        $enforceExit = $LASTEXITCODE
 
-        if ($enforceResult -match 'ENFORCED') {
+        if ($enforceExit -eq 0 -and $enforceResult -match 'ENFORCED') {
             StepPass "ENFORCED -- all gates clear"
         } elseif ($enforceResult -match 'PASSED WITH WARNINGS') {
             Write-Host "  [WARN] Passed with warnings" -ForegroundColor Yellow
@@ -345,7 +369,8 @@ foreach ($provName in $providerList) {
             $provFailed = 'Build'
         } else {
             $output = & powershell -ExecutionPolicy Bypass -File $files.BuildScript.FullName 2>&1 | Out-String
-            if ($output -match '0 FAIL') {
+            $buildExit = $LASTEXITCODE
+            if ($buildExit -eq 0 -and $output -match '0 FAIL') {
                 StepPass "Built"
                 $resolvedJson = Get-ProviderRootJson -ProvDir $files.Dir -Provider $provName
                 if ($resolvedJson) { $files.Json = $resolvedJson }
@@ -460,8 +485,9 @@ if (-not $SkipEnforce -and -not $batchFailed) {
     Write-Host "  [BATCH] Enforce" -ForegroundColor Cyan
     Write-Host ("  " + "-" * 56) -ForegroundColor DarkGray
 
-    $enforceResult = & powershell -ExecutionPolicy Bypass -File "$toolDir\enforce.ps1" -SkipGit 2>&1 | Out-String
-    if ($enforceResult -match 'ENFORCED') {
+    $enforceResult = & powershell -ExecutionPolicy Bypass -File "$toolDir\enforce.ps1" -SkipGit -Reproducible 2>&1 | Out-String
+    $enforceExit = $LASTEXITCODE
+    if ($enforceExit -eq 0 -and $enforceResult -match 'ENFORCED') {
         StepPass "ENFORCED -- all gates clear"
     } else {
         StepFail "enforce.ps1 BLOCKED"

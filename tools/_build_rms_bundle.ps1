@@ -6,7 +6,7 @@
 #   . "$PSScriptRoot\..\..\..\tools\_build_rms_bundle.ps1"
 #   $rmsBundle = Build-RmsBundle                         # standard (no SSN, with race)
 #   $rmsBundle = Build-RmsBundle -KeepSsn                # AZ, TN
-#   $rmsBundle = Build-RmsBundle -SkipRace               # TX, LA, MD, CA_CONTRA_COSTA
+#   $rmsBundle = Build-RmsBundle -SkipRace               # TX_TLETS, TX_TLETS_CCH, LA_LEMS, MD_METERS, CA_CONTRA_COSTA, CA_CLETS
 #   $results   = Build-CommsysQrdm -ProviderName 'FL_FCIC'
 
 # =====================================================================

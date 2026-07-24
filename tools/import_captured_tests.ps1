@@ -76,6 +76,32 @@ function Infer-ComboFromXml($provider, $query, $xml) {
     if ($best) { if ($best.keyReference) { return $best.keyReference } else { return $best.keyRef } }
     return $null
 }
+# Routing verification: does the wire actually carry the EXPECTED combo's set[] identifiers?
+# A correct capture always satisfies this (the fired combo IS the expected one, so its set[]
+# serializes on the wire), so this never false-FAILs a good query -- but a query that fired a
+# DIFFERENT combo which drops an expected identifier (a routing regression) now FAILs instead of
+# passing on query-family alone (the old `messageType -eq query` check, which every fired query
+# trivially satisfied). Returns $true (verified), $false (an expected set identifier is missing
+# from the wire -> routing mismatch), or $null (indeterminate: no expectedKeyRef / combo not
+# found -> caller falls back to the family match). The stronger winner/loser-identifier-on-wire
+# routing proof (over-send, existence-gated in/out selection) lives in audit_log_content.ps1's
+# guardrail check; this is the always-on set-presence backstop for EVERY combo test. Element-name
+# resolution mirrors Infer-ComboFromXml (targetField, not attr .name -- see its FL_FCIC note).
+function Test-ExpectedComboOnWire($provider, $query, $expectedKeyRef, $xml) {
+    if (-not $expectedKeyRef -or -not $xml) { return $null }
+    $qidm = Get-QidmForQuery $provider $query; if (-not $qidm) { return $null }
+    $combo = $qidm.combinations | Where-Object { ($_.keyReference -eq $expectedKeyRef) -or ($_.keyRef -eq $expectedKeyRef) } | Select-Object -First 1
+    if (-not $combo) { return $null }
+    $set = @($combo.requirements.set); if (-not $set) { return $null }
+    $present = @{}; foreach ($mt in [regex]::Matches($xml, '<(\w+)>')) { $present[$mt.Groups[1].Value.ToLower()] = $true }
+    foreach ($s in $set) {
+        $elem = $s
+        $attr = $qidm.attributes | Where-Object { $_.name -ieq $s -or (@($_.sourceField) -contains $s) } | Select-Object -First 1
+        if ($attr) { $elem = if ($attr.targetField) { $attr.targetField } else { $attr.name } }
+        if (-not ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($s.ToLower()))) { return $false }
+    }
+    return $true
+}
 # Infer whether a captured record is a base combo, any-field, or any test by checking
 # which optional (any[]) fields appear in the XML beyond the required set[] fields.
 # Returns @{ kind; anyField } or null if QIDM / combo not found.
@@ -139,9 +165,14 @@ foreach ($file in $files) {
             $skipped++; continue
         }
 
-        # PASS when the query that actually fired (messageType in the XML) matches intent.
+        # PASS requires BOTH: (a) the fired query family (messageType) matches intent, AND (b) the
+        # wire carries the EXPECTED combo's set[] identifiers. (a) alone was the old check -- every
+        # fired query trivially satisfies it, so intra-query routing was never verified.
         $fired = $r.messageType
-        $result = if ($fired -and ($fired -eq $r.query)) { 'PASS' } else { 'FAIL' }
+        $routingOk = Test-ExpectedComboOnWire $r.provider $r.query $r.expectedKeyRef $r.requestXml
+        if (-not ($fired -and ($fired -eq $r.query))) { $result = 'FAIL' }
+        elseif ($routingOk -eq $false) { $result = 'FAIL' }
+        else { $result = 'PASS' }   # $true (verified) or $null (indeterminate -> family match)
         # Resolve test kind: use explicit kind from record (labeled capture), else infer from XML.
         $testKind = $r.kind; $testAnyField = $r.anyField
         if (-not $testKind -and $combo -and $r.requestXml) {
@@ -164,7 +195,8 @@ foreach ($file in $files) {
             $comboLabel = if ($r.guardrailLoser) { "${combo}_guardrail_vs_$($r.guardrailLoser)" } else { "${combo}_guardrail" }
         }
         $underFilledNote = if ($r.underFilled) { ' UNDER-FILLED (a form field failed to fill on submit -- verify this combo).' } else { '' }
-        $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired.$underFilledNote"
+        $routingNote = if ($routingOk -eq $true) { ' routing=VERIFIED (expected combo set[] on wire)' } elseif ($routingOk -eq $false) { " routing=MISMATCH (wire missing an identifier of expected combo $($r.expectedKeyRef))" } else { ' routing=unverified (no expectedKeyRef/combo)' }
+        $note = "Automated capture (txId $($r.transactionId)). kind=${testKind}; anyField=${testAnyField}; expectedKeyRef=$($r.expectedKeyRef); firedMessageType=$fired.$routingNote$underFilledNote"
         $desc = "$comboLabel (auto)"
 
         $ptArgs = @{

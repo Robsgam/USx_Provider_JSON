@@ -843,7 +843,7 @@ See also:
     in-state vs OOS routing must have it. Officers expect uniform labeling.
     FL_FCIC v4.1 confirmed: inconsistent labels confused the workflow.
 
-  FIELD LABEL HINT STANDARD (ENFORCED by verify_build CHECK 15, 2026-06-26):
+  FIELD LABEL HINT STANDARD (ENFORCED by verify_build CHECK 13, 2026-06-26):
     Labels are the ONLY hint mechanism. The platform renders no helperText or
     placeholder attributes on form fields. Every label must carry enough context
     for an officer to understand routing without reading documentation.
@@ -878,7 +878,7 @@ See also:
        b. State DEFAULTED to home in combo defaults[] (approved pattern, e.g. NJ State=NJ):
           the officer CHANGES it for OOS, so "leave blank for" is WRONG guidance -- use
           "State (default [STATE] - change for out-of-state)".
-       ENFORCED: verify_build CHECK 15 FAILs if a State-suffix fieldId label lacks BOTH a
+       ENFORCED: verify_build CHECK 13 FAILs if a State-suffix fieldId label lacks BOTH a
        "leave blank for" hint AND an out-of-state/"change for" hint. (Refined 2026-06-26,
        RND-62365: the old rule demanded "leave blank for" on every State field and FAILed
        NJ's design-correct defaulted-State label. Now accepts either valid pattern.)
@@ -888,7 +888,7 @@ See also:
          "Age (optional)"
          "Brand (optional)"
        Pattern: <Field Name> (optional)
-       ENFORCED: verify_build CHECK 15 WARNs if a pure any[] field has no '('
+       ENFORCED: verify_build CHECK 13 WARNs if a pure any[] field has no '('
        or ' - ' qualifier.
 
     6. CONDITIONAL REQUIREMENT -- on set[] fields that only fire with a co-field:
@@ -911,7 +911,7 @@ See also:
        card title alone). Same-card / single-card DH designs (e.g. AZ_AZDPS,
        "single QIF with all paths on one card") should still tag fields --
        there the DH and DL inputs are visually interleaved with no card-title
-       separation to rely on. verify_build CHECK 15 downgraded this from FAIL
+       separation to rely on. verify_build CHECK 13 downgraded this from FAIL
        to advisory (Info) 2026-07-16 -- it no longer blocks a build either way.
        (Prior: FAILed if a DH-suffix fieldId label lacked a "(DH..." qualifier,
        word-boundary matched. Refined 2026-06-26, RND-62365.)
@@ -921,7 +921,7 @@ See also:
     - One-sentence max per label; avoid redundancy
     - "Purpose Code" fields need no hint -- exempted from rule 5's any[]-only
       qualifier requirement regardless of whether the field is auto-filled or
-      officer-entered (verify_build CHECK 15 Rule 3 exemption added 2026-07-16,
+      officer-entered (verify_build CHECK 13 Rule 3 exemption added 2026-07-16,
       DEX-1278 -- previously documented here but never actually implemented in
       the validator, so a manually-entered Purpose Code field like FL_FCIC's
       DH one still WARNed; the code now matches this long-standing KB note)
@@ -936,12 +936,12 @@ See also:
        (any[]-only qualifier, a WARN), do NOT silently restore wording just to satisfy the
        tool. Add a comment anywhere in the provider's build script:
          # LABEL-OVERRIDE: <fieldId> -- <short reason>
-       verify_build CHECK 15 scans the build script's own source lines for this tag (not
+       verify_build CHECK 13 scans the build script's own source lines for this tag (not
        proximity-based -- one tag anywhere in the file covers every occurrence of that
        fieldId) and downgrades the finding to an accepted, visible [INFO] line instead of
-       FAIL/WARN. Still auditable, just doesn't block. Scoped to CHECK 15 rules 4/5 only --
+       FAIL/WARN. Still auditable, just doesn't block. Scoped to CHECK 13 rules 4/5 only --
        never use it to wave off a finding that indicates a real query/routing problem. See
-       tools/verify_build.ps1 CHECK 15 for the implementation; TX_TLETS's
+       tools/verify_build.ps1 CHECK 13 for the implementation; TX_TLETS's
        RegistrationState/regionId/reasonCode fields are the reference example.
 
   OPTIONS CARD TITLE:
@@ -1260,7 +1260,7 @@ See also:
     - State: NJ, HI, AZ, FL, TX (providers with home state initialValue)
     Check each provider's metadata — do NOT assume any field is universal.
 
-  AUDIT: audit_cad.ps1 CHECK 6 validates defaults coverage automatically.
+  AUDIT: audit_cad.ps1 CHECK 5 validates defaults coverage automatically.
   Run after every build. Any[] fields with form initialValues that lack
   combo defaults[] are flagged as FAIL.
 
@@ -1423,12 +1423,12 @@ See also:
     - CA pattern:     Base.suffix  (e.g., NLTS.DQ.N, IR.QVC.O)
     - NJ VehReg:      RQ_RAND, RQN_RAND  (_RAND = RandomRequest=Y routing split)
 
-  ENFORCEMENT: verify_build.ps1 CHECK 9 ("Synthetic keyRef Documentation")
+  ENFORCEMENT: verify_build.ps1 CHECK 7 ("Synthetic keyRef Documentation")
   WARNs on any multi-combo QIDM that lacks a LIMITATION #21/#36 comment within
   40 lines of the first keyReference in the build script. 0 WARN is required
   before declaring any build DONE.
 
-  STATUS (2026-06-09): NJ, FL, CA_CLETS, TX, NY all CLEAN (CHECK 9 PASS).
+  STATUS (2026-06-09): NJ, FL, CA_CLETS, TX, NY all CLEAN (CHECK 7 PASS).
   Remaining 14 providers: add comment blocks on next scheduled rebuild.
 
 ================================================================================

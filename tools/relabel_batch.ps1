@@ -119,9 +119,18 @@ for ($i = 0; $i -lt $records.Count; $i++) {
 }
 $unassigned = @(0..($records.Count - 1) | Where-Object { -not $assigned.ContainsKey($_) })
 if ($unassigned.Count) {
-    $action = if ($KeepUnmatched) { 'kept (browser label)' } else { 'DROPPED (unreliable browser label; a stale morning row re-created a retired log on 2026-07-02)' }
-    Write-Host "[relabel] $($unassigned.Count) record(s) matched no plan test -- ${action}:" -ForegroundColor DarkYellow
+    $action = if ($KeepUnmatched) { 'kept (browser label)' } else { 'DROPPED from import (unreliable browser label -- a stale row can re-create a retired log, 2026-07-02)' }
+    $lvl = if ($KeepUnmatched) { 'DarkYellow' } else { 'Yellow' }
+    Write-Host "[relabel] WARN: $($unassigned.Count) capture(s) matched NO plan test -- ${action}:" -ForegroundColor $lvl
     foreach ($i in $unassigned) { Write-Host "  $($records[$i].messageType) $($records[$i].combo) $($records[$i].formState)" }
+    if (-not $KeepUnmatched) {
+        # Never silently lose a dropped capture: preserve the unmatched records to a sidecar for
+        # audit (an off-plan fill, or a genuine anomaly whose input matched no plan test, lands here
+        # instead of vanishing). Import still ignores them -- the anti-stale-row protection stays.
+        $sidecar = "$BatchPath.unmatched.json"
+        ConvertTo-Json -InputObject @($unassigned | ForEach-Object { $records[$_] }) -Depth 8 | Set-Content $sidecar -Encoding utf8
+        Write-Host "[relabel] unmatched capture(s) preserved for audit -> $sidecar" -ForegroundColor DarkYellow
+    }
 }
 $outRecords = if ($KeepUnmatched) { $records } else { @(0..($records.Count - 1) | Where-Object { $assigned.ContainsKey($_) } | ForEach-Object { $records[$_] }) }
 # -InputObject keeps an empty set as literal "[]" -- piping @() emits NOTHING, so the file

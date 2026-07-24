@@ -133,6 +133,17 @@ LIMITATION #2: ONE QIDM per (targetEntity, query) pair
 
 --------------------------------------------------------------------------------
 
+LIMITATION #21: Duplicate keyReference rejected at import
+  CONFIRMED: NJ v3.12, NY v1.13
+  Error: "Duplicate key references found in query input data mapping."
+  Rule: Each combination within a single QIDM must have a distinct keyReference.
+  Fix: Use invented distinct keyRef (e.g., DALL + DALH). Provider routes by field
+    content in the XML, not by keyRef. keyRef is platform-internal only.
+  Confirmed working: NY v1.19 (invented DALH accepted, both paths fire correctly).
+  See also: AP #5 (anti-pattern: duplicate keyReference in one QIDM).
+
+--------------------------------------------------------------------------------
+
 LIMITATION #3: First matching combination fires -- all populated fields sent
   CONFIRMED: NJ v2.0
   Behavior: First combination whose set[] fields are all present fires. Its any[]
@@ -866,12 +877,15 @@ CROSS-REFERENCE INDEX
   LIMITATION #12 -> Section 9 (Layout/UI)
   LIMITATION #13 -> Section 9 (Layout/UI)
   LIMITATION #14 -> Section 9 (Layout/UI)
+  LIMITATION #21 -> Section 4 (Transaction/Import) -- duplicate keyReference; see also AP #5
   LIMITATION #23 -> Section 4 (Transaction/Import)
   LIMITATION #26 -> Section 3 (Multi-Entity) -- includes AP #16
   LIMITATION #28 -> Section 3 (Multi-Entity)
   LIMITATION #29 -> Section 3 (Multi-Entity)
   LIMITATION #30 -> Section 5 (Combo Routing)
   LIMITATION #31 -> Section 5 (Combo Routing)
+  LIMITATION #32 -> Section 5 (Combo Routing) -- autoSelect lights on any[] initialValue
+  LIMITATION #33 -> Section 7 (RMS-Specific) -- DH State not in RMS Person search
   LIMITATION #37 -> Conditions/poisoned-array (detail: QIDM_REFERENCE.txt Sec 2a)
   AP #1  -> Section 2 (folded into LIMITATION #4)
   AP #2  -> Section 2 (Field Encoding)

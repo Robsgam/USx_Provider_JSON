@@ -84,6 +84,7 @@ param(
     [string]$Version = "4.10"
 )
 
+$ErrorActionPreference = 'Stop'
 $DATE        = (Get-Date -Format 'yyyy-MM-dd')
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path

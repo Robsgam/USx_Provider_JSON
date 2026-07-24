@@ -69,6 +69,7 @@ param(
     [string]$Version = "4.10"
 )
 
+$ErrorActionPreference = 'Stop'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NY_NYSPIN_EJUSTICE_v${Version}.json"
