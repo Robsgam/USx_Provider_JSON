@@ -849,50 +849,24 @@ foreach ($pd in $providerDirs) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CATEGORY 16: Phase archive completeness
+# CATEGORY 16: Phase archive (retired portfolio-wide)
 # ══════════════════════════════════════════════════════════════════════════════
+# phases/ was retired portfolio-wide -- git commit history is the authoritative version
+# archive (CLAUDE.md Versioning Policy). No provider carries a phases/ directory anymore,
+# so the old per-provider "has v<X.Y> snapshot" check is dead. This category is now a
+# stability-preserving confirmation (number kept fixed so -Category 16 / doc refs still
+# resolve): it PASSes when phases/ is absent everywhere and only surfaces an INFO (never a
+# FAIL) if a legacy phases/ directory reappears.
 if ($Category -eq 0 -or $Category -eq 16) {
 Write-Host ""
-Write-Host "--- CATEGORY 16: Phase Archive Completeness ---" -ForegroundColor Yellow
+Write-Host "--- CATEGORY 16: Phase Archive (retired portfolio-wide) ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
 $providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
-foreach ($pd in $providerDirs) {
-    $provName = $pd.Name
-    $isFlagged = $provName -in $flaggedProviders
-
-    $baseScript = Get-ChildItem "$($pd.FullName)\scripts" -File -Filter 'build_*' -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -notmatch '_mc|_test' } | Select-Object -First 1
-    if (-not $baseScript) { continue }
-
-    $scriptText = [System.IO.File]::ReadAllText($baseScript.FullName)
-    $scriptVersion = $null
-    if ($scriptText -match '\$Version\s*=\s*["'']([^"'']+)["'']') {
-        $scriptVersion = $Matches[1]
-    }
-    if (-not $scriptVersion) { continue }
-
-    $phaseFound = $false
-    $anyPhaseDirExists = $false
-    foreach ($phaseDir in @("$($pd.FullName)\phases", "$($pd.FullName)\phases\current", "$($pd.FullName)\phases\base", "$($pd.FullName)\phases\mc")) {
-        if (Test-Path $phaseDir) {
-            $anyPhaseDirExists = $true
-            $versionedFile = Get-ChildItem $phaseDir -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "v$([regex]::Escape($scriptVersion))" }
-            if ($versionedFile) {
-                $relDir = $phaseDir.Replace($pd.FullName + '\', '')
-                Pass "${provName} -- ${relDir} has v${scriptVersion} snapshot"
-                $phaseFound = $true
-                break
-            }
-        }
-    }
-    if (-not $phaseFound) {
-        # phases/ is being retired provider-by-provider (git history is authoritative instead,
-        # starting with NJ_NJCJIS 2026-07-01) -- no phase dir at all means opted-out, not a gap.
-        if (-not $anyPhaseDirExists) { Pass "${provName} -- phases/ retired for this provider (git history is authoritative)" }
-        elseif ($isFlagged) { Info "FLAGGED: ${provName} -- no v${scriptVersion} phase snapshot" }
-        else { Fail "${provName} -- no v${scriptVersion} phase snapshot" }
-    }
+$withPhases = @($providerDirs | Where-Object { Test-Path (Join-Path $_.FullName 'phases') })
+if ($withPhases.Count -eq 0) {
+    Pass "phases/ retired portfolio-wide across all $($providerDirs.Count) providers (git history is authoritative)"
+} else {
+    Info "phases/ still present in: $(($withPhases.Name) -join ', ') (legacy -- git history is authoritative; retire on next rebuild)"
 }
 }
 
@@ -956,56 +930,22 @@ foreach ($pd in $providerDirs) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CATEGORY 18: camelCase fieldId cross-provider consistency
+# CATEGORY 18: FieldId casing (per-provider gate is authoritative)
 # ══════════════════════════════════════════════════════════════════════════════
+# HISTORY: this category began life as a camelCase-as-default consistency check, then a
+# PascalCase-presence INFO. Both are now obsolete: PascalCase USx CAD fieldIds are the
+# galvanized standard (CLAUDE.md Field Configuration Rules), while a number of non-CAD form
+# fields (raceCode, vehicleYear, nameMiddle, gunCaliber, articleTypeCode, relatedHitSearch-
+# Indicator, ...) legitimately remain camelCase per provider. A blanket cross-provider casing
+# rule therefore can neither pass nor fail meaningfully. Per-field casing correctness is
+# enforced authoritatively per-provider by the casing-aware gates verify_build + audit_cad
+# (see audit_cross_provider.ps1 note). This category is retired to a non-failing confirmation
+# (number kept fixed so -Category 18 / doc refs still resolve).
 if ($Category -eq 0 -or $Category -eq 18) {
 Write-Host ""
-Write-Host "--- CATEGORY 18: camelCase FieldId Consistency ---" -ForegroundColor Yellow
+Write-Host "--- CATEGORY 18: FieldId Casing (per-provider gate authoritative) ---" -ForegroundColor Yellow
 
-$flaggedProviders = @('CA_CONTRA_COSTA')
-$knownPascalFields = @(
-    'RegistrationState','SexCode','RaceCode','ImageIndicator',
-    'OperatorLicenseNumber','NameFirst','NameLast','NameMiddle','NameSuffix',
-    'BirthDate','LicensePlateTypeCode','LicensePlateYear',
-    'VehicleIdentificationNumber','VehicleMakeCode','VehicleYear','VehicleBodyStyle',
-    'GunSerialNumber','GunMake','GunCaliber','GunModel',
-    'ArticleSerialNumber','ArticleTypeCode','RegistrationNumber','BoatHullIdNumber',
-    'RelatedHitSearchIndicator','OperatorLicenseNumberDH','NameFirstDH','NameLastDH',
-    'NameMiddleDH','NameSuffixDH','BirthDateDH','SexCodeDH'
-)
-
-$providerDirs = Get-ChildItem "$repoRoot\providers" -Directory
-foreach ($pd in $providerDirs) {
-    $provName = $pd.Name
-    $isFlagged = $provName -in $flaggedProviders
-
-    $baseJson = Get-ChildItem $pd.FullName -File -Filter '*_BASE.json' | Select-Object -First 1
-    if (-not $baseJson) { continue }
-
-    $text = [System.IO.File]::ReadAllText($baseJson.FullName)
-
-    # Find all fieldId values in form fields
-    $fieldIds = @([regex]::Matches($text, '"fieldId"\s*:\s*"([^"]+)"') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
-
-    # Check each for PascalCase (starts with uppercase) when camelCase equivalent exists
-    $pascalHits = @()
-    foreach ($fid in $fieldIds) {
-        if ($fid -cin $knownPascalFields) {
-            $pascalHits += $fid
-        }
-    }
-
-    if ($pascalHits.Count -gt 0) {
-        $hitList = ($pascalHits | Select-Object -Unique | Sort-Object) -join ', '
-        if ($isFlagged) {
-            Info "FLAGGED: ${provName} has PascalCase fieldIds: $hitList"
-        } else {
-            Info "${provName} has $($pascalHits.Count) PascalCase fieldId(s): $hitList"
-        }
-    } else {
-        Pass "${provName} -- all fieldIds are camelCase"
-    }
-}
+Pass "FieldId casing verified per-provider by verify_build + audit_cad (PascalCase USx standard; cross-provider blanket rule retired)"
 }
 
 # ── SUMMARY ───────────────────────────────────────────────────────────────────

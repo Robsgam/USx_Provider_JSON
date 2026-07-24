@@ -1,23 +1,32 @@
 <#
   verify_build.ps1 -- Post-build verification for provider JSONs
-  Catches mistakes that slip past the structural validator:
+  Catches mistakes that slip past the structural validator (14 checks):
     1. Banned string patterns (from banned_patterns.txt)
     2. QIF fieldId / QIDM sourceField / QIDM combo consistency
     3. RMS QIDM name vs sourceField alignment
     4. Cross-bundle fieldId consistency
-    5. camelCase enforcement (when provider has been migrated)
-    6. Standard pattern comparison (ImageIndicator, queryLabel, etc.)
-    7. Cross-variant consistency (BASE vs MC field type mismatches)
+    5. Standard pattern comparison (queryLabel, ImageIndicator size, keyReference, state)
+    6. Visible-First Mandate + VehicleMakeCode field-type gate
+    7. Synthetic keyRef documentation in build script
+    8. RMS combos subset of CommSys combos
+    9. Value-comparison (poisoned-array) routing conditions
+    10. Identifier-priority guardrail (Plate>VIN, OLN>Name, Hull>Reg)
+    11. conditions[].field references a valid QIF fieldId (inert-condition guard)
+    12. NOT_EXISTS field not in own set[]/any[] (gate-xor-companion)
+    13. Form field label hints
+    14. Combo reachability (shadow detection)
   FAILS the build if any check fails. Called automatically by build_report.ps1.
 
+  Note: the legacy camelCase-enforcement check and BASE-vs-MC cross-variant check were
+  retired 2026-07-24 -- the portfolio is single-JSON and PascalCase-galvanized, so both
+  branches were permanently dead (no -CamelCase caller, no _BASE/_MC siblings).
+
   Usage: .\verify_build.ps1 -Path <provider.json>
-         .\verify_build.ps1 -Path <provider.json> -CamelCase
 #>
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$Path,
-    [switch]$CamelCase
+    [string]$Path
 )
 
 $ErrorActionPreference = "Stop"
@@ -94,7 +103,7 @@ if ($providerBundle) {
 
         foreach ($attr in $cfg.attributes) {
             # Attention auto-populate handler: skip the sourceField/QIF check here
-            # (the handler supplies the value). CHECK 8 (Visible-First Mandate) flags
+            # (the handler supplies the value). CHECK 6 (Visible-First Mandate) flags
             # the hidden-auto-populate case where no visible form field backs it.
             if ($attr.rule -and $attr.rule.function -match 'LastNameFirstNameInitial') { continue }
             foreach ($sf in $attr.sourceField) {
@@ -202,45 +211,9 @@ if ($providerBundle -and $rmsBundle) {
     Pass "Cross-bundle fieldId consistency checked"
 }
 
-# ── CHECK 5: camelCase fieldId enforcement ────────────────────────────────────
+# ── CHECK 5: Standard pattern comparison ──────────────────────────────────────
 Write-Host ""
-Write-Host "--- CHECK 5: camelCase Enforcement ---" -ForegroundColor Yellow
-
-if ($CamelCase) {
-    $platformFields = @('CAD_UNIT_SELECT_VALUE','CAD_EVENT_SELECT_VALUE','LINK_CURRENT_ASSIGNED_EVENT')
-    $allFieldIds = @()
-    foreach ($k in $formFieldIds.Keys) { $allFieldIds += $formFieldIds[$k] }
-    $entityFieldIds = @($allFieldIds | Where-Object { $_ -notin $platformFields })
-    $badCase = @($entityFieldIds | Where-Object { $_ -cmatch '^[A-Z]' })
-    if ($badCase.Count -gt 0) {
-        Fail "QIF fieldIds starting with uppercase (should be camelCase): $($badCase -join ', ')"
-    } else {
-        Pass "All $($entityFieldIds.Count) QIF fieldIds are camelCase (excluded $($platformFields.Count) platform fields)"
-    }
-
-    if ($providerBundle) {
-        $badSources = @()
-        foreach ($cfg in $providerBundle.configurations) {
-            if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
-            foreach ($attr in $cfg.attributes) {
-                foreach ($sf in $attr.sourceField) {
-                    if ($sf -cmatch '^[A-Z]') { $badSources += "$($cfg.name).$sf" }
-                }
-            }
-        }
-        if ($badSources.Count -gt 0) {
-            Fail "CommSys QIDM sourceFields starting with uppercase: $($badSources -join ', ')"
-        } else {
-            Pass "All CommSys QIDM sourceFields are camelCase"
-        }
-    }
-} else {
-    Info "camelCase check skipped (use -CamelCase to enable)"
-}
-
-# ── CHECK 6: Standard pattern comparison ──────────────────────────────────────
-Write-Host ""
-Write-Host "--- CHECK 6: Reference Pattern Check ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 5: Reference Pattern Check ---" -ForegroundColor Yellow
 
 if ($providerBundle) {
     foreach ($cfg in $providerBundle.configurations) {
@@ -286,86 +259,13 @@ if ($rmsBundle) {
     }
 }
 
-# ── CHECK 7: Cross-variant consistency (BASE vs MC field types) ──────────────
-Write-Host ""
-Write-Host "--- CHECK 7: Cross-Variant Consistency ---" -ForegroundColor Yellow
-
-$isBase = $jsonName -match '_BASE$'
-$isMc   = $jsonName -match '_MC$'
-$providerDir = Split-Path $resolved -Parent
-
-if ($isBase) {
-    $mcName = $jsonName -replace '_BASE$', '_MC.json'
-    $mcPath = Join-Path $providerDir $mcName
-} elseif ($isMc) {
-    $baseName = $jsonName -replace '_MC$', '_BASE.json'
-    $mcPath = $null
-    $basePath = Join-Path $providerDir $baseName
-}
-
-$otherPath = if ($isBase) { $mcPath } elseif ($isMc) { $basePath } else { $null }
-
-if ($otherPath -and (Test-Path $otherPath)) {
-    $otherJson = [System.IO.File]::ReadAllText($otherPath) | ConvertFrom-Json
-    $otherEntities = $otherJson.bundles | Where-Object { $_.provider -eq 'MARK43' }
-    $thisEntities = $entitiesBundle
-    $otherLabel = if ($isBase) { 'MC' } else { 'BASE' }
-    $thisLabel = if ($isBase) { 'BASE' } else { 'MC' }
-
-    $fieldTypeDiffs = 0
-    foreach ($thisCfg in $thisEntities.configurations) {
-        if ($thisCfg.type -ne 'QUERYINPUTFORM') { continue }
-        $entity = $thisCfg.targetEntity
-        $otherCfg = $otherEntities.configurations | Where-Object { $_.type -eq 'QUERYINPUTFORM' -and $_.targetEntity -eq $entity }
-        if (-not $otherCfg) { continue }
-
-        $thisText = $thisCfg | ConvertTo-Json -Depth 100 -Compress
-        $otherText = $otherCfg | ConvertTo-Json -Depth 100 -Compress
-
-        $thisFields = @{}
-        foreach ($m in [regex]::Matches($thisText, '"fieldId"\s*:\s*"([^"]+)"[^}]*?"resolvedName"\s*:\s*"([^"]+)"')) {
-            $thisFields[$m.Groups[1].Value] = $m.Groups[2].Value
-        }
-        foreach ($m in [regex]::Matches($thisText, '"resolvedName"\s*:\s*"([^"]+)"[^}]*?"fieldId"\s*:\s*"([^"]+)"')) {
-            if (-not $thisFields.ContainsKey($m.Groups[2].Value)) {
-                $thisFields[$m.Groups[2].Value] = $m.Groups[1].Value
-            }
-        }
-
-        $otherFields = @{}
-        foreach ($m in [regex]::Matches($otherText, '"fieldId"\s*:\s*"([^"]+)"[^}]*?"resolvedName"\s*:\s*"([^"]+)"')) {
-            $otherFields[$m.Groups[1].Value] = $m.Groups[2].Value
-        }
-        foreach ($m in [regex]::Matches($otherText, '"resolvedName"\s*:\s*"([^"]+)"[^}]*?"fieldId"\s*:\s*"([^"]+)"')) {
-            if (-not $otherFields.ContainsKey($m.Groups[2].Value)) {
-                $otherFields[$m.Groups[2].Value] = $m.Groups[1].Value
-            }
-        }
-
-        foreach ($fid in $thisFields.Keys) {
-            $caseMatch = $otherFields.Keys | Where-Object { $_ -ieq $fid } | Select-Object -First 1
-            if ($caseMatch -and $thisFields[$fid] -ne $otherFields[$caseMatch]) {
-                Fail "$entity field '$fid': $thisLabel=$($thisFields[$fid]) but $otherLabel=$($otherFields[$caseMatch])"
-                $fieldTypeDiffs++
-            }
-        }
-    }
-    if ($fieldTypeDiffs -eq 0) {
-        Pass "All shared fields have matching types across $thisLabel and $otherLabel"
-    }
-} elseif ($otherPath) {
-    Info "No $( if ($isBase) {'MC'} else {'BASE'} ) JSON found -- skipping cross-variant check"
-} else {
-    Info "Single-JSON provider -- skipping cross-variant check"
-}
-
-# ── CHECK 8: Visible-First Mandate (no hidden/auto-populated fields) ──────────
+# ── CHECK 6: Visible-First Mandate (no hidden/auto-populated fields) ──────────
 # KB: BUILD_RULES.txt "Visible-First Mandate". All officer-facing query fields
 # MUST be visible (hidden=false). Do NOT hide or auto-populate a field without
 # explicit user approval or USx Tenant Testing evidence. Documented exceptions are
 # whitelisted below; anything else is a WARN requiring justification.
 Write-Host ""
-Write-Host "--- CHECK 8: Visible-First Mandate ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 6: Visible-First Mandate ---" -ForegroundColor Yellow
 
 # Whitelist of fieldId patterns that may be legitimately hidden (see BUILD_RULES.txt):
 #   - RMS dual-field State (SelH for RMS + InpH for outbound XML) when NCIC single-visible unavailable
@@ -506,12 +406,12 @@ if ($flaggedHidden -eq 0 -and $autoPopHandlers -eq 0) {
     Pass "Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard"
 }
 
-# ── CHECK 9: Synthetic keyRef documentation in build script ──────────────────
+# ── CHECK 7: Synthetic keyRef documentation in build script ──────────────────
 # KB: BUILD_RULES.txt Section 15. Every QIDM with >1 combo uses synthetic keyRefs
 # (LIMITATION #21 or #36). The build script MUST have a LIMITATION comment block
 # immediately before the $...Query definition for each such QIDM.
 Write-Host ""
-Write-Host "--- CHECK 9: Synthetic keyRef Documentation ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 7: Synthetic keyRef Documentation ---" -ForegroundColor Yellow
 
 $providerDir   = Split-Path $resolved -Parent
 $providerName  = Split-Path $providerDir -Leaf
@@ -573,13 +473,13 @@ if (-not (Test-Path $scriptPath)) {
     Info "No provider bundle -- skipping synthetic keyRef documentation check"
 }
 
-# ── CHECK 10: RMS combos subset of CommSys combos ────────────────────────────
+# ── CHECK 8: RMS combos subset of CommSys combos ────────────────────────────
 # RMS must not query on a field-path the CommSys form doesn't actually map. Every field
 # used in an RMS combo's set[]/any[] should also appear in some CommSys combo's set[]/any[].
 # A drift (RMS field with no CommSys counterpart) means the two bundles disagree on what the
 # officer can search -- usually a rename that landed in one bundle but not the other.
 Write-Host ""
-Write-Host "--- CHECK 10: RMS combos subset of CommSys combos ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 8: RMS combos subset of CommSys combos ---" -ForegroundColor Yellow
 
 function Get-ComboReqFields($bundle) {
     $fields = [System.Collections.Generic.HashSet[string]]::new()
@@ -611,13 +511,13 @@ if ($providerBundle -and $rmsBundle) {
     Info "No RMS+CommSys bundle pair -- skipping RMS subset check"
 }
 
-# ── CHECK 11: surviving value-comparison routing conditions ───────────────────
+# ── CHECK 9: surviving value-comparison routing conditions ───────────────────
 # POISONED-ARRAY RULE (QIDM_REFERENCE Sec 2a, LIVE-PROVEN FL v4.9 T-A/T-B): a conditions
 # array containing ANY value-comparison operator (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) is
 # disabled in its entirety, incl. co-resident EXISTS/NOT_EXISTS. Flag survivors for review
 # at this provider's rebuild -- redesign to presence/existence-only routing or escalate.
 Write-Host ""
-Write-Host "--- CHECK 11: Value-Comparison Conditions (poisoned-array) ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 9: Value-Comparison Conditions (poisoned-array) ---" -ForegroundColor Yellow
 
 $valueOps = @('EQUALS','NOT_EQUALS','IN','NOT_IN','REGEX')
 $valueComparisonHits = @()
@@ -646,7 +546,7 @@ if ($valueComparisonHits.Count -gt 0) {
     Pass "No value-comparison routing conditions (existence-only or none)"
 }
 
-# ── CHECK 12: Identifier-priority guardrail (Plate>VIN, OLN>Name, Hull>Reg) ───
+# ── CHECK 10: Identifier-priority guardrail (Plate>VIN, OLN>Name, Hull>Reg) ───
 # KB: BUILD_RULES.txt "IDENTIFIER-PRIORITY GUARDRAIL". Covers Vehicle (Plate>VIN, HI v3.6),
 # Person DL+DH (OLN>Name, FL/HI v3.7-3.8), and Boat (Hull>Reg, HI v3.9). DH-suffixed tokens
 # are matched via the optional (DH)? in the OLN/Name regexes.
@@ -655,7 +555,7 @@ if ($valueComparisonHits.Count -gt 0) {
 # lower-priority combos must carry a NOT_EXISTS condition on the higher-priority identifier's
 # sourceField so they exit the pool. Casing-agnostic: matches the provider's actual token.
 Write-Host ""
-Write-Host "--- CHECK 12: Identifier-Priority Guardrail ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 10: Identifier-Priority Guardrail ---" -ForegroundColor Yellow
 
 # does combo set[] contain a token matching $rx (case-insensitive, whole token)?
 function Set-HasToken($combo, [string]$rx) {
@@ -686,7 +586,7 @@ function Has-NotExistsOn($combo, [string]$rx) {
 }
 
 # Optional 'DH' suffix: DriverHistoryQuery combos use DH-suffixed sourceFields
-# (OperatorLicenseNumberDH, NameLastDH/NameFirstDH). Without matching the suffix, CHECK 12
+# (OperatorLicenseNumberDH, NameLastDH/NameFirstDH). Without matching the suffix, CHECK 10
 # was blind to the DH OLN/Name pair and never enforced the guardrail there (HI v3.7 gap,
 # found live 2026-06-23 -> v3.8). Per-QIDM loop keeps DL (unsuffixed) and DH (suffixed) isolated.
 $rxPlate = '(?i)^licensePlateNumber(DH)?$'
@@ -762,14 +662,14 @@ if ($providerBundle) {
     Info "No provider bundle -- skipping identifier-priority guardrail check"
 }
 
-# ── CHECK 13: conditions[].field must reference a QIF sourceField ──────────────
+# ── CHECK 11: conditions[].field must reference a QIF sourceField ──────────────
 # INERT-CONDITIONS ROOT CAUSE (LIVE-PROVEN FL v4.x-v5.x, HI v3.2-v3.3): a conditions[].field
 # value that does not match any QIF sourceField/fieldId is SILENTLY INERT on the platform.
 # Casing matters -- 'State' != 'RegistrationState' (FL bug), 'State' != 'RegistrationState'
 # (HI v3.2 M55S bug). The $formFieldIds hash built in CHECK 2 holds every fieldId from each
 # entity's QIF. Case-sensitive match is intentional (casing IS the bug pattern).
 Write-Host ""
-Write-Host "--- CHECK 13: conditions[].field references a valid QIF sourceField ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 11: conditions[].field references a valid QIF sourceField ---" -ForegroundColor Yellow
 
 $condFieldViolations = 0
 if ($providerBundle) {
@@ -805,7 +705,7 @@ if ($providerBundle) {
     Info "No provider bundle -- skipping conditions field validation"
 }
 
-# ── CHECK 14: NOT_EXISTS condition field must not be in the same combo's set[]/any[] ──
+# ── CHECK 12: NOT_EXISTS condition field must not be in the same combo's set[]/any[] ──
 # GATE-XOR-COMPANION (LIVE-FOUND TX v3.12 2026-06-23): a NOT_EXISTS condition gates a combo
 # OUT when its field has a value. If that same field is also in the combo's set[], the combo
 # can NEVER fire (set requires present, condition requires absent). If it is in any[], the
@@ -815,7 +715,7 @@ if ($providerBundle) {
 # (NOT_EXISTS + field absent from set/any) OR keep it as a COMPANION (in any[], no condition).
 # See BUILD_RULES.txt IDENTIFIER-PRIORITY GUARDRAIL "GATE XOR COMPANION".
 Write-Host ""
-Write-Host "--- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 12: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---" -ForegroundColor Yellow
 
 $gateContradictions = 0
 if ($providerBundle) {
@@ -854,7 +754,7 @@ if ($providerBundle) {
     Info "No provider bundle -- skipping gate-xor-companion check"
 }
 
-# ── CHECK 15: Form field label hints ─────────────────────────────────────────
+# ── CHECK 13: Form field label hints ─────────────────────────────────────────
 # BUILD_RULES.txt Section 11. Rules enforced:
 #   1. State fields (fieldId ends in 'State'): label must contain 'leave blank for'
 #      (tells officers to leave blank for in-state vs fill for OOS)
@@ -867,7 +767,7 @@ if ($providerBundle) {
 #      Purpose Code fields, exempted regardless of auto-filled/officer-entered status
 #      (BUILD_RULES Section 11 implementation notes; wired in 2026-07-16, DEX-1278).
 Write-Host ""
-Write-Host "--- CHECK 15: Form Field Label Hints ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 13: Form Field Label Hints ---" -ForegroundColor Yellow
 
 # Collect fieldId -> label from all QIF layouts (first occurrence wins; all variants share same labels)
 $formFieldLabels = [System.Collections.Generic.Dictionary[string,string]]::new([System.StringComparer]::OrdinalIgnoreCase)
@@ -981,7 +881,7 @@ if ($labelViolations -eq 0) {
     Info "$labelViolations field(s) need label hint fixes"
 }
 
-# ── CHECK 16: Combo Reachability (shadow detection) ──────────────────────────
+# ── CHECK 14: Combo Reachability (shadow detection) ──────────────────────────
 # Platform fires first-match combo in array order. A combo B with conditions can be
 # permanently shadowed by an earlier combo A that fires on B's minimal set[] input
 # without any conditions blocking it. set[] membership is NOT a firing gate — the
@@ -991,7 +891,7 @@ if ($labelViolations -eq 0) {
 # combo fires. LIVE-FOUND: CA_CLETS NLTS.DQ shadowed ID.L1 because NLTS.DQ had no
 # conditions; corrected by adding RegistrationState EXISTS to NLTS.DQ (v2.11).
 Write-Host ""
-Write-Host "--- CHECK 16: Combo Reachability (shadow detection) ---" -ForegroundColor Yellow
+Write-Host "--- CHECK 14: Combo Reachability (shadow detection) ---" -ForegroundColor Yellow
 
 $shadowFails = 0
 if ($providerBundle) {

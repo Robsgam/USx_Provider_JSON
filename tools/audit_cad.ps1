@@ -1,27 +1,29 @@
 <#
   audit_cad.ps1 -- CAD dispatch field alignment auditor
-  Validates that all provider JSONs use the correct camelCase fieldIds
-  so CAD auto-populate works universally.
+  Validates that all provider JSONs expose the correct CAD-integration fieldIds
+  (PascalCase USx tokens, camelCase accepted where not yet renamed) so CAD
+  auto-populate works universally.
 
   Checks:
     1. CAD Field Name Alignment (QIF fieldIds vs universal CAD field list)
     2. CAD_DISPATCH Layout Variant Exists (with CONTEXT_INFO_CARD)
     3. FIRST_RESPONDER Layout Variant Exists
-    4. Patch 8 Completeness (RMS sourceFields are camelCase in BASE)
-    5. QIDM sourceField Case Alignment (sourceField matches QIF fieldId exactly)
-    6. CAD Defaults Coverage (any[] fields with form initialValue need combo defaults[])
+    4. QIDM sourceField Case Alignment (sourceField matches QIF fieldId exactly)
+    5. CAD Defaults Coverage (any[] fields with form initialValue need combo defaults[])
+
+  Note: the legacy -Variant <BASE|MC> switch and the Patch 8 camelCase check were retired
+  2026-07-24 -- the portfolio is single-JSON and PascalCase-galvanized, so the BASE branch
+  and the camelCase-rename Patch 8 check were permanently dead.
 
   Usage:
     .\audit_cad.ps1                                  # scan all providers
-    .\audit_cad.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_BASE.json
-    .\audit_cad.ps1 -Variant MC                      # scan all MC JSONs
+    .\audit_cad.ps1 -Path providers\NJ_NJCJIS\NJ_NJCJIS_v4.10.json
     .\audit_cad.ps1 -OutFile docs\cad_audit.txt      # write to file
 #>
 
 param(
     [string]$Path,
-    [string]$OutFile,
-    [ValidateSet('BASE','MC')][string]$Variant = 'MC'
+    [string]$OutFile
 )
 
 $ErrorActionPreference = 'Stop'
@@ -54,8 +56,8 @@ foreach ($ent in $entities) {
     }
 }
 
-# For MC variant, build PascalCase expectations from the rename map (reversed)
-# MC uses PascalCase fieldIds, so CAD expectations become PascalCase
+# Build PascalCase expectations from the Patch 8 rename map (reversed): the galvanized
+# fieldIds are PascalCase, so each camelCase CAD token maps to its PascalCase form.
 $camelToPascal = [System.Collections.Generic.Dictionary[string,string]]::new()
 foreach ($k in $renameMap.Keys) {
     $camelToPascal[$renameMap[$k]] = $k
@@ -76,11 +78,8 @@ if ($Path) {
     foreach ($pd in $provDirs) {
         $candidates = Get-ChildItem -Path $pd.FullName -Filter '*.json' -File |
             Where-Object { $_.Name -notmatch '(archive|phases|release)' }
-        if ($Variant -eq 'BASE') {
-            $f = $candidates | Where-Object { $_.Name -match '_BASE\.json$' } | Select-Object -First 1
-        } else {
-            $f = $candidates | Where-Object { $_.Name -notmatch '_BASE\.json$' } | Select-Object -First 1
-        }
+        # Single-JSON portfolio: pick the one versioned root JSON (legacy _BASE/_MC excluded).
+        $f = $candidates | Where-Object { $_.Name -notmatch '_(BASE|MC)\.json$' } | Select-Object -First 1
         if ($f) { $jsonFiles += $f }
     }
     $jsonFiles = @($jsonFiles | Sort-Object Name)
@@ -294,52 +293,33 @@ foreach ($jf in $jsonFiles) {
         $qifFieldSet = $qifData.allFieldIds
 
         foreach ($cadField in $cadList) {
-            if ($Variant -eq 'MC') {
-                # MC uses PascalCase. Accept ANY valid PascalCase candidate for this
-                # CAD field. Candidates: the patch8-inverse form (where available) AND
-                # the plain first-letter-uppercase form (with ncicNumber special-cased).
-                # Both are needed because the patch8 reverse map can yield a stale form
-                # for fields renamed in Patch 8 -- e.g. licensePlateNumber reverses to the
-                # BANNED 'LicensePlateNumberIn', while the correct recased form is
-                # 'LicensePlateNumber'. camelCase providers are unaffected: they match the
-                # camelCase branch first and never reach these Pascal candidates.
-                $pascalCands = [System.Collections.Generic.List[string]]::new()
-                if ($camelToPascal.ContainsKey($cadField)) { $pascalCands.Add($camelToPascal[$cadField]) }
-                if ($cadField -eq 'ncicNumber') { $pascalCands.Add('NCICNumber') }
-                if ($cadField) { $pascalCands.Add($cadField.Substring(0,1).ToUpper() + $cadField.Substring(1)) }
-                $hitPascal = $pascalCands | Where-Object { $qifFieldSet.Contains($_) } | Select-Object -First 1
-                if ($qifFieldSet.Contains($cadField)) {
-                    # camelCase found in MC -- that's fine (some fields weren't renamed)
-                    Out-Pass "${cadField}: in QIF and CAD list"
-                } elseif ($hitPascal) {
-                    Out-Pass "${cadField}: in QIF as '$hitPascal' (PascalCase USx fieldIds)"
-                } else {
-                    # Check for wrong case
-                    $wrongCase = $null
-                    foreach ($f in $qifFieldSet) {
-                        if ($f -ieq $cadField -and $f -cne $cadField) { $wrongCase = $f; break }
-                    }
-                    if ($wrongCase) {
-                        Out-Fail "${wrongCase}: wrong case (expected '$cadField' or one of: $($pascalCands -join ', '))"
-                    } else {
-                        Out-Info "${cadField}: in CAD list, not in QIF (CAD sends it but form doesn't have it)"
-                    }
-                }
+            # Galvanized providers use PascalCase USx fieldIds; some non-renamed fields are
+            # still camelCase. Accept EITHER: the camelCase CAD token as-is, OR any valid
+            # PascalCase candidate. Candidates: the patch8-inverse form (where available) AND
+            # the plain first-letter-uppercase form (with ncicNumber special-cased). Both are
+            # needed because the patch8 reverse map can yield a stale form for fields renamed
+            # in Patch 8 -- e.g. licensePlateNumber reverses to the BANNED 'LicensePlateNumberIn',
+            # while the correct recased form is 'LicensePlateNumber'.
+            $pascalCands = [System.Collections.Generic.List[string]]::new()
+            if ($camelToPascal.ContainsKey($cadField)) { $pascalCands.Add($camelToPascal[$cadField]) }
+            if ($cadField -eq 'ncicNumber') { $pascalCands.Add('NCICNumber') }
+            if ($cadField) { $pascalCands.Add($cadField.Substring(0,1).ToUpper() + $cadField.Substring(1)) }
+            $hitPascal = $pascalCands | Where-Object { $qifFieldSet.Contains($_) } | Select-Object -First 1
+            if ($qifFieldSet.Contains($cadField)) {
+                # camelCase form found -- fine (field not yet renamed to PascalCase)
+                Out-Pass "${cadField}: in QIF and CAD list"
+            } elseif ($hitPascal) {
+                Out-Pass "${cadField}: in QIF as '$hitPascal' (PascalCase USx fieldIds)"
             } else {
-                # BASE uses camelCase
-                if ($qifFieldSet.Contains($cadField)) {
-                    Out-Pass "${cadField}: in QIF and CAD list"
+                # Check for wrong case
+                $wrongCase = $null
+                foreach ($f in $qifFieldSet) {
+                    if ($f -ieq $cadField -and $f -cne $cadField) { $wrongCase = $f; break }
+                }
+                if ($wrongCase) {
+                    Out-Fail "${wrongCase}: wrong case (expected '$cadField' or one of: $($pascalCands -join ', '))"
                 } else {
-                    # Check for wrong case (PascalCase when should be camelCase)
-                    $wrongCase = $null
-                    foreach ($f in $qifFieldSet) {
-                        if ($f -ieq $cadField -and $f -cne $cadField) { $wrongCase = $f; break }
-                    }
-                    if ($wrongCase) {
-                        Out-Fail "${wrongCase}: wrong case (expected '$cadField')"
-                    } else {
-                        Out-Info "${cadField}: in CAD list, not in QIF (CAD sends it but form doesn't have it)"
-                    }
+                    Out-Info "${cadField}: in CAD list, not in QIF (CAD sends it but form doesn't have it)"
                 }
             }
         }
@@ -401,69 +381,9 @@ foreach ($jf in $jsonFiles) {
         }
     }
 
-    # ── CHECK 4: Patch 8 Completeness (BASE only) ───────────────────────────
+    # ── CHECK 4: QIDM sourceField Case Alignment ────────────────────────────
     Out ''
-    Out '--- CHECK 4: Patch 8 Completeness ---'
-
-    if ($Variant -eq 'MC') {
-        Out-Info "Skipped (PascalCase USx fieldIds; Patch 8 camelCase check not applied)"
-    } elseif (-not $rmsBundle) {
-        Out-Warn "No RMS bundle found -- cannot check Patch 8"
-    } else {
-        foreach ($cfg in $rmsBundle.configurations) {
-            if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
-            $qidmName = $cfg.name
-            $badAttrs = @()
-            $attrCount = 0
-
-            # Check attribute sourceFields
-            if ($cfg.attributes) {
-                foreach ($attr in $cfg.attributes) {
-                    if (-not $attr.sourceField) { continue }
-                    foreach ($sf in $attr.sourceField) {
-                        $attrCount++
-                        if ($renameMap.ContainsKey($sf)) {
-                            $badAttrs += "$sf (expected '$($renameMap[$sf])')"
-                        }
-                    }
-                }
-            }
-
-            # Check combination set[]/any[] values
-            $badCombos = @()
-            if ($cfg.combinations) {
-                foreach ($combo in $cfg.combinations) {
-                    $allRefs = @()
-                    if ($combo.requirements.set) { $allRefs += $combo.requirements.set }
-                    if ($combo.requirements.any) { $allRefs += $combo.requirements.any }
-                    foreach ($ref in $allRefs) {
-                        if ($renameMap.ContainsKey($ref)) {
-                            $badCombos += "$ref (expected '$($renameMap[$ref])')"
-                        }
-                    }
-                }
-            }
-
-            if ($badAttrs.Count -eq 0 -and $badCombos.Count -eq 0) {
-                Out-Pass "RMS $qidmName -- all sourceFields and combo refs are camelCase"
-            } else {
-                if ($badAttrs.Count -gt 0) {
-                    foreach ($ba in $badAttrs) {
-                        Out-Fail "RMS $qidmName attr sourceField: $ba"
-                    }
-                }
-                if ($badCombos.Count -gt 0) {
-                    foreach ($bc in $badCombos) {
-                        Out-Fail "RMS $qidmName combo ref: $bc"
-                    }
-                }
-            }
-        }
-    }
-
-    # ── CHECK 5: QIDM sourceField Case Alignment ────────────────────────────
-    Out ''
-    Out '--- CHECK 5: QIDM sourceField Case Alignment ---'
+    Out '--- CHECK 4: QIDM sourceField Case Alignment ---'
 
     if ($providerBundle) {
         foreach ($cfg in $providerBundle.configurations) {
@@ -516,7 +436,7 @@ foreach ($jf in $jsonFiles) {
         Out-Warn "No provider bundle found -- cannot check QIDM sourceField alignment"
     }
 
-    # ── CHECK 6: CAD Defaults Coverage ─────────────────────────────────────────
+    # ── CHECK 5: CAD Defaults Coverage ─────────────────────────────────────────
     # For each CommSys QIDM combo, any[] fields with a form initialValue must
     # have a combination-level defaults[] entry. CAD dispatch does NOT apply
     # form initialValues — without defaults[], those fields are absent from XML.
@@ -524,7 +444,7 @@ foreach ($jf in $jsonFiles) {
     #   - Fields guaranteed by conditions (user must have set them for combo to fire)
     #   - codeTypeProvider fields (e.g., State) need defaults too — CommSys priority
     Out ''
-    Out '--- CHECK 6: CAD Defaults Coverage ---'
+    Out '--- CHECK 5: CAD Defaults Coverage ---'
 
     if ($providerBundle) {
         foreach ($cfg in $providerBundle.configurations) {

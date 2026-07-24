@@ -130,52 +130,9 @@ $resolvedStr = $resolved.ToString()
 $providerBase = $jsonName -replace '_(BASE|MC)$', ''
 $matrixFileName = "${providerBase}_TEST_MATRIX.txt"
 $matrixFile = Join-Path $ReportsDir $matrixFileName
-$cadVariant = if ($jsonName -match '_BASE') { 'BASE' } else { 'MC' }
-
-# Auto-detect casing convention so verify_build's camelCase check (CHECK 5) actually
-# runs for camelCase providers instead of being silently skipped (finding I). PascalCase
-# USx-native providers (NJ/FL/HI/TX) are Pascal BY DESIGN -- enabling -CamelCase there
-# would FAIL every field (false positive on known-good), so we only pass it when the
-# entity fieldIds are predominantly lowercase-first (a camelCase provider).
-# TX_TLETS_CCH v1.1 is a deliberately MIXED provider (PascalCase base-6 QIDMs identical to
-# TX_TLETS main + camelCase CCH-suffixed fields) -- the CCH cards' bulk of lowercase-starting
-# fieldIds (attentionCCH, nameLastCCH, etc.) can tip the overall ratio past 60% and wrongly
-# flag this as a camelCase provider. Guard: if any of the 22 canonical PascalCase USx tokens
-# (see CLAUDE.md Field Configuration Rules) appear verbatim (case-sensitive) among the
-# fieldIds, this is a Pascal-or-mixed provider -- a true camelCase provider would only ever
-# have the lowercase-first form of these tokens, so an exact match is a reliable signal
-# regardless of what fraction of the total field count it represents.
-$pascalCaseTokens = @(
-    'LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RandomRequest',
-    'RegistrationState','ImageIndicator','VehicleIdentificationNumber','NCICNumber',
-    'VehicleMakeCode','NameFirst','NameLast','BirthDate','SexCode','OperatorLicenseNumber',
-    'GunSerialNumber','GunMake','GunCaliber','GunModel','ArticleSerialNumber','ArticleTypeCode',
-    'RegistrationNumber','BoatHullIdNumber'
-)
-$useCamelCase = $false
-try {
-    $detectJson = Get-Content $resolvedStr -Raw -Encoding UTF8 | ConvertFrom-Json
-    $entCfgs = ($detectJson.bundles | Where-Object { $_.name -eq 'ENTITIES' }).configurations |
-        Where-Object { $_.type -eq 'QUERYINPUTFORM' }
-    $fids = @()
-    foreach ($qif in $entCfgs) {
-        $lay = $qif.layout.default
-        if (-not $lay) { continue }
-        foreach ($np in ($lay | Get-Member -MemberType NoteProperty)) {
-            $node = $lay.($np.Name)
-            if ($node.type.resolvedName -in @('FormInput','FormSelect','FormDate','FormDateInput') -and $node.props.fieldId) {
-                $fids += [string]$node.props.fieldId
-            }
-        }
-    }
-    $fids = $fids | Where-Object { $_ } | Select-Object -Unique
-    $hasPascalToken = @($fids | Where-Object { $pascalCaseTokens -ccontains ($_ -replace 'DH$','') }).Count -gt 0
-    if ($fids.Count -gt 0 -and -not $hasPascalToken) {
-        $lower = @($fids | Where-Object { $_ -cmatch '^[a-z]' }).Count
-        if (($lower / [double]$fids.Count) -ge 0.6) { $useCamelCase = $true }
-    }
-} catch { $useCamelCase = $false }
-Write-Host "  Casing convention: $(if ($useCamelCase) { 'camelCase (CHECK 5 enabled)' } else { 'PascalCase (CHECK 5 N/A)' })" -ForegroundColor Gray
+# NOTE: the auto-detect casing block (which decided whether to pass verify_build -CamelCase)
+# was removed 2026-07-24 -- the portfolio is PascalCase-galvanized, so verify_build's
+# camelCase-enforcement check was retired and -CamelCase is no longer a parameter.
 
 $validatorFile  = Join-Path $ReportsDir "VALIDATOR_REPORT_$jsonName.txt"
 $respSimFile    = Join-Path $ReportsDir "RESPONSE_SIMULATION_$jsonName.txt"
@@ -244,12 +201,11 @@ $jobs[5] = Start-Job -ScriptBlock {
     "SAVED"
 } -ArgumentList $htmlRendererPath, $resolvedStr, $htmlFile
 
-# Step 6: Post-Build Verification (pass -CamelCase only for camelCase providers)
+# Step 6: Post-Build Verification
 $jobs[6] = Start-Job -ScriptBlock {
-    param($tool, $json, $camel)
-    if ($camel) { & powershell -ExecutionPolicy Bypass -File $tool -Path $json -CamelCase 2>&1 | Out-String }
-    else        { & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String }
-} -ArgumentList $verifyPath, $resolvedStr, $useCamelCase
+    param($tool, $json)
+    & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
+} -ArgumentList $verifyPath, $resolvedStr
 
 # Step 7: Metadata Audit
 if (Test-Path $metadataPath) {
@@ -262,9 +218,9 @@ if (Test-Path $metadataPath) {
 # Step 8: CAD Audit
 if (Test-Path $cadPath) {
     $jobs[8] = Start-Job -ScriptBlock {
-        param($tool, $json, $variant)
-        & powershell -ExecutionPolicy Bypass -File $tool -Path $json -Variant $variant 2>&1 | Out-String
-    } -ArgumentList $cadPath, $resolvedStr, $cadVariant
+        param($tool, $json)
+        & powershell -ExecutionPolicy Bypass -File $tool -Path $json 2>&1 | Out-String
+    } -ArgumentList $cadPath, $resolvedStr
 }
 
 # Step 9: Test Matrix -- single all-or-nothing full pass (tiers removed 2026-07-01)
