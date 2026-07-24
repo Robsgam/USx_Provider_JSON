@@ -526,11 +526,15 @@ foreach ($rf in $gatedReports) {
     }
 }
 $manifest = [ordered]@{
-    sourceFile   = $jsonFile
-    sourceSha256 = (Get-FileHash -Path $resolvedStr -Algorithm SHA256).Hash
-    generatedAt  = $timestamp
-    toolDir      = $toolDir
-    reports      = $reportEntries
+    sourceFile      = $jsonFile
+    sourceSha256    = (Get-FileHash -Path $resolvedStr -Algorithm SHA256).Hash
+    generatedAt     = $timestamp
+    toolDir         = $toolDir
+    # Fingerprint of the report-generating tools -- enforce invalidates + auto-heals reports when a
+    # tool changes even if the JSON did not (audit C3 finding). Empty for the legacy path where the
+    # shared helper isn't dot-sourced (no current provider hits that path).
+    toolFingerprint = $(if (Get-Command Get-ReportToolFingerprint -ErrorAction SilentlyContinue) { Get-ReportToolFingerprint $toolDir } else { '' })
+    reports         = $reportEntries
 }
 $manifestFile = Join-Path $TrackingDir "BUILD_MANIFEST_$jsonName.json"
 [System.IO.File]::WriteAllText($manifestFile, ($manifest | ConvertTo-Json -Depth 10), [System.Text.UTF8Encoding]::new($false))

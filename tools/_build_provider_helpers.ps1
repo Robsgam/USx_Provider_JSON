@@ -180,7 +180,7 @@ function Write-ProviderJson {
         Get-ChildItem $outDir -File -ErrorAction SilentlyContinue |
             Where-Object {
                 $_.Name -ne $outName -and
-                ($_.Name -eq "$prefix.json" -or $_.Name -match "^$([regex]::Escape($prefix))_v[\d.]+\.json$")
+                ($_.Name -eq "$prefix.json" -or $_.Name -match "^$([regex]::Escape($prefix))_v[\d.]+\.json$" -or $_.Name -match "^$([regex]::Escape($prefix))_(BASE|MC)\.json$")
             } |
             ForEach-Object {
                 Write-Host "  -> removing stale root JSON: $($_.Name)" -ForegroundColor DarkYellow

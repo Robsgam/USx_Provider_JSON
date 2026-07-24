@@ -63,7 +63,7 @@ the transaction has no requirements or the combo doesn't exist.
 
 ## Step 3 — KB read order (README.txt's own prescribed order — follow it)
 
-README.txt → BUILD_RULES.txt (Section 0 + 3-bundle structure) → PLATFORM_CONSTRAINTS.txt (31
+README.txt → BUILD_RULES.txt (Section 0 + 3-bundle structure) → PLATFORM_CONSTRAINTS.txt (23
 LIMITATIONs + 27 anti-patterns — read this before writing any combo) → FIELD_REFERENCE.txt →
 QIDM_REFERENCE.txt → PROVIDER_CONSTRAINTS.txt → TESTING_REQUIREMENTS.txt → RULE_HANDLERS.txt.
 
@@ -128,19 +128,19 @@ before keeping `sexAttrId`, dead-attribute cleanup). Do **not** attempt RMS pool
 union-pool over-send is a known, designed-but-gated fix — not yet cleared, see BUILD_RULES
 Section 4's G1/G2 gates).
 
-## Step 7 — Label hints (verify_build.ps1 CHECK 15, BUILD_RULES Section 11)
+## Step 7 — Label hints (verify_build.ps1 CHECK 13, BUILD_RULES Section 11)
 
 Labels are the *only* hint mechanism the platform renders (no helperText/placeholder). Every
 field needs one of the 7 canonical hint types (routing alternative, identifier priority, routing
 context, in-state default, optional indicator, conditional requirement, abbreviation expansion).
 State-suffixed fields specifically need either "(leave blank for STATE)" or "(default STATE -
-change for out-of-state)" or CHECK 15 fails outright.
+change for out-of-state)" or CHECK 13 fails outright.
 
 ## Step 8 — CAD defaults (BUILD_RULES.txt Section 12)
 
 CAD dispatch ignores QIF `initialValue` entirely. Any `any[]` field carrying a form default also
 needs a matching `defaults[]` entry in every combo where it's relevant (keyed by attribute name /
-PascalCase targetField, not sourceField) — `audit_cad.ps1` CHECK 6 validates this.
+PascalCase targetField, not sourceField) — `audit_cad.ps1` CHECK 5 validates this.
 
 ## Step 9 — Attention automated-handler standard (BUILD_RULES.txt Section 14)
 

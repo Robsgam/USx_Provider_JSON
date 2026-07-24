@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: TN_TIES
   Source: TN_TIES_v2.0.json
-  Generated: 2026-07-23 16:55
+  Generated: 2026-07-24 18:42
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -25,41 +25,35 @@ POST-BUILD VERIFICATION
   [INFO] CommSys-only: 24 [DealerLicensePlateNumber, HandicapPlacardNumber, InquiryTypeIndicator, LicensePlateTypeCode, LicensePlateYear, TemporaryLicensePlateNumber, VehicleMakeCode, vehicleYear, ExpandedNameSearchCode, ImageIndicator, relatedHitSearchIndicator, attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, gunCaliber, firearmMake, serialNumber, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
---- CHECK 5: camelCase Enforcement ---
-  [INFO] camelCase check skipped (use -CamelCase to enable)
-
---- CHECK 6: Reference Pattern Check ---
+--- CHECK 5: Reference Pattern Check ---
   [PASS] Reference patterns checked (queryLabel, ImageIndicator size, keyReference, state)
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
---- CHECK 7: Cross-Variant Consistency ---
-  [INFO] Single-JSON provider -- skipping cross-variant check
-
---- CHECK 8: Visible-First Mandate ---
+--- CHECK 6: Visible-First Mandate ---
   [INFO] Hidden field 'attention' (FormInput) -- documented exception, allowed
   [PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect (VEHICLE_MAKE dropdown)
   [INFO] QIDM 'TN_TIES_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
---- CHECK 9: Synthetic keyRef Documentation ---
+--- CHECK 7: Synthetic keyRef Documentation ---
   [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
---- CHECK 10: RMS combos subset of CommSys combos ---
+--- CHECK 8: RMS combos subset of CommSys combos ---
   [PASS] RMS combo fields (10) are a subset of CommSys combo fields (34) (RMS-generic allowed)
 
---- CHECK 11: Value-Comparison Conditions (poisoned-array) ---
+--- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
 
---- CHECK 12: Identifier-Priority Guardrail ---
+--- CHECK 10: Identifier-Priority Guardrail ---
   [PASS] Identifier-priority guardrail satisfied on 4 identifier pair(s)
 
---- CHECK 13: conditions[].field references a valid QIF sourceField ---
+--- CHECK 11: conditions[].field references a valid QIF sourceField ---
   [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
---- CHECK 14: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
+--- CHECK 12: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
---- CHECK 15: Form Field Label Hints ---
+--- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'OperatorLicenseNumberDH' label='License Number' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code (required for out-of-state)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -68,7 +62,7 @@ POST-BUILD VERIFICATION
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [PASS] All form field labels have required routing hint qualifiers (37 fields scanned) (6 DH field(s) untagged -- advisory only, see Info above)
 
---- CHECK 16: Combo Reachability (shadow detection) ---
+--- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
 ========================================

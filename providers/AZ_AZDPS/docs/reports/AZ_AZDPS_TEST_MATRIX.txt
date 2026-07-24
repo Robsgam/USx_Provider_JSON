@@ -111,6 +111,11 @@ ENTITY 1: PERSON (27 tests -- 7 cards, 10 combos -- WMPIWantedPersonInquiry co-f
               Expected: AzAzdpsDriverLicenseQuery fires (ACWL)
 13  Person      ACWL+ACWL          + nameMiddle, nameSuffix, RegistrationState [    ]
               Expected: any[] fields present in XML output.
+
+  WARN -- FIELD CONSTRAINTS for DriverHistoryQuery (read METADATA_REFERENCE.txt before running tests):
+         Must be filled if PurposeCode = CA
+         Must be filled if PurposeCode = CO
+         CHECK: do any combo defaults trigger a constraint that has no default/handler?
 14  Person      KQ+RegistrationStateDH  RegistrationStateDH=AZ, OperatorLicen... [    ]
               Expected: DriverHistoryQuery fires (KQ)
 15  Person      KQ+RegistrationStateDH  + attention, purposeCode        [    ]

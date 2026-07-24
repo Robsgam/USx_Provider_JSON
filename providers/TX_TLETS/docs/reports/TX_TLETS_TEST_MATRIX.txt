@@ -1,6 +1,6 @@
 TX_TLETS v4.7 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-21
+Generated: 2026-07-24
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -63,6 +63,10 @@ ENTITY 1: PERSON (14 tests -- 3 cards, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
+
+  WARN -- FIELD CONSTRAINTS for DriverLicenseQuery (read METADATA_REFERENCE.txt before running tests):
+         Must be filled if ImageIndicator = Y
+         CHECK: do any combo defaults trigger a constraint that has no default/handler?
  1  Person      DQ+Name            SexCode=M, BirthDate=01/15/1990, Name... [    ]
               Expected: DriverLicenseQuery fires (DQName)
  2  Person      DQ+Name            + emailAddress, ImageIndicator, nameMiddle, nameSuffix [    ]
@@ -75,6 +79,10 @@ ENTITY 1: PERSON (14 tests -- 3 cards, 5 combos)
               Expected: DriverLicenseQuery fires (CPLName)
  6  Person      CPLNam+CPLName     + emailAddress, ImageIndicator, messageKey, nameMiddle [    ]
               Expected: any[] fields present in XML output.
+
+  WARN -- FIELD CONSTRAINTS for DriverHistoryQuery (read METADATA_REFERENCE.txt before running tests):
+         Must be filled if ImageIndicator = Y
+         CHECK: do any combo defaults trigger a constraint that has no default/handler?
  7  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQName)
  8  Person      KQ+Name            + Attention, ImageIndicator, emailAddress, nameMiddleDH [    ]
@@ -135,6 +143,10 @@ ENTITY 3: BOAT (12 tests -- 1 card, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
+
+  WARN -- FIELD CONSTRAINTS for BoatQuery (read METADATA_REFERENCE.txt before running tests):
+         Must be filled if ImageIndicator = Y
+         CHECK: do any combo defaults trigger a constraint that has no default/handler?
 32  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber)
 33  Boat        BQ+Hull+State      + ImageIndicator, relatedHitSearchIndicator [    ]
@@ -164,6 +176,10 @@ ENTITY 4: FIREARM (4 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
+
+  WARN -- FIELD CONSTRAINTS for GunQuery (read METADATA_REFERENCE.txt before running tests):
+         Must be filled if ImageIndicator = Y
+         CHECK: do any combo defaults trigger a constraint that has no default/handler?
 44  Firearm     QG+Serial          serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QGGunSerialNumber)
 45  Firearm     QG+Serial          + GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator [    ]
@@ -177,6 +193,10 @@ ENTITY 5: ARTICLE (4 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
+
+  WARN -- FIELD CONSTRAINTS for ArticleSingleQuery (read METADATA_REFERENCE.txt before running tests):
+         Must be filled if ImageIndicator = Y
+         CHECK: do any combo defaults trigger a constraint that has no default/handler?
 48  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
 49  Article     QA+Serial          + ImageIndicator, relatedHitSearchIndicator [    ]

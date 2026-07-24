@@ -75,6 +75,12 @@ if (-not $json.bundles) {
     exit 1
 }
 Write-Pass "bundles array present ($($json.bundles.Count) bundles)"; Inc-Pass
+# A top-level 'version' field is REJECTED by the platform: it deserializes as java.lang.Integer,
+# so a dotted string like "4.10" throws at import. Version lives ONLY in the filename + the bundle
+# description (enforce CHECK 3i). validate was blind to this known import-killer (mutation-test M4).
+if ($json.PSObject.Properties.Name -contains 'version') {
+    Write-Fail "Top-level 'version' field present ('$($json.version)') -- platform rejects it (parses as Integer; a dotted string fails import). Remove it; version belongs in the filename + bundle description."
+}
 
 $entitiesBundle = $null
 $providerBundles = @()
@@ -425,7 +431,7 @@ if ($entitiesBundle) {
                     # AP #3: attributeTypeId='RACE' on form field without codeTypeProvider (sends numeric ID, not code)
                     if ($node.props.attributeTypeId -eq 'RACE' -and -not $node.props.codeTypeProvider) {
                         Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' has attributeTypeId='RACE' without codeTypeProvider -- sends numeric ID, use codeTypeCategory='NIBRS_RACE' or add codeTypeProvider (AP #3)"
-                        Write-Host "    [FIX] In build script: add codeTypeCategory='NIBRS_RACE', codeTypeSource='NIBRS' to field '$($node.props.fieldId)' and remove attributeTypeId='RACE'" -ForegroundColor Cyan
+                        Write-Host "    [FIX] In build script: if an RMS 'race' (useAttributeId) attr OR a CommSys RaceCode attr with codeTypeProvider consumes this field, KEEP attributeTypeId='RACE' and ADD codeTypeProvider='NIBRS' (produces the ID both need). ONLY if nothing consumes it as an ID (a -SkipRace provider): switch to codeTypeCategory='NIBRS_RACE'+codeTypeSource='NIBRS' and drop attributeTypeId." -ForegroundColor Cyan
                     }
                     # Y-only fields should be FormInput, not FormSelect
                     $yOnlyFields = @('RelatedHitSearchIndicator','ExpandedNameSearchCode','ExpandedBirthDateSearchIndicator')
@@ -1342,6 +1348,29 @@ foreach ($bundle in $providerBundles) {
                         foreach ($sf in $sfs) {
                             if ($entityProps.ContainsKey($sf) -and $entityProps[$sf].attributeTypeId -eq 'RACE' -and -not $attr.codeTypeProvider) {
                                 Write-Fail "QIDM '$($cfg.name)' attr '$($attr.name)' maps attributeTypeId=RACE to RaceCode without codeTypeProvider -- sends numeric ID (AP #3)"
+                            }
+                        }
+                    }
+                }
+            }
+
+            # AP #11 (CommSys reverse-lookup direction): an attr WITH codeTypeProvider does an
+            # attribute-ID -> provider-code reverse-lookup on the wire, so its form field must PRODUCE
+            # an attribute ID (attributeTypeId=...). A code-string dropdown (codeTypeCategory without
+            # attributeTypeId) feeds it a bare code the reverse-lookup can't resolve -> dropped/garbled
+            # filter. The RMS useAttributeId direction is gated at the AP #11 block; this is the
+            # CommSys-attr side (NM_NMLETS_OFML raceCodeDH was the live latent instance, 2026-07-24).
+            if ($entityProps) {
+                foreach ($attr in $cfg.attributes) {
+                    if (-not $attr.codeTypeProvider) { continue }
+                    $sfs = @()
+                    if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
+                    elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
+                    foreach ($sf in $sfs) {
+                        if ($entityProps.ContainsKey($sf)) {
+                            $fp = $entityProps[$sf]
+                            if ($fp.codeTypeCategory -and -not $fp.attributeTypeId) {
+                                Write-Fail "QIDM '$($cfg.name)' attr '$($attr.name)' has codeTypeProvider='$($attr.codeTypeProvider)' (attr-ID reverse-lookup) but sourceField '$sf' is a code-string dropdown (codeTypeCategory='$($fp.codeTypeCategory)', no attributeTypeId) -- reverse-lookup can't resolve a code (AP #11, CommSys direction)"
                             }
                         }
                     }

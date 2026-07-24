@@ -441,6 +441,7 @@ TOOLS
     Usage: .\tools\emit_picklist_scope.ps1 -Path providers/<P>/<P>_vX.Y.json
 
   tools/audit_xml_consistency.ps1
+    On-demand (manual; not run by enforce/pipeline/build_report).
     Cross-run XML regression check: same combo + same fills must produce the SAME wire
     XML run after run (only the transaction id changes; normalized before diff). Compares
     current logs against a baseline git ref -- use the previous clean pass's commit of the

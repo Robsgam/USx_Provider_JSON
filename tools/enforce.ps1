@@ -245,21 +245,22 @@ foreach ($pd in $providers) {
     if (-not (Test-Path $manifestFile)) { $manifestFile = Join-Path $docsDir "base\BUILD_MANIFEST_${docPrefix}_BASE.json" }
 
     $liveSha = (Get-FileHash -Path $activeJson.FullName -Algorithm SHA256).Hash
+    $curFp = Get-ReportToolFingerprint $toolDir   # invalidate reports when a report-tool changed, not just the JSON (audit C3)
     $man = $null
     if (Test-Path $manifestFile) {
         try { $man = Get-Content $manifestFile -Raw | ConvertFrom-Json } catch { $man = $null }
     }
-    if (-not ($man -and $man.sourceSha256 -eq $liveSha)) {
-        Out "  $provName -- build manifest stale/missing; regenerating reports..."
+    if (-not ($man -and $man.sourceSha256 -eq $liveSha -and $man.toolFingerprint -eq $curFp)) {
+        Out "  $provName -- build manifest stale/missing (JSON or report-tool changed); regenerating reports..."
         & powershell -ExecutionPolicy Bypass -File "$toolDir\build_report.ps1" -Path $activeJson.FullName 2>&1 | Out-Null
         $man = $null
         if (Test-Path $manifestFile) {
             try { $man = Get-Content $manifestFile -Raw | ConvertFrom-Json } catch { $man = $null }
         }
     }
-    if ($man -and $man.sourceSha256 -eq $liveSha) {
+    if ($man -and $man.sourceSha256 -eq $liveSha -and $man.toolFingerprint -eq $curFp) {
         $script:Manifests[$provName] = $man
-        Pass "$provName -- reports match live JSON (SHA $($liveSha.Substring(0,12))...)"
+        Pass "$provName -- reports match live JSON + current report-tools (SHA $($liveSha.Substring(0,12))...)"
     } else {
         Fail "$provName -- build manifest missing or != live JSON after rebuild (reports NOT trustworthy)"
     }
@@ -503,13 +504,15 @@ foreach ($pd in $providers) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  PHASE 2f: Build Reproducibility (opt-in: -Reproducible)
-#  Re-runs each provider's build script twice into scratch and compares vs the
-#  committed JSON (audit_reproducible.ps1). Confirms committed == fresh build.
-#  Heavy (a real build per provider) so it is OFF by default. Non-determinism =
-#  FAIL; deterministic-but-stale commit = WARN (rebuild that provider).
+#  PHASE 2f: Build Reproducibility (-Reproducible, OR auto-on for a single -Provider run)
+#  Re-runs each provider's build script twice into scratch and compares vs the committed
+#  JSON (audit_reproducible.ps1). Confirms committed == fresh build. Heavy (a real build
+#  per provider), so a FULL-portfolio enforce keeps it opt-in (-Reproducible); a single
+#  -Provider run is cheap (2 builds) and runs it automatically -- closing the gap where the
+#  reproducibility gospel was verified only on explicit opt-in (audit C1 finding 2026-07-24).
+#  Non-determinism = FAIL; deterministic-but-stale commit = WARN (rebuild that provider).
 # ══════════════════════════════════════════════════════════════════════════════
-if ($Reproducible) {
+if ($Reproducible -or $Provider) {
     SectionHeader "PHASE 2f: Build Reproducibility"
     $reproTool = Join-Path $toolDir "audit_reproducible.ps1"
     if (-not (Test-Path $reproTool)) {
@@ -532,6 +535,27 @@ if ($Reproducible) {
             elseif ($rwarn -gt 0)  { Warn "$provName -- committed JSON STALE vs fresh build (rebuild needed)" }
             else                   { Pass "$provName -- committed JSON == fresh build (reproducible & current)" }
         }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2g: Base<->Variant Lockstep (audit_variant_sync.ps1)
+#  A variant (build script declares `# BASE-SYNC: <BASE> vX.Y`) must not fall behind its
+#  base's current version. This real-teeth check previously ran ONLY in doctor.ps1, which no
+#  mandatory path invokes -- so a base bump could silently leave a variant stale (TX_TLETS_CCH
+#  once fell ~4 versions behind). Wired into enforce 2026-07-24 (audit C1 finding).
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2g: Base<->Variant Lockstep"
+$vsTool = Join-Path $toolDir "audit_variant_sync.ps1"
+if (-not (Test-Path $vsTool)) {
+    Info "audit_variant_sync.ps1 not found -- lockstep check skipped"
+} else {
+    $vsOut = & powershell -ExecutionPolicy Bypass -File $vsTool 2>&1 | Out-String
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Base<->variant lockstep: a variant's BASE-SYNC marker is behind its base (run audit_variant_sync.ps1)"
+        $vsOut -split "`n" | Where-Object { $_ -match 'FAIL|behind|drift|re-sync|BASE-SYNC' } | Select-Object -First 6 | ForEach-Object { Out "       $($_.Trim())" }
+    } else {
+        Pass "Base<->variant lockstep: all declared variants synced to their base"
     }
 }
 

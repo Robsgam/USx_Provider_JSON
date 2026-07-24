@@ -71,3 +71,19 @@ function Find-DocsPath([string]$provDir, [string]$category, [string]$fileName) {
     if (Test-Path $flatFallback) { return $flatFallback }
     return $preferred  # neither exists -- return the preferred (category) path as the canonical "should be here"
 }
+
+# Report-tool fingerprint: a stable hash of the tool files whose output BUILD_MANIFEST gates.
+# build_report stamps it into the manifest; enforce compares it. When a report-generating tool
+# changes but the JSON does not, the manifest's sourceSha256 still matches, so enforce would
+# otherwise trust a report produced by the OLD tool (audit C3 finding 2026-07-24: fresh
+# verify_build = 16 PASS vs committed 15). Including the fingerprint in enforce's trust condition
+# makes a tool change trigger the SAME auto-heal (re-run build_report) as a JSON change. Defined
+# ONCE here (both build_report + enforce dot-source this module) so the two can never diverge.
+function Get-ReportToolFingerprint([string]$toolDir) {
+    $files = @('validate.ps1','verify_build.ps1','audit_cad.ps1','audit_metadata.ps1','audit_supported_queries.ps1') | Sort-Object
+    $parts = foreach ($f in $files) {
+        $p = Join-Path $toolDir $f
+        if (Test-Path $p) { (Get-FileHash -Path $p -Algorithm SHA256).Hash } else { 'MISSING' }
+    }
+    return ($parts -join ':')
+}

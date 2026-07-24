@@ -195,15 +195,27 @@ if (-not $devdocResolved) {
     if (Test-Path $candidate) { $devdocResolved = $candidate }
 }
 if ($devdocResolved -and (Test-Path $devdocResolved)) {
+    # Value-triggered requirement phrasings. Broadened 2026-07-24 (audit C1 finding: the gate was
+    # phrase-brittle -- only "Must be filled if"/"Mandatory if" -> other phrasings passed by absence).
+    $triggerRe = '(?:Must be filled if|Mandatory if|Required if|Required when|Mandatory when|Must be supplied if|Must be present if)\s+(\w+)\s*=\s*([A-Za-z0-9]{1,4}(?:\s*,\s*[A-Za-z0-9]{1,4})*)'
+    # Conditional-keyword lines that DON'T parse into field=value (e.g. NM "must be supplied as a set
+    # with X when Y" co-occurrence form) -- surfaced as a NOTE so phrase-brittleness is visible, not silent.
+    $condKeyword = '(?i)\b(must be filled|mandatory (if|when)|required (if|when)|must be supplied|conditional|if supplied)\b'
+    $unparsed = @()
     foreach ($dLine in (Get-Content $devdocResolved)) {
         # Capture the trigger field + a comma-separated list of short codes; the value pattern stops
         # before trailing possible-values prose (e.g. AZ "= CA, CO CI - ..." -> CA,CO; TX "= Y Y,N..." -> Y).
-        if ($dLine -match '(?:Must be filled if|Mandatory if)\s+(\w+)\s*=\s*([A-Za-z0-9]{1,4}(?:\s*,\s*[A-Za-z0-9]{1,4})*)') {
+        if ($dLine -match $triggerRe) {
             $tField = $Matches[1]
             foreach ($tv in @($Matches[2] -split '\s*,\s*' | ForEach-Object { $_.Trim() } | Where-Object { $_ })) {
                 $devdocConstraints.Add([PSCustomObject]@{ field = $tField; value = $tv })
             }
         }
+        elseif ($dLine -match $condKeyword) { $unparsed += $dLine.Trim() }
+    }
+    if ($unparsed.Count -gt 0) {
+        Write-Host "  [NOTE] $($unparsed.Count) devdoc line(s) with conditional-requirement keywords did NOT parse into a field=value constraint (non value-triggered phrasing) -- review manually for T6-class defaults:" -ForegroundColor DarkYellow
+        $unparsed | Select-Object -First 5 | ForEach-Object { Write-Host "         $_" -ForegroundColor DarkGray }
     }
 }
 

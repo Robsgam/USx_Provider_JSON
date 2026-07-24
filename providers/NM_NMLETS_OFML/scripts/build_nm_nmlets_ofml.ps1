@@ -28,7 +28,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nm_nmlets_ofml.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.0'
+$Version     = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NM_NMLETS_OFML_v${Version}.json"
@@ -507,7 +507,11 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DH_NAME_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DH_NAME_2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_NAME_2' }
-                @{ id = 'RaceCodeDH_Input';  node = Sel 'raceCodeDH'  'Race (optional)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DH_NAME_2' }
+                # attributeTypeId='RACE'+codeTypeProvider='NIBRS' matches the DL raceCode field (line ~462)
+                # so it produces the attribute ID the DH RaceCode attr's codeTypeProvider reverse-lookup
+                # needs (was codeTypeCategory code-string -> reverse-lookup couldn't resolve it; AP #11
+                # CommSys direction, caught by the new validate check 2026-07-24).
+                @{ id = 'RaceCodeDH_Input';  node = Sel 'raceCodeDH'  'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_NAME_2' }
             )}
         )
     }
