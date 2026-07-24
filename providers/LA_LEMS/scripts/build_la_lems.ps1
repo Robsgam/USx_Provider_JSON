@@ -14,7 +14,8 @@
 #     allowed hidden field. DriverHistoryQuery metadata has NO Attention field -> DH carries no
 #     Attention attribute/feeder (dropped from legacy, which orphaned it).
 #   DP/DQ routing toggle (DriverLicenseQuery): DP = photo DL (set OLN+ImageIndicator),
-#     DQ = plain DL by OLN (set OLN, ImageIndicator NOT_EXISTS). ImageIndicator has NO default
+#     DQ = plain DL by OLN (set OLN, ImageIndicator NOT_EXISTS). ImageIndicator form defaults to 'Y'
+#     (photo/DP is the default path); officer clears the Image dropdown to reach DQ (plain DL)
 #     (blank) -- it is the toggle: Image=Y -> DP (photo), Image blank -> DQ. Existence-only,
 #     poisoned-array-free, mutually exclusive, both reachable.
 #   Vehicle State REQUIRED (in set[] for both RQS combos per metadata) -- no in/out keyRef
@@ -134,7 +135,8 @@ $vehRegQuery = [PSCustomObject]@{
 # DriverLicenseQuery -- QWDN (warrant name+race), QWA (warrant name), DP (photo OLN), DQ (OLN).
 # OLN>Name guardrail (QWDN/QWA: OperatorLicenseNumber NOT_EXISTS).
 # QWDN vs QWA isolation: QWDN requires raceCode (set); QWA has raceCode NOT_EXISTS.
-# DP vs DQ toggle: DP set[OLN,Image]; DQ set[OLN] + ImageIndicator NOT_EXISTS. ImageIndicator no default.
+# DP vs DQ toggle: DP set[OLN,Image]; DQ set[OLN] + ImageIndicator NOT_EXISTS. ImageIndicator form
+# defaults to 'Y' (DP/photo default); officer clears the Image dropdown to reach DQ.
 # =====================================================================
 $dlQuery = [PSCustomObject]@{
     attributes = @(

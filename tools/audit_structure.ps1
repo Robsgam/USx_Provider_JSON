@@ -68,7 +68,7 @@ $script:issueProviders = [System.Collections.Generic.List[string]]::new()
 
 # ── Skip list ────────────────────────────────────────────────────────────────
 
-$skipProviders = @('CA_CONTRA_COSTA')
+$skipProviders = @()  # (CA_CONTRA_COSTA was skipped while parked/incomplete; removed 2026-07-24 -- it is a completed build and must be audited normally)
 
 # ── Resolve provider list ────────────────────────────────────────────────────
 
