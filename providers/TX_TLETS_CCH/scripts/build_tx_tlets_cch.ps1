@@ -1,4 +1,6 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.3
+# BASE-SYNC: TX_TLETS v4.7   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+#   When TX_TLETS bumps, re-sync base-6 + update this marker (tools/audit_variant_sync.ps1 checks it).
 # Separate provider: full base TLETS query package (6 QIDMs) PLUS all 8 Computerized Criminal
 # History (CCH) transactions on Person.
 #

@@ -103,6 +103,15 @@ try {
     Emit "  [WARN] audit_reverse_propagation.ps1 failed: $($_.Exception.Message)"
 }
 
+Emit ""
+Emit "--- BASE<->VARIANT SYNC (variant base-6 drift; audit_variant_sync.ps1) ---"
+try {
+    $vs = & "$tool\audit_variant_sync.ps1" *>&1 | Out-String
+    ($vs.TrimEnd() -split "`n") | Where-Object { $_ -notmatch '^=+$' -and $_ -notmatch 'BASE<->VARIANT SYNC AUDIT' } | ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] audit_variant_sync.ps1 failed: $($_.Exception.Message)"
+}
+
 # --- 5. Verdict ----------------------------------------------------------------
 Emit ""
 Emit "================================================================"

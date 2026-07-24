@@ -597,6 +597,17 @@ TOOLS
     plus gaps. Informational (enforce PHASE 1 is the gate); composed into doctor.ps1.
     Usage: .\audit_reverse_propagation.ps1 [-OutFile <path>]
 
+  tools/audit_variant_sync.ps1
+    Base<->variant lockstep drift check. A VARIANT provider (e.g. TX_TLETS_CCH) shares its
+    base-6 QIDMs with its BASE provider (TX_TLETS) but is a separate build script with NO
+    auto-propagation, so it can silently drift behind when the base changes (TX_TLETS_CCH had
+    drifted ~4 versions before this existed). Detection is MARKER-DRIVEN: a provider is a variant
+    IFF its build script declares `# BASE-SYNC: <BASE> vX.Y` (avoids name-heuristic false positives
+    like CA_CLETS_OCATS, which is an independent provider). For each declared variant it compares
+    the marker version to the base's CURRENT version and flags drift. Composed into doctor.ps1.
+    When you build a variant (CCH etc.), add the marker; when the base bumps, re-sync + update it.
+    Usage: .\audit_variant_sync.ps1 [-Path providers] [-OutFile <path>]
+
   tools/lint_build_scripts.ps1
     Static analysis of all build scripts for anti-patterns. Checks: PlateYear
     dynamic ($currentYear), field type correctness, missing RMS patches,

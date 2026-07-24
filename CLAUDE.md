@@ -76,7 +76,7 @@ One build script per provider → one `<PROVIDER>.json`. Always multi-card. No s
 
 **Tooling must honor this** — do NOT demand a variant-named source doc or duplicate the base PDF under the variant name. `audit_structure.ps1`'s devdoc-PDF check accepts a base-prefixed PDF when the variant name strips (on `_`) to a sibling base provider directory (added 2026-07-24). Any future devdoc/metadata-resolution logic should follow the same base↔variant fallback.
 
-**Base + variants = ONE logical provider (kept in lockstep).** A variant is *derived* from the base (it inherits the base's QIDMs/metadata/devdoc), so **any change to the base JSON — rebuild, combo edit, label pass, CAD fix — must propagate to (trigger a rebuild of) every variant.** Variants must never drift from their base independently. When you touch a base provider, rebuild its variants in the same pass and re-run their gates. Directory layout stays one-dir-per-variant (`TX_TLETS`, `TX_TLETS_CCH`), but they are tied by the `<BASE>_<VARIANT>` naming convention and treated as a unit. **TODO (tooling gap, not yet built):** a base↔variant dependency check that flags a variant stale when its base's JSON/build changes (analogous to the reverse-propagation flag mechanism, `flag_pending_fix.ps1`). Until that exists, this lockstep is a manual discipline. **Drift resolved 2026-07-24:** `TX_TLETS_CCH` v1.3 re-synced its base-6 QIDMs to `TX_TLETS` v4.7 (email handler + FRT=E default added, QWName removed) — base↔variant lockstep restored.
+**Base + variants = ONE logical provider (kept in lockstep).** A variant is *derived* from the base (it inherits the base's QIDMs/metadata/devdoc), so **any change to the base JSON — rebuild, combo edit, label pass, CAD fix — must propagate to (trigger a rebuild of) every variant.** Variants must never drift from their base independently. When you touch a base provider, rebuild its variants in the same pass and re-run their gates. Directory layout stays one-dir-per-variant (`TX_TLETS`, `TX_TLETS_CCH`), but they are treated as a unit. **Lockstep is enforced by convention + check (added 2026-07-24):** each variant's build script declares `# BASE-SYNC: <BASE> vX.Y` (the base version its base-6 is synced to), and `tools/audit_variant_sync.ps1` (composed into `doctor.ps1`) flags any declared variant whose marker is behind its base's current version. Detection is marker-driven, NOT name-based — so an independent provider that merely shares a name prefix (e.g. `CA_CLETS_OCATS`) is not mistaken for a variant. When the base bumps: re-sync the variant's base-6 and bump its `BASE-SYNC` marker. **Drift resolved 2026-07-24:** `TX_TLETS_CCH` v1.3 re-synced its base-6 to `TX_TLETS` v4.7 (email handler + FRT=E default added, QWName removed) and now declares `# BASE-SYNC: TX_TLETS v4.7`.
 
 ---
 
@@ -349,7 +349,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (61 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 1 archived one-time migration tool in `tools/_archive/`)
+## Tools (62 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 1 archived one-time migration tool in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -383,6 +383,7 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `doctor.ps1` | **ONE-SHOT HEALTH DASHBOARD** -- read-only snapshot: score_all -Quick + poisoned-array sweep (validate G-31) + git status + reverse-propagation status | `-SkipPoison` `-OutFile` |
 | `flag_pending_fix.ps1` | **REVERSE-PROPAGATE** a shared-module/JSON fix as a doc-stub flag: writes `[FLAG:<id>]` into each still-pending provider's PENDING_UPDATES.txt (blocks enforce PHASE 1 until rebuilt; build script clears it) + appends a REVERSE_PROPAGATION_LOG.md row. Idempotent. | `-FixId` `-Description` `-Providers <list\|all>` `-Origin` `-Date` `-DryRun` `-OutFile` |
 | `audit_reverse_propagation.ps1` | Portfolio status view: reads every PENDING_UPDATES.txt + REVERSE_PROPAGATION_LOG.md, reports which providers are pending/propagated per fix + gaps. Informational (enforce PHASE 1 is the gate); composed into doctor.ps1 | `-OutFile` |
+| `audit_variant_sync.ps1` | Base↔variant lockstep drift check. For each provider declaring `# BASE-SYNC: <BASE> vX.Y` in its build script (marker-driven, no name-heuristic false positives), flags drift if the marker is behind the base's current version. Catches the class where a variant (CCH) silently falls behind its base (TX_TLETS). Composed into doctor.ps1. See "Provider Variants". | `-Path <dir>` `-OutFile` |
 | `audit_repo.ps1` | Full monorepo audit (18 categories: banned patterns, versions, docs, structure, cross-provider, camelCase) | `-Category <1-18>` |
 | `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
 | `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |

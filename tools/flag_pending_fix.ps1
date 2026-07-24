@@ -54,7 +54,7 @@ function Pass($msg) { OutColor "    [PASS] $msg" Green }
 function Info($msg) { OutColor "    [INFO] $msg" Gray }
 function Skip($msg) { OutColor "    [SKIP] $msg" DarkYellow }
 
-$skipProviders = @('CA_CONTRA_COSTA')   # incomplete -- never a propagation target
+$skipProviders = @()   # (CA_CONTRA_COSTA was skipped while incomplete; removed 2026-07-24 -- completed build, a valid reverse-propagation target)
 
 # ── Resolve target providers ──
 $allProvNames = @(Get-ChildItem $providersDir -Directory | Select-Object -ExpandProperty Name)
