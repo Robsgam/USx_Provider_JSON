@@ -1,4 +1,14 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.17 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
+#   change): applied the portfolio OLN convention. OperatorLicenseNumber (DL) + OperatorLicenseNumberDH
+#   (DH) "License Number" -> "OLN". DL/DH card titles now carry their query paths ("Driver License
+#   Search by OLN, CII, SSN, \"OR\" Name" / "Driver History Search by OLN, \"OR\" Name"). CA_CLETS has
+#   NO ImageIndicator field (so bare "NCIC Image" is N/A) and NO relatedHitSearchIndicator/stolen
+#   toggle (so "Stolen Check" is N/A). Cross-reference helpers were already stripped at v2.13; the
+#   "(optional)" indicators on genuinely-optional any[] fields (DOB/Age/Height/County/Race) are valid
+#   CHECK 15 hints and are kept. DL top row (OLN + CII + SSN alternate identifiers) unchanged -- OLN
+#   already leads. Label/title-only, no combo/QIDM/routing/fieldId/default change. ALL 5 ENTITIES
+#   RESET for re-test at v2.17 (block by version). NOT yet re-tested.
 # v2.15 (2026-07-21): metadata correctness fix, found by live testing. DriverLicenseQuery IR.QVC.N
 #   combo sent APPSRequestIndicator on the wire (default 'N') -- audit_log_metadata.ps1 FAILed 9/9
 #   IR.QVC.N test logs ("wire field(s) not defined in metadata"). Checked the real metadata XML
@@ -66,7 +76,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.16"
+    [string]$Version = "2.17"
 )
 
 $ErrorActionPreference = "Stop"
@@ -831,10 +841,10 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DL'
-        title = 'DRIVER LICENSE SEARCH'
+        title = 'Driver License Search by OLN, CII, SSN, "OR" Name'
         rows  = @(
             @{ id = 'ROW_PER_DL_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_DL_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
                 @{ id = 'CriminalIdNumber_Input';     node = Inp 'criminalIdNumber'     'CII' '11' 'ROW_PER_DL_1' }
                 @{ id = 'SocialSecurityNumber_Input';  node = Inp 'socialSecurityNumber'  'SSN' '9'  'ROW_PER_DL_1' }
             )}
@@ -859,10 +869,10 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'DRIVER HISTORY SEARCH'
+        title = 'Driver History Search by OLN, "OR" Name'
         rows  = @(
             @{ id = 'ROW_PER_DH_1'; cols = @('6','4'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number' '20' 'ROW_PER_DH_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
                 @{ id = 'PurposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(

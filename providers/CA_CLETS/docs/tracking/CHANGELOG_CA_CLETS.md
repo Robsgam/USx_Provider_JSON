@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.16** | Generated: 2026-07-24
+Current: **v2.17** | Generated: 2026-07-27
 
 ---
+
+## v2.17 -- 2026-07-27 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.16 -- 2026-07-24 -- Race re-added to RMS person search
 

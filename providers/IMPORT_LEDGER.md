@@ -26,7 +26,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (45 logs) | v4.11 | current |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.15 (66 logs) | v4.15 | current (full re-test complete 2026-07-27; in/out gates validated live) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.10 (83 logs) | v4.10 | current (full re-test complete 2026-07-27) |
-| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.16 | last tenant-tested v2.12; v2.13-v2.16 built (race re-add etc.), not re-captured |
+| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.17 | last tenant-tested v2.12; v2.13-v2.17 built (v2.17 = DEX-1284 OLN relabel), not re-captured |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.1 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22 |
 
 All other providers (CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,

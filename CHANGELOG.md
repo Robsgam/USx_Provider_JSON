@@ -110,7 +110,7 @@ Current: **v4.11** — 65P/0F/0W/0LIM | live test PENDING (full re-test from T1)
 
 ## CA_CLETS (CA_CLETS_OFML)
 
-Current: **v2.16** — 77P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.16.json`
+Current: **v2.17** — 77P/0F/0W/0LIM | live test PENDING (full re-test from T1) | import: `CA_CLETS_v2.17.json`
 
 ### v2.12 (2026-07-01) — Restore in-state DriverLicenseQuery combos (ID.L1 / IN.L1)
 - DL 6 → 8 combos: restored `ID.L1` (in-state OLN) + `IN.L1` (in-state Name), the real devdoc keyRefs v2.11 removed
