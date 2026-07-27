@@ -1,4 +1,4 @@
-NJ_NJCJIS v4.11 -- TEST MATRIX
+NJ_NJCJIS v4.12 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -15,14 +15,11 @@ Vehicle (3 cards, 7 fields):
   CARD_VEH_VIN (VIN SEARCH):
     VehicleIdentificationNumber [Inp 20]
 
-Person (3 cards, 7 fields):
-  CARD_PER_OPT (Search Options):
-    RegistrationState [Sel STATE, NJ], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-  CARD_PER_OLN (LICENSE NUMBER):
-    OperatorLicenseNumber [Inp 20]
-  CARD_PER_NAME (NAME SEARCH):
-    ROW 1: NameFirst [Inp 30], NameLast [Inp 30]
-    ROW 2: BirthDate [FormDate], SexCode [Sel SEX]
+Person (1 card, 7 fields):
+  CARD_PER_DL (Driver License Search by OLN, "OR" Name):
+    ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE, NJ], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NameFirst [Inp 30], NameLast [Inp 30]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
 
 Firearm (1 card, 5 fields):
   CARD_GUN (NCIC FIREARM QUERY):
@@ -69,35 +66,35 @@ ENTITY 1: VEHICLE (5 tests -- 3 cards, 2 combos)
  5  Vehicle     Guardrail: RANDFULL>RANDFULLN  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RANDFULL). VIN absent from XML.
 
-ENTITY 2: PERSON (5 tests -- 3 cards, 2 combos)
+ENTITY 2: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 6  Person      FULLN+FULLN        OperatorLicenseNumber=D999888777 [    ]
-              Expected: DriverLicenseQuery fires (FULLN)
- 7  Person      FULLN+FULLN        + ImageIndicator, RegistrationState [    ]
-              Expected: any[] fields present in XML output.
- 8  Person      FULL+FULL          BirthDate=01/15/1990, NameLast=DOE, N... [    ]
-              Expected: DriverLicenseQuery fires (FULL)
- 9  Person      FULL+FULL          + ImageIndicator, SexCode, RegistrationState [    ]
-              Expected: any[] fields present in XML output.
-10  Person      Guardrail: FULLN>FULL  OperatorLicenseNumber=D999888777, Bir... [    ]
-              Expected: DriverLicenseQuery fires (FULLN). DOB+LastName+FirstName absent from XML.
-
-ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-11  Boat        QB+N               BoatHullIdNumber=FL1234AB56H7    [    ]
+ 6  Boat        QB+N               BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QBN)
-12  Boat        QB+N               + ImageIndicator                [    ]
+ 7  Boat        QB+N               + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-13  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
+ 8  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QB)
-14  Boat        QB+Reg             + ImageIndicator                [    ]
+ 9  Boat        QB+Reg             + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-15  Boat        Guardrail: QBN>QB  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+10  Boat        Guardrail: QBN>QB  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (QBN). Reg absent from XML.
+
+ENTITY 3: PERSON (5 tests -- 1 card, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+11  Person      FULLN+FULLN        OperatorLicenseNumber=D999888777 [    ]
+              Expected: DriverLicenseQuery fires (FULLN)
+12  Person      FULLN+FULLN        + ImageIndicator, RegistrationState [    ]
+              Expected: any[] fields present in XML output.
+13  Person      FULL+FULL          BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+              Expected: DriverLicenseQuery fires (FULL)
+14  Person      FULL+FULL          + ImageIndicator, SexCode, RegistrationState [    ]
+              Expected: any[] fields present in XML output.
+15  Person      Guardrail: FULLN>FULL  OperatorLicenseNumber=D999888777, Bir... [    ]
+              Expected: DriverLicenseQuery fires (FULLN). DOB+LastName+FirstName absent from XML.
 
 ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
@@ -122,9 +119,9 @@ TOTAL: 19 tests
 
 COMBO COVERAGE (8/8):
   VehicleRegistrationQuery: 2/2 -- T1(RANDFULL), T3(RANDFULLN)
-  DriverLicenseQuery: 2/2 -- T6(FULLN+FULLN), T8(FULL+FULL)
+  DriverLicenseQuery: 2/2 -- T11(FULLN+FULLN), T13(FULL+FULL)
   GunQuery: 1/1 -- T16(serialNumber)
   ArticleSingleQuery: 1/1 -- T18(Serial)
-  BoatQuery: 2/2 -- T11(N), T13(Reg)
+  BoatQuery: 2/2 -- T6(N), T8(Reg)
 
-IMPORT FILE: NJ_NJCJIS_v4.11.json
+IMPORT FILE: NJ_NJCJIS_v4.12.json

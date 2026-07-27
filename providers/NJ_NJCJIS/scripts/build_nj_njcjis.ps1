@@ -1,5 +1,14 @@
 # build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
 # =====================================================================
+# v4.12 (2026-07-27, DEX-1284 Person consolidation -- direct Rob feedback, layout-only, NO
+#   functional change): collapsed the 3-card Person split (SEARCH OPTIONS + LICENSE NUMBER +
+#   NAME SEARCH) into ONE "Driver License Search by OLN, \"OR\" Name" card, matching NY/TX/FL.
+#   OLN + State + NCIC Image lead the top row (the Rob-confirmed FL model), then Name (First/Last),
+#   then DOB/Sex. The DriverLicense QIDM (FULL=OLN / FULLN=Name combos) is unchanged -- both combos
+#   read from this single card now. State keeps initialValue=NJ + its RegistrationState
+#   LABEL-OVERRIDE (line ~432). Layout-only, no combo/QIDM/routing/fieldId/default change. Vehicle
+#   keeps its own OPTIONS card (only Person was consolidated). ALL 5 ENTITIES RESET for re-test at
+#   v4.12 (block by version). NOT yet re-tested.
 # v4.11 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
 #   change): applied the portfolio conventions established on NY/TX/FL. OLN (OperatorLicenseNumber
 #   DL "License Number (or search by Name + DOB)" -> "OLN"). Canonical bare "NCIC Image" on every
@@ -91,7 +100,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.11"
+    [string]$Version = "4.12"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -470,45 +479,35 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Person -- UNCHANGED: 3 cards: OPTIONS, LICENSE NUMBER, NAME SEARCH
+# Person -- CONSOLIDATED (v4.12): the 3-card split (OPTIONS + LICENSE NUMBER +
+# NAME SEARCH) collapsed to ONE "Driver License" card, matching NY/TX/FL. OLN +
+# State + NCIC Image lead the top row (Rob-confirmed FL model), then Name, then
+# DOB/Sex. QIDM unchanged -- DriverLicense's FULL (OLN) + FULLN (Name) combos both
+# read from this single card. State keeps initialValue=NJ + its LABEL-OVERRIDE.
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER_OPT'
-        title = 'Search Options'
+        id    = 'CARD_PER_DL'
+        title = 'Driver License Search by OLN, "OR" Name'
         rows  = @(
-            @{ id = 'ROW_PER_O1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
+            @{ id = 'ROW_PER_1'; cols = @('6','3','3'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_1' }
+                @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_OLN'
-        title = 'LICENSE NUMBER'
-        rows  = @(
-            @{ id = 'ROW_PER_L1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_L1' }
+            @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_2' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_NAME'
-        title = 'NAME SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_N1'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_N1' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_N1' }
-            )}
-            @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)'                             'ROW_PER_N2' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
+            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)'                             'ROW_PER_3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- MC: OPTIONS + LICENSE NUMBER + NAME SEARCH. Name compacted to 1 row.'
+    description  = 'Person queries -- 1 card (v4.12, consolidated from OPTIONS+LICENSE NUMBER+NAME SEARCH): OLN+State+Image top row, Name, DOB/Sex.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

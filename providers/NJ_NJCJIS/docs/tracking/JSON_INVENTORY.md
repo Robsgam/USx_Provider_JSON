@@ -40,6 +40,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v4.12 (2026-07-27)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NJ_NJCJIS_v4.12.json | v4.12 | Current | 61P/0F/0W/0LIM. |
 ## v4.11 (2026-07-27)
 
 | File | Version | Status | Notes |

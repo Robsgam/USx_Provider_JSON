@@ -2,14 +2,31 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.11** | Generated: 2026-07-27
+Current: **v4.12** | Generated: 2026-07-27
 
 ---
 
-## v4.11 -- 2026-07-27 -- Pipeline rebuild
+## v4.12 -- 2026-07-27 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v4.11 -- 2026-07-27 -- DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
+
+**CHANGED:** Applied the NY/TX/FL portfolio conventions:
+  - OLN: OperatorLicenseNumber DL "License Number (or search by Name + DOB)" -> "OLN"  
+  - canonical bare "NCIC Image" on every image field (Vehicle OPTIONS, Person OPTIONS, Gun,  
+    Article, Boat) -- was "Image (optional)"  
+  NJ has no Driver History card and no relatedHitSearchIndicator/stolen toggle  
+  (VehicleStolenQuery is a user-approved skip), so "Stolen Check" does not apply. Person keeps  
+  its existing 3-card structure (SEARCH OPTIONS / LICENSE NUMBER / NAME SEARCH) -- the OLN field  
+  already sits alone on its own full-width card (CARD_PER_OLN), so no DL top-row restructure was  
+  needed; whether to consolidate OLN+Name onto one "Driver License" card (as on NY/TX/FL) is  
+  deferred to Rob.  
+**REASON:** DEX-1284 portfolio relabel. NJ's v4.9 relabel predated the OLN/NCIC-Image conventions
+  (those landed on NY v4.11+). Label-only, no combo/QIDM/routing/fieldId/default change.  
+  verify_build 15P/0W/0F. ALL 5 ENTITIES RESET for re-test at v4.11 (block by version). NOT yet  
+  re-tested.  
 
 ## v4.10 -- 2026-07-20 -- Pipeline rebuild
 

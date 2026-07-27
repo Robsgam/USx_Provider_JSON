@@ -2,6 +2,21 @@ NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
+v4.12  2026-07-27  DEX-1284 Person consolidation (direct Rob feedback, layout-only, NO functional change)
+  CHANGED: Collapsed the 3-card Person split (SEARCH OPTIONS + LICENSE NUMBER + NAME SEARCH) into
+    ONE "Driver License Search by OLN, \"OR\" Name" card, matching NY/TX/FL. Layout:
+      ROW_PER_1 (6/3/3): OLN | State | NCIC Image   (Rob-confirmed FL top-row model)
+      ROW_PER_2 (6/6):   First Name | Last Name
+      ROW_PER_3 (6/6):   Date of Birth | Sex
+    The DriverLicense QIDM (FULL=OLN / FULLN=Name combos) is unchanged -- both combos read from the
+    single card now. State keeps initialValue=NJ + its RegistrationState LABEL-OVERRIDE. Vehicle
+    keeps its own OPTIONS card (only Person consolidated). Supersedes the v4.11 note that deferred
+    this consolidation to Rob.
+  REASON: Rob -- "consolidate the nj person down." Brings NJ's Person in line with the consolidated
+    single-DL-card pattern on NY/TX/FL. Layout-only, no combo/QIDM/routing/fieldId/default change.
+    verify_build 15P/0W/0F. ALL 5 ENTITIES RESET for re-test at v4.12 (block by version). NOT yet
+    re-tested.
+
 v4.11  2026-07-27  DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
   CHANGED: Applied the NY/TX/FL portfolio conventions:
     - OLN: OperatorLicenseNumber DL "License Number (or search by Name + DOB)" -> "OLN"

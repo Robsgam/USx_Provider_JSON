@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for NJ_NJCJIS v4.11 -- entity forms",
+                        "description":  "Provider configuration for NJ_NJCJIS v4.12 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- RANDOM-REMOVED branch: OPTIONS + PLATE + VIN cards. VehicleStolenQuery eliminated; ncicNumber/vehicleMakeCode removed (stolen-only fields).",
@@ -1118,7 +1118,7 @@
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
-                                                   "description":  "Person queries -- MC: OPTIONS + LICENSE NUMBER + NAME SEARCH. Name compacted to 1 row.",
+                                                   "description":  "Person queries -- 1 card (v4.12, consolidated from OPTIONS+LICENSE NUMBER+NAME SEARCH): OLN+State+Image top row, Name, DOB/Sex.",
                                                    "label":  "Person",
                                                    "layout":  {
                                                                   "default":  {
@@ -1169,55 +1169,77 @@
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
-                                                                                                                  "CARD_PER_OPT",
-                                                                                                                  "CARD_PER_OLN",
-                                                                                                                  "CARD_PER_NAME"
+                                                                                                                  "CARD_PER_DL"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
 
                                                                                                                     },
                                                                                                     "parent":  "FORM_ROOT"
                                                                                                 },
-                                                                                  "CARD_PER_OPT":  {
-                                                                                                       "type":  {
-                                                                                                                    "resolvedName":  "Card"
-                                                                                                                },
-                                                                                                       "displayName":  "Card",
-                                                                                                       "props":  {
-                                                                                                                     "title":  "Search Options"
-                                                                                                                 },
-                                                                                                       "isCanvas":  true,
-                                                                                                       "hidden":  false,
-                                                                                                       "nodes":  [
-                                                                                                                     "ROW_PER_O1"
-                                                                                                                 ],
-                                                                                                       "linkedNodes":  {
-
-                                                                                                                       },
-                                                                                                       "parent":  "ROOT_PAGE"
-                                                                                                   },
-                                                                                  "ROW_PER_O1":  {
-                                                                                                     "type":  {
-                                                                                                                  "resolvedName":  "Row"
-                                                                                                              },
-                                                                                                     "displayName":  "Row",
-                                                                                                     "props":  {
-                                                                                                                   "templateColumns":  [
-                                                                                                                                           "6",
-                                                                                                                                           "6"
-                                                                                                                                       ]
+                                                                                  "CARD_PER_DL":  {
+                                                                                                      "type":  {
+                                                                                                                   "resolvedName":  "Card"
                                                                                                                },
-                                                                                                     "isCanvas":  true,
-                                                                                                     "hidden":  false,
-                                                                                                     "nodes":  [
-                                                                                                                   "RegistrationState_Input",
-                                                                                                                   "ImageIndicator_Input"
-                                                                                                               ],
-                                                                                                     "linkedNodes":  {
+                                                                                                      "displayName":  "Card",
+                                                                                                      "props":  {
+                                                                                                                    "title":  "Driver License Search by OLN, \"OR\" Name"
+                                                                                                                },
+                                                                                                      "isCanvas":  true,
+                                                                                                      "hidden":  false,
+                                                                                                      "nodes":  [
+                                                                                                                    "ROW_PER_1",
+                                                                                                                    "ROW_PER_2",
+                                                                                                                    "ROW_PER_3"
+                                                                                                                ],
+                                                                                                      "linkedNodes":  {
 
-                                                                                                                     },
-                                                                                                     "parent":  "CARD_PER_OPT"
-                                                                                                 },
+                                                                                                                      },
+                                                                                                      "parent":  "ROOT_PAGE"
+                                                                                                  },
+                                                                                  "ROW_PER_1":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "3",
+                                                                                                                                          "3"
+                                                                                                                                      ]
+                                                                                                              },
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "OperatorLicenseNumber_Input",
+                                                                                                                  "RegistrationState_Input",
+                                                                                                                  "ImageIndicator_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_PER_DL"
+                                                                                                },
+                                                                                  "OperatorLicenseNumber_Input":  {
+                                                                                                                      "type":  {
+                                                                                                                                   "resolvedName":  "FormInput"
+                                                                                                                               },
+                                                                                                                      "displayName":  "Input",
+                                                                                                                      "props":  {
+                                                                                                                                    "fieldId":  "OperatorLicenseNumber",
+                                                                                                                                    "label":  "OLN",
+                                                                                                                                    "maxLength":  "20"
+                                                                                                                                },
+                                                                                                                      "isCanvas":  false,
+                                                                                                                      "hidden":  false,
+                                                                                                                      "nodes":  [
+
+                                                                                                                                ],
+                                                                                                                      "linkedNodes":  {
+
+                                                                                                                                      },
+                                                                                                                      "parent":  "ROW_PER_1"
+                                                                                                                  },
                                                                                   "RegistrationState_Input":  {
                                                                                                                   "type":  {
                                                                                                                                "resolvedName":  "FormSelect"
@@ -1237,7 +1259,7 @@
                                                                                                                   "linkedNodes":  {
 
                                                                                                                                   },
-                                                                                                                  "parent":  "ROW_PER_O1"
+                                                                                                                  "parent":  "ROW_PER_1"
                                                                                                               },
                                                                                   "ImageIndicator_Input":  {
                                                                                                                "type":  {
@@ -1259,107 +1281,30 @@
                                                                                                                "linkedNodes":  {
 
                                                                                                                                },
-                                                                                                               "parent":  "ROW_PER_O1"
+                                                                                                               "parent":  "ROW_PER_1"
                                                                                                            },
-                                                                                  "CARD_PER_OLN":  {
-                                                                                                       "type":  {
-                                                                                                                    "resolvedName":  "Card"
-                                                                                                                },
-                                                                                                       "displayName":  "Card",
-                                                                                                       "props":  {
-                                                                                                                     "title":  "LICENSE NUMBER"
-                                                                                                                 },
-                                                                                                       "isCanvas":  true,
-                                                                                                       "hidden":  false,
-                                                                                                       "nodes":  [
-                                                                                                                     "ROW_PER_L1"
-                                                                                                                 ],
-                                                                                                       "linkedNodes":  {
-
-                                                                                                                       },
-                                                                                                       "parent":  "ROOT_PAGE"
-                                                                                                   },
-                                                                                  "ROW_PER_L1":  {
-                                                                                                     "type":  {
-                                                                                                                  "resolvedName":  "Row"
+                                                                                  "ROW_PER_2":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
                                                                                                               },
-                                                                                                     "displayName":  "Row",
-                                                                                                     "props":  {
-                                                                                                                   "templateColumns":  [
-                                                                                                                                           "12"
-                                                                                                                                       ]
-                                                                                                               },
-                                                                                                     "isCanvas":  true,
-                                                                                                     "hidden":  false,
-                                                                                                     "nodes":  [
-                                                                                                                   "OperatorLicenseNumber_Input"
-                                                                                                               ],
-                                                                                                     "linkedNodes":  {
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "NameFirst_Input",
+                                                                                                                  "NameLast_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
 
-                                                                                                                     },
-                                                                                                     "parent":  "CARD_PER_OLN"
-                                                                                                 },
-                                                                                  "OperatorLicenseNumber_Input":  {
-                                                                                                                      "type":  {
-                                                                                                                                   "resolvedName":  "FormInput"
-                                                                                                                               },
-                                                                                                                      "displayName":  "Input",
-                                                                                                                      "props":  {
-                                                                                                                                    "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                    "label":  "OLN",
-                                                                                                                                    "maxLength":  "20"
-                                                                                                                                },
-                                                                                                                      "isCanvas":  false,
-                                                                                                                      "hidden":  false,
-                                                                                                                      "nodes":  [
-
-                                                                                                                                ],
-                                                                                                                      "linkedNodes":  {
-
-                                                                                                                                      },
-                                                                                                                      "parent":  "ROW_PER_L1"
-                                                                                                                  },
-                                                                                  "CARD_PER_NAME":  {
-                                                                                                        "type":  {
-                                                                                                                     "resolvedName":  "Card"
-                                                                                                                 },
-                                                                                                        "displayName":  "Card",
-                                                                                                        "props":  {
-                                                                                                                      "title":  "NAME SEARCH"
-                                                                                                                  },
-                                                                                                        "isCanvas":  true,
-                                                                                                        "hidden":  false,
-                                                                                                        "nodes":  [
-                                                                                                                      "ROW_PER_N1",
-                                                                                                                      "ROW_PER_N2"
-                                                                                                                  ],
-                                                                                                        "linkedNodes":  {
-
-                                                                                                                        },
-                                                                                                        "parent":  "ROOT_PAGE"
-                                                                                                    },
-                                                                                  "ROW_PER_N1":  {
-                                                                                                     "type":  {
-                                                                                                                  "resolvedName":  "Row"
-                                                                                                              },
-                                                                                                     "displayName":  "Row",
-                                                                                                     "props":  {
-                                                                                                                   "templateColumns":  [
-                                                                                                                                           "6",
-                                                                                                                                           "6"
-                                                                                                                                       ]
-                                                                                                               },
-                                                                                                     "isCanvas":  true,
-                                                                                                     "hidden":  false,
-                                                                                                     "nodes":  [
-                                                                                                                   "NameFirst_Input",
-                                                                                                                   "NameLast_Input"
-                                                                                                               ],
-                                                                                                     "linkedNodes":  {
-
-                                                                                                                     },
-                                                                                                     "parent":  "CARD_PER_NAME"
-                                                                                                 },
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_PER_DL"
+                                                                                                },
                                                                                   "NameFirst_Input":  {
                                                                                                           "type":  {
                                                                                                                        "resolvedName":  "FormInput"
@@ -1378,7 +1323,7 @@
                                                                                                           "linkedNodes":  {
 
                                                                                                                           },
-                                                                                                          "parent":  "ROW_PER_N1"
+                                                                                                          "parent":  "ROW_PER_2"
                                                                                                       },
                                                                                   "NameLast_Input":  {
                                                                                                          "type":  {
@@ -1398,30 +1343,30 @@
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
-                                                                                                         "parent":  "ROW_PER_N1"
+                                                                                                         "parent":  "ROW_PER_2"
                                                                                                      },
-                                                                                  "ROW_PER_N2":  {
-                                                                                                     "type":  {
-                                                                                                                  "resolvedName":  "Row"
+                                                                                  "ROW_PER_3":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "Row"
+                                                                                                             },
+                                                                                                    "displayName":  "Row",
+                                                                                                    "props":  {
+                                                                                                                  "templateColumns":  [
+                                                                                                                                          "6",
+                                                                                                                                          "6"
+                                                                                                                                      ]
                                                                                                               },
-                                                                                                     "displayName":  "Row",
-                                                                                                     "props":  {
-                                                                                                                   "templateColumns":  [
-                                                                                                                                           "6",
-                                                                                                                                           "6"
-                                                                                                                                       ]
-                                                                                                               },
-                                                                                                     "isCanvas":  true,
-                                                                                                     "hidden":  false,
-                                                                                                     "nodes":  [
-                                                                                                                   "BirthDate_Input",
-                                                                                                                   "SexCode_Input"
-                                                                                                               ],
-                                                                                                     "linkedNodes":  {
+                                                                                                    "isCanvas":  true,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+                                                                                                                  "BirthDate_Input",
+                                                                                                                  "SexCode_Input"
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
 
-                                                                                                                     },
-                                                                                                     "parent":  "CARD_PER_NAME"
-                                                                                                 },
+                                                                                                                    },
+                                                                                                    "parent":  "CARD_PER_DL"
+                                                                                                },
                                                                                   "BirthDate_Input":  {
                                                                                                           "type":  {
                                                                                                                        "resolvedName":  "FormDate"
@@ -1439,7 +1384,7 @@
                                                                                                           "linkedNodes":  {
 
                                                                                                                           },
-                                                                                                          "parent":  "ROW_PER_N2"
+                                                                                                          "parent":  "ROW_PER_3"
                                                                                                       },
                                                                                   "SexCode_Input":  {
                                                                                                         "type":  {
@@ -1460,7 +1405,7 @@
                                                                                                         "linkedNodes":  {
 
                                                                                                                         },
-                                                                                                        "parent":  "ROW_PER_N2"
+                                                                                                        "parent":  "ROW_PER_3"
                                                                                                     }
                                                                               },
                                                                   "CAD_DISPATCH":  {
@@ -1512,55 +1457,77 @@
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "CONTEXT_INFO_CARD",
-                                                                                                                       "CARD_PER_OPT",
-                                                                                                                       "CARD_PER_OLN",
-                                                                                                                       "CARD_PER_NAME"
+                                                                                                                       "CARD_PER_DL"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
                                                                                                                          },
                                                                                                          "parent":  "FORM_ROOT"
                                                                                                      },
-                                                                                       "CARD_PER_OPT":  {
-                                                                                                            "type":  {
-                                                                                                                         "resolvedName":  "Card"
-                                                                                                                     },
-                                                                                                            "displayName":  "Card",
-                                                                                                            "props":  {
-                                                                                                                          "title":  "Search Options"
-                                                                                                                      },
-                                                                                                            "isCanvas":  true,
-                                                                                                            "hidden":  false,
-                                                                                                            "nodes":  [
-                                                                                                                          "ROW_PER_O1"
-                                                                                                                      ],
-                                                                                                            "linkedNodes":  {
-
-                                                                                                                            },
-                                                                                                            "parent":  "ROOT_PAGE"
-                                                                                                        },
-                                                                                       "ROW_PER_O1":  {
-                                                                                                          "type":  {
-                                                                                                                       "resolvedName":  "Row"
-                                                                                                                   },
-                                                                                                          "displayName":  "Row",
-                                                                                                          "props":  {
-                                                                                                                        "templateColumns":  [
-                                                                                                                                                "6",
-                                                                                                                                                "6"
-                                                                                                                                            ]
+                                                                                       "CARD_PER_DL":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "Card"
                                                                                                                     },
-                                                                                                          "isCanvas":  true,
-                                                                                                          "hidden":  false,
-                                                                                                          "nodes":  [
-                                                                                                                        "RegistrationState_Input",
-                                                                                                                        "ImageIndicator_Input"
-                                                                                                                    ],
-                                                                                                          "linkedNodes":  {
+                                                                                                           "displayName":  "Card",
+                                                                                                           "props":  {
+                                                                                                                         "title":  "Driver License Search by OLN, \"OR\" Name"
+                                                                                                                     },
+                                                                                                           "isCanvas":  true,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+                                                                                                                         "ROW_PER_1",
+                                                                                                                         "ROW_PER_2",
+                                                                                                                         "ROW_PER_3"
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
 
-                                                                                                                          },
-                                                                                                          "parent":  "CARD_PER_OPT"
-                                                                                                      },
+                                                                                                                           },
+                                                                                                           "parent":  "ROOT_PAGE"
+                                                                                                       },
+                                                                                       "ROW_PER_1":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "3",
+                                                                                                                                               "3"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "OperatorLicenseNumber_Input",
+                                                                                                                       "RegistrationState_Input",
+                                                                                                                       "ImageIndicator_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER_DL"
+                                                                                                     },
+                                                                                       "OperatorLicenseNumber_Input":  {
+                                                                                                                           "type":  {
+                                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                                    },
+                                                                                                                           "displayName":  "Input",
+                                                                                                                           "props":  {
+                                                                                                                                         "fieldId":  "OperatorLicenseNumber",
+                                                                                                                                         "label":  "OLN",
+                                                                                                                                         "maxLength":  "20"
+                                                                                                                                     },
+                                                                                                                           "isCanvas":  false,
+                                                                                                                           "hidden":  false,
+                                                                                                                           "nodes":  [
+
+                                                                                                                                     ],
+                                                                                                                           "linkedNodes":  {
+
+                                                                                                                                           },
+                                                                                                                           "parent":  "ROW_PER_1"
+                                                                                                                       },
                                                                                        "RegistrationState_Input":  {
                                                                                                                        "type":  {
                                                                                                                                     "resolvedName":  "FormSelect"
@@ -1580,7 +1547,7 @@
                                                                                                                        "linkedNodes":  {
 
                                                                                                                                        },
-                                                                                                                       "parent":  "ROW_PER_O1"
+                                                                                                                       "parent":  "ROW_PER_1"
                                                                                                                    },
                                                                                        "ImageIndicator_Input":  {
                                                                                                                     "type":  {
@@ -1602,107 +1569,30 @@
                                                                                                                     "linkedNodes":  {
 
                                                                                                                                     },
-                                                                                                                    "parent":  "ROW_PER_O1"
+                                                                                                                    "parent":  "ROW_PER_1"
                                                                                                                 },
-                                                                                       "CARD_PER_OLN":  {
-                                                                                                            "type":  {
-                                                                                                                         "resolvedName":  "Card"
-                                                                                                                     },
-                                                                                                            "displayName":  "Card",
-                                                                                                            "props":  {
-                                                                                                                          "title":  "LICENSE NUMBER"
-                                                                                                                      },
-                                                                                                            "isCanvas":  true,
-                                                                                                            "hidden":  false,
-                                                                                                            "nodes":  [
-                                                                                                                          "ROW_PER_L1"
-                                                                                                                      ],
-                                                                                                            "linkedNodes":  {
-
-                                                                                                                            },
-                                                                                                            "parent":  "ROOT_PAGE"
-                                                                                                        },
-                                                                                       "ROW_PER_L1":  {
-                                                                                                          "type":  {
-                                                                                                                       "resolvedName":  "Row"
+                                                                                       "ROW_PER_2":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
                                                                                                                    },
-                                                                                                          "displayName":  "Row",
-                                                                                                          "props":  {
-                                                                                                                        "templateColumns":  [
-                                                                                                                                                "12"
-                                                                                                                                            ]
-                                                                                                                    },
-                                                                                                          "isCanvas":  true,
-                                                                                                          "hidden":  false,
-                                                                                                          "nodes":  [
-                                                                                                                        "OperatorLicenseNumber_Input"
-                                                                                                                    ],
-                                                                                                          "linkedNodes":  {
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "NameFirst_Input",
+                                                                                                                       "NameLast_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
 
-                                                                                                                          },
-                                                                                                          "parent":  "CARD_PER_OLN"
-                                                                                                      },
-                                                                                       "OperatorLicenseNumber_Input":  {
-                                                                                                                           "type":  {
-                                                                                                                                        "resolvedName":  "FormInput"
-                                                                                                                                    },
-                                                                                                                           "displayName":  "Input",
-                                                                                                                           "props":  {
-                                                                                                                                         "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                         "label":  "OLN",
-                                                                                                                                         "maxLength":  "20"
-                                                                                                                                     },
-                                                                                                                           "isCanvas":  false,
-                                                                                                                           "hidden":  false,
-                                                                                                                           "nodes":  [
-
-                                                                                                                                     ],
-                                                                                                                           "linkedNodes":  {
-
-                                                                                                                                           },
-                                                                                                                           "parent":  "ROW_PER_L1"
-                                                                                                                       },
-                                                                                       "CARD_PER_NAME":  {
-                                                                                                             "type":  {
-                                                                                                                          "resolvedName":  "Card"
-                                                                                                                      },
-                                                                                                             "displayName":  "Card",
-                                                                                                             "props":  {
-                                                                                                                           "title":  "NAME SEARCH"
-                                                                                                                       },
-                                                                                                             "isCanvas":  true,
-                                                                                                             "hidden":  false,
-                                                                                                             "nodes":  [
-                                                                                                                           "ROW_PER_N1",
-                                                                                                                           "ROW_PER_N2"
-                                                                                                                       ],
-                                                                                                             "linkedNodes":  {
-
-                                                                                                                             },
-                                                                                                             "parent":  "ROOT_PAGE"
-                                                                                                         },
-                                                                                       "ROW_PER_N1":  {
-                                                                                                          "type":  {
-                                                                                                                       "resolvedName":  "Row"
-                                                                                                                   },
-                                                                                                          "displayName":  "Row",
-                                                                                                          "props":  {
-                                                                                                                        "templateColumns":  [
-                                                                                                                                                "6",
-                                                                                                                                                "6"
-                                                                                                                                            ]
-                                                                                                                    },
-                                                                                                          "isCanvas":  true,
-                                                                                                          "hidden":  false,
-                                                                                                          "nodes":  [
-                                                                                                                        "NameFirst_Input",
-                                                                                                                        "NameLast_Input"
-                                                                                                                    ],
-                                                                                                          "linkedNodes":  {
-
-                                                                                                                          },
-                                                                                                          "parent":  "CARD_PER_NAME"
-                                                                                                      },
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER_DL"
+                                                                                                     },
                                                                                        "NameFirst_Input":  {
                                                                                                                "type":  {
                                                                                                                             "resolvedName":  "FormInput"
@@ -1721,7 +1611,7 @@
                                                                                                                "linkedNodes":  {
 
                                                                                                                                },
-                                                                                                               "parent":  "ROW_PER_N1"
+                                                                                                               "parent":  "ROW_PER_2"
                                                                                                            },
                                                                                        "NameLast_Input":  {
                                                                                                               "type":  {
@@ -1741,30 +1631,30 @@
                                                                                                               "linkedNodes":  {
 
                                                                                                                               },
-                                                                                                              "parent":  "ROW_PER_N1"
+                                                                                                              "parent":  "ROW_PER_2"
                                                                                                           },
-                                                                                       "ROW_PER_N2":  {
-                                                                                                          "type":  {
-                                                                                                                       "resolvedName":  "Row"
+                                                                                       "ROW_PER_3":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
                                                                                                                    },
-                                                                                                          "displayName":  "Row",
-                                                                                                          "props":  {
-                                                                                                                        "templateColumns":  [
-                                                                                                                                                "6",
-                                                                                                                                                "6"
-                                                                                                                                            ]
-                                                                                                                    },
-                                                                                                          "isCanvas":  true,
-                                                                                                          "hidden":  false,
-                                                                                                          "nodes":  [
-                                                                                                                        "BirthDate_Input",
-                                                                                                                        "SexCode_Input"
-                                                                                                                    ],
-                                                                                                          "linkedNodes":  {
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "BirthDate_Input",
+                                                                                                                       "SexCode_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
 
-                                                                                                                          },
-                                                                                                          "parent":  "CARD_PER_NAME"
-                                                                                                      },
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER_DL"
+                                                                                                     },
                                                                                        "BirthDate_Input":  {
                                                                                                                "type":  {
                                                                                                                             "resolvedName":  "FormDate"
@@ -1782,7 +1672,7 @@
                                                                                                                "linkedNodes":  {
 
                                                                                                                                },
-                                                                                                               "parent":  "ROW_PER_N2"
+                                                                                                               "parent":  "ROW_PER_3"
                                                                                                            },
                                                                                        "SexCode_Input":  {
                                                                                                              "type":  {
@@ -1803,7 +1693,7 @@
                                                                                                              "linkedNodes":  {
 
                                                                                                                              },
-                                                                                                             "parent":  "ROW_PER_N2"
+                                                                                                             "parent":  "ROW_PER_3"
                                                                                                          },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
@@ -1936,55 +1826,77 @@
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "CONTEXT_INFO_CARD",
-                                                                                                                          "CARD_PER_OPT",
-                                                                                                                          "CARD_PER_OLN",
-                                                                                                                          "CARD_PER_NAME"
+                                                                                                                          "CARD_PER_DL"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
                                                                                                                             },
                                                                                                             "parent":  "FORM_ROOT"
                                                                                                         },
-                                                                                          "CARD_PER_OPT":  {
-                                                                                                               "type":  {
-                                                                                                                            "resolvedName":  "Card"
-                                                                                                                        },
-                                                                                                               "displayName":  "Card",
-                                                                                                               "props":  {
-                                                                                                                             "title":  "Search Options"
-                                                                                                                         },
-                                                                                                               "isCanvas":  true,
-                                                                                                               "hidden":  false,
-                                                                                                               "nodes":  [
-                                                                                                                             "ROW_PER_O1"
-                                                                                                                         ],
-                                                                                                               "linkedNodes":  {
-
-                                                                                                                               },
-                                                                                                               "parent":  "ROOT_PAGE"
-                                                                                                           },
-                                                                                          "ROW_PER_O1":  {
-                                                                                                             "type":  {
-                                                                                                                          "resolvedName":  "Row"
-                                                                                                                      },
-                                                                                                             "displayName":  "Row",
-                                                                                                             "props":  {
-                                                                                                                           "templateColumns":  [
-                                                                                                                                                   "6",
-                                                                                                                                                   "6"
-                                                                                                                                               ]
+                                                                                          "CARD_PER_DL":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "Card"
                                                                                                                        },
-                                                                                                             "isCanvas":  true,
-                                                                                                             "hidden":  false,
-                                                                                                             "nodes":  [
-                                                                                                                           "RegistrationState_Input",
-                                                                                                                           "ImageIndicator_Input"
-                                                                                                                       ],
-                                                                                                             "linkedNodes":  {
+                                                                                                              "displayName":  "Card",
+                                                                                                              "props":  {
+                                                                                                                            "title":  "Driver License Search by OLN, \"OR\" Name"
+                                                                                                                        },
+                                                                                                              "isCanvas":  true,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+                                                                                                                            "ROW_PER_1",
+                                                                                                                            "ROW_PER_2",
+                                                                                                                            "ROW_PER_3"
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
 
-                                                                                                                             },
-                                                                                                             "parent":  "CARD_PER_OPT"
-                                                                                                         },
+                                                                                                                              },
+                                                                                                              "parent":  "ROOT_PAGE"
+                                                                                                          },
+                                                                                          "ROW_PER_1":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "3",
+                                                                                                                                                  "3"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "OperatorLicenseNumber_Input",
+                                                                                                                          "RegistrationState_Input",
+                                                                                                                          "ImageIndicator_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER_DL"
+                                                                                                        },
+                                                                                          "OperatorLicenseNumber_Input":  {
+                                                                                                                              "type":  {
+                                                                                                                                           "resolvedName":  "FormInput"
+                                                                                                                                       },
+                                                                                                                              "displayName":  "Input",
+                                                                                                                              "props":  {
+                                                                                                                                            "fieldId":  "OperatorLicenseNumber",
+                                                                                                                                            "label":  "OLN",
+                                                                                                                                            "maxLength":  "20"
+                                                                                                                                        },
+                                                                                                                              "isCanvas":  false,
+                                                                                                                              "hidden":  false,
+                                                                                                                              "nodes":  [
+
+                                                                                                                                        ],
+                                                                                                                              "linkedNodes":  {
+
+                                                                                                                                              },
+                                                                                                                              "parent":  "ROW_PER_1"
+                                                                                                                          },
                                                                                           "RegistrationState_Input":  {
                                                                                                                           "type":  {
                                                                                                                                        "resolvedName":  "FormSelect"
@@ -2004,7 +1916,7 @@
                                                                                                                           "linkedNodes":  {
 
                                                                                                                                           },
-                                                                                                                          "parent":  "ROW_PER_O1"
+                                                                                                                          "parent":  "ROW_PER_1"
                                                                                                                       },
                                                                                           "ImageIndicator_Input":  {
                                                                                                                        "type":  {
@@ -2026,107 +1938,30 @@
                                                                                                                        "linkedNodes":  {
 
                                                                                                                                        },
-                                                                                                                       "parent":  "ROW_PER_O1"
+                                                                                                                       "parent":  "ROW_PER_1"
                                                                                                                    },
-                                                                                          "CARD_PER_OLN":  {
-                                                                                                               "type":  {
-                                                                                                                            "resolvedName":  "Card"
-                                                                                                                        },
-                                                                                                               "displayName":  "Card",
-                                                                                                               "props":  {
-                                                                                                                             "title":  "LICENSE NUMBER"
-                                                                                                                         },
-                                                                                                               "isCanvas":  true,
-                                                                                                               "hidden":  false,
-                                                                                                               "nodes":  [
-                                                                                                                             "ROW_PER_L1"
-                                                                                                                         ],
-                                                                                                               "linkedNodes":  {
-
-                                                                                                                               },
-                                                                                                               "parent":  "ROOT_PAGE"
-                                                                                                           },
-                                                                                          "ROW_PER_L1":  {
-                                                                                                             "type":  {
-                                                                                                                          "resolvedName":  "Row"
+                                                                                          "ROW_PER_2":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
                                                                                                                       },
-                                                                                                             "displayName":  "Row",
-                                                                                                             "props":  {
-                                                                                                                           "templateColumns":  [
-                                                                                                                                                   "12"
-                                                                                                                                               ]
-                                                                                                                       },
-                                                                                                             "isCanvas":  true,
-                                                                                                             "hidden":  false,
-                                                                                                             "nodes":  [
-                                                                                                                           "OperatorLicenseNumber_Input"
-                                                                                                                       ],
-                                                                                                             "linkedNodes":  {
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "NameFirst_Input",
+                                                                                                                          "NameLast_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
 
-                                                                                                                             },
-                                                                                                             "parent":  "CARD_PER_OLN"
-                                                                                                         },
-                                                                                          "OperatorLicenseNumber_Input":  {
-                                                                                                                              "type":  {
-                                                                                                                                           "resolvedName":  "FormInput"
-                                                                                                                                       },
-                                                                                                                              "displayName":  "Input",
-                                                                                                                              "props":  {
-                                                                                                                                            "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                            "label":  "OLN",
-                                                                                                                                            "maxLength":  "20"
-                                                                                                                                        },
-                                                                                                                              "isCanvas":  false,
-                                                                                                                              "hidden":  false,
-                                                                                                                              "nodes":  [
-
-                                                                                                                                        ],
-                                                                                                                              "linkedNodes":  {
-
-                                                                                                                                              },
-                                                                                                                              "parent":  "ROW_PER_L1"
-                                                                                                                          },
-                                                                                          "CARD_PER_NAME":  {
-                                                                                                                "type":  {
-                                                                                                                             "resolvedName":  "Card"
-                                                                                                                         },
-                                                                                                                "displayName":  "Card",
-                                                                                                                "props":  {
-                                                                                                                              "title":  "NAME SEARCH"
-                                                                                                                          },
-                                                                                                                "isCanvas":  true,
-                                                                                                                "hidden":  false,
-                                                                                                                "nodes":  [
-                                                                                                                              "ROW_PER_N1",
-                                                                                                                              "ROW_PER_N2"
-                                                                                                                          ],
-                                                                                                                "linkedNodes":  {
-
-                                                                                                                                },
-                                                                                                                "parent":  "ROOT_PAGE"
-                                                                                                            },
-                                                                                          "ROW_PER_N1":  {
-                                                                                                             "type":  {
-                                                                                                                          "resolvedName":  "Row"
-                                                                                                                      },
-                                                                                                             "displayName":  "Row",
-                                                                                                             "props":  {
-                                                                                                                           "templateColumns":  [
-                                                                                                                                                   "6",
-                                                                                                                                                   "6"
-                                                                                                                                               ]
-                                                                                                                       },
-                                                                                                             "isCanvas":  true,
-                                                                                                             "hidden":  false,
-                                                                                                             "nodes":  [
-                                                                                                                           "NameFirst_Input",
-                                                                                                                           "NameLast_Input"
-                                                                                                                       ],
-                                                                                                             "linkedNodes":  {
-
-                                                                                                                             },
-                                                                                                             "parent":  "CARD_PER_NAME"
-                                                                                                         },
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER_DL"
+                                                                                                        },
                                                                                           "NameFirst_Input":  {
                                                                                                                   "type":  {
                                                                                                                                "resolvedName":  "FormInput"
@@ -2145,7 +1980,7 @@
                                                                                                                   "linkedNodes":  {
 
                                                                                                                                   },
-                                                                                                                  "parent":  "ROW_PER_N1"
+                                                                                                                  "parent":  "ROW_PER_2"
                                                                                                               },
                                                                                           "NameLast_Input":  {
                                                                                                                  "type":  {
@@ -2165,30 +2000,30 @@
                                                                                                                  "linkedNodes":  {
 
                                                                                                                                  },
-                                                                                                                 "parent":  "ROW_PER_N1"
+                                                                                                                 "parent":  "ROW_PER_2"
                                                                                                              },
-                                                                                          "ROW_PER_N2":  {
-                                                                                                             "type":  {
-                                                                                                                          "resolvedName":  "Row"
+                                                                                          "ROW_PER_3":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
                                                                                                                       },
-                                                                                                             "displayName":  "Row",
-                                                                                                             "props":  {
-                                                                                                                           "templateColumns":  [
-                                                                                                                                                   "6",
-                                                                                                                                                   "6"
-                                                                                                                                               ]
-                                                                                                                       },
-                                                                                                             "isCanvas":  true,
-                                                                                                             "hidden":  false,
-                                                                                                             "nodes":  [
-                                                                                                                           "BirthDate_Input",
-                                                                                                                           "SexCode_Input"
-                                                                                                                       ],
-                                                                                                             "linkedNodes":  {
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "BirthDate_Input",
+                                                                                                                          "SexCode_Input"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
 
-                                                                                                                             },
-                                                                                                             "parent":  "CARD_PER_NAME"
-                                                                                                         },
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER_DL"
+                                                                                                        },
                                                                                           "BirthDate_Input":  {
                                                                                                                   "type":  {
                                                                                                                                "resolvedName":  "FormDate"
@@ -2206,7 +2041,7 @@
                                                                                                                   "linkedNodes":  {
 
                                                                                                                                   },
-                                                                                                                  "parent":  "ROW_PER_N2"
+                                                                                                                  "parent":  "ROW_PER_3"
                                                                                                               },
                                                                                           "SexCode_Input":  {
                                                                                                                 "type":  {
@@ -2227,7 +2062,7 @@
                                                                                                                 "linkedNodes":  {
 
                                                                                                                                 },
-                                                                                                                "parent":  "ROW_PER_N2"
+                                                                                                                "parent":  "ROW_PER_3"
                                                                                                             },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
@@ -4330,7 +4165,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for NJ_NJCJIS v4.11",
+                        "description":  "Provider configuration for NJ_NJCJIS v4.12",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -5903,7 +5738,7 @@
                         "provider":  "NJ_NJCJIS"
                     },
                     {
-                        "description":  "Provider configuration for NJ_NJCJIS v4.11 -- RMS bundle",
+                        "description":  "Provider configuration for NJ_NJCJIS v4.12 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",
