@@ -2,9 +2,36 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.7** | Generated: 2026-07-24
+Current: **v4.8** | Generated: 2026-07-27
 
 ---
+
+## v4.8 -- 2026-07-27 -- DEX-1284: relabel/naming-convention pass (NY-established portfolio conventions)
+
+**CHANGED:** Applied the conventions established on NY_NYSPIN_EJUSTICE (BUILD_RULES Section 11):
+  - OLN: OperatorLicenseNumber (DL) + OperatorLicenseNumberDH (DH) label -> "OLN".  
+  - NCIC Image: every image field (Person OPTIONS, Gun, Article, Boat) -> canonical "NCIC Image"  
+    (was "NCIC Image - if available"; verify_build CHECK 15 accepts the bare canonical label).  
+  - Stolen Check: relatedHitSearchIndicator (Gun/Article/Boat) -> "Stolen Check"  
+    (was "(Y) for NCIC stolen-<entity> check").  
+  - Lean labels: stripped remaining "(optional)"/"(or use X)"/"(required)" helpers -- Vehicle  
+    Make/Year, VIN (was spelled-out "Vehicle Identification Number" -> "VIN"), Firearm Serial  
+    Number, Gun Make/Caliber, Article Type, Boat Registration Number, MI/Suffix (DL+DH),  
+    Message Key. Bare any[]-only fields carry LABEL-OVERRIDE tags.  
+  - Card titles: Person DL/DH now carry the query paths ("Driver License/History Search by OLN,  
+    \"OR\" Name"); Firearm/Article titles switched "Query by" -> "Search by".  
+  - Uniform 4/4/4 grid on Vehicle: ROW_VEH_1 5/2/2/3 -> 3/3/3/3, ROW_VEH_2 5/4/3 -> 4/4/4.  
+PERSON OPTIONS CARD KEPT (NOT folded into DL/DH): the NY-style Person top-row (OLN + State +  
+  NCIC Image on each card) would require DH-suffixed copies of the shared State/Image/Reason/  
+  EmailAddress fields AND touching the EmailAddress handler, which is owned by a separate eng  
+  team (RND-57165 -- do not build/modify). So State/Image stay on the shared SEARCH OPTIONS card  
+  (Image relabeled "NCIC Image"); OLN stays on the DL/DH top rows. Flagged to Rob.  
+SHADOW INSPECTION: portfolio review (2026-07-27) + the hardened devdoc gate confirm all built  
+  queries are in the TX devdoc "Basic Queries Supported" list (VehicleInsuranceRegistrationQuery  
+  is the Basic-authorized RQ alternative; QWName shadow already removed v4.2). No shadow to remove.  
+**REASON:** DEX-1284 (Rob) -- "same relabeling and naming convention along with the shadow inspection."
+  Label/title/layout-only -- NO combo/QIDM/routing/fieldId/default change. All 5 entities reset for  
+  re-test at v4.8. TX_TLETS_CCH variant rebuilt in lockstep (BASE-SYNC -> v4.8).  
 
 ## v4.7 -- 2026-07-21 -- Pipeline rebuild
 

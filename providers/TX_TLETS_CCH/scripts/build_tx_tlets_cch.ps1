@@ -1,5 +1,13 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.3
-# BASE-SYNC: TX_TLETS v4.7   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.8   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# v1.4 (2026-07-27, DEX-1284 lockstep with TX_TLETS v4.8): re-synced the base-6 labels/layout to
+#   TX_TLETS's relabel/naming-convention pass -- OLN (DL+DH), canonical "NCIC Image", "Stolen Check"
+#   (Gun/Article/Boat), lean labels (Vehicle Make/Year, VIN, Serial, Gun Make/Caliber, Article Type,
+#   Boat Reg, MI/Suffix, Message Key), Person DL/DH titles "Driver License/History Search by OLN,
+#   \"OR\" Name", Firearm/Article titles "Search by", uniform 4/4/4 Vehicle grid. Person OPTIONS card
+#   kept (shared State/Image/Reason/Email + email handler, same rationale as base). The 8 CCH
+#   transactions + 3 CCH cards + CCH-suffixed fields UNTOUCHED. Label/layout-only, no combo/QIDM/
+#   routing/fieldId change. All 5 base entities + CCH reset for re-test at v1.4.
 #   When TX_TLETS bumps, re-sync base-6 + update this marker (tools/audit_variant_sync.ps1 checks it).
 # Separate provider: full base TLETS query package (6 QIDMs) PLUS all 8 Computerized Criminal
 # History (CCH) transactions on Person.
@@ -75,7 +83,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.3"
+    [string]$Version = "1.4"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -491,7 +499,20 @@ $provBundle = [PSCustomObject]@{
 # BUNDLE 2: ENTITIES (Vehicle, Person [base 3 cards + 3 CCH cards], Firearm, Article, Boat)
 # =====================================================================
 
-# Vehicle -- 1 card, 3 rows (ported from TX_TLETS main v4.7)
+# LABEL-OVERRIDE cluster (v1.4, DEX-1284 lockstep with TX_TLETS v4.8). Pure-any[] fields kept bare
+# per the lean convention (card title carries paths); CHECK 15 Rule 3 WARN downgraded to [INFO].
+# (Image fields use canonical "NCIC Image", accepted by CHECK 15 directly -- no override needed.)
+# LABEL-OVERRIDE: VehicleMakeCode -- bare "Vehicle Make" per lean pass (any[] optional)
+# LABEL-OVERRIDE: vehicleYear -- bare "Vehicle Year" per lean pass (any[] optional)
+# LABEL-OVERRIDE: nameMiddle -- bare "MI" per lean pass (any[] optional)
+# LABEL-OVERRIDE: nameSuffix -- bare "Suffix" per lean pass (any[] optional)
+# LABEL-OVERRIDE: nameMiddleDH -- bare "MI" per lean pass (any[] optional)
+# LABEL-OVERRIDE: nameSuffixDH -- bare "Suffix" per lean pass (any[] optional)
+# LABEL-OVERRIDE: messageKey -- bare "Message Key" per lean pass (any[]-only in CPL combo)
+# LABEL-OVERRIDE: GunMake -- bare "Gun Make" per lean pass (any[] optional)
+# LABEL-OVERRIDE: GunCaliber -- bare "Caliber" per lean pass (any[] optional)
+# LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per lean pass (any[] optional)
+# Vehicle -- 1 card, 3 rows (ported from TX_TLETS main v4.8)
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH'
@@ -499,16 +520,16 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             # LABEL-OVERRIDE: RegistrationState -- merely-defaulted (initialValue=TX), officer-editable;
             # bare label is the TX_TLETS main v4.4 convention (feedback_no_auto_on_defaulted_fields).
-            @{ id = 'ROW_VEH_1'; cols = @('5','2','2','3'); fields = @(
+            @{ id = 'ROW_VEH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('5','4','3'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
+            @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
+                @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
             # LABEL-OVERRIDE: regionId -- genuinely any[]-only with no default anywhere (TX_TLETS main
             # v4.4 accepted override), bare label per Rob's explicit call.
@@ -547,17 +568,17 @@ $perLayout = MakeLayouts @(
             # LABEL-OVERRIDE: RegistrationState -- merely-defaulted (initialValue=TX), officer-editable, bare label (TX_TLETS main convention).
             @{ id = 'ROW_PER_O1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
                 @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_O1' @{ initialValue = 'C' } }
             )}
         )
     }
     @{
         id    = 'CARD_PER_DL'
-        title = 'DRIVER LICENSE'
+        title = 'Driver License Search by OLN, "OR" Name'
         rows  = @(
             @{ id = 'ROW_PER_L1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB + Sex)' '20' 'ROW_PER_L1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_L1' }
                 @{ id = 'BirthDate_Input';             node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_L1' }
                 @{ id = 'SexCode_Input';               node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_L1' }
             )}
@@ -566,15 +587,15 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_N1'; cols = @('3','3','2','2','2'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name' '30' 'ROW_PER_N1' }
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '30' 'ROW_PER_N1' }
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI (optional)'     '30' 'ROW_PER_N1' }
-                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)' '30' 'ROW_PER_N1' }
-                @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'Message Key (CPL/DWI/RDL, optional)' '3' 'ROW_PER_N1' }
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '30' 'ROW_PER_N1' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1' }
+                @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'Message Key' '3' 'ROW_PER_N1' }
             )}
         )
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'DRIVER HISTORY'
+        title = 'Driver History Search by OLN, "OR" Name'
         rows  = @(
             # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler.
             # Hidden gate-feeder (InpH initialValue='X') makes 'Attention' visible to the platform
@@ -585,15 +606,15 @@ $perLayout = MakeLayouts @(
             # "(DH...)" qualifier dropped from every label (TX_TLETS main v4.3 convention, mirrors
             # FL/NY/HI) -- the card's own "DRIVER HISTORY" title disambiguates it from "DRIVER LICENSE".
             @{ id = 'ROW_PER_DHL1'; cols = @('8','4'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (or search by Name + DOB + Sex)' '20' 'ROW_PER_DHL1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DHL1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DHL1' @{ initialValue = 'C' } }
             )}
             # Name order First-before-Last (TX_TLETS main v4.3), matches DL.
             @{ id = 'ROW_PER_DHN1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_PER_DHN1' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_PER_DHN1' }
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI (optional)'     '30' 'ROW_PER_DHN1' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix (optional)' '30' 'ROW_PER_DHN1' }
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '30' 'ROW_PER_DHN1' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DHN1' }
             )}
             @{ id = 'ROW_PER_DHN2'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input';    node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DHN2' }
@@ -685,17 +706,17 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'Firearm Query by Serial Number, "OR" NCIC Number'
+        title = 'Firearm Search by Serial Number, "OR" NCIC Number'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'GunSerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number (or use NCIC#)' '20' 'ROW_GUN_1' }
+                @{ id = 'GunSerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'NCICNumber_Input';       node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'GunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
-                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' '(Y) for NCIC stolen-gun check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
+                @{ id = 'GunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
+                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -706,16 +727,16 @@ $firearmsForm = [PSCustomObject]@{ description = 'Firearm query -- QG (Serial/NC
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'Article Query by Serial Number, "OR" NCIC Number'
+        title = 'Article Search by Serial Number, "OR" NCIC Number'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
-                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCICNumber_Input';                node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_2' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
-                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' '(Y) for NCIC stolen-article check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
+                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
             )}
         )
     }
@@ -729,14 +750,14 @@ $boaLayout = MakeLayouts @(
         title = 'Boat Search by Registration Number, "OR" Hull ID, "OR" NCIC Number'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '11' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '11' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
                 @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for TX)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCICNumber_Input';                node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_2' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
-                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' '(Y) for NCIC stolen-boat check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
+                @{ id = 'relatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
         )
     }

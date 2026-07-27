@@ -2,9 +2,29 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.3** | Generated: 2026-07-24
+Current: **v1.4** | Generated: 2026-07-27
 
 ---
+
+## v1.4 -- 2026-07-27 -- DEX-1284 lockstep with TX_TLETS v4.8 (BASE-SYNC -> v4.8)
+
+**CHANGED:** Re-synced the base-6 QIDM labels/layout to TX_TLETS v4.8's relabel/naming-convention
+  pass (separate build script -- does not auto-propagate). Mirrored edits, identical to base:  
+  - OLN (OperatorLicenseNumber DL + OperatorLicenseNumberDH -> "OLN")  
+  - canonical "NCIC Image" (Person OPTIONS, Gun, Article, Boat)  
+  - "Stolen Check" (relatedHitSearchIndicator Gun/Article/Boat)  
+  - lean labels (Vehicle Make/Year, VIN, Firearm Serial, Gun Make/Caliber, Article Type, Boat  
+    Reg, MI/Suffix DL+DH, Message Key) + LABEL-OVERRIDE tags on bare any[] fields  
+  - Person DL/DH card titles carry query paths ("Driver License/History Search by OLN, \"OR\"  
+    Name"); Firearm/Article titles "Query by" -> "Search by"  
+  - uniform 4/4/4 Vehicle grid (ROW_VEH_1 5/2/2/3 -> 3/3/3/3, ROW_VEH_2 5/4/3 -> 4/4/4)  
+  Person OPTIONS card KEPT (not folded) -- same rationale as base (shared State/Image/Reason/  
+  EmailAddress fields + email handler owned by separate eng team, RND-57165).  
+  The 8 CCH transactions (AQ/AR/FQ/IQ/QH/QR/QWI/ZR) + 3 CCH cards + CCH-suffixed fields UNTOUCHED.  
+  BASE-SYNC marker bumped TX_TLETS v4.7 -> v4.8.  
+**REASON:** DEX-1284 base<->variant lockstep -- TX_TLETS base v4.8 relabel pass must propagate to the
+  CCH variant in the same pass (CLAUDE.md "Provider Variants" rule). Label/layout-only, no combo/  
+  QIDM/routing/fieldId change. All 5 base entities + CCH reset for re-test at v1.4. NOT tenant-tested.  
 
 ## v1.3 -- 2026-07-24 -- Pipeline rebuild
 

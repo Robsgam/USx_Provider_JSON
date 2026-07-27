@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.7.json
-  Generated: 2026-07-24 18:42
+  Source: TX_TLETS_v4.8.json
+  Generated: 2026-07-27 11:36
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_v4.7
+ POST-BUILD VERIFICATION: TX_TLETS_v4.8
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -56,16 +56,26 @@ POST-BUILD VERIFICATION
 
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (Rob's explicit v4.4 call while evaluating queries)
-  [INFO] Field 'OperatorLicenseNumberDH' label='License Number (or search by Name + DOB + Sex)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'nameMiddleDH' label='MI (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'nameSuffixDH' label='Suffix (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameMiddleDH' label='MI' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare "Vehicle Year" per lean pass (any[] optional))
   [INFO] Field 'regionId' (any[]-only) label='Region ID' -- manual label override accepted (Rob's explicit v4.4 call while evaluating queries live;)
+  [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare "Vehicle Make" per lean pass (any[] optional))
+  [INFO] Field 'nameMiddle' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per lean pass (any[] optional))
+  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per lean pass (any[] optional))
   [INFO] Field 'reasonCode' (any[]-only) label='Reason Code' -- manual label override accepted (merely-defaulted (initialValue=C), officer-editable, bare)
+  [INFO] Field 'messageKey' (any[]-only) label='Message Key' -- manual label override accepted (bare "Message Key" per lean pass (any[]-only in CPL combo))
+  [INFO] Field 'nameMiddleDH' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per lean pass (any[] optional))
+  [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per lean pass (any[] optional))
+  [INFO] Field 'GunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare "Caliber" per lean pass (any[] optional))
+  [INFO] Field 'GunMake' (any[]-only) label='Gun Make' -- manual label override accepted (bare "Gun Make" per lean pass (any[] optional))
+  [INFO] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted ("Stolen Check" per lean pass (any[] optional))
   [PASS] All form field labels have required routing hint qualifiers (42 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
