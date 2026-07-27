@@ -25,7 +25,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.8 (archived) | v7.10 | v7.9 relabel + v7.10 UPPERCASE titles built; all 5 reset — re-import+capture pending |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (archived) | v4.13 | v4.12 relabel + v4.13 UPPERCASE titles + Boat-stolen audit fix built; all 5 reset — re-import+capture pending |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.16 (67 logs) | v4.16 | current (tenant-complete 2026-07-27, UPPERCASE-title re-sweep) |
-| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.10 (archived) | v4.12 | v4.10 WAS tenant-complete; reset by v4.11 (UPPERCASE titles) + v4.12 (Person 2-card fold) — re-import+capture pending |
+| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.12 (84 logs) | v4.12 | current (tenant-complete 2026-07-27, Person 2-card-fold re-sweep) |
 | CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.18 | last tenant-tested v2.12; v2.13-v2.18 built (v2.18 = UPPERCASE titles + gunCaliber CAD fix), not re-captured |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.1 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22 |
 
@@ -44,7 +44,7 @@ in repo, awaiting first tenant import.
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
 | Miami Springs Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.10** (relabel + UPPERCASE titles); manual re-import owed |
 | North Miami Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.10** (relabel + UPPERCASE titles); manual re-import owed |
-| Balcones Heights TX Foundation | TX_TLETS | v4.10 | 2026-07-27 | v4.2→v4.7→v4.10; now **behind repo v4.12** (UPPERCASE titles + Person fold); manual re-import owed |
+| Balcones Heights TX Foundation | TX_TLETS | v4.12 | 2026-07-27 | v4.2→v4.7→v4.10→v4.12 (Person 2-card fold); current |
 
 **Maintenance:** add/bump a row here ONLY when an import is actually reported (per
 `project_deployment_tracking` memory: never record from an "update X to latest" instruction alone).
