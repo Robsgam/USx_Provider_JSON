@@ -91,7 +91,11 @@ function Import-CaptureFile($path, $label) {
 
 # Startup catch-up sweep -- see header comment. Only runs if files already exist; harmless
 # (no-op) on a clean start.
-$preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue)
+$preExisting = @(Get-ChildItem -Path $downloads -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -notlike '*.unmatched*' })
+# NOTE: exclude relabel's own audit sidecars ('<file>.unmatched.json') -- they still start with
+# 'usx_' so they match the watch filter, and re-sweeping one re-drops it (0 new) AND spawns a
+# deeper '.unmatched.unmatched.json' each pass (self-perpetuating chain, TX v4.8 run 2026-07-27).
 # Picklist scope files are per-entity and ALL get imported; the largest-only rule applies
 # only to accumulated capture batches.
 $prePicklists = @($preExisting | Where-Object { $_.Name -like 'usx_picklists_*' })
@@ -143,6 +147,10 @@ while ($true) {
     $ev = $watcher.WaitForChanged([System.IO.WatcherChangeTypes]::Created -bor [System.IO.WatcherChangeTypes]::Renamed, 30000)
     if ($ev.TimedOut) { continue }
     $path = Join-Path $downloads $ev.Name
+
+    # Skip relabel's audit sidecars ('<file>.unmatched.json') -- they match the usx_*.json watch
+    # filter but re-importing one yields 0 new and spawns a deeper .unmatched chain (TX v4.8).
+    if ($ev.Name -like '*.unmatched*') { continue }
 
     # Dedup: Chrome fires Created then Renamed for one download; ignore a repeat within 10s.
     $now = [DateTime]::UtcNow.Ticks
