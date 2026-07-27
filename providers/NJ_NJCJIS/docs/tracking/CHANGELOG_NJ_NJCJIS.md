@@ -2,9 +2,14 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.10** | Generated: 2026-07-24
+Current: **v4.11** | Generated: 2026-07-27
 
 ---
+
+## v4.11 -- 2026-07-27 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v4.10 -- 2026-07-20 -- Pipeline rebuild
 

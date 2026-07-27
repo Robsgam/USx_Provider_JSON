@@ -21,7 +21,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 
 | Provider | URL | DEX | Installed (logged) | Repo | Note |
 |---|---|---|---|---|---|
-| NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (35 logs) | v4.10 | current |
+| NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (archived) | v4.11 | v4.11 built (DEX-1284 relabel); all 5 reset — re-import+capture pending |
 | FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.8 (archived) | v7.9 | v7.9 built (DEX-1284 relabel); all 5 reset — re-import+capture pending |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (45 logs) | v4.11 | current |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.15 (66 logs) | v4.15 | current (full re-test complete 2026-07-27; in/out gates validated live) |
@@ -40,7 +40,7 @@ in repo, awaiting first tenant import.
 
 | Tenant | Provider | Version | Imported | Notes |
 |---|---|---|---|---|
-| Newark Foundation | NJ_NJCJIS | v4.10 | 2026-07-22 | hands-off testing MODE (done by others; yes/no + REPORTED status) |
+| Newark Foundation | NJ_NJCJIS | v4.10 | 2026-07-22 | hands-off MODE — **behind repo v4.11** (DEX-1284 relabel); manual re-import owed |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
 | Miami Springs Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.9** (DEX-1284 relabel); manual re-import owed |
 | North Miami Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.9** (DEX-1284 relabel); manual re-import owed |
