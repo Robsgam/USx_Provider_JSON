@@ -1,6 +1,6 @@
-FL_FCIC v7.8 -- TEST MATRIX
+FL_FCIC v7.9 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-24
+Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -14,7 +14,7 @@ Vehicle (1 card, 9 fields):
     ROW 3: decalNumber [Inp 10], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Person (2 cards, 18 fields):
-  CARD_DL (Driver License):
+  CARD_DL (Driver License Search by OLN, "OR" Name):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX], nameSuffix [Inp 10]
@@ -249,4 +249,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T70(Serial), T72(OAN), T74(NCIC), T76(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T37(QB+Hull), T39(FBQ+Reg), T41(BQ+Reg), T42(QB+Reg), T44(BQ+Name), T45(FBQ+Decal), T47(FBQ+TitleLien), T49(QB+CG), T51(QB+NCIC), T53(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.8.json
+IMPORT FILE: FL_FCIC_v7.9.json

@@ -1,6 +1,22 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.9 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
+#   change): applied the portfolio conventions established on NY/TX. OLN (OperatorLicenseNumber DL
+#   "License Number (or search by Name + DOB)" + OperatorLicenseNumberDH "Driver License Number" ->
+#   "OLN"). Canonical bare "NCIC Image" on every image field (Vehicle/DL/Gun/Article/Boat -- was
+#   "NCIC Image - if available" / DL "Image (optional)"; this overrides the old FL-only
+#   "- if available" wording, now superseded by the global DEX-1284 convention). Boat stolen toggle
+#   "Y for NCIC stolen-boat check" -> "Stolen Check" (LABEL-OVERRIDE, any[] optional). DL card title
+#   -> "Driver License Search by OLN, \"OR\" Name". Lean cross-reference strips: DL BirthDate/Sex
+#   drop "(required with Name)" (both set[]-required on the Name combo); Gun Make drops
+#   "(incl w/Serial Num only - optional)" -> bare (LABEL-OVERRIDE, any[]); Article Serial/OAN drop
+#   "(with Article Type)"; Boat Reg drops "(or use Hull ID)". DL layout unchanged -- Rob confirmed
+#   OLN + State + NCIC Image stay together on the top row (mirrors FL's own DH top row + the NY
+#   model; NOT the TX "OLN alone" form, since FL carries State/Image on the DL card). Shadow-query
+#   review: FL is the in/out-gating reference (existence-only State + OLN + Hull gates already
+#   complete since v6.x/v7.x) -- nothing to remove. Label/title-only, no combo/QIDM/routing/fieldId/
+#   default change. ALL 5 ENTITIES RESET for re-test at v7.9 (block by version).
 # v7.8 (2026-07-20): Firearm CAD auto-population fix (direct feedback, mirrors NY_NYSPIN_EJUSTICE
 #   v4.10 + CA_CLETS v2.9 precedent). CAD sends the gun serial number as the camelCase field
 #   'serialNumber', not the PascalCase USx token 'GunSerialNumber' -- so the USx-query button in a
@@ -202,7 +218,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.8"
+    [string]$Version = "7.9"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -874,7 +890,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'DecalNumber_Input';        node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
                 @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
-                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
             )}
         )
     }
@@ -893,12 +909,12 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_DL'
-        title = 'Driver License'
+        title = 'Driver License Search by OLN, "OR" Name'
         rows  = @(
             @{ id = 'ROW_DL1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_DL1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL1' }
                 @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_DL1' }
-                @{ id = 'ImageIndicator_Input';         node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL1' }
+                @{ id = 'ImageIndicator_Input';         node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL1' }
             )}
             @{ id = 'ROW_DL2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL2' }
@@ -906,8 +922,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_DL2' }
             )}
             @{ id = 'ROW_DL3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)' 'ROW_DL3' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex (required with Name)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL3' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL3' }
                 @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '10' 'ROW_DL3' }
             )}
         )
@@ -917,7 +933,7 @@ $perLayout = MakeLayouts @(
         title = 'Driver History (Out-of-State) By Name "OR" Drivers License Number'
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'Driver License Number' '20' 'ROW_DH1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_DH1' }
                 @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
@@ -960,12 +976,13 @@ $faLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make (incl w/Serial Num only - optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                # LABEL-OVERRIDE: GunMake -- bare "Gun Make" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX)
+                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCICNumber_Input';         node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_GUN_2' }
                 @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
+                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -988,12 +1005,12 @@ $artLayout = MakeLayouts @(
             # v7.6 (DEX-1281): split the old 4-field row -- Serial Number + Owner Applied
             # Number on their own line, Article Type + Image below.
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number (with Article Type)' '20' 'ROW_ART_1' }
-                @{ id = 'OwnerAppliedNumber_Input';  node = Inp 'ownerAppliedNumber' 'Owner Applied Number (with Article Type)' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
+                @{ id = 'OwnerAppliedNumber_Input';  node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
+                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
             )}
             @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
                 @{ id = 'NCICNumber_Input';           node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_3' }
@@ -1021,7 +1038,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '8' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
                 @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('3','3','3','3'); fields = @(
@@ -1041,8 +1058,9 @@ $boaLayout = MakeLayouts @(
             # this is a new row, not a merge into one).
             @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_4' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-boat check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_4' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image - if available' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_4' }
+                # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX portfolio convention)
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_4' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_4' }
             )}
         )
     }
