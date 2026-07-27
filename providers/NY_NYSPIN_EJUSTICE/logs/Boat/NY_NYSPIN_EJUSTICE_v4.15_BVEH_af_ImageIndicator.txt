@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Boat BoatQuery
+Combo: BVEH_af_ImageIndicator (BVEH_af_ImageIndicator (auto))
+Date: 2026-07-27 15:11:21
+Result: PASS
+JSON Version: 4.15
+Entity Fingerprint: 77d149426332c3e70151943edd17337c753351d3f5b7da0a0b5408526c0a533f
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","RegistrationNumber":"FL1234AB","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJFN12WZ6Y1BDG2GCJ12ZXT">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KYJFN12WZ6Y1BDG2GCJ12ZXT</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>GA</State>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJFN12WZ6Y1BDG2GCJ12ZXT
+  ImageIndicator                 Y
+  State                          GA
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01KYJFN12WZ6Y1BDG2GCJ12ZXT). kind=any-field; anyField=ImageIndicator; expectedKeyRef=BVEH; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
