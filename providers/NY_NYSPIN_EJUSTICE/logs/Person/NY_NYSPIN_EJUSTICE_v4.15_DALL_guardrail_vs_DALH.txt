@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
+Combo: DALL_guardrail_vs_DALH (DALL_guardrail_vs_DALH (auto))
+Date: 2026-07-27 15:07:37
+Result: PASS
+JSON Version: 4.15
+Entity Fingerprint: 431e7d171f5b7ecf3d43927f02b007461b1c22d28089a1c6a50ff77bd488175d
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","ImageIndicatorDH":"Y","NameFirstDH":"JOHN","NameLastDH":"DOE","OperatorLicenseNumberDH":"D999888777","SexCodeDH":"Male","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C","requestorDH":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJFJP8WJKEE7RS1KH5VC8YG">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYJFJP8WJKEE7RS1KH5VC8YG</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <NyNyspinTransactionName>DALL</NyNyspinTransactionName>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJFJP8WJKEE7RS1KH5VC8YG
+  ImageIndicator                 Y
+  NyNyspinTransactionName        DALL
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01KYJFJP8WJKEE7RS1KH5VC8YG). kind=guardrail; anyField=; expectedKeyRef=DALL; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
