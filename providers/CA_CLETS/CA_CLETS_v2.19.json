@@ -7766,7 +7766,15 @@
                                                                                                                       "field":  "LicensePlateYear",
                                                                                                                       "value":  "2026"
                                                                                                                   }
-                                                                                                              ]
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "NLTS.RQ.P",
@@ -7837,8 +7845,7 @@
                                                                                                              "VehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "RegistrationState"
+                                                                                                             "VehicleMakeCode"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -7850,6 +7857,12 @@
                                                                                                                     {
                                                                                                                         "field":  [
                                                                                                                                       "LicensePlateNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
@@ -7866,7 +7879,6 @@
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState",
                                                                                                              "LicensePlateTypeCode",
                                                                                                              "LicensePlateYear",
                                                                                                              "VehicleMakeCode",
@@ -7885,7 +7897,15 @@
                                                                                                                       "field":  "LicensePlateYear",
                                                                                                                       "value":  "2026"
                                                                                                                   }
-                                                                                                              ]
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "IA.QV",
@@ -8896,14 +8916,22 @@
                                                                                                              "BoatHullIdNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState"
+
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "purposeCode",
                                                                                                                       "value":  "C"
                                                                                                                   }
-                                                                                                              ]
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "BoatHullIdNumber",
                                                                             "keyReference":  "IA.QB.H",
@@ -8936,7 +8964,7 @@
                                                                                                              "RegistrationNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState"
+
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -8948,6 +8976,12 @@
                                                                                                                     {
                                                                                                                         "field":  [
                                                                                                                                       "BoatHullIdNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
@@ -8969,7 +9003,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS v2.18 MC -- 6 QIDMs, 40 combos, 100% metadata coverage",
+                        "description":  "Provider configuration for CA_CLETS v2.19 MC -- 6 QIDMs, 40 combos, 100% metadata coverage",
                         "name":  "CA_CLETS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS"

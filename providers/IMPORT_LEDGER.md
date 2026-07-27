@@ -26,7 +26,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (archived) | v4.13 | v4.12 relabel + v4.13 UPPERCASE titles + Boat-stolen audit fix built; all 5 reset — re-import+capture pending |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.16 (67 logs) | v4.16 | current (tenant-complete 2026-07-27, UPPERCASE-title re-sweep) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.12 (84 logs) | v4.12 | current (tenant-complete 2026-07-27, Person 2-card-fold re-sweep) |
-| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.18 | last tenant-tested v2.12; v2.13-v2.18 built (v2.18 = UPPERCASE titles + gunCaliber CAD fix), not re-captured |
+| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.19 | last tenant-tested v2.12; v2.13-v2.19 built (v2.19 = in/out gating fix, FUNCTIONAL), not re-captured — re-test owed |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.1 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22 |
 
 All other providers (CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,

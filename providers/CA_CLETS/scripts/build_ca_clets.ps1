@@ -1,4 +1,17 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.19 (2026-07-27, in/out gating fix -- FUNCTIONAL, audit finding): completed the DEX-1284
+#   existence-gate in/out routing on Vehicle + Boat (CA never received it -- was on the older
+#   pre-DEX-1284 model). The OOS combos now fire only when State is present and the in-state
+#   catchalls only when State is blank, so they no longer co-fire/shadow:
+#     Vehicle: NLTS.RQ.P += RegistrationState EXISTS (was UNGATED -- v2.11 claimed "all 6 NLTS
+#       combos" but its list named NLTS.RQ.V and missed NLTS.RQ.P, so it shadowed IA.QV);
+#       IA.QVK += RegistrationState NOT_EXISTS; IA.QV += RegistrationState NOT_EXISTS.
+#     Boat:    IA.QB.H += RegistrationState NOT_EXISTS; IA.QB.R += RegistrationState NOT_EXISTS.
+#       (NLTS.BQ.H/R already EXISTS-gated; IA.QB.O is a standalone OAN path, no OOS sibling -> left.)
+#   RegistrationState dropped from the in-state combos' any[] (gate-XOR-companion). Existence-only
+#   (poisoned-array-safe). Same fix proven on NY v4.15 / TX v4.9 / FL. FUNCTIONAL -> all 5 entities
+#   reset. NOTE: the whole CA family (Ventura/eSUN/SLO/OCATS/Contra Costa) built from this template
+#   likely needs the same fix -- flagged, not done here. NOT yet re-tested.
 # v2.17 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
 #   change): applied the portfolio OLN convention. OperatorLicenseNumber (DL) + OperatorLicenseNumberDH
 #   (DH) "License Number" -> "OLN". DL/DH card titles now carry their query paths ("Driver License
@@ -76,7 +89,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.18"
+    [string]$Version = "2.19"
 )
 
 $ErrorActionPreference = "Stop"
@@ -145,6 +158,12 @@ $vehRegQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode';  value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';      value = $currentYear }
                 )
+                # v2.19 in/out gate (DEX-1284, FL/NY/TX pattern): OOS plate fires only when State is
+                # present. Was ungated -- v2.11 claimed "all 6 NLTS combos" got EXISTS but its list
+                # named NLTS.RQ.V and MISSED NLTS.RQ.P, so it shadowed the in-state IA.QV.
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
+                )
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'NLTS.RQ.P'
@@ -194,12 +213,15 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','VehicleIdentificationNumber')
-                any        = @('VehicleMakeCode','RegistrationState')
+                any        = @('VehicleMakeCode')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
+                # v2.19 in/out gate: in-state VIN fires only when State is BLANK (OOS VIN routes to
+                # NLTS.RQ.V instead). RegistrationState dropped from any[] (gate-XOR-companion).
                 conditions = @(
                     [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');  operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -210,11 +232,16 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','LicensePlateNumber')
-                any      = @('RegistrationState','LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','vehicleYear')
+                any      = @('LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','vehicleYear')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode';          value = 'C' }
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode';  value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';      value = $currentYear }
+                )
+                # v2.19 in/out gate: in-state plate catchall fires only when State is BLANK (OOS plate
+                # routes to NLTS.RQ.P). RegistrationState dropped from any[] (gate-XOR-companion).
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -706,9 +733,14 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','BoatHullIdNumber')
-                any      = @('RegistrationState')
+                any      = @()
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                # v2.19 in/out gate: in-state hull fires only when State is BLANK (OOS hull routes to
+                # NLTS.BQ.H). RegistrationState dropped from any[] (gate-XOR-companion).
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -730,12 +762,15 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','RegistrationNumber')
-                any        = @('RegistrationState')
+                any        = @()
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
+                # v2.19 in/out gate: in-state reg fires only when State is BLANK (OOS reg routes to
+                # NLTS.BQ.R). RegistrationState dropped from any[] (gate-XOR-companion).
                 conditions = @(
                     [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'RegistrationNumber'

@@ -2,14 +2,27 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.18** | Generated: 2026-07-27
+Current: **v2.19** | Generated: 2026-07-27
 
 ---
 
-## v2.18 -- 2026-07-27 -- Pipeline rebuild
+## v2.19 -- 2026-07-27 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v2.18 -- 2026-07-27 -- UPPERCASE card titles + gunCaliber CAD-token fix (audit finding)
+
+**CHANGED:** (a) All card titles UPPERCASED, wording unchanged (e.g. "Driver License Search by OLN,
+  CII, SSN, \"OR\" Name" -> all-caps; "Search Options" -> "SEARCH OPTIONS"; Firearm/Article/Boat  
+  already uppercase). New global convention (BUILD_RULES Section 11).  
+  (b) AUDIT FIX: gunCaliber -> GunCaliber (form fieldId + QIDM sourceField + Gun combo any[] +  
+  LABEL-OVERRIDE tag). GunCaliber is a PascalCase CAD-integration token; CA was the only provider  
+  emitting it camelCase (TX/HI/NY/NJ all use GunCaliber), so CAD would not auto-populate caliber.  
+  Attribute name + targetField were already 'GunCaliber' -- only the form-fed casing was wrong.  
+**REASON:** Rob -- "everything needs to be upper case" (titles) + the adversarial audit caught the
+  gunCaliber casing. Title/casing-only, no combo/QIDM/routing change. verify_build clean. ALL 5  
+  ENTITIES RESET at v2.18 (block by version). NOT yet re-tested.  
 
 ## v2.17 -- 2026-07-27 -- DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
 
