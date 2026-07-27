@@ -1,0 +1,82 @@
+﻿================================================================
+TEST LOG: TX_TLETS Person DriverHistoryQuery
+Combo: KQOLN_any (KQOLN_any (auto))
+Date: 2026-07-27 19:23:48
+Result: PASS
+JSON Version: 4.12
+Entity Fingerprint: 70e995eac395c183043b394f36d01e602c13803970c22d5dea4e674cb983e59f
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","ImageIndicator":"Y","ImageIndicatorDH":"N","OperatorLicenseNumberDH":"D999888777","RegistrationState":"Texas","RegistrationStateDH":"New Jersey","emailAddress":"X","purposeCodeDH":"F","reasonCode":"C","reasonCodeDH":"F"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJY78MHK1ETY0J0JH33JRQ7">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYJY78MHK1ETY0J0JH33JRQ7</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>NJ</State>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <PurposeCode>F</PurposeCode>
+            <ReasonCode>F</ReasonCode>
+            <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJY78MHK1ETY0J0JH33JRQ7
+  ImageIndicator                 N
+  State                          NJ
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  PurposeCode                    F
+  ReasonCode                     F
+  EmailAddress                   ROB.SGAMBELLONE@MARK43.COM
+
+NOTES
+-----
+Automated capture (txId 01KYJY78MHK1ETY0J0JH33JRQ7). kind=any; anyField=; expectedKeyRef=KQOLN; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
