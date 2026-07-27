@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
+Combo: DALL_af_nyNyspinTransactionNameDH (DALL_af_nyNyspinTransactionNameDH (auto))
+Date: 2026-07-27 18:42:00
+Result: PASS
+JSON Version: 4.16
+Entity Fingerprint: 89aba78c60b731a85e41285d34a877fe1c87b6fdc7e31a227146e2905d0a3c73
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","ImageIndicatorDH":"Y","OperatorLicenseNumberDH":"D999888777","nyNyspinTransactionNameDH":"DLIC","purposeCodeDH":"C","requestorDH":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJVTS3HJ20AG3YJGVYMN2X4">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYJVTS3HJ20AG3YJGVYMN2X4</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <NyNyspinTransactionName>DLIC</NyNyspinTransactionName>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJVTS3HJ20AG3YJGVYMN2X4
+  ImageIndicator                 Y
+  NyNyspinTransactionName        DLIC
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01KYJVTS3HJ20AG3YJGVYMN2X4). kind=any-field; anyField=nyNyspinTransactionNameDH; expectedKeyRef=DALL; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
