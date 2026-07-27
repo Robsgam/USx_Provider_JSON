@@ -2,9 +2,37 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.11** | Generated: 2026-07-27
+Current: **v4.12** | Generated: 2026-07-27
 
 ---
+
+## v4.12 -- 2026-07-27 -- DEX-1284: HI-style lean label pass (all 5 entities) + global "NCIC Image" convention
+
+**CHANGED:** Stripped every inline field helper EXCEPT the State routing hint, across all 5 entities.
+         The card TITLE now carries each entity's query paths (the NY Vehicle model extended to  
+         the rest):  
+           - Person DL card title -> 'Driver License Search by OLN, "OR" Name'  
+           - Person DH card title -> 'Driver History Search by OLN, "OR" Name'  
+           - Firearm card title    -> 'Firearm Search by Serial Number'  
+           - Article card title    -> 'Article Search by Serial Number'  
+           - Boat card title       -> 'Boat Search by Registration, "OR" Hull ID'  
+           - Vehicle title unchanged ('Vehicle Registration Search by Plate, "OR" VIN' -- the model)  
+         Field label strips: Plate Number / VIN / Vehicle Make / Vehicle Year (Vehicle);  
+         First/Last/MI/Suffix/DOB/Sex/Purpose Code (Person DL+DH); Gun Make / Caliber (Firearm);  
+         Article Type (Article); Registration Number (Boat). State keeps 'State (leave blank for NY)'.  
+         Image fields (ImageIndicator + DH) -> canonical bare "NCIC Image".  
+         Firearm + Article stolen-hit toggle (relatedHitSearchIndicator) -> "Stolen Check".  
+TOOLING: verify_build.ps1 CHECK 15 Rule 3 gained a $canonicalBareLabels allowlist that accepts the  
+         bare "NCIC Image" label (global convention -- purely permissive, cannot regress any  
+         provider). LABEL-OVERRIDE tags added for the deliberately-bare any[] fields  
+         (VehicleMakeCode, vehicleYear, nameMiddle, nameSuffix, nameMiddleDH, nameSuffixDH, GunMake,  
+         GunCaliber, relatedHitSearchIndicator).  
+**REASON:** DEX-1284 (Leo) direct feedback -- lean/HI-style labels, card title guides the query. Two
+         NEW GLOBAL conventions recorded in BUILD_RULES Section 11 + CLAUDE.md field-config, both  
+         FUTURE-RETROFIT (applied per-provider on its revisit turn, NY first): (1) canonical  
+         "NCIC Image" image-field label; (2) lean-label / card-title-carries-the-path style.  
+         Label/title-only -- NO combo/QIDM/routing/fieldId/default change. All 5 entities reset for  
+         re-test at v4.12. DEFERRED: none for this pass (purpose-code dropdown still pending Leo).  
 
 ## v4.11 -- 2026-07-27 -- DEX-1284: remove DGRP name-search card + OLN relabel (2-card Person)
 

@@ -860,11 +860,16 @@ if ($providerBundle) {
         }
     }
 }
+# Canonical bare labels that need no '(' / ' - ' qualifier -- global conventions where the bare
+# wording IS the intended officer-facing label (DEX-1284, 2026-07-27). "NCIC Image" is the
+# portfolio-wide image-field label (retrofit to every provider on its revisit turn). Purely
+# permissive -- adding an accepted label cannot regress a currently-passing provider.
+$canonicalBareLabels = @('NCIC Image')
 $pureAnyFields = @($everInAny | Where-Object { -not $everInSet.Contains($_) -and $_ -notmatch '(?i)purposeCode' })
 foreach ($fid in $pureAnyFields) {
     if (-not $formFieldLabels.ContainsKey($fid)) { continue }
     $lbl = $formFieldLabels[$fid]
-    if ($lbl -notmatch '\(' -and $lbl -notmatch ' - ') {
+    if ($lbl -notmatch '\(' -and $lbl -notmatch ' - ' -and $canonicalBareLabels -notcontains $lbl) {
         if ($labelOverrides.ContainsKey($fid)) {
             Info "Field '$fid' (any[]-only) label='$lbl' -- manual label override accepted ($($labelOverrides[$fid]))"
         } else {

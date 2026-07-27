@@ -855,6 +855,23 @@ See also:
     When a routing-alternative hint is kept on it, the pattern is "OLN (or search by Name...)".
     (The card/query name stays "Driver License"/"Driver History" -- only the field label is OLN.)
 
+    CANONICAL FIELD LABEL -- NCIC Image (global, DEX-1284, 2026-07-27):
+    Every image-toggle field (ImageIndicator and its DH-suffix variant) is labeled exactly
+    "NCIC Image" on EVERY provider -- NOT "NCIC Image - if available" / "Image (optional)" /
+    "Image". Applied to each provider on its revisit turn (FUTURE RETROFIT -- not a one-shot
+    sweep; NY_NYSPIN_EJUSTICE v4.12 is the first). verify_build CHECK 15 Rule 3 accepts the bare
+    "NCIC Image" as a canonical label (its $canonicalBareLabels allowlist), so it needs NO
+    "(optional)" qualifier and NO LABEL-OVERRIDE tag despite being an any[]-only field.
+
+    LEAN-LABEL / CARD-TITLE-CARRIES-THE-PATH convention (DEX-1284, 2026-07-27, HI-style):
+    Preferred officer-facing style is lean -- strip inline field helpers and let the CARD TITLE
+    state the query paths (e.g. Vehicle "... Search by Plate, \"OR\" VIN"; Person "Driver License
+    Search by OLN, \"OR\" Name"). The ONE field that always keeps its inline hint is State (its
+    routing hint "leave blank for <HOME>" is mandatory -- CHECK 15 Rule 1). Firearm/Article
+    stolen-hit toggles use the bare label "Stolen Check". Other deliberately-bare any[] fields
+    (Make/Year/MI/Suffix/Caliber/etc.) carry a "# LABEL-OVERRIDE: <fieldId> -- <reason>" tag so
+    CHECK 15 Rule 3 downgrades the WARN to accepted [INFO]. Applied per-provider on its revisit turn.
+
     SEVEN CANONICAL HINT TYPES (required on applicable fields):
 
     1. ROUTING ALTERNATIVES -- on any primary identifier where an alternative
