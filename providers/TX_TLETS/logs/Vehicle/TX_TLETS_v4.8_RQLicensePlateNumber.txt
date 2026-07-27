@@ -1,6 +1,6 @@
 ================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
-Combo: RQLicensePlateNumber_any (RQLicensePlateNumber_any (auto))
+Combo: RQLicensePlateNumber (RQLicensePlateNumber (auto))
 Date: 2026-07-27 12:16:26
 Result: PASS
 JSON Version: 4.8
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","financialResponsibilityType":"E"}
+{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","financialResponsibilityType":"E"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KYJ5Q9TFVMA8JG5XQ9TGG6XE">
+    <api:Transaction id="01KYJ5Q5DJFA58MT69D7Z0S92Z">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KYJ5Q9TFVMA8JG5XQ9TGG6XE</Id>
+            <Id>01KYJ5Q5DJFA58MT69D7Z0S92Z</Id>
             <FinancialResponsibilityType>E</FinancialResponsibilityType>
             <LicensePlateYear>2026</LicensePlateYear>
-            <State>GA</State>
+            <State>TX</State>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
           </Request>
@@ -60,7 +60,7 @@ Request:
   "elasticQuery": {
     "vehicle": {
       "registrationStateAttrIds": [
-        69509555361
+        69509558547
       ],
       "tag": "TEST123"
     }
@@ -79,15 +79,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KYJ5Q9TFVMA8JG5XQ9TGG6XE
+  Id                             01KYJ5Q5DJFA58MT69D7Z0S92Z
   FinancialResponsibilityType    E
   LicensePlateYear               2026
-  State                          GA
+  State                          TX
   LicensePlateTypeCode           PC
   LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01KYJ5Q9TFVMA8JG5XQ9TGG6XE). kind=any; anyField=; expectedKeyRef=RQLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KYJ5Q5DJFA58MT69D7Z0S92Z). kind=combo; anyField=; expectedKeyRef=RQLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
