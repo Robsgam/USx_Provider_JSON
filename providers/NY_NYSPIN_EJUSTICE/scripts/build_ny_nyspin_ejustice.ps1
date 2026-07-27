@@ -82,9 +82,14 @@
 #   (VIN 6->4), ROW_VEH_3 6/6->4/4 (State 6->4; a 2-char code no longer sits in a half-row box). New
 #   GLOBAL field-size/placement standard recorded in BUILD_RULES Section 11. Layout-only -- no
 #   label/combo/QIDM/routing/fieldId/default change. All 5 entities re-test from T1.
+# v4.14 (2026-07-27, DEX-1284 Person top-row -- direct Rob feedback, NO functional change): both
+#   Person cards (DL + DH) put OLN + State + NCIC Image together on the TOP line (6/3/3) -- OLN keeps
+#   the width, State/Image are short codes. Merged the old row-1 (OLN full-width) + row-1B
+#   (State/Image 6/6) into one row per card. Layout-only -- no label/combo/QIDM/routing/fieldId
+#   change. All 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.13"
+    [string]$Version = "4.14"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -634,15 +639,12 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DL'
         title = 'Driver License Search by OLN, "OR" Name'
         rows  = @(
-            # Row 1: primary identifier + search options folded in (OPTIONS card dumped v4.5).
-            # State+Image split to their own row (Rob-confirmed 2026-07-17, mirrors Vehicle's
-            # fix) -- sharing a row with License Number left State's label wrapping.
-            @{ id = 'ROW_PER_DL_1'; cols = @('12'); fields = @(
+            # Row 1 (v4.14): OLN + State + NCIC Image together on the top line (6/3/3) -- OLN keeps
+            # the width (long identifier), State/Image are short codes. Name/DOB rows follow.
+            @{ id = 'ROW_PER_DL_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
-            )}
-            @{ id = 'ROW_PER_DL_1B'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1B' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DL_1B' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DL_1' }
             )}
             @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name' '35' 'ROW_PER_DL_2' }
@@ -660,15 +662,12 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DH'
         title = 'Driver History Search by OLN, "OR" Name'
         rows  = @(
-            # Row 1: primary identifier + DH-own State/Image folded in (self-contained card, v4.5).
-            # State+Image split to their own row (Rob-confirmed 2026-07-17, mirrors Vehicle's
-            # fix) -- sharing a row with License Number left State's label wrapping.
-            @{ id = 'ROW_PER_DH_1'; cols = @('12'); fields = @(
+            # Row 1 (v4.14): OLN + State + NCIC Image together on the top line (6/3/3), mirroring the
+            # DL card -- self-contained DH-own State/Image. Name/DOB rows follow.
+            @{ id = 'ROW_PER_DH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
-            )}
-            @{ id = 'ROW_PER_DH_1B'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1B' }
-                @{ id = 'ImageIndicatorDH_Input';    node = Sel 'ImageIndicatorDH' 'NCIC Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1B' }
+                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
+                @{ id = 'ImageIndicatorDH_Input';    node = Sel 'ImageIndicatorDH' 'NCIC Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_PER_DH_1' }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '35' 'ROW_PER_DH_2' }

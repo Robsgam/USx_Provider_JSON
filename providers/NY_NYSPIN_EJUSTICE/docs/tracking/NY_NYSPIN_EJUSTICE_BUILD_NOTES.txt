@@ -3,6 +3,21 @@ NY_NYSPIN_EJUSTICE -- BUILD NOTES
 Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
 Clean restart from XML metadata as sole source of truth.
 See SQVR_main.txt for test results. See STATUS.txt for test matrix.
+v4.14  2026-07-27  DEX-1284: Person cards -- OLN + State + NCIC Image on the top line
+  CHANGED: Both Person cards (DRIVER LICENSE + DRIVER HISTORY) now place the primary identifier
+           and the two routing/option fields together on the TOP row (6/3/3):
+             - OLN [6] | State [3] | NCIC Image [3]
+           Merged the old two-row arrangement (row 1 = OLN full-width [12]; row 1B = State/Image
+           [6/6]) into one top row per card. OLN keeps the width (long identifier); State and
+           NCIC Image are short codes at 3 each. Name row (First/Last/MI/Suffix) and DOB/Sex row
+           follow unchanged. Applies to CARD_PER_DL and CARD_PER_DH identically.
+           No label/fieldId/combo/default change -- pure row/column regrouping.
+  REASON: DEX-1284 (Rob) -- "on the person put OLN, State and NCIC Image on the top line for each
+           card." Recorded as the global Person top-row pattern in BUILD_RULES Section 11 (future
+           retrofit per provider on revisit -- Rob: "expect this level of cleanup on all providers").
+           Layout-only -- no combo/QIDM/routing/fieldId change. All 5 entities reset for re-test at
+           v4.14 (block-by-version; Vehicle force-reopened so its v4.13 logs don't carry over).
+
 v4.13  2026-07-27  DEX-1284: Vehicle card 4/4/4 balance + global field-size/placement standard
   CHANGED: Rebalanced the Vehicle card to a uniform 4/4/4 column grid so fields align
            left-to-right AND top-to-bottom:
