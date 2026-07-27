@@ -98,24 +98,6 @@ v2.1 changes from v2.0:
   NIBRS sex reverse-lookup: CONFIRMED on NY
 
 ================================================================================
-2b. NyNyspinDriverLicenseNameQuery -- Person Entity (DGRP)
-================================================================================
-
-  QIDM: NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery (autoSelect=true)
-  QIF:  Person (shared DRIVER LICENSE card)
-  queryLabel: DL Name Search
-  Combos: DGRP (Name+DOB)
-
-  DGRP -- Name search (broader DL lookup) [PENDING]
-    set: nameLast, nameFirst
-    any: nameMiddle, nameSuffix, birthDate, sexCode
-    defaults: (none)
-    keyReference: DGRP
-    Name format: FormatStringRuleHandler "LAST, FIRST MIDDLE SUFFIX"
-    Date format: CommsysParseDateRuleHandler yyyy-MM-dd -> MMddyyyy
-    Co-fires with DL when name fields are entered
-
-================================================================================
 3. DriverHistoryQuery -- Person Entity
 ================================================================================
 
@@ -171,7 +153,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
   CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on GINQ
 
-  GINQ -- Serial Number [PENDING]
+  GINQ -- Serial Number [CONFIRMED]
     set: gunSerialNumber
     any: imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
