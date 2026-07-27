@@ -1,0 +1,89 @@
+﻿================================================================
+TEST LOG: TX_TLETS Person DriverLicenseQuery
+Combo: DQOLN_af_ImageIndicator (DQOLN_af_ImageIndicator (auto))
+Date: 2026-07-27 14:34:54
+Result: PASS
+JSON Version: 4.10
+Entity Fingerprint: 31352587c5a2169622b004ec47b681c4f7857a4c69ced48e9d617ee9b091cb48
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","ImageIndicator":"N","OperatorLicenseNumber":"D999888777","RegistrationState":"Texas","emailAddress":"X","purposeCodeDH":"C","reasonCode":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJCPAEJ2FFCYCT7FPDDZ55K">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KYJCPAEJ2FFCYCT7FPDDZ55K</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>TX</State>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <ReasonCode>C</ReasonCode>
+            <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777",
+                         "registrationStateAttrId":  "69509558547"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJCPAEJ2FFCYCT7FPDDZ55K
+  ImageIndicator                 N
+  State                          TX
+  OperatorLicenseNumber          D999888777
+  ReasonCode                     C
+  EmailAddress                   ROB.SGAMBELLONE@MARK43.COM
+
+NOTES
+-----
+Automated capture (txId 01KYJCPAEJ2FFCYCT7FPDDZ55K). kind=any-field; anyField=ImageIndicator; expectedKeyRef=DQOLN; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

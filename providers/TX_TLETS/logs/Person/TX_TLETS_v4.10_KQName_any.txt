@@ -1,0 +1,86 @@
+﻿================================================================
+TEST LOG: TX_TLETS Person DriverHistoryQuery
+Combo: KQName_any (KQName_any (auto))
+Date: 2026-07-27 14:34:48
+Result: PASS
+JSON Version: 4.10
+Entity Fingerprint: 31352587c5a2169622b004ec47b681c4f7857a4c69ced48e9d617ee9b091cb48
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","BirthDateDH":"1990-01-15","ImageIndicator":"N","NameFirstDH":"JOHN","NameLastDH":"DOE","RegistrationState":"Georgia","SexCodeDH":"Male","emailAddress":"X","purposeCodeDH":"F","reasonCode":"F"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJCQV5QVK1KN7K9SS58D3JC">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYJCQV5QVK1KN7K9SS58D3JC</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <Attention>SGAMBELLONE R</Attention>
+            <SexCode>M</SexCode>
+            <ReasonCode>F</ReasonCode>
+            <PurposeCode>F</PurposeCode>
+            <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE,JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJCQV5QVK1KN7K9SS58D3JC
+  ImageIndicator                 N
+  State                          GA
+  Attention                      SGAMBELLONE R
+  SexCode                        M
+  ReasonCode                     F
+  PurposeCode                    F
+  EmailAddress                   ROB.SGAMBELLONE@MARK43.COM
+  BirthDate                      01151990
+  Name                           DOE,JOHN
+
+NOTES
+-----
+Automated capture (txId 01KYJCQV5QVK1KN7K9SS58D3JC). kind=any; anyField=; expectedKeyRef=KQName; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
