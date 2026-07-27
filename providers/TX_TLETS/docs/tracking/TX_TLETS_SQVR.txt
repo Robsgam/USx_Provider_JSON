@@ -1,4 +1,4 @@
-TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-27
@@ -32,32 +32,32 @@ v3.4 CHANGES (from v3.3):
           VehicleIdentificationNumber, VehicleMakeCode, VehicleYear,
           RegistrationState, FinancialResponsibilityType, RegionId, StickerNumber
 
-  REG Plate -- TX Registration (Plate+Year+FRT) [PENDING]
+  REG Plate -- TX Registration (Plate+Year+FRT) [CONFIRMED]
     keyReference: REGLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [PENDING]
+  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [CONFIRMED]
     keyReference: RQLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
     any: RegistrationState
     state: In/Out
 
-  VIN+FRT -- VIN + Financial Responsibility [PENDING]
+  VIN+FRT -- VIN + Financial Responsibility [CONFIRMED]
     keyReference: VINVehicleIdentificationNumber
     set: VehicleIdentificationNumber, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  DPSI Sticker -- TX DPS Insurance (Sticker Number) [PENDING]
+  DPSI Sticker -- TX DPS Insurance (Sticker Number) [CONFIRMED]
     keyReference: DPSIStickerNumber
     set: StickerNumber
     any: RegistrationState
     state: In/Out
     CONFIRMED: T18 2026-06-17. StickerNumber=TEST123. XML: StickerNumber + State=TX (default). No plate or VIN fields.
 
-  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [PENDING]
+  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [CONFIRMED]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
