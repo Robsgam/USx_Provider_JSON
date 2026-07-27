@@ -1,4 +1,4 @@
-FL_FCIC v7.9 -- TEST MATRIX
+FL_FCIC v7.10 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -8,34 +8,34 @@ Validator: unknown
 FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 9 fields):
-  CARD_VEH_SEARCH (Vehicle Registration Search by License Plate, "OR" VIN, "OR" Decal):
+  CARD_VEH_SEARCH (VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN, "OR" DECAL):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: decalNumber [Inp 10], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Person (2 cards, 18 fields):
-  CARD_DL (Driver License Search by OLN, "OR" Name):
+  CARD_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX], nameSuffix [Inp 10]
-  CARD_DH (Driver History (Out-of-State) By Name "OR" Drivers License Number):
+  CARD_DH (DRIVER HISTORY (OUT-OF-STATE) BY NAME "OR" DRIVERS LICENSE NUMBER):
     ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 1], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 3: Attention [Inp X, 30]
 
 Firearm (1 card, 5 fields):
-  CARD_GUN (FIREARM Query by Serial Number, "OR" NCIC Number, "OR" PCN):
+  CARD_GUN (FIREARM QUERY BY SERIAL NUMBER, "OR" NCIC NUMBER, "OR" PCN):
     ROW 1: serialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: NCICNumber [Inp 10], processControlNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Article (1 card, 6 fields):
-  CARD_ART (ARTICLE QUERY by Serial Number, "OR" Owner Applied Number, "OR" NCIC Number, "OR" PCN):
+  CARD_ART (ARTICLE QUERY BY SERIAL NUMBER, "OR" OWNER APPLIED NUMBER, "OR" NCIC NUMBER, "OR" PCN):
     ROW 1: ArticleSerialNumber [Inp 20], ownerAppliedNumber [Inp 20]
     ROW 2: ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
     ROW 3: NCICNumber [Inp 10], processControlNumber [Inp 10]
 
 Boat (1 card, 13 fields):
-  CARD_BOA_SEARCH (Boat Search):
+  CARD_BOA_SEARCH (BOAT SEARCH):
     ROW 1: BoatHullIdNumber [Inp 62], RegistrationNumber [Inp 8], coastGuardDocumentNumber [Inp 8]
     ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], NCICNumber [Inp 10], processControlNumber [Inp 10]
     ROW 3: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate]
@@ -249,4 +249,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T70(Serial), T72(OAN), T74(NCIC), T76(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T37(QB+Hull), T39(FBQ+Reg), T41(BQ+Reg), T42(QB+Reg), T44(BQ+Name), T45(FBQ+Decal), T47(FBQ+TitleLien), T49(QB+CG), T51(QB+NCIC), T53(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.9.json
+IMPORT FILE: FL_FCIC_v7.10.json

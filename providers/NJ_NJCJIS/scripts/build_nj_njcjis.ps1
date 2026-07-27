@@ -100,7 +100,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.12"
+    [string]$Version = "4.13"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -435,7 +435,7 @@ $njBundle = [PSCustomObject]@{
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH_OPT'
-        title = 'Search Options'
+        title = 'SEARCH OPTIONS'
         rows  = @(
             @{ id = 'ROW_VEH_O1'; cols = @('4','4','4'); fields = @(
                 # LABEL-OVERRIDE: RegistrationState -- Rob's explicit cosmetic call (NJ v4.9); bare
@@ -488,7 +488,7 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
-        title = 'Driver License Search by OLN, "OR" Name'
+        title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
         rows  = @(
             @{ id = 'ROW_PER_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_1' }

@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE v4.15 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.16 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -8,34 +8,34 @@ Validator: unknown
 FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 8 fields):
-  CARD_VEH (Vehicle Registration Search by Plate, "OR" VIN):
+  CARD_VEH (VEHICLE REGISTRATION SEARCH BY PLATE, "OR" VIN):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Person (2 cards, 21 fields):
-  CARD_PER_DL (Driver License Search by OLN, "OR" Name):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: NameFirst [Inp 35], NameLast [Inp 35], nameMiddle [Inp 35], nameSuffix [Inp 10]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
-  CARD_PER_DH (Driver History Search by OLN, "OR" Name):
+  CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], ImageIndicatorDH [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: NameFirstDH [Inp 35], NameLastDH [Inp 35], nameMiddleDH [Inp 35], nameSuffixDH [Inp 10]
     ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX], purposeCodeDH [Inp C, 1], nyNyspinTransactionNameDH [Inp DALL, 4]
     ROW 4: requestorDH [Inp X, 35]
 
 Firearm (1 card, 4 fields):
-  CARD_GUN (Firearm Search by Serial Number):
+  CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
     ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 4 fields):
-  CARD_ART (Article Search by Serial Number):
+  CARD_ART (ARTICLE SEARCH BY SERIAL NUMBER):
     ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 4 fields):
-  CARD_BOA (Boat Search by Registration, "OR" Hull ID):
+  CARD_BOA (BOAT SEARCH BY REGISTRATION, "OR" HULL ID):
     ROW 1: RegistrationNumber [Inp 10], BoatHullIdNumber [Inp 20]
     ROW 2: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
@@ -185,4 +185,4 @@ COMBO COVERAGE (16/16):
   ArticleSingleQuery: 1/1 -- T45(AINQ)
   BoatQuery: 4/4 -- T31(RVEH+RVEH), T33(RCAR+Hull), T35(BVEH+BVEH), T37(BVIN+BVIN)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.15.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.16.json

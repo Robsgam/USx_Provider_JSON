@@ -2,14 +2,23 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.6** | Generated: 2026-07-27
+Current: **v1.7** | Generated: 2026-07-27
 
 ---
 
-## v1.6 -- 2026-07-27 -- Pipeline rebuild
+## v1.7 -- 2026-07-27 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v1.6 -- 2026-07-27 -- Person DL top-row (lockstep w/ TX_TLETS v4.10)
+
+**CHANGED:** Mirrored the base Person DL layout fix -- CARD_PER_DL restructured to the DH card's
+  3-line shape: ROW_PER_L1 (12) OLN alone; ROW_PER_N2 (6/6) Date of Birth / Sex moved off the  
+  OLN row. Name row unchanged. BASE-SYNC marker bumped v4.9 -> v4.10. The 8 CCH transactions +  
+  3 CCH cards + CCH-suffixed fields UNTOUCHED.  
+**REASON:** Base<->variant lockstep -- TX_TLETS v4.10 Person DL top-row fix propagates to the CCH
+  variant in the same pass (CLAUDE.md "Provider Variants" rule). Layout-only. NOT tenant-tested.  
 
 ## v1.5 -- 2026-07-27 -- DEX-1284 shadow correction (lockstep w/ TX_TLETS v4.9) + QH.NAME Choice fix
 

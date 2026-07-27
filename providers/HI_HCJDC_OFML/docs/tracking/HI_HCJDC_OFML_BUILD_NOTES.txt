@@ -3,6 +3,17 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.13  2026-07-27  Boat stolen-label audit fix + UPPERCASE card titles (NO functional change)
+  CHANGED: (a) AUDIT FIX: the v4.12 "Stolen Check" relabel missed the Boat relatedSearchHitIndicator
+    (Firearm + Article were relabeled; Boat was left "(Y) for NCIC stolen-boat check"). Caught by the
+    post-rebuild adversarial audit. Boat stolen toggle -> "Stolen Check"; the LABEL-OVERRIDE tag now
+    correctly covers all 3 (Firearm/Article/Boat).
+    (b) UPPERCASE TITLES: all card titles UPPERCASED, wording unchanged (v4.12 query-path titles
+    DL/DH/Firearm/Article/Boat now all-caps; Vehicle SEARCH OPTIONS/PLATE/VIN already caps). New
+    global convention (BUILD_RULES Section 11).
+  REASON: Adversarial audit (Boat stolen miss) + Rob "everything needs to be upper case" (titles).
+    Label/title-only, no combo/QIDM/routing change. verify_build clean. ALL 5 ENTITIES RESET at
+    v4.13 (block by version). NOT yet re-tested.
 v4.12  2026-07-27  DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
   CHANGED: Brought HI in line with the NY/TX/FL/NJ/CA portfolio conventions (HI had diverged --
     parenthetical image label + pre-OLN labels):

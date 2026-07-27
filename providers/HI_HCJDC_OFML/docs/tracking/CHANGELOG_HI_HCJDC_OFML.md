@@ -2,14 +2,41 @@
 
 Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.12** | Generated: 2026-07-27
+Current: **v4.13** | Generated: 2026-07-27
 
 ---
 
-## v4.12 -- 2026-07-27 -- Pipeline rebuild
+## v4.13 -- 2026-07-27 -- Boat stolen-label audit fix + UPPERCASE card titles (NO functional change)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** (a) AUDIT FIX: the v4.12 "Stolen Check" relabel missed the Boat relatedSearchHitIndicator
+  (Firearm + Article were relabeled; Boat was left "(Y) for NCIC stolen-boat check"). Caught by the  
+  post-rebuild adversarial audit. Boat stolen toggle -> "Stolen Check"; the LABEL-OVERRIDE tag now  
+  correctly covers all 3 (Firearm/Article/Boat).  
+  (b) UPPERCASE TITLES: all card titles UPPERCASED, wording unchanged (v4.12 query-path titles  
+  DL/DH/Firearm/Article/Boat now all-caps; Vehicle SEARCH OPTIONS/PLATE/VIN already caps). New  
+  global convention (BUILD_RULES Section 11).  
+**REASON:** Adversarial audit (Boat stolen miss) + Rob "everything needs to be upper case" (titles).
+  Label/title-only, no combo/QIDM/routing change. verify_build clean. ALL 5 ENTITIES RESET at  
+  v4.13 (block by version). NOT yet re-tested.  
+
+## v4.12 -- 2026-07-27 -- DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
+
+**CHANGED:** Brought HI in line with the NY/TX/FL/NJ/CA portfolio conventions (HI had diverged --
+  parenthetical image label + pre-OLN labels):  
+  - OLN: OperatorLicenseNumber (DL) + OperatorLicenseNumberDH (DH) -> "OLN"  
+  - canonical bare "NCIC Image" (the one visible image field, Vehicle SEARCH OPTIONS -- was  
+    "NCIC Image (if available)"; retires HI's v4.10 parenthetical divergence)  
+  - "Stolen Check" (relatedSearchHitIndicator on Firearm/Article/Boat -- was  
+    "(Y) for NCIC stolen-X check"; LABEL-OVERRIDE, any[] w/ default Y)  
+  - card titles carry query paths: DL/DH "Driver License/History Search by OLN, \"OR\" Name";  
+    Firearm/Article "... Search by Serial Number"; Boat "Boat Search by Registration, \"OR\" Hull ID"  
+  - Boat Reg dropped "(or use Hull ID)" cross-reference helper  
+  Kept the valid DOB/Sex "(required with Name)" + Make/Caliber/Model/Type "(optional)/(required)"  
+  hints.  
+**REASON:** DEX-1284 portfolio relabel -- HI was the one revisited provider still on the old
+  parenthetical "NCIC Image (if available)" wording and pre-OLN labels. Label/title-only, no  
+  combo/QIDM/routing/fieldId/default change. verify_build 15P/0W/0F. ALL 5 ENTITIES RESET for  
+  re-test at v4.12 (block by version). NOT yet re-tested.  
 
 ## v4.11 -- 2026-07-20 -- Pipeline rebuild
 

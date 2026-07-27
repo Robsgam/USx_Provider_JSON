@@ -1,5 +1,5 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.3
-# BASE-SYNC: TX_TLETS v4.10   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.11   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.5 (2026-07-27, DEX-1284 shadow correction, lockstep w/ TX_TLETS v4.9 + a CCH-only metadata fix):
 #   (base-6) removed QVLicensePlateNumber + QVVehicleIdentificationNumber (ungated subset-shadows,
 #   platform auto-fired -- see TX_TLETS v4.9); KEPT regionId (optional combination field) moved to the
@@ -92,7 +92,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.6"
+    [string]$Version = "1.7"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -428,7 +428,7 @@ $cchQH = [PSCustomObject]@{
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('inquiryReasonCCH','requestorCCH','operatorCCH','stateIdNumberCCH','purposeCodeCCH'); any = @('nameLastCCH','nameFirstCCH','nameMiddleCCH','nameSuffixCCH') }; primaryFieldReference = 'StateIdNumber'; keyReference = 'QH.SID'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('inquiryReasonCCH','requestorCCH','operatorCCH','fbiNumberCCH','purposeCodeCCH'); any = @('nameLastCCH','nameFirstCCH','nameMiddleCCH','nameSuffixCCH') }; primaryFieldReference = 'FBINumber'; keyReference = 'QH.FBI'; state = 'In/Out' }
     )
-    description = 'CCHCriminalHistoryQHQuery -- 4 combos (BDOB/Name/SID/FBI, metadata-exact). Manual select.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $false; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'CCHCriminalHistoryQHQuery'; queryLabel = 'CCH Criminal History (QH)'; targetEntity = 'Person'
+    description = 'CCHCriminalHistoryQHQuery -- 5 combos (BDOB/NAME.SSN/NAME.MISC/SID/FBI; Name split to honor the mandatory SSN|Misc Choice, v1.5). Manual select.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $false; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'CCHCriminalHistoryQHQuery'; queryLabel = 'CCH Criminal History (QH)'; targetEntity = 'Person'
 }
 
 # --- CCHCriminalHistoryQRQuery (QR) -- record request by SID/FBI, 2 combos ---
@@ -531,7 +531,7 @@ $provBundle = [PSCustomObject]@{
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH'
-        title = 'Vehicle Registration Search by Plate, "OR" VIN, "OR" Sticker'
+        title = 'VEHICLE REGISTRATION SEARCH BY PLATE, "OR" VIN, "OR" STICKER'
         rows  = @(
             # LABEL-OVERRIDE: RegistrationState -- merely-defaulted (initialValue=TX), officer-editable;
             # bare label is the TX_TLETS main v4.4 convention (feedback_no_auto_on_defaulted_fields).
@@ -590,7 +590,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DL'
-        title = 'Driver License Search by OLN, "OR" Name'
+        title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # OLN alone on the top line (Rob 2026-07-27, lockstep w/ TX_TLETS main v4.10) -- the DL
             # card now mirrors the DH card's 3-line structure (OLN / Name / DOB+Sex). DOB + Sex were
@@ -616,7 +616,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'Driver History Search by OLN, "OR" Name'
+        title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler.
             # Hidden gate-feeder (InpH initialValue='X') makes 'Attention' visible to the platform
@@ -645,7 +645,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_CCH_OPT'
-        title = 'CCH OPTIONS (RESTRICTED -- Criminal History)'
+        title = 'CCH OPTIONS (RESTRICTED -- CRIMINAL HISTORY)'
         rows  = @(
             @{ id = 'ROW_CCH_O1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'attentionCCH_Input';     node = Inp 'attentionCCH' 'Attention (CCH)' '30' 'ROW_CCH_O1' }
@@ -727,7 +727,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'Firearm Search by Serial Number, "OR" NCIC Number'
+        title = 'FIREARM SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'GunSerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
@@ -748,7 +748,7 @@ $firearmsForm = [PSCustomObject]@{ description = 'Firearm query -- QG (Serial/NC
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'Article Search by Serial Number, "OR" NCIC Number'
+        title = 'ARTICLE SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
@@ -768,7 +768,7 @@ $articleForm = [PSCustomObject]@{ description = 'Article query -- QA (Serial+Typ
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
-        title = 'Boat Search by Registration Number, "OR" Hull ID, "OR" NCIC Number'
+        title = 'BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID, "OR" NCIC NUMBER'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '11' 'ROW_BOA_1' }

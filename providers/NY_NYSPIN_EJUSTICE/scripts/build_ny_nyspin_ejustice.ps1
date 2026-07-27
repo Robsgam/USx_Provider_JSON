@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.15"
+    [string]$Version = "4.16"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -578,7 +578,7 @@ $vehLayout = MakeLayouts @(
     # Single card (v4.6): SEARCH OPTIONS folded into the plate row -- no separate options card.
     @{
         id    = 'CARD_VEH'
-        title = 'Vehicle Registration Search by Plate, "OR" VIN'
+        title = 'VEHICLE REGISTRATION SEARCH BY PLATE, "OR" VIN'
         rows  = @(
             # NOTE (v4.9, manual/Rob-confirmed): Plate Type/Year are deliberately bare, no
             # parenthetical at all -- both are prefilled via initialValue and officer-editable.
@@ -643,7 +643,7 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
-        title = 'Driver License Search by OLN, "OR" Name'
+        title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # Row 1 (v4.14): OLN + State + NCIC Image together on the top line (6/3/3) -- OLN keeps
             # the width (long identifier), State/Image are short codes. Name/DOB rows follow.
@@ -666,7 +666,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'Driver History Search by OLN, "OR" Name'
+        title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # Row 1 (v4.14): OLN + State + NCIC Image together on the top line (6/3/3), mirroring the
             # DL card -- self-contained DH-own State/Image. Name/DOB rows follow.
@@ -725,7 +725,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'Firearm Search by Serial Number'
+        title = 'FIREARM SEARCH BY SERIAL NUMBER'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
@@ -755,7 +755,7 @@ $firearmsForm = [PSCustomObject]@{
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'Article Search by Serial Number'
+        title = 'ARTICLE SEARCH BY SERIAL NUMBER'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
@@ -788,7 +788,7 @@ $boaLayout = MakeLayouts @(
     # Single card (v4.6): SEARCH OPTIONS folded into the identifier row -- no separate options card.
     @{
         id    = 'CARD_BOA'
-        title = 'Boat Search by Registration, "OR" Hull ID'
+        title = 'BOAT SEARCH BY REGISTRATION, "OR" HULL ID'
         rows  = @(
             # State moved off row 1 onto its own row with Image (Rob-confirmed 2026-07-17) --
             # sharing row 1 with both identifier fields left State's label wrapping. Row 1 now

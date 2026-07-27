@@ -159,7 +159,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.10"
+    [string]$Version = "4.11"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -409,7 +409,7 @@ $provBundle = [PSCustomObject]@{
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH'
-        title = 'Vehicle Registration Search by Plate, "OR" VIN, "OR" Sticker'
+        title = 'VEHICLE REGISTRATION SEARCH BY PLATE, "OR" VIN, "OR" STICKER'
         rows  = @(
             # LABEL-OVERRIDE: RegistrationState -- see the full explanation next to the Person
             # card's OPTIONS row further down; same field/label, same override applies.
@@ -480,7 +480,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DL'
-        title = 'Driver License Search by OLN, "OR" Name'
+        title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # OLN alone on the top line (Rob 2026-07-27) -- the DL card now mirrors the DH card's
             # 3-line structure (OLN line / Name line / DOB+Sex line). DOB + Sex were previously
@@ -510,7 +510,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'Driver History Search by OLN, "OR" Name'
+        title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler.
             # Hidden gate-feeder (InpH initialValue='X') makes 'Attention' visible to the platform
@@ -555,7 +555,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'Firearm Search by Serial Number, "OR" NCIC Number'
+        title = 'FIREARM SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'GunSerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
@@ -576,7 +576,7 @@ $firearmsForm = [PSCustomObject]@{ description = 'Firearm query -- QG (Serial/NC
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'Article Search by Serial Number, "OR" NCIC Number'
+        title = 'ARTICLE SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
@@ -596,7 +596,7 @@ $articleForm = [PSCustomObject]@{ description = 'Article query -- QA (Serial+Typ
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
-        title = 'Boat Search by Registration Number, "OR" Hull ID, "OR" NCIC Number'
+        title = 'BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID, "OR" NCIC NUMBER'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '11' 'ROW_BOA_1' }

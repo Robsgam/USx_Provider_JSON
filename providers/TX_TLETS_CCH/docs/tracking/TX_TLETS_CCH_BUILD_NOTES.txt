@@ -2,6 +2,16 @@
   BUILD NOTES: TX_TLETS_CCH
   Created: 2026-06-09
 ================================================================
+v1.7  2026-07-27  UPPERCASE card titles + QH-description audit fix (lockstep w/ TX_TLETS v4.11)
+  CHANGED: (a) All card titles UPPERCASED, wording unchanged (base-6 titles + the 3 CCH cards).
+    New global convention (BUILD_RULES Section 11). (b) AUDIT FIX: the QH QIDM `description` string
+    said "4 combos (BDOB/Name/SID/FBI)" but QH has had 5 combos since the v1.5 Name->SSN/MISC Choice
+    split -- corrected to "5 combos (BDOB/NAME.SSN/NAME.MISC/SID/FBI)". Description text only; the QH
+    combos themselves were already correct. BASE-SYNC -> v4.11.
+  REASON: Rob "everything needs to be upper case" (titles) + the adversarial audit caught the stale
+    QH description count. Title/description-only, no combo/QIDM/routing change. verify_build clean.
+    ALL 5 base entities + CCH RESET at v1.7. NOT tenant-tested (stub).
+
 v1.6  2026-07-27  Person DL top-row (lockstep w/ TX_TLETS v4.10)
   CHANGED: Mirrored the base Person DL layout fix -- CARD_PER_DL restructured to the DH card's
     3-line shape: ROW_PER_L1 (12) OLN alone; ROW_PER_N2 (6/6) Date of Birth / Sex moved off the

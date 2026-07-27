@@ -2,14 +2,38 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.9** | Generated: 2026-07-27
+Current: **v7.10** | Generated: 2026-07-27
 
 ---
 
-## v7.9 -- 2026-07-27 -- Pipeline rebuild
+## v7.10 -- 2026-07-27 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v7.9 -- 2026-07-27 -- DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
+
+**CHANGED:** Applied the NY/TX portfolio conventions:
+  - OLN: OperatorLicenseNumber (DL "License Number (or search by Name + DOB)") +  
+    OperatorLicenseNumberDH ("Driver License Number") -> "OLN"  
+  - canonical bare "NCIC Image" on every image field (Vehicle/DL/Gun/Article/Boat) -- was  
+    "NCIC Image - if available" / DL "Image (optional)". Overrides the prior FL-only  
+    "- if available" wording (now superseded by the global DEX-1284 convention).  
+  - Boat stolen toggle "Y for NCIC stolen-boat check" -> "Stolen Check" (LABEL-OVERRIDE: any[])  
+  - DL card title "Driver License" -> "Driver License Search by OLN, \"OR\" Name"  
+  - lean cross-reference strips: DL BirthDate/Sex drop "(required with Name)" (both set[]-required  
+    on the Name combo); Gun Make drops "(incl w/Serial Num only - optional)" -> bare  
+    (LABEL-OVERRIDE: any[]); Article Serial/OAN drop "(with Article Type)"; Boat Reg drops  
+    "(or use Hull ID)".  
+  - DL layout unchanged: Rob confirmed OLN + State + NCIC Image stay on the top row (mirrors FL's  
+    own DH top row OLN+State+PurposeCode + the NY model; NOT the TX OLN-alone form -- FL carries  
+    State/Image on the DL card, TX had them on a separate OPTIONS card).  
+**REASON:** DEX-1284 portfolio relabel. FL predated the OLN/NCIC-Image/Stolen-Check conventions even
+  though it originated many other patterns. Shadow-query review: FL is the in/out-gating reference  
+  (existence-only State/OLN/Hull gates already complete) -- nothing to remove. Label/title-only,  
+  no combo/QIDM/routing/fieldId/default change. verify_build 16P/0W/0F (LABEL-OVERRIDE tags on  
+  GunMake + relatedHitSearchIndicator). ALL 5 ENTITIES RESET for re-test at v7.9 (block by version).  
+  NOT yet re-tested at v7.9.  
 
 ## v7.8 -- 2026-07-20 -- Pipeline rebuild
 

@@ -2,14 +2,29 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.17** | Generated: 2026-07-27
+Current: **v2.18** | Generated: 2026-07-27
 
 ---
 
-## v2.17 -- 2026-07-27 -- Pipeline rebuild
+## v2.18 -- 2026-07-27 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v2.17 -- 2026-07-27 -- DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
+
+**CHANGED:** Applied the portfolio OLN convention:
+  - OperatorLicenseNumber (DL) + OperatorLicenseNumberDH (DH) "License Number" -> "OLN"  
+  - DL/DH card titles carry query paths: "Driver License Search by OLN, CII, SSN, \"OR\" Name"  
+    and "Driver History Search by OLN, \"OR\" Name"  
+  CA_CLETS has NO ImageIndicator field (bare "NCIC Image" N/A) and NO relatedHitSearchIndicator/  
+  stolen toggle ("Stolen Check" N/A). Cross-reference helpers were already stripped at v2.13; the  
+  "(optional)" indicators on genuinely-optional any[] fields (DOB/Age/Height/County/Race) are  
+  valid CHECK 15 hints and are kept. DL top row (OLN + CII + SSN alternate identifiers) unchanged  
+  -- OLN already leads.  
+**REASON:** DEX-1284 portfolio relabel. Label/title-only, no combo/QIDM/routing/fieldId/default
+  change. verify_build 16P/0W/0F. ALL 5 ENTITIES RESET for re-test at v2.17 (block by version).  
+  NOT yet re-tested.  
 
 ## v2.16 -- 2026-07-24 -- Race re-added to RMS person search
 

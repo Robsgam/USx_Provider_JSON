@@ -1,4 +1,4 @@
-CA_CLETS v2.17 -- TEST MATRIX
+CA_CLETS v2.18 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -15,20 +15,20 @@ Vehicle (1 card, 12 fields):
     ROW 4: NameFirst [Inp 30], NameLast [Inp 30], addressCity [Inp 13], addressStreetNumber [Inp 3]
 
 Person (3 cards, 20 fields):
-  CARD_PER_OPT (Search Options):
+  CARD_PER_OPT (SEARCH OPTIONS):
     RegistrationState [Sel STATE], purposeCode [Inp C, 1]
-  CARD_PER_DL (Driver License Search by OLN, CII, SSN, "OR" Name):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, CII, SSN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20], criminalIdNumber [Inp 11], socialSecurityNumber [Inp 9]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate], SexCode [Sel SEX]
     ROW 3: age [Inp 2], height [Inp 3], addressCounty [Inp 3], raceCode [Sel RACE]
-  CARD_PER_DH (Driver History Search by OLN, "OR" Name):
+  CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 3: Attention [Inp X, 30]
 
 Firearm (1 card, 9 fields):
   CARD_GUN_SEARCH (FIREARM SEARCH):
-    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
+    ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate], age [Inp 2], purposeCode [Inp C, 1]
 
 Article (1 card, 6 fields):
@@ -183,7 +183,7 @@ ENTITY 4: FIREARM (4 tests -- 1 card, 2 combos)
 --  ----------  --------------------------------------------------  ------
 52  Firearm     IG+.QGB            purposeCode=C, serialNumber=GUN12345 [    ]
               Expected: GunQuery fires (IG.QGB)
-53  Firearm     IG+.QGB            + gunCaliber, GunMake, gunTypeCode [    ]
+53  Firearm     IG+.QGB            + GunCaliber, GunMake, gunTypeCode [    ]
               Expected: any[] fields present in XML output.
 54  Firearm     IG+.QGH            purposeCode=C, NameLast=DOE, NameFirs... [    ]
               Expected: GunQuery fires (IG.QGH)
@@ -214,4 +214,4 @@ COMBO COVERAGE (25/25):
   ArticleSingleQuery: 2/2 -- T56(IP.QA.O), T58(IP.QA.S)
   BoatQuery: 6/6 -- T44(IA.QB.+IA.QB.H), T45(IA.QB.+IA.QB.O), T46(IA.QB.+IA.QB.R), T47(NLTS+.BQ.N), T48(NLTS+.BQ.H), T49(NLTS+.BQ.R)
 
-IMPORT FILE: CA_CLETS_v2.17.json
+IMPORT FILE: CA_CLETS_v2.18.json

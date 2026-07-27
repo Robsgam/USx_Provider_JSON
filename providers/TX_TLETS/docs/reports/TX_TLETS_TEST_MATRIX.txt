@@ -1,4 +1,4 @@
-TX_TLETS v4.10 -- TEST MATRIX
+TX_TLETS v4.11 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -8,7 +8,7 @@ Validator: unknown
 FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 10 fields):
-  CARD_VEH (Vehicle Registration Search by Plate, "OR" VIN, "OR" Sticker):
+  CARD_VEH (VEHICLE REGISTRATION SEARCH BY PLATE, "OR" VIN, "OR" STICKER):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE, TX]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: stickerNumber [Inp 10], financialResponsibilityType [Inp E, 1], regionId [Inp 4]
@@ -17,28 +17,28 @@ Person (3 cards, 21 fields):
   CARD_PER_OPT (SEARCH OPTIONS):
     emailAddress [Inp X, 80]
     RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
-  CARD_PER_DL (Driver License Search by OLN, "OR" Name):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30], messageKey [Inp 3]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
-  CARD_PER_DH (Driver History Search by OLN, "OR" Name):
+  CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: Attention [Inp X, 30]
     ROW 2: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 3: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
 
 Firearm (1 card, 6 fields):
-  CARD_GUN (Firearm Search by Serial Number, "OR" NCIC Number):
+  CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER):
     ROW 1: serialNumber [Inp 20], NCICNumber [Inp 10], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 5 fields):
-  CARD_ART (Article Search by Serial Number, "OR" NCIC Number):
+  CARD_ART (ARTICLE SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER):
     ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 6 fields):
-  CARD_BOA (Boat Search by Registration Number, "OR" Hull ID, "OR" NCIC Number):
+  CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID, "OR" NCIC NUMBER):
     ROW 1: RegistrationNumber [Inp 11], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE]
     ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
@@ -212,4 +212,4 @@ COMBO COVERAGE (19/19):
   ArticleSingleQuery: 2/2 -- T45(Serial), T47(NCIC)
   BoatQuery: 5/5 -- T27(BQ+Hull), T29(QB+Hull), T31(BQ+Reg), T33(QB+Reg), T35(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.10.json
+IMPORT FILE: TX_TLETS_v4.11.json

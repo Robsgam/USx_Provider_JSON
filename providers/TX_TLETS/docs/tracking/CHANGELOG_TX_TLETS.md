@@ -2,14 +2,29 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.10** | Generated: 2026-07-27
+Current: **v4.11** | Generated: 2026-07-27
 
 ---
 
-## v4.10 -- 2026-07-27 -- Pipeline rebuild
+## v4.11 -- 2026-07-27 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v4.10 -- 2026-07-27 -- Person DL top-row -- OLN alone on the top line (direct Rob feedback)
+
+**CHANGED:** Restructured CARD_PER_DL to mirror the DH card's 3-content-line layout. The DL card
+  had OLN + Date of Birth + Sex lumped on one row (ROW_PER_L1, 6/3/3). Now:  
+    ROW_PER_L1 (12)   -- OLN alone  
+    ROW_PER_N1 (3/3/2/2/2) -- First/Last/MI/Suffix/Message Key  (unchanged)  
+    ROW_PER_N2 (6/6)  -- Date of Birth / Sex   (NEW -- moved off ROW_PER_L1, matches DH's ROW_PER_DHN2)  
+  Also removed the stale QV Plate / QV VIN combo blocks from TX_TLETS_SQVR.txt (both combos were  
+  removed at v4.9 but their SQVR entries -- incl. a [PENDING] marker that blocked Vehicle block-out  
+  -- were left behind).  
+**REASON:** Rob, reviewing the rendered TX Person form during the v4.10 tenant re-test: "keep it three
+  lines like the DH card with just OLN on top line." Layout-only -- no combo/QIDM/routing/fieldId/  
+  label change. Person reopened for re-test; Vehicle (block-locked at v4.9, fingerprint unchanged)  
+  preserved. CCH variant rebuilt in lockstep (v1.6, BASE-SYNC -> v4.10).  
 
 ## v4.9 -- 2026-07-27 -- DEX-1284 shadow-query correction: removed QV subset-shadows (FUNCTIONAL)
 

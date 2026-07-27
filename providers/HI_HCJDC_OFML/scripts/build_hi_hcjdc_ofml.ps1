@@ -1,5 +1,15 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.13 (2026-07-27, audit fix + UPPERCASE card titles -- NO functional change):
+#   (a) AUDIT FIX: the v4.12 "Stolen Check" relabel missed the Boat relatedSearchHitIndicator
+#       (Firearm + Article were relabeled, Boat was left as "(Y) for NCIC stolen-boat check"). Caught
+#       by the post-rebuild adversarial audit. Boat stolen toggle -> "Stolen Check", completing the
+#       convention across all 3 stolen fields; the LABEL-OVERRIDE tag now correctly covers Boat.
+#   (b) UPPERCASE TITLES (Rob global decision -- "everything needs to be upper case"): all card
+#       titles UPPERCASED, wording unchanged. The query-path titles introduced at v4.12 (DL/DH/
+#       Firearm/Article/Boat) are now all-caps; Vehicle's SEARCH OPTIONS/PLATE SEARCH/VIN SEARCH
+#       were already uppercase. New global convention (BUILD_RULES Section 11).
+#   Label/title-only. ALL 5 ENTITIES RESET at v4.13.
 # v4.12 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
 #   change): brought HI in line with the NY/TX/FL/NJ/CA portfolio conventions (HI had diverged --
 #   its image label was parenthetical "NCIC Image (if available)" and it still used pre-OLN labels).
@@ -195,7 +205,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.12",
+    [string]$Version = "4.13",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -761,7 +771,7 @@ if ($AttnDiagnostic -and ($AttnMode -eq 'passthrough' -or $AttnMode -eq 'handler
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
-        title = 'Driver License Search by OLN, "OR" Name'
+        title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # State shares the License Number row (Rob-confirmed 2026-07-17) -- unchanged field
             # (still plain RegistrationState, still feeds DriverLicenseQuery.State + the RMS
@@ -786,7 +796,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'Driver History Search by OLN, "OR" Name'
+        title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
             # DH "(DH)" qualifier dropped from labels (Rob-confirmed 2026-07-17, mirrors FL_FCIC/
             # NY_NYSPIN_EJUSTICE) -- the card's own "DRIVER HISTORY" title already disambiguates
@@ -839,7 +849,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'Firearm Search by Serial Number'
+        title = 'FIREARM SEARCH BY SERIAL NUMBER'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
@@ -867,7 +877,7 @@ $firearmsForm = [PSCustomObject]@{
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'Article Search by Serial Number'
+        title = 'ARTICLE SEARCH BY SERIAL NUMBER'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'articleSerialNumber_Input';       node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
@@ -893,7 +903,7 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
-        title = 'Boat Search by Registration, "OR" Hull ID'
+        title = 'BOAT SEARCH BY REGISTRATION, "OR" HULL ID'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
                 @{ id = 'registrationNumber_Input';        node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
@@ -901,7 +911,7 @@ $boaLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_BOA_2'; cols = @('8','4'); fields = @(
                 @{ id = 'boatHullIdNumber_Input';          node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }
-                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' '(Y) for NCIC stolen-boat check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
+                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
         )
     }

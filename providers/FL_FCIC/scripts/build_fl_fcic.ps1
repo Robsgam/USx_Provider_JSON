@@ -218,7 +218,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.9"
+    [string]$Version = "7.10"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -872,7 +872,7 @@ $providerBundle = [PSCustomObject]@{
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH_SEARCH'
-        title = 'Vehicle Registration Search by License Plate, "OR" VIN, "OR" Decal'
+        title = 'VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN, "OR" DECAL'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
@@ -909,7 +909,7 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_DL'
-        title = 'Driver License Search by OLN, "OR" Name'
+        title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
         rows  = @(
             @{ id = 'ROW_DL1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_DL1' }
@@ -930,7 +930,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_DH'
-        title = 'Driver History (Out-of-State) By Name "OR" Drivers License Number'
+        title = 'DRIVER HISTORY (OUT-OF-STATE) BY NAME "OR" DRIVERS LICENSE NUMBER'
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_DH1' }
@@ -972,7 +972,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'FIREARM Query by Serial Number, "OR" NCIC Number, "OR" PCN'
+        title = 'FIREARM QUERY BY SERIAL NUMBER, "OR" NCIC NUMBER, "OR" PCN'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
@@ -1000,7 +1000,7 @@ $firearmsForm = [PSCustomObject]@{
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'ARTICLE QUERY by Serial Number, "OR" Owner Applied Number, "OR" NCIC Number, "OR" PCN'
+        title = 'ARTICLE QUERY BY SERIAL NUMBER, "OR" OWNER APPLIED NUMBER, "OR" NCIC NUMBER, "OR" PCN'
         rows  = @(
             # v7.6 (DEX-1281): split the old 4-field row -- Serial Number + Owner Applied
             # Number on their own line, Article Type + Image below.
@@ -1034,7 +1034,7 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA_SEARCH'
-        title = 'Boat Search'
+        title = 'BOAT SEARCH'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }

@@ -76,7 +76,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.17"
+    [string]$Version = "2.18"
 )
 
 $ErrorActionPreference = "Stop"
@@ -94,7 +94,7 @@ $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 . "$PSScriptRoot\..\..\..\tools\_build_layout_helpers.ps1"
 . "$PSScriptRoot\..\..\..\tools\_build_provider_helpers.ps1"
 
-# LABEL-OVERRIDE: gunCaliber -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
+# LABEL-OVERRIDE: GunCaliber -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: GunMake -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: gunTypeCode -- v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label
 # LABEL-OVERRIDE: SexCode -- v2.14 cosmetic pass, set[]-required on IR.QVC.N (not purely optional), bare label kept (TX_TLETS precedent)
@@ -533,7 +533,7 @@ $gunQuery = [PSCustomObject]@{
             size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
         }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('purposeCode'); targetField = 'CaRequestPurposeCode' }
-        [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('gunCaliber');            targetField = 'GunCaliber' }
+        [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('GunCaliber');            targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';              size = 3;  sourceField = @('GunMake');               targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunSerialNumber';      size = 20; sourceField = @('serialNumber');          targetField = 'GunSerialNumber' }
         [PSCustomObject]@{ name = 'GunTypeCode';          size = 2;  sourceField = @('gunTypeCode');           targetField = 'GunTypeCode' }
@@ -560,7 +560,7 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','serialNumber')
-                any      = @('gunCaliber','GunMake','gunTypeCode')
+                any      = @('GunCaliber','GunMake','gunTypeCode')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -831,7 +831,7 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_OPT'
-        title = 'Search Options'
+        title = 'SEARCH OPTIONS'
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
@@ -841,7 +841,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DL'
-        title = 'Driver License Search by OLN, CII, SSN, "OR" Name'
+        title = 'DRIVER LICENSE SEARCH BY OLN, CII, SSN, "OR" NAME'
         rows  = @(
             @{ id = 'ROW_PER_DL_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
@@ -869,7 +869,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'Driver History Search by OLN, "OR" Name'
+        title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
             @{ id = 'ROW_PER_DH_1'; cols = @('6','4'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
@@ -908,7 +908,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';  node = Sel 'GunMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'GunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
                 @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('3','3','2','2','2'); fields = @(
