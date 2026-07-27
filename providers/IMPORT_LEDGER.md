@@ -24,7 +24,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (archived) | v4.13 | v4.11 relabel + v4.12 consolidation + v4.13 UPPERCASE titles built; all 5 reset — re-import+capture pending |
 | FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.8 (archived) | v7.10 | v7.9 relabel + v7.10 UPPERCASE titles built; all 5 reset — re-import+capture pending |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (archived) | v4.13 | v4.12 relabel + v4.13 UPPERCASE titles + Boat-stolen audit fix built; all 5 reset — re-import+capture pending |
-| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.15 (archived) | v4.16 | v4.15 WAS tenant-complete; v4.16 (UPPERCASE titles) RESET it — re-import+capture pending |
+| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.16 (67 logs) | v4.16 | current (tenant-complete 2026-07-27, UPPERCASE-title re-sweep) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.10 (archived) | v4.11 | v4.10 WAS tenant-complete; v4.11 (UPPERCASE titles) RESET it — re-import+capture pending |
 | CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.18 | last tenant-tested v2.12; v2.13-v2.18 built (v2.18 = UPPERCASE titles + gunCaliber CAD fix), not re-captured |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.1 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22 |

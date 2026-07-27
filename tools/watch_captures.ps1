@@ -136,32 +136,36 @@ if ($preExisting.Count -gt 0) {
     }
 }
 
-$watcher = New-Object System.IO.FileSystemWatcher
-$watcher.Path             = $downloads
-$watcher.Filter           = 'usx_*.json'
-$watcher.NotifyFilter     = [System.IO.NotifyFilters]::FileName -bor [System.IO.NotifyFilters]::LastWrite
-$watcher.EnableRaisingEvents = $true
-
-$recent = @{}   # name -> last-handled ticks, to dedupe the Created+Renamed double-fire
+# ── MAIN LOOP -- POLLING (robust; replaced FileSystemWatcher 2026-07-27) ──────────────
+# FileSystemWatcher only raises events for files created AFTER it starts, can miss fast
+# create->rename drops and the extension's service-worker-bridge downloads, and never fires
+# for a file that lands in the gap between a -Once exit and the next relaunch -- so a capture
+# was silently skipped (NY Article miss, 2026-07-27; Rob: "set the polling time to something
+# more robust or pick up the renamed files"). Polling re-scans Downloads on a fixed interval,
+# so detection is timing-independent: it catches every capture the startup sweep would, and
+# picks up already-downloaded / renamed files regardless of when or how they appeared.
+# Imported files are archived out of Downloads by import_captured_tests, so each is handled once.
+$pollSec = 3
 while ($true) {
-    $ev = $watcher.WaitForChanged([System.IO.WatcherChangeTypes]::Created -bor [System.IO.WatcherChangeTypes]::Renamed, 30000)
-    if ($ev.TimedOut) { continue }
-    $path = Join-Path $downloads $ev.Name
-
-    # Skip relabel's audit sidecars ('<file>.unmatched.json') -- they match the usx_*.json watch
-    # filter but re-importing one yields 0 new and spawns a deeper .unmatched chain (TX v4.8).
-    if ($ev.Name -like '*.unmatched*') { continue }
-
-    # Dedup: Chrome fires Created then Renamed for one download; ignore a repeat within 10s.
-    $now = [DateTime]::UtcNow.Ticks
-    if ($recent.ContainsKey($ev.Name) -and (($now - $recent[$ev.Name]) -lt [TimeSpan]::FromSeconds(10).Ticks)) { continue }
-    $recent[$ev.Name] = $now
-
-    Write-Host "[WATCH] $($ev.Name) detected -- waiting for Chrome to finish writing..." -ForegroundColor Yellow
-    $summary = Import-CaptureFile $path $ev.Name
-    Write-Host "[WATCH] done. Ready for next fetch.`n" -ForegroundColor Green
-    if ($Once -and $summary) {
-        Write-Host "[WATCH-ONCE] INGESTED $($ev.Name) -- $("$summary".Trim())" -ForegroundColor Green
-        exit 0
+    Start-Sleep -Seconds $pollSec
+    # Match the startup-sweep filters exactly: exclude relabel's '.unmatched' audit sidecars
+    # (re-importing one yields 0 new + spawns a deeper .unmatched chain, TX v4.8). Oldest-first
+    # so a burst of captures ingests in arrival order.
+    $files = @(Get-ChildItem -Path $downloads -Filter 'usx_*.json' -File -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notlike '*.unmatched*' } | Sort-Object LastWriteTime)
+    if ($files.Count -eq 0) { continue }
+    # Drop empty ('[]' ~2-4 bytes) captures so a stale empty file doesn't re-trip every poll.
+    foreach ($e in @($files | Where-Object { $_.Length -le 4 })) {
+        Remove-Item $e.FullName -Force -ErrorAction SilentlyContinue
+        Write-Host "[WATCH] skipped empty capture: $($e.Name) ($($e.Length) bytes)" -ForegroundColor DarkYellow
+    }
+    foreach ($f in @($files | Where-Object { $_.Length -gt 4 })) {
+        Write-Host "[WATCH] $($f.Name) detected -- waiting for Chrome to finish writing..." -ForegroundColor Yellow
+        $summary = Import-CaptureFile $f.FullName $f.Name
+        Write-Host "[WATCH] done. Ready for next fetch.`n" -ForegroundColor Green
+        if ($Once -and $summary) {
+            Write-Host "[WATCH-ONCE] INGESTED $($f.Name) -- $("$summary".Trim())" -ForegroundColor Green
+            exit 0
+        }
     }
 }
