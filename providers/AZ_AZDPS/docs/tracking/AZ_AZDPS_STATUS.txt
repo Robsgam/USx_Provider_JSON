@@ -6,6 +6,21 @@ Current: v3.1 | 72P/0F/0W/0LIM | Updated 2026-07-24
 Current version : v3.1
 Provider: AZ_AZDPS
 
+KNOWN SCOPE DEVIATION -- DEFERRED (logged 2026-07-27, DEX-1284 portfolio shadow-query review; Rob: "log only, defer")
+-----------------------------------------------------------------------------------------------------------------
+AZ builds 3 queries that are OUTSIDE its devdoc "Basic Queries Supported:" section (lines 25-296 of
+source/AZ_AZDPS_DEVDOC.txt) -- same class as NY's removed DGRP shadow. To be resolved when AZ is
+revisited (AZ is NOT USx-tenant-tested, so no urgency; no action taken now):
+  1. AzAzdpsDriverLicenseQuery (devdoc @393, "Transactions Supported") is built AS the Driver License,
+     while the Basic-authorized DriverLicenseQuery (@161 -- distinct transaction, has BadgeNumber +
+     ImageIndicator photo path) is NOT built. Decide whether the AzAzdps variant is genuinely required
+     (provider-specific) or the Basic DriverLicenseQuery should be built instead. INVESTIGATE before changing.
+  2. WMPIWantedPersonInquiry  (devdoc @5324, "Transactions Supported" / WMP-I section) -- not Basic.
+  3. WMPIMissingPersonInquiry (devdoc @4800, "Transactions Supported" / WMP-I section) -- not Basic.
+NOTE: these WMP-I queries are described in CLAUDE.md's AZ notable-patterns as a feature; per the
+devdoc-Basic rule (reaffirmed by Rob 2026-07-27) they are scope violations unless explicitly signed off
+(CA_CONTRA_COSTA-style documented override). Do NOT strip without a decision. See portfolio review, this date.
+
 ARCHITECTURE (v2.0)
 --------------------
 Entities: Vehicle, Person, Firearm, Article, Boat

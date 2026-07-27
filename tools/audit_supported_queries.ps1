@@ -55,6 +55,47 @@ function Rec($tag,$msg) {
     }
 }
 
+# Best-effort extraction of the devdoc "Basic Queries Supported" (or "Basic Query Transactions")
+# section: the transaction names it authorizes + the line range. This is the DEVDOC GROUND TRUTH.
+# Rationale (2026-07-27): the SUPPORTED_QUERIES.txt extract is seeded FROM the JSON's own combos,
+# so a shadow query present at seed time survives a human "CONFIRMED" rubber stamp forever (NY's
+# NyNyspinDriverLicenseNameQuery / DGRP did exactly this -- an Expanded-section transaction that
+# was falsely confirmed as Basic). Surfacing the devdoc's own list here gives the reconciler the
+# ground truth to diff against. Advisory only -- does NOT gate (PDF-only devdocs can't be parsed).
+function Get-DevdocBasic($srcDir) {
+    $res = [PSCustomObject]@{ found=$false; file=$null; startLine=0; boundaryLine=0; queries=@(); note='' }
+    if (-not $srcDir -or -not (Test-Path $srcDir)) { $res.note = 'no source/ dir'; return $res }
+    $txt = @(Get-ChildItem -Path $srcDir -Filter '*_DEVDOC.txt' -File -ErrorAction SilentlyContinue)
+    if (-not $txt) { $txt = @(Get-ChildItem -Path $srcDir -Filter '*.txt' -File -ErrorAction SilentlyContinue) }
+    if (-not $txt) {
+        $pdf = @(Get-ChildItem -Path $srcDir -Filter '*.pdf' -File -ErrorAction SilentlyContinue)
+        $res.note = if ($pdf) { "devdoc is PDF-only ($($pdf[0].Name)); run pdftotext to enable Basic-list extraction" } else { 'no devdoc text found' }
+        return $res
+    }
+    $file = $txt[0].FullName
+    $res.file = $file
+    $lines = @(Get-Content $file)
+    $start = -1
+    for ($i=0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '(?i)^\s*Basic Quer(y|ies) (Supported|Transactions)\s*:') { $start = $i; break }
+    }
+    if ($start -lt 0) { $res.note = 'no "Basic Queries Supported:" header found'; return $res }
+    $boundary = $lines.Count
+    for ($i=$start+1; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '(?i)^\s*(Transactions Supported|Expanded Transactions Supported|Expanded Quer(y|ies) Supported|Data-Mined Transactions|Additional Transactions)\s*:') { $boundary = $i; break }
+    }
+    $names = [System.Collections.Generic.List[string]]::new()
+    for ($i=$start+1; $i -lt $boundary; $i++) {
+        $t = $lines[$i].Trim()
+        if ($t -match '^[A-Za-z][A-Za-z0-9]*(Query|Inquiry)$') { [void]$names.Add($t) }
+    }
+    $res.found = $true
+    $res.startLine = $start + 1      # 1-based, for human cross-reference
+    $res.boundaryLine = $boundary + 1
+    $res.queries = @($names | Sort-Object -Unique)
+    return $res
+}
+
 Emit "================================================================"
 Emit "  SUPPORTED-QUERY (DEVDOC) AUDIT -- $provider"
 Emit "================================================================"
@@ -75,6 +116,11 @@ foreach ($q in $qidms) {
     }
 }
 
+# ── Devdoc ground truth: the "Basic Queries Supported" list the extract must be reconciled
+#    AGAINST (not the JSON it was seeded from). Advisory/reference only. ──
+$srcDir = Join-Path $jsonDir 'source'
+$devdoc = Get-DevdocBasic $srcDir
+
 # ── Auto-write a PROVISIONAL template if the extract is absent ──
 if (-not (Test-Path $extractFile)) {
     $tmpl = [System.Collections.Generic.List[string]]::new()
@@ -85,6 +131,21 @@ if (-not (Test-Path $extractFile)) {
     $tmpl.Add("#   - add any devdoc-supported query intentionally not built (document as a skip)")
     $tmpl.Add("# Then change STATUS to CONFIRMED to turn this into a hard gate.")
     $tmpl.Add("# Format: <QueryLabel> | <PrimaryFieldReference>")
+    $tmpl.Add("#")
+    if ($devdoc.found) {
+        $tmpl.Add("# ---- DEVDOC GROUND TRUTH (auto-extracted -- reconcile the lines below AGAINST THIS) ----")
+        $tmpl.Add("# $([System.IO.Path]::GetFileName($devdoc.file)) 'Basic Queries Supported' section, lines $($devdoc.startLine)-$($devdoc.boundaryLine):")
+        if ($devdoc.queries.Count) {
+            foreach ($q in $devdoc.queries) { $tmpl.Add("#     $q") }
+        } else {
+            $tmpl.Add("#     (NONE listed -- devdoc authorizes no Basic queries)")
+        }
+        $tmpl.Add("# A built query whose transaction name is NOT in the list above is a SHADOW / scope")
+        $tmpl.Add("# violation (e.g. NY's NyNyspinDriverLicenseNameQuery was an Expanded-section transaction).")
+        $tmpl.Add("# ---------------------------------------------------------------------------------------")
+    } else {
+        $tmpl.Add("# [devdoc Basic list NOT auto-extracted: $($devdoc.note) -- verify manually against the devdoc]")
+    }
     $tmpl.Add("")
     foreach ($p in ($jsonPairs | Sort-Object query, ident -Unique)) {
         $tmpl.Add("$($p.query) | $($p.ident)")
@@ -111,6 +172,11 @@ foreach ($l in $raw) {
 }
 $gated = ($status -eq 'CONFIRMED')
 Emit "Extract STATUS: $status  ($(if ($gated) {'GATING -- mismatches FAIL'} else {'PROVISIONAL -- mismatches INFO until devdoc sign-off'}))"
+if ($devdoc.found) {
+    Emit "Devdoc 'Basic Queries Supported' ($([System.IO.Path]::GetFileName($devdoc.file)), lines $($devdoc.startLine)-$($devdoc.boundaryLine)): $(if ($devdoc.queries.Count) { ($devdoc.queries -join ', ') } else { '(none)' })"
+} else {
+    Emit "Devdoc Basic list: not auto-extracted ($($devdoc.note))"
+}
 Emit ""
 
 function Key($q,$i) { "$($q.ToLower())|$($i.ToLower())" }

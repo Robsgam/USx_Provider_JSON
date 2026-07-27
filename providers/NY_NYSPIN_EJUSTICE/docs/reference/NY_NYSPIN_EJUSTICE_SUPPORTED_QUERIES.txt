@@ -1,15 +1,25 @@
-STATUS: CONFIRMED (devdoc-verified 2026-07-13)
-# NY_NYSPIN_EJUSTICE supported queries -- DERIVED FROM JSON COMBOS, then CONFIRMED against source/NY_NYSPIN_DEVDOC.txt 'Basic Queries Supported' (7 query labels incl. DL Name Search; Boat has no devdoc Name combo -- Hull/Reg/State only; 0 unbuilt combos).
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED (devdoc-verified 2026-07-27)
+# NY_NYSPIN_EJUSTICE supported queries -- reconciled against source/NY_NYSPIN_DEVDOC.txt
+# 'Basic Queries Supported' section (lines 17-141): EXACTLY 6 queries.
+# CORRECTION (2026-07-27, DEX-1284): the prior "CONFIRMED ... 7 labels incl. DL Name Search"
+# was a FALSE confirmation. "DL Name Search" is NyNyspinDriverLicenseNameQuery, which lives under
+# "Expanded Transactions Supported" (devdoc line 844) -- NOT Basic. It was a shadow of the DL
+# Name+DOB+Sex path (DLICN) and was removed from the build at v4.11. Its line is deleted below.
 # Format: <QueryLabel> | <PrimaryFieldReference>
+#
+# ---- DEVDOC GROUND TRUTH (NY_NYSPIN_DEVDOC.txt 'Basic Queries Supported', lines 17-141) ----
+#     ArticleSingleQuery
+#     BoatQuery
+#     DriverHistoryQuery
+#     DriverLicenseQuery
+#     GunQuery
+#     VehicleRegistrationQuery
+# A built query whose transaction name is NOT in the list above is a SHADOW / scope violation.
+# --------------------------------------------------------------------------------------------
 
 Article | ArticleSerialNumber
 Boat | BoatHullIdNumber
 Boat | RegistrationNumber
-DL Name Search | Name
 Driver History | Name
 Driver History | OperatorLicenseNumber
 Driver License | Name
