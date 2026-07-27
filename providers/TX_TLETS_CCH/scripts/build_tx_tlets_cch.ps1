@@ -1,5 +1,5 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.3
-# BASE-SYNC: TX_TLETS v4.11   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.12   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.5 (2026-07-27, DEX-1284 shadow correction, lockstep w/ TX_TLETS v4.9 + a CCH-only metadata fix):
 #   (base-6) removed QVLicensePlateNumber + QVVehicleIdentificationNumber (ungated subset-shadows,
 #   platform auto-fired -- see TX_TLETS v4.9); KEPT regionId (optional combination field) moved to the
@@ -92,7 +92,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.7"
+    [string]$Version = "1.8"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -215,19 +215,19 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'; rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' } }
         [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate' }
         [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress'; rule = [PSCustomObject]@{ function = 'GetUserProfileSingleValueRuleHandler'; arguments = @('email') } }
-        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicatorDH'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'Name'; rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',',' ',' ') }; size = 30; sourceField = @('NameLastDH','NameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name' }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'ReasonCode'; size = 1; sourceField = @('reasonCode'); targetField = 'ReasonCode' }
+        [PSCustomObject]@{ name = 'ReasonCode'; size = 1; sourceField = @('reasonCodeDH'); targetField = 'ReasonCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # KQName -- name path. Image=Y + Reason=C defaults ride; Email in any[] (typed now, handler later). OLN>Name guardrail.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = @('Attention','ImageIndicator','emailAddress','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','RegistrationState'); defaults = $imgDefsDH; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = @('Attention','ImageIndicatorDH','emailAddress','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCodeDH','RegistrationStateDH'); defaults = $imgDefsDH; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
         # KQOLN -- OLN path (catchall). Image=Y + Reason=C defaults ride; Email in any[].
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('Attention','ImageIndicator','emailAddress','purposeCodeDH','reasonCode','RegistrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('Attention','ImageIndicatorDH','emailAddress','purposeCodeDH','reasonCodeDH','RegistrationStateDH'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
     )
     description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). Image-variant split merged (set[] does not gate firing); ImageIndicator=Y default triggers Reason=C, all in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165. DH-suffix; OLN>Name guardrail on KQName; Attention auto-populated (gate-feeder).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
@@ -567,27 +567,16 @@ $vehicleForm = [PSCustomObject]@{
 
 # Person -- base 3 cards (SEARCH OPTIONS/DRIVER LICENSE/DRIVER HISTORY, ported from TX_TLETS
 # main) + 3 CCH cards (OPT/PERSON/RECORD, CCH-suffixed, unchanged)
+# Person base = 2 cards (v1.8, lockstep w/ TX_TLETS main v4.12): the SEARCH OPTIONS card folded away
+# -- State / NCIC Image / Reason Code options duplicated onto the bottom row of BOTH DL and DH (shared
+# fieldIds on DL, DH-suffixed on DH); the hidden EmailAddress feeder (RND-57165, separate eng team)
+# stays a single shared hidden field on DL, untouched. Plus the 3 CCH cards (unchanged). See TX_TLETS
+# main v4.12.
+# LABEL-OVERRIDE: reasonCode -- bare "Reason Code" (initialValue=C), officer-editable (TX convention).
+# LABEL-OVERRIDE: reasonCodeDH -- DH copy of reasonCode, same bare "Reason Code".
+# LABEL-OVERRIDE: RegistrationState -- bare "State", TX default via initialValue.
+# LABEL-OVERRIDE: RegistrationStateDH -- DH copy of RegistrationState, bare "State", TX default via initialValue.
 $perLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_PER_OPT'
-        title = 'SEARCH OPTIONS'
-        rows  = @(
-            # EmailAddress is auto-populated via GetUserProfileSingleValueRuleHandler (RND-57165)
-            # -- hidden gate-feeder makes 'emailAddress' visible to the platform so the handler's
-            # sourceField resolves and the officer's own signed-in email enters the serialization
-            # pool. CJIS policy requires the actual requestor's email, not a manually-typed value.
-            @{ id = 'ROW_PER_OE'; cols = @('12'); fields = @(
-                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_OE' @{ initialValue = 'X' } }
-            )}
-            # LABEL-OVERRIDE: reasonCode -- merely-defaulted (initialValue=C), officer-editable, bare label (TX_TLETS main convention).
-            # LABEL-OVERRIDE: RegistrationState -- merely-defaulted (initialValue=TX), officer-editable, bare label (TX_TLETS main convention).
-            @{ id = 'ROW_PER_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
-                @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_O1' @{ initialValue = 'C' } }
-            )}
-        )
-    }
     @{
         id    = 'CARD_PER_DL'
         title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
@@ -611,6 +600,16 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_N2' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
+            )}
+            # Search options as the DL card's last row (folded from OPTIONS). Shared fieldIds + the
+            # single hidden EmailAddress feeder (shared by DL + DH).
+            @{ id = 'ROW_PER_DL_OPT'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_DL_OPT' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_OPT' }
+                @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_DL_OPT' @{ initialValue = 'C' } }
+            )}
+            @{ id = 'ROW_PER_DL_OE'; cols = @('12'); fields = @(
+                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_DL_OE' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -640,6 +639,13 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DHN2'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input';    node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DHN2' }
                 @{ id = 'SexCodeDH_Input';      node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DHN2' }
+            )}
+            # Search options as the DH card's last row (DH-suffixed copies -- self-contained DH). Email
+            # NOT duplicated (single shared hidden feeder on DL serves both; RND-57165 handler untouched).
+            @{ id = 'ROW_PER_DH_OPT'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_DH_OPT' }
+                @{ id = 'ImageIndicatorDH_Input';    node = Sel 'ImageIndicatorDH' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DH_OPT' }
+                @{ id = 'reasonCodeDH_Input';        node = Inp 'reasonCodeDH' 'Reason Code' '1' 'ROW_PER_DH_OPT' @{ initialValue = 'C' } }
             )}
         )
     }

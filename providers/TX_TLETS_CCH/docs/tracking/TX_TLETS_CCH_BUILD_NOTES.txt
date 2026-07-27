@@ -2,6 +2,18 @@
   BUILD NOTES: TX_TLETS_CCH
   Created: 2026-06-09
 ================================================================
+v1.8  2026-07-27  Person 2-card fold (lockstep w/ TX_TLETS v4.12)
+  CHANGED: Mirrored the base Person 2-card fold from TX_TLETS main v4.12. The base SEARCH OPTIONS
+    card was folded away -- State/NCIC Image/Reason Code options duplicated onto the bottom row of
+    BOTH base DL and DH cards (shared fieldIds on DL, DH-suffixed RegistrationStateDH/ImageIndicatorDH/
+    reasonCodeDH on DH; DriverHistoryQuery re-sourced to them, wire targetFields unchanged). The
+    single hidden EmailAddress feeder stays shared on the DL card (RND-57165 handler untouched).
+    Base Person is now 2 cards + the 3 CCH cards (AQ/AR/FQ/IQ/QH/QR/QWI/ZR transactions + CCH-suffixed
+    fields UNTOUCHED). BASE-SYNC -> v4.12.
+  REASON: Base<->variant lockstep -- TX_TLETS v4.12 Person fold propagates to CCH in the same pass.
+    verify_build 16P/0W/0F. Layout + DH-sourcing change (wire-identical). ALL base entities + CCH
+    reset at v1.8. NOT tenant-tested (stub).
+
 v1.7  2026-07-27  UPPERCASE card titles + QH-description audit fix (lockstep w/ TX_TLETS v4.11)
   CHANGED: (a) All card titles UPPERCASED, wording unchanged (base-6 titles + the 3 CCH cards).
     New global convention (BUILD_RULES Section 11). (b) AUDIT FIX: the QH QIDM `description` string

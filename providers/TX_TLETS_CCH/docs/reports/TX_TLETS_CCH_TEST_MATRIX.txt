@@ -1,4 +1,4 @@
-TX_TLETS_CCH v1.7 -- TEST MATRIX
+TX_TLETS_CCH v1.8 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -13,19 +13,19 @@ Vehicle (1 card, 10 fields):
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: stickerNumber [Inp 10], financialResponsibilityType [Inp E, 1], regionId [Inp 4]
 
-Person (6 cards, 53 fields):
-  CARD_PER_OPT (SEARCH OPTIONS):
-    emailAddress [Inp X, 80]
-    RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
+Person (5 cards, 56 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30], messageKey [Inp 3]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 4: RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
+    ROW 5: emailAddress [Inp X, 80]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: Attention [Inp X, 30]
     ROW 2: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 3: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 5: RegistrationStateDH [Sel STATE, TX], ImageIndicatorDH [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCodeDH [Inp C, 1]
   CARD_PER_CCH_OPT (CCH OPTIONS (RESTRICTED -- CRIMINAL HISTORY)):
     attentionCCH [Inp 30], inquiryReasonCCH [Inp 75], purposeCodeCCH [Inp 1]
   CARD_PER_CCH_PERSON (CCH PERSON / CRIMINAL HISTORY (RESTRICTED)):
@@ -81,7 +81,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (31 tests -- 6 cards, 21 combos -- CCHCriminalHistoryAQ/CCHCriminalHistoryAR/CCHCriminalHistoryFQ/CCHCriminalHistoryIQ/CCHCriminalHistoryQH/CCHCriminalHistoryQR/CCHCriminalHistoryQWI/CCHCriminalHistoryZR co-fires with DL)
+ENTITY 1: PERSON (31 tests -- 5 cards, 21 combos -- CCHCriminalHistoryAQ/CCHCriminalHistoryAR/CCHCriminalHistoryFQ/CCHCriminalHistoryIQ/CCHCriminalHistoryQH/CCHCriminalHistoryQR/CCHCriminalHistoryQWI/CCHCriminalHistoryZR co-fires with DL)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -139,11 +139,11 @@ ENTITY 1: PERSON (31 tests -- 6 cards, 21 combos -- CCHCriminalHistoryAQ/CCHCrim
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
 23  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQName)
-24  Person      KQ+Name            + Attention, ImageIndicator, emailAddress, nameMiddleDH [    ]
+24  Person      KQ+Name            + Attention, ImageIndicatorDH, emailAddress, nameMiddleDH [    ]
               Expected: any[] fields present in XML output.
 25  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQOLN)
-26  Person      KQ+OLN             + Attention, ImageIndicator, emailAddress, purposeCodeDH [    ]
+26  Person      KQ+OLN             + Attention, ImageIndicatorDH, emailAddress, purposeCodeDH [    ]
               Expected: any[] fields present in XML output.
 27  Person      Guardrail: DQOLN>DQName  OperatorLicenseNumber=D999888777, Sex... [    ]
               Expected: DriverLicenseQuery fires (DQOLN). SexCode+DOB+LastName+FirstName absent from XML.
@@ -275,4 +275,4 @@ COMBO COVERAGE (35/35):
   CCHCriminalHistoryQWIQuery: 3/3 -- T18(QW+I.DOB co-fire), T19(QW+I.MISC co-fire), T20(QW+I.SSN co-fire)
   CCHCriminalHistoryZRQuery: 2/2 -- T21(ZR.FBI+ZR.FBI co-fire), T22(ZR.SID+ZR.SID co-fire)
 
-IMPORT FILE: TX_TLETS_CCH_v1.7.json
+IMPORT FILE: TX_TLETS_CCH_v1.8.json

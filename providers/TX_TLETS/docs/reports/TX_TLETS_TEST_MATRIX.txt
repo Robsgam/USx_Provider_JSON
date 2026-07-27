@@ -1,4 +1,4 @@
-TX_TLETS v4.11 -- TEST MATRIX
+TX_TLETS v4.12 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -13,19 +13,19 @@ Vehicle (1 card, 10 fields):
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: stickerNumber [Inp 10], financialResponsibilityType [Inp E, 1], regionId [Inp 4]
 
-Person (3 cards, 21 fields):
-  CARD_PER_OPT (SEARCH OPTIONS):
-    emailAddress [Inp X, 80]
-    RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
+Person (2 cards, 24 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30], messageKey [Inp 3]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 4: RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
+    ROW 5: emailAddress [Inp X, 80]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: Attention [Inp X, 30]
     ROW 2: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
     ROW 3: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 4: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 5: RegistrationStateDH [Sel STATE, TX], ImageIndicatorDH [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCodeDH [Inp C, 1]
 
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER):
@@ -60,7 +60,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (14 tests -- 3 cards, 5 combos)
+ENTITY 1: PERSON (14 tests -- 2 cards, 5 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -86,11 +86,11 @@ ENTITY 1: PERSON (14 tests -- 3 cards, 5 combos)
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
  7  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQName)
- 8  Person      KQ+Name            + Attention, ImageIndicator, emailAddress, nameMiddleDH [    ]
+ 8  Person      KQ+Name            + Attention, ImageIndicatorDH, emailAddress, nameMiddleDH [    ]
               Expected: any[] fields present in XML output.
  9  Person      KQ+OLN             OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQOLN)
-10  Person      KQ+OLN             + Attention, ImageIndicator, emailAddress, purposeCodeDH [    ]
+10  Person      KQ+OLN             + Attention, ImageIndicatorDH, emailAddress, purposeCodeDH [    ]
               Expected: any[] fields present in XML output.
 11  Person      Guardrail: DQOLN>DQName  OperatorLicenseNumber=D999888777, Sex... [    ]
               Expected: DriverLicenseQuery fires (DQOLN). SexCode+DOB+LastName+FirstName absent from XML.
@@ -212,4 +212,4 @@ COMBO COVERAGE (19/19):
   ArticleSingleQuery: 2/2 -- T45(Serial), T47(NCIC)
   BoatQuery: 5/5 -- T27(BQ+Hull), T29(QB+Hull), T31(BQ+Reg), T33(QB+Reg), T35(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.11.json
+IMPORT FILE: TX_TLETS_v4.12.json

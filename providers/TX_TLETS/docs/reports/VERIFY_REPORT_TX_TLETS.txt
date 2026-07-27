@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.11.json
-  Generated: 2026-07-27 17:12
+  Source: TX_TLETS_v4.12.json
+  Generated: 2026-07-27 19:00
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_v4.11
+ POST-BUILD VERIFICATION: TX_TLETS_v4.12
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 31 [financialResponsibilityType, LicensePlateTypeCode, LicensePlateYear, regionId, stickerNumber, VehicleMakeCode, vehicleYear, emailAddress, ImageIndicator, messageKey, nameMiddle, nameSuffix, reasonCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, GunCaliber, GunMake, serialNumber, NCICNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 34 [financialResponsibilityType, LicensePlateTypeCode, LicensePlateYear, regionId, stickerNumber, VehicleMakeCode, vehicleYear, emailAddress, ImageIndicator, messageKey, nameMiddle, nameSuffix, reasonCode, Attention, BirthDateDH, ImageIndicatorDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, reasonCodeDH, SexCodeDH, RegistrationStateDH, GunCaliber, GunMake, serialNumber, NCICNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -40,7 +40,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (39) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (42) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -55,7 +55,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (Rob's explicit v4.4 call while evaluating queries)
+  [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (bare "State", TX default via initialValue (Rob v4.4).)
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -64,19 +64,24 @@ POST-BUILD VERIFICATION
   [INFO] Field 'nameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'RegistrationStateDH' label='State' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'ImageIndicatorDH' label='NCIC Image' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'reasonCodeDH' label='Reason Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'regionId' (any[]-only) label='Region ID' -- manual label override accepted (any[]-only optional combination field. KEPT after the QV combo)
   [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare "Vehicle Year" per lean pass (any[] optional))
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare "Vehicle Make" per lean pass (any[] optional))
   [INFO] Field 'nameMiddle' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per lean pass (any[] optional))
   [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per lean pass (any[] optional))
-  [INFO] Field 'reasonCode' (any[]-only) label='Reason Code' -- manual label override accepted (merely-defaulted (initialValue=C), officer-editable, bare)
+  [INFO] Field 'reasonCode' (any[]-only) label='Reason Code' -- manual label override accepted (merely-defaulted (initialValue=C), officer-editable bare label (Rob v4.3/v4.4).)
   [INFO] Field 'messageKey' (any[]-only) label='Message Key' -- manual label override accepted (bare "Message Key" per lean pass (any[]-only in CPL combo))
   [INFO] Field 'nameMiddleDH' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per lean pass (any[] optional))
   [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per lean pass (any[] optional))
+  [INFO] Field 'reasonCodeDH' (any[]-only) label='Reason Code' -- manual label override accepted (DH copy of reasonCode, same bare "Reason Code".)
+  [INFO] Field 'RegistrationStateDH' (any[]-only) label='State' -- manual label override accepted (DH copy of RegistrationState, bare "State", TX default via initialValue.)
   [INFO] Field 'GunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare "Caliber" per lean pass (any[] optional))
   [INFO] Field 'GunMake' (any[]-only) label='Gun Make' -- manual label override accepted (bare "Gun Make" per lean pass (any[] optional))
   [INFO] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted ("Stolen Check" per lean pass (any[] optional))
-  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (45 fields scanned) (11 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

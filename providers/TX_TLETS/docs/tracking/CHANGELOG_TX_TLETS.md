@@ -2,14 +2,24 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.11** | Generated: 2026-07-27
+Current: **v4.12** | Generated: 2026-07-27
 
 ---
 
-## v4.11 -- 2026-07-27 -- Pipeline rebuild
+## v4.12 -- 2026-07-27 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v4.11 -- 2026-07-27 -- UPPERCASE card titles (Rob global decision, NO functional change)
+
+**CHANGED:** All card titles UPPERCASED, wording unchanged (e.g. "Driver License Search by OLN,
+  \"OR\" Name" -> "DRIVER LICENSE SEARCH BY OLN, \"OR\" NAME"; "Firearm Search by Serial Number,  
+  \"OR\" NCIC Number" -> all-caps). New global convention (BUILD_RULES Section 11). Mechanical  
+  uppercase transform of every card `title` string; no wording/field/combo/QIDM change.  
+**REASON:** Rob -- "everything needs to be upper case" (card-title standardization, chosen form =
+  uppercase current wording). Title-only. verify_build clean. ALL 5 ENTITIES RESET at v4.11  
+  (block by version). CCH rebuilt in lockstep (v1.7, BASE-SYNC -> v4.11). NOT yet re-tested.  
 
 ## v4.10 -- 2026-07-27 -- Person DL top-row -- OLN alone on the top line (direct Rob feedback)
 

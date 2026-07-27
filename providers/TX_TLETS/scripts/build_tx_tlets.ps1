@@ -1,6 +1,16 @@
 # build_tx_tlets.ps1  -- TX_TLETS v4.7
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
 # 19 CommSys combos: 5 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v4.12 (2026-07-27, direct Rob feedback -- Person 2-card fold, layout+DH-sourcing change): folded
+#   the standalone SEARCH OPTIONS card away -- Person is now 2 cards (DL + DH), with the State/NCIC
+#   Image/Reason Code options DUPLICATED onto the BOTTOM row of EACH card. DL keeps the shared
+#   RegistrationState/ImageIndicator/reasonCode fieldIds (DL QIDM unchanged). DH gets DH-suffixed
+#   copies (RegistrationStateDH/ImageIndicatorDH/reasonCodeDH) -- unique fieldIds, self-contained DH
+#   like NY/HI; the DriverHistoryQuery attributes + KQName/KQOLN any[] were re-sourced to the
+#   DH-suffixed names (attribute names + wire targetFields UNCHANGED, so the wire request is
+#   identical). The hidden EmailAddress auto-feeder (RND-57165, separate eng team) stays a SINGLE
+#   shared hidden field on the DL card -- both QIDMs still source 'emailAddress'; NOT duplicated,
+#   handler UNTOUCHED. All 5 entities reset at v4.12. CCH rebuilt in lockstep (BASE-SYNC -> v4.12).
 # v4.10 (2026-07-27, direct Rob feedback -- Person DL top-row, NO functional change): the DL card
 #   had OLN + Date of Birth + Sex lumped on one row (6/3/3). Rob: "keep it three lines like the DH
 #   card with just OLN on top line." Restructured CARD_PER_DL to mirror CARD_PER_DH's 3-content-line
@@ -159,7 +169,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.11"
+    [string]$Version = "4.12"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -287,19 +297,19 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'; rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' } }
         [PSCustomObject]@{ name = 'BirthDate'; rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }; size = 8; sourceField = @('BirthDateDH'); targetField = 'BirthDate' }
         [PSCustomObject]@{ name = 'EmailAddress'; size = 80; sourceField = @('emailAddress'); targetField = 'EmailAddress'; rule = [PSCustomObject]@{ function = 'GetUserProfileSingleValueRuleHandler'; arguments = @('email') } }
-        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
+        [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicatorDH'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{ name = 'Name'; rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(',',' ',' ') }; size = 30; sourceField = @('NameLastDH','NameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name' }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
-        [PSCustomObject]@{ name = 'ReasonCode'; size = 1; sourceField = @('reasonCode'); targetField = 'ReasonCode' }
+        [PSCustomObject]@{ name = 'ReasonCode'; size = 1; sourceField = @('reasonCodeDH'); targetField = 'ReasonCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         # KQName -- name path. Image=Y + Reason=C defaults ride; Email in any[] (typed now, handler later). OLN>Name guardrail.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = @('Attention','ImageIndicator','emailAddress','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCode','RegistrationState'); defaults = $imgDefsDH; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = @('Attention','ImageIndicatorDH','emailAddress','nameMiddleDH','nameSuffixDH','purposeCodeDH','reasonCodeDH','RegistrationStateDH'); defaults = $imgDefsDH; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'KQName'; state = 'In/Out' }
         # KQOLN -- OLN path (catchall). Image=Y + Reason=C defaults ride; Email in any[].
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('Attention','ImageIndicator','emailAddress','purposeCodeDH','reasonCode','RegistrationState'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('Attention','ImageIndicatorDH','emailAddress','purposeCodeDH','reasonCodeDH','RegistrationStateDH'); defaults = $imgDefsDH }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'KQOLN'; state = 'In/Out' }
     )
     description = 'DriverHistoryQuery -- 2 combos (KQName, KQOLN). v4.0: image-variant split merged (set[] does not gate firing); ImageIndicator=Y default triggers Reason=C, all in any[]. v4.1: EmailAddress auto-populated (GetUserProfileSingleValueRuleHandler, gate-feeder), RND-57165. DH-suffix; OLN>Name guardrail on KQName; Attention auto-populated (gate-feeder).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_DriverHistoryQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; queriesToDeselect = @('DriverLicenseQuery'); provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'DriverHistoryQuery'; queryLabel = 'Driver History'; targetEntity = 'Person'
 }
@@ -452,32 +462,20 @@ $vehicleForm = [PSCustomObject]@{
 # this shared card). Giving DH its own copies of all four would mean duplicating the
 # email-automation handler wiring too, a materially bigger and riskier change than HI's
 # single-field case -- left for a dedicated future pass, not bundled into this labeling rebuild.
+# Person = 2 cards (v4.12, Rob 2026-07-27): the standalone SEARCH OPTIONS card was FOLDED AWAY --
+# its State / NCIC Image / Reason Code options are now duplicated onto the BOTTOM row of BOTH the
+# DRIVER LICENSE and DRIVER HISTORY cards. DL keeps the shared RegistrationState/ImageIndicator/
+# reasonCode fieldIds (DL QIDM sources them). DH gets DH-suffixed copies (RegistrationStateDH/
+# ImageIndicatorDH/reasonCodeDH -- unique fieldIds, self-contained DH like NY/HI; DH QIDM re-sourced
+# to them, wire targetFields unchanged). The hidden EmailAddress auto-feeder (RND-57165 handler,
+# owned by a separate eng team -- do NOT modify) stays a SINGLE shared hidden field on the DL card;
+# both DL and DH QIDMs still source 'emailAddress' from it, so it is NOT duplicated and the handler
+# is untouched.
+# LABEL-OVERRIDE: reasonCode -- merely-defaulted (initialValue=C), officer-editable bare label (Rob v4.3/v4.4).
+# LABEL-OVERRIDE: reasonCodeDH -- DH copy of reasonCode, same bare "Reason Code".
+# LABEL-OVERRIDE: RegistrationState -- bare "State", TX default via initialValue (Rob v4.4).
+# LABEL-OVERRIDE: RegistrationStateDH -- DH copy of RegistrationState, bare "State", TX default via initialValue.
 $perLayout = MakeLayouts @(
-    @{
-        id    = 'CARD_PER_OPT'
-        title = 'SEARCH OPTIONS'
-        rows  = @(
-            # EmailAddress is auto-populated via GetUserProfileSingleValueRuleHandler (RND-57165)
-            # -- hidden gate-feeder makes 'emailAddress' visible to the platform so the handler's
-            # sourceField resolves and the officer's own signed-in email enters the serialization
-            # pool. CJIS policy requires the actual requestor's email, not a manually-typed value.
-            @{ id = 'ROW_PER_OE'; cols = @('12'); fields = @(
-                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_OE' @{ initialValue = 'X' } }
-            )}
-            # LABEL-OVERRIDE: reasonCode -- merely-defaulted (initialValue=C), officer-editable, bare
-            # label is Rob's explicit v4.3/v4.4 call -- see feedback_no_auto_on_defaulted_fields; do
-            # not "fix" this to "(auto)" or "(optional)" in a future automated labeling pass.
-            # LABEL-OVERRIDE: RegistrationState -- Rob's explicit v4.4 call while evaluating queries
-            # live; default TX still set via initialValue, "(change for out-of-state)" phrasing
-            # intentionally dropped for now. Revisit if/when query evaluation surfaces a real need
-            # for the OOS routing hint text (not purely cosmetic at that point).
-            @{ id = 'ROW_PER_O1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_O1' }
-                @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_O1' @{ initialValue = 'C' } }
-            )}
-        )
-    }
     @{
         id    = 'CARD_PER_DL'
         title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
@@ -505,6 +503,17 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_N2' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
+            )}
+            # Search options as the DL card's last row (folded from the retired OPTIONS card). Shared
+            # fieldIds -- the DriverLicenseQuery combos source these. Hidden EmailAddress feeder lives
+            # here (shared by DL + DH; the RND-57165 handler resolves the officer's signed-in email).
+            @{ id = 'ROW_PER_DL_OPT'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_DL_OPT' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_OPT' }
+                @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_DL_OPT' @{ initialValue = 'C' } }
+            )}
+            @{ id = 'ROW_PER_DL_OE'; cols = @('12'); fields = @(
+                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_DL_OE' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -539,11 +548,20 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDateDH_Input';    node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DHN2' }
                 @{ id = 'SexCodeDH_Input';      node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DHN2' }
             )}
+            # Search options as the DH card's last row (DH-suffixed copies -- self-contained DH, unique
+            # fieldIds; the DriverHistoryQuery combos source these DH-suffixed names, wire unchanged).
+            # EmailAddress is NOT duplicated here: the single shared hidden feeder on the DL card serves
+            # both QIDMs (DH QIDM still sources 'emailAddress'), so the RND-57165 handler stays untouched.
+            @{ id = 'ROW_PER_DH_OPT'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_DH_OPT' }
+                @{ id = 'ImageIndicatorDH_Input';    node = Sel 'ImageIndicatorDH' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DH_OPT' }
+                @{ id = 'reasonCodeDH_Input';        node = Inp 'reasonCodeDH' 'Reason Code' '1' 'ROW_PER_DH_OPT' @{ initialValue = 'C' } }
+            )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- 3 cards: SEARCH OPTIONS (State + Image + ReasonCode + Email) + DRIVER LICENSE + DRIVER HISTORY (DH-suffix).'
+    description  = 'Person queries -- 2 cards (v4.12, OPTIONS folded in): DRIVER LICENSE + DRIVER HISTORY, each with State/Image/Reason options as its last row (DH-suffixed on DH); single shared hidden EmailAddress feeder on DL.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
