@@ -210,33 +210,33 @@ v3.4 CHANGES (from v3.3):
   Fields: RegistrationNumber, BoatHullIdNumber, NCICNumber,
           RegistrationState, ImageIndicator, RelatedHitSearchIndicator
 
-  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [PENDING]
+  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [CONFIRMED]
     keyReference: BQRegistrationNumber
     set: RegistrationNumber, RegistrationState
     CONFIRMED: T21 2026-06-17. RegNum=FL1234AB + State=Texas. XML: RegistrationNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y.
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
 
-  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [PENDING]
+  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [CONFIRMED]
     keyReference: BQBoatHullIdNumber
     set: BoatHullIdNumber, RegistrationState
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
     CONFIRMED: T19 2026-06-17. HullId=FL1234AB56H7 + State=Texas. XML: BoatHullIdNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y.
 
-  QB Reg -- NCIC Stolen Boat (Reg, any state) [PENDING]
+  QB Reg -- NCIC Stolen Boat (Reg, any state) [CONFIRMED]
     keyReference: QBRegistrationNumber
     set: RegistrationNumber
     any: BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB Hull -- NCIC Stolen Boat (Hull, any state) [PENDING]
+  QB Hull -- NCIC Stolen Boat (Hull, any state) [CONFIRMED]
     keyReference: QBBoatHullIdNumber
     set: BoatHullIdNumber
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB NCIC -- NCIC Stolen Boat (NCIC Number) [PENDING]
+  QB NCIC -- NCIC Stolen Boat (NCIC Number) [CONFIRMED]
     keyReference: QBNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
