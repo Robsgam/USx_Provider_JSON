@@ -76,9 +76,15 @@
 #   "Driver License/History Search by OLN, \"OR\" Name". Bare any[] fields carry LABEL-OVERRIDE tags
 #   (Rob's explicit cosmetic call). Label/title-only -- no combo/QIDM/routing/fieldId/default change.
 #   All 5 entities re-test from T1.
+# v4.13 (2026-07-27, DEX-1284 layout balance -- direct Rob feedback, NO functional change): Vehicle
+#   card rebalanced to a uniform 4/4/4 grid so fields align left-to-right AND top-to-bottom --
+#   ROW_VEH_1 4/2/2->4/4/4 (was only filling 8 of 12 cols, Type/Year cramped), ROW_VEH_2 6/3/3->4/4/4
+#   (VIN 6->4), ROW_VEH_3 6/6->4/4 (State 6->4; a 2-char code no longer sits in a half-row box). New
+#   GLOBAL field-size/placement standard recorded in BUILD_RULES Section 11. Layout-only -- no
+#   label/combo/QIDM/routing/fieldId/default change. All 5 entities re-test from T1.
 
 param(
-    [string]$Version = "4.12"
+    [string]$Version = "4.13"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -575,20 +581,20 @@ $vehLayout = MakeLayouts @(
             # any[] optional -- CHECK 15 Rule 3's "(optional)" qualifier is not wanted here.
             # LABEL-OVERRIDE: LicensePlateYear -- Rob's explicit exception; bare "Plate Year" intended
             # (initialValue=current year, officer-editable, any[] optional).
-            @{ id = 'ROW_VEH_1'; cols = @('4','2','2'); fields = @(
+            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
+            @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'VehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
-            # Last row (Rob-confirmed 2026-07-17): State + Image share the final row, each with
-            # half the row's width -- neither crammed with the identifier fields nor stranded
-            # alone on its own line.
-            @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
+            # Options row (v4.13): State + Image on the uniform 4/4/4 grid (each 4 wide, aligned
+            # under the Plate#/VIN and Type/Make columns above) -- content-sized, not a half-row box
+            # for a 2-char State code.
+            @{ id = 'ROW_VEH_3'; cols = @('4','4'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'N' } 'ROW_VEH_3' }
             )}

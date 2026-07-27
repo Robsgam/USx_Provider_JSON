@@ -863,6 +863,17 @@ See also:
     "NCIC Image" as a canonical label (its $canonicalBareLabels allowlist), so it needs NO
     "(optional)" qualifier and NO LABEL-OVERRIDE tag despite being an any[]-only field.
 
+    FIELD SIZE & PLACEMENT convention (global, DEX-1284, 2026-07-27):
+    Default each card to a UNIFORM column grid -- every row's templateColumns shares the same
+    boundaries so fields line up left-to-right AND top-to-bottom (typically 4/4/4 for three-across
+    cards, or 6/6 for two-across). Size the field to the grid; do NOT leave a row summing to <12
+    with a lopsided split (the old NY Vehicle ROW_VEH_1 4/2/2 filled only 8 of 12 cols and cramped
+    Plate Type/Year), and do NOT give a short code field (State, Image, Plate Type = 1-2 chars) a
+    half-row box just because the row has two fields -- drop it onto the shared grid width instead
+    (NY v4.13: Vehicle -> 4/4/4, VIN & State 6->4). A trailing row with fewer fields than the grid
+    (e.g. State+Image on a 4/4 pair under a 4/4/4 card) is fine -- they still align to the same
+    left-origin columns. Applied per-provider on its revisit turn.
+
     LEAN-LABEL / CARD-TITLE-CARRIES-THE-PATH convention (DEX-1284, 2026-07-27, HI-style):
     Preferred officer-facing style is lean -- strip inline field helpers and let the CARD TITLE
     state the query paths (e.g. Vehicle "... Search by Plate, \"OR\" VIN"; Person "Driver License

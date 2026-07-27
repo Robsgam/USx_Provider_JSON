@@ -2,9 +2,34 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.12** | Generated: 2026-07-27
+Current: **v4.13** | Generated: 2026-07-27
 
 ---
+
+## v4.13 -- 2026-07-27 -- DEX-1284: Vehicle card 4/4/4 balance + global field-size/placement standard
+
+**CHANGED:** Rebalanced the Vehicle card to a uniform 4/4/4 column grid so fields align
+         left-to-right AND top-to-bottom:  
+           - ROW_VEH_1 (Plate Number / Plate Type / Plate Year): 4/2/2 -> 4/4/4  
+             (was filling only 8 of 12 cols; Plate Type/Year were cramped at width 2)  
+           - ROW_VEH_2 (VIN / Vehicle Make / Vehicle Year): 6/3/3 -> 4/4/4  (VIN 6 -> 4)  
+           - ROW_VEH_3 (State / NCIC Image): 6/6 -> 4/4  (State 6 -> 4; a 2-char code no  
+             longer sits in a half-row box; State/Image align under the columns above)  
+         No label/fieldId/combo/default change on the Vehicle card.  
+TOOLING/DOCS (this session, no NY JSON impact beyond the layout above): (1) corrected  
+         docs/reference/NY_NYSPIN_EJUSTICE_SUPPORTED_QUERIES.txt -- removed the false  
+         "DL Name Search | Name" CONFIRMED line (NyNyspinDriverLicenseNameQuery is an  
+         "Expanded Transactions Supported" transaction @844, NOT Basic; removed from the build  
+         at v4.11) and embedded the devdoc ground-truth Basic list. (2) hardened  
+         tools/audit_supported_queries.ps1 (Get-DevdocBasic) to extract + embed each devdoc's  
+         real "Basic Queries Supported" list into the seeded template and print it every run  
+         (closes the rubber-stamp hole that let the DGRP shadow pass a CONFIRMED gate).  
+**REASON:** DEX-1284 (Leo/Rob) -- "shorten VIN and State so everything looks balanced left-to-right
+         and top-to-bottom; do better at field size and placement globally." New GLOBAL  
+         field-size/placement standard recorded in BUILD_RULES Section 11 (uniform grid, size to  
+         the grid, no lopsided <12 rows, no half-row box for a short code field), FUTURE-RETROFIT  
+         per-provider on revisit. Layout-only -- no combo/QIDM/routing/fieldId change. All 5  
+         entities reset for re-test at v4.13.  
 
 ## v4.12 -- 2026-07-27 -- DEX-1284: HI-style lean label pass (all 5 entities) + global "NCIC Image" convention
 
