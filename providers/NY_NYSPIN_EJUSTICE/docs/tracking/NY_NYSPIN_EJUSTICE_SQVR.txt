@@ -239,12 +239,13 @@ SUMMARY
 ================================================================================
 
   Entities: 5 QIFs (Vehicle, Person, Firearm, Article, Boat)
-  Cards: 7 (Vehicle 1, Person 3, Firearm 1, Article 1, Boat 1)
-  QIDMs: 7 (VehicleReg, DL, DGRP, DH, Gun, Article, Boat)
-  Total combos: 17 CommSys + 2 RMS
-  CAD defaults: All 17 combos covered
-  CONFIRMED: 13 combos (v1.0 live test 2026-04-24)
-  PENDING: 4 combos (DGRP v2.1, DALHOUT/DALLOUT v2.2, RVEHOUT v2.3)
-  Missing: Per-test XML logs (retroactive capture not possible)
-  Coverage: 0% from audit tool (test logs are pre-restructure BASE_SIM files)
-  v2.3 import test priorities: DGRP, DALHOUT, DALLOUT, RVEHOUT (all OOS/name paths)
+  Cards: 6 (Vehicle 1, Person 2 [DL + DH], Firearm 1, Article 1, Boat 1)
+  QIDMs: 6 (VehicleReg, DL, DH, Gun, Article, Boat)
+    -- DGRP (DL Name Search / NyNyspinDriverLicenseNameQuery) REMOVED v4.11 (DEX-1284):
+       it was an Expanded-Transactions-Supported shadow of DL's Name+DOB+Sex path, not Basic.
+  Total combos: 16 CommSys + 2 RMS
+  CAD defaults: all combos covered
+  USx Tenant Testing (v4.14): all 5 entities captured -- 67/67 logs, 0 FAIL, content-verified.
+    Blocked: Vehicle, Firearm, Article, Boat.
+    Person: awaiting a FRESH v4.14 capture run (v4.14 changed the Person top-row layout; the
+      prior Person captures were from the previous-version form).
