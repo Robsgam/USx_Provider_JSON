@@ -1,0 +1,84 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
+Combo: DALHOUT_any (DALHOUT_any (auto))
+Date: 2026-07-27 10:52:01
+Result: PASS
+JSON Version: 4.14
+Entity Fingerprint: 431e7d171f5b7ecf3d43927f02b007461b1c22d28089a1c6a50ff77bd488175d
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","ImageIndicatorDH":"N","NameFirstDH":"JOHN","NameLastDH":"DOE","RegistrationStateDH":"New Jersey","SexCodeDH":"Male","nyNyspinTransactionNameDH":"DLIC","purposeCodeDH":"C","requestorDH":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJ064P7YDC4ZWA005DVNHQV">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYJ064P7YDC4ZWA005DVNHQV</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>NJ</State>
+            <NyNyspinTransactionName>DLIC</NyNyspinTransactionName>
+            <SexCode>M</SexCode>
+            <Requestor>SGAMBELLONE R</Requestor>
+            <PurposeCode>C</PurposeCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJ064P7YDC4ZWA005DVNHQV
+  ImageIndicator                 N
+  State                          NJ
+  NyNyspinTransactionName        DLIC
+  SexCode                        M
+  Requestor                      SGAMBELLONE R
+  PurposeCode                    C
+  BirthDate                      01151990
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KYJ064P7YDC4ZWA005DVNHQV). kind=any; anyField=; expectedKeyRef=DALHOUT; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

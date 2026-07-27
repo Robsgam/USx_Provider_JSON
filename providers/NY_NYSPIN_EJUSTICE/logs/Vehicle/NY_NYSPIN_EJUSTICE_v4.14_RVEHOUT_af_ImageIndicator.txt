@@ -1,0 +1,93 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Vehicle VehicleRegistrationQuery
+Combo: RVEHOUT_af_ImageIndicator (RVEHOUT_af_ImageIndicator (auto))
+Date: 2026-07-27 10:51:56
+Result: PASS
+JSON Version: 4.14
+Entity Fingerprint: e81ce167e94c9e42fb4b0449b853041964e560d6d2b91b84fb6eb926f28364d7
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJ0WYEWZTSEX4R01CHZ349N">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KYJ0WYEWZTSEX4R01CHZ349N</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <State>GA</State>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69509801326
+      ],
+      "tag": "TEST123"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJ0WYEWZTSEX4R01CHZ349N
+  ImageIndicator                 Y
+  LicensePlateYear               2026
+  State                          GA
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01KYJ0WYEWZTSEX4R01CHZ349N). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RVEHOUT; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
