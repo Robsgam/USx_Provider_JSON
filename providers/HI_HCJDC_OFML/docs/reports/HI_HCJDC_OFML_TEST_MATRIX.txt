@@ -1,6 +1,6 @@
-HI_HCJDC_OFML v4.11 -- TEST MATRIX
+HI_HCJDC_OFML v4.12 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-24
+Generated: 2026-07-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -17,28 +17,28 @@ Vehicle (3 cards, 8 fields):
     VehicleIdentificationNumber [Inp 20], vehicleYear [Inp 4]
 
 Person (2 cards, 18 fields):
-  CARD_PER_DL (DRIVER LICENSE):
+  CARD_PER_DL (Driver License Search by OLN, "OR" Name):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
-  CARD_PER_DH (DRIVER HISTORY):
+  CARD_PER_DH (Driver History Search by OLN, "OR" Name):
     ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp C, 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 30], nameSuffixDH [Inp 30]
     ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 4: Attention [Inp X, 30]
 
 Firearm (1 card, 5 fields):
-  CARD_GUN (FIREARM):
+  CARD_GUN (Firearm Search by Serial Number):
     ROW 1: serialNumber [Inp 20], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], GunModel [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 3 fields):
-  CARD_ART (ARTICLE):
+  CARD_ART (Article Search by Serial Number):
     ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 4 fields):
-  CARD_BOA (BOAT SEARCH):
+  CARD_BOA (Boat Search by Registration, "OR" Hull ID):
     ROW 1: RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
     ROW 2: BoatHullIdNumber [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
@@ -160,4 +160,4 @@ COMBO COVERAGE (12/12):
   ArticleSingleQuery: 1/1 -- T31(Serial)
   BoatQuery: 2/2 -- T24(BQ+Reg), T26(QB+Hull)
 
-IMPORT FILE: HI_HCJDC_OFML_v4.11.json
+IMPORT FILE: HI_HCJDC_OFML_v4.12.json

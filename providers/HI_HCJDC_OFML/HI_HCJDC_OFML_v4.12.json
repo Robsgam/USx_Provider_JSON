@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.11 -- entity forms",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.12 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- 3 cards: SEARCH OPTIONS (Vehicle Type/State/NCIC Image), PLATE SEARCH, VIN SEARCH. OOS-first routing: bare plate-\u003eM55L, +Plate Type+Year-\u003eRQ; bare VIN-\u003eM55S, +State-\u003eRQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.",
@@ -155,7 +155,7 @@
                                                                                                                "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "NCIC Image (if available)",
+                                                                                                                             "label":  "NCIC Image",
                                                                                                                              "initialValue":  "N",
                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -522,7 +522,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "NCIC Image (if available)",
+                                                                                                                                  "label":  "NCIC Image",
                                                                                                                                   "initialValue":  "N",
                                                                                                                                   "codeTypeSource":  "NCIC",
                                                                                                                                   "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -970,7 +970,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "NCIC Image (if available)",
+                                                                                                                                     "label":  "NCIC Image",
                                                                                                                                      "initialValue":  "N",
                                                                                                                                      "codeTypeSource":  "NCIC",
                                                                                                                                      "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -1297,7 +1297,7 @@
                                                                                                                },
                                                                                                       "displayName":  "Card",
                                                                                                       "props":  {
-                                                                                                                    "title":  "DRIVER LICENSE"
+                                                                                                                    "title":  "Driver License Search by OLN, \"OR\" Name"
                                                                                                                 },
                                                                                                       "isCanvas":  true,
                                                                                                       "hidden":  false,
@@ -1340,7 +1340,7 @@
                                                                                                                       "displayName":  "Input",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                    "label":  "License Number (or search by Name + DOB)",
+                                                                                                                                    "label":  "OLN",
                                                                                                                                     "maxLength":  "20"
                                                                                                                                 },
                                                                                                                       "isCanvas":  false,
@@ -1547,7 +1547,7 @@
                                                                                                                },
                                                                                                       "displayName":  "Card",
                                                                                                       "props":  {
-                                                                                                                    "title":  "DRIVER HISTORY"
+                                                                                                                    "title":  "Driver History Search by OLN, \"OR\" Name"
                                                                                                                 },
                                                                                                       "isCanvas":  true,
                                                                                                       "hidden":  false,
@@ -1593,7 +1593,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                      "label":  "License Number (or Name + DOB + Sex)",
+                                                                                                                                      "label":  "OLN",
                                                                                                                                       "maxLength":  "20"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -1920,7 +1920,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "DRIVER LICENSE"
+                                                                                                                         "title":  "Driver License Search by OLN, \"OR\" Name"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -1963,7 +1963,7 @@
                                                                                                                            "displayName":  "Input",
                                                                                                                            "props":  {
                                                                                                                                          "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                         "label":  "License Number (or search by Name + DOB)",
+                                                                                                                                         "label":  "OLN",
                                                                                                                                          "maxLength":  "20"
                                                                                                                                      },
                                                                                                                            "isCanvas":  false,
@@ -2170,7 +2170,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "DRIVER HISTORY"
+                                                                                                                         "title":  "Driver History Search by OLN, \"OR\" Name"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -2216,7 +2216,7 @@
                                                                                                                              "displayName":  "Input",
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                           "label":  "License Number (or Name + DOB + Sex)",
+                                                                                                                                           "label":  "OLN",
                                                                                                                                            "maxLength":  "20"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
@@ -2624,7 +2624,7 @@
                                                                                                                        },
                                                                                                               "displayName":  "Card",
                                                                                                               "props":  {
-                                                                                                                            "title":  "DRIVER LICENSE"
+                                                                                                                            "title":  "Driver License Search by OLN, \"OR\" Name"
                                                                                                                         },
                                                                                                               "isCanvas":  true,
                                                                                                               "hidden":  false,
@@ -2667,7 +2667,7 @@
                                                                                                                               "displayName":  "Input",
                                                                                                                               "props":  {
                                                                                                                                             "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                            "label":  "License Number (or search by Name + DOB)",
+                                                                                                                                            "label":  "OLN",
                                                                                                                                             "maxLength":  "20"
                                                                                                                                         },
                                                                                                                               "isCanvas":  false,
@@ -2874,7 +2874,7 @@
                                                                                                                        },
                                                                                                               "displayName":  "Card",
                                                                                                               "props":  {
-                                                                                                                            "title":  "DRIVER HISTORY"
+                                                                                                                            "title":  "Driver History Search by OLN, \"OR\" Name"
                                                                                                                         },
                                                                                                               "isCanvas":  true,
                                                                                                               "hidden":  false,
@@ -2920,7 +2920,7 @@
                                                                                                                                 "displayName":  "Input",
                                                                                                                                 "props":  {
                                                                                                                                               "fieldId":  "OperatorLicenseNumberDH",
-                                                                                                                                              "label":  "License Number (or Name + DOB + Sex)",
+                                                                                                                                              "label":  "OLN",
                                                                                                                                               "maxLength":  "20"
                                                                                                                                           },
                                                                                                                                 "isCanvas":  false,
@@ -3292,7 +3292,7 @@
                                                                                                             },
                                                                                                    "displayName":  "Card",
                                                                                                    "props":  {
-                                                                                                                 "title":  "FIREARM"
+                                                                                                                 "title":  "Firearm Search by Serial Number"
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
@@ -3440,7 +3440,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                        "label":  "(Y) for NCIC stolen-gun check",
+                                                                                                                                        "label":  "Stolen Check",
                                                                                                                                         "initialValue":  "Y",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -3518,7 +3518,7 @@
                                                                                                                  },
                                                                                                         "displayName":  "Card",
                                                                                                         "props":  {
-                                                                                                                      "title":  "FIREARM"
+                                                                                                                      "title":  "Firearm Search by Serial Number"
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
@@ -3666,7 +3666,7 @@
                                                                                                                                "displayName":  "Select",
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                             "label":  "(Y) for NCIC stolen-gun check",
+                                                                                                                                             "label":  "Stolen Check",
                                                                                                                                              "initialValue":  "Y",
                                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -3825,7 +3825,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "FIREARM"
+                                                                                                                         "title":  "Firearm Search by Serial Number"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -3973,7 +3973,7 @@
                                                                                                                                   "displayName":  "Select",
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                                "label":  "(Y) for NCIC stolen-gun check",
+                                                                                                                                                "label":  "Stolen Check",
                                                                                                                                                 "initialValue":  "Y",
                                                                                                                                                 "codeTypeSource":  "NCIC",
                                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4097,7 +4097,7 @@
                                                                                                             },
                                                                                                    "displayName":  "Card",
                                                                                                    "props":  {
-                                                                                                                 "title":  "ARTICLE"
+                                                                                                                 "title":  "Article Search by Serial Number"
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
@@ -4200,7 +4200,7 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                        "label":  "(Y) for NCIC stolen-article check",
+                                                                                                                                        "label":  "Stolen Check",
                                                                                                                                         "initialValue":  "Y",
                                                                                                                                         "codeTypeSource":  "NCIC",
                                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4278,7 +4278,7 @@
                                                                                                                  },
                                                                                                         "displayName":  "Card",
                                                                                                         "props":  {
-                                                                                                                      "title":  "ARTICLE"
+                                                                                                                      "title":  "Article Search by Serial Number"
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
@@ -4381,7 +4381,7 @@
                                                                                                                                "displayName":  "Select",
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                             "label":  "(Y) for NCIC stolen-article check",
+                                                                                                                                             "label":  "Stolen Check",
                                                                                                                                              "initialValue":  "Y",
                                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4540,7 +4540,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "ARTICLE"
+                                                                                                                         "title":  "Article Search by Serial Number"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -4643,7 +4643,7 @@
                                                                                                                                   "displayName":  "Select",
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedSearchHitIndicator",
-                                                                                                                                                "label":  "(Y) for NCIC stolen-article check",
+                                                                                                                                                "label":  "Stolen Check",
                                                                                                                                                 "initialValue":  "Y",
                                                                                                                                                 "codeTypeSource":  "NCIC",
                                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -4767,7 +4767,7 @@
                                                                                                             },
                                                                                                    "displayName":  "Card",
                                                                                                    "props":  {
-                                                                                                                 "title":  "BOAT SEARCH"
+                                                                                                                 "title":  "Boat Search by Registration, \"OR\" Hull ID"
                                                                                                              },
                                                                                                    "isCanvas":  true,
                                                                                                    "hidden":  false,
@@ -4809,7 +4809,7 @@
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "RegistrationNumber",
-                                                                                                                                 "label":  "Registration Number (or use Hull ID)",
+                                                                                                                                 "label":  "Registration Number",
                                                                                                                                  "maxLength":  "8"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
@@ -4969,7 +4969,7 @@
                                                                                                                  },
                                                                                                         "displayName":  "Card",
                                                                                                         "props":  {
-                                                                                                                      "title":  "BOAT SEARCH"
+                                                                                                                      "title":  "Boat Search by Registration, \"OR\" Hull ID"
                                                                                                                   },
                                                                                                         "isCanvas":  true,
                                                                                                         "hidden":  false,
@@ -5011,7 +5011,7 @@
                                                                                                                         "displayName":  "Input",
                                                                                                                         "props":  {
                                                                                                                                       "fieldId":  "RegistrationNumber",
-                                                                                                                                      "label":  "Registration Number (or use Hull ID)",
+                                                                                                                                      "label":  "Registration Number",
                                                                                                                                       "maxLength":  "8"
                                                                                                                                   },
                                                                                                                         "isCanvas":  false,
@@ -5252,7 +5252,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "BOAT SEARCH"
+                                                                                                                         "title":  "Boat Search by Registration, \"OR\" Hull ID"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -5294,7 +5294,7 @@
                                                                                                                            "displayName":  "Input",
                                                                                                                            "props":  {
                                                                                                                                          "fieldId":  "RegistrationNumber",
-                                                                                                                                         "label":  "Registration Number (or use Hull ID)",
+                                                                                                                                         "label":  "Registration Number",
                                                                                                                                          "maxLength":  "8"
                                                                                                                                      },
                                                                                                                            "isCanvas":  false,
@@ -5464,7 +5464,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.11",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.12",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -7250,7 +7250,7 @@
                         "provider":  "HI_HCJDC_OFML"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.11 -- RMS bundle",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.12 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

@@ -1,5 +1,18 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.12 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
+#   change): brought HI in line with the NY/TX/FL/NJ/CA portfolio conventions (HI had diverged --
+#   its image label was parenthetical "NCIC Image (if available)" and it still used pre-OLN labels).
+#   OLN (OperatorLicenseNumber DL + OperatorLicenseNumberDH DH -> "OLN"). Canonical bare "NCIC Image"
+#   (the one visible image field, Vehicle SEARCH OPTIONS -- was "NCIC Image (if available)"; this
+#   retires HI's parenthetical divergence noted at v4.10). Stolen toggle "Stolen Check"
+#   (relatedSearchHitIndicator on Firearm/Article/Boat -- was "(Y) for NCIC stolen-X check";
+#   LABEL-OVERRIDE, any[] w/ default Y). Card titles now carry query paths: DL/DH -> "Driver
+#   License/History Search by OLN, \"OR\" Name"; Firearm/Article -> "... Search by Serial Number";
+#   Boat -> "Boat Search by Registration, \"OR\" Hull ID". Boat Reg dropped its "(or use Hull ID)"
+#   cross-reference helper. Kept the valid DOB/Sex "(required with Name)" + Make/Caliber/Model/Type
+#   "(optional)/(required)" hints. Label/title-only, no combo/QIDM/routing/fieldId/default change.
+#   ALL 5 ENTITIES RESET for re-test at v4.12 (block by version). NOT yet re-tested.
 # v4.11 (2026-07-20): Firearm CAD auto-population fix (direct feedback, mirrors NY_NYSPIN_EJUSTICE
 #   v4.10 + CA_CLETS v2.9 precedent). CAD sends the gun serial number as the camelCase field
 #   'serialNumber', not the PascalCase USx token 'GunSerialNumber' -- so the USx-query button in a
@@ -182,7 +195,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.11",
+    [string]$Version = "4.12",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -681,7 +694,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_OPT1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
                 @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
-                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image (if available)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
+                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
             )}
         )
     }
@@ -748,13 +761,13 @@ if ($AttnDiagnostic -and ($AttnMode -eq 'passthrough' -or $AttnMode -eq 'handler
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
-        title = 'DRIVER LICENSE'
+        title = 'Driver License Search by OLN, "OR" Name'
         rows  = @(
             # State shares the License Number row (Rob-confirmed 2026-07-17) -- unchanged field
             # (still plain RegistrationState, still feeds DriverLicenseQuery.State + the RMS
             # Person QIDM); DH gets its own dedicated RegistrationStateDH field (CARD_PER_DH below).
             @{ id = 'ROW_PER_DL1'; cols = @('7','5'); fields = @(
-                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name + DOB)' '20' 'ROW_PER_DL1' }
+                @{ id = 'operatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL1' }
                 @{ id = 'registrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL1' }
             )}
             # First/Last/MI/Suffix on one line (Rob-confirmed 2026-07-17) -- MI shortened (no
@@ -773,7 +786,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = 'DRIVER HISTORY'
+        title = 'Driver History Search by OLN, "OR" Name'
         rows  = @(
             # DH "(DH)" qualifier dropped from labels (Rob-confirmed 2026-07-17, mirrors FL_FCIC/
             # NY_NYSPIN_EJUSTICE) -- the card's own "DRIVER HISTORY" title already disambiguates
@@ -784,7 +797,7 @@ $perLayout = MakeLayouts @(
             # DriverHistoryQuery's State attribute is sourced from RegistrationStateDH (see
             # $dhQuery below), not the shared RegistrationState the DL card keeps.
             @{ id = 'ROW_PER_DH1'; cols = @('5','4','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (or Name + DOB + Sex)' '20' 'ROW_PER_DH1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH1' }
                 @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH1' @{ initialValue = 'C' } }
             )}
@@ -826,7 +839,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'FIREARM'
+        title = 'Firearm Search by Serial Number'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
@@ -835,7 +848,8 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'gunCaliber_Input';                node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
                 @{ id = 'gunModel_Input';                  node = Inp 'GunModel' 'Model (optional)' '20' 'ROW_GUN_2' }
-                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' '(Y) for NCIC stolen-gun check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
+# LABEL-OVERRIDE: relatedSearchHitIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional w/ default Y; matches NY/TX/FL). Covers Firearm/Article/Boat uses.
+                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -853,14 +867,14 @@ $firearmsForm = [PSCustomObject]@{
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'ARTICLE'
+        title = 'Article Search by Serial Number'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
                 @{ id = 'articleSerialNumber_Input';       node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'articleTypeCode_Input';           node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_2'; cols = @('6'); fields = @(
-                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' '(Y) for NCIC stolen-article check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
+                @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
             )}
         )
     }
@@ -879,10 +893,10 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
-        title = 'BOAT SEARCH'
+        title = 'Boat Search by Registration, "OR" Hull ID'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
-                @{ id = 'registrationNumber_Input';        node = Inp 'RegistrationNumber' 'Registration Number (or use Hull ID)' '8' 'ROW_BOA_1' }
+                @{ id = 'registrationNumber_Input';        node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
                 @{ id = 'registrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('8','4'); fields = @(
