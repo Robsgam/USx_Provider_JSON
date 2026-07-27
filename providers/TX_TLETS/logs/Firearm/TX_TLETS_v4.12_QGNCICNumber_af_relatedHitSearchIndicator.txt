@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: TX_TLETS Firearm GunQuery
+Combo: QGNCICNumber_af_relatedHitSearchIndicator (QGNCICNumber_af_relatedHitSearchIndicator (auto))
+Date: 2026-07-27 19:24:59
+Result: PASS
+JSON Version: 4.12
+Entity Fingerprint: 32640f6d3116f96683c213387b1dcfd0aeb1fc57d1c6138c0de125373e4c26d6
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","NCICNumber":"X123456789","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJY952FQPRSBFBP6SP887QF">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KYJY952FQPRSBFBP6SP887QF</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJY952FQPRSBFBP6SP887QF
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 N
+  NCICNumber                     X123456789
+
+NOTES
+-----
+Automated capture (txId 01KYJY952FQPRSBFBP6SP887QF). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=QGNCICNumber; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
