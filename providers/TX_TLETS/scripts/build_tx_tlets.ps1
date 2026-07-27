@@ -1,6 +1,14 @@
 # build_tx_tlets.ps1  -- TX_TLETS v4.7
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
 # 19 CommSys combos: 5 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v4.10 (2026-07-27, direct Rob feedback -- Person DL top-row, NO functional change): the DL card
+#   had OLN + Date of Birth + Sex lumped on one row (6/3/3). Rob: "keep it three lines like the DH
+#   card with just OLN on top line." Restructured CARD_PER_DL to mirror CARD_PER_DH's 3-content-line
+#   layout -- ROW_PER_L1 now OLN alone (12); DOB + Sex moved to their own ROW_PER_N2 (6/6, matching
+#   DH's ROW_PER_DHN2); Name row unchanged. Layout-only, no combo/QIDM/routing/fieldId/label change.
+#   Person reopened for re-test; Vehicle block-locked at v4.9 preserved (fingerprint unchanged).
+#   Also cleaned the TX SQVR of the stale QV Plate/QV VIN combo blocks (both removed at v4.9).
+#   CCH variant rebuilt in lockstep (BASE-SYNC -> v4.10).
 # v4.9 (2026-07-27, DEX-1284 shadow-query correction -- Rob-confirmed, FUNCTIONAL change): removed
 #   QVLicensePlateNumber + QVVehicleIdentificationNumber from VehicleInsuranceRegistrationQuery --
 #   both were ungated SUBSET-SHADOWS (QV{Plate} subset of REG/RQ; QV{VIN} subset of VIN+FRT; the
@@ -151,7 +159,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.9"
+    [string]$Version = "4.10"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -474,10 +482,12 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DL'
         title = 'Driver License Search by OLN, "OR" Name'
         rows  = @(
-            @{ id = 'ROW_PER_L1'; cols = @('6','3','3'); fields = @(
+            # OLN alone on the top line (Rob 2026-07-27) -- the DL card now mirrors the DH card's
+            # 3-line structure (OLN line / Name line / DOB+Sex line). DOB + Sex were previously
+            # lumped onto the OLN row (6/3/3); moved to their own row (ROW_PER_N2) so the primary
+            # identifier stands alone on top, matching CARD_PER_DH.
+            @{ id = 'ROW_PER_L1'; cols = @('12'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_L1' }
-                @{ id = 'BirthDate_Input';             node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_L1' }
-                @{ id = 'SexCode_Input';               node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_L1' }
             )}
             # Name order First-before-Last (Rob-confirmed 2026-07-17 -- was Last-before-First,
             # the one regression that contradicted every other reviewed provider NJ/CA/HI/NY/FL).
@@ -491,8 +501,11 @@ $perLayout = MakeLayouts @(
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1' }
                 @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'Message Key' '3' 'ROW_PER_N1' }
             )}
-            # ROW_PER_N2 (Race/Expanded DOB/Region ID) removed v4.2 -- those 3 fields only ever
-            # fed the now-removed QWName combo (platform-auto-sent shadow query, not built).
+            # DOB + Sex on their own row (moved off ROW_PER_L1 2026-07-27), matching DH's ROW_PER_DHN2.
+            @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_N2' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_N2' }
+            )}
         )
     }
     @{

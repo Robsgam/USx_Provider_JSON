@@ -2,9 +2,14 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.5** | Generated: 2026-07-27
+Current: **v1.6** | Generated: 2026-07-27
 
 ---
+
+## v1.6 -- 2026-07-27 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.5 -- 2026-07-27 -- DEX-1284 shadow correction (lockstep w/ TX_TLETS v4.9) + QH.NAME Choice fix
 

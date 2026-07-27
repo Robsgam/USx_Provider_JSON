@@ -2,7 +2,7 @@ TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-27
-JSON version: v4.9
+JSON version: v4.10
 Live test: v4.5 full re-test 2026-07-17 (first live pass since v4.0; single-day batch import,
            all 21 combos across all 5 entities, EmailAddress automation confirmed live)
 Validator: 80 PASS / 0 FAIL / 0 WARN / 0 LIM (v4.5)
@@ -57,12 +57,6 @@ v3.4 CHANGES (from v3.3):
     state: In/Out
     CONFIRMED: T18 2026-06-17. StickerNumber=TEST123. XML: StickerNumber + State=TX (default). No plate or VIN fields.
 
-  QV Plate -- NCIC Stolen Vehicle (Plate only) [PENDING]
-    keyReference: QVLicensePlateNumber
-    set: LicensePlateNumber
-    any: RegionId, RegistrationState
-    state: In/Out
-
   RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [CONFIRMED]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
@@ -72,16 +66,11 @@ v3.4 CHANGES (from v3.3):
                No plate fields. No FinancialResponsibilityType. State=TX injected from registrationState
                any[] (initialValue "Texas" reverse-looked up to NCIC code TX).
 
-  QV VIN -- NCIC Stolen Vehicle (VIN only) [LIMITATION]
-    keyReference: QVVehicleIdentificationNumber
-    set: VehicleIdentificationNumber
-    any: RegionId
-    state: In/Out
-    LIMITATION: QVVehicleIdentificationNumber has same set[] as RQVehicleIdentificationNumber
-                (both set[vehicleIdentificationNumber]). RQ appears at combo position 6, QV at
-                position 7. First-match rule means RQ always fires when VIN is entered alone.
-                QV VIN is permanently shadowed and unreachable via form routing. No toggle field
-                differentiates them.
+  (QV Plate + QV VIN removed v4.9, DEX-1284: both were ungated subset-shadows of the metadata
+   QV auto-fired from the larger REG/RQ/VIN queries -- the extra fields on the parent queries are
+   FRT/Type/Year qualifiers, not a state discriminator, so an explicit QV combo was redundant.
+   RegionId (the QV combination's one optional field) was kept and moved into the RQ plate/VIN
+   any[] pool. See TX_TLETS_ACCEPTED_DIVERGENCES / build notes v4.9.)
 
   RMS co-fire (confirmed)
     RMS Vehicle combo fires alongside CommSys (licensePlateNumber, VIN).

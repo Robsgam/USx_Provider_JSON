@@ -2,9 +2,14 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.9** | Generated: 2026-07-27
+Current: **v4.10** | Generated: 2026-07-27
 
 ---
+
+## v4.10 -- 2026-07-27 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v4.9 -- 2026-07-27 -- DEX-1284 shadow-query correction: removed QV subset-shadows (FUNCTIONAL)
 

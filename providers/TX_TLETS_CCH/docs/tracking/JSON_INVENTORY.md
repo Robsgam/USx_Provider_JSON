@@ -9,6 +9,12 @@
 
 
 
+
+## v1.6 (2026-07-27)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_CCH_v1.6.json | v1.6 | Current | 111P/0F/0W/0LIM. |
 ## v1.5 (2026-07-27)
 
 | File | Version | Status | Notes |
