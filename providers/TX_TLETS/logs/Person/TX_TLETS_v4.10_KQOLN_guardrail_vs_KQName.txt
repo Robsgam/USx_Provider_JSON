@@ -1,7 +1,7 @@
 ﻿================================================================
-TEST LOG: TX_TLETS Person DriverLicenseQuery
-Combo: DQName_af_reasonCode (DQName_af_reasonCode (auto))
-Date: 2026-07-27 14:38:09
+TEST LOG: TX_TLETS Person DriverHistoryQuery
+Combo: KQOLN_guardrail_vs_KQName (KQOLN_guardrail_vs_KQName (auto))
+Date: 2026-07-27 14:37:56
 Result: PASS
 JSON Version: 4.10
 Entity Fingerprint: 31352587c5a2169622b004ec47b681c4f7857a4c69ced48e9d617ee9b091cb48
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"Attention":"X","BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Texas","SexCode":"Male","emailAddress":"X","purposeCodeDH":"C","reasonCode":"F"}
+{"Attention":"X","BirthDateDH":"1990-01-15","ImageIndicator":"Y","NameFirstDH":"JOHN","NameLastDH":"DOE","OperatorLicenseNumberDH":"D999888777","RegistrationState":"Texas","SexCodeDH":"Male","emailAddress":"X","purposeCodeDH":"C","reasonCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KYJDQNY5NQXD0JKG6AP5EBDX">
+    <api:Transaction id="01KYJDVK14VXHCQKF9ACFVS6HH">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -35,15 +35,15 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KYJDQNY5NQXD0JKG6AP5EBDX</Id>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYJDVK14VXHCQKF9ACFVS6HH</Id>
             <ImageIndicator>Y</ImageIndicator>
             <State>TX</State>
-            <SexCode>M</SexCode>
-            <ReasonCode>F</ReasonCode>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <ReasonCode>C</ReasonCode>
+            <PurposeCode>C</PurposeCode>
             <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress>
-            <BirthDate>01151990</BirthDate>
-            <Name>DOE,JOHN</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -57,21 +57,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "lastName":  "DOE",
-                         "firstName":  "JOHN",
-                         "sexAttrId":  "69509553096",
-                         "dateOfBirth":  "1990-01-15",
-                         "registrationStateAttrId":  "69509558547"
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -80,17 +66,17 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KYJDQNY5NQXD0JKG6AP5EBDX
+  Id                             01KYJDVK14VXHCQKF9ACFVS6HH
   ImageIndicator                 Y
   State                          TX
-  SexCode                        M
-  ReasonCode                     F
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  ReasonCode                     C
+  PurposeCode                    C
   EmailAddress                   ROB.SGAMBELLONE@MARK43.COM
-  BirthDate                      01151990
-  Name                           DOE,JOHN
 
 NOTES
 -----
-Automated capture (txId 01KYJDQNY5NQXD0JKG6AP5EBDX). kind=any-field; anyField=reasonCode; expectedKeyRef=DQName; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KYJDVK14VXHCQKF9ACFVS6HH). kind=guardrail; anyField=; expectedKeyRef=KQOLN; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
