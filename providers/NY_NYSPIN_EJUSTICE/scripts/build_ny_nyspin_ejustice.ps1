@@ -10,7 +10,7 @@
 #
 # LAYOUT (5 QIFs, 9 cards):
 #   Vehicle:  1 card (v4.6) -- VEHICLE QUERY (Plate row + options folded in, VIN row)
-#   Person:   3 cards (v4.5) -- DRIVER LICENSE (OLN+Name+own State/Image) + DRIVER HISTORY (DH-suffix, own StateDH/ImageDH) + DL NAME SEARCH (DGRP, last). SEARCH OPTIONS card dumped.
+#   Person:   2 cards (v4.11, DEX-1284) -- DRIVER LICENSE (OLN+Name+own State/Image) + DRIVER HISTORY (DH-suffix, own StateDH/ImageDH). DL NAME SEARCH (DGRP name-only shadow) removed; SEARCH OPTIONS card dumped (v4.5).
 #   Firearm:  1 card
 #   Article:  1 card
 #   Boat:     1 card (v4.6) -- BOAT QUERY (Reg + Hull + options folded in)
@@ -66,7 +66,7 @@
 #   Same fix CA_CLETS applied at v2.9. Firearm entity reopened for retest.
 
 param(
-    [string]$Version = "4.10"
+    [string]$Version = "4.11"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -238,65 +238,12 @@ $dlQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e2. NyNyspinDriverLicenseNameQuery (DGRP) -- own card, full metadata field set (v4.1)
-# XML: NyNyspinDriverLicenseNameQuery v1
-#   DGRP: set[Name], any[AddressCity, AddressStateCode, AddressStreet,
-#         AddressZipCode, Age, BirthDate, MessageContinueKeyCode,
-#         MiscellaneousDescriptiveText, SexCode]
-# v4.1: DGRP broken out to its OWN card (CARD_PER_DGRP "DL NAME SEARCH") with DGRP-suffixed
-#   Name/DOB/Sex fields (full isolation, mirrors the DH-suffix pattern) + all 7 previously
-#   missing optional fields (address block, Age, MessageContinueKeyCode,
-#   MiscellaneousDescriptiveText). No ImageIndicator or State in this transaction's metadata.
-# autoSelect=TRUE (v4.1, was FALSE): the v2.8 dual co-fire happened because DGRP SHARED DL's
-#   Name pool, so any name entry satisfied DGRP's set and it auto-fired alongside DL. Now that
-#   DGRP has its own field pool, filling the DL card no longer satisfies DGRP's set (and vice
-#   versa) -- the co-fire cause is gone, so DGRP can auto-fire on its own card's Name with no
-#   manual-select step and no queriesToDeselect. LIVE-VERIFY on the v4.1 capture: DGRP fires
-#   alone from its card, and does NOT co-fire when only the DL card is used.
-# ⚠️ Age (maxLen=1), MessageContinueKeyCode (pagination token), MiscellaneousDescriptiveText
-#   (200-char free text) built as-is per metadata -- flagged for a possible future remove/keep
-#   call (user reserves that decision).
+# 1e2. NyNyspinDriverLicenseNameQuery (DGRP) -- REMOVED v4.11 (DEX-1284, Leo).
+# The "DL NAME SEARCH" card was a name-only shadow of DriverLicenseQuery's DLICN (Name+DOB+Sex)
+# combo -- an Expanded (non-Basic) transaction. Removed to condense Person to 2 cards (DL + DH).
+# DL-by-name now runs via DLICN (requires Name+DOB+Sex); the looser name-only path is gone.
+# Data-safe: all DGRP-suffixed fields were confined to this QIDM (audit C5-F6, 2026-07-24).
 # =====================================================================
-$dgrpQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{
-            name        = 'BirthDate'
-            rule        = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','MMddyyyy') }
-            size        = 10; sourceField = @('BirthDateDGRP'); targetField = 'BirthDate'
-        }
-        [PSCustomObject]@{
-            name        = 'Name'
-            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
-            size        = 35; sourceField = @('NameLastDGRP','NameFirstDGRP','nameMiddleDGRP','nameSuffixDGRP'); targetField = 'Name'
-        }
-        [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDGRP'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'AddressStreet';                size = 20;  sourceField = @('addressStreet');                targetField = 'AddressStreet' }
-        [PSCustomObject]@{ name = 'AddressCity';                  size = 15;  sourceField = @('addressCity');                  targetField = 'AddressCity' }
-        [PSCustomObject]@{ name = 'AddressStateCode';             size = 2;   sourceField = @('addressStateCode');             targetField = 'AddressStateCode'; codeTypeProvider = 'NCIC' }
-        [PSCustomObject]@{ name = 'AddressZipCode';               size = 5;   sourceField = @('addressZipCode');               targetField = 'AddressZipCode' }
-        [PSCustomObject]@{ name = 'Age';                          size = 1;   sourceField = @('age');                          targetField = 'Age' }
-        [PSCustomObject]@{ name = 'MessageContinueKeyCode';       size = 30;  sourceField = @('messageContinueKeyCode');       targetField = 'MessageContinueKeyCode' }
-        [PSCustomObject]@{ name = 'MiscellaneousDescriptiveText'; size = 200; sourceField = @('miscellaneousDescriptiveText'); targetField = 'MiscellaneousDescriptiveText' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NameLastDGRP','NameFirstDGRP'); any = @('nameMiddleDGRP','nameSuffixDGRP','BirthDateDGRP','SexCodeDGRP','addressStreet','addressCity','addressStateCode','addressZipCode','age','messageContinueKeyCode','miscellaneousDescriptiveText') }
-            primaryFieldReference = 'Name'
-            keyReference          = 'DGRP'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'Mapping for NyNyspinDriverLicenseNameQuery -- DGRP (Name search). v4.1: own card + DGRP-suffixed fields (isolated from DL/DH pool) + full metadata field set; autoSelect=true (isolation removes the v2.8 co-fire cause).'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $true
-    provider        = 'NY_NYSPIN_EJUSTICE'
-    providerType    = 'Commsys'
-    query           = 'NyNyspinDriverLicenseNameQuery'
-    queryLabel      = 'DL Name Search'
-    targetEntity    = 'Person'
-}
 
 # =====================================================================
 # 1f. DriverHistoryQuery
@@ -558,7 +505,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $nyBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehQuery, $dlQuery, $dgrpQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for NY_NYSPIN_EJUSTICE v${Version}"
     name           = 'NY_NYSPIN_EJUSTICE'
     type           = 'BUNDLE'
@@ -635,7 +582,7 @@ $vehicleForm = [PSCustomObject]@{
 # ------------------------------------------------------------------
 # Person -- 3 cards
 # OPTIONS: RegistrationState + ImageIndicator (shared by all DL/DH/DGRP combos)
-# DRIVER LICENSE: OLN + Name fields (DL + DGRP combos)
+# DRIVER LICENSE: OLN + Name fields (DL combos)
 # DRIVER HISTORY: OLN-DH + Name-DH fields (DH-suffix isolation)
 #
 # v4.8 (direct feedback, mirrors FL_FCIC DEX-1278): dropped the "(DH..." qualifier from every
@@ -645,7 +592,7 @@ $vehicleForm = [PSCustomObject]@{
 # counterpart's exact phrasing minus the DH tag (e.g. "Last Name (DH, Name search)" ->
 # "Last Name (Name search)", matching NameLast_Input's existing wording); DH-only fields
 # (PurposeCode/TransactionType/Requestor) just lose the "DH, " prefix. Also reordered the Name
-# fields on ALL THREE Person cards (DL/DH/DGRP) to First-before-Last (was Last-first),
+# fields on the Person cards (DL/DH) to First-before-Last (was Last-first),
 # matching FL's now-established First/Last convention. Label/order-only -- no combo/QIDM/wire
 # change (Name attributes still format Last-first on the wire via FormatStringRuleHandler
 # regardless of visual field order). Person re-tests from T1; Vehicle/Firearm/Article/Boat
@@ -660,7 +607,7 @@ $perLayout = MakeLayouts @(
             # State+Image split to their own row (Rob-confirmed 2026-07-17, mirrors Vehicle's
             # fix) -- sharing a row with License Number left State's label wrapping.
             @{ id = 'ROW_PER_DL_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (or search by Name)' '20' 'ROW_PER_DL_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
             )}
             @{ id = 'ROW_PER_DL_1B'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1B' }
@@ -686,7 +633,7 @@ $perLayout = MakeLayouts @(
             # State+Image split to their own row (Rob-confirmed 2026-07-17, mirrors Vehicle's
             # fix) -- sharing a row with License Number left State's label wrapping.
             @{ id = 'ROW_PER_DH_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (or search by Name)' '20' 'ROW_PER_DH_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
             )}
             @{ id = 'ROW_PER_DH_1B'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1B' }
@@ -723,40 +670,10 @@ $perLayout = MakeLayouts @(
             )}
         )
     }
-    # DL NAME SEARCH (DGRP) placed LAST on the Person form (user layout call 2026-07-07) --
-    # card order is pure Craft.js layout, no routing/entity impact. DGRP stays targetEntity=Person.
-    @{
-        id    = 'CARD_PER_DGRP'
-        title = 'DL NAME SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_DGRP_1'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameFirstDGRP_Input';  node = Inp 'NameFirstDGRP'  'First Name' '35' 'ROW_PER_DGRP_1' }
-                @{ id = 'NameLastDGRP_Input';   node = Inp 'NameLastDGRP'   'Last Name'  '35' 'ROW_PER_DGRP_1' }
-                @{ id = 'NameMiddleDGRP_Input'; node = Inp 'nameMiddleDGRP' 'MI (optional)'     '35' 'ROW_PER_DGRP_1' }
-                @{ id = 'NameSuffixDGRP_Input'; node = Inp 'nameSuffixDGRP' 'Suffix (optional)' '10' 'ROW_PER_DGRP_1' }
-            )}
-            # Rebalanced to equal thirds (Rob-confirmed 2026-07-17) -- DOB Range was squeezed to
-            # col=2 (1/6 of the row) for one of the longer labels here and was wrapping.
-            @{ id = 'ROW_PER_DGRP_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDateDGRP_Input'; node = Dt  'BirthDateDGRP' 'Date of Birth (optional)'                                         'ROW_PER_DGRP_2' }
-                @{ id = 'Age_Input';           node = Inp 'age' 'DOB Range +/-yr (optional)' '1' 'ROW_PER_DGRP_2' }
-                @{ id = 'SexCodeDGRP_Input';   node = Sel 'SexCodeDGRP'   'Sex (optional)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DGRP_2' }
-            )}
-            @{ id = 'ROW_PER_DGRP_3'; cols = @('4','3','3','2'); fields = @(
-                @{ id = 'AddressStreet_Input';    node = Inp 'addressStreet' 'Street (optional)' '20' 'ROW_PER_DGRP_3' }
-                @{ id = 'AddressCity_Input';      node = Inp 'addressCity'   'City (optional)'   '15' 'ROW_PER_DGRP_3' }
-                @{ id = 'AddressStateCode_Input'; node = Sel 'addressStateCode' 'Address State (optional)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DGRP_3' }
-                @{ id = 'AddressZipCode_Input';   node = Inp 'addressZipCode' 'Zip (optional)' '5' 'ROW_PER_DGRP_3' }
-            )}
-            @{ id = 'ROW_PER_DGRP_4'; cols = @('4','8'); fields = @(
-                @{ id = 'MessageContinueKeyCode_Input';      node = Inp 'messageContinueKeyCode' 'Continuation Key (optional)' '30' 'ROW_PER_DGRP_4' }
-                @{ id = 'MiscellaneousDescriptiveText_Input'; node = Inp 'miscellaneousDescriptiveText' 'Additional Descriptors (optional)' '200' 'ROW_PER_DGRP_4' }
-            )}
-        )
-    }
+    # DL NAME SEARCH (DGRP) card removed v4.11 (DEX-1284) -- Person is now 2 cards (DL + DH).
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- 3 cards (v4.5, OPTIONS dumped): DRIVER LICENSE (OLN+Name, own State/Image) + DRIVER HISTORY (DH-suffix, own RegistrationStateDH/ImageIndicatorDH) + DL NAME SEARCH (DGRP, full metadata set; last)'
+    description  = 'Person queries -- 2 cards (v4.11, DEX-1284): DRIVER LICENSE (OLN+Name, own State/Image) + DRIVER HISTORY (DH-suffix, own RegistrationStateDH/ImageIndicatorDH). DL NAME SEARCH / DGRP name-only shadow query removed.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

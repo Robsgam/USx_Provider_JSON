@@ -2,9 +2,22 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.10** | Generated: 2026-07-24
+Current: **v4.11** | Generated: 2026-07-27
 
 ---
+
+## v4.11 -- 2026-07-27 -- DEX-1284: remove DGRP name-search card + OLN relabel (2-card Person)
+
+**CHANGED:** Removed the NyNyspinDriverLicenseNameQuery (DGRP) "DL NAME SEARCH" QIDM + card ->
+         Person condensed to 2 cards (DRIVER LICENSE + DRIVER HISTORY). Relabeled the OLN field  
+         on both cards (OperatorLicenseNumber / OperatorLicenseNumberDH) "License Number (or  
+         search by Name)" -> "OLN" (global OLN labeling convention, NY's revisit turn).  
+         QIDMs 7->6, Person cards 3->2, combos 17->16.  
+**REASON:** DEX-1284 (Leo) -- the DGRP card was a name-only shadow of DriverLicenseQuery's DLICN
+         (Name+DOB+Sex) combo, an Expanded/non-Basic transaction. Data-safe removal (DGRP fields  
+         self-contained). DL-by-name now runs via DLICN (requires Name+DOB+Sex). RMS person query  
+         unchanged. DEFERRED to Rob's specifics: HI-style label trim, CAD-render QA; purpose code  
+         left as-is. ALL 5 entities reset for re-test at v4.11.  
 
 ## v4.10 -- 2026-07-20 -- Pipeline rebuild
 

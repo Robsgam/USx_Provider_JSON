@@ -848,12 +848,19 @@ See also:
     placeholder attributes on form fields. Every label must carry enough context
     for an officer to understand routing without reading documentation.
 
+    CANONICAL FIELD LABEL -- OLN (global, DEX-1284, 2026-07-27):
+    The operator-license-number field (OperatorLicenseNumber and its DH-suffix variant) is
+    labeled "OLN" on EVERY provider -- NOT "License Number" / "OL Number" / "Driver License
+    Number". Applied to each provider on its revisit turn (not a retroactive one-shot sweep).
+    When a routing-alternative hint is kept on it, the pattern is "OLN (or search by Name...)".
+    (The card/query name stays "Driver License"/"Driver History" -- only the field label is OLN.)
+
     SEVEN CANONICAL HINT TYPES (required on applicable fields):
 
     1. ROUTING ALTERNATIVES -- on any primary identifier where an alternative
        search path exists:
          "Plate Number (or search by VIN or Owner Name)"
-         "License Number (or search by Name + Sex)"
+         "OLN (or search by Name + Sex)"
          "Serial Number (or search by Owner Name)"
          "Hull ID (or Reg Number; Hull wins if both)"
        Pattern: <Field Name> (or search by <alternative>)
