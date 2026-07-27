@@ -15,20 +15,18 @@
 #   Article:  1 card
 #   Boat:     1 card (v4.6) -- BOAT QUERY (Reg + Hull + options folded in)
 #
-# QIDMs (7, 17 combos):
-#   VehicleRegistrationQuery             RVIN, RVEHOUT, RVEH, RCAR
+# QIDMs (6, 16 combos):
+#   VehicleRegistrationQuery             RVEHOUT/RVIN (OOS, State EXISTS), RVEH/RCAR (NY, State NOT_EXISTS)  [in/out = distinct queries, gated v4.15]
 #   DriverLicenseQuery                   DLICN (Name+DOB), DLIC (OLN)  [metadata: both keyRef=DLIC; DLICN is synthetic -- platform requires unique keyRefs per QIDM]
-#   NyNyspinDriverLicenseNameQuery       DGRP (autoSelect=FALSE -- manual select for name-only DMV search; avoids co-fire with DL)
 #   DriverHistoryQuery                   DALHOUT, DALH, DALLOUT, DALL  [State routing via RegistrationState EXISTS/NOT_EXISTS -- see v4.0]
 #   GunQuery                             GINQ
 #   ArticleSingleQuery                   AINQ
-#   BoatQuery                            BVEH, BVIN, RVEH, RCAR
+#   BoatQuery                            BVEH/BVIN (OOS, State EXISTS), RVEH/RCAR (NY, State NOT_EXISTS)  [in/out = distinct queries, gated v4.15]
 #
 # STATE: NCIC pattern CONFIRMED on NY (no initialValue -- blank default).
 #   See LIMITATION #30.
 # SEX: Full 3-layer NIBRS pattern CONFIRMED
 # DL+DH: DH-suffix fieldIds + one-directional queriesToDeselect (DH deselects DL)
-# DL+DGRP: DGRP autoSelect=false (manual) -- prevents NyNyspin co-fire on Name+DOB+Sex
 # Combo order: most set[] fields first
 # CAD defaults on all CommSys combos with initialValues
 #
@@ -87,9 +85,17 @@
 #   the width, State/Image are short codes. Merged the old row-1 (OLN full-width) + row-1B
 #   (State/Image 6/6) into one row per card. Layout-only -- no label/combo/QIDM/routing/fieldId
 #   change. All 5 entities re-test from T1 (block-by-version).
+# v4.15 (2026-07-27, DEX-1284 shadow-review follow-up -- in/out routing gates): the 4 ungated
+#   in/out combos (Vehicle RVEHOUT/RVEH/RCAR, Boat BVIN/RVEH/RCAR) were firing on set[]/any[]
+#   membership alone -- an out-of-state plate/hull query (State-bearing) co-fired with its in-state
+#   sibling. Per the FL in/out pattern (in-state and out-of-state are ALWAYS distinct queries), added
+#   existence-only RegistrationState gates: EXISTS on the OOS combos (RVEHOUT, BVIN -- the State-bearing
+#   destination queries), NOT_EXISTS on the NY in-state combos (RVEH, RCAR both entities). Existence-only
+#   (poisoned-array-safe). No shadow-subset combos to remove on NY (adversarial re-review: none present).
+#   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.14"
+    [string]$Version = "4.15"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -168,19 +174,19 @@ $vehQuery = [PSCustomObject]@{
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RVEHOUT'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RVEH'
             state                 = 'In'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RCAR'
             state                 = 'In/Out'
@@ -498,19 +504,19 @@ $boatQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber','RegistrationState'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber','RegistrationState'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BVIN'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'RVEH'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'RCAR'
             state                 = 'In/Out'

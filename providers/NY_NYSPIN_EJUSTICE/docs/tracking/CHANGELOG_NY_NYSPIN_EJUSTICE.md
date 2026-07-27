@@ -2,9 +2,32 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.14** | Generated: 2026-07-27
+Current: **v4.15** | Generated: 2026-07-27
 
 ---
+
+## v4.15 -- 2026-07-27 -- DEX-1284 shadow-review follow-up -- in/out routing gates (FUNCTIONAL)
+
+**CHANGED:** Gated the 4 previously-ungated in/out combos so an out-of-state (State-bearing) query
+         no longer co-fires with its NY in-state sibling. Existence-only RegistrationState gates  
+         (poisoned-array-safe):  
+           VehicleRegistrationQuery  
+             - RVEHOUT (OOS plate)  += RegistrationState EXISTS  
+             - RVEH    (NY plate)   += RegistrationState NOT_EXISTS  
+             - RCAR    (NY VIN)     += RegistrationState NOT_EXISTS  (alongside existing LPN NOT_EXISTS)  
+           BoatQuery  
+             - BVIN    (OOS hull)   += RegistrationState EXISTS  
+             - RVEH    (NY reg)     += RegistrationState NOT_EXISTS  (alongside existing Hull NOT_EXISTS)  
+             - RCAR    (NY hull)    += RegistrationState NOT_EXISTS  
+         (RVIN and BVEH were already State-gated; DriverHistory in/out already gated at v4.0.)  
+         Header comment corrected 7 QIDMs/17 combos -> 6/16 (DGRP was removed at v4.11) and the  
+         stale DGRP QIDM/DL+DGRP lines dropped.  
+**REASON:** DEX-1284 portfolio shadow-query review. Rob's rule: in-state vs out-of-state are ALWAYS
+         distinct queries (the FL_FCIC pattern) -- both siblings must stay reachable but must NOT  
+         co-fire. Adversarial re-review confirmed NY has NO shadow-subset combos to remove (unlike  
+         TX_TLETS QV). Functional routing change: Vehicle + Boat reset for re-test from T1;  
+         Person/Firearm/Article fingerprints unchanged (preserved-blocked). NOT yet tenant-tested  
+         at v4.15 (Rob re-runs the NY sweep).  
 
 ## v4.14 -- 2026-07-27 -- DEX-1284: Person cards -- OLN + State + NCIC Image on the top line
 

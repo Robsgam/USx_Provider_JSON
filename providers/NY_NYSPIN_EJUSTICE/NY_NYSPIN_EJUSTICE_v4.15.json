@@ -6694,6 +6694,14 @@
                                                                                                              "LicensePlateTypeCode",
                                                                                                              "LicensePlateYear"
                                                                                                          ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ],
                                                                                                  "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "ImageIndicator",
@@ -6721,9 +6729,16 @@
                                                                                                  "any":  [
                                                                                                              "ImageIndicator",
                                                                                                              "LicensePlateTypeCode",
-                                                                                                             "LicensePlateYear",
-                                                                                                             "RegistrationState"
+                                                                                                             "LicensePlateYear"
                                                                                                          ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ],
                                                                                                  "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "ImageIndicator",
@@ -6755,6 +6770,12 @@
                                                                                                                     {
                                                                                                                         "field":  [
                                                                                                                                       "LicensePlateNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
@@ -7424,6 +7445,14 @@
                                                                                                  "any":  [
                                                                                                              "ImageIndicator"
                                                                                                          ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ],
                                                                                                  "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "ImageIndicator",
@@ -7449,6 +7478,12 @@
                                                                                                                                       "BoatHullIdNumber"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ],
                                                                                                  "defaults":  [
@@ -7470,6 +7505,14 @@
                                                                                                  "any":  [
                                                                                                              "ImageIndicator"
                                                                                                          ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ],
                                                                                                  "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "ImageIndicator",
@@ -7493,13 +7536,13 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.14",
+                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.15",
                         "name":  "NY_NYSPIN_EJUSTICE",
                         "type":  "BUNDLE",
                         "provider":  "NY_NYSPIN_EJUSTICE"
                     },
                     {
-                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.14 -- RMS bundle",
+                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.15 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

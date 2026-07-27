@@ -3,6 +3,28 @@ NY_NYSPIN_EJUSTICE -- BUILD NOTES
 Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
 Clean restart from XML metadata as sole source of truth.
 See SQVR_main.txt for test results. See STATUS.txt for test matrix.
+v4.15  2026-07-27  DEX-1284 shadow-review follow-up -- in/out routing gates (FUNCTIONAL)
+  CHANGED: Gated the 4 previously-ungated in/out combos so an out-of-state (State-bearing) query
+           no longer co-fires with its NY in-state sibling. Existence-only RegistrationState gates
+           (poisoned-array-safe):
+             VehicleRegistrationQuery
+               - RVEHOUT (OOS plate)  += RegistrationState EXISTS
+               - RVEH    (NY plate)   += RegistrationState NOT_EXISTS
+               - RCAR    (NY VIN)     += RegistrationState NOT_EXISTS  (alongside existing LPN NOT_EXISTS)
+             BoatQuery
+               - BVIN    (OOS hull)   += RegistrationState EXISTS
+               - RVEH    (NY reg)     += RegistrationState NOT_EXISTS  (alongside existing Hull NOT_EXISTS)
+               - RCAR    (NY hull)    += RegistrationState NOT_EXISTS
+           (RVIN and BVEH were already State-gated; DriverHistory in/out already gated at v4.0.)
+           Header comment corrected 7 QIDMs/17 combos -> 6/16 (DGRP was removed at v4.11) and the
+           stale DGRP QIDM/DL+DGRP lines dropped.
+  REASON: DEX-1284 portfolio shadow-query review. Rob's rule: in-state vs out-of-state are ALWAYS
+           distinct queries (the FL_FCIC pattern) -- both siblings must stay reachable but must NOT
+           co-fire. Adversarial re-review confirmed NY has NO shadow-subset combos to remove (unlike
+           TX_TLETS QV). Functional routing change: Vehicle + Boat reset for re-test from T1;
+           Person/Firearm/Article fingerprints unchanged (preserved-blocked). NOT yet tenant-tested
+           at v4.15 (Rob re-runs the NY sweep).
+
 v4.14  2026-07-27  DEX-1284: Person cards -- OLN + State + NCIC Image on the top line
   CHANGED: Both Person cards (DRIVER LICENSE + DRIVER HISTORY) now place the primary identifier
            and the two routing/option fields together on the TOP row (6/3/3):

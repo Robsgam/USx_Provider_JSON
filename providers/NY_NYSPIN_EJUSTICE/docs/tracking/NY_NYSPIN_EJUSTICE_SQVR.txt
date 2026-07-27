@@ -2,13 +2,12 @@ NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ===============================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-27
-JSON version: v4.14
-Validator: 81 PASS / 0 FAIL / 0 WARN / 0 LIM
-Simulation: 17/17 combos FIRE
+JSON version: v4.15
+Validator: 75 PASS / 0 FAIL / 0 WARN / 0 LIM
+Simulation: 16/16 combos FIRE
 Prior live test: All 13 original combos CONFIRMED (2026-04-24, v1.0)
-New in v2.3: RVEHOUT (Vehicle plate OOS Choice combo) -- (pending live test)
-New in v2.2: DALHOUT/DALLOUT (DH OOS) -- (pending live test)
-New in v2.1: DGRP (DL Name Search) -- (pending live test)
+v4.15: Vehicle RVEHOUT/RVEH/RCAR + Boat BVIN/RVEH/RCAR gained existence-only RegistrationState
+  in/out gates (EXISTS on OOS, NOT_EXISTS on NY) -- Vehicle + Boat reset for re-test.
 
 NOTE: Live tests were performed without per-test XML log captures.
 All CONFIRMED markers below are based on test summary results, not
@@ -38,36 +37,42 @@ v2.1 changes from v2.0:
   Choice-set: metadata RVEH has Choice(in-state plate / OOS plate+type+year+state).
     OOS option built as RVEHOUT with State in set[] (LIMITATION #36). See QIDM_REFERENCE.
 
-  RVIN -- VIN + State (OOS / NCIC/Nlets) [CONFIRMED]
+  RVIN -- VIN + State (OOS / NCIC/Nlets) [PENDING]
     set: vehicleIdentificationNumber, registrationState
     any: imageIndicator, vehicleMakeCode, vehicleYear
     defaults: ImageIndicator=N
     keyReference: RVIN
     Fires when: VIN + State both filled
 
-  RVEHOUT -- Plate + State (OOS / Nlets) [CONFIRMED]
+  RVEHOUT -- Plate + State (OOS / Nlets) [PENDING]
     set: licensePlateNumber, registrationState
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
+    conditions: RegistrationState EXISTS  (v4.15 -- OOS gate; distinct from in-state RVEH)
     defaults: ImageIndicator=N, LicensePlateTypeCode=PC, LicensePlateYear=2026
     keyReference: RVEHOUT (invented; provider routes by content per NY v1.19)
-    Fires when: Plate + State both filled. New in v2.3 -- needs live OOS-plate test.
+    Fires when: Plate + State both filled.
 
-  RVEH -- Plate, in-state (NY DMV) [CONFIRMED]
+  RVEH -- Plate, in-state (NY DMV) [PENDING]
     set: licensePlateNumber
-    any: imageIndicator, licensePlateTypeCode, licensePlateYear, registrationState
+    any: imageIndicator, licensePlateTypeCode, licensePlateYear
+    conditions: RegistrationState NOT_EXISTS  (v4.15 -- NY in-state gate; State removed from any[]
+      per gate-XOR-companion: a NOT_EXISTS-gated field can't also live in any[])
     defaults: ImageIndicator=N, LicensePlateTypeCode=PC, LicensePlateYear=2026
     keyReference: RVEH
     Fires when: Plate filled, State blank
 
-  RCAR -- VIN only (NY DMV, no state) [CONFIRMED]
+  RCAR -- VIN only (NY DMV, no state) [PENDING]
     set: vehicleIdentificationNumber
     any: imageIndicator
+    conditions: LicensePlateNumber NOT_EXISTS (Plate>VIN), RegistrationState NOT_EXISTS (v4.15 NY gate)
     defaults: ImageIndicator=N
     keyReference: RCAR
-    Fires when: VIN filled, State blank
+    Fires when: VIN filled, Plate + State blank
 
   NCIC state pattern: CONFIRMED on NY
   LIMITATION #30: State has NO initialValue (blank=NY in-state, filled=OOS)
+  In/out routing (v4.15): in-state and OOS are distinct queries -- existence-only
+    RegistrationState gates keep both reachable without co-firing (FL pattern).
   Priority: RVIN (2 set) > RVEHOUT (2 set) > RVEH (1 set) > RCAR (1 set)
 
 ================================================================================
@@ -75,7 +80,7 @@ v2.1 changes from v2.0:
 ================================================================================
 
   QIDM: NY_NYSPIN_EJUSTICE_DriverLicenseQuery (autoSelect=true, NO deselect)
-  QIF:  Person (3 cards: SEARCH OPTIONS + DRIVER LICENSE + DRIVER HISTORY)
+  QIF:  Person (2 cards: DRIVER LICENSE + DRIVER HISTORY -- SEARCH OPTIONS dumped v4.5)
   Combos: DLICN (Name+DOB), DLIC (OLN)
   Defaults: ImageIndicator=Y
   CAD defaults: ImageIndicator=Y on DLICN and DLIC
@@ -182,41 +187,42 @@ v2.1 changes from v2.0:
   QIDM: NY_NYSPIN_EJUSTICE_BoatQuery
   QIF:  Boat (1 card: BOAT QUERY)
   Combos: BVEH (reg OOS), BVIN (hull OOS), RVEH (reg NY), RCAR (hull NY)
-  Routing: State blank = NY in-state (RVEH/RCAR), State filled = OOS (BVEH/BVIN)
-  Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
-  CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on all 4 combos
+  Routing: State filled = OOS (BVEH/BVIN, State EXISTS), State blank = NY in-state (RVEH/RCAR,
+    State NOT_EXISTS). In/out are distinct queries -- existence-only gates keep both reachable
+    without co-firing (FL pattern, completed v4.15).
+  Attributes: BoatHullIdNumber, ImageIndicator, RegistrationNumber, State. (NY Boat has NO
+    RelatedHitSearchIndicator -- it exists only on Gun/Article.)
+  Defaults: ImageIndicator=N (all 4 combos)
+  CAD defaults: ImageIndicator=N on all 4 combos
   LIMITATION #30 applies (no State default)
 
-  BVEH -- Registration Number + State OOS [CONFIRMED]
+  BVEH -- Registration Number + State OOS [PENDING]
     set: registrationNumber, registrationState
-    any: imageIndicator, relatedHitSearchIndicator
-    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+    any: imageIndicator
+    conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg), RegistrationState EXISTS (OOS gate)
+    defaults: ImageIndicator=N
     keyReference: BVEH
 
-  BVIN -- Hull ID + State OOS [CONFIRMED]
+  BVIN -- Hull ID + State OOS [PENDING]
     set: boatHullIdNumber, registrationState
-    any: imageIndicator, relatedHitSearchIndicator
-    defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
+    any: imageIndicator
+    conditions: RegistrationState EXISTS  (v4.15 -- OOS gate)
+    defaults: ImageIndicator=N
     keyReference: BVIN
 
-  RVEH -- Registration Number, NY (no state) [CONFIRMED]
+  RVEH -- Registration Number, NY (no state) [PENDING]
     set: registrationNumber
     any: imageIndicator
-    defaults: ImageIndicator=Y
-    keyReference: RVEH
-    Live proof: logs/Boat/NY_NYSPIN_EJUSTICE_v4.6_RVEH.txt (BoatQuery, RegistrationNumber,
-      no state -> in-state, PASS). Marker auto-left PENDING because keyRef RVEH is shared with
-      Vehicle (auto-updater flips Vehicle's RVEH first); reconciled by hand each rebuild
-      (v4.1/v4.3/v4.4/v4.6). NOTE: recurring bookkeeping cost of the shared RVEH/RCAR keyRefs --
-      candidate for a post_test/SQVR entity-disambiguation fix.
+    conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg), RegistrationState NOT_EXISTS (v4.15 NY gate)
+    defaults: ImageIndicator=N
+    keyReference: RVEH  (shared keyRef name with Vehicle RVEH -- platform routes by targetEntity)
 
-  RCAR -- Hull ID, NY (no state) [CONFIRMED]
+  RCAR -- Hull ID, NY (no state) [PENDING]
     set: boatHullIdNumber
     any: imageIndicator
-    defaults: ImageIndicator=Y
-    keyReference: RCAR
-    Live proof: logs/Boat/NY_NYSPIN_EJUSTICE_v4.6_RCAR.txt (BoatQuery, BoatHullIdNumber,
-      no state -> in-state, PASS). Same shared-keyRef reconciliation as Boat RVEH above.
+    conditions: RegistrationState NOT_EXISTS  (v4.15 -- NY gate)
+    defaults: ImageIndicator=N
+    keyReference: RCAR  (shared keyRef name with Vehicle RCAR -- platform routes by targetEntity)
 
   Priority: BVEH (2 set) > BVIN (2 set) > RVEH (1 set) > RCAR (1 set)
 
@@ -245,7 +251,9 @@ SUMMARY
        it was an Expanded-Transactions-Supported shadow of DL's Name+DOB+Sex path, not Basic.
   Total combos: 16 CommSys + 2 RMS
   CAD defaults: all combos covered
-  USx Tenant Testing (v4.14): all 5 entities captured -- 67/67 logs, 0 FAIL, content-verified.
-    Blocked: Vehicle, Firearm, Article, Boat.
-    Person: awaiting a FRESH v4.14 capture run (v4.14 changed the Person top-row layout; the
-      prior Person captures were from the previous-version form).
+  USx Tenant Testing (v4.15): FUNCTIONAL routing change on Vehicle + Boat (in/out gates) ->
+    those 2 entities reset to PENDING, need a fresh v4.15 capture run.
+    Preserved-blocked (fingerprint unchanged v4.14->v4.15): Firearm, Article, Person.
+    NOTE (log-truth): Person's v4.14 top-row layout still awaits its own fresh capture (flagged in
+      the v4.14 summary); the fingerprint-preserve does NOT substitute for that. Rob re-runs the NY
+      sweep -- Vehicle + Boat mandatory at v4.15, Person to close its v4.14 gap.
