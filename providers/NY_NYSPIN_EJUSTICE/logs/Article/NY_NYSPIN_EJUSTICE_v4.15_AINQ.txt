@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Article ArticleSingleQuery
+Combo: AINQ (AINQ (auto))
+Date: 2026-07-27 15:10:26
+Result: PASS
+JSON Version: 4.15
+Entity Fingerprint: 91fa2eaec7e7e72c8b836266bbb09ddaad9f84a5185bc9968ef17aec7abb64e6
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ArticleSerialNumber":"ART99999","ArticleTypeCode":"BBICYCL","ImageIndicator":"N","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJFM50F5E0PS3WH2YWWZVXY">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01KYJFM50F5E0PS3WH2YWWZVXY</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJFM50F5E0PS3WH2YWWZVXY
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  ArticleTypeCode                BBICYCL
+  ArticleSerialNumber            ART99999
+
+NOTES
+-----
+Automated capture (txId 01KYJFM50F5E0PS3WH2YWWZVXY). kind=combo; anyField=; expectedKeyRef=AINQ; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
