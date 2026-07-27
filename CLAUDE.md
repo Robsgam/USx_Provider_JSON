@@ -38,6 +38,17 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 | OR_LEDS | providers/OR_LEDS/ | v2.0 | 55P/0F/0W -- v2.0 (2026-07-23) methodology galvanization: consolidated legacy BASE+MC -> single `OR_LEDS_v2.0.json`, native PascalCase USx CAD fieldIds (`Build-RmsBundle -PascalCaseUsxFields`); added OOS RegistrationState EXISTS/NOT_EXISTS gates (RQ.PO OOS plate / RQ.P in-state plate) + identifier-priority guardrails (Plate>VIN RQ.V, OLN>Name DQ.N, Hull>Reg BQ.R); DL collapsed 4->2 combos (DQ.N/DQ.O) and VehReg 4->3 (RQ.PO/RQ.V/RQ.P); State already had no initialValue (LIMITATION #30) -- kept "leave blank for OR" hint; VehicleMakeCode Inp->Sel (VEHICLE_MAKE dropdown); RaceCode->raceCode (RMS alignment); removed dangling relatedHitSearchIndicator field from Person (no QIDM uses it in OR); Gun/Article serialNumber maxLen fixed to XML (11/20); CAD combo defaults (Image=Y/PlateType=PC/PlateYear); (optional) labels. NOT USx-tenant-tested. | 5 basic queries (no DH), invented keyRefs (RQ/DQ/QG/QA/BQ splits), OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails, MC multi-card |
 | TN_TIES | providers/TN_TIES/ | v2.0 | 74P/0F/0W/0LIM -- v2.0 (2026-07-23) GALVANIZED: consolidated legacy BASE+MC dual scripts -> single versioned PascalCase JSON (native USx CAD fieldIds via -PascalCaseUsxFields; -KeepSsn preserved, race kept). Existence-only OOS routing gates (RQ Nlets/State-EXISTS vs QV/QWA/DQ01 NCIC/State-NOT_EXISTS; Boat BB vs QB) + identifier-priority guardrails (Plate>VIN, OLN>Name incl. DH-suffix, Hull>Reg). DriverHistory Attention converted to eSUN/AZ auto-handler feeder (hidden `attention` initialValue=X + defaults Attention=X on KQ combos); purposeCodeDH visible officer-entered. DH-suffix fields now VISIBLE on 2 dedicated DH cards (were hidden rows). VehicleMakeCode Inp->Sel VEHICLE_MAKE dropdown. 28 metadata combos -> 22 built: dropped 6 form-identical shadows (Vehicle RQ01/RV01/RQ03/RV03/RV, DL DQ02 -- server routes by keyRef, form input identical; OCATS/MD precedent, documented in TN_TIES_ACCEPTED_DIVERGENCES.txt). `(optional)` label hints; phases/tests retired. NOT USx-tenant-tested at v2.0. | 6 basic queries, 22 combos (8 Veh incl. Dealer/Handicap/Temp specialty, 5 DL, 3 DH, Gun/Article/Boat), no State initialValue (LIMITATION #30), DH-suffix + queriesToDeselect, Attention auto-handler feeder, existence-only OOS gates + identifier-priority guardrails |
 
+## Import Tracking (which JSON version is in which tenant)
+
+**`providers/IMPORT_LEDGER.md` is the single source of truth** for where each JSON is installed.
+Two tenant classes: **USx Provider Tenants** (one per provider; the driver capture tool is locked
+to these — so the newest version with non-archived `logs/` = proof of what's installed there,
+self-verifying, never assume) and **Foundation Tenants** (customer staging, e.g. Newark / Miami
+Springs / Balcones Heights — the capture tool can't reach them, so their versions are recorded
+manually in the ledger from actual import reports only). Update the ledger's Foundation section on
+every reported import; the Provider-Tenant section is log-derived (recompute via `portfolio_status.ps1`
+or the ledger's one-liner). Do NOT answer "where is X installed" from memory alone — read the ledger.
+
 ## Legacy Repos (READ-ONLY)
 
 Individual repos are preserved for history but are now read-only. All active work happens here.
