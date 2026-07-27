@@ -1,0 +1,88 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Vehicle VehicleRegistrationQuery
+Combo: RVEH_af_LicensePlateTypeCode (RVEH_af_LicensePlateTypeCode (auto))
+Date: 2026-07-27 10:37:19
+Result: PASS
+JSON Version: 4.13
+Entity Fingerprint: e81ce167e94c9e42fb4b0449b853041964e560d6d2b91b84fb6eb926f28364d7
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"AM","LicensePlateYear":"2026"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYJ024V4Z33HX868B0F6BWVD">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KYJ024V4Z33HX868B0F6BWVD</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <LicensePlateTypeCode>AM</LicensePlateTypeCode>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "tag": "TEST123"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYJ024V4Z33HX868B0F6BWVD
+  ImageIndicator                 N
+  LicensePlateYear               2026
+  LicensePlateTypeCode           AM
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01KYJ024V4Z33HX868B0F6BWVD). kind=any-field; anyField=LicensePlateTypeCode; expectedKeyRef=RVEH; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
