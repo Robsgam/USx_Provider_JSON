@@ -24,7 +24,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (35 logs) | v4.10 | current |
 | FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.8 (117 logs) | v7.8 | current |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (45 logs) | v4.11 | current |
-| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.14 (33 logs) | v4.15 | v4.15 built (in/out gates), Vehicle+Boat reset — re-import+capture pending |
+| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.15 (66 logs) | v4.15 | current (full re-test complete 2026-07-27; in/out gates validated live) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.10 (83 logs) | v4.10 | current (full re-test complete 2026-07-27) |
 | CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.16 | last tenant-tested v2.12; v2.13-v2.16 built (race re-add etc.), not re-captured |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.1 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22 |

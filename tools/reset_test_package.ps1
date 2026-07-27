@@ -107,12 +107,21 @@ if (-not (Test-Path $stateJsonReadPath)) {
 }
 
 $priorEntities = @{}
+$priorGlobal   = $null
 if (Test-Path $stateJsonReadPath) {
     try {
         $ps = Get-Content $stateJsonReadPath -Raw | ConvertFrom-Json
         if ($ps.entities) { foreach ($p in $ps.entities.PSObject.Properties) { $priorEntities[$p.Name] = $p.Value } }
-    } catch { $priorEntities = @{} }
+        if ($ps.global) { $priorGlobal = "$($ps.global)" }
+    } catch { $priorEntities = @{}; $priorGlobal = $null }
 }
+
+# BLOCK BY VERSION, TEST BY ENTITY (Rob, standing rule): a VERSION CHANGE reopens the WHOLE
+# provider -- all 5 entities are re-tested at the new version, with NO fingerprint-preservation
+# carryover. Fingerprint-preservation is allowed ONLY on a same-version rebuild (the entity-granular
+# "test by entity" workflow within one version). So preservation is gated on the version being
+# unchanged; on any version change every entity resets regardless of fingerprint.
+$versionChanged = ($priorGlobal -and ($priorGlobal -ne $version))
 
 $entityList = @($currentFp.Keys | Sort-Object)
 $resetEntities    = New-Object System.Collections.Generic.List[string]
@@ -121,7 +130,7 @@ foreach ($ent in $entityList) {
     $prior     = $priorEntities[$ent]
     $isBlocked = $prior -and $prior.status -eq 'blocked'
     $unchanged = $prior -and ($prior.fingerprint -eq $currentFp[$ent])
-    if (-not $Force -and $isBlocked -and $unchanged) { $preserveEntities.Add($ent) }
+    if (-not $Force -and -not $versionChanged -and $isBlocked -and $unchanged) { $preserveEntities.Add($ent) }
     else { $resetEntities.Add($ent) }
 }
 $fullReset = ($preserveEntities.Count -eq 0)
