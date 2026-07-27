@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
-Combo: RQLicensePlateNumber (RQLicensePlateNumber (auto))
-Date: 2026-07-27 14:42:56
+Combo: DPSIStickerNumber (DPSIStickerNumber (auto))
+Date: 2026-07-27 14:42:52
 Result: PASS
 JSON Version: 4.10
 Entity Fingerprint: 2eea17afdff9570a6a4f07a594ea9eaa12249eadd733f41dd760e65440ae362a
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","financialResponsibilityType":"E"}
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Texas","financialResponsibilityType":"E","stickerNumber":"STK1234567"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KYJE2JJW7YP135N8N04KKKPX">
+    <api:Transaction id="01KYJE3KZE7XKW00MFJPRBGG89">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,12 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KYJE2JJW7YP135N8N04KKKPX</Id>
-            <FinancialResponsibilityType>E</FinancialResponsibilityType>
-            <LicensePlateYear>2026</LicensePlateYear>
+            <Id>01KYJE3KZE7XKW00MFJPRBGG89</Id>
+            <StickerNumber>STK1234567</StickerNumber>
             <State>TX</State>
-            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-            <LicensePlateNumber>TEST123</LicensePlateNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -55,22 +52,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "vehicle":  {
-                                         "registrationStateAttrIds":  [
-                                                                          69509558547
-                                                                      ],
-                                         "tag":  "TEST123"
-                                     }
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -79,15 +61,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KYJE2JJW7YP135N8N04KKKPX
-  FinancialResponsibilityType    E
-  LicensePlateYear               2026
+  Id                             01KYJE3KZE7XKW00MFJPRBGG89
+  StickerNumber                  STK1234567
   State                          TX
-  LicensePlateTypeCode           PC
-  LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01KYJE2JJW7YP135N8N04KKKPX). kind=combo; anyField=; expectedKeyRef=RQLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KYJE3KZE7XKW00MFJPRBGG89). kind=combo; anyField=; expectedKeyRef=DPSIStickerNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
