@@ -4,7 +4,7 @@
                         "description":  "Entity form configurations",
                         "configurations":  [
                                                {
-                                                   "description":  "Vehicle queries -- single card. VehReg (7 combos) + VehStolen (2 combos).",
+                                                   "description":  "Vehicle queries -- single card. VehReg (5 combos: REG/RQ/VIN+FRT/DPSI).",
                                                    "label":  "Vehicle",
                                                    "layout":  {
                                                                   "default":  {
@@ -7285,6 +7285,7 @@
                                                                                                              "LicensePlateTypeCode"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "regionId",
                                                                                                              "RegistrationState"
                                                                                                          ],
                                                                                                  "defaults":  [
@@ -7367,56 +7368,10 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "LicensePlateNumber"
+                                                                                                             "VehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "regionId",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "State",
-                                                                                                                      "value":  "TX"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "QVLicensePlateNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "regionId"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "LicensePlateNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "regionId"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "QVVehicleIdentificationNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
                                                                                                              "RegistrationState",
                                                                                                              "VehicleMakeCode",
                                                                                                              "vehicleYear"
@@ -7441,7 +7396,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleInsuranceRegistrationQuery -- 7 combos (REG/RQ/VIN+FRT/DPSI/QV).",
+                                                   "description":  "VehicleInsuranceRegistrationQuery -- 5 combos (REG/RQ/VIN+FRT/DPSI). QV plate/VIN removed v4.9 (ungated subset shadows, platform auto-fired).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "TX_TLETS_VehicleInsuranceRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -8295,12 +8250,18 @@
                                                                                                                                       "BoatHullIdNumber"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "QBRegistrationNumber",
-                                                                            "state":  "In/Out"
+                                                                            "state":  "In"
                                                                         },
                                                                         {
                                                                             "requirements":  {
@@ -8320,11 +8281,19 @@
                                                                                                                       "field":  "RelatedHitSearchIndicator",
                                                                                                                       "value":  "Y"
                                                                                                                   }
-                                                                                                              ]
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "BoatHullIdNumber",
                                                                             "keyReference":  "QBBoatHullIdNumber",
-                                                                            "state":  "In/Out"
+                                                                            "state":  "In"
                                                                         },
                                                                         {
                                                                             "requirements":  {
@@ -8362,7 +8331,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS v4.8",
+                        "description":  "Provider configuration for TX_TLETS v4.9",
                         "name":  "TX_TLETS",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS"

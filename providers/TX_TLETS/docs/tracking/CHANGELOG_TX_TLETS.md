@@ -2,9 +2,32 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.8** | Generated: 2026-07-27
+Current: **v4.9** | Generated: 2026-07-27
 
 ---
+
+## v4.9 -- 2026-07-27 -- DEX-1284 shadow-query correction: removed QV subset-shadows (FUNCTIONAL)
+
+**CHANGED:** Removed QVLicensePlateNumber + QVVehicleIdentificationNumber from
+  VehicleInsuranceRegistrationQuery (7 -> 5 combos; 19 total CommSys). Both were ungated  
+  SUBSET-SHADOWS: QV{LicensePlateNumber} is a subset of REG{Plate,Year,FRT} / RQ{Plate,Type,Year};  
+  QV{VehicleIdentificationNumber} is a subset of VIN{VIN,FRT}. The extra fields are FRT/Type/Year  
+  QUALIFIERS of the same plate/VIN query -- NOT a state discriminator -- so the platform auto-fires  
+  the metadata QV transaction from the larger query and an explicit combo was redundant (same class  
+  as the QWName removal v4.2 and NY's DGRP v4.11).  
+  - RegionId (an OPTIONAL member of the QV combination) KEPT and moved to the RQ plate + RQ VIN  
+    any[] -- a devdoc-optional combination field is NEVER dropped (Rob 2026-07-27); it serializes  
+    into the union pool the platform's auto-fired regional QV reads. ROW_VEH_3 stays 4/4/4.  
+  - Boat QB in-state combos (QBRegistrationNumber, QBBoatHullIdNumber) gated RegistrationState  
+    NOT_EXISTS -- they were ungated and co-fired with the State-bearing BQ OOS combos; now  
+    mutually exclusive (in-state fires State-blank, OOS fires State-present), matching FL_FCIC's  
+    in/out gating. state field set 'In/Out' -> 'In'.  
+RULING (Rob 2026-07-27): in-state vs out-of-state are ALWAYS distinct queries -> kept and gated  
+  (State EXISTS/NOT_EXISTS), never removed. Only ungated subset-shadows whose extra fields are  
+  same-query qualifiers (no state discriminator) are removable -- that was QV, not the in/out pairs.  
+**REASON:** DEX-1284 adversarial re-review of NY+TX corrected the shadow-query model (a subset combo is
+  platform-auto-fired from its superset, not "unreachable"). Portfolio subset-shadow map run same day.  
+  FUNCTIONAL change -> all 5 entities reset for re-test from T1. TX_TLETS_CCH rebuilt in lockstep (v1.5).  
 
 ## v4.8 -- 2026-07-27 -- DEX-1284: relabel/naming-convention pass (NY-established portfolio conventions)
 

@@ -1,6 +1,18 @@
 # build_tx_tlets.ps1  -- TX_TLETS v4.7
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
-# 21 CommSys combos: 7 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# 19 CommSys combos: 5 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
+# v4.9 (2026-07-27, DEX-1284 shadow-query correction -- Rob-confirmed, FUNCTIONAL change): removed
+#   QVLicensePlateNumber + QVVehicleIdentificationNumber from VehicleInsuranceRegistrationQuery --
+#   both were ungated SUBSET-SHADOWS (QV{Plate} subset of REG/RQ; QV{VIN} subset of VIN+FRT; the
+#   extra fields are FRT/Type/Year qualifiers, NOT a state discriminator), so the platform auto-fires
+#   the metadata QV transaction from the larger query and building them explicitly was redundant
+#   (same class as the QWName removal v4.2, and NY's DGRP). VehReg 7->5 combos. RegionId (an OPTIONAL
+#   member of the QV combination) is KEPT -- moved to the RQ plate + RQ VIN any[] (a devdoc-optional
+#   combination field is never dropped; it serializes into the union pool the auto-fired regional QV
+#   reads). ROW_VEH_3 stays 4/4/4 (Sticker/FRT/RegionId). Boat QB in-state combos gated RegistrationState
+#   NOT_EXISTS (were ungated -> co-fired with the State-bearing BQ OOS combos; FL in/out gating).
+#   NOTE (Rob ruling): in-state vs OOS are ALWAYS distinct queries (kept + gated); only the
+#   no-state-discriminator qualifier subset-shadows (QV) were removed. Full re-test from T1.
 # v4.8 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
 #   change): applied the NY-established portfolio conventions. OLN label (OperatorLicenseNumber
 #   DL+DH -> "OLN"); canonical "NCIC Image" (all image fields, was "NCIC Image - if available");
@@ -139,7 +151,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.8"
+    [string]$Version = "4.9"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -186,15 +198,20 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('RegistrationState','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('regionId','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In/Out' }
-        # QV VIN (regional) -- RegionId stays in any[] (metadata-faithful); RegionId EXISTS gates firing + ordered BEFORE RQ VIN: VIN+RegionId -> QV, VIN alone -> RQ.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('regionId'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegistrationState','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        # QVLicensePlateNumber + QVVehicleIdentificationNumber REMOVED v4.9 (DEX-1284 shadow review,
+        # Rob-confirmed). Both were ungated SUBSET-SHADOWS: QV{Plate} subset of REG/RQ, QV{VIN} subset
+        # of VIN+FRT -- the extra fields are FRT/Type/Year qualifiers of the SAME plate/VIN query
+        # (NOT a state discriminator), so the platform auto-fires the metadata QV transaction from the
+        # larger query; an explicit combo was redundant (QWName class). regionId (an OPTIONAL member of
+        # the QV combination) is KEPT and moved to the RQ plate + RQ VIN any[] -- a devdoc-optional
+        # combination field is never dropped; it serializes into the union pool the auto-fired regional
+        # QV reads. in-state/OOS are separately kept + gated -- QV was not that.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
     )
-    description = 'VehicleInsuranceRegistrationQuery -- 7 combos (REG/RQ/VIN+FRT/DPSI/QV).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+    description = 'VehicleInsuranceRegistrationQuery -- 5 combos (REG/RQ/VIN+FRT/DPSI). QV plate/VIN removed v4.9 (ungated subset shadows, platform auto-fired).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
 # --- DriverLicenseQuery (3 combos) ---
@@ -345,8 +362,8 @@ $boatQuery = [PSCustomObject]@{
         # QBRegistrationNumber: Hull>Reg guardrail. BoatHullIdNumber is the NOT_EXISTS gate subject,
         # so it must NOT appear in any[] -- a field can't be in the serialization pool AND gate the
         # combo out of existence (contradiction; also poisons Build-MinimalData test injection).
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'RegistrationNumber'; keyReference = 'QBRegistrationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }; primaryFieldReference = 'BoatHullIdNumber'; keyReference = 'QBBoatHullIdNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'RegistrationNumber'; keyReference = 'QBRegistrationNumber'; state = 'In' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'BoatHullIdNumber'; keyReference = 'QBBoatHullIdNumber'; state = 'In' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }; primaryFieldReference = 'NCICNumber'; keyReference = 'QBNCICNumber'; state = 'In/Out' }
     )
     description = 'BoatQuery -- 5 combos (BQ OOS + QB in-state/NCIC).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_BoatQuery'; type = 'QUERYINPUTDATAMAPPING'; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'BoatQuery'; queryLabel = 'Boat'; targetEntity = 'Boat'
@@ -399,9 +416,9 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
-            # LABEL-OVERRIDE: regionId -- Rob's explicit v4.4 call while evaluating queries live;
-            # genuinely any[]-only with no default anywhere (unlike reasonCode/State), so this is
-            # its own distinct accepted override, not the same case as the merely-defaulted class.
+            # LABEL-OVERRIDE: regionId -- any[]-only optional combination field. KEPT after the QV combo
+            # removal (a devdoc-optional combination field is never dropped): it now rides the RQ plate/
+            # VIN any[] pool, which the platform's auto-fired regional QV reads. Bare label, Rob's call.
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'stickerNumber_Input';               node = Inp 'stickerNumber' 'Sticker Number' '10' 'ROW_VEH_3' }
                 @{ id = 'financialResponsibilityType_Input'; node = Inp 'financialResponsibilityType' 'Fin. Resp. Type' '1' 'ROW_VEH_3' @{ initialValue = 'E' } }
@@ -411,7 +428,7 @@ $vehLayout = MakeLayouts @(
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- single card. VehReg (7 combos) + VehStolen (2 combos).'
+    description  = 'Vehicle queries -- single card. VehReg (5 combos: REG/RQ/VIN+FRT/DPSI).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -605,4 +622,4 @@ $pendingPath = Join-Path $PSScriptRoot "..\docs\PENDING_UPDATES.txt"
 if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
 
 Write-Host ""
-Write-Host "Build complete. 7 cards, 22 CommSys combos, 6 QIDMs."
+Write-Host "Build complete. 7 cards, 19 CommSys combos, 6 QIDMs."

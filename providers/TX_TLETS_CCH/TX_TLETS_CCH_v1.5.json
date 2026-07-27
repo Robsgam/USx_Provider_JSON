@@ -10138,6 +10138,7 @@
                                                                                                              "LicensePlateTypeCode"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "regionId",
                                                                                                              "RegistrationState"
                                                                                                          ],
                                                                                                  "defaults":  [
@@ -10220,56 +10221,10 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "LicensePlateNumber"
+                                                                                                             "VehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "regionId",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "State",
-                                                                                                                      "value":  "TX"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "QVLicensePlateNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "regionId"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "LicensePlateNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "regionId"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "QVVehicleIdentificationNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
                                                                                                              "RegistrationState",
                                                                                                              "VehicleMakeCode",
                                                                                                              "vehicleYear"
@@ -10294,7 +10249,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleInsuranceRegistrationQuery -- 7 combos (REG/RQ/VIN+FRT/DPSI/QV).",
+                                                   "description":  "VehicleInsuranceRegistrationQuery -- 5 combos (REG/RQ/VIN+FRT/DPSI). QV plate/VIN removed v1.5 (ungated subset shadows, lockstep w/ TX_TLETS v4.9).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "TX_TLETS_CCH_VehicleInsuranceRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -11148,12 +11103,18 @@
                                                                                                                                       "BoatHullIdNumber"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "QBRegistrationNumber",
-                                                                            "state":  "In/Out"
+                                                                            "state":  "In"
                                                                         },
                                                                         {
                                                                             "requirements":  {
@@ -11173,11 +11134,19 @@
                                                                                                                       "field":  "RelatedHitSearchIndicator",
                                                                                                                       "value":  "Y"
                                                                                                                   }
-                                                                                                              ]
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "RegistrationState"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
                                                                                              },
                                                                             "primaryFieldReference":  "BoatHullIdNumber",
                                                                             "keyReference":  "QBBoatHullIdNumber",
-                                                                            "state":  "In/Out"
+                                                                            "state":  "In"
                                                                         },
                                                                         {
                                                                             "requirements":  {
@@ -11855,17 +11824,36 @@
                                                                                                              "inquiryReasonCCH",
                                                                                                              "nameLastCCH",
                                                                                                              "nameFirstCCH",
-                                                                                                             "purposeCodeCCH"
+                                                                                                             "purposeCodeCCH",
+                                                                                                             "socialSecurityNumberCCH"
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "nameMiddleCCH",
-                                                                                                             "nameSuffixCCH",
-                                                                                                             "socialSecurityNumberCCH",
-                                                                                                             "miscellaneousNumberCCH"
+                                                                                                             "nameSuffixCCH"
                                                                                                          ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "QH.NAME",
+                                                                            "keyReference":  "QH.NAME.SSN",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "requestorCCH",
+                                                                                                             "operatorCCH",
+                                                                                                             "inquiryReasonCCH",
+                                                                                                             "nameLastCCH",
+                                                                                                             "nameFirstCCH",
+                                                                                                             "purposeCodeCCH",
+                                                                                                             "miscellaneousNumberCCH"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "nameMiddleCCH",
+                                                                                                             "nameSuffixCCH"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "QH.NAME.MISC",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -12379,7 +12367,7 @@
                                                    "targetEntity":  "Person"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS_CCH v1.4",
+                        "description":  "Provider configuration for TX_TLETS_CCH v1.5",
                         "name":  "TX_TLETS_CCH",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS_CCH"

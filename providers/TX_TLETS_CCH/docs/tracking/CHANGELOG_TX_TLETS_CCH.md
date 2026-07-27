@@ -2,9 +2,27 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.4** | Generated: 2026-07-27
+Current: **v1.5** | Generated: 2026-07-27
 
 ---
+
+## v1.5 -- 2026-07-27 -- DEX-1284 shadow correction (lockstep w/ TX_TLETS v4.9) + QH.NAME Choice fix
+
+**CHANGED:** (base-6, mirror of TX_TLETS v4.9) removed QVLicensePlateNumber + QVVehicleIdentificationNumber
+  (ungated subset-shadows, platform auto-fired); KEPT regionId (optional combination field) moved  
+  to the RQ plate/VIN any[] (never drop a devdoc-optional field); ROW_VEH_3 stays 4/4/4; gated  
+  Boat QB in-state combos RegistrationState NOT_EXISTS  
+  (were ungated -> co-fired with the State-bearing BQ OOS combos; FL in/out pattern). BASE-SYNC  
+  bumped v4.8 -> v4.9.  
+  (CCH-only metadata fix) QH.NAME split into QH.NAME.SSN + QH.NAME.MISC to honor the metadata's  
+  mandatory Choice{SocialSecurityNumber | MiscellaneousNumber} (XML line 14221). v1.1 had wrongly  
+  demoted both to optional any[] and claimed it "matches metadata exactly" -- it did NOT (the Choice  
+  is mandatory; the v1.0 SSN/MISC split was actually correct). Restored the split, matching the  
+  QWI.SSN/QWI.MISC sibling pattern -- one of SSN/Misc is now required on a QH Name search. QH 4 -> 5 combos.  
+**REASON:** DEX-1284 adversarial re-review found (a) the base-6 QV subset-shadow (corrected on TX_TLETS
+  v4.9, propagated here in lockstep) and (b) the QH.NAME dropped-Choice metadata error. Root cause of  
+  (b): extract_metadata_reference.ps1 is <Choice>-blind, so audit_metadata couldn't catch it. NOT  
+  tenant-tested (stub). All entities reset.  
 
 ## v1.4 -- 2026-07-27 -- DEX-1284 lockstep with TX_TLETS v4.8 (BASE-SYNC -> v4.8)
 

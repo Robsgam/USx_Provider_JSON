@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH_v1.4.json
-  Generated: 2026-07-27 11:43
+  Source: TX_TLETS_CCH_v1.5.json
+  Generated: 2026-07-27 13:52
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -35,7 +35,7 @@ VALIDATOR RESULTS
   [PASS] QIF 'ENTITY_Boat' -> Boat : 9 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 7 combos
+  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' -> Vehicle : 10 attrs, 5 combos
   [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' -> Person : 9 attrs, 3 combos
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
@@ -62,7 +62,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' -> Person : 12 attrs, 4 combos
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' -> Person : 12 attrs, 5 combos
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' -> Person : 11 attrs, 2 combos
@@ -102,8 +102,6 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'RQLicensePlateNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'VINVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'DPSIStickerNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'QVLicensePlateNumber': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'QVVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery' combo 'RQVehicleIdentificationNumber': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'DQName': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_DriverLicenseQuery' combo 'CPLName': all set[]/any[] fields resolvable
@@ -124,7 +122,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryFQQuery' combo 'FQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryIQQuery' combo 'IQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.BDOB': all set[]/any[] fields resolvable
-  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.NAME': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.NAME.SSN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.NAME.MISC': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.SID': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQHQuery' combo 'QH.FBI': all set[]/any[] fields resolvable
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryQRQuery' combo 'QR.FBI': all set[]/any[] fields resolvable
@@ -136,7 +135,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'TX_TLETS_CCH_CCHCriminalHistoryZRQuery' combo 'ZR.SID': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 112 PASS / 0 FAIL / 0 WARN
+  RESULTS: 111 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.

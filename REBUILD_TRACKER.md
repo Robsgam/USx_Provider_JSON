@@ -39,7 +39,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 3 | NY_NYSPIN_EJUSTICE | v4.14 |  | 75P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
 | 4 | AZ_AZDPS | v3.1 |  | 72P/0F/0W/0LIM | 0 | v3.1 (2026-07-24) existence-gate identifier-priority guardrails added (were demotion-only in v3.0); single-JSON; NOT USx-tenant-tested |
 | 5 | FL_FCIC | v7.8 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
-| 6 | TX_TLETS | v4.8 |  | 80P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
+| 6 | TX_TLETS | v4.9 |  | 78P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 8 | CA_CLETS | v2.16 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v2.0 |  | 72P/0F/1W/1LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
@@ -52,7 +52,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 16 | NM_NMLETS_OFML | v2.1 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 17 | OR_LEDS | v2.0 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 18 | TN_TIES | v2.0 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 19 | TX_TLETS_CCH | v1.4 |  | 112P/0F/0W/0LIM | 0 | base-6 re-synced to TX_TLETS v4.7 (email handler + FRT=E, QWName removed); lockstep restored; CCH stub, NOT USx-tenant-tested |
+| 19 | TX_TLETS_CCH | v1.5 |  | 111P/0F/0W/0LIM | 0 | base-6 re-synced to TX_TLETS v4.7 (email handler + FRT=E, QWName removed); lockstep restored; CCH stub, NOT USx-tenant-tested |
 | 20 | CA_CONTRA_COSTA | v2.1 |  | 77P/0F/0W/0LIM | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT USx-tenant-tested |
 
 ---

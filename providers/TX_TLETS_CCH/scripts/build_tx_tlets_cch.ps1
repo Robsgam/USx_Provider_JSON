@@ -1,5 +1,14 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.3
-# BASE-SYNC: TX_TLETS v4.8   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.9   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# v1.5 (2026-07-27, DEX-1284 shadow correction, lockstep w/ TX_TLETS v4.9 + a CCH-only metadata fix):
+#   (base-6) removed QVLicensePlateNumber + QVVehicleIdentificationNumber (ungated subset-shadows,
+#   platform auto-fired -- see TX_TLETS v4.9); KEPT regionId (optional combination field) moved to the
+#   RQ plate/VIN any[] (never drop a devdoc-optional field); ROW_VEH_3 stays 4/4/4; gated Boat QB
+#   in-state combos RegistrationState NOT_EXISTS (FL in/out
+#   pattern). (CCH-only) QH.NAME split into QH.NAME.SSN + QH.NAME.MISC to honor the metadata mandatory
+#   Choice{SocialSecurityNumber|MiscellaneousNumber} (v1.1 wrongly demoted both to optional any[];
+#   the "matches metadata exactly" claim was false). Matches the QWI.SSN/QWI.MISC split pattern.
+#   VehReg 7->5, QH 4->5 -> 14 combos net delta. All entities reset for re-test.
 # v1.4 (2026-07-27, DEX-1284 lockstep with TX_TLETS v4.8): re-synced the base-6 labels/layout to
 #   TX_TLETS's relabel/naming-convention pass -- OLN (DL+DH), canonical "NCIC Image", "Stolen Check"
 #   (Gun/Article/Boat), lean labels (Vehicle Make/Year, VIN, Serial, Gun Make/Caliber, Article Type,
@@ -83,7 +92,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.4"
+    [string]$Version = "1.5"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -134,15 +143,17 @@ $vehRegQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('RegistrationState','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('regionId','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In/Out' }
-        # QV VIN (regional) -- RegionId stays in any[] (metadata-faithful); RegionId EXISTS gates firing + ordered BEFORE RQ VIN: VIN+RegionId -> QV, VIN alone -> RQ.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('regionId'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegistrationState','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        # QVLicensePlateNumber + QVVehicleIdentificationNumber REMOVED v1.5 (lockstep with TX_TLETS
+        # v4.9): ungated subset-shadows (QV{Plate} subset of REG/RQ; QV{VIN} subset of VIN+FRT --
+        # qualifier subset, no state discriminator -> platform auto-fires the metadata QV). regionId
+        # (optional combination field) KEPT -- moved to the RQ plate + RQ VIN any[] (never drop a
+        # devdoc-optional combination field; it rides the union pool the auto-fired QV reads).
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
     )
-    description = 'VehicleInsuranceRegistrationQuery -- 7 combos (REG/RQ/VIN+FRT/DPSI/QV).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+    description = 'VehicleInsuranceRegistrationQuery -- 5 combos (REG/RQ/VIN+FRT/DPSI). QV plate/VIN removed v1.5 (ungated subset shadows, lockstep w/ TX_TLETS v4.9).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
 # --- DriverLicenseQuery (3 combos) ---
@@ -289,8 +300,8 @@ $boatQuery = [PSCustomObject]@{
         # QBRegistrationNumber: Hull>Reg guardrail. BoatHullIdNumber is the NOT_EXISTS gate subject,
         # so it must NOT appear in any[] -- a field can't be in the serialization pool AND gate the
         # combo out of existence (contradiction; also poisons Build-MinimalData test injection).
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'RegistrationNumber'; keyReference = 'QBRegistrationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }; primaryFieldReference = 'BoatHullIdNumber'; keyReference = 'QBBoatHullIdNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'RegistrationNumber'; keyReference = 'QBRegistrationNumber'; state = 'In' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'BoatHullIdNumber'; keyReference = 'QBBoatHullIdNumber'; state = 'In' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }; primaryFieldReference = 'NCICNumber'; keyReference = 'QBNCICNumber'; state = 'In/Out' }
     )
     description = 'BoatQuery -- 5 combos (BQ OOS + QB in-state/NCIC).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_BoatQuery'; type = 'QUERYINPUTDATAMAPPING'; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'BoatQuery'; queryLabel = 'Boat'; targetEntity = 'Boat'
@@ -409,7 +420,11 @@ $cchQH = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('requestorCCH','operatorCCH','birthDateCCH','inquiryReasonCCH','nameLastCCH','nameFirstCCH','purposeCodeCCH','sexCodeCCH','raceCodeCCH'); any = @('miscellaneousNumberCCH','socialSecurityNumberCCH','nameMiddleCCH','nameSuffixCCH') }; primaryFieldReference = 'BirthDate'; keyReference = 'QH.BDOB'; state = 'In/Out' }
         # QH.NAME -- bare Name combo (metadata-exact). SSN/MiscNumber optional enrichments, not required.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('requestorCCH','operatorCCH','inquiryReasonCCH','nameLastCCH','nameFirstCCH','purposeCodeCCH'); any = @('nameMiddleCCH','nameSuffixCCH','socialSecurityNumberCCH','miscellaneousNumberCCH') }; primaryFieldReference = 'Name'; keyReference = 'QH.NAME'; state = 'In/Out' }
+        # QH.NAME split v1.5 into SSN + MISC branches to honor the metadata mandatory
+        # Choice{SocialSecurityNumber|MiscellaneousNumber} (v1.1 wrongly demoted both to optional
+        # any[]). Matches the QWI.SSN/QWI.MISC pattern -- one of SSN/Misc is now required.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('requestorCCH','operatorCCH','inquiryReasonCCH','nameLastCCH','nameFirstCCH','purposeCodeCCH','socialSecurityNumberCCH'); any = @('nameMiddleCCH','nameSuffixCCH') }; primaryFieldReference = 'Name'; keyReference = 'QH.NAME.SSN'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('requestorCCH','operatorCCH','inquiryReasonCCH','nameLastCCH','nameFirstCCH','purposeCodeCCH','miscellaneousNumberCCH'); any = @('nameMiddleCCH','nameSuffixCCH') }; primaryFieldReference = 'Name'; keyReference = 'QH.NAME.MISC'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('inquiryReasonCCH','requestorCCH','operatorCCH','stateIdNumberCCH','purposeCodeCCH'); any = @('nameLastCCH','nameFirstCCH','nameMiddleCCH','nameSuffixCCH') }; primaryFieldReference = 'StateIdNumber'; keyReference = 'QH.SID'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('inquiryReasonCCH','requestorCCH','operatorCCH','fbiNumberCCH','purposeCodeCCH'); any = @('nameLastCCH','nameFirstCCH','nameMiddleCCH','nameSuffixCCH') }; primaryFieldReference = 'FBINumber'; keyReference = 'QH.FBI'; state = 'In/Out' }
     )
@@ -531,8 +546,8 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'VehicleMakeCode_Input';             node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
-            # LABEL-OVERRIDE: regionId -- genuinely any[]-only with no default anywhere (TX_TLETS main
-            # v4.4 accepted override), bare label per Rob's explicit call.
+            # LABEL-OVERRIDE: regionId -- any[]-only optional combination field, KEPT after the QV combo
+            # removal (a devdoc-optional combination field is never dropped); rides the RQ plate/VIN pool.
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'stickerNumber_Input';               node = Inp 'stickerNumber' 'Sticker Number' '10' 'ROW_VEH_3' }
                 @{ id = 'financialResponsibilityType_Input'; node = Inp 'financialResponsibilityType' 'Fin. Resp. Type' '1' 'ROW_VEH_3' @{ initialValue = 'E' } }
