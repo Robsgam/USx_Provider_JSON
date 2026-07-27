@@ -887,6 +887,15 @@ See also:
     (Make/Year/MI/Suffix/Caliber/etc.) carry a "# LABEL-OVERRIDE: <fieldId> -- <reason>" tag so
     CHECK 15 Rule 3 downgrades the WARN to accepted [INFO]. Applied per-provider on its revisit turn.
 
+    CARD TITLES ARE UPPERCASE (global, Rob 2026-07-27 -- "everything needs to be upper case"):
+    Every card `title` string is ALL-CAPS. The chosen form is UPPERCASE-the-current-wording (NOT a
+    reword) -- query-path titles keep their paths, just uppercased (e.g. "DRIVER LICENSE SEARCH BY
+    OLN, \"OR\" NAME", "FIREARM SEARCH BY SERIAL NUMBER", "SEARCH OPTIONS"). This is titles ONLY --
+    field labels are NOT uppercased (OLN/NCIC Image stay as-is; "First Name" etc. keep normal case).
+    Applied to the 7 rebuilt-today providers (TX/CCH/NY/FL/NJ/CA/HI, 2026-07-27); retrofit the rest
+    on their revisit turn. Titles are free text (not field labels) so no CHECK 15 interaction; ASCII
+    only (LIMITATION #11). Mechanical: uppercase every `title = '...'` string in the build script.
+
     SEVEN CANONICAL HINT TYPES (required on applicable fields):
 
     1. ROUTING ALTERNATIVES -- on any primary identifier where an alternative
