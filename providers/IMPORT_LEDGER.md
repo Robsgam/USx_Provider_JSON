@@ -21,12 +21,12 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 
 | Provider | URL | DEX | Installed (logged) | Repo | Note |
 |---|---|---|---|---|---|
-| NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (archived) | v4.12 | v4.11 relabel + v4.12 Person consolidation built; all 5 reset — re-import+capture pending |
-| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.8 (archived) | v7.9 | v7.9 built (DEX-1284 relabel); all 5 reset — re-import+capture pending |
-| HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (archived) | v4.12 | v4.12 built (DEX-1284 relabel); all 5 reset — re-import+capture pending |
-| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.15 (66 logs) | v4.15 | current (full re-test complete 2026-07-27; in/out gates validated live) |
-| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.10 (83 logs) | v4.10 | current (full re-test complete 2026-07-27) |
-| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.17 | last tenant-tested v2.12; v2.13-v2.17 built (v2.17 = DEX-1284 OLN relabel), not re-captured |
+| NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (archived) | v4.13 | v4.11 relabel + v4.12 consolidation + v4.13 UPPERCASE titles built; all 5 reset — re-import+capture pending |
+| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.8 (archived) | v7.10 | v7.9 relabel + v7.10 UPPERCASE titles built; all 5 reset — re-import+capture pending |
+| HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (archived) | v4.13 | v4.12 relabel + v4.13 UPPERCASE titles + Boat-stolen audit fix built; all 5 reset — re-import+capture pending |
+| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.15 (archived) | v4.16 | v4.15 WAS tenant-complete; v4.16 (UPPERCASE titles) RESET it — re-import+capture pending |
+| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.10 (archived) | v4.11 | v4.10 WAS tenant-complete; v4.11 (UPPERCASE titles) RESET it — re-import+capture pending |
+| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.18 | last tenant-tested v2.12; v2.13-v2.18 built (v2.18 = UPPERCASE titles + gunCaliber CAD fix), not re-captured |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.1 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22 |
 
 All other providers (CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,
@@ -40,11 +40,11 @@ in repo, awaiting first tenant import.
 
 | Tenant | Provider | Version | Imported | Notes |
 |---|---|---|---|---|
-| Newark Foundation | NJ_NJCJIS | v4.10 | 2026-07-22 | hands-off MODE — **behind repo v4.12** (DEX-1284 relabel + Person consolidation); manual re-import owed |
+| Newark Foundation | NJ_NJCJIS | v4.10 | 2026-07-22 | hands-off MODE — **behind repo v4.13** (relabel + consolidation + UPPERCASE titles); manual re-import owed |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
-| Miami Springs Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.9** (DEX-1284 relabel); manual re-import owed |
-| North Miami Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.9** (DEX-1284 relabel); manual re-import owed |
-| Balcones Heights TX Foundation | TX_TLETS | v4.10 | 2026-07-27 | was v4.2 (2026-07-17) → v4.7 (2026-07-22) → v4.10 (today) |
+| Miami Springs Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.10** (relabel + UPPERCASE titles); manual re-import owed |
+| North Miami Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.10** (relabel + UPPERCASE titles); manual re-import owed |
+| Balcones Heights TX Foundation | TX_TLETS | v4.10 | 2026-07-27 | v4.2→v4.7→v4.10; now **behind repo v4.11** (UPPERCASE titles); manual re-import owed |
 
 **Maintenance:** add/bump a row here ONLY when an import is actually reported (per
 `project_deployment_tracking` memory: never record from an "update X to latest" instruction alone).
