@@ -22,7 +22,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | Provider | URL | DEX | Installed (logged) | Repo | Note |
 |---|---|---|---|---|---|
 | NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (archived) | v4.13 | v4.11 relabel + v4.12 consolidation + v4.13 UPPERCASE titles built; all 5 reset — re-import+capture pending |
-| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.8 (archived) | v7.10 | v7.9 relabel + v7.10 UPPERCASE titles built; all 5 reset — re-import+capture pending |
+| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.12 (118 logs) | v7.12 | current (tenant-complete 2026-07-28: v7.11 UI/label fixes + v7.12 Vehicle-first order, ALL-PASS 118/118) |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (archived) | v4.13 | v4.12 relabel + v4.13 UPPERCASE titles + Boat-stolen audit fix built; all 5 reset — re-import+capture pending |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.16 (67 logs) | v4.16 | current (tenant-complete 2026-07-27, UPPERCASE-title re-sweep) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.12 (84 logs) | v4.12 | current (tenant-complete 2026-07-27, Person 2-card-fold re-sweep) |
@@ -42,8 +42,8 @@ in repo, awaiting first tenant import.
 |---|---|---|---|---|
 | Newark Foundation | NJ_NJCJIS | v4.10 | 2026-07-22 | hands-off MODE — **behind repo v4.13** (relabel + consolidation + UPPERCASE titles); manual re-import owed |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
-| Miami Springs Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.10** (relabel + UPPERCASE titles); manual re-import owed |
-| North Miami Foundation | FL_FCIC | v7.8 | 2026-07-22 | hands-off MODE — **behind repo v7.10** (relabel + UPPERCASE titles); manual re-import owed |
+| Miami Springs Foundation | FL_FCIC | v7.12 | 2026-07-28 | current — v7.8→v7.12 (v7.9 relabel + v7.10 UPPERCASE + v7.11 UI/label fixes + v7.12 Vehicle-first order) |
+| North Miami Foundation | FL_FCIC | v7.12 | 2026-07-28 | current — v7.8→v7.12 (v7.9 relabel + v7.10 UPPERCASE + v7.11 UI/label fixes + v7.12 Vehicle-first order) |
 | Balcones Heights TX Foundation | TX_TLETS | v4.12 | 2026-07-27 | v4.2→v4.7→v4.10→v4.12 (Person 2-card fold); current |
 
 **Maintenance:** add/bump a row here ONLY when an import is actually reported (per
@@ -64,4 +64,4 @@ for p in */; do p="${p%/}"; [ -d "$p/logs" ] || continue
 done
 ```
 
-_Last reconciled: 2026-07-27._
+_Last reconciled: 2026-07-28._
