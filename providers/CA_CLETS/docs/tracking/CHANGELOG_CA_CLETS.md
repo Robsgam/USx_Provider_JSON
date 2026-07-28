@@ -2,9 +2,25 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.21** | Generated: 2026-07-28
+Current: **v2.22** | Generated: 2026-07-28
 
 ---
+
+## v2.22 -- 2026-07-28 -- Lean-label pass + stale combo-count doc fixes (direct Rob feedback + adversarial audit, NO functional change)
+
+**CHANGED:**
+  (1) LEAN LABELS -- stripped every "(optional)"/"(with Name, optional)"/"(required with Name)"  
+    helper now that the card titles carry the query paths (matches FL/NJ/HI/NY/TX): Vehicle  
+    Make/Year/City/Street; DL DOB/Age/Height/County/Race; Article Type/Brand/Category -> bare, each  
+    any[]-only field tagged # LABEL-OVERRIDE so verify_build CHECK 15 stays clean. Boat owner Name  
+    "(out-of-state only)" -> "(out-of-state)"; Boat DOB helper dropped. State fields keep their  
+    "leave blank for CA" routing hint.  
+  (2) STALE COMBO COUNTS (adversarial-audit finding, doc-only): bundle description 40->25 combos,  
+    VehicleRegistrationQuery 6->5, BoatQuery 7->6 (the 40/6/7 were pre-v2.5 counts, before the 13  
+    IV.4* + IV.4V/IV.4B deletions) + header card-count 8->6.  
+**REASON:** Rob -- "clean up all the optional labels, cleaner pass like the other providers" + the
+  adversarial audit's stale-string findings. Label/doc-only, no combo/QIDM/routing/fieldId/default  
+  change; wire identical. Audit confirmed the v2.21 Person fold is fully intact. ALL 5 ENTITIES RESET.  
 
 ## v2.21 -- 2026-07-28 -- FIX botched v2.20 Person fold -- DH card lost its State field (Rob caught it)
 

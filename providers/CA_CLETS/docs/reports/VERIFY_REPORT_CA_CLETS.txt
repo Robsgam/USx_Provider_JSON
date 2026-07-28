@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.21.json
-  Generated: 2026-07-28 15:45
+  Source: CA_CLETS_v2.22.json
+  Generated: 2026-07-28 16:06
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS_v2.21
+ POST-BUILD VERIFICATION: CA_CLETS_v2.22
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -61,9 +61,20 @@ POST-BUILD VERIFICATION
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional; card title carries the paths))
+  [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'addressCity' (any[]-only) label='City' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement))
+  [INFO] Field 'addressStreetNumber' (any[]-only) label='Street Number' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement))
+  [INFO] Field 'age' (any[]-only) label='Age' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
+  [INFO] Field 'addressCounty' (any[]-only) label='County' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
+  [INFO] Field 'height' (any[]-only) label='Height' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
+  [INFO] Field 'raceCode' (any[]-only) label='Race' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
   [INFO] Field 'GunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
   [INFO] Field 'GunMake' (any[]-only) label='Make' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
   [INFO] Field 'gunTypeCode' (any[]-only) label='Type' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
+  [INFO] Field 'articleBrand' (any[]-only) label='Brand' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'ArticleTypeCode' (any[]-only) label='Article Type' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'articleCategory' (any[]-only) label='Category' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [PASS] All form field labels have required routing hint qualifiers (43 fields scanned) (7 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---

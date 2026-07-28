@@ -1,4 +1,15 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.22 (2026-07-28, lean-label pass + stale-count doc fixes -- direct Rob feedback + adversarial
+#   audit, NO functional change): (1) LEAN LABELS -- stripped every "(optional)"/"(with Name,
+#   optional)"/"(required with Name)" helper now that the card titles carry the query paths (matches
+#   the FL/NJ/HI/NY/TX pass): Vehicle Make/Year/City/Street; DL DOB/Age/Height/County/Race; Article
+#   Type/Brand/Category -> bare, each any[]-only field tagged `# LABEL-OVERRIDE` so CHECK 15 stays
+#   clean. Boat owner Name "(out-of-state only)" -> "(out-of-state)" (kept the routing hint); Boat
+#   DOB helper dropped. State fields keep their "leave blank for CA" routing hint. (2) STALE COUNTS
+#   (adversarial-audit finding, doc-only): corrected the bundle description 40->25 combos, VehReg
+#   6->5, Boat 7->6 (the 40/6/7 were pre-v2.5 counts before the IV.4* deletions) + the header
+#   card-count (8->6). Label/doc-only, no combo/QIDM/routing/fieldId/default change. Audit confirmed
+#   the v2.21 Person fold is fully intact. ALL 5 ENTITIES RESET at v2.22.
 # v2.21 (2026-07-28, FIX botched v2.20 Person fold -- Rob caught it): v2.20 folded the shared
 #   RegistrationState onto the DL card ONLY, on the wrong premise that "CA's DH uses no State."
 #   The DriverHistoryQuery (NLTS.KQ = Nlets/interstate) DOES source State (attribute State ->
@@ -94,11 +105,13 @@
 #   (probe-confirmed present; matches RND-54190 runbook + sibling VehicleModelName). Result-mapping
 #   only; request-side combos unchanged. Full re-test from T1 per rebuild mandate.
 # Builds CA_CLETS.json from source\CA_CLETS.xml metadata + KB specs.
-# QIDMs expanded to cover ALL 40 metadata combos (40 built, 0 LIMITATION).
-# Layout: Vehicle(2), Person(3), Firearm(1), Article(1), Boat(1) -- 8 cards total
+# QIDMs cover ALL 25 built combos (0 LIMITATION). (Count corrected v2.22 -- was a stale "40" from
+# before the v2.5 deletion of the 13 IV.4* + IV.4V/IV.4B poisoned/redundant combos.)
+# Layout (v2.22): Vehicle(1), Person(2: DL+DH), Firearm(1), Article(1), Boat(1) -- 6 cards total
+#   (Vehicle collapsed to 1 card v2.14; Person OPTIONS folded into DL v2.20/v2.21.)
 #
-# QUERYINPUTDATAMAPPING (CommSys -- 6 QIDMs, 40 combos):
-#   VehicleRegistrationQuery   NLTS.RQ(P/V) + IN.VP + IV.4V + IA.QVK + IA.QV = 6 combos
+# QUERYINPUTDATAMAPPING (CommSys -- 6 QIDMs, 25 combos):
+#   VehicleRegistrationQuery   NLTS.RQ(P/V) + IN.VP + IA.QVK + IA.QV = 5 combos
 #     v2.5: deleted 13 IV.4* plate-type combos (server routes by LicensePlateTypeCode value;
 #     wire = MessageType=VehicleRegistrationQuery, keyRef internal) + removed inert State NOT_EQUALS.
 #     v2.6: PascalCase USx fieldIds, identifier-priority guardrails (Plate>VIN, OLN>Name, Hull>Reg),
@@ -109,13 +122,13 @@
 #   DriverHistoryQuery         NLTS.KQ(N/O) = 2 combos, DH-suffix fields
 #   GunQuery                   IG.QGH (name) + IG.QGB (serial) = 2 combos
 #   ArticleSingleQuery         IP.QA(S/O) = 2 combos
-#   BoatQuery                  NLTS.BQ(N/H/R) + IA.QB(H/O/R) + IV.4B = 7 combos
+#   BoatQuery                  NLTS.BQ(N/H/R) + IA.QB(H/O/R) = 6 combos
 #
 # Run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.21"
+    [string]$Version = "2.22"
 )
 
 $ErrorActionPreference = "Stop"
@@ -275,7 +288,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- 6 combos: NLTS.RQ.P/V (OOS), IN.VP (name), IV.4V/IA.QVK (VIN), IA.QV (plate+optional type; server routes IV.4* by plate-type value). v2.5: 13 IV.4* combos deleted (redundant; server-side value routing), inert State conditions removed. v2.6: PascalCase fieldIds, Plate>VIN guardrail on NLTS.RQ.V+IA.QVK, CAD defaults on all combos.'
+    description        = 'VehicleRegistrationQuery -- 5 combos: NLTS.RQ.P/V (OOS), IN.VP (name), IA.QVK (VIN), IA.QV (plate+optional type; server routes IV.4* by plate-type value). v2.5: 13 IV.4* combos deleted (redundant; server-side value routing), inert State conditions removed. v2.6: PascalCase fieldIds, Plate>VIN guardrail on NLTS.RQ.V+IA.QVK, CAD defaults on all combos.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = "${provider}_VehicleRegistrationQuery"
     type               = 'QUERYINPUTDATAMAPPING'
@@ -805,7 +818,7 @@ $boatQuery = [PSCustomObject]@{
         }
         # (IV.4B boat-reg combo DELETED v2.5 -- identical required set to IA.QB.R; server routes; wire=BoatQuery+regNumber.)
     )
-    description     = 'BoatQuery -- 7 combos: NLTS.BQ OOS (name, hull, reg) + IA.QB (hull, OAN, reg) + IV.4B (covered by IA.QB.R). MC cross-entity. v2.6: PascalCase fieldIds, Hull>Reg guardrail on NLTS.BQ.R+IA.QB.R, CAD defaults on all combos.'
+    description     = 'BoatQuery -- 6 combos: NLTS.BQ OOS (name, hull, reg) + IA.QB (hull, OAN, reg). MC cross-entity. v2.6: PascalCase fieldIds, Hull>Reg guardrail on NLTS.BQ.R+IA.QB.R, CAD defaults on all combos.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = "${provider}_BoatQuery"
     type            = 'QUERYINPUTDATAMAPPING'
@@ -818,7 +831,7 @@ $boatQuery = [PSCustomObject]@{
 
 $caBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for ${provider} v${Version} MC -- 6 QIDMs, 40 combos, 100% metadata coverage"
+    description    = "Provider configuration for ${provider} v${Version} MC -- 6 QIDMs, 25 combos, 100% metadata coverage"
     name           = $provider
     type           = 'BUNDLE'
     provider       = $provider
@@ -861,14 +874,18 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '30' 'ROW_VEH_3' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
-                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year (optional)' '4' 'ROW_VEH_3' }
+                # LABEL-OVERRIDE: VehicleMakeCode -- bare per DEX-1284 lean pass (any[] optional; card title carries the paths)
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
+                # LABEL-OVERRIDE: vehicleYear -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year' '4' 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_4'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_4' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_4' }
-                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City (with Name, optional)'          '13' 'ROW_VEH_4' }
-                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number (with Name, optional)' '3'  'ROW_VEH_4' }
+                # LABEL-OVERRIDE: addressCity -- bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement)
+                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City'          '13' 'ROW_VEH_4' }
+                # LABEL-OVERRIDE: addressStreetNumber -- bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement)
+                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number' '3'  'ROW_VEH_4' }
             )}
         )
     }
@@ -902,19 +919,24 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DL_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_DL_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (optional)'                                    'ROW_PER_DL_2' }
+                # LABEL-OVERRIDE: BirthDate -- bare per DEX-1284 lean pass (any[] optional on the DL name/OLN paths)
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_2' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_2' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'Age_Input';            node = Inp 'age'            'Age (optional)'    '2' 'ROW_PER_DL_3' }
-                @{ id = 'Height_Input';         node = Inp 'height'         'Height (optional)' '3' 'ROW_PER_DL_3' }
-                @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County (optional)' '3' 'ROW_PER_DL_3' }
+                # LABEL-OVERRIDE: age -- bare per DEX-1284 lean pass (any[] optional DL refinement)
+                @{ id = 'Age_Input';            node = Inp 'age'            'Age'    '2' 'ROW_PER_DL_3' }
+                # LABEL-OVERRIDE: height -- bare per DEX-1284 lean pass (any[] optional DL refinement)
+                @{ id = 'Height_Input';         node = Inp 'height'         'Height' '3' 'ROW_PER_DL_3' }
+                # LABEL-OVERRIDE: addressCounty -- bare per DEX-1284 lean pass (any[] optional DL refinement)
+                @{ id = 'AddressCounty_Input';  node = Inp 'addressCounty'  'County' '3' 'ROW_PER_DL_3' }
                 # attributeTypeId='RACE'+codeTypeProvider='NIBRS' mirrors the SexCode field (line ~845):
                 # produces the attribute ID the RMS race attr (useAttributeId=true) needs AND the code
                 # for the CommSys RaceCode wire -- the dual-consumer pattern proven by sex. (Was
                 # codeTypeCategory='NIBRS_RACE' code-string-only, which tripped AP #11 once race was
                 # added to RMS on 2026-07-24.) VERIFY at re-test: RACE dropdown populates + CommSys RaceCode wire.
-                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
+                # LABEL-OVERRIDE: raceCode -- bare per DEX-1284 lean pass (any[] optional DL refinement)
+                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
             # v2.20/v2.21: SEARCH OPTIONS card folded away -- Person = 2 cards (DL + DH). State +
             # Purpose Code go on the DL card's bottom row (DriverLicenseQuery sources shared
@@ -1010,9 +1032,12 @@ $artLayout = MakeLayouts @(
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'ArticleTypeCode_Input';  node = Sel 'ArticleTypeCode'  'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ArticleBrand_Input';     node = Inp 'articleBrand'     'Brand (optional)'        '6'                                                                     'ROW_ART_2' }
-                @{ id = 'ArticleCategory_Input';  node = Inp 'articleCategory'  'Category (optional)'     '1'                                                                     'ROW_ART_2' }
+                # LABEL-OVERRIDE: ArticleTypeCode -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'ArticleTypeCode_Input';  node = Sel 'ArticleTypeCode'  'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
+                # LABEL-OVERRIDE: articleBrand -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'ArticleBrand_Input';     node = Inp 'articleBrand'     'Brand'        '6'                                                                     'ROW_ART_2' }
+                # LABEL-OVERRIDE: articleCategory -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'ArticleCategory_Input';  node = Inp 'articleCategory'  'Category'     '1'                                                                     'ROW_ART_2' }
             )}
         )
     }
@@ -1041,12 +1066,12 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state only)' '30' 'ROW_BOA_2' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state only)'  '30' 'ROW_BOA_2' }
-                @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth (required with Name)' 'ROW_BOA_2' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state)' '30' 'ROW_BOA_2' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state)'  '30' 'ROW_BOA_2' }
+                @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth' 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_3'; cols = @('6','4'); fields = @(
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA; required with Name)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_3' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_3' }
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_BOA_3' @{ initialValue = 'C' } }
             )}
         )
