@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QAProcessControlNumber_any (QAProcessControlNumber_any (auto))
+Date: 2026-07-28 09:55:43
+Result: PASS
+JSON Version: 7.12
+Entity Fingerprint: cc1147efc052491fece359bbad9f89cf39db32292376d92b7d7002fdcc914726
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","processControlNumber":"0000012345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYMFJFD85W3RRR4NYQCZFBRQ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01KYMFJFD85W3RRR4NYQCZFBRQ</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <ProcessControlNumber>0000012345</ProcessControlNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYMFJFD85W3RRR4NYQCZFBRQ
+  ImageIndicator                 Y
+  ProcessControlNumber           0000012345
+
+NOTES
+-----
+Automated capture (txId 01KYMFJFD85W3RRR4NYQCZFBRQ). kind=any; anyField=; expectedKeyRef=QAProcessControlNumber; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
