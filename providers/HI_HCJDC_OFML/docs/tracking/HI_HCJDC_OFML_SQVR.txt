@@ -117,8 +117,8 @@ Architecture notes:
 
   M55L_guardrail -- plate-wins: Plate+VIN co-entry -> plate path wins (bare plate -> M55L per
     v4.7 CHECK 16 routing; +Type -> RQ), VIN absent from XML. Was mislabelled RQ_guardrail
-    until the 2026-07-02 content-based relabel (sim expectation corrected). [PENDING]
-    v4.10 live-proven 2026-07-20: M55L_guardrail_vs_M55S + M55L_guardrail_vs_RQV both PASS
+    until the 2026-07-02 content-based relabel (sim expectation corrected). [CONFIRMED]
+    v4.14 USx-tenant-verified 2026-07-28: M55L_guardrail_vs_M55S + M55L_guardrail_vs_RQV both PASS
     (captured combo names carry a _vs_<loser> suffix the SQVR line's generic label predates;
     hand-reconciled -- auto-updater matches keyReference: lines, not guardrail variants).
 
@@ -184,7 +184,7 @@ Architecture notes:
   HI_HCJDC_OFML_ACCEPTED_DIVERGENCES.txt and BUILD_RULES.txt.
 
   DQN_guardrail_vs_DQ -- OLN>Name: OLN+Name co-entry -> only DQN fires, DQ exits pool [CONFIRMED]
-    Live v4.8 (logs/Person/HI_HCJDC_OFML_v4.8_DQN_guardrail_vs_DQ.txt).
+    Live v4.8 (logs/Person/HI_HCJDC_OFML_v4.14_DQN_guardrail_vs_DQ.txt).
 
   Priority order: DQN > DQ -- CONFIRMED (note; backed by combo logs T1-T4, DQN_guardrail_vs_DQ)
     OLN first; Name+Sex+DOB second (Sex required -- no longer a Sex-optional QW fallback).
@@ -230,7 +230,7 @@ Architecture notes:
     in wire (purposeCodeDH=C form input; Attention auto-populated via handler).
 
   KQN_guardrail_vs_KQ -- OLN>Name DH: OLN+Name co-entry -> only KQN fires, KQ exits pool [CONFIRMED]
-    Live v4.8 (logs/Person/HI_HCJDC_OFML_v4.8_KQN_guardrail_vs_KQ.txt).
+    Live v4.8 (logs/Person/HI_HCJDC_OFML_v4.14_KQN_guardrail_vs_KQ.txt).
 
   Priority order: KQN > KQ -- CONFIRMED (note; backed by combo logs T5-T8, KQN_guardrail_vs_KQ)
     OLN before Name. Live v4.8.
@@ -255,8 +255,8 @@ Architecture notes:
     any: (empty)
     keyReference: QG
 
-  QG_any -- Serial + Make + Caliber + Model + RelatedSearchHitIndicator all present [PENDING]
-    v4.11 live-proven 2026-07-21: HI_HCJDC_OFML_v4.11_QG_any.txt PASS (both PHASE 6 gates verified).
+  QG_any -- Serial + Make + Caliber + Model + RelatedSearchHitIndicator all present [CONFIRMED]
+    v4.14 USx-tenant-verified 2026-07-28: HI_HCJDC_OFML_v4.14_QG_any.txt PASS (both PHASE 6 gates verified).
 
 ================================================================================
 5. ArticleSingleQuery -- Article Entity
@@ -292,8 +292,8 @@ Architecture notes:
     any: (empty)
     keyReference: QB
 
-  QB_guardrail -- Hull>Reg: Hull+Reg co-entry -> only QB fires, BQ exits pool [PENDING]
-    v4.10 live-proven 2026-07-20: HI_HCJDC_OFML_v4.10_QB_guardrail_vs_BQ.txt PASS.
+  QB_guardrail -- Hull>Reg: Hull+Reg co-entry -> only QB fires, BQ exits pool [CONFIRMED]
+    v4.14 USx-tenant-verified 2026-07-28: HI_HCJDC_OFML_v4.14_QB_guardrail_vs_BQ.txt PASS.
 
   Priority order: BQ > QB -- CONFIRMED (note; backed by live v3.5 T22/T23)
     Registration before Hull. T22: RegistrationNumber filled -> BQ. T23: Hull filled -> QB.
