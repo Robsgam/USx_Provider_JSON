@@ -1,0 +1,1982 @@
+{
+    "provider":  "AZ_AZDPS",
+    "version":  "3.2",
+    "tier":  "Full",
+    "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
+    "testCount":  83,
+    "formDefaults":  {
+                         "Vehicle":  {
+                                         "LicensePlateTypeCode":  "PC",
+                                         "LicensePlateYear":  "2026",
+                                         "RegistrationState":  "AZ"
+                                     },
+                         "Person":  {
+                                        "RegistrationState":  "AZ",
+                                        "RegistrationStateDH":  "AZ",
+                                        "attention":  "X"
+                                    },
+                         "Firearm":  {
+
+                                     },
+                         "Article":  {
+
+                                     },
+                         "Boat":  {
+                                      "RegistrationState":  "AZ"
+                                  }
+                     },
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVR",
+                      "expectedKeyRef":  "ACVR",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "LicensePlateNumber",
+                                    "value":  "TEST123"
+                                }
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVR",
+                      "expectedKeyRef":  "ACVR",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "LicensePlateYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2025"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVR",
+                      "expectedKeyRef":  "ACVR",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "LicensePlateTypeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVR",
+                      "expectedKeyRef":  "ACVR",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "VehicleMakeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVR",
+                      "expectedKeyRef":  "ACVR",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "vehicleYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVR",
+                      "expectedKeyRef":  "ACVR",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2025"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVRV",
+                      "expectedKeyRef":  "ACVRV",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "VehicleIdentificationNumber",
+                                    "value":  "1HGCM82633A123456"
+                                }
+                  },
+                  {
+                      "n":  8,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVRV",
+                      "expectedKeyRef":  "ACVRV",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "LicensePlateTypeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  9,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVRV",
+                      "expectedKeyRef":  "ACVRV",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "LicensePlateYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2025"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  10,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVRV",
+                      "expectedKeyRef":  "ACVRV",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "VehicleMakeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  11,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVRV",
+                      "expectedKeyRef":  "ACVRV",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "vehicleYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  12,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "ACVRV",
+                      "expectedKeyRef":  "ACVRV",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2025"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  13,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "ACWL",
+                      "expectedKeyRef":  "ACWL",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  14,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "ACWL",
+                      "expectedKeyRef":  "ACWL",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  15,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQN",
+                      "expectedKeyRef":  "DQN",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  16,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQN",
+                      "expectedKeyRef":  "DQN",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  17,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQ",
+                      "expectedKeyRef":  "DQ",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "OperatorLicenseNumber",
+                                    "value":  "D999888777"
+                                }
+                  },
+                  {
+                      "n":  18,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQ",
+                      "expectedKeyRef":  "DQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "BirthDate",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQ",
+                      "expectedKeyRef":  "DQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "SexCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQ",
+                      "expectedKeyRef":  "DQ",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  21,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQSS",
+                      "expectedKeyRef":  "DQSS",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "SocialSecurityNumber",
+                                    "value":  "123456789"
+                                }
+                  },
+                  {
+                      "n":  22,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQSS",
+                      "expectedKeyRef":  "DQSS",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "BirthDate",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  23,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQSS",
+                      "expectedKeyRef":  "DQSS",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "SexCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  24,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  "DQSS",
+                      "expectedKeyRef":  "DQSS",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  25,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQH",
+                      "expectedKeyRef":  "KQH",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  26,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQH",
+                      "expectedKeyRef":  "KQH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "purposeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  27,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQH",
+                      "expectedKeyRef":  "KQH",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQ",
+                      "expectedKeyRef":  "KQ",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "OperatorLicenseNumberDH",
+                                    "value":  "D999888777"
+                                }
+                  },
+                  {
+                      "n":  29,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQ",
+                      "expectedKeyRef":  "KQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "BirthDateDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  30,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQ",
+                      "expectedKeyRef":  "KQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "purposeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQ",
+                      "expectedKeyRef":  "KQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "SexCodeDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQ",
+                      "expectedKeyRef":  "KQ",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQW",
+                      "expectedKeyRef":  "ACQW",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  34,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQW",
+                      "expectedKeyRef":  "ACQW",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ExpandedBirthDateSearchCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedBirthDateSearchCode",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQW",
+                      "expectedKeyRef":  "ACQW",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  36,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQW",
+                      "expectedKeyRef":  "ACQW",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedBirthDateSearchCode",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  37,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQWN",
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "NCICNumber",
+                                    "value":  "X123456789"
+                                }
+                  },
+                  {
+                      "n":  38,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQWN",
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "BirthDate",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  39,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQWN",
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ExpandedBirthDateSearchCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedBirthDateSearchCode",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  40,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQWN",
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "raceCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  41,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQWN",
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  42,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQWN",
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "SexCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  43,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  "ACQWN",
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedBirthDateSearchCode",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  44,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQM",
+                      "expectedKeyRef":  "ACQM",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "Age",
+                                        "value":  "35"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "Height",
+                                        "value":  "509"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  45,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQM",
+                      "expectedKeyRef":  "ACQM",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "Age",
+                                        "value":  "35"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "Height",
+                                        "value":  "509"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  46,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQM",
+                      "expectedKeyRef":  "ACQM",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "Age",
+                                        "value":  "35"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "Height",
+                                        "value":  "509"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  47,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQMN",
+                      "expectedKeyRef":  "ACQMN",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "NCICNumber",
+                                    "value":  "X123456789"
+                                }
+                  },
+                  {
+                      "n":  48,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQMN",
+                      "expectedKeyRef":  "ACQMN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "Age",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "Age",
+                                        "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  49,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQMN",
+                      "expectedKeyRef":  "ACQMN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "Height",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "Height",
+                                        "value":  "509"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  50,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQMN",
+                      "expectedKeyRef":  "ACQMN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "raceCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  51,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQMN",
+                      "expectedKeyRef":  "ACQMN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  52,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQMN",
+                      "expectedKeyRef":  "ACQMN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "SexCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  53,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  "ACQMN",
+                      "expectedKeyRef":  "ACQMN",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "Age",
+                                        "value":  "35"
+                                    },
+                                    {
+                                        "fieldId":  "Height",
+                                        "value":  "509"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  54,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DQ",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ],
+                      "guardrailLoser":  "ACWL"
+                  },
+                  {
+                      "n":  55,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DQSS",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ],
+                      "guardrailLoser":  "ACWL"
+                  },
+                  {
+                      "n":  56,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DQ",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ],
+                      "guardrailLoser":  "DQN"
+                  },
+                  {
+                      "n":  57,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DQSS",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "123456789"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ],
+                      "guardrailLoser":  "DQN"
+                  },
+                  {
+                      "n":  58,
+                      "entity":  "Person",
+                      "query":  "AzAzdpsDriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DQ",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "123456789"
+                                    }
+                                ],
+                      "guardrailLoser":  "DQSS"
+                  },
+                  {
+                      "n":  59,
+                      "entity":  "Person",
+                      "query":  "WMPIWantedPersonInquiry",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DQN",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    }
+                                ],
+                      "guardrailLoser":  "ACQW"
+                  },
+                  {
+                      "n":  60,
+                      "entity":  "Person",
+                      "query":  "WMPIMissingPersonInquiry",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "ACQWN",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "X123456789"
+                                    },
+                                    {
+                                        "fieldId":  "Age",
+                                        "value":  "35"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    },
+                                    {
+                                        "fieldId":  "Height",
+                                        "value":  "509"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    }
+                                ],
+                      "guardrailLoser":  "ACQM"
+                  },
+                  {
+                      "n":  61,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "ACQG",
+                      "expectedKeyRef":  "ACQG",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "serialNumber",
+                                    "value":  "GUN12345"
+                                }
+                  },
+                  {
+                      "n":  62,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "ACQG",
+                      "expectedKeyRef":  "ACQG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunCaliber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunCaliber",
+                                        "value":  "11"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  63,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "ACQG",
+                      "expectedKeyRef":  "ACQG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  64,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "ACQG",
+                      "expectedKeyRef":  "ACQG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunModel",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunModel",
+                                        "value":  "TEST"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  65,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "ACQG",
+                      "expectedKeyRef":  "ACQG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  66,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "ACQG",
+                      "expectedKeyRef":  "ACQG",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunCaliber",
+                                        "value":  "11"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
+                                        "fieldId":  "GunModel",
+                                        "value":  "TEST"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  67,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ACQA",
+                      "expectedKeyRef":  "ACQA",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  68,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ACQA",
+                      "expectedKeyRef":  "ACQA",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  69,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "ACQA",
+                      "expectedKeyRef":  "ACQA",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  70,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "ACQB",
+                      "expectedKeyRef":  "ACQB",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "RegistrationNumber",
+                                    "value":  "FL1234AB"
+                                }
+                  },
+                  {
+                      "n":  71,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "ACQB",
+                      "expectedKeyRef":  "ACQB",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  72,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "ACQB",
+                      "expectedKeyRef":  "ACQB",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  73,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "ACQBH",
+                      "expectedKeyRef":  "ACQBH",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "BoatHullIdNumber",
+                                    "value":  "FL1234AB56H7"
+                                }
+                  },
+                  {
+                      "n":  74,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "ACQBH",
+                      "expectedKeyRef":  "ACQBH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  75,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "ACQBH",
+                      "expectedKeyRef":  "ACQBH",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  76,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQ",
+                      "expectedKeyRef":  "BQ",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "RegistrationNumber",
+                                    "value":  "FL1234AB"
+                                }
+                  },
+                  {
+                      "n":  77,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQ",
+                      "expectedKeyRef":  "BQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  78,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQ",
+                      "expectedKeyRef":  "BQ",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  79,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQH",
+                      "expectedKeyRef":  "BQH",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "BoatHullIdNumber",
+                                    "value":  "FL1234AB56H7"
+                                }
+                  },
+                  {
+                      "n":  80,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQH",
+                      "expectedKeyRef":  "BQH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  81,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQH",
+                      "expectedKeyRef":  "BQH",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  82,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "BQH",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "ACQB"
+                  },
+                  {
+                      "n":  83,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "BQH",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "BQ"
+                  }
+              ]
+}

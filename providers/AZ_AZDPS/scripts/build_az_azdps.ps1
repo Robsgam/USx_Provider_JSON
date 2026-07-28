@@ -4,6 +4,23 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_az_azdps.ps1
 #
+# v3.2 (2026-07-28, DEX-1284 convention pass -- direct Rob feedback, layout/label-only, NO functional
+#   change): brought AZ from the pre-DEX-1284 methodology in line with the FL/NJ/HI/NY/TX/CA portfolio.
+#   STRUCTURE: Vehicle 3 cards (OPTIONS+PLATE+VIN) -> 1; Boat 3 cards (OPTIONS+REG+HULL) -> 1; Person
+#   7 cards -> 3 (DRIVER LICENSE / DRIVER HISTORY / WANTED-MISSING). The shared hidden badge
+#   (dexStateUserId, per-entity), RegistrationStateDH SelH, and Attention feeder all fold onto the
+#   card that consumes them -- preserved exactly (fieldIds/initialValues/InpH/SelH unchanged).
+#   CA-LESSON CHECK applied: verified from the QIDM set[]/any[] that BOTH WMPI queries source the DL
+#   card's shared Name/DOB/Sex, so the DL name stays VISIBLE (WMPI reads it from the pool -- no orphan);
+#   a Wanted/Missing name search enters Name on the Driver License card + descriptors on the
+#   Wanted/Missing card (shared-name design, unchanged wire).
+#   LABELS: OLN (License Number (DL)/(DH) -> "OLN"); "Related Hit (Y)" -> "Stolen Check"
+#   (Firearm/Article/Boat/WMPI); stripped every "(optional)"/"(DH)" helper -> bare + LABEL-OVERRIDE
+#   (Make/Year, MI/Suffix, Exp Name/DOB, Area Code/Form ORI, Gun Make/Model/Caliber); State
+#   "(default AZ - change for out-of-state)" -> bare "State" (initialValue=AZ kept, NJ pattern,
+#   LABEL-OVERRIDE); card titles enumerate query paths; M.I. -> MI; dropped "(DH)" field qualifiers.
+#   AZ has NO ImageIndicator (NCIC Image N/A). No combo/QIDM/routing/fieldId/default/wire change.
+#   ALL 5 ENTITIES RESET at v3.2. NOT yet USx-tenant-tested.
 # v3.1 (2026-07-24): identifier-priority guardrails HARDENED from demotion-only to existence-gate.
 #   v3.0 had ZERO conditions on its CommSys combos -- "priority" was implemented only by demoting the
 #   lower identifier to any[], which does NOT create mutual exclusivity (LIMITATION #1: any[] fields
@@ -75,7 +92,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.1'
+$Version = '3.2'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -626,44 +643,36 @@ $missingQuery = [PSCustomObject]@{
 
 # VEHICLE -- 3 cards: OPTIONS, PLATE SEARCH, VIN SEARCH
 # RegistrationState + dexStateUserId on shared OPTIONS card (no duplicate fieldIds)
+# v3.2: collapsed 3 cards (OPTIONS+PLATE+VIN) -> 1. State + hidden badge fold onto the single card.
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH_OPT'
-        title = 'OPTIONS - Select State for OOS queries'
+        id    = 'CARD_VEH'
+        title = 'VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN'
         rows  = @(
-            @{ id = 'ROW_VEH_OPT_1'; cols = @('6'); fields = @(
-                @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State (default AZ - change for out-of-state)' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_VEH_OPT_1' }
+            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
+                @{ id = 'LicPlate_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'PlateType_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_OPT_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_Veh'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_VEH_OPT_BADGE' }
+            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
+                @{ id = 'VIN_Input';       node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
+                # LABEL-OVERRIDE: VehicleMakeCode -- bare per DEX-1284 lean pass (any[] optional VIN qualifier)
+                @{ id = 'Make_Veh_Input';  node = Sel 'VehicleMakeCode' 'Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                # LABEL-OVERRIDE: vehicleYear -- bare per DEX-1284 lean pass (any[] optional VIN qualifier)
+                @{ id = 'Year_Veh_Input';  node = Inp 'vehicleYear' 'Year' '4' 'ROW_VEH_2' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_PLATE'
-        title = 'PLATE SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_PLATE_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicPlate_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
-                @{ id = 'PlateType_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_1' }
-                @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_1' @{ initialValue = $currentYear } }
+            # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept, officer-editable for OOS, not an in/out routing toggle
+            @{ id = 'ROW_VEH_3'; cols = @('6'); fields = @(
+                @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_VEH_3' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_VIN'
-        title = 'VIN SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_VIN_1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'VIN_Input';       node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_VIN_1' }
-                @{ id = 'Make_Veh_Input';  node = Sel 'VehicleMakeCode' 'Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_VIN_1' }
-                @{ id = 'Year_Veh_Input';  node = Inp 'vehicleYear' 'Year (optional)' '4' 'ROW_VEH_VIN_1' }
+            @{ id = 'ROW_VEH_BADGE'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'dexStateUserId_Veh'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_VEH_BADGE' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- Plate+Badge (ACVR) and VIN+Badge (ACVRV) on multi-card layout.'
+    description  = 'Vehicle queries -- 1 card (v3.2, collapsed from OPTIONS+PLATE+VIN): Plate/Type/Year, VIN/Make/Year, State, hidden badge. Plate+Badge (ACVR) and VIN+Badge (ACVRV).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -673,112 +682,104 @@ $vehicleForm = [PSCustomObject]@{
 
 # PERSON -- 7 cards: OPTIONS, DL, NAME, DH-OLN, DH-NAME, WANTED/MISSING, MISSING PHYSICAL
 # Shared fields: RegistrationState, dexStateUserId, RegistrationStateDH on OPTIONS card
+# v3.2: consolidated 7 cards -> 3 (DL / DH / Wanted-Missing). Shared hidden fields (badge, StateDH)
+# fold onto the card that uses them. NOTE: the two WMPI queries SOURCE the DL card's shared Name/DOB/
+# Sex fields (verified from their QIDM set[]/any[]) -- so the DL name stays VISIBLE on the DL card and
+# a Wanted/Missing name search reads it from there (shared-name design, unchanged wire; the officer
+# fills Name on the Driver License card + descriptors on the Wanted/Missing card).
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER_OPT'
-        title = 'OPTIONS'
-        rows  = @(
-            @{ id = 'ROW_PER_OPT_1'; cols = @('6'); fields = @(
-                @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State (DL - default AZ, change for out-of-state)' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_OPT_1' }
-            )}
-            @{ id = 'ROW_PER_OPT_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_Per'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_PER_OPT_BADGE' }
-            )}
-            @{ id = 'ROW_PER_OPT_STEDH'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'StateDH_Input'; node = SelH 'RegistrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_OPT_STEDH' }
-            )}
-        )
-    }
-    @{
         id    = 'CARD_PER_DL'
-        title = 'DL - LICENSE #'
+        title = 'DRIVER LICENSE SEARCH BY OLN, SSN, "OR" NAME'
         rows  = @(
             @{ id = 'ROW_PER_DL_1'; cols = @('6','6'); fields = @(
-                @{ id = 'OLN_Per_Input'; node = Inp 'OperatorLicenseNumber' 'License Number (DL)' '20' 'ROW_PER_DL_1' }
+                @{ id = 'OLN_Per_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
                 @{ id = 'SSN_Per_Input'; node = Inp 'SocialSecurityNumber' 'SSN' '9' 'ROW_PER_DL_1' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_NAME'
-        title = 'NAME SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_NAME_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '20' 'ROW_PER_NAME_1' }
+            @{ id = 'ROW_PER_DL_2'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '20' 'ROW_PER_DL_2' }
             )}
-            @{ id = 'ROW_PER_NAME_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'M.I. (optional)'   '20' 'ROW_PER_NAME_2' }
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)'  '4' 'ROW_PER_NAME_2' }
-                @{ id = 'BirthDate_Input';  node = Dt  'BirthDate'  'Date of Birth'     'ROW_PER_NAME_2' }
-                @{ id = 'SexCode_Input';    node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_2' }
+            @{ id = 'ROW_PER_DL_3'; cols = @('3','3','3','3'); fields = @(
+                # LABEL-OVERRIDE: nameMiddle -- bare "MI" per DEX-1284 lean pass (any[] optional)
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '20' 'ROW_PER_DL_3' }
+                # LABEL-OVERRIDE: nameSuffix -- bare "Suffix" per DEX-1284 lean pass (any[] optional)
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'  '4' 'ROW_PER_DL_3' }
+                @{ id = 'BirthDate_Input';  node = Dt  'BirthDate'  'Date of Birth'  'ROW_PER_DL_3' }
+                @{ id = 'SexCode_Input';    node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_DH_OLN'
-        title = 'DH - LICENSE #'
-        rows  = @(
-            @{ id = 'ROW_PER_DH_OLN_1'; cols = @('8','4'); fields = @(
-                @{ id = 'OLN_DH_Input';     node = Inp 'OperatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH_OLN_1' }
-                @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_DH_OLN_1' }
+            # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
+            @{ id = 'ROW_PER_DL_4'; cols = @('6'); fields = @(
+                @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DL_4' }
             )}
-            @{ id = 'ROW_PER_DH_OLN_2'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_OLN_2' @{ initialValue = 'X' } }
+            @{ id = 'ROW_PER_DL_BADGE'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'dexStateUserId_Per'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_PER_DL_BADGE' }
             )}
         )
     }
     @{
-        id    = 'CARD_PER_DH_NAME'
-        title = 'DH - NAME SEARCH'
+        id    = 'CARD_PER_DH'
+        title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
-            @{ id = 'ROW_PER_DH_NAME_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name (DH)'  '30' 'ROW_PER_DH_NAME_1' }
-                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name (DH)' '20' 'ROW_PER_DH_NAME_1' }
+            @{ id = 'ROW_PER_DH_1'; cols = @('8','4'); fields = @(
+                @{ id = 'OLN_DH_Input';     node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
+                @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_DH_1' }
             )}
-            @{ id = 'ROW_PER_DH_NAME_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'NameMiddleDH' 'M.I. (DH)'    '20' 'ROW_PER_DH_NAME_2' }
-                @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix (DH)'   '4' 'ROW_PER_DH_NAME_2' }
-                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'DOB (DH)'          'ROW_PER_DH_NAME_2' }
-                @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH' 'Sex (DH)' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_NAME_2' }
+            @{ id = 'ROW_PER_DH_2'; cols = @('6','6'); fields = @(
+                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_2' }
+                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name' '20' 'ROW_PER_DH_2' }
+            )}
+            @{ id = 'ROW_PER_DH_3'; cols = @('3','3','3','3'); fields = @(
+                # LABEL-OVERRIDE: NameMiddleDH -- bare "MI" per DEX-1284 lean pass (any[] optional)
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'NameMiddleDH' 'MI'     '20' 'ROW_PER_DH_3' }
+                # LABEL-OVERRIDE: NameSuffixDH -- bare "Suffix" per DEX-1284 lean pass (any[] optional)
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix'  '4' 'ROW_PER_DH_3' }
+                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth'  'ROW_PER_DH_3' }
+                @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
+            )}
+            # DH self-contained: hidden RegistrationStateDH (SelH, initialValue AZ) + Attention feeder.
+            @{ id = 'ROW_PER_DH_STEDH'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'StateDH_Input'; node = SelH 'RegistrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DH_STEDH' }
+            )}
+            @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
             )}
         )
     }
     @{
         id    = 'CARD_PER_WM'
-        title = 'WANTED/MISSING'
+        title = 'WANTED / MISSING PERSON SEARCH BY NCIC NUMBER, "OR" NAME (name entered on the Driver License card)'
         rows  = @(
             @{ id = 'ROW_PER_WM_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCIC_Input';    node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_PER_WM_1' }
                 @{ id = 'RaceCode_Input';node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_WM_1' }
-                @{ id = 'RelHit_Input';  node = Inp 'relatedHitSearchIndicator' 'Related Hit (Y)' '1' 'ROW_PER_WM_1' }
+                @{ id = 'RelHit_Input';  node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_PER_WM_1' }
             )}
             @{ id = 'ROW_PER_WM_2'; cols = @('4','4'); fields = @(
-                @{ id = 'ExpandName_Input'; node = Inp 'ExpandedNameSearchCode'      'Exp Name Search (optional)' '1' 'ROW_PER_WM_2' }
-                @{ id = 'ExpandDOB_Input';  node = Inp 'ExpandedBirthDateSearchCode' 'Exp DOB Search (optional)'  '1' 'ROW_PER_WM_2' }
+                # LABEL-OVERRIDE: ExpandedNameSearchCode -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'ExpandName_Input'; node = Inp 'ExpandedNameSearchCode'      'Exp Name Search' '1' 'ROW_PER_WM_2' }
+                # LABEL-OVERRIDE: ExpandedBirthDateSearchCode -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'ExpandDOB_Input';  node = Inp 'ExpandedBirthDateSearchCode' 'Exp DOB Search'  '1' 'ROW_PER_WM_2' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_MP'
-        title = 'MISSING PHYSICAL'
-        rows  = @(
-            @{ id = 'ROW_PER_MP_1'; cols = @('2','2','2','3','3'); fields = @(
-                @{ id = 'Age_Input';    node = Inp 'Age'    'Age'    '2' 'ROW_PER_MP_1' }
-                @{ id = 'Height_Input'; node = Inp 'Height' 'Height' '3' 'ROW_PER_MP_1' }
-                @{ id = 'Weight_Input'; node = Inp 'Weight' 'Weight' '3' 'ROW_PER_MP_1' }
-                @{ id = 'Eye_Input';    node = Sel 'EyeColorCode'  'Eye Color'  @{ codeTypeCategory = 'NCIC_EYE_COLOR';  codeTypeSource = 'NCIC' } 'ROW_PER_MP_1' }
-                @{ id = 'Hair_Input';   node = Sel 'HairColorCode' 'Hair Color' @{ codeTypeCategory = 'NCIC_HAIR_COLOR'; codeTypeSource = 'NCIC' } 'ROW_PER_MP_1' }
+            # Missing-person physical descriptors (ACQM set[]).
+            @{ id = 'ROW_PER_WM_3'; cols = @('2','2','2','3','3'); fields = @(
+                @{ id = 'Age_Input';    node = Inp 'Age'    'Age'    '2' 'ROW_PER_WM_3' }
+                @{ id = 'Height_Input'; node = Inp 'Height' 'Height' '3' 'ROW_PER_WM_3' }
+                @{ id = 'Weight_Input'; node = Inp 'Weight' 'Weight' '3' 'ROW_PER_WM_3' }
+                @{ id = 'Eye_Input';    node = Sel 'EyeColorCode'  'Eye Color'  @{ codeTypeCategory = 'NCIC_EYE_COLOR';  codeTypeSource = 'NCIC' } 'ROW_PER_WM_3' }
+                @{ id = 'Hair_Input';   node = Sel 'HairColorCode' 'Hair Color' @{ codeTypeCategory = 'NCIC_HAIR_COLOR'; codeTypeSource = 'NCIC' } 'ROW_PER_WM_3' }
             )}
-            @{ id = 'ROW_PER_MP_2'; cols = @('4','4'); fields = @(
-                @{ id = 'AreaCode_Input'; node = Inp 'AreaCode' 'Area Code (optional)' '3' 'ROW_PER_MP_2' }
-                @{ id = 'FormORI_Input';  node = Inp 'FormORI'  'Form ORI (optional)'  '9' 'ROW_PER_MP_2' }
+            @{ id = 'ROW_PER_WM_4'; cols = @('4','4'); fields = @(
+                # LABEL-OVERRIDE: AreaCode -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'AreaCode_Input'; node = Inp 'AreaCode' 'Area Code' '3' 'ROW_PER_WM_4' }
+                # LABEL-OVERRIDE: FormORI -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'FormORI_Input';  node = Inp 'FormORI'  'Form ORI'  '9' 'ROW_PER_WM_4' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- DL + DH + Wanted + Missing on multi-card layout (7 cards).'
+    description  = 'Person queries -- 3 cards (v3.2, consolidated from 7): DRIVER LICENSE (OLN/SSN/Name/DOB/Sex/State + hidden badge), DRIVER HISTORY (DH-suffix + hidden StateDH/Attention), WANTED/MISSING (NCIC/Race/descriptors; sources the DL card shared Name). DL + DH + Wanted + Missing queries.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -790,7 +791,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'FIREARM SEARCH'
+        title = 'FIREARM SEARCH BY SERIAL NUMBER'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('12'); fields = @(
                 @{ id = 'Serial_FA_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
@@ -799,12 +800,16 @@ $faLayout = MakeLayouts @(
                 @{ id = 'dexStateUserId_FA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_GUN_BADGE' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'Make_FA_Input';   node = Sel 'GunMake'    'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'Model_FA_Input';  node = Inp 'GunModel'   'Model (optional)'   '11' 'ROW_GUN_2' }
-                @{ id = 'Cal_FA_Input';    node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                # LABEL-OVERRIDE: GunMake -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'Make_FA_Input';   node = Sel 'GunMake'    'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                # LABEL-OVERRIDE: GunModel -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'Model_FA_Input';  node = Inp 'GunModel'   'Model'   '11' 'ROW_GUN_2' }
+                # LABEL-OVERRIDE: GunCaliber -- bare per DEX-1284 lean pass (any[] optional)
+                @{ id = 'Cal_FA_Input';    node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
             )}
+            # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
             @{ id = 'ROW_GUN_3'; cols = @('4'); fields = @(
-                @{ id = 'RelHit_FA_Input'; node = Inp 'relatedHitSearchIndicator' 'Related Hit (Y)' '1' 'ROW_GUN_3' }
+                @{ id = 'RelHit_FA_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_GUN_3' }
             )}
         )
     }
@@ -822,7 +827,7 @@ $firearmsForm = [PSCustomObject]@{
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'ARTICLE SEARCH'
+        title = 'ARTICLE SEARCH BY TYPE + SERIAL NUMBER'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('5','7'); fields = @(
                 @{ id = 'Type_ART_Input';   node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
@@ -831,8 +836,9 @@ $artLayout = MakeLayouts @(
             @{ id = 'ROW_ART_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_ART'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_ART_BADGE' }
             )}
+            # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
             @{ id = 'ROW_ART_2'; cols = @('4'); fields = @(
-                @{ id = 'RelHit_ART_Input'; node = Inp 'relatedHitSearchIndicator' 'Related Hit (Y)' '1' 'ROW_ART_2' }
+                @{ id = 'RelHit_ART_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_ART_2' }
             )}
         )
     }
@@ -848,41 +854,31 @@ $articleForm = [PSCustomObject]@{
 
 # BOAT -- 3 cards: OPTIONS, REGISTRATION, HULL
 # RegistrationState + dexStateUserId on shared OPTIONS card (no duplicate fieldIds)
+# v3.2: collapsed 3 cards (OPTIONS+REGISTRATION+HULL) -> 1. Both identifiers on row 1, State + Stolen
+# Check on row 2, hidden badge.
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA_OPT'
-        title = 'OPTIONS'
+        id    = 'CARD_BOA'
+        title = 'BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID'
         rows  = @(
-            @{ id = 'ROW_BOA_OPT_1'; cols = @('6'); fields = @(
-                @{ id = 'State_BOA_Input'; node = Sel 'RegistrationState' 'State (default AZ - change for out-of-state)' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_BOA_OPT_1' }
+            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
+                @{ id = 'Reg_BOA_Input';  node = Inp 'RegistrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
+                @{ id = 'Hull_BOA_Input'; node = Inp 'BoatHullIdNumber'   'Hull ID Number'      '20' 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_OPT_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_BOA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_BOA_OPT_BADGE' }
+            @{ id = 'ROW_BOA_2'; cols = @('4','4'); fields = @(
+                # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
+                @{ id = 'State_BOA_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_BOA_2' }
+                # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
+                @{ id = 'RelHit_BOA_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_BOA_2' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_BOA_REG'
-        title = 'REGISTRATION'
-        rows  = @(
-            @{ id = 'ROW_BOA_REG_1'; cols = @('8'); fields = @(
-                @{ id = 'Reg_BOA_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_REG_1' }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_BOA_HULL'
-        title = 'HULL'
-        rows  = @(
-            @{ id = 'ROW_BOA_HULL_1'; cols = @('8','4'); fields = @(
-                @{ id = 'Hull_BOA_Input';   node = Inp 'BoatHullIdNumber'          'Hull ID Number'  '20' 'ROW_BOA_HULL_1' }
-                @{ id = 'RelHit_BOA_Input'; node = Inp 'relatedHitSearchIndicator' 'Related Hit (Y)'  '1' 'ROW_BOA_HULL_1' }
+            @{ id = 'ROW_BOA_BADGE'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'dexStateUserId_BOA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_BOA_BADGE' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- ACQB/ACQBH (Badge) and BQ/BQH (no Badge) on multi-card layout.'
+    description  = 'Boat queries -- 1 card (v3.2, collapsed from OPTIONS+REGISTRATION+HULL): Reg/Hull, State/Stolen Check, hidden badge. ACQB/ACQBH (Badge) and BQ/BQH (no Badge).'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'

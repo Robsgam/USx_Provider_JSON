@@ -1,65 +1,56 @@
-AZ_AZDPS v3.1 -- TEST MATRIX
+AZ_AZDPS v3.2 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-27
+Generated: 2026-07-28
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 8 fields):
-  CARD_VEH_OPT (OPTIONS - Select State for OOS queries):
-    RegistrationState [Sel STATE, AZ]
-    dexStateUserId [Inp]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-  CARD_VEH_VIN (VIN SEARCH):
-    VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+Vehicle (1 card, 8 fields):
+  CARD_VEH (VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN):
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+    ROW 3: RegistrationState [Sel STATE, AZ]
+    ROW 4: dexStateUserId [Inp]
 
-Person (7 cards, 32 fields):
-  CARD_PER_OPT (OPTIONS):
-    RegistrationState [Sel STATE, AZ]
-    dexStateUserId [Inp]
-    RegistrationStateDH [Sel STATE, AZ]
-  CARD_PER_DL (DL - LICENSE #):
-    OperatorLicenseNumber [Inp 20], SocialSecurityNumber [Inp 9]
-  CARD_PER_NAME (NAME SEARCH):
-    ROW 1: NameLast [Inp 30], NameFirst [Inp 20]
-    ROW 2: nameMiddle [Inp 20], nameSuffix [Inp 4], BirthDate [FormDate], SexCode [Sel SEX]
-  CARD_PER_DH_OLN (DH - LICENSE #):
-    OperatorLicenseNumberDH [Inp 20], purposeCode [Inp 1]
-    attention [Inp X, 30]
-  CARD_PER_DH_NAME (DH - NAME SEARCH):
-    ROW 1: NameLastDH [Inp 30], NameFirstDH [Inp 20]
-    ROW 2: NameMiddleDH [Inp 20], NameSuffixDH [Inp 4], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
-  CARD_PER_WM (WANTED/MISSING):
+Person (3 cards, 32 fields):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, SSN, "OR" NAME):
+    ROW 1: OperatorLicenseNumber [Inp 20], SocialSecurityNumber [Inp 9]
+    ROW 2: NameLast [Inp 30], NameFirst [Inp 20]
+    ROW 3: nameMiddle [Inp 20], nameSuffix [Inp 4], BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 4: RegistrationState [Sel STATE, AZ]
+    ROW 5: dexStateUserId [Inp]
+  CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
+    ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCode [Inp 1]
+    ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 20]
+    ROW 3: NameMiddleDH [Inp 20], NameSuffixDH [Inp 4], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 4: RegistrationStateDH [Sel STATE, AZ]
+    ROW 5: attention [Inp X, 30]
+  CARD_PER_WM (WANTED / MISSING PERSON SEARCH BY NCIC NUMBER, "OR" NAME (name entered on the Driver License card)):
     ROW 1: NCICNumber [Inp 10], raceCode [Sel RACE], relatedHitSearchIndicator [Inp 1]
     ROW 2: ExpandedNameSearchCode [Inp 1], ExpandedBirthDateSearchCode [Inp 1]
-  CARD_PER_MP (MISSING PHYSICAL):
-    ROW 1: Age [Inp 2], Height [Inp 3], Weight [Inp 3], EyeColorCode [Sel NCIC_EYE_COLOR/NCIC], HairColorCode [Sel NCIC_HAIR_COLOR/NCIC]
-    ROW 2: AreaCode [Inp 3], FormORI [Inp 9]
+    ROW 3: Age [Inp 2], Height [Inp 3], Weight [Inp 3], EyeColorCode [Sel NCIC_EYE_COLOR/NCIC], HairColorCode [Sel NCIC_HAIR_COLOR/NCIC]
+    ROW 4: AreaCode [Inp 3], FormORI [Inp 9]
 
 Firearm (1 card, 6 fields):
-  CARD_GUN (FIREARM SEARCH):
+  CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
     serialNumber [Inp 11]
     dexStateUserId [Inp]
     GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunModel [Inp 11], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
     relatedHitSearchIndicator [Inp 1]
 
 Article (1 card, 4 fields):
-  CARD_ART (ARTICLE SEARCH):
+  CARD_ART (ARTICLE SEARCH BY TYPE + SERIAL NUMBER):
     ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleSerialNumber [Inp 11]
     dexStateUserId [Inp]
     relatedHitSearchIndicator [Inp 1]
 
-Boat (3 cards, 5 fields):
-  CARD_BOA_OPT (OPTIONS):
-    RegistrationState [Sel STATE, AZ]
-    dexStateUserId [Inp]
-  CARD_BOA_REG (REGISTRATION):
-    RegistrationNumber [Inp 8]
-  CARD_BOA_HULL (HULL):
-    BoatHullIdNumber [Inp 20], relatedHitSearchIndicator [Inp 1]
+Boat (1 card, 5 fields):
+  CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID):
+    ROW 1: RegistrationNumber [Inp 8], BoatHullIdNumber [Inp 20]
+    ROW 2: RegistrationState [Sel STATE, AZ], relatedHitSearchIndicator [Inp 1]
+    ROW 3: dexStateUserId [Inp]
 
 QIDM SUMMARY (8 QIDMs, 18 combos)
 ----------------------------------------
@@ -81,7 +72,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (27 tests -- 7 cards, 10 combos -- WMPIWantedPersonInquiry co-fires with WMPIMissingPersonInquiry)
+ENTITY 1: PERSON (27 tests -- 3 cards, 10 combos -- WMPIWantedPersonInquiry co-fires with WMPIMissingPersonInquiry)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -145,7 +136,7 @@ ENTITY 1: PERSON (27 tests -- 7 cards, 10 combos -- WMPIWantedPersonInquiry co-f
 27  Person      Priority routing: verify more-specific combo wins.  [    ]
               Fill fields that match multiple combos, verify correct one fires.
 
-ENTITY 2: VEHICLE (5 tests -- 3 cards, 2 combos)
+ENTITY 2: VEHICLE (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -160,7 +151,7 @@ ENTITY 2: VEHICLE (5 tests -- 3 cards, 2 combos)
 32  Vehicle     Guardrail: ACVR>ACVRV  LicensePlateNumber=TEST123, dexStateU... [    ]
               Expected: VehicleRegistrationQuery fires (ACVR). dexStateUserId+VIN absent from XML.
 
-ENTITY 3: BOAT (10 tests -- 3 cards, 4 combos)
+ENTITY 3: BOAT (10 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -216,4 +207,4 @@ COMBO COVERAGE (18/18):
   WMPIWantedPersonInquiry: 2/2 -- T1(ACQWN+ACQWN co-fire), T5(ACQW+ACQW co-fire)
   WMPIMissingPersonInquiry: 2/2 -- T1(ACQMN+ACQMN), T3(ACQM+ACQM)
 
-IMPORT FILE: AZ_AZDPS_v3.1.json
+IMPORT FILE: AZ_AZDPS_v3.2.json
