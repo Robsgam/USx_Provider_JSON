@@ -1,0 +1,76 @@
+================================================================
+TEST LOG: FL_FCIC Person DriverHistoryQuery
+Combo: KQOperatorLicenseNumber_any (KQOperatorLicenseNumber_any (auto))
+Date: 2026-07-28 09:56:06
+Result: PASS
+JSON Version: 7.12
+Entity Fingerprint: cad942483366b0c1a367b913f5fc792308a70af277ada783e6df9a2491401892
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","ImageIndicator":"Y","OperatorLicenseNumberDH":"D999888777","RegistrationStateDH":"New Jersey","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYMFDY6AFP0K5QFHXY9QH5HM">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYMFDY6AFP0K5QFHXY9QH5HM</Id>
+            <State>NJ</State>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <PurposeCode>C</PurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYMFDY6AFP0K5QFHXY9QH5HM
+  State                          NJ
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  PurposeCode                    C
+
+NOTES
+-----
+Automated capture (txId 01KYMFDY6AFP0K5QFHXY9QH5HM). kind=any; anyField=; expectedKeyRef=KQOperatorLicenseNumber; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
