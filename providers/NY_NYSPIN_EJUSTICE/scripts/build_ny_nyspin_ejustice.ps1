@@ -472,7 +472,8 @@ $artQuery = [PSCustomObject]@{
 #   RCAR: set[BoatHullIdNumber], any[ImageIndicator]                -- NY hull
 #   BVEH: set[RegistrationNumber, State], any[ImageIndicator]       -- OOS reg
 #   BVIN: set[BoatHullIdNumber, State], any[ImageIndicator]         -- OOS hull
-# ImageIndicator: on Boat OPTIONS card. RelatedHitSearchIndicator: YES_NO_UNKNOWN, default Y.
+# ImageIndicator: on the Boat card. NY BoatQuery metadata defines NO RelatedHitSearchIndicator,
+# so no stolen toggle is built (correct -- NY Boat = Hull/Reg/State/Image only).
 # Order: BVEH > BVIN > RVEH > RCAR (most-specific first)
 # v4.0: Hull>Reg identifier-priority guardrail -- BoatHullIdNumber NOT_EXISTS added to
 #   BVEH + RVEH (Reg combos exit the pool when a Hull ID is also entered). Hull is a
