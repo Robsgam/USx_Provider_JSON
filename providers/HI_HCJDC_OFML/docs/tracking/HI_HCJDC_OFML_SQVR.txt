@@ -49,7 +49,7 @@ Architecture notes:
     ensures that when Plate is present, all VIN combos exit the union pool. Plate wins.
   vehicleYear (v3.6): added to RQV/M55S/QVV any[]; serializes on VIN searches only.
 
-  RQ -- OOS plate (Plate + PlateType + PlateYear) [PENDING]
+  RQ -- OOS plate (Plate + PlateType + PlateYear) [CONFIRMED]
     set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
     any: ImageIndicator, RegistrationState
     keyReference: RQ
@@ -62,7 +62,7 @@ Architecture notes:
     Live v3.6 T6 (DECISIVE -- plate-wins): All fields simultaneously (+ VIN+Make) ->
       CommSys XML = plate only. VehicleIdentificationNumber+VehicleMakeCode ABSENT.
 
-  RQV -- OOS VIN (VIN + State) [PENDING]
+  RQV -- OOS VIN (VIN + State) [CONFIRMED]
     set: VehicleIdentificationNumber, RegistrationState
     any: ImageIndicator, vehicleYear
     conditions: LicensePlateNumber NOT_EXISTS (plate-wins guardrail, v3.6)
@@ -74,7 +74,7 @@ Architecture notes:
       XML VIN/State=CA/VehicleYear=2019/Image=N. VehicleTypeCode ABSENT. vehicleYear confirmed.
       RMS registrationStateAttrIds+vinNumber.
 
-  M55L -- in-state plate (VehicleTypeCode + Plate) [PENDING]
+  M55L -- in-state plate (VehicleTypeCode + Plate) [CONFIRMED]
     set: vehicleTypeCode, LicensePlateNumber
     any: ImageIndicator, RegistrationState
     conditions: LicensePlateTypeCode NOT_EXISTS (exits pool for OOS plate / RQ)
@@ -85,7 +85,7 @@ Architecture notes:
     Live v3.6 T7 (DECISIVE -- plate-wins): Plate+VIN (no State, no PlateType/Year) ->
       M55L fires; VehicleIdentificationNumber ABSENT. M55S exits on LicensePlateNumber NOT_EXISTS.
 
-  M55S -- in-state VIN (VehicleTypeCode + VIN) [PENDING]
+  M55S -- in-state VIN (VehicleTypeCode + VIN) [CONFIRMED]
     set: vehicleTypeCode, VehicleIdentificationNumber
     any: ImageIndicator, vehicleYear
     conditions: RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (v3.6)
