@@ -1,5 +1,16 @@
 # build_nj_njcjis.ps1  -- NJ_NJCJIS canonical build (single JSON, multi-card)
 # =====================================================================
+# v4.14 (2026-07-28, layout review -- direct Rob feedback, layout-only, NO functional change):
+#   two changes from the NJ v4.13 rendered-form review (mirrors the FL v7.11/v7.12 pass).
+#   (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE
+#   "VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, \"OR\" VIN" card -- Row 1 Plate/Type/Year,
+#   Row 2 VIN, Row 3 the shared options State/Random Request/NCIC Image (matches FL's collapsed
+#   Vehicle + NJ's own v4.12 Person consolidation). (2) Boat card title bare "BOAT SEARCH" ->
+#   "BOAT SEARCH BY REGISTRATION NUMBER, \"OR\" HULL ID" (Boat has 2 identifier paths; matches
+#   the HI/NY Reg-first convention + NJ's Reg-first field order). QIDM/combos/routing/fieldIds/
+#   defaults all unchanged -- both VehReg combos (RANDFULL/RANDFULLN) read the same fieldIds.
+#   Layout/title-only. ALL 5 ENTITIES RESET for re-test at v4.14 (block by version). (v4.13 was a
+#   mechanical UPPERCASE-titles pass, no header entry was added at the time.)
 # v4.12 (2026-07-27, DEX-1284 Person consolidation -- direct Rob feedback, layout-only, NO
 #   functional change): collapsed the 3-card Person split (SEARCH OPTIONS + LICENSE NUMBER +
 #   NAME SEARCH) into ONE "Driver License Search by OLN, \"OR\" Name" card, matching NY/TX/FL.
@@ -100,7 +111,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.13"
+    [string]$Version = "4.14"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -427,50 +438,39 @@ $njBundle = [PSCustomObject]@{
 # =====================================================================
 
 # ------------------------------------------------------------------
-# Vehicle -- 3 cards: OPTIONS, PLATE SEARCH, VIN SEARCH
-# OPTIONS: State+Random+Image (shared routing fields for all combos)
-# PLATE SEARCH: Plate+PlateType+PlateYear
-# VIN SEARCH: VIN only (BRANCH DELTA)
+# Vehicle -- 1 card (v4.14, collapsed from 3: OPTIONS + PLATE + VIN -> single
+# "VEHICLE REGISTRATION SEARCH" card, matching FL's collapsed Vehicle + NJ's own
+# v4.12 Person consolidation). Row 1 Plate/Type/Year, Row 2 VIN, Row 3 the shared
+# options State/Random/Image. QIDM/combos unchanged -- both VehReg combos
+# (RANDFULL/RANDFULLN) read the same fieldIds; layout-only.
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH_OPT'
-        title = 'SEARCH OPTIONS'
+        id    = 'CARD_VEH'
+        title = 'VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN'
         rows  = @(
-            @{ id = 'ROW_VEH_O1'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
+                @{ id = 'LicensePlateNumber_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (optional)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';    node = Inp 'LicensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+            )}
+            @{ id = 'ROW_VEH_2'; cols = @('12'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }
+            )}
+            @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 # LABEL-OVERRIDE: RegistrationState -- Rob's explicit cosmetic call (NJ v4.9); bare
                 # "State" per the FL/TX precedent. State is a defaulted any[] field (initialValue=NJ,
                 # officer-editable for out-of-state), NOT an in-state/OOS routing toggle, so no routing
                 # hint is load-bearing. Same fieldId covers the Person card's State too.
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_O1' }
-                @{ id = 'RandomRequest_Input';     node = Sel 'RandomRequest' 'Random Request (N = full record; Y = random)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_O1' }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_PLATE'
-        title = 'PLATE SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_P1'; cols = @('6','3','3'); fields = @(
-                @{ id = 'LicensePlateNumber_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_P1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (optional)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_P1' }
-                @{ id = 'LicensePlateYear_Input';    node = Inp 'LicensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_P1' @{ initialValue = $currentYear } }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_VIN'
-        title = 'VIN SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_V1'; cols = @('12'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_V1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_3' }
+                @{ id = 'RandomRequest_Input';     node = Sel 'RandomRequest' 'Random Request (N = full record; Y = random)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- RANDOM-REMOVED branch: OPTIONS + PLATE + VIN cards. VehicleStolenQuery eliminated; ncicNumber/vehicleMakeCode removed (stolen-only fields).'
+    description  = 'Vehicle queries -- RANDOM-REMOVED branch: 1 card (v4.14, collapsed from OPTIONS+PLATE+VIN). VehicleStolenQuery eliminated; ncicNumber/vehicleMakeCode removed (stolen-only fields).'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -575,7 +575,7 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
-        title = 'BOAT SEARCH'
+        title = 'BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('5','5','2'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }

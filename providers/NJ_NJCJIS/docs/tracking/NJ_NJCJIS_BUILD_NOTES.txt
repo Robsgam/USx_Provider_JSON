@@ -2,6 +2,18 @@ NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
+v4.14  2026-07-28  Layout review -- Vehicle 1-card collapse + Boat title (direct Rob feedback, NO functional change)
+  CHANGED: Two changes from the NJ v4.13 rendered-form review (mirrors the FL v7.11/v7.12 pass):
+    (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE
+      "VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, \"OR\" VIN" card -- Row 1 Plate/Type/Year,
+      Row 2 VIN, Row 3 shared options State/Random Request/NCIC Image (matches FL's collapsed
+      Vehicle + NJ's own v4.12 Person consolidation).
+    (2) Boat card title "BOAT SEARCH" -> "BOAT SEARCH BY REGISTRATION NUMBER, \"OR\" HULL ID"
+      (Boat has 2 identifier paths; HI/NY Reg-first convention + NJ's Reg-first field order).
+  REASON: Rob's layout review before the NJ tenant sweep. QIDM/combos/routing/fieldIds/defaults all
+    unchanged -- both VehReg combos (RANDFULL/RANDFULLN) read the same fieldIds. Layout/title-only.
+    ALL 5 ENTITIES RESET for re-test at v4.14 (block by version).
+
 v4.13  2026-07-27  UPPERCASE card titles (Rob global decision, NO functional change)
   CHANGED: All card titles UPPERCASED, wording unchanged (e.g. "Driver License Search by OLN,
     \"OR\" Name" -> all-caps; "Search Options" -> "SEARCH OPTIONS"; Firearm/Article/Boat already

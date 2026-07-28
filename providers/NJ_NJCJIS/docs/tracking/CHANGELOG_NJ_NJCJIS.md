@@ -2,14 +2,31 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.13** | Generated: 2026-07-27
+Current: **v4.14** | Generated: 2026-07-28
 
 ---
 
-## v4.13 -- 2026-07-27 -- Pipeline rebuild
+## v4.14 -- 2026-07-28 -- Layout review -- Vehicle 1-card collapse + Boat title (direct Rob feedback, NO functional change)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Two changes from the NJ v4.13 rendered-form review (mirrors the FL v7.11/v7.12 pass):
+  (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE  
+    "VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, \"OR\" VIN" card -- Row 1 Plate/Type/Year,  
+    Row 2 VIN, Row 3 shared options State/Random Request/NCIC Image (matches FL's collapsed  
+    Vehicle + NJ's own v4.12 Person consolidation).  
+  (2) Boat card title "BOAT SEARCH" -> "BOAT SEARCH BY REGISTRATION NUMBER, \"OR\" HULL ID"  
+    (Boat has 2 identifier paths; HI/NY Reg-first convention + NJ's Reg-first field order).  
+**REASON:** Rob's layout review before the NJ tenant sweep. QIDM/combos/routing/fieldIds/defaults all
+  unchanged -- both VehReg combos (RANDFULL/RANDFULLN) read the same fieldIds. Layout/title-only.  
+  ALL 5 ENTITIES RESET for re-test at v4.14 (block by version).  
+
+## v4.13 -- 2026-07-27 -- UPPERCASE card titles (Rob global decision, NO functional change)
+
+**CHANGED:** All card titles UPPERCASED, wording unchanged (e.g. "Driver License Search by OLN,
+  \"OR\" Name" -> all-caps; "Search Options" -> "SEARCH OPTIONS"; Firearm/Article/Boat already  
+  uppercase). Mechanical uppercase transform; no wording/field/combo/QIDM change. New global  
+  convention (BUILD_RULES Section 11).  
+**REASON:** Rob -- "everything needs to be upper case." Title-only. verify_build clean. ALL 5
+  ENTITIES RESET at v4.13 (block by version). NOT yet re-tested.  
 
 ## v4.12 -- 2026-07-27 -- DEX-1284 Person consolidation (direct Rob feedback, layout-only, NO functional change)
 

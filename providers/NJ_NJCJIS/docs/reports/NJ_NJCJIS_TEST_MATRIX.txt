@@ -1,19 +1,17 @@
-NJ_NJCJIS v4.13 -- TEST MATRIX
+NJ_NJCJIS v4.14 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-27
+Generated: 2026-07-28
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 7 fields):
-  CARD_VEH_OPT (SEARCH OPTIONS):
-    RegistrationState [Sel STATE, NJ], RandomRequest [Sel YES_NO_UNKNOWN/NCIC, N], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-  CARD_VEH_VIN (VIN SEARCH):
-    VehicleIdentificationNumber [Inp 20]
+Vehicle (1 card, 7 fields):
+  CARD_VEH (VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN):
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 2: VehicleIdentificationNumber [Inp 20]
+    ROW 3: RegistrationState [Sel STATE, NJ], RandomRequest [Sel YES_NO_UNKNOWN/NCIC, N], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Person (1 card, 7 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
@@ -31,7 +29,7 @@ Article (1 card, 3 fields):
     ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Boat (1 card, 3 fields):
-  CARD_BOA (BOAT SEARCH):
+  CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID):
     RegistrationNumber [Inp 20], BoatHullIdNumber [Inp 20], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 QIDM SUMMARY (5 QIDMs, 8 combos)
@@ -51,7 +49,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (5 tests -- 3 cards, 2 combos)
+ENTITY 1: VEHICLE (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -124,4 +122,4 @@ COMBO COVERAGE (8/8):
   ArticleSingleQuery: 1/1 -- T18(Serial)
   BoatQuery: 2/2 -- T6(N), T8(Reg)
 
-IMPORT FILE: NJ_NJCJIS_v4.13.json
+IMPORT FILE: NJ_NJCJIS_v4.14.json
