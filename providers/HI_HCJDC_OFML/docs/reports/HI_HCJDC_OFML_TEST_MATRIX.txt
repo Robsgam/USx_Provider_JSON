@@ -1,20 +1,18 @@
-HI_HCJDC_OFML v4.13 -- TEST MATRIX
+HI_HCJDC_OFML v4.14 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-27
+Generated: 2026-07-28
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 8 fields):
-  CARD_VEH_OPT (SEARCH OPTIONS):
-    vehicleTypeCode [Sel VEHICLE_TYPE/HI_NIBRS, 1], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10]
-    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 4]
-  CARD_VEH_VIN (VIN SEARCH):
-    VehicleIdentificationNumber [Inp 20], vehicleYear [Inp 4]
+Vehicle (1 card, 8 fields):
+  CARD_VEH (VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN):
+    ROW 1: LicensePlateNumber [Inp 10]
+    ROW 2: LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 4]
+    ROW 3: VehicleIdentificationNumber [Inp 20], vehicleYear [Inp 4]
+    ROW 4: vehicleTypeCode [Sel VEHICLE_TYPE/HI_NIBRS, 1], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
 Person (2 cards, 18 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
@@ -39,8 +37,8 @@ Article (1 card, 3 fields):
 
 Boat (1 card, 4 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION, "OR" HULL ID):
-    ROW 1: RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
-    ROW 2: BoatHullIdNumber [Inp 20], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 1: RegistrationNumber [Inp 8], BoatHullIdNumber [Inp 20]
+    ROW 2: RegistrationState [Sel STATE], relatedSearchHitIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (6 QIDMs, 12 combos)
 ----------------------------------------
@@ -60,61 +58,61 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (12 tests -- 3 cards, 4 combos)
+ENTITY 1: PERSON (11 tests -- 2 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Vehicle     RQ+V+State         VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (RQV)
- 2  Vehicle     RQ+V+State         + ImageIndicator, vehicleYear   [    ]
-              Expected: any[] fields present in XML output.
- 3  Vehicle     RQ+Plate           LicensePlateNumber=TEST123, LicensePl... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ)
- 4  Vehicle     RQ+Plate           + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
- 5  Vehicle     M55S+M55S          vehicleTypeCode=1, VehicleIdentificat... [    ]
-              Expected: VehicleRegistrationQuery fires (M55S)
- 6  Vehicle     M55S+M55S          + ImageIndicator, vehicleYear   [    ]
-              Expected: any[] fields present in XML output.
- 7  Vehicle     M55L+M55L          vehicleTypeCode=1, LicensePlateNumber... [    ]
-              Expected: VehicleRegistrationQuery fires (M55L)
- 8  Vehicle     M55L+M55L          + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
- 9  Vehicle     Guardrail: RQ>RQV  LicensePlateNumber=TEST123, VehicleId... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ). VIN+RegistrationState absent from XML.
-10  Vehicle     Guardrail: RQ>M55L  LicensePlateTypeCode=PC, vehicleTypeC... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ). vehicleTypeCode+Plate absent from XML.
-11  Vehicle     Guardrail: RQV>M55S  RegistrationState=GA, vehicleTypeCode... [    ]
-              Expected: VehicleRegistrationQuery fires (RQV). vehicleTypeCode+VIN absent from XML.
-12  Vehicle     Guardrail: RQ>M55S  LicensePlateNumber=TEST123, vehicleTy... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ). vehicleTypeCode+VIN absent from XML.
-
-ENTITY 2: PERSON (11 tests -- 2 cards, 4 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-13  Person      DQ+N               OperatorLicenseNumber=D999888777 [    ]
+ 1  Person      DQ+N               OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (DQN)
-14  Person      DQ+N               + RegistrationState             [    ]
+ 2  Person      DQ+N               + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-15  Person      DQ+SexCode         SexCode=M, BirthDate=01/15/1990, Name... [    ]
+ 3  Person      DQ+SexCode         SexCode=M, BirthDate=01/15/1990, Name... [    ]
               Expected: DriverLicenseQuery fires (DQ)
-16  Person      DQ+SexCode         + RegistrationState             [    ]
+ 4  Person      DQ+SexCode         + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-17  Person      KQ+N               OperatorLicenseNumberDH=D999888777 [    ]
+ 5  Person      KQ+N               OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQN)
-18  Person      KQ+N               + RegistrationStateDH, purposeCodeDH, Attention [    ]
+ 6  Person      KQ+N               + RegistrationStateDH, purposeCodeDH, Attention [    ]
               Expected: any[] fields present in XML output.
-19  Person      KQ+SexCodeDH       SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
+ 7  Person      KQ+SexCodeDH       SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQ)
-20  Person      KQ+SexCodeDH       + RegistrationStateDH, purposeCodeDH, Attention [    ]
+ 8  Person      KQ+SexCodeDH       + RegistrationStateDH, purposeCodeDH, Attention [    ]
               Expected: any[] fields present in XML output.
-21  Person      Guardrail: DQN>DQ  OperatorLicenseNumber=D999888777, Sex... [    ]
+ 9  Person      Guardrail: DQN>DQ  OperatorLicenseNumber=D999888777, Sex... [    ]
               Expected: DriverLicenseQuery fires (DQN). SexCode+DOB+LastName+FirstName absent from XML.
-22  Person      Guardrail: KQN>KQ  OperatorLicenseNumberDH=D999888777, S... [    ]
+10  Person      Guardrail: KQN>KQ  OperatorLicenseNumberDH=D999888777, S... [    ]
               Expected: DriverHistoryQuery fires (KQN). SexCodeDH+DOB+LastName+FirstName absent from XML.
-23  Person      Deselect: DH deselects DL.            [    ]
+11  Person      Deselect: DH deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
+
+ENTITY 2: VEHICLE (12 tests -- 1 card, 4 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+12  Vehicle     RQ+V+State         VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RQV)
+13  Vehicle     RQ+V+State         + ImageIndicator, vehicleYear   [    ]
+              Expected: any[] fields present in XML output.
+14  Vehicle     RQ+Plate           LicensePlateNumber=TEST123, LicensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ)
+15  Vehicle     RQ+Plate           + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+16  Vehicle     M55S+M55S          vehicleTypeCode=1, VehicleIdentificat... [    ]
+              Expected: VehicleRegistrationQuery fires (M55S)
+17  Vehicle     M55S+M55S          + ImageIndicator, vehicleYear   [    ]
+              Expected: any[] fields present in XML output.
+18  Vehicle     M55L+M55L          vehicleTypeCode=1, LicensePlateNumber... [    ]
+              Expected: VehicleRegistrationQuery fires (M55L)
+19  Vehicle     M55L+M55L          + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+20  Vehicle     Guardrail: RQ>RQV  LicensePlateNumber=TEST123, VehicleId... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ). VIN+RegistrationState absent from XML.
+21  Vehicle     Guardrail: RQ>M55L  LicensePlateTypeCode=PC, vehicleTypeC... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ). vehicleTypeCode+Plate absent from XML.
+22  Vehicle     Guardrail: RQV>M55S  RegistrationState=GA, vehicleTypeCode... [    ]
+              Expected: VehicleRegistrationQuery fires (RQV). vehicleTypeCode+VIN absent from XML.
+23  Vehicle     Guardrail: RQ>M55S  LicensePlateNumber=TEST123, vehicleTy... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ). vehicleTypeCode+VIN absent from XML.
 
 ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
@@ -153,11 +151,11 @@ ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 TOTAL: 32 tests
 
 COMBO COVERAGE (12/12):
-  VehicleRegistrationQuery: 4/4 -- T1(RQ+V), T3(RQ+Plate), T5(M55S+M55S), T7(M55L+M55L)
-  DriverLicenseQuery: 2/2 -- T13(N), T15(SexCode)
-  DriverHistoryQuery: 2/2 -- T17(KQ+N), T19(KQ+SexCodeDH)
+  VehicleRegistrationQuery: 4/4 -- T12(RQ+V), T14(RQ+Plate), T16(M55S+M55S), T18(M55L+M55L)
+  DriverLicenseQuery: 2/2 -- T1(N), T3(SexCode)
+  DriverHistoryQuery: 2/2 -- T5(KQ+N), T7(KQ+SexCodeDH)
   GunQuery: 1/1 -- T29(serialNumber)
   ArticleSingleQuery: 1/1 -- T31(Serial)
   BoatQuery: 2/2 -- T24(BQ+Reg), T26(QB+Hull)
 
-IMPORT FILE: HI_HCJDC_OFML_v4.13.json
+IMPORT FILE: HI_HCJDC_OFML_v4.14.json

@@ -2,9 +2,23 @@
 
 Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.13** | Generated: 2026-07-27
+Current: **v4.14** | Generated: 2026-07-28
 
 ---
+
+## v4.14 -- 2026-07-28 -- Layout review -- Vehicle 1-card collapse + Boat order tidy (direct Rob feedback, NO functional change)
+
+**CHANGED:** From the HI v4.13 rendered-form review (mirrors FL v7.11/v7.12 + NJ v4.14):
+  (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE  
+    "VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, \"OR\" VIN" card -- Plate row, Type/Year row,  
+    VIN/Year row, then Vehicle Type/State/NCIC Image options row (matches FL + NJ).  
+  (2) Boat field order tidied -- both identifiers (Registration Number + Hull ID) on row 1,  
+    State + Stolen Check on row 2 (State was sandwiched between the two identifiers).  
+**REASON:** Rob's layout review before the HI tenant sweep. Every fieldId/initialValue/OOS-routing
+  signal preserved (Plate Type/Year keep NO default = OOS trigger, VehicleType default=1);  
+  QIDM/combos/routing unchanged. Layout-only. ALL 5 ENTITIES RESET for re-test at v4.14 (block by  
+  version). Stolen Check default=Y on Firearm/Article/Boat CONFIRMED intended (LE always-check  
+  default, Rob-reviewed).  
 
 ## v4.13 -- 2026-07-27 -- Boat stolen-label audit fix + UPPERCASE card titles (NO functional change)
 

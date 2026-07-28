@@ -1,5 +1,17 @@
 # build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
+# v4.14 (2026-07-28, layout review -- direct Rob feedback, layout-only, NO functional change):
+#   From the HI v4.13 rendered-form review (mirrors the FL v7.11/v7.12 + NJ v4.14 pass):
+#   (1) Vehicle COLLAPSED from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE
+#       "VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, \"OR\" VIN" card -- Row 1 Plate Number,
+#       Row 2 Plate Type/Year, Row 3 VIN/Vehicle Year, Row 4 the shared Vehicle Type/State/NCIC
+#       Image options (matches FL + NJ collapsed Vehicle). Every fieldId/initialValue/OOS-routing
+#       signal preserved (Plate Type/Year keep NO default = the OOS trigger; VehicleType default=1).
+#   (2) Boat field order tidied -- both identifiers on Row 1 (Registration Number + Hull ID),
+#       State moved below both onto Row 2 with Stolen Check (was State sandwiched between the two
+#       identifiers). QIDM/combos/routing/fieldIds/defaults all unchanged. Layout-only.
+#   ALL 5 ENTITIES RESET for re-test at v4.14 (block by version). (Stolen Check default=Y on
+#   Firearm/Article/Boat CONFIRMED intended -- LE always-check-stolen default, Rob-reviewed.)
 # v4.13 (2026-07-27, audit fix + UPPERCASE card titles -- NO functional change):
 #   (a) AUDIT FIX: the v4.12 "Stolen Check" relabel missed the Boat relatedSearchHitIndicator
 #       (Firearm + Article were relabeled, Boat was left as "(Y) for NCIC stolen-boat check"). Caught
@@ -205,7 +217,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.13",
+    [string]$Version = "4.14",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -698,43 +710,34 @@ $provBundle = [PSCustomObject]@{
 # QV (stolen) server-generated. VehicleTypeCode: 1=Auto, 2=Motorcycle, 3=Truck, 5=Trailer, 6=Moped.
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH_OPT'
-        title = 'SEARCH OPTIONS'
+        id    = 'CARD_VEH'
+        title = 'VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN'
         rows  = @(
-            @{ id = 'ROW_VEH_OPT1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_OPT1' }
-                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT1' }
-                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT1' }
+            # v4.14: collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to one,
+            # matching FL + NJ. Plate row, Type/Year row, VIN row, options row (Type/State/Image
+            # last). All fieldIds/initialValues/OOS-routing preserved -- Plate Type/Year keep NO
+            # default (blank = the OOS signal), VehicleType default=1, layout-only change.
+            @{ id = 'ROW_VEH_1'; cols = @('12'); fields = @(
+                @{ id = 'licensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'License Plate Number' '10' 'ROW_VEH_1' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_PLATE'
-        title = 'PLATE SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_PLATE1'; cols = @('12'); fields = @(
-                @{ id = 'licensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'License Plate Number' '10' 'ROW_VEH_PLATE1' }
+            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
+                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state plates only)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_2' }
+                @{ id = 'licensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (out-of-state plates only)' '4' 'ROW_VEH_2' }
             )}
-            @{ id = 'ROW_VEH_PLATE2'; cols = @('6','6'); fields = @(
-                @{ id = 'licensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (out-of-state plates only)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_PLATE2' }
-                @{ id = 'licensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (out-of-state plates only)' '4' 'ROW_VEH_PLATE2' }
+            @{ id = 'ROW_VEH_3'; cols = @('8','4'); fields = @(
+                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_3' }
+                @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_3' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_VIN'
-        title = 'VIN SEARCH'
-        rows  = @(
-            # VIN + Year on one line, "VIN" dropped from the label (Rob-confirmed 2026-07-17).
-            @{ id = 'ROW_VEH_VIN1'; cols = @('8','4'); fields = @(
-                @{ id = 'vehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_VIN1' }
-                @{ id = 'vehicleYear_Input';                 node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_VIN1' }
+            @{ id = 'ROW_VEH_4'; cols = @('4','4','4'); fields = @(
+                @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_4' }
+                @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_4' }
+                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_4' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- 3 cards: SEARCH OPTIONS (Vehicle Type/State/NCIC Image), PLATE SEARCH, VIN SEARCH. OOS-first routing: bare plate->M55L, +Plate Type+Year->RQ; bare VIN->M55S, +State->RQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.'
+    description  = 'Vehicle queries -- 1 card (v4.14, collapsed from SEARCH OPTIONS + PLATE + VIN): Plate, Type/Year, VIN/Year, then Type/State/NCIC Image. OOS-first routing: bare plate->M55L, +Plate Type+Year->RQ; bare VIN->M55S, +State->RQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -905,12 +908,13 @@ $boaLayout = MakeLayouts @(
         id    = 'CARD_BOA'
         title = 'BOAT SEARCH BY REGISTRATION, "OR" HULL ID'
         rows  = @(
-            @{ id = 'ROW_BOA_1'; cols = @('8','4'); fields = @(
+            # v4.14: both identifiers on row 1; State moved below both (Reg/Hull -> State/Stolen).
+            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
                 @{ id = 'registrationNumber_Input';        node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
-                @{ id = 'registrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'boatHullIdNumber_Input';          node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('8','4'); fields = @(
-                @{ id = 'boatHullIdNumber_Input';          node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_2' }
+            @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
+                @{ id = 'registrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
                 @{ id = 'relatedSearchHitIndicator_Input'; node = Sel 'relatedSearchHitIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
         )
