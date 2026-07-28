@@ -1,6 +1,6 @@
-FL_FCIC v7.10 -- TEST MATRIX
+FL_FCIC v7.11 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-27
+Generated: 2026-07-28
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -35,7 +35,7 @@ Article (1 card, 6 fields):
     ROW 3: NCICNumber [Inp 10], processControlNumber [Inp 10]
 
 Boat (1 card, 13 fields):
-  CARD_BOA_SEARCH (BOAT SEARCH):
+  CARD_BOA_SEARCH (BOAT SEARCH BY HULL ID, "OR" REGISTRATION NUMBER, "OR" COAST GUARD DOC #, "OR" NCIC NUMBER, "OR" PCN):
     ROW 1: BoatHullIdNumber [Inp 62], RegistrationNumber [Inp 8], coastGuardDocumentNumber [Inp 8]
     ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], NCICNumber [Inp 10], processControlNumber [Inp 10]
     ROW 3: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate]
@@ -249,4 +249,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T70(Serial), T72(OAN), T74(NCIC), T76(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T37(QB+Hull), T39(FBQ+Reg), T41(BQ+Reg), T42(QB+Reg), T44(BQ+Name), T45(FBQ+Decal), T47(FBQ+TitleLien), T49(QB+CG), T51(QB+NCIC), T53(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.10.json
+IMPORT FILE: FL_FCIC_v7.11.json

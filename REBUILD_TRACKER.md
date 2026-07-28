@@ -38,7 +38,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 2 | HI_HCJDC_OFML | v4.13 |  | 65P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 3 | NY_NYSPIN_EJUSTICE | v4.16 |  | 75P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
 | 4 | AZ_AZDPS | v3.1 |  | 72P/0F/0W/0LIM | 0 | v3.1 (2026-07-24) existence-gate identifier-priority guardrails added (were demotion-only in v3.0); single-JSON; NOT USx-tenant-tested |
-| 5 | FL_FCIC | v7.10 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
+| 5 | FL_FCIC | v7.11 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v4.12 |  | 78P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 8 | CA_CLETS | v2.19 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |

@@ -1,6 +1,21 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.11 (2026-07-28, UI/label-review pass -- direct Rob feedback, NO functional change): four
+#   cosmetic label fixes surfaced reviewing the rendered v7.10 form before its tenant sweep.
+#   (1) Boat card title was bare "BOAT SEARCH" (only card missing its query paths) ->
+#   "BOAT SEARCH BY HULL ID, \"OR\" REGISTRATION NUMBER, \"OR\" COAST GUARD DOC #, \"OR\" NCIC
+#   NUMBER, \"OR\" PCN" (matches Firearm/Article enumerated-path style). (2) Person DH BirthDate
+#   label "DOB" -> "Date of Birth" (unifies with the DL card; pure cosmetic, same FormDate).
+#   DH "MI" DELIBERATELY KEPT -- nameMiddleDH is a genuine 1-char middle-initial field (maxLen=1)
+#   vs DL's full nameMiddle (maxLen=30); "MI" is accurate, "Middle Name" would misrepresent it.
+#   (3) Vehicle lean-strip: VIN "(or search by Plate)" dropped (set[]-required, card title carries
+#   the path); Vehicle Make/Year "(By VIN optional)" dropped -> bare (any[]-only, LABEL-OVERRIDE
+#   tags added; matches the NY/TX DEX-1284 lean convention Vehicle hadn't yet received).
+#   (4) Person DH State was bare "State" -> "State (required)" -- DH is OOS-only so State is a
+#   mandatory destination (set[] in both KQ combos), NOT the "leave blank for FL" in/out toggle.
+#   Label-only, no combo/QIDM/routing/fieldId/default change. ALL 5 ENTITIES stay RESET (already
+#   reset at v7.10, never captured) -- re-test from T1.
 # v7.9 (2026-07-27, DEX-1284 relabel/naming-convention pass -- direct Rob feedback, NO functional
 #   change): applied the portfolio conventions established on NY/TX. OLN (OperatorLicenseNumber DL
 #   "License Number (or search by Name + DOB)" + OperatorLicenseNumberDH "Driver License Number" ->
@@ -218,7 +233,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.10"
+    [string]$Version = "7.11"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -880,9 +895,11 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateYear_Input';    node = Inp 'LicensePlateYear' 'Plate Year (out-of-state)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('5','4','3'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (or search by Plate)' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input';              node = Sel 'VehicleMakeCode' 'Vehicle Make (By VIN optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year (By VIN optional)' '4' 'ROW_VEH_2' }
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
+                # LABEL-OVERRIDE: VehicleMakeCode -- bare "Vehicle Make" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX)
+                @{ id = 'VehicleMakeCode_Input';              node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
+                # LABEL-OVERRIDE: vehicleYear -- bare "Vehicle Year" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX)
+                @{ id = 'VehicleYear_Input';                  node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
             )}
             # v7.5: bottom row now carries Decal + State + Image together (was Decal alone
             # after v7.4's Title/Lien removal; State/Image moved down from the now-retired
@@ -934,7 +951,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_DH1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (required)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
             # v7.2 (DEX-1278): reordered First/Last/MI/DOB/Sex (was Last/First/DOB/Sex);
@@ -944,7 +961,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_DH2' }
                 @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'         '1'  'ROW_DH2' }
-                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'DOB' 'ROW_DH2' }
+                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth' 'ROW_DH2' }
                 @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH'    'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
             # v6.0: hidden Attention gate-feeder (HI v2.9 live-proven pattern). The DH Attention
@@ -1034,7 +1051,7 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA_SEARCH'
-        title = 'BOAT SEARCH'
+        title = 'BOAT SEARCH BY HULL ID, "OR" REGISTRATION NUMBER, "OR" COAST GUARD DOC #, "OR" NCIC NUMBER, "OR" PCN'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '62' 'ROW_BOA_1' }

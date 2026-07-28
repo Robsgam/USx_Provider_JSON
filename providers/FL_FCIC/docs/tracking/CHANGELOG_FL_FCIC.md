@@ -2,14 +2,37 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.10** | Generated: 2026-07-27
+Current: **v7.11** | Generated: 2026-07-28
 
 ---
 
-## v7.10 -- 2026-07-27 -- Pipeline rebuild
+## v7.11 -- 2026-07-28 -- UI/label-review pass (direct Rob feedback, NO functional change)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Four cosmetic label fixes surfaced reviewing the rendered v7.10 form before its tenant
+  sweep:  
+  (1) Boat card title "BOAT SEARCH" (the only card missing its query paths) ->  
+    "BOAT SEARCH BY HULL ID, \"OR\" REGISTRATION NUMBER, \"OR\" COAST GUARD DOC #, \"OR\" NCIC  
+    NUMBER, \"OR\" PCN" (matches the Firearm/Article enumerated-path title style).  
+  (2) Person DH BirthDate label "DOB" -> "Date of Birth" (unifies with the DL card; pure  
+    cosmetic, same FormDate). DH "MI" DELIBERATELY KEPT -- nameMiddleDH is a genuine 1-char  
+    middle-initial field (maxLen=1) vs DL's full nameMiddle (maxLen=30); "MI" is accurate,  
+    "Middle Name" would misrepresent it.  
+  (3) Vehicle lean-strip: VIN "(or search by Plate)" dropped (set[]-required; card title carries  
+    the path); Vehicle Make/Year "(By VIN optional)" dropped -> bare (any[]-only, LABEL-OVERRIDE  
+    tags added; matches the NY/TX DEX-1284 lean convention Vehicle had not yet received).  
+  (4) Person DH State "State" -> "State (required)" -- DH is OOS-only so State is a mandatory  
+    destination (set[] in both KQ combos), NOT the "leave blank for FL" in/out toggle.  
+**REASON:** Rob's UI/label review of v7.10 before the FL tenant sweep. Label-only, no combo/QIDM/
+  routing/fieldId/default change. ALL 5 ENTITIES stay RESET (already reset at v7.10, never  
+  captured) -- re-test from T1.  
+
+## v7.10 -- 2026-07-27 -- UPPERCASE card titles (Rob global decision, NO functional change)
+
+**CHANGED:** All card titles UPPERCASED, wording unchanged (e.g. "Driver License Search by OLN,
+  \"OR\" Name" -> all-caps; "Boat Search" -> "BOAT SEARCH"). Mechanical uppercase transform;  
+  no wording/field/combo/QIDM change. New global convention (BUILD_RULES Section 11).  
+**REASON:** Rob -- "everything needs to be upper case." Title-only. verify_build clean. ALL 5
+  ENTITIES RESET at v7.10 (block by version). NOT yet re-tested.  
 
 ## v7.9 -- 2026-07-27 -- DEX-1284 relabel/naming-convention pass (direct Rob feedback, NO functional change)
 
