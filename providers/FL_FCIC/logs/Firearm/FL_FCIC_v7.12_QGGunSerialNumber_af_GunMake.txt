@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGGunSerialNumber_af_GunMake (QGGunSerialNumber_af_GunMake (auto))
+Date: 2026-07-28 09:55:38
+Result: PASS
+JSON Version: 7.12
+Entity Fingerprint: e766759244a59972a49f00a59a5299e5fcad31f0edaff043c67f6326c640f66f
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunMake":"IMI","ImageIndicator":"N","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYMFFS1JW45HA42K9MYGC4HJ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KYMFFS1JW45HA42K9MYGC4HJ</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunMake>IMI</GunMake>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYMFFS1JW45HA42K9MYGC4HJ
+  ImageIndicator                 N
+  GunSerialNumber                GUN12345
+  GunMake                        IMI
+
+NOTES
+-----
+Automated capture (txId 01KYMFFS1JW45HA42K9MYGC4HJ). kind=any-field; anyField=GunMake; expectedKeyRef=QGGunSerialNumber; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
