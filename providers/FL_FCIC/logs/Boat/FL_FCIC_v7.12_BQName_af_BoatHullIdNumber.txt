@@ -1,0 +1,76 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQName_af_BoatHullIdNumber (BQName_af_BoatHullIdNumber (auto))
+Date: 2026-07-28 09:55:51
+Result: PASS
+JSON Version: 7.12
+Entity Fingerprint: fc91951d03266c6c6c8601653ffac4a1cab99fc997c1fcbe67f355d36aece4a5
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYMFQHHMWYFBS5Z98V067PQK">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KYMFQHHMWYFBS5Z98V067PQK</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <State>GA</State>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYMFQHHMWYFBS5Z98V067PQK
+  BoatHullIdNumber               FL1234AB56H7
+  State                          GA
+  BirthDate                      19900115
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KYMFQHHMWYFBS5Z98V067PQK). kind=any-field; anyField=BoatHullIdNumber; expectedKeyRef=BQName; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

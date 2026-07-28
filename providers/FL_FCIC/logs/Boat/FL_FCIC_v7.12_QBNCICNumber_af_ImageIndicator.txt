@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBNCICNumber_af_ImageIndicator (QBNCICNumber_af_ImageIndicator (auto))
+Date: 2026-07-28 09:55:54
+Result: PASS
+JSON Version: 7.12
+Entity Fingerprint: fc91951d03266c6c6c8601653ffac4a1cab99fc997c1fcbe67f355d36aece4a5
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","NCICNumber":"X123456789"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYMFP19TXPWX1ASZ21GSWDPG">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KYMFP19TXPWX1ASZ21GSWDPG</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <NCICNumber>X123456789</NCICNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYMFP19TXPWX1ASZ21GSWDPG
+  ImageIndicator                 Y
+  NCICNumber                     X123456789
+
+NOTES
+-----
+Automated capture (txId 01KYMFP19TXPWX1ASZ21GSWDPG). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QBNCICNumber; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
