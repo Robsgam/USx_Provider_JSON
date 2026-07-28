@@ -1017,6 +1017,22 @@ See also:
     DH card: OLN_DH, StateDH, PurposeCode, Name_DH, DOB_DH, Sex_DH, Attention
     queriesToDeselect isolates DL from DH (one-directional: DH deselects DL).
 
+  OPTIONS-FOLD (fold a shared Person OPTIONS card into DL+DH -- TX_TLETS v4.12, Rob
+  2026-07-27 "fix person to be 2 card and duplicate the search options into each card"):
+    When a provider carries a standalone Person SEARCH OPTIONS card holding fields shared by
+    both DL and DH (State / Image / Reason / etc.), you can collapse Person to a clean 2-card
+    (DL + DH) by DUPLICATING those option fields onto the BOTTOM row of each card:
+      - DL card gets the ORIGINAL shared fieldIds (DriverLicenseQuery unchanged).
+      - DH card gets DH-SUFFIXED copies (RegistrationStateDH/ImageIndicatorDH/reasonCodeDH) --
+        unique fieldIds, self-contained like NY/HI. Re-source the DriverHistoryQuery attributes
+        and its combo any[] to the DH-suffixed names; attribute NAMES + wire targetFields stay
+        the same, so the wire request is byte-identical (layout+sourcing change only).
+    HANDLER-OWNED fields are the exception -- do NOT duplicate them. The single hidden
+    EmailAddress gate-feeder stays once on the DL card and serves BOTH QIDMs (both still source
+    'emailAddress'), so the RND-57165 handler (separate eng team) is untouched. General rule:
+    duplicate shared plain fields per card; keep one shared hidden feeder for any field owned by
+    a rule-handler you must not modify.
+
   QIDMS ARE INDEPENDENT OF LAYOUT:
     All QIDM combinations, attributes, and keyReferences are defined
     independently of the card structure. Layout changes do not affect QIDMs.
