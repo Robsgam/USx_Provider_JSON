@@ -40,7 +40,7 @@ in repo, awaiting first tenant import.
 
 | Tenant | Provider | Version | Imported | Notes |
 |---|---|---|---|---|
-| Newark Foundation | NJ_NJCJIS | v4.10 | 2026-07-22 | hands-off MODE — **behind repo v4.13** (relabel + consolidation + UPPERCASE titles); manual re-import owed |
+| Newark Foundation | NJ_NJCJIS | v4.14 | 2026-07-28 | current — v4.10→v4.14 (relabel + Person consolidation + UPPERCASE titles + Vehicle 1-card collapse + Boat title) |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
 | Miami Springs Foundation | FL_FCIC | v7.12 | 2026-07-28 | current — v7.8→v7.12 (v7.9 relabel + v7.10 UPPERCASE + v7.11 UI/label fixes + v7.12 Vehicle-first order) |
 | North Miami Foundation | FL_FCIC | v7.12 | 2026-07-28 | current — v7.8→v7.12 (v7.9 relabel + v7.10 UPPERCASE + v7.11 UI/label fixes + v7.12 Vehicle-first order) |
