@@ -48,6 +48,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v7.12 (2026-07-28)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| FL_FCIC_v7.12.json | v7.12 | Current | 91P/0F/0W/0LIM. |
 ## v7.11 (2026-07-28)
 
 | File | Version | Status | Notes |

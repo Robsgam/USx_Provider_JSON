@@ -2,9 +2,21 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.11** | Generated: 2026-07-28
+Current: **v7.12** | Generated: 2026-07-28
 
 ---
+
+## v7.12 -- 2026-07-28 -- Entity display-order change (direct Rob feedback)
+
+**CHANGED:** Default entity display order Person-first -> Vehicle-first:
+  @('Person','Vehicle','Firearm','Article','Boat') -> @('Vehicle','Person','Firearm','Article',  
+  'Boat'). The default variant now matches CAD_DISPATCH/FIRST_RESPONDER (both already Vehicle-first).  
+**REASON:** Rob -- "shift the order of the entities, have veh first then person." Order-array-only,
+  no QIF/QIDM/combo/routing/field/label change; every per-entity fingerprint is byte-identical to  
+  v7.11 so the CommSys wire for all 5 entities is unchanged. Still a version bump -> full  
+  test-package reset (block by version). The v7.11 Vehicle captures (24 PASS, both log gates  
+  green) archived to logs/Vehicle/_archive_pre_v7.12/ + stashed; re-capture at v7.12 expected  
+  identical.  
 
 ## v7.11 -- 2026-07-28 -- UI/label-review pass (direct Rob feedback, NO functional change)
 

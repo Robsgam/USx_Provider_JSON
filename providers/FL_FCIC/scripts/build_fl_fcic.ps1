@@ -1,6 +1,14 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.12 (2026-07-28, entity display-order change -- direct Rob feedback): default entity order
+#   Person-first -> Vehicle-first (@('Person','Vehicle',...) -> @('Vehicle','Person','Firearm',
+#   'Article','Boat')), so the default variant now matches the CAD_DISPATCH/FIRST_RESPONDER
+#   variants (both already Vehicle-first). Order-array-only -- no QIF/QIDM/combo/routing/field/
+#   label change; every per-entity fingerprint is byte-identical to v7.11, so the CommSys wire
+#   for all 5 entities is unchanged. Still a version bump -> full test-package reset (block by
+#   version); the v7.11 Vehicle captures (24 PASS) archive and re-capture at v7.12 (identical
+#   wire expected).
 # v7.11 (2026-07-28, UI/label-review pass -- direct Rob feedback, NO functional change): four
 #   cosmetic label fixes surfaced reviewing the rendered v7.10 form before its tenant sweep.
 #   (1) Boat card title was bare "BOAT SEARCH" (only card missing its query paths) ->
@@ -233,7 +241,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.11"
+    [string]$Version = "7.12"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -1092,7 +1100,7 @@ $boatForm = [PSCustomObject]@{
 }
 
 $entitiesBundle = Build-EntitiesBundle -Configurations @($personForm, $vehicleForm, $firearmsForm, $articleForm, $boatForm) `
-    -DefaultOrder @('Person','Vehicle','Firearm','Article','Boat') `
+    -DefaultOrder @('Vehicle','Person','Firearm','Article','Boat') `
     -Description "Provider configuration for FL_FCIC v${Version} -- entity forms"
 
 # =====================================================================
