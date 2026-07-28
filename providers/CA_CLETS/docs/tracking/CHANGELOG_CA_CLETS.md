@@ -2,14 +2,48 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.19** | Generated: 2026-07-27
+Current: **v2.20** | Generated: 2026-07-28
 
 ---
 
-## v2.19 -- 2026-07-27 -- Pipeline rebuild
+## v2.20 -- 2026-07-28 -- Layout review -- Person OPTIONS fold + 4 title enumerations (direct Rob feedback, NO functional change)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:**
+  (1) Person SEARCH OPTIONS card folded into DL -- State + Purpose Code moved onto the DL card's  
+    bottom row (the DriverLicenseQuery combos source these shared fieldIds). Person = 2 cards  
+    (DL + DH). Unlike TX v4.12, NO DH-suffixed copies needed: CA's DH is already self-contained  
+    (its own purposeCodeDH; DriverHistoryQuery uses NO State), verified from the build-script DH  
+    QIDM sourceFields.  
+  (2) Enumerated the 4 bare card titles: Vehicle "...BY LICENSE PLATE, OR VIN, OR NAME"; Firearm  
+    "...BY SERIAL NUMBER, OR NAME"; Article "...BY SERIAL NUMBER, OR OWNER APPLIED NUMBER"; Boat  
+    "...BY HULL ID, OR REGISTRATION NUMBER, OR OWNER APPLIED NUMBER" (DL/DH already enumerated).  
+**REASON:** Rob's layout review before the CA_CLETS tenant sweep. Layout/title-only, no combo/QIDM/
+  routing/fieldId/default change -- wire identical to v2.19 (the in/out gating fix). ALL 5 ENTITIES  
+  RESET for re-test at v2.20. CA-FAMILY: propagate to Ventura/eSUN/SLO/OCATS/Contra Costa on their pass.  
+
+## v2.19 -- 2026-07-27 -- In/out gating fix on Vehicle + Boat (FUNCTIONAL, adversarial-audit finding)
+
+**CHANGED:** Completed the DEX-1284 existence-gate in/out routing that CA never received (it was on
+  the older pre-DEX-1284 model where the in-state catchalls relied on set[]/ordering alone). Now  
+  the OOS combos fire only when State is present and the in-state catchalls only when State is  
+  blank, so they no longer co-fire/shadow:  
+    Vehicle: NLTS.RQ.P += RegistrationState EXISTS  (was UNGATED -- v2.11 claimed it gated "all 6  
+               NLTS combos" but its own list named NLTS.RQ.V and MISSED NLTS.RQ.P, so RQ.P fired  
+               on any plate and shadowed the in-state IA.QV)  
+             IA.QVK   += RegistrationState NOT_EXISTS  
+             IA.QV    += RegistrationState NOT_EXISTS  
+    Boat:    IA.QB.H  += RegistrationState NOT_EXISTS  
+             IA.QB.R  += RegistrationState NOT_EXISTS  
+             (NLTS.BQ.H/R were already EXISTS-gated; IA.QB.O is a standalone OAN path with no OOS  
+              sibling, so it was left ungated.)  
+  RegistrationState dropped from the in-state combos' any[] (gate-XOR-companion). Existence-only  
+  (poisoned-array-safe).  
+**REASON:** Adversarial audit found CA running the pre-DEX-1284 routing model -- the exact co-fire/
+  shadow bug NY v4.15 / TX v4.9 / FL fixed. test_commsys confirms: plate+State -> NLTS.RQ.P only  
+  (IA.QV now SKIPs on State present); plate-alone -> IA.QV. verify_build 16P/0W/0F, CHECK 14  
+  reachability PASS. FUNCTIONAL -> all 5 entities reset (block by version). NOT yet re-tested.  
+  FAMILY FOLLOW-UP: CA_VENTURA/eSUN/SLO/OCATS/Contra Costa (same template) likely need the same  
+  fix -- flagged, not done here.  
 
 ## v2.18 -- 2026-07-27 -- UPPERCASE card titles + gunCaliber CAD-token fix (audit finding)
 

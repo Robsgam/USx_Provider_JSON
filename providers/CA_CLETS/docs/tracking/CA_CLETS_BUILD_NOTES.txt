@@ -1,6 +1,20 @@
 CA_CLETS -- Build Notes
 ========================
 
+v2.20  2026-07-28  Layout review -- Person OPTIONS fold + 4 title enumerations (direct Rob feedback, NO functional change)
+  CHANGED:
+    (1) Person SEARCH OPTIONS card folded into DL -- State + Purpose Code moved onto the DL card's
+      bottom row (the DriverLicenseQuery combos source these shared fieldIds). Person = 2 cards
+      (DL + DH). Unlike TX v4.12, NO DH-suffixed copies needed: CA's DH is already self-contained
+      (its own purposeCodeDH; DriverHistoryQuery uses NO State), verified from the build-script DH
+      QIDM sourceFields.
+    (2) Enumerated the 4 bare card titles: Vehicle "...BY LICENSE PLATE, OR VIN, OR NAME"; Firearm
+      "...BY SERIAL NUMBER, OR NAME"; Article "...BY SERIAL NUMBER, OR OWNER APPLIED NUMBER"; Boat
+      "...BY HULL ID, OR REGISTRATION NUMBER, OR OWNER APPLIED NUMBER" (DL/DH already enumerated).
+  REASON: Rob's layout review before the CA_CLETS tenant sweep. Layout/title-only, no combo/QIDM/
+    routing/fieldId/default change -- wire identical to v2.19 (the in/out gating fix). ALL 5 ENTITIES
+    RESET for re-test at v2.20. CA-FAMILY: propagate to Ventura/eSUN/SLO/OCATS/Contra Costa on their pass.
+
 v2.19  2026-07-27  In/out gating fix on Vehicle + Boat (FUNCTIONAL, adversarial-audit finding)
   CHANGED: Completed the DEX-1284 existence-gate in/out routing that CA never received (it was on
     the older pre-DEX-1284 model where the in-state catchalls relied on set[]/ordering alone). Now

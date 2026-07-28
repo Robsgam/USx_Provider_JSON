@@ -1,4 +1,19 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.20 (2026-07-28, layout review -- direct Rob feedback, layout/title-only, NO functional change):
+#   (1) Person SEARCH OPTIONS card FOLDED into DL -- State + Purpose Code moved onto the DL card's
+#       bottom row (the DriverLicenseQuery combos source these shared fieldIds). Person = 2 cards
+#       (DL + DH). Unlike the TX v4.12 fold, NO DH-suffixed copies were needed: CA's DH is already
+#       self-contained (its own purposeCodeDH; the DriverHistoryQuery uses NO State), so it never
+#       read the shared OPTIONS fields. Verified from the build script (DH QIDM sourceFields), per
+#       Rob's "learn where to find data" directive.
+#   (2) Enumerated the 4 bare card titles to carry query paths (match DL/DH + the FL/NJ/HI/NY/TX
+#       convention): Vehicle "...BY LICENSE PLATE, OR VIN, OR NAME"; Firearm "...BY SERIAL NUMBER,
+#       OR NAME"; Article "...BY SERIAL NUMBER, OR OWNER APPLIED NUMBER"; Boat "...BY HULL ID, OR
+#       REGISTRATION NUMBER, OR OWNER APPLIED NUMBER".
+#   No combo/QIDM/routing/fieldId/default change -- CommSys wire identical to v2.19 (which carried
+#   the in/out gating FIX). ALL 5 ENTITIES RESET for re-test at v2.20 (block by version).
+#   CA-FAMILY NOTE: CA_CLETS is the template for Ventura/eSUN/SLO/OCATS/Contra Costa -- these title
+#   + Person-fold changes (and the v2.19 gating fix) should propagate to that family on its own pass.
 # v2.19 (2026-07-27, in/out gating fix -- FUNCTIONAL, audit finding): completed the DEX-1284
 #   existence-gate in/out routing on Vehicle + Boat (CA never received it -- was on the older
 #   pre-DEX-1284 model). The OOS combos now fire only when State is present and the in-state
@@ -89,7 +104,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.19"
+    [string]$Version = "2.20"
 )
 
 $ErrorActionPreference = "Stop"
@@ -822,7 +837,7 @@ $caBundle = [PSCustomObject]@{
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH_SEARCH'
-        title = 'VEHICLE SEARCH'
+        title = 'VEHICLE SEARCH BY LICENSE PLATE, "OR" VIN, "OR" NAME'
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
@@ -865,16 +880,6 @@ $vehicleForm = [PSCustomObject]@{
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER_OPT'
-        title = 'SEARCH OPTIONS'
-        rows  = @(
-            @{ id = 'ROW_PER_OPT_1'; cols = @('6','4'); fields = @(
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' @{ initialValue = 'C' } }
-            )}
-        )
-    }
-    @{
         id    = 'CARD_PER_DL'
         title = 'DRIVER LICENSE SEARCH BY OLN, CII, SSN, "OR" NAME'
         rows  = @(
@@ -900,6 +905,14 @@ $perLayout = MakeLayouts @(
                 # added to RMS on 2026-07-24.) VERIFY at re-test: RACE dropdown populates + CommSys RaceCode wire.
                 @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
+            # v2.20: SEARCH OPTIONS card folded away -- State + Purpose Code moved onto the DL card's
+            # bottom row (the DriverLicenseQuery combos source these shared fieldIds). DH is already
+            # self-contained (its own purposeCodeDH; the DH QIDM uses NO State), so -- unlike the TX
+            # v4.12 fold -- no DH-suffixed copies are needed. Person = 2 cards (DL + DH). Wire unchanged.
+            @{ id = 'ROW_PER_DL_OPT'; cols = @('6','4'); fields = @(
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_OPT' }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_DL_OPT' @{ initialValue = 'C' } }
+            )}
         )
     }
     @{
@@ -923,7 +936,7 @@ $perLayout = MakeLayouts @(
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- MC collapsed: OPTIONS + DL SEARCH (OLN/CII/SSN/Name/DOB/Sex/Age/Height/County/Race) + DH SEARCH (DH-suffix fields).'
+    description  = 'Person queries -- 2 cards (v2.20, SEARCH OPTIONS folded into DL): DL SEARCH (OLN/CII/SSN/Name/DOB/Sex/Age/Height/County/Race + State/Purpose bottom row) + DH SEARCH (DH-suffix fields, self-contained).'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -938,7 +951,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN_SEARCH'
-        title = 'FIREARM SEARCH'
+        title = 'FIREARM SEARCH BY SERIAL NUMBER, "OR" NAME'
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
@@ -972,7 +985,7 @@ $firearmsForm = [PSCustomObject]@{
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART_SEARCH'
-        title = 'ARTICLE SEARCH'
+        title = 'ARTICLE SEARCH BY SERIAL NUMBER, "OR" OWNER APPLIED NUMBER'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
@@ -1003,7 +1016,7 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA_SEARCH'
-        title = 'BOAT SEARCH'
+        title = 'BOAT SEARCH BY HULL ID, "OR" REGISTRATION NUMBER, "OR" OWNER APPLIED NUMBER'
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber'   'Hull ID'             '20' 'ROW_BOA_1' }
