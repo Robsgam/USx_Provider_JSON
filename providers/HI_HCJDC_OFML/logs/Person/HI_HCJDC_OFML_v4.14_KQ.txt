@@ -1,0 +1,78 @@
+================================================================
+TEST LOG: HI_HCJDC_OFML Person DriverHistoryQuery
+Combo: KQ (KQ (auto))
+Date: 2026-07-28 14:23:11
+Result: PASS
+JSON Version: 4.14
+Entity Fingerprint: a6a5f0691a14f38ff62894bb42ddfaea2bbbf09adf1f3b7b152c4555ef060332
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","BirthDateDH":"1990-01-15","NameFirstDH":"JOHN","NameLastDH":"DOE","SexCodeDH":"Male","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYMZ4AR3KHW86MQ9YN0S2SV3">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYMZ4AR3KHW86MQ9YN0S2SV3</Id>
+            <Attention>SGAMBELLONE R</Attention>
+            <SexCode>M</SexCode>
+            <PurposeCode>C</PurposeCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYMZ4AR3KHW86MQ9YN0S2SV3
+  Attention                      SGAMBELLONE R
+  SexCode                        M
+  PurposeCode                    C
+  BirthDate                      01151990
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KYMZ4AR3KHW86MQ9YN0S2SV3). kind=combo; anyField=; expectedKeyRef=KQ; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
