@@ -1,6 +1,20 @@
 CA_CLETS -- Build Notes
 ========================
 
+v2.21  2026-07-28  FIX botched v2.20 Person fold -- DH card lost its State field (Rob caught it)
+  CHANGED: v2.20 folded the shared RegistrationState onto the DL card ONLY, on the wrong premise
+    that CA's DH uses no State. The DriverHistoryQuery (NLTS.KQ, Nlets/interstate) DOES source State
+    (attribute State -> RegistrationState, present in both KQ.N/KQ.O any[]) and needs a destination
+    State for OOS history -- so the DH card was left with no State field (botched Person screen).
+    FIX (TX v4.12 pattern): DH card gets its own RegistrationStateDH; the DH QIDM State attribute +
+    both combos' any[] re-sourced RegistrationState -> RegistrationStateDH. State now on BOTH cards
+    (DL shared RegistrationState, DH suffixed RegistrationStateDH). targetField stays 'State' so the
+    CommSys wire is identical. Attention (hidden) + purposeCodeDH were already on the DH card.
+  REASON: Rob -- "person screen is botched, you did not account for state/attention/purpose code for
+    DH out-of-state queries, was supposed to go on both cards." Correct. Root cause: I judged fold
+    cost from the DH combo set[] and missed State in the DH any[]. Layout + form-field-isolation only,
+    no combo/routing/wire change. ALL 5 ENTITIES RESET at v2.21.
+
 v2.20  2026-07-28  Layout review -- Person OPTIONS fold + 4 title enumerations (direct Rob feedback, NO functional change)
   CHANGED:
     (1) Person SEARCH OPTIONS card folded into DL -- State + Purpose Code moved onto the DL card's

@@ -1,4 +1,15 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.21 (2026-07-28, FIX botched v2.20 Person fold -- Rob caught it): v2.20 folded the shared
+#   RegistrationState onto the DL card ONLY, on the wrong premise that "CA's DH uses no State."
+#   The DriverHistoryQuery (NLTS.KQ = Nlets/interstate) DOES source State (attribute State ->
+#   RegistrationState, in both KQ.N/KQ.O any[]) -- it needs a destination State for OOS history --
+#   so the DH card was left with no State field (botched Person screen). FIX (TX v4.12 pattern):
+#   DH card gets its OWN RegistrationStateDH; the DH QIDM State attribute + both combos' any[]
+#   re-sourced RegistrationState -> RegistrationStateDH. State now on BOTH cards (DL shared, DH
+#   suffixed); DL keeps shared RegistrationState/purposeCode; Attention (hidden) + purposeCodeDH
+#   already on DH. targetField stays 'State' -> CommSys wire identical. Layout+form-field-isolation
+#   only, no combo/routing change. Lesson: read the DH QIDM sourceFields (not just set[]) before
+#   judging fold cost -- the v2.20 "no State" claim came from missing State in the DH any[].
 # v2.20 (2026-07-28, layout review -- direct Rob feedback, layout/title-only, NO functional change):
 #   (1) Person SEARCH OPTIONS card FOLDED into DL -- State + Purpose Code moved onto the DL card's
 #       bottom row (the DriverLicenseQuery combos source these shared fieldIds). Person = 2 cards
@@ -104,7 +115,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.20"
+    [string]$Version = "2.21"
 )
 
 $ErrorActionPreference = "Stop"
@@ -512,7 +523,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{
             name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
             rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
@@ -522,7 +533,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCodeDH','BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH')
-                any        = @('RegistrationState','Attention')
+                any        = @('RegistrationStateDH','Attention')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
                     [PSCustomObject]@{ field = 'Attention';      value = 'X' }
@@ -538,7 +549,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCodeDH','OperatorLicenseNumberDH')
-                any      = @('RegistrationState','Attention')
+                any      = @('RegistrationStateDH','Attention')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
                     [PSCustomObject]@{ field = 'Attention';      value = 'X' }
@@ -905,10 +916,12 @@ $perLayout = MakeLayouts @(
                 # added to RMS on 2026-07-24.) VERIFY at re-test: RACE dropdown populates + CommSys RaceCode wire.
                 @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
-            # v2.20: SEARCH OPTIONS card folded away -- State + Purpose Code moved onto the DL card's
-            # bottom row (the DriverLicenseQuery combos source these shared fieldIds). DH is already
-            # self-contained (its own purposeCodeDH; the DH QIDM uses NO State), so -- unlike the TX
-            # v4.12 fold -- no DH-suffixed copies are needed. Person = 2 cards (DL + DH). Wire unchanged.
+            # v2.20/v2.21: SEARCH OPTIONS card folded away -- Person = 2 cards (DL + DH). State +
+            # Purpose Code go on the DL card's bottom row (DriverLicenseQuery sources shared
+            # RegistrationState/purposeCode). The DH card gets its OWN DH-suffixed State
+            # (RegistrationStateDH) -- DriverHistoryQuery (NLTS.KQ, interstate/OOS) needs a
+            # destination State, so State MUST appear on the DH card too (TX v4.12 pattern). The
+            # v2.20 "DH uses no State" claim was WRONG -- the DH QIDM sources State; fixed v2.21.
             @{ id = 'ROW_PER_DL_OPT'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_OPT' }
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_DL_OPT' @{ initialValue = 'C' } }
@@ -919,8 +932,12 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
-            @{ id = 'ROW_PER_DH_1'; cols = @('6','4'); fields = @(
+            # v2.21: RegistrationStateDH added here -- DriverHistory is Nlets/interstate (OOS), so the
+            # DH card needs its own destination State (the DH QIDM sources RegistrationStateDH). Mirrors
+            # the DL card's State + the TX v4.12 both-cards pattern.
+            @{ id = 'ROW_PER_DH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
+                @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
                 @{ id = 'PurposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(

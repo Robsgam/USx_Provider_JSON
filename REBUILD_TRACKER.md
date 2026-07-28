@@ -41,7 +41,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 5 | FL_FCIC | v7.12 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v4.12 |  | 78P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 8 | CA_CLETS | v2.20 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
+| 8 | CA_CLETS | v2.21 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v2.0 |  | 72P/0F/1W/1LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 10 | CA_CLETS_OCATS | v2.0 |  | 63P/0F/0W/1LIM | 1 | out of scope |
 | 11 | CA_eSUN | v2.0 |  | 71P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
