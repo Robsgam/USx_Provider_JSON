@@ -410,7 +410,128 @@
     return payload;
   };
 
+  // -------------------------------------------------------------------------
+  // RENDER SNAPSHOT (2026-07-29, Rob: "render should be classified with the labels and
+  // field ordering"). Walks the RENDERED form and records, in visual order, every field's
+  // DOM id, its visible label, its control type, and its card/row grouping. Compared against
+  // the JSON-derived expected manifest by tools/audit_render_fidelity.ps1.
+  //
+  // This is its own evidence channel -- no fill, no submit, no dex-log. A render test has no
+  // CommSys request, so it cannot ride the wire-XML capture pipeline (and forcing it in would
+  // hit the phantom-owed trap in _content_match.ps1). One download per entity, like
+  // __usxScopePicklists.
+  //
+  // LABEL DOM SHAPE IS NOT YET RECON'D. Only the dex-log XML and the fill controls have ever
+  // been reverse-engineered on this platform; the input form's label markup has not. So each
+  // field tries several strategies in order and RECORDS WHICH ONE WON (labelStrategy) plus a
+  // strategyTally in the payload. Read that tally after the first live run: if one strategy
+  // wins everywhere, simplify to it; if a field falls through to 'none', its markup needs a
+  // look before the gate can be trusted for that field. Do NOT delete the fallbacks based on
+  // a guess about the DOM.
+  window.__usxCaptureRender = function (entityName) {
+    if (!entityName) { console.error('[USx-RENDER] entity required: __usxCaptureRender("Vehicle")'); return; }
+
+    const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+
+    // Strategies, most authoritative first. Each returns a label string or ''.
+    function resolveLabel(el) {
+      const id = el.id;
+      // 1. <label for="fieldId"> -- the accessible, standard association
+      if (id) {
+        const lf = document.querySelector('label[for="' + CSS.escape(id) + '"]');
+        if (lf && norm(lf.textContent)) return { label: norm(lf.textContent), strategy: 'label[for]' };
+      }
+      // 2. aria-labelledby -> referenced element's text
+      const alb = el.getAttribute('aria-labelledby');
+      if (alb) {
+        const t = alb.split(/\s+/).map((x) => { const n = document.getElementById(x); return n ? norm(n.textContent) : ''; }).filter(Boolean).join(' ');
+        if (t) return { label: norm(t), strategy: 'aria-labelledby' };
+      }
+      // 3. an ancestor form-field wrapper containing a <label>
+      let p = el.parentElement, hops = 0;
+      while (p && hops < 6) {
+        const lab = p.querySelector(':scope > label, :scope > * > label');
+        if (lab && norm(lab.textContent)) return { label: norm(lab.textContent), strategy: 'ancestor label (' + hops + ' hops)' };
+        p = p.parentElement; hops++;
+      }
+      // 4. aria-label on the control itself
+      const al = el.getAttribute('aria-label');
+      if (al && norm(al)) return { label: norm(al), strategy: 'aria-label' };
+      // 5. placeholder -- last resort; NOTE placeholders are documented as NOT rendered by this
+      //    platform (BUILD_RULES), so a hit here is itself suspicious and worth reporting.
+      const ph = el.getAttribute('placeholder');
+      if (ph && norm(ph)) return { label: norm(ph), strategy: 'placeholder (SUSPECT)' };
+      return { label: '', strategy: 'none' };
+    }
+
+    function controlType(el) {
+      if (el.classList && [...el.classList].some((c) => /select__input/.test(c))) return 'FormSelect';
+      if (el.closest && el.closest('[class*="select__control"]')) return 'FormSelect';
+      if (el.getAttribute('type') === 'checkbox') return 'FormCheckbox';
+      if (el.closest && el.closest('[class*="datepicker"], [class*="date-field"], [class*="DateField"]')) return 'FormDate';
+      if (el.getAttribute('role') === 'spinbutton') return 'FormDate';
+      return 'FormInput';
+    }
+
+    // Every candidate control on the page, in DOCUMENT ORDER (querySelectorAll guarantees it),
+    // which is the visual order the officer reads.
+    const controls = [...document.querySelectorAll('input[id], select[id], textarea[id]')]
+      .filter((el) => el.id && el.offsetParent !== null);   // offsetParent null => not rendered/hidden
+
+    if (!controls.length) {
+      console.error('[USx-RENDER] no rendered controls with ids found -- is the ' + entityName + ' form up? Aborting (nothing downloaded).');
+      return;
+    }
+
+    // Group into cards/rows by DOM ancestry. Card/row IDs are BUILD-TIME Craft.js ids and do
+    // NOT exist in the DOM, so ids are emitted as null and the audit pairs cards by INDEX and
+    // compares TITLES -- it explicitly skips id comparison when the actual side has none.
+    const cardOf = (el) => el.closest('[class*="card" i], section, fieldset') || document.body;
+    const rowOf = (el) => el.closest('[class*="row" i], [class*="grid" i]') || cardOf(el);
+    const cardTitle = (cardEl) => {
+      if (!cardEl) return null;
+      const h = cardEl.querySelector('h1,h2,h3,h4,h5,h6,[class*="title" i],[class*="header" i]');
+      return h ? norm(h.textContent) : null;
+    };
+
+    const cards = [];
+    const cardIdx = new Map();
+    const rowIdx = new Map();
+    const tally = {};
+
+    for (const el of controls) {
+      const cEl = cardOf(el), rEl = rowOf(el);
+      if (!cardIdx.has(cEl)) { cardIdx.set(cEl, cards.length); cards.push({ id: null, title: cardTitle(cEl), rows: [] }); }
+      const card = cards[cardIdx.get(cEl)];
+      const rKey = cEl === rEl ? cEl : rEl;
+      if (!rowIdx.has(rKey)) { rowIdx.set(rKey, card.rows.length); card.rows.push({ id: null, templateColumns: [], hidden: false, fields: [] }); }
+      const row = card.rows[rowIdx.get(rKey)];
+      const r = resolveLabel(el);
+      tally[r.strategy] = (tally[r.strategy] || 0) + 1;
+      row.fields.push({
+        fieldId: el.id, label: r.label, type: controlType(el),
+        hidden: false, initialValue: (el.value === '' ? null : el.value),
+        labelStrategy: r.strategy
+      });
+    }
+
+    const payload = {
+      provider: L.providerFromHost(), entity: entityName, capturedAt: new Date().toISOString(),
+      capturedBy: '__usxCaptureRender', fieldCount: controls.length,
+      labelStrategyTally: tally, cards: cards
+    };
+    const unlabeled = controls.length - (tally['label[for]'] || 0) - (tally['aria-labelledby'] || 0) - (tally['ancestor label (0 hops)'] || 0);
+    L.triggerDownload('usx_render_' + payload.provider + '_' + entityName + '.json', payload);
+    console.log('%c[USx-RENDER]', 'color:#a0a;font-weight:bold',
+      entityName + ': ' + controls.length + ' field(s) in ' + cards.length + ' card(s) -> downloaded usx_render_' +
+      payload.provider + '_' + entityName + '.json');
+    console.log('%c[USx-RENDER]', 'color:#a0a', 'label strategy tally (read this -- the label DOM shape is not yet recon\'d):', tally);
+    if (tally['none']) console.warn('[USx-RENDER] ' + tally['none'] + ' field(s) resolved NO label -- their markup needs a look before the gate can be trusted.');
+    if (tally['placeholder (SUSPECT)']) console.warn('[USx-RENDER] ' + tally['placeholder (SUSPECT)'] + ' field(s) fell through to placeholder, which this platform does not render -- suspect.');
+    return payload;
+  };
+
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options; __usxCaptureRender("Vehicle") = render snapshot (labels + field order). After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();

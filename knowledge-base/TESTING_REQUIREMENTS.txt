@@ -655,9 +655,39 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
          docs/<P>_TEST_MATRIX.txt.)
   [TOOL] post_test.ps1 STAMPS every log with JSON Version + Entity Fingerprint +
          Tier (Full). block_entity.ps1 requires, per entity, a valid current-version XML
-         log for every combo, an any[] log per combo with optional fields, and a render +
-         negative log. Never hand-write a [CONFIRMED] marker or a log "PASS" -- a marker
-         with no stamped current-version XML log fails enforce (audit_test_coverage -Gate).
+         log for every combo and an any[] log per combo with optional fields. Never
+         hand-write a [CONFIRMED] marker or a log "PASS" -- a marker with no stamped
+         current-version XML log fails enforce (audit_test_coverage -Gate).
+
+  RENDER / NEGATIVE / DESELECT -- WHICH TOOL ACTUALLY COVERS WHAT (corrected 2026-07-29).
+         This block used to claim block_entity.ps1 required "a render + negative log". It
+         never did -- block_entity.ps1 and emit_test_plan.ps1 both state the opposite in
+         their own comments, no plan has ever emitted a render/negative/deselect test, and
+         across 20 providers and 282 logs ZERO render, negative, or deselect logs have ever
+         existed. A [TOOL] marker on an unenforced requirement is worse than no marker: it
+         reads as proof. Current, accurate state:
+
+  [TOOL] RENDER -- classified by LABELS and FIELD ORDER (Rob's directive 2026-07-29).
+         Evidence is a DOM snapshot, NOT a wire-XML test: a render test issues no CommSys
+         request, so it cannot ride the fill->submit->scrape->infer-combo pipeline (and
+         forcing it in hits the phantom-owed trap in _content_match.ps1). Capture with
+         __usxCaptureRender('<Entity>') in the tenant console; the download goes to
+         providers/<P>/logs/_render/<Entity>_v<X.Y>.json. Verified by
+         tools/audit_render_fidelity.ps1 (enforce PHASE 2m), which compares it against the
+         manifest derived from the JSON layout via tools/_render_manifest.ps1 and FAILs on
+         any label mismatch, missing/extra field, visual reorder, or card-title drift.
+         RECURRING: re-captured per entity on EVERY version bump, like every other test.
+         A divergence FAILs; a missing snapshot is advisory until that provider's next
+         sweep, but a provider is NOT done until 0 are owed.
+         NOTE: the label DOM shape has not been recon'd -- __usxCaptureRender tries several
+         strategies and reports a labelStrategyTally. Read it on the first live run.
+
+  [OP]   NEGATIVE and DESELECT -- NOT yet automated, still operator-run. Both need an
+         evidence model the capture pipeline does not have: a negative proves the ABSENCE
+         of a dex-log entry after submitting an empty form, and a deselect proves WHICH SET
+         of queries fired from one submit (today's capture pairs one dex-log row to one
+         test). Until that lands, run them by hand and record the result in the entity's
+         STATUS notes. Do NOT mark them [TOOL].
 
   GATE 1 -- REBUILD RESTARTS TESTING (BEFORE STARTING/RESUMING A SESSION):
   [GATE] A JSON rebuild (ANY version bump) restarts the ENTIRE test package

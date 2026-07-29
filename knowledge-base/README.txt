@@ -673,6 +673,31 @@ TOOLS
     the two cannot drift. Exports Get-ProviderTestState / Get-ProviderValidatorScore /
     Get-ProviderMethodology.
 
+  tools/audit_render_fidelity.ps1
+    RENDER GATE, classified by LABELS and FIELD ORDER (enforce PHASE 2m). Compares each
+    entity's captured DOM snapshot (providers/<P>/logs/_render/<Entity>_v<X.Y>.json, produced
+    by __usxCaptureRender in the tenant console) against the manifest derived from the JSON
+    layout, and FAILs on any label mismatch, missing/extra field, visual reorder, or card-title
+    drift. Origin (Rob 2026-07-29, "render should be classified with the labels and field
+    ordering"): render was the only gate with no machine check -- audit_form_review records
+    only THAT a human looked, so every label/title/order defect in 2026-07 was caught by eye.
+    A JSON self-check cannot substitute: the retired Convert-UsxCasing recase collapsed
+    Craft.js `nodes` and forms rendered as tab names only while every validator passed.
+    Deliberately its own evidence channel, not a wire-XML plan test (a render test sends no
+    CommSys request; forcing it into the import path hits the phantom-owed trap documented in
+    _content_match.ps1). Divergence = FAIL; missing snapshot = advisory until that provider's
+    next sweep, but a provider is not DONE until 0 owed.
+    Usage: .\audit_render_fidelity.ps1 -Path <provider json> [-OutFile <path>]
+
+  tools/_render_manifest.ps1  (shared module, dot-sourced)
+    Canonical render manifest: the ordered label/field-order description of an entity form,
+    consumed by BOTH emit-side and audit-side so expected and actual cannot drift apart.
+    Exports Get-QifRenderManifest / Get-RmFlatFields / Compare-RenderManifest. ORDER COMES
+    FROM A TREE WALK (ROOT -> FORM_ROOT -> ROOT_PAGE -> cards -> rows -> fields, following each
+    node's own `nodes` array) -- the flat Craft.js id->node map's key order is file-write order
+    and has no relation to what the officer sees, so do NOT copy Get-QifFieldIds-style flat
+    enumeration for anything order-sensitive.
+
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
     consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1
