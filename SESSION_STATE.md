@@ -19,8 +19,12 @@ by choice — `main` stays at the last tenant-tested state)
 
 ## Gate status
 
-`enforce.ps1 -SkipGit` → **427 PASS / 0 FAIL / 0 WARN**. If that is not what you get, something
-changed since this was written — trust the tool, not this line, and fix this line.
+Run `tools\enforce.ps1 -SkipGit`. **Expect `0 FAIL / 0 WARN`.** That is the invariant.
+
+Do NOT record the PASS count here. It grows every time a gate is added (it moved 427→430 within an
+hour of this file being created, purely from new gates), so an absolute number is guaranteed to go
+stale and teaches the next session to distrust the file. `0 FAIL / 0 WARN` is the only durable
+assertion. If you get a FAIL or WARN, the tool is right and this file is out of date.
 
 ## Tenant-test state (derive it: `tools\portfolio_status.ps1`)
 
