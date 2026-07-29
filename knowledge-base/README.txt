@@ -272,6 +272,23 @@ TOOLS
     attribute-name condition logic). FAILs on drift. Run live by enforce Phase 2d.
     Usage: .\audit_simulator_parity.ps1 [-Path <json>] [-OutFile <path>]
 
+  tools/audit_log_combo_attribution.ps1
+    Did each saved test log's NAMED combo actually fire? The wire XML carries NO keyRef
+    (MessageType is just the query name), so a log named for combo A is indistinguishable
+    from one where a sibling B fired -- "84 logs PASS" can silently mean "76 combos
+    exercised, 8 filed under combos that never ran". Replays each log's recorded QUERY
+    STRING: routing is existence-based, so field PRESENCE fully determines the winner.
+    Walks the owning QIDM in array order and compares first-match to the claim.
+    Uses _sim_helpers.ps1 Test-ComboConditionsCore, so it cannot drift from the simulator.
+    Strips _any / _af_<field> / _guardrail_vs_<other> suffixes to recover the base keyRef.
+    Scopes the QIDM by the log header's query name -- NEVER by bare keyRef, which collides
+    across QIDMs (NY_NYSPIN_EJUSTICE reuses RVEH/RCAR on Vehicle AND Boat; a bare lookup
+    reported 8 bogus failures until fixed). See BUILD_RULES Section 13.
+    Found 2026-07-29 -- 17 misattributed logs of 417: TX_TLETS x8 (2 genuinely unreachable
+    combos), FL_FCIC x7 + CA_CLETS x2 (reachable combos whose any-field/any test fill
+    included a higher-priority identifier and rerouted). NY/NJ/HI 100% clean.
+    Usage: .\audit_log_combo_attribution.ps1 -Path <json> [-OutFile <path>]
+
   tools/audit_combo_reachability.ps1
     FILL-INDEPENDENT dead-combo gate. The platform fires the FIRST matching combination
     in a QIDM, so combo A is unreachable if some B ordered before it matches whenever A

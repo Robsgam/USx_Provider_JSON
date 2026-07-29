@@ -301,6 +301,28 @@ $tests = New-Object System.Collections.Generic.List[object]
 $formDefaultsByEntity = [ordered]@{}
 $n = 0
 
+# Resolve expectedKeyRef by SIMULATION for the structural kinds too (combo / any-field /
+# any) -- guardrails already did this (see Get-SimFiringKeyRef below). A test's own fill can
+# REROUTE it: adding a higher-priority identifier as an any[] field makes an earlier combo
+# win first-match, so the plan asserted a combo the query never reaches, the captured log
+# was filed under it, and nothing caught the lie because the wire XML carries no keyRef.
+# That produced 9 misattributed logs -- FL_FCIC Boat FBQ Decal/Registration/TitleLien (x7,
+# rerouted to FBQBoatHullIdNumber / FBQDecalNumber) and CA_CLETS IR.QVC.S (x2, rerouted to
+# IR.QVC.C). Found 2026-07-29 by audit_log_combo_attribution.ps1; see BUILD_RULES Sec 20d.
+# When the fill reroutes, expectedKeyRef becomes the combo that ACTUALLY fires and
+# reroutedFrom records the combo the test cannot reach -- so the plan never asserts a
+# falsehood and the condition is visible BEFORE anyone spends a tenant test on it.
+function Resolve-ExpectedKeyRef($entQidms, $fills, $entDefaults, $structuralKr) {
+    $fd = @{}
+    foreach ($f in @($fills)) { if ($f -and $f.fieldId) { $fd[$f.fieldId] = $f.value } }
+    if ($entDefaults) {
+        foreach ($k in $entDefaults.Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $entDefaults[$k] } }
+    }
+    $sim = Get-SimFiringKeyRef $entQidms $fd
+    if ($sim) { return $sim }
+    return $structuralKr
+}
+
 foreach ($ent in $entities) {
     $fieldIds = Get-QifFieldIds $qifByEntity[$ent]
     $hiddenIds = @(Get-QifHiddenFieldIds $qifByEntity[$ent])
@@ -322,10 +344,13 @@ foreach ($ent in $entities) {
             # Trust: flag any set[] field we couldn't resolve a value for (under-fill risk).
             foreach ($sn in $setNames) { Note-IfUnresolved "$ent $kr set[]" (Resolve-FieldId $sn $q $fieldIds) (Get-TestValue (Resolve-FieldId $sn $q $fieldIds) $isOOS) }
             $n++
-            $tests.Add([ordered]@{
+            $expKr = Resolve-ExpectedKeyRef $entQidms $fills $formDefaultsByEntity[$ent] $kr
+            $t0 = [ordered]@{
                 n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
-                expectedKeyRef = $kr; kind = 'combo'; tier = 'Full'; fills = $fills
-            })
+                expectedKeyRef = $expKr; kind = 'combo'; tier = 'Full'; fills = $fills
+            }
+            if ($expKr -ne $kr) { $t0.reroutedFrom = $kr }
+            $tests.Add($t0)
             # individual any[] field tests + all-together (full pass)
             $anyNames = @($c.requirements.any | Where-Object { $_ })
             if ($anyNames.Count -gt 0) {
@@ -340,12 +365,16 @@ foreach ($ent in $entities) {
                     if ($null -ne $val -and $val -ne '') {
                         $script:ToggleStats.anyField++
                         $n++
-                        $tests.Add([ordered]@{
+                        $afFills = @(@($fills)) + @([ordered]@{ fieldId = $ff; value = "$val" })
+                        $afKr = Resolve-ExpectedKeyRef $entQidms $afFills $entFormDefaults $kr
+                        $tAf = [ordered]@{
                             n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
-                            expectedKeyRef = $kr; kind = 'any-field'; tier = 'Full'
+                            expectedKeyRef = $afKr; kind = 'any-field'; tier = 'Full'
                             anyField = $ff
-                            fills = @(@($fills)) + @([ordered]@{ fieldId = $ff; value = "$val" })
-                        })
+                            fills = $afFills
+                        }
+                        if ($afKr -ne $kr) { $tAf.reroutedFrom = $kr }
+                        $tests.Add($tAf)
                     }
                 }
                 # All any[] fields together. Reuse the same toggle-aware derivation so the combined
@@ -360,10 +389,13 @@ foreach ($ent in $entities) {
                 }
                 if (@($anyFills).Count -gt @($fills).Count) {
                     $n++
-                    $tests.Add([ordered]@{
+                    $anyKr = Resolve-ExpectedKeyRef $entQidms $anyFills $entFormDefaults $kr
+                    $tAny = [ordered]@{
                         n = $n; entity = $ent; query = $q.query; comboKeyRef = $kr
-                        expectedKeyRef = $kr; kind = 'any'; tier = 'Full'; fills = $anyFills
-                    })
+                        expectedKeyRef = $anyKr; kind = 'any'; tier = 'Full'; fills = $anyFills
+                    }
+                    if ($anyKr -ne $kr) { $tAny.reroutedFrom = $kr }
+                    $tests.Add($tAny)
                 }
             }
         }
