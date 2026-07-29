@@ -429,7 +429,11 @@ foreach ($prov in ($providerJsons | Sort-Object Name)) {
     Out-LineColor "    Total combos (CommSys): $totalCombos" "White"
     Out-LineColor "    Total test logs:        $totalTests" "White"
     Out-LineColor "    Matched combos:         $testedCombos" "White"
-    Out-LineColor "    Coverage:               $coveragePct%" $coverageColor
+    # LABEL PRECISION (2026-07-29): this is COMBO coverage -- a combo counts as covered once it
+    # has >=1 matching log, so a combo with 1 of its 6 PLANNED tests captured still reads 100%.
+    # FL_FCIC reported "Coverage 100%" with 7 Boat plan tests never captured. Plan completeness is
+    # a DIFFERENT measure -- see report_test_status/portfolio_status (OwedPlanTests -> PARTIAL).
+    Out-LineColor "    Combo coverage:         $coveragePct%  (combos with >=1 log; NOT plan-test completeness -- see report_test_status for owed tests)" $coverageColor
 
     if ($untestedCombos.Count -gt 0) {
         Out-Line ""

@@ -496,6 +496,29 @@ foreach ($provFolder in $providerFolders) {
         Write-Warn "source/${provName}*.pdf missing (devdoc PDF)"
     }
 
+    # ── CHECK 9b: devdoc TEXT extract (added 2026-07-29) ──────────────────────────
+    # The PDF alone is not machine-readable. extract_metadata_reference.ps1 auto-discovers
+    # source/<PROVIDER>_DEVDOC.txt to parse "Must be filled if X = Y" / "Mandatory if"
+    # conditional field constraints into METADATA_REFERENCE's FIELD CONSTRAINTS section, which
+    # is what check_test_preconditions.ps1 gates on -- the check CLAUDE.md calls MANDATORY
+    # before presenting any combo test instruction (origin: the TX_TLETS T6 bug, where an
+    # ImageIndicator=Y default silently made EmailAddress required per devdoc).
+    # With no text extract that gate CANNOT FIRE and reports a PASS indistinguishable from
+    # "no constraints exist" -- a vacuous green. Found 2026-07-29: NJ_NJCJIS and FL_FCIC each
+    # carry the devdoc PDF but no _DEVDOC.txt, so neither has ever been constraint-checked.
+    # Only CHECK 9's PDF test existed, so nothing surfaced it.
+    # REMEDIATION: pdftotext source/<PROVIDER>.pdf source/<PROVIDER>_DEVDOC.txt
+    #              then re-run extract_metadata_reference.ps1 + check_test_preconditions.ps1
+    if (Test-Path $sourceDir) {
+        $ddTxt = @(Get-ChildItem $sourceDir -File -Filter '*.txt' -ErrorAction SilentlyContinue |
+                   Where-Object { $_.Name -imatch 'devdoc' })
+        if ($ddTxt.Count -gt 0) {
+            Write-Pass "source devdoc TEXT extract present ($($ddTxt[0].Name)) -- conditional-constraint gate can run"
+        } elseif ($pdfExists) {
+            Write-Warn "source devdoc TEXT extract missing -- conditional-field constraint gate (check_test_preconditions) CANNOT run and passes vacuously. Fix: pdftotext source/${provName}*.pdf source/${provName}_DEVDOC.txt"
+        }
+    }
+
     # ── CHECK 10: Phase Archives ──────────────────────────────────────────────
 
     Out-Line ""

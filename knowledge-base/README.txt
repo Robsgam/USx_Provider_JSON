@@ -47,7 +47,7 @@ FILES IN THIS FOLDER (12 files, organized by question)
                            A/B/C), known query patterns, field naming constraints
 
   PLATFORM_CONSTRAINTS.txt "What CAN'T I do? What breaks?"
-                           All 23 platform limitations (non-contiguous, #1-#37) + all 27 anti-patterns
+                           All 24 platform limitations (non-contiguous, #1-#37) + all 27 anti-patterns
                            (AP #1-#27) organized by category. Anti-patterns folded into
                            their related constraints. Confirmed dead ends.
 

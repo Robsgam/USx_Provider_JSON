@@ -107,7 +107,7 @@ Every provider JSON has exactly 3 bundles in this order:
 
 ## Anti-Patterns and Platform Limitations
 
-Full reference: `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 23 LIMITATIONs, non-contiguous #1-#37, with cross-reference index).
+Full reference: `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 24 LIMITATIONs, non-contiguous #1-#37, with cross-reference index).
 
 ---
 
@@ -366,7 +366,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (60 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
+## Tools (63 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -416,12 +416,12 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `sync_version_docs.ps1` | Auto-updates STATUS.txt, SQVR.txt, JSON_INVENTORY.md (versioned filename), REBUILD_TRACKER.md, BUILD_NOTES.txt (date checksum), per-provider CHANGELOG_<PROVIDER>.md, and the repo-root CHANGELOG.md "Current:" line, with current version and scores | `-Provider <name>` `-DryRun` |
 | `generate_changelog.ps1` | Renders per-provider `docs/CHANGELOG_<PROVIDER>.md` (Markdown) from `<PROVIDER>_BUILD_NOTES.txt`. Deterministic. Step 16 of build_report; re-run by sync_version_docs | `-Path <json>` `-Provider <name>` `-OutFile <path>` |
 | `preflight_rebuild.ps1` | Per-provider rebuild action plan (validator WARNs + linter + flags → checklist) | `-Provider <name>` `-All` `-Quick` `-OutFile` |
-| `audit_log_content.ps1` | Saved-log integrity: every test log's QUERY STRING must satisfy its plan test's full fill-set (not identifier-only) | `-Path <json>` `-OutFile` |
+| `audit_log_content.ps1` | Saved-log integrity: every test log's QUERY STRING must satisfy its plan test's full fill-set (not identifier-only). NOTE: also prints the log-count vs plan-test-count delta, but PASSes on the logs that exist -- plan completeness is the classifier's job (PARTIAL state) | `-Provider <name>` `-Quiet` |
 | `audit_supported_queries.ps1` | DEVDOC GROUND-TRUTH GATE: validates the JSON's built queries against the devdoc "Basic Queries Supported" list (build_report step 14) | `-Path <json>` `-OutFile` |
-| `audit_xml_consistency.ps1` | On-demand run-over-run wire-XML regression check (manual; not run by enforce/pipeline/build_report): same combo + same fills must produce identical wire XML run to run | `-Path <json>` `-OutFile` |
+| `audit_xml_consistency.ps1` | On-demand run-over-run wire-XML regression check (manual; not run by enforce/pipeline/build_report): same combo + same fills must produce identical wire XML run to run. Compares the working tree against a git ref | `-Provider <name>` `-BaselineRef <commit>` `-Quiet` |
 | `audit_simulator_parity.ps1` | Guards that test_commsys.ps1 and run_test_matrix.ps1 share one canonical condition-evaluation path | `-Path <json>` |
 | `audit_picklist_scope.ps1` | ADVISORY picklist-scope reminder (never blocks): flags providers missing the one-time TENANT_PICKLISTS.json capture | `-Path <json>` |
-| `verify_claims.ps1` | Hypothesis Quarantine Gate: blocks unverified platform-behavior claims from driving churn (must cite committed test logs) | `-Path <json>` |
+| `verify_claims.ps1` | Hypothesis Quarantine Gate: blocks unverified platform-behavior claims from driving churn (must cite committed test logs). Repo-wide -- takes NO -Path (passing one is silently ignored) | `-OutFile <path>` |
 | `get_entity_fingerprints.ps1` | Computes per-entity canonical fingerprints (via _json_canonical) for test-state tracking / block_entity | `-Path <json>` |
 
 ### Metadata & Extraction
@@ -431,7 +431,7 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `extract_metadata_reference.ps1` | Generates METADATA_REFERENCE.txt from XML + JSON (field definitions, combo requirements, coverage) | `-XmlPath <xml>` `-Path <json>` `-OutFile` `-All` |
 | `extract_queries.ps1` | Parses metadata XML into SQVR-ready tracking file | `-XmlPath <xml>` `-OutFile` |
 | `diff_docs.ps1` | Diffs updated engineering docs against KB files (NEW/REMOVED/CONFIRMED per category) | `-NewDoc` `-KbFile` `-OutFile` `-Provider` |
-| `check_test_preconditions.ps1` | Cross-checks combo defaults against devdoc conditional field constraints (the "Must be filled if X=Y" gate) | `-Path <json>` |
+| `check_test_preconditions.ps1` | Cross-checks combo defaults against devdoc conditional field constraints (the "Must be filled if X=Y" gate). WARN-ONLY, always exits 0 (pipeline treats it as advisory) -- it CANNOT prove a constraint is satisfied by a handler, so a WARN needs human adjudication. Passes VACUOUSLY when `source/<PROVIDER>_DEVDOC.txt` is absent (audit_structure CHECK 9b now flags that) | `-Provider <name>` `-Query <name>` `-FromHook` |
 
 ### Provider Lifecycle
 
@@ -452,8 +452,8 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `accept_divergence.ps1` | Appends a reasoned entry to a provider's accepted-divergence registry (read by audit_metadata CHECK 4/4d/5) | `-Provider` `-Reason` |
 | `suggest_field_labels.ps1` | Derives required/optional label hints from QIDM combos | `-Path <json>` |
 | `emit_picklist_scope.ps1` | Emits the PICKLIST_SCOPE.json the browser scope tool consumes (one-time-per-provider tenant picklist capture) | `-Path <json>` |
-| `import_picklists.ps1` | Merges usx_picklists_*.json downloads into docs/reference/TENANT_PICKLISTS.json + validates current test values | `-Provider` |
-| `relabel_batch.ps1` | Content-based batch relabeler (pipeline stage before import); fixes unreliable browser-side label pairing | `-Provider` |
+| `import_picklists.ps1` | Merges usx_picklists_*.json downloads into docs/reference/TENANT_PICKLISTS.json + validates current test values | `-Path <download>` |
+| `relabel_batch.ps1` | Content-based batch relabeler (pipeline stage before import); fixes unreliable browser-side label pairing | `-BatchPath <file>` `-PlanPath <file>` `-KeepUnmatched` |
 | `serve_plans.ps1` | Localhost HTTP server so the browser extension loads the repo's current test plan / picklist scope itself | (no args) |
 | `watch_captures.ps1` | Start once per test session; watches Downloads for usx_captured_*.json and ingests them | (no args) |
 
@@ -514,7 +514,7 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 | **Are there structural issues?** | `build_report.ps1 -Path <json>` (runs 9 core tools; `-IncludeExtended` for the 2 advisory ones) | Spot-reading JSON sections |
 | **Is this field consistent across providers?** | `audit_cross_provider.ps1 -Path providers/` | Manual grep across provider folders |
 | **Are all docs/versions in sync?** | `enforce.ps1 -Provider <name>` | Manual file-by-file comparison |
-| **What anti-patterns apply?** | `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 23 LIMITATIONs, non-contiguous #1-#37) | Memory, training data |
+| **What anti-patterns apply?** | `knowledge-base/PLATFORM_CONSTRAINTS.txt` (27 APs + 24 LIMITATIONs, non-contiguous #1-#37) | Memory, training data |
 | **What does the RMS bundle contain?** | `tools/_build_rms_bundle.ps1` (all builds) + CLAUDE.md RMS Bundle section | Raw JSON inspection |
 | **Current build state** (scores, warnings) | `docs/` report files (generated by `build_report.ps1`). Legacy: `docs/base/` or `docs/mc/` | Re-running validator ad hoc |
 | **Test coverage status** | `audit_test_coverage.ps1 -Path <json>` + `docs/<PROVIDER>_SQVR.txt` | Counting test log files manually |

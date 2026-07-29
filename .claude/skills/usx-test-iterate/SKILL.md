@@ -128,10 +128,30 @@ Never write an unconfirmed hypothesis into the KB as if it were settled fact.
 
 `tools/enforce.ps1 -Provider <NAME>` PHASE 6 verdict must read CLOSED (every combo either
 `[CONFIRMED]` with a backing XML-bearing log at the current version/fingerprint, or an explicit
-`[APPROVED SKIP]`). Both PHASE 6 log gates must PASS: **6c Log-content integrity**
-(`audit_log_content.ps1`, log ↔ plan fill-set) AND **6d Log-metadata integrity**
-(`audit_log_metadata.ps1`, log ↔ metadata field/combo). A green 6c with a failing/absent 6d is
-NOT done — the direct metadata proof is the whole point of the capture package.
+`[APPROVED SKIP]`).
+
+**FOUR gates, not two (corrected 2026-07-29 — the two-gate definition was provably
+insufficient).** FL_FCIC and TX_TLETS both passed 6c AND 6d for their entire test history while
+7 and 8 of their logs were filed under combos that never fired, and while plan tests had never
+been captured at all. Content + metadata integrity cannot see either problem:
+
+- **6c Log-content integrity** (`audit_log_content.ps1 -Provider <NAME>`) — log ↔ plan fill-set.
+- **6d Log-metadata integrity** (`audit_log_metadata.ps1 -Provider <NAME>`) — log ↔ metadata
+  field/combo. The direct CommSys-correctness proof. A green 6c with a failing/absent 6d is NOT done.
+- **2i Log combo attribution** (`audit_log_combo_attribution.ps1 -Path <json>`) — the log's NAMED
+  combo is what ACTUALLY fired. The wire XML carries NO keyRef, so a filename is never evidence;
+  this replays the recorded QUERY STRING to prove it. Without this a dead or shadowed combo
+  carries a green PASS log that is really its shadower's.
+- **Plan completeness** — `report_test_status.ps1 -Provider <NAME>` must NOT read PARTIAL. The
+  classifier diffs plan tests against captured logs (`OwedPlanTests`). Beware the metrics that
+  CANNOT see this and will happily say you are done: `audit_test_coverage` reports "Coverage 100%"
+  once every combo has ≥1 log (a combo with 1 of 6 planned tests counts as covered), and
+  `audit_log_content` prints the "N log(s) vs M plan test(s)" delta and then PASSes on the logs
+  that exist. ALL-PASS requires zero owed plan tests.
+
+Also required before declaring DONE: `audit_combo_reachability.ps1` (enforce 2h) shows no
+unregistered DEAD combo — testing an unreachable combo is impossible, so it must be removed or
+registered, never "tested".
 `tools/verify_claims.ps1` must show no unbacked live-proven claims. All docs current, everything
 committed and pushed. If any of this fails, the session is not done — fix what's flagged, don't
 declare victory around it.
