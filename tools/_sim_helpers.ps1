@@ -32,6 +32,64 @@ function Get-ComboConditions($combo) {
 # Sec 2a): a conditions array containing ANY value-comparison operator
 # (EQUALS/NOT_EQUALS/IN/NOT_IN/REGEX) is disabled IN ITS ENTIRETY -- including
 # co-resident EXISTS/NOT_EXISTS -- so the combo behaves as unconditioned (ok=true).
+# ── CANONICAL "WHICH COMBO FIRES" (added 2026-07-29) ─────────────────────────────
+# Five tools had grown their own copy of this walk (test_commsys, run_test_matrix,
+# emit_test_plan, audit_combo_reachability, audit_log_combo_attribution) while only the
+# CONDITIONS predicate below was shared -- so audit_simulator_parity could report "parity"
+# while the set[]-satisfaction halves disagreed. Two cases were already being dropped by
+# the newest copies: attribute-name -> sourceField resolution, and the empty-set[]-with-
+# any[] rule (a combo with no set[] requires at least ONE any[] field filled, e.g. CCH AR)
+# -- without it such a combo reads as always-matching and hijacks first-match.
+# Any tool answering "which combo fires" MUST call Get-FiringKeyRef, never re-walk it.
+
+# Which of a QIDM's refs are satisfied by this form fill? Resolves BOTH directions:
+# the raw sourceField key the officer typed into, and the attribute NAME it feeds --
+# set[]/any[] entries appear as either across the portfolio.
+function Get-SimFilledRefs($qidm, $formData) {
+    $filled = @()
+    foreach ($attr in $qidm.attributes) {
+        $sfs = @()
+        if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
+        elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
+        $has = $false
+        foreach ($sf in $sfs) { if ($formData.ContainsKey($sf) -and $formData[$sf]) { $filled += $sf; $has = $true } }
+        if ($has) { $filled += $attr.name }
+    }
+    # A fill key that is not modelled as an attribute sourceField still counts as present
+    # (combo set[]/any[] may name a form fieldId directly).
+    foreach ($k in $formData.Keys) { if ($formData[$k]) { $filled += $k } }
+    return ($filled | Select-Object -Unique)
+}
+
+# Does this ONE combo match the fill? (set[] all present; if set[] is empty, at least one
+# any[] present; conditions pass). Returns $true/$false.
+function Test-ComboMatches($combo, $filled, $formData) {
+    # Filter nulls: @($null) is a 1-element array in PowerShell, not empty.
+    $set = @($combo.requirements.set | Where-Object { $_ })
+    $any = @($combo.requirements.any | Where-Object { $_ })
+    foreach ($f in $set) { if ($filled -notcontains $f) { return $false } }
+    if ($set.Count -eq 0 -and $any.Count -gt 0) {
+        $anyOk = $false
+        foreach ($f in $any) { if ($filled -contains $f) { $anyOk = $true; break } }
+        if (-not $anyOk) { return $false }
+    }
+    return (Test-ComboConditionsCore (Get-ComboConditions $combo) $formData).ok
+}
+
+# FIRST matching combination across the given QIDMs, in array order = what the platform
+# fires. Returns the keyRef, or $null if nothing matches.
+function Get-FiringKeyRef($entQidms, $formData) {
+    foreach ($q in $entQidms) {
+        $filled = Get-SimFilledRefs $q $formData
+        foreach ($c in $q.combinations) {
+            if (Test-ComboMatches $c $filled $formData) {
+                if ($c.keyReference) { return $c.keyReference } else { return $c.keyRef }
+            }
+        }
+    }
+    return $null
+}
+
 function Test-ComboConditionsCore($conds, $formData) {
     $r = @{ ok = $true; failures = @(); poisoned = $false; poisonDesc = '' }
     $conds = @($conds)

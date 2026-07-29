@@ -143,17 +143,11 @@ foreach ($lf in $logFiles) {
         }
     }
 
-    # First matching combination wins
-    $fired = $null
-    foreach ($cb in @($owner.combinations)) {
-        $setOk = $true
-        foreach ($f in @($cb.requirements.set)) { if (-not $fill.ContainsKey($f)) { $setOk = $false; break } }
-        if (-not $setOk) { continue }
-        $cr = Test-ComboConditionsCore (Get-ComboConditions $cb) $fill
-        if (-not $cr.ok) { continue }
-        $fired = $cb.keyReference
-        break
-    }
+    # First matching combination wins -- via the CANONICAL walk in _sim_helpers.ps1, not a
+    # local re-implementation. The local copy this replaced dropped two cases the shared one
+    # handles: attribute-name -> sourceField resolution, and the empty-set[]-with-any[] rule
+    # (such a combo would have read as always-matching and hijacked first-match).
+    $fired = Get-FiringKeyRef @($owner) $fill
 
     if ($null -eq $fired) {
         Emit ""

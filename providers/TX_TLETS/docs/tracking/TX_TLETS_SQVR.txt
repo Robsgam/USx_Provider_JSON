@@ -38,11 +38,21 @@ v3.4 CHANGES (from v3.3):
     any: RegistrationState
     state: In/Out
 
-  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [CONFIRMED]
+  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [DEAD -- REMOVAL SCHEDULED]
     keyReference: RQLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
     any: RegistrationState
     state: In/Out
+    NOT CONFIRMED, NOT CONFIRMABLE (2026-07-29): unreachable. REGLicensePlateNumber is ordered
+      first and its only extra set[] field is FinancialResponsibilityType, which the form
+      pre-fills 'E' -- so REG always matches first and this combo never fires at any fill.
+      Its former [CONFIRMED] marker was false: the v4.12 logs named for it actually exercised
+      REG (the RQLicensePlateNumber log's wire carried BOTH FinancialResponsibilityType (REG's
+      set field) AND LicensePlateTypeCode, i.e. the LIMITATION #1 union pool). Those 8 stale
+      logs were deleted 2026-07-29. Detected by audit_combo_reachability.ps1 /
+      audit_log_combo_attribution.ps1; registered dead-combo-REMOVE-SCHEDULED. Removal decided
+      per Rob's v4.9 subset-shadow ruling -- executes at TX's next version bump.
+      Officer impact: NONE (REG returns registration + financial responsibility, a superset).
 
   VIN+FRT -- VIN + Financial Responsibility [CONFIRMED]
     keyReference: VINVehicleIdentificationNumber
@@ -57,14 +67,18 @@ v3.4 CHANGES (from v3.3):
     state: In/Out
     CONFIRMED: T18 2026-06-17. StickerNumber=TEST123. XML: StickerNumber + State=TX (default). No plate or VIN fields.
 
-  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [CONFIRMED]
+  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [DEAD -- REMOVAL SCHEDULED]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
     state: In/Out
-    CONFIRMED: T15 2026-06-17. VIN-only input. XML: VehicleIdentificationNumber + State=TX (default).
-               No plate fields. No FinancialResponsibilityType. State=TX injected from registrationState
-               any[] (initialValue "Texas" reverse-looked up to NCIC code TX).
+    NOT CONFIRMED, NOT CONFIRMABLE (2026-07-29): unreachable. VINVehicleIdentificationNumber is
+      ordered first and its only extra set[] field is FinancialResponsibilityType, which the form
+      pre-fills 'E' -- so the VIN combo always matches first and this one never fires at any fill.
+      The prior "CONFIRMED: T15 2026-06-17" was false: that fill included FRT=E, so it exercised
+      VINVehicleIdentificationNumber. Stale logs deleted 2026-07-29. Same class + same disposition
+      as RQ Plate above (dead-combo-REMOVE-SCHEDULED, removal at TX's next bump per Rob's v4.9
+      subset-shadow ruling). Officer impact: NONE.
 
   (QV Plate + QV VIN removed v4.9, DEX-1284: both were ungated subset-shadows of the metadata
    QV auto-fired from the larger REG/RQ/VIN queries -- the extra fields on the parent queries are
@@ -257,11 +271,17 @@ SUMMARY
 
   CommSys QIDMs: 6 (VehicleInsuranceReg, DriverLicense, DriverHistory,
                      GunQuery, ArticleSingle, BoatQuery)
-  Total CommSys combos: 21 (7 Vehicle + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat)
+  Total CommSys combos: 19 (5 Vehicle + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat)
+      (was stated as 21 / "7 Vehicle" -- stale since v4.9 removed QV Plate + QV VIN; the
+       per-combo blocks were cleaned at v4.10 but this summary was missed. Fixed 2026-07-29.)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
-  CONFIRMED (v4.5 full re-test, single-day batch import, 2026-07-17):
-    Vehicle (7/7): REGLicensePlateNumber, RQLicensePlateNumber, VINVehicleIdentificationNumber,
-      DPSIStickerNumber, QVLicensePlateNumber, QVVehicleIdentificationNumber, RQVehicleIdentificationNumber
+  CONFIRMED (v4.12 full re-test):
+    Vehicle (3/5 confirmable): REGLicensePlateNumber, VINVehicleIdentificationNumber,
+      DPSIStickerNumber.
+      RQLicensePlateNumber + RQVehicleIdentificationNumber are DEAD (unreachable behind REG/VIN
+      via the pre-filled FinancialResponsibilityType) -- not confirmable, removal scheduled at the
+      next bump. QVLicensePlateNumber + QVVehicleIdentificationNumber were REMOVED at v4.9 and must
+      not be listed here at all.
     Person DL (3/3): DQName, CPLName, DQOLN (QWName removed v4.2 -- platform-auto-sent shadow query)
     Person DH (2/2): KQName, KQOLN -- EmailAddress automation (RND-57165) confirmed live: KQName.txt
       shows <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress> in the captured XML, resolved

@@ -65,42 +65,9 @@ function Get-EntityDefaultFields($entQidms) {
     }
     return $d
 }
-function Get-SimFilledRefs($qidm, $formData) {
-    $filled = @()
-    foreach ($attr in $qidm.attributes) {
-        $sfs = @()
-        if ($attr.sourceField -is [System.Array]) { $sfs = $attr.sourceField }
-        elseif ($attr.sourceField) { $sfs = @($attr.sourceField) }
-        $has = $false
-        foreach ($sf in $sfs) { if ($formData.ContainsKey($sf) -and $formData[$sf]) { $filled += $sf; $has = $true } }
-        if ($has) { $filled += $attr.name }
-    }
-    return ($filled | Select-Object -Unique)
-}
-function Get-SimFiringKeyRef($entQidms, $formData) {
-    foreach ($q in $entQidms) {
-        $filled = Get-SimFilledRefs $q $formData
-        foreach ($c in $q.combinations) {
-            # Filter nulls: @($null) is a 1-element array in PowerShell, not empty -- a combo
-            # with no 'any' key (a valid minimal combo, e.g. CCH AR) must not inject a phantom
-            # null entry that later crashes Get-ComboTestValue's mandatory -FieldId parameter.
-            $set = @($c.requirements.set | Where-Object { $_ })
-            $any = @($c.requirements.any | Where-Object { $_ })
-            $setOk = $true
-            foreach ($f in $set) { if ($filled -notcontains $f) { $setOk = $false; break } }
-            $anyOk = $true
-            if ($set.Count -eq 0 -and $any.Count -gt 0) {
-                $anyOk = $false
-                foreach ($f in $any) { if ($filled -contains $f) { $anyOk = $true; break } }
-            }
-            if (-not ($setOk -and $anyOk)) { continue }
-            if ((Test-ComboConditionsCore (Get-ComboConditions $c) $formData).ok) {
-                if ($c.keyReference) { return $c.keyReference } else { return $c.keyRef }
-            }
-        }
-    }
-    return $null
-}
+# Get-SimFilledRefs + the combo walk now live in _sim_helpers.ps1 as Get-FiringKeyRef --
+# ONE canonical implementation, so this cannot drift from the auditors (2026-07-29).
+function Get-SimFiringKeyRef($entQidms, $formData) { return Get-FiringKeyRef $entQidms $formData }
 
 $raw = [System.IO.File]::ReadAllText((Resolve-Path $Path), [System.Text.UTF8Encoding]::new($false))
 $json = $raw | ConvertFrom-Json
