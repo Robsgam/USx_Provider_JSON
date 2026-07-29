@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_SAN_LUIS_OBISPO_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.0** | Generated: 2026-07-27
+Current: **v2.1** | Generated: 2026-07-29
 
 ---
+
+## v2.1 -- 2026-07-29 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.0 -- 2026-07-23 -- Pipeline rebuild
 

@@ -189,6 +189,38 @@ $testData["Boat"] = @{
     dexStateUserId                = "BADGE"
 }
 
+# ── Seed form initialValue defaults (fidelity gate) ──
+# $testData above only carries synthetic IDENTIFIER values. Fields the real form
+# pre-fills -- FinancialResponsibilityType=E, LicensePlateTypeCode=PC, PlateYear,
+# ImageIndicator, State, ReasonCode, hidden handler feeders -- were absent, so the
+# simulator modelled a form state that cannot occur: any combo whose set[] included a
+# defaulted field reported "[SKIP] missing set", and the shadowing it causes was
+# invisible. Found 2026-07-29: TX_TLETS RQVehicleIdentificationNumber is unreachable
+# behind VINVehicleIdentificationNumber precisely because FRT is always pre-filled 'E',
+# and the default sim run skipped BOTH FRT combos so nothing flagged it.
+# $testData wins on conflict -- _af_ toggle tests deliberately differ from the default.
+$seeded = @()
+foreach ($bundle in $json.bundles) {
+    if ($bundle.provider -ne 'MARK43') { continue }
+    foreach ($cfg in $bundle.configurations) {
+        $ent = $cfg.targetEntity
+        if (-not $ent) { continue }
+        if (-not $testData.ContainsKey($ent)) { $testData[$ent] = @{} }
+        foreach ($prop in $cfg.layout.default.PSObject.Properties) {
+            $fid = $prop.Value.props.fieldId
+            $iv  = $prop.Value.props.initialValue
+            if ($fid -and -not [string]::IsNullOrEmpty([string]$iv) -and
+                -not $testData[$ent].ContainsKey($fid)) {
+                $testData[$ent][$fid] = $iv
+                $seeded += "$ent.$fid=$iv"
+            }
+        }
+    }
+}
+if ($seeded.Count -gt 0) {
+    Write-Host "  Seeded form defaults ($($seeded.Count)): $(($seeded | Sort-Object) -join ', ')" -ForegroundColor DarkGray
+}
+
 # ── Apply -Override scenario overlay (empty string removes the field) ──
 if ($Override) {
     foreach ($entKey in @($testData.Keys)) {

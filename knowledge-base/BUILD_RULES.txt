@@ -1737,3 +1737,58 @@ See also:
   carried on every record) -- do not assume keyRef alone is unique across a
   provider. Do not wait to discover this the hard way on the next tool built
   against combo data.
+
+
+================================================================================
+20. COMBO REACHABILITY -- FIRST-MATCH SHADOWING (added 2026-07-29)
+================================================================================
+
+  The platform fires the FIRST matching combination in a QIDM's array, and the
+  serialized field pool is the UNION of set[]+any[] of ALL matching combos
+  (LIMITATION #1). Two consequences that are easy to build wrong:
+
+  20a. A DEFAULTED SIBLING SET FIELD KILLS THE COMBO BELOW IT.
+    Combo A is unreachable if some B ordered before it matches whenever A does.
+    The silent case: every set[] field B needs that A does not is form-PREFILLED
+    (initialValue), so B's set is always satisfied and B always wins.
+    A dead combo still validates, still counts toward metadata coverage, and can
+    even carry a PASS test log -- because the wire XML contains NO keyRef, a log
+    named for A is indistinguishable from one where B fired. It is also not inert:
+    its any[] still unions into the pool, so it can push fields onto the wire that
+    the firing transaction does not define.
+    Gate: tools/audit_combo_reachability.ps1 (enforce PHASE 2h). Fill-independent.
+    Found 2026-07-29 -- TX_TLETS RQLicensePlateNumber (behind REG) and
+    RQVehicleIdentificationNumber (behind VIN), both because
+    FinancialResponsibilityType is prefilled 'E'; the RQLicensePlateNumber log's
+    wire carries BOTH FinancialResponsibilityType (REG's set field) AND
+    LicensePlateTypeCode (RQ's), proving REG fired and the pool unioned.
+    CA_SAN_LUIS_OBISPO B2.O was an ungated identical twin of KQ.O.
+
+  20b. NEVER EXISTENCE-GATE ON A MANDATORILY-DEFAULTED FIELD.
+    ImageIndicator MUST carry a FormSelect initialValue or it does not serialize at
+    all (FIELD_REFERENCE.txt Section 9). So it ALWAYS exists, and routing on
+    "ImageIndicator EXISTS / NOT_EXISTS" guarantees the NOT_EXISTS branch is dead.
+    A value comparison is not an escape hatch either -- any value-comparison
+    operator poisons the whole conditions array. Same applies to RandomRequest and
+    any other field the platform requires to be defaulted.
+    LA_LEMS DriverLicenseQuery DP/DQ is the portfolio's only instance (2026-07-29).
+    This is LIMITATION #30 generalized: do not default a field whose EXISTENCE
+    routes combos -- and if the platform forces the default, that field cannot be
+    the discriminator at all.
+
+  20c. A GATE DOES NOT SERIALIZE -- KEEP THE GATING FIELD IN THE OOS any[].
+    conditions[] only decide WHICH combo fires; they contribute nothing to the
+    serialized pool. An OOS combo gated "RegistrationState EXISTS" that does not
+    also list RegistrationState in set[]/any[] goes out with NO destination state.
+    Gate-XOR-companion: the OOS combo keeps the field in any[]; its in-state twin
+    (NOT_EXISTS) deliberately omits it.
+    CA_SAN_LUIS_OBISPO KQ.N shipped this way -- union pool was BirthDate+Name+
+    SexCode with no State (fixed v2.1, 2026-07-29).
+
+  20d. TESTING IMPLICATION -- A LOG CANNOT PROVE WHICH COMBO FIRED.
+    The wire XML has no keyRef, so combo identity is NOT evidenced by the log.
+    A guardrail test must differentiate by a field the shadower would ADD or the
+    dead combo would OMIT, and identifier-priority guardrails (Plate>VIN, OLN>Name)
+    do NOT cover defaulted-sibling pairs. Verify combo identity with
+    test_commsys.ps1 (which seeds form initialValues as of 2026-07-29) rather than
+    inferring it from the captured wire.

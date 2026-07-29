@@ -560,6 +560,40 @@ if (-not (Test-Path $vsTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2h: Combo Reachability (dead-combo gate, audit_combo_reachability.ps1)
+#  The platform fires the FIRST matching combination, so a combo is DEAD if one
+#  ordered before it matches whenever it does. The silent case is a sibling whose
+#  extra set[] fields are all form-prefilled (initialValue) -- it always wins, and
+#  nothing else catches it: the combo validates, counts toward coverage, and can
+#  carry a PASS log, because the wire XML has no keyRef so a log named for the dead
+#  combo is indistinguishable from one where its shadower fired.
+#  Run live -- this reads the JSON, not a cached report. Registered dead-combo
+#  divergences report [NOTE] and do not block.
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2h: Combo Reachability"
+$reachTool = Join-Path $toolDir "audit_combo_reachability.ps1"
+if (-not (Test-Path $reachTool)) {
+    Info "audit_combo_reachability.ps1 not found -- dead-combo check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $reachJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $reachJson) { Info "$provName -- no root JSON, reachability skipped"; continue }
+        $reachOut = & powershell -ExecutionPolicy Bypass -File $reachTool -Path $reachJson 2>&1 | Out-String
+        $rm = [regex]::Match($reachOut, '\[FAIL\]\s*(\d+)\s*dead combination')
+        if ($rm.Success) {
+            Fail "$provName -- $($rm.Groups[1].Value) DEAD combo(s): unreachable under first-match ordering (run audit_combo_reachability.ps1)"
+            $reachOut -split "`n" | Where-Object { $_ -match 'DEAD COMBO|never fires' } |
+                Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            $noteCount = ([regex]::Matches($reachOut, '\[NOTE\] DEAD COMBO')).Count
+            $sfx = if ($noteCount -gt 0) { " ($noteCount accepted dead-combo divergence(s))" } else { "" }
+            Pass "$provName -- all combos reachable$sfx"
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"

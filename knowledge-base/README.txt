@@ -272,6 +272,25 @@ TOOLS
     attribute-name condition logic). FAILs on drift. Run live by enforce Phase 2d.
     Usage: .\audit_simulator_parity.ps1 [-Path <json>] [-OutFile <path>]
 
+  tools/audit_combo_reachability.ps1
+    FILL-INDEPENDENT dead-combo gate. The platform fires the FIRST matching combination
+    in a QIDM, so combo A is unreachable if some B ordered before it matches whenever A
+    does. The silent case: B's extra set[] fields are all form-prefilled (initialValue),
+    so B's set is always satisfied and B always wins. Such a combo still validates, still
+    counts toward coverage, and can even carry a PASS test log -- the wire XML has no
+    keyRef, so a log named for A is indistinguishable from one where B fired.
+    Counts ONLY form initialValue as "always present" (combo defaults[] are excluded:
+    apply-order vs matching is unverified, and a combo's own defaults cannot satisfy its
+    own set[]). Conditions on a prefilled field are resolved -- EXISTS is always true,
+    NOT_EXISTS always false. RMS QIDMs skipped (intentional specificity cascade).
+    A dead combo registered in <PROVIDER>_ACCEPTED_DIVERGENCES.txt with rule
+    'dead-combo*' reports [NOTE] instead of [FAIL].
+    Found 2026-07-29: TX_TLETS RQLicensePlateNumber + RQVehicleIdentificationNumber
+    (both behind FinancialResponsibilityType=E), CA_SAN_LUIS_OBISPO B2.O (ungated OLN
+    twin), LA_LEMS DQ (ImageIndicator must always be defaulted, so existence-gating on
+    it can never work).
+    Usage: .\audit_combo_reachability.ps1 -Path <json> [-OutFile <path>]
+
   tools/audit_supported_queries.ps1
     Devdoc ground-truth gate. Checks every CommSys combo (queryLabel +
     primaryFieldReference) against docs/<PROVIDER>_SUPPORTED_QUERIES.txt, the

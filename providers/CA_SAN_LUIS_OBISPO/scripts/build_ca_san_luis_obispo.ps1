@@ -16,7 +16,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '2.0'
+    [string]$Version = '2.1'
 )
 
 $ErrorActionPreference = "Stop"
@@ -193,7 +193,12 @@ $dhQuery = [PSCustomObject]@{
     combinations = @(
         # OOS Name -- most specific (4 DH set + State in any)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
+            # RegistrationState MUST be in any[]: it is the OOS routing gate, but a gate
+            # does not serialize. Without it the union pool (LIMITATION #1) was
+            # BirthDate+Name+SexCode only, so the out-of-state DH-by-Name query went out
+            # with NO destination State. Fixed 2026-07-29. Gate-XOR: the in-state twin
+            # (B2.N) deliberately omits it.
+            requirements          = [PSCustomObject]@{ set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
@@ -206,15 +211,21 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         # OOS OLN (1 DH set + State in any)
+        # KQ.O/B2.O were BOTH ungated with an identical set[OperatorLicenseNumberDH], so
+        # KQ.O (ordered first) always won and B2.O could never fire -- a dead combo. The
+        # sibling Name pair above was already gated this way; the OLN pair was missed.
+        # Same fix CA_VENTURA_COUNTY received (NLTS.KQ.O EXISTS / ID.B2 NOT_EXISTS).
+        # Existence-only, so poisoned-array-safe. Found 2026-07-29 by
+        # audit_combo_reachability.ps1.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('RegistrationState') }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
             state                 = 'In/Out'
         }
-        # In-state OLN (1 DH set)
+        # In-state OLN (1 DH set) -- gate-XOR: State is the discriminator, so it is NOT in any[]
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @() }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @(); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'B2.O'
             state                 = 'In/Out'

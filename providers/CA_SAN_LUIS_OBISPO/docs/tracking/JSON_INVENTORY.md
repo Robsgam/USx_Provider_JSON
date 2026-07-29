@@ -19,6 +19,12 @@ All JSON versions produced for this provider.
 | phases/mc/CA_SAN_LUIS_OBISPO_MC_v1.0_2026-05-07.json | v1.0 | Snapshot | Initial MC build. |
 
 
+
+## v2.1 (2026-07-29)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_SAN_LUIS_OBISPO_v2.1.json | v2.1 | Current | 65P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
