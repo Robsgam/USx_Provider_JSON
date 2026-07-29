@@ -432,11 +432,17 @@ if (Test-Path $labelReviewPath) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  STEP 13: Officer Query Guide -- advisory deliverable, not read by enforce.ps1.
-#  Opt-in via -IncludeExtended; run tools/render_officer_guide.ps1 directly any time.
+#  STEP 13: Officer Query Guide -- the ONLY customer-facing deliverable.
+#  ALWAYS RUNS (promoted 2026-07-29). It was opt-in via -IncludeExtended from 2026-07-06,
+#  and in that window every guide silently rotted: only 8 of 20 providers had one at all,
+#  and all 6 tenant-tested providers' guides were 3-4 weeks OLDER than their JSON (FL's
+#  predated six versions of label/layout change). A document handed to an officer that
+#  regenerates only when someone remembers a flag is a document that is wrong.
+#  Still not read by enforce.ps1 -- staleness is now prevented by generating it every
+#  build rather than by a gate, and the guide carries a build stamp so a stale sheet is
+#  self-identifying. PDF is best-effort (Edge headless); HTML is always produced.
 # ══════════════════════════════════════════════════════════════════════════════
 
-if ($IncludeExtended) {
 Write-Host ""
 Write-Host "  [13/$stepCount] Generating officer query guide..." -ForegroundColor Yellow
 $officerGuidePath = Join-Path $toolDir "render_officer_guide.ps1"
@@ -448,10 +454,6 @@ if (Test-Path $officerGuidePath) {
     else { Write-Host "  [13/$stepCount] Officer guide not produced (advisory)" -ForegroundColor Gray }
 } else {
     Write-Host "  [13/$stepCount] SKIPPED (render_officer_guide.ps1 not found)" -ForegroundColor Gray
-}
-} else {
-    Write-Host ""
-    Write-Host "  [13/$stepCount] SKIPPED (advisory; pass -IncludeExtended to run)" -ForegroundColor Gray
 }
 
 # --- Summary ---

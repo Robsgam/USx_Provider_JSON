@@ -201,13 +201,22 @@ thead th.opt { color:#3a5a3a; }
 footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }
 "@
 
+# Build version, from the active JSON filename (<PROVIDER>_v<X.Y>.json).
+# WHY THIS MATTERS: before 2026-07-29 the guide carried no version at all, so nothing tied a
+# printed sheet to the build it described -- which is exactly how every guide silently rotted
+# 3-4 weeks behind its JSON without anyone noticing (officer-guide generation had been demoted
+# to opt-in on 2026-07-06). An officer holding a stale sheet had no way to tell.
+$guideVersion = 'unversioned'
+$vm = [regex]::Match([IO.Path]::GetFileName($resolved), '_v([0-9]+\.[0-9]+)\.json$')
+if ($vm.Success) { $guideVersion = "v$($vm.Groups[1].Value)" }
+
 $html = @"
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>$(Esc $providerName) — Officer Query Guide</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>$(Esc $providerName) — Officer Query Guide $(Esc $guideVersion)</title>
 <style>$css</style></head><body>
-<h1>$(Esc $providerName) — Query Guide</h1>
+<h1>$(Esc $providerName) — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build $(Esc $guideVersion))</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
 $($sb.ToString())
-<footer>$(Esc $providerName) &middot; Generated $genDate &middot; Reference only — supported search paths and field requirements.</footer>
+<footer>$(Esc $providerName) build $(Esc $guideVersion) &middot; Generated $genDate &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
 </body></html>
 "@
 
