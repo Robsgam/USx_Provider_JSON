@@ -689,6 +689,20 @@ TOOLS
     next sweep, but a provider is not DONE until 0 owed.
     Usage: .\audit_render_fidelity.ps1 -Path <provider json> [-OutFile <path>]
 
+  tools/import_render_snapshot.ps1
+    Files a downloaded render snapshot (usx_render_<PROVIDER>_<Entity>.json) into
+    providers/<P>/logs/_render/<Entity>_v<X.Y>.json, version-stamped from the provider's ACTIVE
+    root JSON -- the browser is not trusted to assert which build it rendered, so a rebuild can
+    never inherit the prior version's render proof. Routed automatically by watch_captures.ps1
+    (usx_render_* -> here, the same way usx_picklists_* -> import_picklists.ps1); archives the
+    download into automation/captures so each file is handled once. Echoes the capture's
+    labelStrategyTally and WARNs on any field that resolved no label (or fell through to
+    placeholder) -- that evidence decides whether the render gate can be trusted for a form, so
+    it must not sit unread in a JSON file. FULLY AUTOMATIC: __usxRunPlan snapshots the entity
+    form as step 0 of every run, so no console call and no file shuffling is ever needed
+    (Rob 2026-07-29: "we built the extension and watcher tools to automate this").
+    Usage: .\import_render_snapshot.ps1 -Path <download> [-KeepDownload]
+
   tools/_render_manifest.ps1  (shared module, dot-sourced)
     Canonical render manifest: the ordered label/field-order description of an entity form,
     consumed by BOTH emit-side and audit-side so expected and actual cannot drift apart.

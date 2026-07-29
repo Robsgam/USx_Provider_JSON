@@ -125,6 +125,25 @@
     const dBetween = opts.between || 1700;    // pause after submit/clear, before next combo
     const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entityFilter || t.entity === entityFilter));
     if (!tests.length) { console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
+
+    // RENDER SNAPSHOT, automatically, as step 0 of every entity run (2026-07-29). Rob's
+    // correction: "we built the extension and watcher tools to automate this" -- a render gate
+    // that needs a hand-typed console call is not automation, it is a chore that will be
+    // skipped. Right here is also the ONLY correct moment to snapshot: the entity form is
+    // confirmed on screen and still PRISTINE (no fills, no submits), so the captured labels
+    // and field order are the officer's first view. Downloads via the SW bridge and is filed
+    // by watch_captures.ps1 -> import_render_snapshot.ps1. Never blocks the run: a render
+    // capture failure must not cost a 79-test sweep.
+    if (entityFilter && typeof window.__usxCaptureRender === 'function') {
+      try {
+        const rp = window.__usxCaptureRender(entityFilter);
+        if (rp && rp.labelStrategyTally) {
+          console.log('%c[USx-DRV]', 'color:#a0a', `render snapshot captured for ${entityFilter} before any fill (${rp.fieldCount} field(s))`);
+        }
+      } catch (e) { console.warn('[USx-DRV] render snapshot failed (continuing with the test run):', e); }
+      await L.sleep(600);   // let the download settle before the first fill mutates the form
+    }
+
     const manifest = []; const results = [];
     for (const t of tests) {
       const fr = [];

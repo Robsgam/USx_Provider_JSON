@@ -119,9 +119,12 @@ $verdict = if ($failCount -gt 0) { "FAIL" } else { "PASS" }
 Out-Line "  RESULTS: $passCount verified / $failCount divergent / $missingCount owed (no snapshot)  -> $verdict"
 Out-Line "------------------------------------------------------------"
 if ($missingCount -gt 0) {
-    Out-Line "  Capture the owed snapshots: render the entity form in the tenant, then run"
-    Out-Line "    __usxCaptureRender('<Entity>')"
-    Out-Line "  in the console and move the download into logs\_render\."
+    # AUTOMATIC -- no console command, no file shuffling (Rob 2026-07-29: "we built the
+    # extension and watcher tools to automate this"). __usxRunPlan snapshots the entity form
+    # as step 0 of every run, and watch_captures.ps1 files it via import_render_snapshot.ps1.
+    Out-Line "  Owed snapshots are captured AUTOMATICALLY: with watch_captures.ps1 running,"
+    Out-Line "  pick the entity in the extension panel and click 'Run Plan' -- the render"
+    Out-Line "  snapshot is taken before the first fill and filed into logs\_render\ for you."
 }
 Out-Line ""
 

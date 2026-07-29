@@ -68,6 +68,22 @@ function Import-CaptureFile($path, $label) {
         if (-not $summary) { $summary = 'picklists merged (no summary line)' }
         return "PICKLISTS: $summary"
     }
+    # Render snapshots route to import_render_snapshot (a DOM label/field-order manifest, not a
+    # wire-XML test record -- a render test issues no CommSys request at all). Emitted
+    # automatically by __usxCaptureRender as step 0 of every __usxRunPlan entity run.
+    if ($label -like 'usx_render_*') {
+        Write-Host "[WATCH] render snapshot: $label" -ForegroundColor Magenta
+        $summary = $null
+        try {
+            $out = & (Join-Path $PSScriptRoot 'import_render_snapshot.ps1') -Path $path *>&1
+            $out | ForEach-Object { Write-Host $_ }
+            $summary = ($out | Where-Object { "$_" -match 'render snapshot (filed|replaced)' } | Select-Object -Last 1)
+        } catch { Write-Host "[WATCH] import_render_snapshot errored: $_" -ForegroundColor Red }
+        # import_render_snapshot archives the file itself on success; no-op if already gone.
+        Remove-Item $path -Force -ErrorAction SilentlyContinue
+        if (-not $summary) { $summary = 'render snapshot handled (no summary line)' }
+        return "RENDER: $("$summary".Trim())"
+    }
     Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
     # Content-based relabel pass: browser label pairing is unreliable when tests share
     # identifiers and differ only in optional fields; formState content is ground truth.
