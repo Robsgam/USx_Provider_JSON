@@ -17,6 +17,18 @@ by choice — `main` stays at the last tenant-tested state)
 
 ---
 
+## ▶ NEXT PHYSICAL ACTION
+
+**Nothing is in flight. Waiting on Rob.** Last session ended deliberately, tree clean, all pushed.
+
+When Rob is ready, the queue is: **NY v4.17 re-test** and **TX v4.13 re-test** (both reset by their
+bumps, both from T1). Neither has been started — no partial sweep to resume.
+
+**Run the `usx-resume` skill before acting on this.** It sweeps for environment state this file
+cannot see (captures stranded in Downloads, stray `watch_captures` processes, a build script bumped
+but not rebuilt). Do not start a bump, a sweep, or a Jira comment on your own initiative after a
+restart — Rob may have done things in the gap.
+
 ## Gate status
 
 Run `tools\enforce.ps1 -SkipGit`. **Expect `0 FAIL / 0 WARN`.** That is the invariant.
