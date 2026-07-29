@@ -693,6 +693,29 @@ if (-not (Test-Path $fbTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2l: Session State (audit_session_state.ps1)
+#  SESSION_STATE.md is injected into every new session by the SessionStart hook, so its whole
+#  value is being TRUSTED on restart -- which makes a stale one worse than none. Its predecessor
+#  (a memory file, not in git, appended to instead of replaced) drifted badly enough to cost ~an
+#  hour of re-prompting per restart on 2026-07-29. Committed AND verified, so it cannot rot the
+#  same way. Provider-agnostic: runs once, not per provider.
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2l: Session State"
+$ssTool = Join-Path $toolDir "audit_session_state.ps1"
+if (-not (Test-Path $ssTool)) {
+    Info "audit_session_state.ps1 not found -- session-state check skipped"
+} else {
+    $ssOut = & powershell -ExecutionPolicy Bypass -File $ssTool 2>&1 | Out-String
+    $sm = [regex]::Match($ssOut, '\[FAIL\]\s*(\d+)\s*stale claim')
+    if ($sm.Success -or $ssOut -match '\[FAIL\] SESSION_STATE\.md is MISSING') {
+        Fail "SESSION_STATE.md is stale or missing -- the next session will pick up wrong (run audit_session_state.ps1)"
+        $ssOut -split "`n" | Where-Object { $_ -match '^\s*\[FAIL\]' } | Select-Object -First 6 | ForEach-Object { Out "       $($_.Trim())" }
+    } else {
+        Pass "SESSION_STATE.md consistent with the repo (pick-up point is trustworthy)"
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"

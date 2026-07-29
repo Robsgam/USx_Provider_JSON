@@ -278,6 +278,18 @@ TOOLS
     attribute-name condition logic). FAILs on drift. Run live by enforce Phase 2d.
     Usage: .\audit_simulator_parity.ps1 [-Path <json>] [-OutFile <path>]
 
+  tools/audit_session_state.ps1
+    Is SESSION_STATE.md still telling the truth? That file is the session PICK-UP POINT --
+    injected into every new session by the SessionStart hook -- so its value is being TRUSTED on
+    restart, and a stale one is worse than none. Its predecessor was a memory file: not in git,
+    appended to instead of replaced, and it drifted badly enough to cost ~an hour of re-prompting
+    per restart (2026-07-29). Now committed AND verified.
+    Checks: every provider version it names matches the active JSON; it names no provider that no
+    longer exists; its "Last updated" is not >14 days behind the last commit; and it has not grown
+    past ~120 lines (the accumulation failure mode that killed the predecessor). Does NOT check
+    prose. Gated by enforce PHASE 2l.
+    Usage: .\audit_session_state.ps1 [-OutFile <path>]
+
   tools/audit_form_review.ps1
     Has a HUMAN looked at the rendered form for THIS build? Every other gate proves the
     REQUEST is correct; none proves the FORM is usable. Through 2026-07 every label/title/

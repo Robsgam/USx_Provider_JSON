@@ -368,7 +368,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (64 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
+## Tools (65 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -403,6 +403,7 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `flag_pending_fix.ps1` | **REVERSE-PROPAGATE** a shared-module/JSON fix as a doc-stub flag: writes `[FLAG:<id>]` into each still-pending provider's PENDING_UPDATES.txt (blocks enforce PHASE 1 until rebuilt; build script clears it) + appends a REVERSE_PROPAGATION_LOG.md row. Idempotent. | `-FixId` `-Description` `-Providers <list\|all>` `-Origin` `-Date` `-DryRun` `-OutFile` |
 | `audit_reverse_propagation.ps1` | Portfolio status view: reads every PENDING_UPDATES.txt + REVERSE_PROPAGATION_LOG.md, reports which providers are pending/propagated per fix + gaps. Informational (enforce PHASE 1 is the gate); composed into doctor.ps1 | `-OutFile` |
 | `audit_variant_sync.ps1` | Base↔variant lockstep drift check. For each provider declaring `# BASE-SYNC: <BASE> vX.Y` in its build script (marker-driven, no name-heuristic false positives), flags drift if the marker is behind the base's current version. Catches the class where a variant (CCH) silently falls behind its base (TX_TLETS). Composed into doctor.ps1. See "Provider Variants". | `-Path <dir>` `-OutFile` |
+| `audit_session_state.ps1` | **SESSION PICK-UP GATE** (enforce 2l) -- verifies `SESSION_STATE.md`, the repo-root pick-up point auto-injected into every new session by the SessionStart hook. Checks the provider versions it names against the active JSONs, that it isn't >14 days behind the last commit, and that it hasn't grown past ~120 lines (the accumulation failure that killed its memory-file predecessor). A stale pick-up point is worse than none | `-OutFile` |
 | `audit_form_review.ps1` | **RENDERED FORM REVIEW** (enforce 2k, ADVISORY) -- records which build a human actually looked at, in `docs/tracking/<P>_FORM_REVIEW.txt`. Every other gate proves the request is correct; none proves the form is usable, and every label/title/layout defect in 2026-07 was caught by eye, not by tooling. Advisory on purpose: a review is a human act and must not be manufacturable to satisfy a gate | `-Path <json>` `-Record -Reviewer <name>` |
 | `audit_sqvr_integrity.ps1` | **SQVR TRUTH GATE** (enforce 2j) -- the SQVR is hand-maintained prose asserting which combos exist/how many/what version, and nothing verified it, so it rotted on every combo add-remove; it's also what a tester reads to decide what to test. Checks SQVR-named keyRefs exist in the JSON (blocks/sections marked DORMANT-REMOVED-NOT BUILT-OUT OF SCOPE report [NOTE]), stated combo/QIDM totals match, and stated JSON version matches. Does NOT require every combo to have a block (13 providers use a lighter format) | `-Path <json>` `-OutFile` |
 | `audit_log_combo_attribution.ps1` | **LOG ATTRIBUTION GATE** -- did each saved log's NAMED combo actually fire? The wire XML carries no keyRef, so this was unverifiable and a green package could overstate coverage (17 of 417 logs were filed under combos that never ran, found 2026-07-29). Replays each log's recorded QUERY STRING (routing is existence-based, so field presence decides the winner) through the owning QIDM in array order, using the canonical `_sim_helpers` predicate. Scopes the QIDM by the log header's QUERY NAME, never bare keyRef (they collide across QIDMs -- BUILD_RULES 13). Stale logs on registered `dead-combo*` divergences report [NOTE] | `-Path <json>` `-OutFile` |
@@ -526,6 +527,12 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 **Rule: If a tool exists for the question, run the tool. If an extracted file exists, read the file. Raw sources are LAST resort only when no extracted reference exists.**
 
 ---
+
+## Session continuity — SESSION_STATE.md
+
+`SESSION_STATE.md` (repo root) is the **pick-up point** for a new session. The user's SessionStart hook injects it automatically, so a restarted session starts with current context instead of re-deriving it. It is **committed to git** (versioned, diffable) and **gated** by `enforce` PHASE 2l via `audit_session_state.ps1`.
+
+**Rules:** current state ONLY (no history — that lives in git and `docs/tracking/CHANGELOG_<P>.md`); under ~80 lines or it stops being read; **update it in the same commit as the work it describes**. Never append a dated section — *replace* the content. Numbers in it must be derived from `portfolio_status.ps1` / `enforce.ps1`, never remembered.
 
 ## Workflow
 
