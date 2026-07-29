@@ -659,35 +659,24 @@ SECTION 11 -- TEST SESSION WORKFLOW -- MANDATORY GATES
          hand-write a [CONFIRMED] marker or a log "PASS" -- a marker with no stamped
          current-version XML log fails enforce (audit_test_coverage -Gate).
 
-  RENDER / NEGATIVE / DESELECT -- WHICH TOOL ACTUALLY COVERS WHAT (corrected 2026-07-29).
-         This block used to claim block_entity.ps1 required "a render + negative log". It
-         never did -- block_entity.ps1 and emit_test_plan.ps1 both state the opposite in
-         their own comments, no plan has ever emitted a render/negative/deselect test, and
-         across 20 providers and 282 logs ZERO render, negative, or deselect logs have ever
-         existed. A [TOOL] marker on an unenforced requirement is worse than no marker: it
-         reads as proof. Current, accurate state:
+  [OP]   RENDER, NEGATIVE, and DESELECT are MANUAL -- by decision, not by omission
+         (Rob 2026-07-29: "the renders need to be removed, that will always be a manual
+         process; we just want the driver and capture tool to do as much as possible").
+         The automation's job is the wire side: fill, submit, capture, import, verify. A
+         render check is a human looking at the form -- keep it that way.
 
-  [TOOL] RENDER -- classified by LABELS and FIELD ORDER (Rob's directive 2026-07-29).
-         Evidence is a DOM snapshot, NOT a wire-XML test: a render test issues no CommSys
-         request, so it cannot ride the fill->submit->scrape->infer-combo pipeline (and
-         forcing it in hits the phantom-owed trap in _content_match.ps1). Capture with
-         __usxCaptureRender('<Entity>') in the tenant console; the download goes to
-         providers/<P>/logs/_render/<Entity>_v<X.Y>.json. Verified by
-         tools/audit_render_fidelity.ps1 (enforce PHASE 2m), which compares it against the
-         manifest derived from the JSON layout via tools/_render_manifest.ps1 and FAILs on
-         any label mismatch, missing/extra field, visual reorder, or card-title drift.
-         RECURRING: re-captured per entity on EVERY version bump, like every other test.
-         A divergence FAILs; a missing snapshot is advisory until that provider's next
-         sweep, but a provider is NOT done until 0 are owed.
-         NOTE: the label DOM shape has not been recon'd -- __usxCaptureRender tries several
-         strategies and reports a labelStrategyTally. Read it on the first live run.
+         This block previously carried a [TOOL] marker claiming block_entity.ps1 required
+         "a render + negative log". It never did: block_entity.ps1 and emit_test_plan.ps1
+         both state the opposite in their own comments, no test plan has ever emitted a
+         render/negative/deselect test, and across 20 providers and 282 logs ZERO such logs
+         have ever existed. A [TOOL] marker on something no tool enforces is worse than no
+         marker, because it reads as proof. Corrected 2026-07-29.
 
-  [OP]   NEGATIVE and DESELECT -- NOT yet automated, still operator-run. Both need an
-         evidence model the capture pipeline does not have: a negative proves the ABSENCE
-         of a dex-log entry after submitting an empty form, and a deselect proves WHICH SET
-         of queries fired from one submit (today's capture pairs one dex-log row to one
-         test). Until that lands, run them by hand and record the result in the entity's
-         STATUS notes. Do NOT mark them [TOOL].
+         So: run these three by eye/by hand and record the outcome in the entity's STATUS
+         notes. The rendered-form review is tracked (advisorily) by audit_form_review.ps1
+         -Record, which is enforce PHASE 2k -- that records WHICH BUILD a human reviewed,
+         and is deliberately advisory because a review is a human act that must not be
+         manufacturable to satisfy a gate. Do NOT re-mark any of the three [TOOL].
 
   GATE 1 -- REBUILD RESTARTS TESTING (BEFORE STARTING/RESUMING A SESSION):
   [GATE] A JSON rebuild (ANY version bump) restarts the ENTIRE test package

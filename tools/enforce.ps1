@@ -734,51 +734,6 @@ if (-not (Test-Path $ssTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  PHASE 2m: Render Fidelity (audit_render_fidelity.ps1) -- labels + field ORDER
-#  The machine counterpart to 2k. 2k records THAT a human looked; this proves WHAT rendered
-#  matches the JSON: every visible field present, in the right visual order, under the right
-#  label and card title. Rob's directive 2026-07-29 ("render should be classified with the
-#  labels and field ordering") -- and the reason it must be a DOM comparison, not a JSON
-#  self-check, is that the retired Convert-UsxCasing recase collapsed Craft.js `nodes` and
-#  forms rendered as tab names only while every JSON validator passed.
-#
-#  A DIVERGENCE FAILS. A MISSING SNAPSHOT IS ADVISORY (Info), on purpose: no provider has
-#  captured one yet, so blocking on absence would turn all 20 red at once -- the portfolio-wide
-#  reset Rob explicitly did NOT choose. Each provider's render snapshots get captured during
-#  its own next tenant sweep, and from then on any drift FAILs. A provider is not DONE until
-#  audit_render_fidelity reports every entity verified (0 owed).
-# ══════════════════════════════════════════════════════════════════════════════
-SectionHeader "PHASE 2m: Render Fidelity (labels + field order)"
-$rfTool = Join-Path $toolDir "audit_render_fidelity.ps1"
-if (-not (Test-Path $rfTool)) {
-    Info "audit_render_fidelity.ps1 not found -- render-fidelity check skipped"
-} else {
-    foreach ($pd in $providers) {
-        $provName = $pd.Name
-        $rfJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
-        if (-not $rfJson) { continue }
-        $rfOut = & powershell -ExecutionPolicy Bypass -File $rfTool -Path $rfJson 2>&1 | Out-String
-        $rfM = [regex]::Match($rfOut, 'RESULTS:\s*(\d+) verified\s*/\s*(\d+) divergent\s*/\s*(\d+) owed')
-        if (-not $rfM.Success) {
-            Info "$provName -- render fidelity produced no parseable result (advisory)"
-            continue
-        }
-        $rfVer = [int]$rfM.Groups[1].Value; $rfDiv = [int]$rfM.Groups[2].Value; $rfOwed = [int]$rfM.Groups[3].Value
-        if ($rfDiv -gt 0) {
-            Fail "$provName -- $rfDiv entity(ies) render DIFFERENTLY than the JSON (labels/order); run tools\audit_render_fidelity.ps1 -Path $rfJson"
-            $rfOut -split "`n" | Where-Object { $_ -match '^\s+\[(LABEL_MISMATCH|ORDER_MISMATCH|MISSING_FIELD|EXTRA_FIELD|TITLE_MISMATCH|CARD_MISMATCH)\]' } |
-                Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
-        } elseif ($rfVer -gt 0 -and $rfOwed -eq 0) {
-            Pass "$provName -- render verified for all $rfVer entity(ies) (labels + field order match the JSON)"
-        } elseif ($rfVer -gt 0) {
-            Info "$provName -- render verified $rfVer, $rfOwed entity(ies) still owed a snapshot (__usxCaptureRender)"
-        } else {
-            Info "$provName -- no render snapshots captured yet ($rfOwed owed; captured during the provider's tenant sweep)"
-        }
-    }
-}
-
-# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"
