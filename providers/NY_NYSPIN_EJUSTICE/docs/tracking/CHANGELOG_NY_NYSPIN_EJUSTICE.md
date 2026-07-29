@@ -2,14 +2,23 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.16** | Generated: 2026-07-27
+Current: **v4.17** | Generated: 2026-07-29
 
 ---
 
-## v4.16 -- 2026-07-27 -- Pipeline rebuild
+## v4.17 -- 2026-07-29 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v4.16 -- 2026-07-27 -- UPPERCASE card titles (Rob global decision, NO functional change)
+
+**CHANGED:** All card titles UPPERCASED, wording unchanged (e.g. "Driver License Search by OLN,
+  \"OR\" Name" -> "DRIVER LICENSE SEARCH BY OLN, \"OR\" NAME"). Mechanical uppercase transform;  
+  no wording/field/combo/QIDM change. New global convention (BUILD_RULES Section 11).  
+**REASON:** Rob -- "everything needs to be upper case." Title-only. NOTE: this bump RESETS NY's
+  v4.15 tenant-complete state (block by version) -- the v4.15 66-log tenant pass is superseded;  
+  re-test owed. verify_build clean. ALL 5 ENTITIES RESET at v4.16. NOT yet re-tested.  
 
 ## v4.15 -- 2026-07-27 -- DEX-1284 shadow-review follow-up -- in/out routing gates (FUNCTIONAL)
 

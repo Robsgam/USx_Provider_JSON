@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.16"
+    [string]$Version = "4.17"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -682,15 +682,27 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'         '35' 'ROW_PER_DH_2' }
                 @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix'     '10' 'ROW_PER_DH_2' }
             )}
-            @{ id = 'ROW_PER_DH_3'; cols = @('3','3','3','3'); fields = @(
+            # DH row 3 SPLIT at v4.17 (DEX-1284, Leo's CAD review): this was a single 4-across
+            # row @('3','3','3','3') holding Date of Birth + Sex + Purpose Code + Transaction Type.
+            # At CAD width a 3-column FormDate compacts -- the date segments (MM/DD/YYYY) do not
+            # fit a quarter-row box -- so DOB and Sex now get half a row each and the two
+            # prefilled/optional fields drop to their own line beneath them.
+            # Purpose Code and Transaction Type are both merely-defaulted officer-editable fields
+            # (C / DALL), so they belong below the identifying fields, not competing with them.
+            # This is layout-only: same fieldIds, same initialValues, same combo membership, so
+            # the wire is unchanged. Applies to ALL THREE layout variants automatically --
+            # MakeLayouts builds default/CAD_DISPATCH/FIRST_RESPONDER from this one definition.
+            @{ id = 'ROW_PER_DH_3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth'                                 'ROW_PER_DH_3' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1'  'ROW_PER_DH_3' @{ initialValue = 'C' } }
+            )}
+            @{ id = 'ROW_PER_DH_4'; cols = @('6','6'); fields = @(
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1'  'ROW_PER_DH_4' @{ initialValue = 'C' } }
                 # LABEL-OVERRIDE: nyNyspinTransactionNameDH -- Rob's explicit exception; bare
                 # "Transaction Type" is the intended wording (prefilled initialValue=DALL,
                 # officer-editable, any[] optional). CHECK 15 Rule 3's "(optional)" qualifier is not
                 # wanted -- do not "fix" this to "(auto)"/"(default X)" in a future labeling pass.
-                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
+                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_4' @{ initialValue = 'DALL' } }
             )}
             # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
             # field (set[] on DALHOUT/DALLOUT), so BUILD_RULES Section 14's default rule would
