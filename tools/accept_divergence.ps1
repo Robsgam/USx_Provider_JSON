@@ -69,6 +69,19 @@ if (-not (Test-Path $registry)) {
 # -- Idempotency check: first three fields, case-insensitive --
 $key = "$($Query.ToLower())|$($KeyRef.ToLower())|$($Field.ToLower())"
 $existing = Get-Content $registry | Where-Object { $_ -notmatch '^\s*#' -and $_.Trim() -ne '' }
+
+# A well-formed record is 7 pipe-delimited fields = exactly 6 pipes. More than that
+# means two records were merged onto one line (see the trailing-newline note below).
+# Line-based parsers -- this one and audit_metadata's -- only ever see the first, so
+# surface it. Count pipes, NOT "a date followed by text": reason prose legitimately
+# contains dates (FL_FCIC/HI_HCJDC_OFML both do), and that heuristic cries wolf.
+foreach ($line in $existing) {
+    if (([regex]::Matches($line, '\|')).Count -gt 6) {
+        Write-Host "  [WARN] Merged records on one line -- the trailing record is invisible to audit_metadata. Split it:" -ForegroundColor Red
+        Write-Host "         $line" -ForegroundColor Gray
+    }
+}
+
 foreach ($line in $existing) {
     $parts = $line -split '\|'
     if ($parts.Count -ge 3) {
@@ -82,6 +95,29 @@ foreach ($line in $existing) {
 }
 
 # -- Append the new entry --
+# Add-Content appends directly onto the last line when the file has no trailing
+# newline, merging two records into one physical line. audit_metadata parses this
+# registry line-by-line, so the second record silently disappears from the gate
+# (found 2026-07-29 in FL_FCIC/HI_HCJDC_OFML/TX_TLETS -- 4 lost records, incl. the
+# TX RSDWW shadow-unbuilt-REVISIT note). Guarantee the newline before appending.
+$raw = [System.IO.File]::ReadAllText($registry)
+if ($raw.Length -gt 0 -and -not ($raw -match '\r?\n$')) {
+    $nl = if ($raw -match '\r\n') { "`r`n" } else { "`n" }
+    [System.IO.File]::AppendAllText($registry, $nl)
+    Write-Host "  [FIX] Registry had no trailing newline -- added before append" -ForegroundColor Yellow
+}
+
+# The registry is pipe-delimited, so a raw '|' inside any field shifts every column
+# after it (TX_TLETS_CCH had "Choice{SSN|Misc}" in a reason, pushing source/date to
+# parts[6]/[7]). Substitute before writing rather than corrupting the record.
+foreach ($n in 'Query','KeyRef','Field','Rule','Reason') {
+    $v = (Get-Variable $n).Value
+    if ($v -match '\|') {
+        Write-Host "  [FIX] '|' in -$n replaced with '/' (pipe is the field delimiter)" -ForegroundColor Yellow
+        Set-Variable $n -Value ($v -replace '\s*\|\s*', ' / ')
+    }
+}
+
 $entry = "$Query | $KeyRef | $Field | $Rule | $Reason | $source | $Date"
 Add-Content -Path $registry -Value $entry -Encoding utf8
 
