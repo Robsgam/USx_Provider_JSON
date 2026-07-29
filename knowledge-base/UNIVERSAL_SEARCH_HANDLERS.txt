@@ -1,0 +1,145 @@
+UNIVERSAL SEARCH -- CONFIGURATION HANDLERS (authoritative platform registry)
+================================================================================
+SOURCE (captured into the repo 2026-07-29 -- it had never been committed):
+  Universal Search: Configuration Handlers
+    https://mark43.atlassian.net/wiki/spaces/SEARCH/pages/6649839718
+    page 6649839718, version 2 (2026-05-05). Sourced from HandlerConfiguration.java.
+  Attribute Handle  (the rule-handler detail page it links to)
+    https://mark43.atlassian.net/wiki/spaces/SEARCH/pages/6708822104
+    page 6708822104, version 5 (2026-07-15).
+
+WHY THIS FILE EXISTS: RULE_HANDLERS.txt was written from "All built provider JSONs +
+_build_rms_bundle.ps1 + engineering doc (2026-05-08)" -- i.e. from what WE build. That means it
+describes the handlers we happen to use, not the full set the platform accepts. On 2026-07-29 that
+gap caused a wrong answer: asked whether a handler could strip a home state, the repo was searched
+for handlers IN USE and the answer came back "none exists" -- while IgnoreUserValueRuleHandler was
+documented all along and is running in production on CA_eSUN. Always check THIS registry before
+concluding a capability does not exist.
+
+================================================================================
+  1. MAIN MESSAGE HANDLERS  (full lifecycle of a CommSys query)
+================================================================================
+  CommsysOriAuthenticationHandler     Generates the Authentication XML element (session/credentials)
+  CommsysTransactionRequestHandler    Maps OUTGOING query data into a Transaction XML element
+                                      -- this is the handlerFunction on every CommSys QIDM we build
+  CommsysWsiOutgoingMessageHandler    Assembles the full LawEnforcementTransaction document
+                                      -- this is the handlerFunction on our QMF
+  CommsysResultsHandler               Parses CommSys XML responses into QueryResult objects
+  CommsysAuthorizationResultHandler   Processes login/logout authorization responses
+  QueryResultLayoutHandler            Formats the final result layout (currently a stub)
+
+================================================================================
+  2. REST HANDLERS
+================================================================================
+  RmsRestPayloadHandler               Builds JSON POST payloads for RMS; converts dot-notation
+                                      config keys to nested JSON -- the handlerFunction on our RMS QIDMs
+  RmsRestResultsHandler               Converts RMS REST JSON (persons/vehicles with photos) to results
+  RecordsArchiveRestPayloadHandler    Paginated JSON POST payloads for Records Archive  [WE DO NOT USE]
+  RecordsArchiveRestResultsHandler    Records Archive REST JSON -> results               [WE DO NOT USE]
+
+================================================================================
+  3. ATTRIBUTE / RULE HANDLERS -- full platform index (22 + 1 deprecated)
+================================================================================
+  Handlers marked [UNUSED] are accepted by the platform but appear in NO provider we build.
+  Do not conclude a capability is unavailable just because it is unused.
+
+   1 FormatStringRuleHandler                     Concatenate fields with separators
+   2 FormatArrayRuleHandler                      Transform nested JSON arrays (declarative mapping)
+   3 ParseCommsysNameRuleHandler                 Name parsing, 3-level fallback
+   4 CommsysParseDateRuleHandler                 Convert date format (in-fmt, out-fmt)
+   5 HeightParserRuleHandler                     Normalize height (Commsys 3-digit / RMS feet+inches)
+   6 CommsysResultAttributeMappingRuleHandler    Map raw code -> display value via attribute tables
+   7 CommsysGetArticleCodeRuleHandler            Map article category code       [UNUSED]
+   8 CommsysGetRaceCodeRuleHandler               Map race code                   [UNUSED]
+   9 CommsysGetSexCodeRuleHandler                Map sex code                    [UNUSED]
+  10 CommsysGetStateCodeRuleHandler              Map state code                  [UNUSED]
+  11 CommsysGetLicensePlateCodeRuleHandler       Map plate type code             [UNUSED]
+  12 CommsysGetVehicleCodeRuleHandler            Map vehicle code (uses articleCategoryCodes) [UNUSED]
+  13 ParseCommsysVehicleYearRuleHandler          2-digit year -> 4-digit (threshold arg)
+  14 CommsysArticleAttributeRuleHandler          Extract FIRST_CHAR or REMAINDER of an article code
+                                                 [not in our builds; IS in deployed CA_eSUN]
+  15 IgnoreUserValueRuleHandler                  Filter values -- see section 4, this is the one
+                                                 that was wrongly reported as nonexistent
+  16 CommysResultFallbackRegexRuleHandler        fallbackRule: regex-extract from free text,
+                                                 chained transforms (uppercase/lowercase/maxLength/rule)
+                                                 [UNUSED] -- note the platform's own spelling
+                                                 "Commys" (missing 'S'); copy it exactly
+  17 AttributeArrayWrapperRuleHandler            Wrap a single value as "[value]"
+  18 CommsysGetDexStateUserIdRuleHandler         DEX State user ID + certification-expiry validation
+                                                 (arguments: ["true"] = required -> throws if absent
+                                                 or if the DEX certification has EXPIRED)
+  19 CommsysGetLastNameFirstNameInitialRuleHandler  Logged-in user as "LastName FirstInitial"
+  20 CommsysImageDataRuleHandler                 Extract ImageData from an image source [UNUSED]
+  21 CommsysImageIdRuleHandler                   Extract ImageId from an image source   [UNUSED]
+  22 GetUserProfileSingleValueRuleHandler        Pull a UserProfile property. arguments[0] is the key;
+                                                 documented keys: firstName, lastName, badgeNumber,
+                                                 email, userId, departmentId
+   - FormatNameRuleHandler                       DEPRECATED -> use ParseCommsysNameRuleHandler.
+                                                 NOTE: our RMS bundle still emits this on
+                                                 RMS_Results/Name across all 20 providers.
+
+  Also available and NOT modelled anywhere in our builds:
+    fallbackRule   -- a SECOND rule on the same attribute, run by the framework when the primary
+                      value is absent. We have never used it. Pairs with handler 16.
+    attributeType / codeTypeSource on the attribute itself (we set these on form fields).
+
+================================================================================
+  4. IgnoreUserValueRuleHandler -- CORRECTED ENTRY (supersedes the old "DEAD END" note)
+================================================================================
+  BEHAVIOUR (platform doc): returns NULL when the value is in the ignore list, otherwise returns
+  the value unchanged. Match is CASE-INSENSITIVE. It filters; it cannot SUBSTITUTE one value for
+  another.
+    sourceField[0]   the key to read
+    rule.arguments   the list of values to ignore
+
+  PRODUCTION USE -- CA_eSUN (from the deployed department export, 2026-07-29):
+    { "name":"State", "rule":{ "function":"IgnoreUserValueRuleHandler","arguments":["CA"] },
+      "size":4, "sourceField":["RegistrationState"], "targetField":"State" }
+  applied on VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery AND BoatQuery.
+  Purpose: the form/CAD always supplies the home state (deployed eSUN's RegistrationState is a
+  FormSelect with initialValue='CA'), and this drops "CA" so an in-state query does not send
+  State=CA to a California system.
+
+  RULE_HANDLERS.txt previously listed this under "DEAD ENDS / DO NOT USE" as a dead end "for state
+  hardcoding". That is correct ONLY for hardcoding (it cannot inject a value). It is NOT a dead end
+  for STRIPPING a home state -- that is exactly what production uses it for. Corrected 2026-07-29.
+
+  *** OPEN QUESTION -- DO NOT ASSUME EITHER WAY ***
+  STATUS: HYPOTHESIS (discriminating test: add IgnoreUserValueRuleHandler(["NY"]) to a
+  condition-gated provider in a test tenant, submit a CAD-style query WITH the home state, and
+  observe which keyRef the wire shows.)
+  Our combo conditions are evaluated against FORM STATE (_sim_helpers.ps1: "FORM-STATE KEY lookup
+  ONLY"), while attribute rules produce the OUTBOUND value. If that ordering holds, adding this
+  handler to a provider that gates on `RegistrationState EXISTS/NOT_EXISTS` (NY, FL, TX, CA_CLETS,
+  HI, OH, MD, NM, OR, TN...) would strip the state from the WIRE but still select the
+  out-of-state combo -- producing an OOS transaction with NO destination state, which is worse
+  than today. Deployed eSUN does not settle this: its combos carry NO conditions at all and route
+  purely by set[] membership, so the handler never has to influence routing there.
+  IMPLICATION: adopting the eSUN pattern is a ROUTING-MODEL change (defaulted home state +
+  set[]-membership routing + strip on the wire), not a one-line handler addition.
+
+================================================================================
+  5. behaviors BLOCK -- top-level, we never emit it
+================================================================================
+  The deployed eSUN export carries a sibling of "bundles":
+    "behaviors": { "ParallelQuery": { "name":"ParallelQuery", "function":"parallelQueryHandler",
+                                      "description":"run parallel queries", "isEnabled": false } }
+  Our builds put ParallelQuery on the RMS bundle instead (RULE_HANDLERS.txt entry 4 /
+  _build_rms_bundle.ps1). Whether the top-level "behaviors" form supersedes the per-bundle form is
+  UNKNOWN -- verify with the platform team before changing anything.
+
+================================================================================
+  6. DEPLOYED CA_eSUN vs OUR CA_eSUN v2.0 -- known deltas (2026-07-29)
+================================================================================
+  Ours is a galvanization rebuild and differs from what is actually deployed:
+    - deployed has IgnoreUserValueRuleHandler(["CA"]) on State (Veh/DL/DH/Boat); ours has none,
+      so OUR build would send State=CA to a California system on an in-state query
+    - deployed has CommsysArticleAttributeRuleHandler on ArticleCategory/ArticleTypeCode
+    - deployed RegistrationState is a FormSelect initialValue='CA' label 'State';
+      ours has no default, label 'State (leave blank for CA)'
+    - deployed combos carry NO conditions and route by set[] membership;
+      ours uses existence-gated conditions
+    - deployed combos carry an ORI field in any[]; ours do not
+    - deployed carries the top-level behaviors block
+  DO NOT "fix" our eSUN to match without a decision: the two designs are coherent but different,
+  and switching routing models invalidates that provider's whole test package.

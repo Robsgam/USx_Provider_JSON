@@ -329,6 +329,8 @@ usage ad hoc before that.
 
 Full reference: `knowledge-base/RULE_HANDLERS.txt` (25 handlers — 7 directly configured, rest platform-defined in RMS).
 
+**AUTHORITATIVE PLATFORM REGISTRY: `knowledge-base/UNIVERSAL_SEARCH_HANDLERS.txt`** — captured 2026-07-29 from Confluence (`HandlerConfiguration.java`): every handler the platform *accepts*, including the ~8 no provider currently uses, plus the `fallbackRule` mechanism and the top-level `behaviors` block. **Check it before concluding a capability does not exist** — RULE_HANDLERS.txt documents only what we already build, and on 2026-07-29 that gap produced a wrong "no such handler exists" answer about `IgnoreUserValueRuleHandler`, which is running in production on CA_eSUN.
+
 ---
 
 ## Entity Display Order

@@ -629,8 +629,17 @@ Found at 4 property paths in the JSON structure.
   IgnoreUserValueRuleHandler -- AP #4. Does not SUBSTITUTE values.
     Returns null for matching codes, original value for non-matching.
     Useful for filtering unwanted response codes (e.g. "UNK", "XXX").
-    DEAD END for state hardcoding because it cannot replace a value with
+    DEAD END for state HARDCODING because it cannot replace a value with
     a different one. Use InpH with initialValue for hardcoded defaults.
+    *** CORRECTED 2026-07-29 -- IT IS NOT A DEAD END FOR *STRIPPING* A HOME STATE.
+    That is exactly what production CA_eSUN uses it for: arguments ["CA"] on the
+    State attribute of VehicleRegistrationQuery / DriverLicenseQuery /
+    DriverHistoryQuery / BoatQuery, so an in-state query does not send State=CA to
+    a California system. Sitting under "DEAD ENDS / DO NOT USE" caused this handler
+    to be reported as NONEXISTENT when Leo cited it on DEX-1284 -- the capability was
+    documented all along. Full detail, incl. the OPEN QUESTION of whether it can
+    influence combo ROUTING (it probably cannot: conditions read FORM STATE, while
+    this produces the OUTBOUND value), is in UNIVERSAL_SEARCH_HANDLERS.txt section 4.
 
 ================================================================================
   BUILD SCRIPT CHECKLIST

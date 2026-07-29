@@ -24,7 +24,7 @@ SOURCE AUTHORITY RULES:
   Document any MetaData vs. DevDoc discrepancies in provider docs.
 
 ================================================================================
-FILES IN THIS FOLDER (12 files, organized by question)
+FILES IN THIS FOLDER (14 files, organized by question)
 ================================================================================
 
   README.txt               This file -- index and overview
@@ -65,6 +65,12 @@ FILES IN THIS FOLDER (12 files, organized by question)
 
   IMPORT_ERRORS.txt        "Why did import fail?"
                            7 known import errors with root cause and fix
+
+  UNIVERSAL_SEARCH_HANDLERS.txt  "What handlers does the PLATFORM accept?"
+                           AUTHORITATIVE registry captured from Confluence (HandlerConfiguration
+                           .java): message/REST/attribute handlers incl. ones no provider uses,
+                           the fallbackRule mechanism, the behaviors block, and the deployed-
+                           vs-ours CA_eSUN deltas. CHECK HERE before saying a handler does not exist.
 
   RULE_HANDLERS.txt        "What handlers exist?"
                            25 handlers: 4 property paths, 9 handler functions,
