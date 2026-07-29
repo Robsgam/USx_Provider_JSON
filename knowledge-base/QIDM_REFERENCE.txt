@@ -904,3 +904,30 @@ SECTION 10 -- COMBINATION EXAMPLES (from engineering reference)
       "any": ["firstName", "lastName", "dateOfBirth", "sex", "race", "ssn"]
     }
   }
+
+--------------------------------------------------------------------------------
+FIRST-MATCH FIRING + UNION POOL (galvanized 2026-07-29)
+--------------------------------------------------------------------------------
+  STATUS: LIVE-PROVEN providers/TX_TLETS/logs/Vehicle/TX_TLETS_v4.12_REGLicensePlateNumber.txt
+
+  CLIENT SIDE: one QIDM emits ONE transaction. The FIRST matching combination in the
+  array fires; later matches do NOT emit additional transactions. The serialized field
+  pool is the UNION of set[]+any[] of ALL matching combos (LIMITATION #1), so a losing
+  match still contributes fields to the wire.
+
+  WHY THAT LOG PROVES IT: the plate fill matches BOTH REGLicensePlateNumber (set includes
+  FinancialResponsibilityType) and RQLicensePlateNumber (set includes LicensePlateTypeCode).
+  The captured envelope holds exactly ONE <api:Transaction> with ONE <MessageType>, and it
+  carries FinancialResponsibilityType AND LicensePlateTypeCode TOGETHER. If each matching
+  combo produced its own transaction there would be two, with disjoint field sets.
+  Corroboration: 425/425 committed logs across 6 providers = 1 transaction, 1 MessageType.
+
+  CONSEQUENCE (the reason this is worth stating): a combo that is never the first match is
+  DEAD -- it cannot be tested, and any log named for it is actually evidence for its
+  shadower, because the wire carries no keyRef. Gated by audit_combo_reachability.ps1
+  (enforce 2h) and audit_log_combo_attribution.ps1 (enforce 2i).
+
+  DISTINCT FROM the state-side auto-send model (QW / devdoc "Data-Mined Transactions"),
+  where CommSys runs SECONDARY queries off the single request. Both models yield the same
+  disposition for a no-discriminator subset shadow -- remove it -- so which model applies
+  is not a reason to reopen a removal ruling. See BUILD_RULES.txt Section 21.

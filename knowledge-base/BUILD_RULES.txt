@@ -1805,3 +1805,77 @@ See also:
   which is query-scoped and returns $null on AMBIGUITY rather than guessing. Reach for it
   instead of writing another combo search. NY_NYSPIN_EJUSTICE is the canary provider -- if a
   new tool reports Vehicle/Boat weirdness ONLY on NY, suspect an unscoped keyRef lookup first.
+
+
+================================================================================
+21. GALVANIZED: COMBO-FIRING MODEL + THE THREE INTEGRITY GATES (2026-07-29)
+================================================================================
+
+  Read this before re-analysing shadow queries, dead combos, or test-log coverage.
+  It exists so the 2026-07-29 investigation never has to be repeated.
+
+  21a. THE FIRING MODEL -- LIVE-PROVEN, DO NOT RE-DERIVE.
+    Client side: ONE QIDM produces ONE transaction. The FIRST matching combination in
+    the array fires; later matches do NOT produce additional transactions. The
+    serialized field pool is the UNION of set[]+any[] of ALL matching combos
+    (LIMITATION #1), so a losing match still puts its fields on the wire.
+
+    EVIDENCE (committed log, not inference):
+      providers/TX_TLETS/logs/Vehicle/TX_TLETS_v4.12_REGLicensePlateNumber.txt
+      A plate fill matches BOTH REGLicensePlateNumber (set incl. FinancialResponsibility
+      Type) and RQLicensePlateNumber (set incl. LicensePlateTypeCode). The captured
+      envelope contains exactly ONE <api:Transaction> / ONE <MessageType>, carrying
+      FinancialResponsibilityType AND LicensePlateTypeCode TOGETHER. Two separate
+      per-combo transactions would have shown two transactions with disjoint fields.
+      Corroborated portfolio-wide: 425/425 logs = 1 transaction, 1 MessageType.
+
+    THIS DOES NOT CONTRADICT the v4.9 "platform auto-fires the subset query" ruling --
+    they are DIFFERENT mechanisms at different layers:
+      client  = one QIDM -> one transaction (first match) + union pool   [above]
+      state   = CommSys/NCIC auto-running SECONDARY queries from that one request
+                (QW, and the devdoc "Data-Mined Transactions" family)
+    Both models give the SAME disposition for a no-discriminator subset shadow: remove
+    it. Either it can never fire, or the state derives it anyway. So the removal ruling
+    is model-independent -- do not reopen it on the basis of which model is "right".
+
+  21b. THE THREE GATES (enforce 2h / 2i / 2j) -- what each ASSERTION used to go unchecked.
+    2h audit_combo_reachability   a built combo can actually fire.
+        Dead when a sibling ordered EARLIER matches whenever it does -- the silent case
+        being that the sibling's extra set[] fields are all form-prefilled
+        (initialValue), so its set is always satisfied.
+    2i audit_log_combo_attribution  a log's named combo is what actually fired.
+        The wire carries NO keyRef, so a filename was NEVER evidence. Replays the log's
+        recorded QUERY STRING; routing is existence-based so presence decides.
+    2j audit_sqvr_integrity        the SQVR still describes the JSON.
+        SQVR-named keyRefs must exist; stated totals + version must match.
+
+    ALL THREE ARE NEGATIVE-TESTED (2026-07-29): an injected dead combo, a deliberately
+    relabelled log, and an SQVR naming a nonexistent combo with a wrong total each
+    produced exit 1 with the correct diagnosis, and enforce's parsers were confirmed to
+    match those exact FAIL lines. A gate that cannot fail is worthless -- if you change
+    one of these tools, re-run that negative test.
+
+  21c. WHY THIS WAS INVISIBLE FOR SO LONG (the root cause, now fixed).
+    Tools MODELLED A FORM STATE OFFICERS NEVER SEE. test_commsys did not seed form
+    initialValue, so with FinancialResponsibilityType blank the REG/VIN combos reported
+    "[SKIP] missing set" and the dead RQ combos looked like the live ones -- which is
+    exactly why the v4.9 shadow review, which was otherwise correct, missed them.
+    Any tool that simulates a form MUST seed initialValue (visible AND hidden).
+    Corollary: a plan's formDefaults omits hidden handler-fed fields, so simulate from
+    the JSON's initialValues, not from the plan alone.
+
+  21d. ONE CANONICAL FIRING WALK.
+    _sim_helpers.ps1 owns Get-SimFilledRefs / Test-ComboMatches / Get-FiringKeyRef.
+    Five tools had each grown a private copy while only the CONDITIONS predicate was
+    shared, so audit_simulator_parity could report "parity" while the set[]-satisfaction
+    halves disagreed. Never re-walk combinations; call Get-FiringKeyRef.
+    audit_simulator_parity now cross-checks the ANSWER: every plan test's expectedKeyRef
+    is recomputed with the canonical walk and must agree (1257 checked).
+
+  21e. INDETERMINATE IS A VALID ANSWER.
+    A combo requiring a field no static model can supply -- handler-populated with no
+    initialValue -- cannot be predicted statically. AZ_AZDPS's badge combos
+    (ACVR/ACVRV/ACWL/ACQB/ACQBH) all require dexStateUserId. Statically the no-badge
+    fallbacks (DQN/BQ/BQH) win; at runtime the badge combo may. Report INDETERMINATE,
+    never a mismatch. AZ RISK: if the platform does not populate dexStateUserId, the whole
+    badge family silently falls back -- CONFIRM ON THE FIRST QUERY of AZ's first sweep.
