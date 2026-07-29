@@ -1792,3 +1792,16 @@ See also:
     do NOT cover defaulted-sibling pairs. Verify combo identity with
     test_commsys.ps1 (which seeds form initialValues as of 2026-07-29) rather than
     inferring it from the captured wire.
+
+  RECURRENCE LOG -- this rule was violated THREE times on 2026-07-29 alone, each time
+  producing something that looked exactly like a real provider defect:
+    1. audit_log_combo_attribution.ps1 -- bare-keyRef lookup grabbed NY_NYSPIN_EJUSTICE's
+       BoatQuery RVEH/RCAR while replaying a Vehicle fill -> 8 bogus "NO COMBO FIRES".
+       Nearly reported as an NY functional regression.
+    2. an ad-hoc wire-vs-set consistency scan -- same unscoped lookup -> 6 bogus
+       "set field absent from wire" on the same NY combos.
+    3. (earlier) the same class is why audit_metadata keys by (query, keyRef).
+  MECHANISM FIX: _sim_helpers.ps1 now exports Get-ComboByKeyRef($qidms, $keyRef, $queryHint),
+  which is query-scoped and returns $null on AMBIGUITY rather than guessing. Reach for it
+  instead of writing another combo search. NY_NYSPIN_EJUSTICE is the canary provider -- if a
+  new tool reports Vehicle/Boat weirdness ONLY on NY, suspect an unscoped keyRef lookup first.

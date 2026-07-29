@@ -76,6 +76,34 @@ function Test-ComboMatches($combo, $filled, $formData) {
     return (Test-ComboConditionsCore (Get-ComboConditions $combo) $formData).ok
 }
 
+# Resolve a combo by keyRef -- ALWAYS query-scoped. Use this instead of searching combos by
+# bare keyRef, which is the single most-repeated bug in this toolchain: keyRefs COLLIDE across
+# QIDMs within one provider (NY_NYSPIN_EJUSTICE reuses RVEH and RCAR on BOTH
+# VehicleRegistrationQuery and BoatQuery), so an unscoped lookup silently grabs the wrong
+# QIDM and evaluates one entity's data against another's combos.
+# Hit three separate times on 2026-07-29 alone -- it produced 8 bogus "NO COMBO FIRES" results
+# in audit_log_combo_attribution and 6 bogus "set field absent from wire" results in an ad-hoc
+# scan, each looking exactly like a real provider defect. BUILD_RULES.txt Section 13.
+# $qidms may be one QIDM or many; $queryHint is matched against the QIDM .name/.query.
+# Returns @{ combo; qidm } or $null. Returns $null on AMBIGUITY rather than guessing.
+function Get-ComboByKeyRef($qidms, $keyRef, $queryHint) {
+    $hits = @()
+    foreach ($q in @($qidms)) {
+        foreach ($c in @($q.combinations)) {
+            $kr = if ($c.keyReference) { $c.keyReference } else { $c.keyRef }
+            if ("$kr" -eq "$keyRef") { $hits += @{ combo = $c; qidm = $q } }
+        }
+    }
+    if ($hits.Count -eq 0) { return $null }
+    if ($hits.Count -eq 1) { return $hits[0] }
+    if ($queryHint) {
+        foreach ($h in $hits) {
+            if ("$($h.qidm.name)" -match [regex]::Escape($queryHint) -or "$($h.qidm.query)" -eq "$queryHint") { return $h }
+        }
+    }
+    return $null   # ambiguous and no usable hint -- caller must handle, never guess
+}
+
 # FIRST matching combination across the given QIDMs, in array order = what the platform
 # fires. Returns the keyRef, or $null if nothing matches.
 function Get-FiringKeyRef($entQidms, $formData) {
