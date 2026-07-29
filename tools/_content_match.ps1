@@ -33,6 +33,18 @@ function Get-CmPlanLabel($t) {
         if ($t.guardrailLoser) { return "$($t.expectedKeyRef)_guardrail_vs_$($t.guardrailLoser)" }
         return "$($t.expectedKeyRef)_guardrail"
     }
+    # A REROUTED test (emit_test_plan.ps1 sets reroutedFrom when the test's own fill makes an
+    # earlier combo win first-match) must be labelled by the combo that ACTUALLY fires, never
+    # by the one it cannot reach -- otherwise the captured log asserts a combo that never ran
+    # and no downstream check can tell, because the wire XML carries no keyRef. That produced
+    # 17 misattributed logs (TX_TLETS x8, FL_FCIC x7, CA_CLETS x2; found 2026-07-29 by
+    # audit_log_combo_attribution.ps1). Same convention guardrail labels already use:
+    # winner first, "_over_<unreachable>" carrying what the fill defeated.
+    # Non-rerouted labels are byte-identical to before, so no existing filename churns.
+    if ($t.reroutedFrom) {
+        $suffix = if ($t.kind -eq 'any-field') { "_af_$($t.anyField)" } elseif ($t.kind -eq 'any') { '_any' } else { '' }
+        return "$($t.expectedKeyRef)$suffix" + "_over_$($t.reroutedFrom)"
+    }
     if ($t.kind -eq 'any')       { return "$($t.comboKeyRef)_any" }
     if ($t.kind -eq 'any-field') { return "$($t.comboKeyRef)_af_$($t.anyField)" }
     return $t.comboKeyRef

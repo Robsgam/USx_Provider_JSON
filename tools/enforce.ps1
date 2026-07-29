@@ -594,6 +594,40 @@ if (-not (Test-Path $reachTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2i: Log Combo Attribution (audit_log_combo_attribution.ps1)
+#  Does each saved log's NAMED combo match what actually fired? The wire XML carries no
+#  keyRef, so this was previously unverifiable and a green test package could overstate
+#  coverage -- 17 logs of 417 were filed under combos that never ran (found 2026-07-29).
+#  Replays each log's recorded QUERY STRING; routing is existence-based so field presence
+#  decides the winner. Stale logs on registered dead-combo divergences report [NOTE].
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2i: Log Combo Attribution"
+$attrTool = Join-Path $toolDir "audit_log_combo_attribution.ps1"
+if (-not (Test-Path $attrTool)) {
+    Info "audit_log_combo_attribution.ps1 not found -- attribution check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $attrJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $attrJson) { continue }
+        $attrOut = & powershell -ExecutionPolicy Bypass -File $attrTool -Path $attrJson 2>&1 | Out-String
+        $am = [regex]::Match($attrOut, '\[FAIL\]\s*(\d+)\s*misattributed')
+        if ($am.Success) {
+            Fail "$provName -- $($am.Groups[1].Value) log(s) filed under a combo that did NOT fire (run audit_log_combo_attribution.ps1)"
+            $attrOut -split "`n" | Where-Object { $_ -match 'MISATTRIBUTED|NO COMBO FIRES|AMBIGUOUS' } |
+                Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            $vm = [regex]::Match($attrOut, '\[PASS\]\s*(\d+)\s*log')
+            $cnt = if ($vm.Success) { $vm.Groups[1].Value } else { '0' }
+            $stale = ([regex]::Matches($attrOut, '\[NOTE\] STALE LOG')).Count
+            $sfx = if ($stale -gt 0) { " ($stale stale on registered dead combos)" } else { "" }
+            if ([int]$cnt -eq 0) { Info "$provName -- no logs to attribute" }
+            else { Pass "$provName -- $cnt log(s) attributed correctly$sfx" }
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"

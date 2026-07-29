@@ -80,7 +80,23 @@ foreach ($b in $json.bundles) {
 $logFiles = Get-ChildItem $logsDir -Recurse -Filter '*.txt' -File |
             Where-Object { $_.FullName -notmatch '_archive' }
 
-$ok = 0; $mismatch = 0; $skipped = 0
+# A log misattributed BECAUSE its combo is a registered dead-combo divergence is a KNOWN,
+# reasoned condition, not a fresh finding: the combo cannot fire by documented design, so its
+# stale log is expected until the combo is removed (and reset_test_package archives it on the
+# next version bump). Report [NOTE] so this can be a blocking gate without crying wolf --
+# same contract audit_combo_reachability.ps1 uses.
+$deadAccepted = @{}
+$regFile = Get-ChildItem $provDir -Recurse -Filter '*ACCEPTED_DIVERGENCES*' -ErrorAction SilentlyContinue |
+           Select-Object -First 1
+if ($regFile) {
+    foreach ($line in (Get-Content $regFile.FullName)) {
+        if ($line -match '^\s*#' -or -not $line.Trim()) { continue }
+        $p = $line -split '\|'
+        if ($p.Count -ge 4 -and $p[3].Trim() -match 'dead-combo') { $deadAccepted[$p[1].Trim()] = $true }
+    }
+}
+
+$ok = 0; $mismatch = 0; $skipped = 0; $noted = 0
 foreach ($lf in $logFiles) {
     $text = [System.IO.File]::ReadAllText($lf.FullName)
 
@@ -145,11 +161,19 @@ foreach ($lf in $logFiles) {
         Emit "         claimed '$claim' but the recorded fill satisfies no combination in $($owner.name -replace '.*_','')"
         $mismatch++
     } elseif ($fired -ne $claim) {
-        Emit ""
-        Emit "  [FAIL] MISATTRIBUTED: $($lf.Name)" "Red"
-        Emit "         claims '$claim' but the recorded fill fires '$fired' (ordered earlier, first-match wins)"
-        Emit "         => this log is evidence for '$fired', NOT for '$claim'" "Yellow"
-        $mismatch++
+        if ($deadAccepted.ContainsKey($claim)) {
+            Emit ""
+            Emit "  [NOTE] STALE LOG: $($lf.Name)" "DarkYellow"
+            Emit "         '$claim' is a registered dead-combo divergence, so this log is evidence for"
+            Emit "         '$fired'. Expected until the combo is removed (archived on the next bump)."
+            $noted++
+        } else {
+            Emit ""
+            Emit "  [FAIL] MISATTRIBUTED: $($lf.Name)" "Red"
+            Emit "         claims '$claim' but the recorded fill fires '$fired' (ordered earlier, first-match wins)"
+            Emit "         => this log is evidence for '$fired', NOT for '$claim'" "Yellow"
+            $mismatch++
+        }
     } else {
         $ok++
     }
@@ -158,10 +182,11 @@ foreach ($lf in $logFiles) {
 Emit ""
 Emit "================================================================"
 $sk = if ($skipped -gt 0) { " ($skipped unparseable/non-CommSys skipped)" } else { "" }
+$nt = if ($noted -gt 0) { " ($noted stale log(s) on registered dead combos)" } else { "" }
 if ($mismatch -eq 0) {
-    Emit "  [PASS] $ok log(s) verified -- named combo is what fired$sk" "Green"
+    Emit "  [PASS] $ok log(s) verified -- named combo is what fired$nt$sk" "Green"
 } else {
-    Emit "  [FAIL] $mismatch misattributed log(s); $ok verified$sk" "Red"
+    Emit "  [FAIL] $mismatch misattributed log(s); $ok verified$nt$sk" "Red"
 }
 Emit "================================================================"
 
