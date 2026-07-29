@@ -673,6 +673,28 @@ TOOLS
     the two cannot drift. Exports Get-ProviderTestState / Get-ProviderValidatorScore /
     Get-ProviderMethodology.
 
+  tools/audit_query_trace.ps1
+    QUERY TRACE -- every metadata combination -> built? reachable? if not, WHY? Answers the one
+    question no other gate asks: "are we missing a COMBINATION, and is one of our own form
+    defaults the reason?" Classifies each metadata combo BUILT / PREFILL-DEAD (a sibling wins
+    because its extra set[] field is form-prefilled -- names the prefill to remove; RECOVERABLE)
+    / SHADOW (identical required set[], needs a discriminating condition) / MISSING (adjudicate
+    against devdoc Basic scope). Advisory: metadata is FIELD authority, devdoc is QUERY authority,
+    so a MISSING may be legitimately out of scope.
+    Origin (TX_TLETS v4.13 post-mortem, 2026-07-29): TX shipped 3 of 7 vehicle combinations with
+    141 PASS / 0 FAIL. audit_supported_queries checks BUILT->devdoc (blind to a never-built combo);
+    audit_metadata CHECK 5 checks PRIMARY-FIELD coverage, which an in-state combo satisfies (blind
+    to a missing out-of-state variant on the same field); audit_combo_reachability only walks
+    combos that ARE built. TX's two devdoc "(OutofState)" paths were deleted as dead when they were
+    only unreachable because the form prefilled their discriminators.
+    PARSER NOTE -- the metadata shape is <Combination><Requirements><Set>, fields carry @reference
+    (NOT InnerText), and <Any>/<Choice> are nested INSIDE <Set>. Matching is CONTAINMENT, not
+    equality, and both sides are normalized through the QIDM attribute sourceFields (metadata says
+    'Name'/'OperatorLicenseNumber'; built set[] says NameLast,NameFirst / OperatorLicenseNumberDH).
+    Getting any of that wrong silently reports every combo as an empty-set SHADOW -- validate any
+    change against TX_TLETS, whose answer is known (17 built / 4 PREFILL-DEAD / 0 SHADOW / 0 MISSING).
+    Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
     consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1
