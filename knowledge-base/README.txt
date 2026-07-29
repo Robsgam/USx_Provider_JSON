@@ -673,6 +673,17 @@ TOOLS
     the two cannot drift. Exports Get-ProviderTestState / Get-ProviderValidatorScore /
     Get-ProviderMethodology.
 
+  tools/_claude_table_cells.ps1  (shared module, dot-sourced)
+    Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
+    consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1
+    CHECK 3j) so the two cannot drift apart. Exports Format-ClaudeValidatorCell /
+    Format-ClaudeTenantCell / Format-ClaudeVersionCell / Test-ClaudeScoreCellShape.
+    Origin (2026-07-29): sync_provider_table owned a private score regex that required a
+    "/<n>LIM" segment; the rebuilt table dropped that segment, so the regex matched no row,
+    the tool reported "no change" for all 20 providers, and the table silently rotted
+    (TX_TLETS held 78P after v4.13 removed 2 checks; NY/FL/CA held stale tenant verdicts).
+    Change a cell format HERE only -- never in a caller.
+
   tools/flag_pending_fix.ps1
     Reverse-propagate a shared-module/JSON bug fix as a doc-stub flag. Writes a
     [FLAG:<id>] line into each still-pending provider's PENDING_UPDATES.txt (which

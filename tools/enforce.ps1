@@ -42,6 +42,8 @@ $tracker   = Join-Path $repoRoot "REBUILD_TRACKER.md"
 # folder first, falls back to flat docs/ (every provider that hasn't migrated yet).
 . "$toolDir\_resolve_docs_path.ps1"
 . "$toolDir\_resolve_provider_json.ps1"
+. "$toolDir\_test_status_lib.ps1"
+. "$toolDir\_claude_table_cells.ps1"
 
 # ── Output + counters ────────────────────────────────────────────────────────
 $script:outputLines = @()
@@ -173,6 +175,22 @@ Out ("=" * 60)
 
 $providers = Get-ProviderList
 $claudeText = [System.IO.File]::ReadAllText($claudeMd)
+
+# Resolve the Provider Status table's column positions BY HEADER NAME (never fixed indices).
+# The table has been re-shaped before -- a column insert shifts every index after it, and a
+# checker reading the wrong cell fails confusingly or, worse, passes vacuously. Consumed by
+# Check 3j; sync_provider_table.ps1 resolves the same way.
+$ctColIdx = @{}
+$ctHeaderMatch = [regex]::Match($claudeText, '(?m)^\|\s*Provider\s*\|.*$')
+if ($ctHeaderMatch.Success) {
+    $ctHdrCols = $ctHeaderMatch.Value -split '\|'
+    for ($ci = 0; $ci -lt $ctHdrCols.Count; $ci++) {
+        switch -Regex ($ctHdrCols[$ci].Trim()) {
+            '^Validator$'   { $ctColIdx['Validator'] = $ci }
+            '^Tenant test$' { $ctColIdx['Tenant']    = $ci }
+        }
+    }
+}
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 1: Build Freshness
@@ -720,6 +738,12 @@ if (-not (Test-Path $ssTool)) {
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"
 
+# Check 3j prerequisite -- reported ONCE, not per provider.
+$ctCheckable = $ctColIdx.ContainsKey('Validator') -and $ctColIdx.ContainsKey('Tenant')
+if (-not $ctCheckable) {
+    Warn "CLAUDE.md provider table has no 'Validator'/'Tenant test' columns -- derived-cell check (3j) cannot run"
+}
+
 foreach ($pd in $providers) {
     $provName = $pd.Name
     $docPrefix = $provName
@@ -737,6 +761,50 @@ foreach ($pd in $providers) {
         }
     } else {
         Warn "$provName -- not found in CLAUDE.md provider table"
+    }
+
+    # Check 3j: CLAUDE.md derived cells (Validator score + Tenant test) match derived truth.
+    #
+    # WHY (2026-07-29): Check 3a gates the VERSION cell only. The Validator and Tenant-test
+    # cells were synced by sync_provider_table.ps1 and gated by nothing -- and that tool's
+    # score regex demanded a "/<n>LIM" segment the rebuilt table no longer had, so it silently
+    # matched no row and reported "no change" for all 20 providers while the table rotted
+    # (TX_TLETS kept 78P after v4.13 removed 2 checks; NY/FL/CA kept stale tenant verdicts).
+    # Versions matched throughout, so 3a stayed green the whole time. An unverified doc cell
+    # is a claim someone reads as fact -- gate it. Cell format lives in _claude_table_cells.ps1
+    # so writer and checker cannot drift apart again.
+    $ctRow = if ($ctCheckable) { [regex]::Match($claudeText, "(?m)^\|\s*${escapedName}\s*\|.*$") } else { $null }
+    if ($ctRow -and $ctRow.Success) {
+        $ctCols = $ctRow.Value -split '\|'
+        if ($ctCols.Count -gt [Math]::Max($ctColIdx['Validator'], $ctColIdx['Tenant'])) {
+            $ctScoreCell  = $ctCols[$ctColIdx['Validator']].Trim()
+            $ctTenantCell = $ctCols[$ctColIdx['Tenant']].Trim()
+
+            if ($ctScoreCell -match '\((BASE|MC)\)') {
+                Info "$provName -- CLAUDE.md carries a legacy dual BASE/MC score (cell check skipped)"
+            }
+            elseif (-not (Test-ClaudeScoreCellShape -Cell $ctScoreCell)) {
+                Fail "$provName -- CLAUDE.md validator cell '$ctScoreCell' is not a P/F/W[/LIM] score -- sync_provider_table.ps1 cannot maintain it"
+            }
+            else {
+                $ctScore = Get-ProviderValidatorScore -ProvDir $pd.FullName -Name $provName
+                $ctState = Get-ProviderTestState      -ProvDir $pd.FullName -Name $provName
+                $wantScore  = Format-ClaudeValidatorCell -Score $ctScore
+                $wantTenant = Format-ClaudeTenantCell    -State $ctState
+
+                if ($wantScore -and $ctScoreCell -ne $wantScore) {
+                    Fail "$provName -- CLAUDE.md validator cell says '$ctScoreCell', report says '$wantScore' -- run sync_provider_table.ps1"
+                } elseif ($wantScore) {
+                    Pass "$provName -- CLAUDE.md validator cell $wantScore"
+                }
+
+                if ($wantTenant -and $ctTenantCell -ne $wantTenant) {
+                    Fail "$provName -- CLAUDE.md tenant-test cell says '$ctTenantCell', log-truth says '$wantTenant' -- run sync_provider_table.ps1"
+                } elseif ($wantTenant) {
+                    Pass "$provName -- CLAUDE.md tenant-test cell $wantTenant"
+                }
+            }
+        }
     }
 
     # Check 3c: STATUS.txt

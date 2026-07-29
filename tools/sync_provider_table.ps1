@@ -1,10 +1,26 @@
 <#
-  sync_provider_table.ps1 -- Auto-update CLAUDE.md provider status table from live validator scores
-  Reads each provider's VALIDATOR_REPORT files (BASE and MC), parses the RESULTS summary line,
-  and updates the score portion of the Status column in the CLAUDE.md Provider Status table.
+  sync_provider_table.ps1 -- Auto-update the CLAUDE.md Provider Status table from derived truth.
 
-  Preserves all other table content: Version, Path, Notable patterns, and any flags
-  after the score (NEW, test results, descriptive text).
+  Syncs three columns per row: Version, Validator (P/F/W[/LIM]), and Tenant test.
+  All three are DERIVED via tools\_test_status_lib.ps1 -- the same primitives
+  portfolio_status.ps1 and report_test_status.ps1 use -- so the CLAUDE.md table can
+  never disagree with the canonical status table.
+
+  Preserves everything else in the row: Path, Notable patterns, History link.
+
+  WHY IT DERIVES INSTEAD OF PARSING ITS OWN REPORTS (2026-07-29):
+    This tool used to carry a private copy of the validator-report parser plus its own
+    score regex, `\d+P/\d+F/\d+W/\d+LIM`, which REQUIRED a trailing "/<n>LIM" segment in
+    the table cell. When the CLAUDE.md table was rebuilt without that segment (cells became
+    "76P/0F/0W"), the regex stopped matching every row, the replace became a no-op, and the
+    tool reported "no change" for all 20 providers -- while the table silently rotted (TX_TLETS
+    kept 78P after v4.13 removed 2 checks; NY/FL/CA kept stale tenant-test verdicts).
+    A sync tool that cannot detect drift in the column it exists to sync is worse than no tool,
+    because its green output is read as proof. Two lessons, both encoded below:
+      1. Derive from the shared library; never re-implement a parser a lib already owns.
+      2. Accept the score cell with OR without the LIM segment, and render LIM only when > 0.
+    enforce.ps1 PHASE 3 now also verifies these cells (CHECK 3j), so a future format change
+    fails loudly instead of going quiet.
 
   Usage: .\sync_provider_table.ps1
          .\sync_provider_table.ps1 -DryRun
@@ -26,64 +42,8 @@ if (-not (Test-Path $claudeMd)) {
     exit 1
 }
 
-# ── Helpers ──
-
-function Parse-ValidatorResults {
-    <#
-      Reads a validator report file and returns the score string (e.g. "69P/0F/0W/1LIM")
-      or $null if no RESULTS line found.
-    #>
-    param([string]$ReportPath)
-
-    if (-not (Test-Path $ReportPath)) { return $null }
-
-    $content = Get-Content $ReportPath -Raw -Encoding UTF8
-    # Match: RESULTS: 69 PASS / 0 FAIL / 0 WARN / 1 LIMITATION
-    # Some reports omit the LIMITATION count (e.g., "59 PASS / 0 FAIL / 7 WARN")
-    if ($content -match 'RESULTS:\s+(\d+)\s+PASS\s*/\s*(\d+)\s+FAIL\s*/\s*(\d+)\s+WARN\s*/\s*(\d+)\s+LIMITATION') {
-        return "$($Matches[1])P/$($Matches[2])F/$($Matches[3])W/$($Matches[4])LIM"
-    }
-    elseif ($content -match 'RESULTS:\s+(\d+)\s+PASS\s*/\s*(\d+)\s+FAIL\s*/\s*(\d+)\s+WARN') {
-        return "$($Matches[1])P/$($Matches[2])F/$($Matches[3])W/0LIM"
-    }
-    return $null
-}
-
-function Find-ValidatorReport {
-    <#
-      Finds the validator report file for a provider folder and variant.
-        base/mc -> legacy dual-JSON report in docs\<variant>\VALIDATOR_REPORT_*_<VARIANT>.txt
-        single  -> galvanized single-JSON report VALIDATOR_REPORT_<PROVIDER>.txt anywhere under
-                   docs\ (flat or 4-category reports\), EXCLUDING the _BASE/_MC-suffixed variants.
-      Returns the path or $null.
-    #>
-    param([string]$ProviderDir, [string]$Variant)
-
-    if ($Variant -eq 'single') {
-        $docsRoot = Join-Path $ProviderDir "docs"
-        if (-not (Test-Path $docsRoot)) { return $null }
-        $reports = Get-ChildItem $docsRoot -Recurse -File -Filter "VALIDATOR_REPORT_*.txt" -ErrorAction SilentlyContinue |
-                   Where-Object { $_.Name -notmatch '_(BASE|MC)\.txt$' }
-        if (-not $reports -or $reports.Count -eq 0) { return $null }
-        return ($reports | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
-    }
-
-    $docsDir = Join-Path $ProviderDir "docs\$Variant"
-    if (-not (Test-Path $docsDir)) { return $null }
-
-    $reports = Get-ChildItem $docsDir -Filter "VALIDATOR_REPORT_*_$($Variant.ToUpper()).txt" -File -ErrorAction SilentlyContinue
-    if ($reports.Count -eq 0) { return $null }
-
-    # Return the most recently modified one
-    return ($reports | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
-}
-
-# ── Score pattern regexes ──
-
-# Single score: 69P/0F/0W/1LIM
-$scoreRx = '\d+P/\d+F/\d+W/\d+LIM'
-# Dual score: 64P/0F/0W/5LIM (BASE) 68P/0F/0W/7LIM (MC)
-$dualScoreRx = "$scoreRx \(BASE\) $scoreRx \(MC\)"
+. (Join-Path $toolDir "_test_status_lib.ps1")
+. (Join-Path $toolDir "_claude_table_cells.ps1")
 
 # ── Read CLAUDE.md ──
 
@@ -118,6 +78,31 @@ if ($tableStart -lt 0 -or $headerLineIdx -lt 0) {
 
 if ($tableEnd -lt 0) { $tableEnd = $lines.Count }
 
+# ── Locate the columns we own, BY HEADER NAME (never by fixed index) ──
+# The table has been re-shaped before (a Tenant-test column was inserted, shifting every
+# index after it). Resolving by header name means a future re-shape cannot silently point
+# this tool at the wrong cell.
+
+$hdrCols = $lines[$headerLineIdx] -split '\|'
+$colIdx = @{}
+for ($c = 0; $c -lt $hdrCols.Count; $c++) {
+    switch -Regex ($hdrCols[$c].Trim()) {
+        '^Provider$'    { $colIdx['Provider']  = $c }
+        '^Path$'        { $colIdx['Path']      = $c }
+        '^Version$'     { $colIdx['Version']   = $c }
+        '^Validator$'   { $colIdx['Validator'] = $c }
+        '^Tenant test$' { $colIdx['Tenant']    = $c }
+    }
+}
+
+foreach ($req in @('Provider','Path','Version','Validator','Tenant')) {
+    if (-not $colIdx.ContainsKey($req)) {
+        Write-Host "  [ERROR] Provider Status table is missing the '$req' column -- header reads:" -ForegroundColor Red
+        Write-Host "          $($lines[$headerLineIdx])" -ForegroundColor DarkGray
+        exit 1
+    }
+}
+
 # ── Banner ──
 
 $today = Get-Date -Format "yyyy-MM-dd"
@@ -133,36 +118,28 @@ $updateCount = 0
 $totalProviders = 0
 $changes = @()
 
-# Data rows start after the separator row (headerLineIdx + 1 = separator, headerLineIdx + 2 = first data row)
-# Actually: headerLineIdx = header, headerLineIdx+1 = separator (|---|---|...), headerLineIdx+2.. = data
 for ($i = ($headerLineIdx + 2); $i -lt $tableEnd; $i++) {
     $line = $lines[$i]
 
-    # Skip non-table lines
     if ($line -notmatch '^\|') { continue }
 
-    # Split the table row into columns
-    # | Provider | Path | Version | Status | Notable patterns |
     $cols = $line -split '\|'
-    # cols[0] = "" (before first |), cols[1] = Provider, cols[2] = Path, cols[3] = Version, cols[4] = Status, cols[5] = Notable patterns, cols[6] = "" (after last |)
-    if ($cols.Count -lt 6) { continue }
+    if ($cols.Count -le $colIdx['Tenant']) { continue }
 
-    $providerName = $cols[1].Trim()
-    $pathCol = $cols[2].Trim()
-    $statusCol = $cols[4].Trim()
+    $providerName = $cols[$colIdx['Provider']].Trim()
+    $pathCol      = $cols[$colIdx['Path']].Trim()
 
     if (-not $providerName -or $providerName -match '^-+$') { continue }
 
     $totalProviders++
+    $label = "  $($providerName):".PadRight(25)
 
     # Extract folder name from path column (e.g., "providers/NJ_NJCJIS/" -> "NJ_NJCJIS")
     $folderName = $null
-    if ($pathCol -match 'providers/([^/]+)/?') {
-        $folderName = $Matches[1]
-    }
+    if ($pathCol -match 'providers/([^/]+)/?') { $folderName = $Matches[1] }
 
     if (-not $folderName) {
-        Write-Host "  $($providerName):".PadRight(25) -NoNewline -ForegroundColor White
+        Write-Host $label -NoNewline -ForegroundColor White
         Write-Host "skipped (no folder in Path column)" -ForegroundColor Yellow
         $changes += @{ Provider = $providerName; Result = "skipped (no folder)" }
         continue
@@ -170,102 +147,75 @@ for ($i = ($headerLineIdx + 2); $i -lt $tableEnd; $i++) {
 
     $providerDir = Join-Path $repoRoot "providers\$folderName"
     if (-not (Test-Path $providerDir)) {
-        Write-Host "  $($providerName):".PadRight(25) -NoNewline -ForegroundColor White
+        Write-Host $label -NoNewline -ForegroundColor White
         Write-Host "skipped (folder not found: $folderName)" -ForegroundColor Yellow
         $changes += @{ Provider = $providerName; Result = "skipped (folder missing)" }
         continue
     }
 
-    # ── Find and parse validator reports ──
+    # Legacy dual-JSON rows carry "(BASE)"/"(MC)" scores. The shared library has no
+    # BASE/MC notion, so refuse the row loudly rather than mangling it into a single score.
+    if ($cols[$colIdx['Validator']] -match '\((BASE|MC)\)') {
+        Write-Host $label -NoNewline -ForegroundColor White
+        Write-Host "skipped (legacy dual BASE/MC score -- sync by hand)" -ForegroundColor Yellow
+        $changes += @{ Provider = $providerName; Result = "skipped (dual score)" }
+        continue
+    }
 
-    $baseReport = Find-ValidatorReport -ProviderDir $providerDir -Variant "base"
-    $mcReport = Find-ValidatorReport -ProviderDir $providerDir -Variant "mc"
+    # ── Derive all three cells from the shared library ──
 
-    $baseScore = if ($baseReport) { Parse-ValidatorResults -ReportPath $baseReport } else { $null }
-    $mcScore = if ($mcReport) { Parse-ValidatorResults -ReportPath $mcReport } else { $null }
+    $score = Get-ProviderValidatorScore -ProvDir $providerDir -Name $folderName
+    $state = Get-ProviderTestState      -ProvDir $providerDir -Name $folderName
 
-    # Galvanized single-JSON providers: report is VALIDATOR_REPORT_<PROVIDER>.txt (no BASE/MC suffix)
-    $singleReport = Find-ValidatorReport -ProviderDir $providerDir -Variant "single"
-    $singleScore  = if ($singleReport) { Parse-ValidatorResults -ReportPath $singleReport } else { $null }
-
-    if (-not $baseScore -and -not $mcScore -and -not $singleScore) {
-        Write-Host "  $($providerName):".PadRight(25) -NoNewline -ForegroundColor White
-        Write-Host "skipped (no validator reports)" -ForegroundColor Yellow
+    if ($null -eq $score.Pass) {
+        Write-Host $label -NoNewline -ForegroundColor White
+        Write-Host "skipped (no validator report)" -ForegroundColor Yellow
         $changes += @{ Provider = $providerName; Result = "skipped (no reports)" }
         continue
     }
 
-    # ── Determine if this is a dual-score or single-score row ──
-
-    $oldStatus = $statusCol
-    $newStatus = $statusCol
-
-    $isDualRow = ($statusCol -match "$scoreRx \(BASE\)") -or ($statusCol -match "$scoreRx \(MC\)")
-
-    if ($isDualRow -and $baseScore -and $mcScore) {
-        # Replace dual score: oldBaseScore (BASE) oldMcScore (MC) -> newBaseScore (BASE) newMcScore (MC)
-        $newStatus = $statusCol -replace "$scoreRx (\(BASE\)) $scoreRx (\(MC\))", "$baseScore `$1 $mcScore `$2"
-    }
-    elseif ($isDualRow -and $baseScore) {
-        # Only BASE report available -- update just the BASE score
-        $newStatus = $statusCol -replace "($scoreRx)( \(BASE\))", "$baseScore`$2"
-    }
-    elseif ($isDualRow -and $mcScore) {
-        # Only MC report available -- update just the MC score
-        $newStatus = $statusCol -replace "($scoreRx)( \(MC\))", "$mcScore`$2"
-    }
-    elseif (-not $isDualRow -and ($singleScore -or $baseScore)) {
-        # Single score row (galvanized single-JSON, or a legacy single-report provider):
-        # replace the FIRST score occurrence only (the leading P/F/W/LIM), so we don't touch
-        # any score-shaped text later in the rich narrative cell.
-        $useScore = if ($singleScore) { $singleScore } else { $baseScore }
-        $newStatus = [regex]::Replace($statusCol, $scoreRx, $useScore, 1)
+    $newCells = @{
+        Version   = Format-ClaudeVersionCell   -State $state
+        Validator = Format-ClaudeValidatorCell -Score $score
+        Tenant    = Format-ClaudeTenantCell    -State $state
     }
 
-    # ── Report changes ──
+    # ── Apply, preserving the single leading/trailing space convention ──
 
-    if ($newStatus -ne $oldStatus) {
-        # Extract just the score portions for display
-        $oldScoreDisplay = ""
-        $newScoreDisplay = ""
+    $rowDiffs = @()
+    foreach ($key in @('Version','Validator','Tenant')) {
+        $new = $newCells[$key]
+        if (-not $new) { continue }                       # not derivable -- leave the cell alone
+        $old = $cols[$colIdx[$key]].Trim()
+        if ($old -eq $new) { continue }
+        $rowDiffs += "$key`: $old -> $new"
+        $cols[$colIdx[$key]] = " $new "
+    }
 
-        if ($isDualRow) {
-            [void]($oldStatus -match "($scoreRx) \(BASE\) ($scoreRx) \(MC\)")
-            $oldScoreDisplay = "$($Matches[1]) (BASE) $($Matches[2]) (MC)"
-            [void]($newStatus -match "($scoreRx) \(BASE\) ($scoreRx) \(MC\)")
-            $newScoreDisplay = "$($Matches[1]) (BASE) $($Matches[2]) (MC)"
-        }
-        else {
-            [void]($oldStatus -match "($scoreRx)")
-            $oldScoreDisplay = $Matches[1]
-            [void]($newStatus -match "($scoreRx)")
-            $newScoreDisplay = $Matches[1]
-        }
-
-        Write-Host "  $($providerName):".PadRight(25) -NoNewline -ForegroundColor White
-        Write-Host "$oldScoreDisplay -> $newScoreDisplay" -NoNewline -ForegroundColor Green
+    if ($rowDiffs.Count -gt 0) {
+        Write-Host $label -NoNewline -ForegroundColor White
+        Write-Host ($rowDiffs -join "  |  ") -NoNewline -ForegroundColor Green
         Write-Host "  (updated)" -ForegroundColor Green
 
-        # Rebuild the line with updated status column, preserving column widths
-        $cols[4] = " $newStatus "
         $lines[$i] = ($cols -join '|')
-
         $updateCount++
-        $changes += @{ Provider = $providerName; Result = "updated"; Old = $oldScoreDisplay; New = $newScoreDisplay }
+        $changes += @{ Provider = $providerName; Result = "updated"; Diffs = ($rowDiffs -join "; ") }
     }
     else {
-        Write-Host "  $($providerName):".PadRight(25) -NoNewline -ForegroundColor White
+        Write-Host $label -NoNewline -ForegroundColor White
         Write-Host "no change" -ForegroundColor DarkGray
-
         $changes += @{ Provider = $providerName; Result = "no change" }
     }
 }
 
 # ── Update the "updated" date in the section header ──
 
-for ($i = $tableStart; $i -le $tableStart + 2; $i++) {
-    if ($lines[$i] -match '^## Provider Status') {
-        $lines[$i] = "## Provider Status (updated $today)"
+if ($updateCount -gt 0) {
+    for ($i = $tableStart; $i -lt [Math]::Min($tableStart + 3, $lines.Count); $i++) {
+        if ($lines[$i] -match '^## Provider Status') {
+            $lines[$i] = "## Provider Status (updated $today)"
+            break
+        }
     }
 }
 
@@ -278,12 +228,20 @@ if ($DryRun) {
     Write-Host "    DRY RUN: $updateCount of $totalProviders providers would be updated" -ForegroundColor Yellow
     Write-Host "  ================================================================" -ForegroundColor Cyan
     Write-Host ""
+    exit 0
+}
+
+$target = if ($OutFile) { $OutFile } else { $claudeMd }
+
+if ($updateCount -gt 0 -or $OutFile) {
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllLines($target, $lines, $utf8NoBom)
+    Write-Host "    Updated $updateCount of $totalProviders providers -> $target" -ForegroundColor Green
 }
 else {
-    $targetFile = if ($OutFile) { $OutFile } else { $claudeMd }
-    [System.IO.File]::WriteAllLines($targetFile, $lines)
-
-    Write-Host "    Updated $updateCount of $totalProviders providers in $(Split-Path $targetFile -Leaf)" -ForegroundColor Green
-    Write-Host "  ================================================================" -ForegroundColor Cyan
-    Write-Host ""
+    Write-Host "    All $totalProviders providers already in sync -- no write needed" -ForegroundColor Green
 }
+
+Write-Host "  ================================================================" -ForegroundColor Cyan
+Write-Host ""
+exit 0
