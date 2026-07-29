@@ -3,7 +3,7 @@
   "version": "2.0",
   "tier": "Full",
   "note": "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-  "testCount": 69,
+  "testCount": 65,
   "formDefaults": {
     "Vehicle": {
       "LicensePlateTypeCode": "PC",
@@ -798,38 +798,6 @@
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.N",
-      "expectedKeyRef": "L1.N",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        }
-      ],
-      "reroutedFrom": "DQ.N"
-    },
-    {
-      "n": 34,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "DQ.N",
       "expectedKeyRef": "DQ.N",
       "kind": "any",
       "tier": "Full",
@@ -861,7 +829,7 @@
       ]
     },
     {
-      "n": 35,
+      "n": 34,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.N",
@@ -884,7 +852,7 @@
       ]
     },
     {
-      "n": 36,
+      "n": 35,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.N",
@@ -912,7 +880,7 @@
       ]
     },
     {
-      "n": 37,
+      "n": 36,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.N",
@@ -939,27 +907,7 @@
       ]
     },
     {
-      "n": 38,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "DQ.O",
-      "expectedKeyRef": "L1.O",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "OperatorLicenseNumber",
-          "value": "D999888777"
-        }
-      ],
-      "reroutedFrom": "DQ.O"
-    },
-    {
-      "n": 39,
+      "n": 37,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.O",
@@ -982,7 +930,7 @@
       ]
     },
     {
-      "n": 40,
+      "n": 38,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.O",
@@ -1001,39 +949,7 @@
       ]
     },
     {
-      "n": 41,
-      "entity": "Person",
-      "query": "DriverHistoryQuery",
-      "comboKeyRef": "KQ.N",
-      "expectedKeyRef": "L1.N.DH",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "NameLastDH",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirstDH",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCodeDH",
-          "value": "M"
-        },
-        {
-          "fieldId": "BirthDateDH",
-          "value": "1990-01-15"
-        }
-      ],
-      "reroutedFrom": "KQ.N"
-    },
-    {
-      "n": 42,
+      "n": 39,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQ.N",
@@ -1068,7 +984,7 @@
       ]
     },
     {
-      "n": 43,
+      "n": 40,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "L1.N.DH",
@@ -1091,7 +1007,7 @@
       ]
     },
     {
-      "n": 44,
+      "n": 41,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "L1.N.DH",
@@ -1119,7 +1035,7 @@
       ]
     },
     {
-      "n": 45,
+      "n": 42,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "L1.N.DH",
@@ -1146,27 +1062,7 @@
       ]
     },
     {
-      "n": 46,
-      "entity": "Person",
-      "query": "DriverHistoryQuery",
-      "comboKeyRef": "KQ.O",
-      "expectedKeyRef": "L1.O.DH",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "OperatorLicenseNumberDH",
-          "value": "D999888777"
-        }
-      ],
-      "reroutedFrom": "KQ.O"
-    },
-    {
-      "n": 47,
+      "n": 43,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQ.O",
@@ -1189,7 +1085,7 @@
       ]
     },
     {
-      "n": 48,
+      "n": 44,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "L1.O.DH",
@@ -1208,7 +1104,7 @@
       ]
     },
     {
-      "n": 49,
+      "n": 45,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": null,
@@ -1244,7 +1140,7 @@
       "guardrailLoser": "DQ.N"
     },
     {
-      "n": 50,
+      "n": 46,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": null,
@@ -1272,7 +1168,7 @@
       "guardrailLoser": "L1.N"
     },
     {
-      "n": 51,
+      "n": 47,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": null,
@@ -1308,7 +1204,7 @@
       "guardrailLoser": "KQ.N"
     },
     {
-      "n": 52,
+      "n": 48,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": null,
@@ -1336,7 +1232,7 @@
       "guardrailLoser": "L1.N.DH"
     },
     {
-      "n": 53,
+      "n": 49,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGH",
@@ -1349,7 +1245,7 @@
       }
     },
     {
-      "n": 54,
+      "n": 50,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -1368,7 +1264,7 @@
       ]
     },
     {
-      "n": 55,
+      "n": 51,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -1392,7 +1288,7 @@
       ]
     },
     {
-      "n": 56,
+      "n": 52,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -1416,7 +1312,7 @@
       ]
     },
     {
-      "n": 57,
+      "n": 53,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -1440,7 +1336,7 @@
       ]
     },
     {
-      "n": 58,
+      "n": 54,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -1471,7 +1367,7 @@
       ]
     },
     {
-      "n": 59,
+      "n": 55,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": null,
@@ -1491,7 +1387,7 @@
       "guardrailLoser": "QGH"
     },
     {
-      "n": 60,
+      "n": 56,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA",
@@ -1510,7 +1406,7 @@
       ]
     },
     {
-      "n": 61,
+      "n": 57,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA",
@@ -1534,7 +1430,7 @@
       ]
     },
     {
-      "n": 62,
+      "n": 58,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA",
@@ -1558,7 +1454,7 @@
       ]
     },
     {
-      "n": 63,
+      "n": 59,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA",
@@ -1582,7 +1478,7 @@
       ]
     },
     {
-      "n": 64,
+      "n": 60,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA",
@@ -1613,91 +1509,91 @@
       ]
     },
     {
+      "n": 61,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "comboKeyRef": "BQ.H",
+      "expectedKeyRef": "BQ.H",
+      "kind": "combo",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "caRequestPurposeCode",
+          "value": "C"
+        },
+        {
+          "fieldId": "BoatHullIdNumber",
+          "value": "FL1234AB56H7"
+        }
+      ]
+    },
+    {
+      "n": 62,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "comboKeyRef": "BQ.H",
+      "expectedKeyRef": "BQ.H",
+      "kind": "any",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "caRequestPurposeCode",
+          "value": "C"
+        },
+        {
+          "fieldId": "BoatHullIdNumber",
+          "value": "FL1234AB56H7"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "GA"
+        }
+      ]
+    },
+    {
+      "n": 63,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "comboKeyRef": "BQ.R",
+      "expectedKeyRef": "BQ.R",
+      "kind": "combo",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "caRequestPurposeCode",
+          "value": "C"
+        },
+        {
+          "fieldId": "RegistrationNumber",
+          "value": "FL1234AB"
+        }
+      ]
+    },
+    {
+      "n": 64,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "comboKeyRef": "BQ.R",
+      "expectedKeyRef": "BQ.R",
+      "kind": "any",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "caRequestPurposeCode",
+          "value": "C"
+        },
+        {
+          "fieldId": "RegistrationNumber",
+          "value": "FL1234AB"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "GA"
+        }
+      ]
+    },
+    {
       "n": 65,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQ.H",
-      "expectedKeyRef": "BQ.H",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        }
-      ]
-    },
-    {
-      "n": 66,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQ.H",
-      "expectedKeyRef": "BQ.H",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        }
-      ]
-    },
-    {
-      "n": 67,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQ.R",
-      "expectedKeyRef": "BQ.R",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        }
-      ]
-    },
-    {
-      "n": 68,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQ.R",
-      "expectedKeyRef": "BQ.R",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        }
-      ]
-    },
-    {
-      "n": 69,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,

@@ -3,7 +3,7 @@
   "version": "7.12",
   "tier": "Full",
   "note": "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-  "testCount": 118,
+  "testCount": 111,
   "formDefaults": {
     "Vehicle": {
       "LicensePlateTypeCode": "PC",
@@ -1727,27 +1727,6 @@
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "FBQDecalNumber",
-      "expectedKeyRef": "FBQBoatHullIdNumber",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "BoatHullIdNumber",
-      "fills": [
-        {
-          "fieldId": "decalNumber",
-          "value": "FL12345678"
-        },
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        }
-      ],
-      "reroutedFrom": "FBQDecalNumber"
-    },
-    {
-      "n": 77,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "FBQDecalNumber",
       "expectedKeyRef": "FBQDecalNumber",
       "kind": "any-field",
       "tier": "Full",
@@ -1764,7 +1743,7 @@
       ]
     },
     {
-      "n": 78,
+      "n": 77,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "FBQDecalNumber",
@@ -1784,35 +1763,7 @@
       ]
     },
     {
-      "n": 79,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "FBQDecalNumber",
-      "expectedKeyRef": "FBQBoatHullIdNumber",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "decalNumber",
-          "value": "FL12345678"
-        },
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "titleLienInformation",
-          "value": "ABCD1234"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "FBQDecalNumber"
-    },
-    {
-      "n": 80,
+      "n": 78,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "FBQRegistrationNumber",
@@ -1825,28 +1776,7 @@
       }
     },
     {
-      "n": 81,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "FBQRegistrationNumber",
-      "expectedKeyRef": "FBQDecalNumber",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "decalNumber",
-      "fills": [
-        {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        },
-        {
-          "fieldId": "decalNumber",
-          "value": "FL12345678"
-        }
-      ],
-      "reroutedFrom": "FBQRegistrationNumber"
-    },
-    {
-      "n": 82,
+      "n": 79,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "FBQRegistrationNumber",
@@ -1866,7 +1796,7 @@
       ]
     },
     {
-      "n": 83,
+      "n": 80,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "FBQRegistrationNumber",
@@ -1886,35 +1816,7 @@
       ]
     },
     {
-      "n": 84,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "FBQRegistrationNumber",
-      "expectedKeyRef": "FBQDecalNumber",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        },
-        {
-          "fieldId": "decalNumber",
-          "value": "FL12345678"
-        },
-        {
-          "fieldId": "titleLienInformation",
-          "value": "ABCD1234"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "FBQRegistrationNumber"
-    },
-    {
-      "n": 85,
+      "n": 81,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "FBQTitleLienInformation",
@@ -1927,49 +1829,7 @@
       }
     },
     {
-      "n": 86,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "FBQTitleLienInformation",
-      "expectedKeyRef": "FBQBoatHullIdNumber",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "BoatHullIdNumber",
-      "fills": [
-        {
-          "fieldId": "titleLienInformation",
-          "value": "ABCD1234"
-        },
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        }
-      ],
-      "reroutedFrom": "FBQTitleLienInformation"
-    },
-    {
-      "n": 87,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "FBQTitleLienInformation",
-      "expectedKeyRef": "FBQDecalNumber",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "decalNumber",
-      "fills": [
-        {
-          "fieldId": "titleLienInformation",
-          "value": "ABCD1234"
-        },
-        {
-          "fieldId": "decalNumber",
-          "value": "FL12345678"
-        }
-      ],
-      "reroutedFrom": "FBQTitleLienInformation"
-    },
-    {
-      "n": 88,
+      "n": 82,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "FBQTitleLienInformation",
@@ -1989,35 +1849,7 @@
       ]
     },
     {
-      "n": 89,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "FBQTitleLienInformation",
-      "expectedKeyRef": "FBQBoatHullIdNumber",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "titleLienInformation",
-          "value": "ABCD1234"
-        },
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "decalNumber",
-          "value": "FL12345678"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "FBQTitleLienInformation"
-    },
-    {
-      "n": 90,
+      "n": 83,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBBoatHullIdNumber",
@@ -2036,7 +1868,7 @@
       ]
     },
     {
-      "n": 91,
+      "n": 84,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBBoatHullIdNumber",
@@ -2060,7 +1892,7 @@
       ]
     },
     {
-      "n": 92,
+      "n": 85,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBBoatHullIdNumber",
@@ -2083,7 +1915,7 @@
       ]
     },
     {
-      "n": 93,
+      "n": 86,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBCoastGuardDocumentNumber",
@@ -2096,7 +1928,7 @@
       }
     },
     {
-      "n": 94,
+      "n": 87,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBCoastGuardDocumentNumber",
@@ -2116,7 +1948,7 @@
       ]
     },
     {
-      "n": 95,
+      "n": 88,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBCoastGuardDocumentNumber",
@@ -2136,7 +1968,7 @@
       ]
     },
     {
-      "n": 96,
+      "n": 89,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBCoastGuardDocumentNumber",
@@ -2159,7 +1991,7 @@
       ]
     },
     {
-      "n": 97,
+      "n": 90,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBNCICNumber",
@@ -2172,7 +2004,7 @@
       }
     },
     {
-      "n": 98,
+      "n": 91,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBNCICNumber",
@@ -2192,7 +2024,7 @@
       ]
     },
     {
-      "n": 99,
+      "n": 92,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBNCICNumber",
@@ -2212,7 +2044,7 @@
       ]
     },
     {
-      "n": 100,
+      "n": 93,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBNCICNumber",
@@ -2235,7 +2067,7 @@
       ]
     },
     {
-      "n": 101,
+      "n": 94,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBProcessControlNumber",
@@ -2248,7 +2080,7 @@
       }
     },
     {
-      "n": 102,
+      "n": 95,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBProcessControlNumber",
@@ -2268,7 +2100,7 @@
       ]
     },
     {
-      "n": 103,
+      "n": 96,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBProcessControlNumber",
@@ -2288,7 +2120,7 @@
       ]
     },
     {
-      "n": 104,
+      "n": 97,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBProcessControlNumber",
@@ -2311,7 +2143,7 @@
       ]
     },
     {
-      "n": 105,
+      "n": 98,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBRegistrationNumber",
@@ -2330,7 +2162,7 @@
       ]
     },
     {
-      "n": 106,
+      "n": 99,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBRegistrationNumber",
@@ -2354,7 +2186,7 @@
       ]
     },
     {
-      "n": 107,
+      "n": 100,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QBRegistrationNumber",
@@ -2377,7 +2209,7 @@
       ]
     },
     {
-      "n": 108,
+      "n": 101,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQName",
@@ -2404,7 +2236,7 @@
       ]
     },
     {
-      "n": 109,
+      "n": 102,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQName",
@@ -2436,7 +2268,7 @@
       ]
     },
     {
-      "n": 110,
+      "n": 103,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQName",
@@ -2468,7 +2300,7 @@
       ]
     },
     {
-      "n": 111,
+      "n": 104,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQName",
@@ -2503,7 +2335,7 @@
       ]
     },
     {
-      "n": 112,
+      "n": 105,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQBoatHullIdNumber",
@@ -2522,7 +2354,7 @@
       ]
     },
     {
-      "n": 113,
+      "n": 106,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQRegistrationNumber",
@@ -2541,7 +2373,7 @@
       ]
     },
     {
-      "n": 114,
+      "n": 107,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,
@@ -2561,7 +2393,7 @@
       "guardrailLoser": "FBQBoatHullIdNumber"
     },
     {
-      "n": 115,
+      "n": 108,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,
@@ -2581,7 +2413,7 @@
       "guardrailLoser": "FBQRegistrationNumber"
     },
     {
-      "n": 116,
+      "n": 109,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,
@@ -2601,7 +2433,7 @@
       "guardrailLoser": "FBQRegistrationNumber"
     },
     {
-      "n": 117,
+      "n": 110,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,
@@ -2625,7 +2457,7 @@
       "guardrailLoser": "QBRegistrationNumber"
     },
     {
-      "n": 118,
+      "n": 111,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,

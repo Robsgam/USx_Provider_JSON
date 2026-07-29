@@ -74,12 +74,38 @@
   }
 
   // Submit + clear the form (so the next combo starts clean); fall back to plain Send.
-  function clickSendClear() {
-    const sc = [...document.querySelectorAll('button')].find((b) => /send\s*&\s*clear/i.test(b.textContent || '') && !b.disabled);
-    if (sc) { sc.click(); return { ok: true, mode: 'send+clear' }; }
-    const s = [...document.querySelectorAll('button')].find((b) => (b.textContent || '').trim() === 'Send' && !b.disabled);
-    if (s) { s.click(); return { ok: true, mode: 'send (no clear)' }; }
-    return { ok: false, err: 'no enabled Send button' };
+  //
+  // POLLS for the button to become ENABLED instead of checking once. The platform enables Send
+  // asynchronously after re-validating the form, and a single check races that -- the fixed
+  // dSettle pause before the call is not always enough.
+  // EVIDENCE (2026-07-29, FL_FCIC v7.12 Boat): T71 (Hull+decalNumber) and T73 (Hull+ImageIndicator)
+  // both reported "no enabled Send button", yet T74 -- whose fill is a strict SUPERSET of both --
+  // submitted fine, and test_commsys confirmed each fill fires FBQBoatHullIdNumber with both
+  // fields present in that combo's any[]. So the fills were valid and the miss was pure timing.
+  // fillWithRetry() above already retried; the submit step was the one place that did not.
+  //
+  // The failure message now distinguishes the two very different causes, because "no enabled Send
+  // button" sent us looking for a config defect when it was a race:
+  //   present-but-disabled -> the FORM rejected the input (validation/maxLength/required)
+  //   absent entirely      -> wrong page, or the button markup changed
+  async function clickSendClear(waitMs) {
+    const budget = waitMs || 6000;
+    const deadline = Date.now() + budget;
+    for (;;) {
+      const sc = [...document.querySelectorAll('button')].find((b) => /send\s*&\s*clear/i.test(b.textContent || '') && !b.disabled);
+      if (sc) { sc.click(); return { ok: true, mode: 'send+clear' }; }
+      const s = [...document.querySelectorAll('button')].find((b) => (b.textContent || '').trim() === 'Send' && !b.disabled);
+      if (s) { s.click(); return { ok: true, mode: 'send (no clear)' }; }
+      if (Date.now() >= deadline) break;
+      await L.sleep(250);
+    }
+    const disabledSend = [...document.querySelectorAll('button')].some((b) => /send/i.test(b.textContent || '') && b.disabled);
+    return {
+      ok: false,
+      err: disabledSend
+        ? `Send present but still DISABLED after ${budget}ms -- the form rejected this input (check field validation / maxLength / a required field that did not fill)`
+        : `no Send button found in the DOM after ${budget}ms -- wrong page, or the button markup changed`
+    };
   }
 
   // Run a whole tier plan for ONE entity in a loop. `plan` = the TEST_PLAN.json object

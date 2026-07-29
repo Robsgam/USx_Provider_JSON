@@ -3,7 +3,7 @@
   "version": "2.0",
   "tier": "Full",
   "note": "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-  "testCount": 35,
+  "testCount": 30,
   "formDefaults": {
     "Vehicle": {
       "LicensePlateTypeCode": "PC",
@@ -19,104 +19,6 @@
   "tests": [
     {
       "n": 1,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "RQ.PO",
-      "expectedKeyRef": "RQ.P",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": {
-        "fieldId": "LicensePlateNumber",
-        "value": "TEST123"
-      },
-      "reroutedFrom": "RQ.PO"
-    },
-    {
-      "n": 2,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "RQ.PO",
-      "expectedKeyRef": "RQ.P",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "LicensePlateTypeCode",
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "LicensePlateTypeCode",
-          "value": "PC"
-        }
-      ],
-      "reroutedFrom": "RQ.PO"
-    },
-    {
-      "n": 3,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "RQ.PO",
-      "expectedKeyRef": "RQ.P",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "LicensePlateYear",
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "LicensePlateYear",
-          "value": "2025"
-        }
-      ],
-      "reroutedFrom": "RQ.PO"
-    },
-    {
-      "n": 4,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "RQ.PO",
-      "expectedKeyRef": "RQ.P",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "VehicleMakeCode",
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "VehicleMakeCode",
-          "value": "CNST_FORD"
-        }
-      ],
-      "reroutedFrom": "RQ.PO"
-    },
-    {
-      "n": 5,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "RQ.PO",
-      "expectedKeyRef": "RQ.P",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "vehicleYear",
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "vehicleYear",
-          "value": "2023"
-        }
-      ],
-      "reroutedFrom": "RQ.PO"
-    },
-    {
-      "n": 6,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.PO",
@@ -151,7 +53,7 @@
       ]
     },
     {
-      "n": 7,
+      "n": 2,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.V",
@@ -164,7 +66,7 @@
       }
     },
     {
-      "n": 8,
+      "n": 3,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.V",
@@ -184,7 +86,7 @@
       ]
     },
     {
-      "n": 9,
+      "n": 4,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.V",
@@ -204,7 +106,7 @@
       ]
     },
     {
-      "n": 10,
+      "n": 5,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.V",
@@ -231,7 +133,7 @@
       ]
     },
     {
-      "n": 11,
+      "n": 6,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.P",
@@ -244,7 +146,7 @@
       }
     },
     {
-      "n": 12,
+      "n": 7,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.P",
@@ -264,7 +166,7 @@
       ]
     },
     {
-      "n": 13,
+      "n": 8,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.P",
@@ -284,7 +186,7 @@
       ]
     },
     {
-      "n": 14,
+      "n": 9,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.P",
@@ -304,7 +206,7 @@
       ]
     },
     {
-      "n": 15,
+      "n": 10,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.P",
@@ -324,7 +226,7 @@
       ]
     },
     {
-      "n": 16,
+      "n": 11,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "RQ.P",
@@ -355,7 +257,7 @@
       ]
     },
     {
-      "n": 17,
+      "n": 12,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": null,
@@ -375,7 +277,7 @@
       "guardrailLoser": "RQ.V"
     },
     {
-      "n": 18,
+      "n": 13,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.N",
@@ -398,7 +300,7 @@
       ]
     },
     {
-      "n": 19,
+      "n": 14,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.N",
@@ -426,7 +328,7 @@
       ]
     },
     {
-      "n": 20,
+      "n": 15,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.N",
@@ -454,7 +356,7 @@
       ]
     },
     {
-      "n": 21,
+      "n": 16,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.N",
@@ -489,7 +391,7 @@
       ]
     },
     {
-      "n": 22,
+      "n": 17,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.O",
@@ -502,7 +404,7 @@
       }
     },
     {
-      "n": 23,
+      "n": 18,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.O",
@@ -522,7 +424,7 @@
       ]
     },
     {
-      "n": 24,
+      "n": 19,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.O",
@@ -545,7 +447,7 @@
       ]
     },
     {
-      "n": 25,
+      "n": 20,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": null,
@@ -573,7 +475,7 @@
       "guardrailLoser": "DQ.N"
     },
     {
-      "n": 26,
+      "n": 21,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QG",
@@ -586,7 +488,7 @@
       }
     },
     {
-      "n": 27,
+      "n": 22,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QG",
@@ -606,7 +508,7 @@
       ]
     },
     {
-      "n": 28,
+      "n": 23,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QG",
@@ -626,7 +528,7 @@
       ]
     },
     {
-      "n": 29,
+      "n": 24,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QG",
@@ -649,7 +551,7 @@
       ]
     },
     {
-      "n": 30,
+      "n": 25,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA",
@@ -668,7 +570,7 @@
       ]
     },
     {
-      "n": 31,
+      "n": 26,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQ.H",
@@ -681,7 +583,7 @@
       }
     },
     {
-      "n": 32,
+      "n": 27,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQ.H",
@@ -700,7 +602,7 @@
       ]
     },
     {
-      "n": 33,
+      "n": 28,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQ.R",
@@ -713,7 +615,7 @@
       }
     },
     {
-      "n": 34,
+      "n": 29,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQ.R",
@@ -732,7 +634,7 @@
       ]
     },
     {
-      "n": 35,
+      "n": 30,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,

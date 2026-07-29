@@ -3,7 +3,7 @@
   "version": "3.3",
   "tier": "Full",
   "note": "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-  "testCount": 60,
+  "testCount": 52,
   "formDefaults": {
     "Vehicle": {
       "LicensePlateTypeCode": "PC",
@@ -282,15 +282,11 @@
       "n": 13,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
-      "comboKeyRef": "ACWL",
+      "comboKeyRef": "DQN",
       "expectedKeyRef": "DQN",
       "kind": "combo",
       "tier": "Full",
       "fills": [
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
         {
           "fieldId": "NameLast",
           "value": "DOE"
@@ -302,23 +298,22 @@
         {
           "fieldId": "SexCode",
           "value": "M"
+        },
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
         }
-      ],
-      "reroutedFrom": "ACWL"
+      ]
     },
     {
       "n": 14,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
-      "comboKeyRef": "ACWL",
+      "comboKeyRef": "DQN",
       "expectedKeyRef": "DQN",
       "kind": "any",
       "tier": "Full",
       "fills": [
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
         {
           "fieldId": "NameLast",
           "value": "DOE"
@@ -332,72 +327,17 @@
           "value": "M"
         },
         {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
           "fieldId": "RegistrationState",
           "value": "GA"
         }
-      ],
-      "reroutedFrom": "ACWL"
+      ]
     },
     {
       "n": 15,
-      "entity": "Person",
-      "query": "AzAzdpsDriverLicenseQuery",
-      "comboKeyRef": "DQN",
-      "expectedKeyRef": "DQN",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        }
-      ]
-    },
-    {
-      "n": 16,
-      "entity": "Person",
-      "query": "AzAzdpsDriverLicenseQuery",
-      "comboKeyRef": "DQN",
-      "expectedKeyRef": "DQN",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        }
-      ]
-    },
-    {
-      "n": 17,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQ",
@@ -410,7 +350,7 @@
       }
     },
     {
-      "n": 18,
+      "n": 16,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQ",
@@ -430,7 +370,7 @@
       ]
     },
     {
-      "n": 19,
+      "n": 17,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQ",
@@ -450,7 +390,7 @@
       ]
     },
     {
-      "n": 20,
+      "n": 18,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQ",
@@ -477,7 +417,7 @@
       ]
     },
     {
-      "n": 21,
+      "n": 19,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQSS",
@@ -490,7 +430,7 @@
       }
     },
     {
-      "n": 22,
+      "n": 20,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQSS",
@@ -510,7 +450,7 @@
       ]
     },
     {
-      "n": 23,
+      "n": 21,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQSS",
@@ -530,7 +470,7 @@
       ]
     },
     {
-      "n": 24,
+      "n": 22,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": "DQSS",
@@ -557,7 +497,7 @@
       ]
     },
     {
-      "n": 25,
+      "n": 23,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQH",
@@ -584,7 +524,7 @@
       ]
     },
     {
-      "n": 26,
+      "n": 24,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQH",
@@ -616,7 +556,7 @@
       ]
     },
     {
-      "n": 27,
+      "n": 25,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQH",
@@ -647,7 +587,7 @@
       ]
     },
     {
-      "n": 28,
+      "n": 26,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQ",
@@ -660,7 +600,7 @@
       }
     },
     {
-      "n": 29,
+      "n": 27,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQ",
@@ -680,7 +620,7 @@
       ]
     },
     {
-      "n": 30,
+      "n": 28,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQ",
@@ -700,7 +640,7 @@
       ]
     },
     {
-      "n": 31,
+      "n": 29,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQ",
@@ -720,7 +660,7 @@
       ]
     },
     {
-      "n": 32,
+      "n": 30,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "KQ",
@@ -747,7 +687,7 @@
       ]
     },
     {
-      "n": 33,
+      "n": 31,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": null,
@@ -777,6 +717,70 @@
         }
       ],
       "guardrailLoser": "ACWL"
+    },
+    {
+      "n": 32,
+      "entity": "Person",
+      "query": "AzAzdpsDriverLicenseQuery",
+      "comboKeyRef": null,
+      "expectedKeyRef": "DQSS",
+      "kind": "guardrail",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "SocialSecurityNumber",
+          "value": "123456789"
+        },
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "JOHN"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        }
+      ],
+      "guardrailLoser": "ACWL"
+    },
+    {
+      "n": 33,
+      "entity": "Person",
+      "query": "AzAzdpsDriverLicenseQuery",
+      "comboKeyRef": null,
+      "expectedKeyRef": "DQ",
+      "kind": "guardrail",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumber",
+          "value": "D999888777"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "JOHN"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        }
+      ],
+      "guardrailLoser": "DQN"
     },
     {
       "n": 34,
@@ -792,10 +796,6 @@
           "value": "123456789"
         },
         {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
-        {
           "fieldId": "NameLast",
           "value": "DOE"
         },
@@ -806,76 +806,16 @@
         {
           "fieldId": "SexCode",
           "value": "M"
+        },
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
         }
       ],
-      "guardrailLoser": "ACWL"
+      "guardrailLoser": "DQN"
     },
     {
       "n": 35,
-      "entity": "Person",
-      "query": "AzAzdpsDriverLicenseQuery",
-      "comboKeyRef": null,
-      "expectedKeyRef": "DQ",
-      "kind": "guardrail",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "OperatorLicenseNumber",
-          "value": "D999888777"
-        },
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        }
-      ],
-      "guardrailLoser": "DQN"
-    },
-    {
-      "n": 36,
-      "entity": "Person",
-      "query": "AzAzdpsDriverLicenseQuery",
-      "comboKeyRef": null,
-      "expectedKeyRef": "DQSS",
-      "kind": "guardrail",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "SocialSecurityNumber",
-          "value": "123456789"
-        },
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        }
-      ],
-      "guardrailLoser": "DQN"
-    },
-    {
-      "n": 37,
       "entity": "Person",
       "query": "AzAzdpsDriverLicenseQuery",
       "comboKeyRef": null,
@@ -895,7 +835,7 @@
       "guardrailLoser": "DQSS"
     },
     {
-      "n": 38,
+      "n": 36,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "ACQG",
@@ -908,7 +848,7 @@
       }
     },
     {
-      "n": 39,
+      "n": 37,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "ACQG",
@@ -928,7 +868,7 @@
       ]
     },
     {
-      "n": 40,
+      "n": 38,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "ACQG",
@@ -948,7 +888,7 @@
       ]
     },
     {
-      "n": 41,
+      "n": 39,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "ACQG",
@@ -968,7 +908,7 @@
       ]
     },
     {
-      "n": 42,
+      "n": 40,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "ACQG",
@@ -988,7 +928,7 @@
       ]
     },
     {
-      "n": 43,
+      "n": 41,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "ACQG",
@@ -1019,7 +959,7 @@
       ]
     },
     {
-      "n": 44,
+      "n": 42,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "ACQA",
@@ -1038,7 +978,7 @@
       ]
     },
     {
-      "n": 45,
+      "n": 43,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "ACQA",
@@ -1062,7 +1002,7 @@
       ]
     },
     {
-      "n": 46,
+      "n": 44,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "ACQA",
@@ -1077,6 +1017,39 @@
         {
           "fieldId": "ArticleSerialNumber",
           "value": "ART99999"
+        },
+        {
+          "fieldId": "relatedHitSearchIndicator",
+          "value": "Y"
+        }
+      ]
+    },
+    {
+      "n": 45,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "comboKeyRef": "BQ",
+      "expectedKeyRef": "BQ",
+      "kind": "combo",
+      "tier": "Full",
+      "fills": {
+        "fieldId": "RegistrationNumber",
+        "value": "FL1234AB"
+      }
+    },
+    {
+      "n": 46,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "comboKeyRef": "BQ",
+      "expectedKeyRef": "BQ",
+      "kind": "any-field",
+      "tier": "Full",
+      "anyField": "relatedHitSearchIndicator",
+      "fills": [
+        {
+          "fieldId": "RegistrationNumber",
+          "value": "FL1234AB"
         },
         {
           "fieldId": "relatedHitSearchIndicator",
@@ -1088,234 +1061,83 @@
       "n": 47,
       "entity": "Boat",
       "query": "BoatQuery",
-      "comboKeyRef": "ACQB",
+      "comboKeyRef": "BQ",
       "expectedKeyRef": "BQ",
-      "kind": "combo",
+      "kind": "any",
       "tier": "Full",
-      "fills": {
-        "fieldId": "RegistrationNumber",
-        "value": "FL1234AB"
-      },
-      "reroutedFrom": "ACQB"
+      "fills": [
+        {
+          "fieldId": "RegistrationNumber",
+          "value": "FL1234AB"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "GA"
+        },
+        {
+          "fieldId": "relatedHitSearchIndicator",
+          "value": "Y"
+        }
+      ]
     },
     {
       "n": 48,
       "entity": "Boat",
       "query": "BoatQuery",
-      "comboKeyRef": "ACQB",
-      "expectedKeyRef": "BQ",
-      "kind": "any-field",
+      "comboKeyRef": "BQH",
+      "expectedKeyRef": "BQH",
+      "kind": "combo",
       "tier": "Full",
-      "anyField": "relatedHitSearchIndicator",
-      "fills": [
-        {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        },
-        {
-          "fieldId": "relatedHitSearchIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "ACQB"
+      "fills": {
+        "fieldId": "BoatHullIdNumber",
+        "value": "FL1234AB56H7"
+      }
     },
     {
       "n": 49,
       "entity": "Boat",
       "query": "BoatQuery",
-      "comboKeyRef": "ACQB",
-      "expectedKeyRef": "BQ",
-      "kind": "any",
+      "comboKeyRef": "BQH",
+      "expectedKeyRef": "BQH",
+      "kind": "any-field",
       "tier": "Full",
+      "anyField": "relatedHitSearchIndicator",
       "fills": [
         {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
+          "fieldId": "BoatHullIdNumber",
+          "value": "FL1234AB56H7"
         },
         {
           "fieldId": "relatedHitSearchIndicator",
           "value": "Y"
         }
-      ],
-      "reroutedFrom": "ACQB"
+      ]
     },
     {
       "n": 50,
       "entity": "Boat",
       "query": "BoatQuery",
-      "comboKeyRef": "ACQBH",
+      "comboKeyRef": "BQH",
       "expectedKeyRef": "BQH",
-      "kind": "combo",
+      "kind": "any",
       "tier": "Full",
-      "fills": {
-        "fieldId": "BoatHullIdNumber",
-        "value": "FL1234AB56H7"
-      },
-      "reroutedFrom": "ACQBH"
+      "fills": [
+        {
+          "fieldId": "BoatHullIdNumber",
+          "value": "FL1234AB56H7"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "GA"
+        },
+        {
+          "fieldId": "relatedHitSearchIndicator",
+          "value": "Y"
+        }
+      ]
     },
     {
       "n": 51,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "ACQBH",
-      "expectedKeyRef": "BQH",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "relatedHitSearchIndicator",
-      "fills": [
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "relatedHitSearchIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "ACQBH"
-    },
-    {
-      "n": 52,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "ACQBH",
-      "expectedKeyRef": "BQH",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        },
-        {
-          "fieldId": "relatedHitSearchIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "ACQBH"
-    },
-    {
-      "n": 53,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQ",
-      "expectedKeyRef": "BQ",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": {
-        "fieldId": "RegistrationNumber",
-        "value": "FL1234AB"
-      }
-    },
-    {
-      "n": 54,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQ",
-      "expectedKeyRef": "BQ",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "relatedHitSearchIndicator",
-      "fills": [
-        {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        },
-        {
-          "fieldId": "relatedHitSearchIndicator",
-          "value": "Y"
-        }
-      ]
-    },
-    {
-      "n": 55,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQ",
-      "expectedKeyRef": "BQ",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "RegistrationNumber",
-          "value": "FL1234AB"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        },
-        {
-          "fieldId": "relatedHitSearchIndicator",
-          "value": "Y"
-        }
-      ]
-    },
-    {
-      "n": 56,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQH",
-      "expectedKeyRef": "BQH",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": {
-        "fieldId": "BoatHullIdNumber",
-        "value": "FL1234AB56H7"
-      }
-    },
-    {
-      "n": 57,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQH",
-      "expectedKeyRef": "BQH",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "relatedHitSearchIndicator",
-      "fills": [
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "relatedHitSearchIndicator",
-          "value": "Y"
-        }
-      ]
-    },
-    {
-      "n": 58,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "BQH",
-      "expectedKeyRef": "BQH",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        },
-        {
-          "fieldId": "relatedHitSearchIndicator",
-          "value": "Y"
-        }
-      ]
-    },
-    {
-      "n": 59,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,
@@ -1335,7 +1157,7 @@
       "guardrailLoser": "ACQB"
     },
     {
-      "n": 60,
+      "n": 52,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,

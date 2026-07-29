@@ -3,7 +3,7 @@
   "version": "2.0",
   "tier": "Full",
   "note": "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-  "testCount": 46,
+  "testCount": 42,
   "formDefaults": {
     "Vehicle": {
       "ImageIndicator": "N",
@@ -22,59 +22,6 @@
   "tests": [
     {
       "n": 1,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "ZLRG.P",
-      "expectedKeyRef": "ZVEH.P",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "LicensePlateTypeCode",
-          "value": "PC"
-        },
-        {
-          "fieldId": "LicensePlateYear",
-          "value": "2026"
-        }
-      ],
-      "reroutedFrom": "ZLRG.P"
-    },
-    {
-      "n": 2,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "ZLRG.P",
-      "expectedKeyRef": "ZVEH.P",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "ImageIndicator",
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "LicensePlateTypeCode",
-          "value": "PC"
-        },
-        {
-          "fieldId": "LicensePlateYear",
-          "value": "2026"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "ZLRG.P"
-    },
-    {
-      "n": 3,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZLRG.P",
@@ -105,42 +52,7 @@
       ]
     },
     {
-      "n": 4,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "ZLRG.V",
-      "expectedKeyRef": "ZVEH.V",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": {
-        "fieldId": "VehicleIdentificationNumber",
-        "value": "1HGCM82633A123456"
-      },
-      "reroutedFrom": "ZLRG.V"
-    },
-    {
-      "n": 5,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "ZLRG.V",
-      "expectedKeyRef": "ZVEH.V",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "ImageIndicator",
-      "fills": [
-        {
-          "fieldId": "VehicleIdentificationNumber",
-          "value": "1HGCM82633A123456"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "Y"
-        }
-      ],
-      "reroutedFrom": "ZLRG.V"
-    },
-    {
-      "n": 6,
+      "n": 2,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZLRG.V",
@@ -163,7 +75,7 @@
       ]
     },
     {
-      "n": 7,
+      "n": 3,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZVEH.V",
@@ -176,7 +88,7 @@
       }
     },
     {
-      "n": 8,
+      "n": 4,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZVEH.V",
@@ -196,7 +108,7 @@
       ]
     },
     {
-      "n": 9,
+      "n": 5,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZVEH.V",
@@ -216,7 +128,7 @@
       ]
     },
     {
-      "n": 10,
+      "n": 6,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZVEH.V",
@@ -239,7 +151,7 @@
       ]
     },
     {
-      "n": 11,
+      "n": 7,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZVEH.P",
@@ -252,7 +164,7 @@
       }
     },
     {
-      "n": 12,
+      "n": 8,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZVEH.P",
@@ -272,7 +184,7 @@
       ]
     },
     {
-      "n": 13,
+      "n": 9,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": "ZVEH.P",
@@ -291,7 +203,7 @@
       ]
     },
     {
-      "n": 14,
+      "n": 10,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": null,
@@ -311,7 +223,7 @@
       "guardrailLoser": "ZLRG.V"
     },
     {
-      "n": 15,
+      "n": 11,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
       "comboKeyRef": null,
@@ -331,7 +243,7 @@
       "guardrailLoser": "ZVEH.V"
     },
     {
-      "n": 16,
+      "n": 12,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "ZWAR.O",
@@ -362,7 +274,7 @@
       ]
     },
     {
-      "n": 17,
+      "n": 13,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "ZWAR.O",
@@ -382,6 +294,147 @@
         {
           "fieldId": "OperatorLicenseNumber",
           "value": "D999888777"
+        },
+        {
+          "fieldId": "raceCode",
+          "value": "W"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ]
+    },
+    {
+      "n": 14,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "comboKeyRef": "ZWAR.O",
+      "expectedKeyRef": "ZWAR.O",
+      "kind": "any",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "JOHN"
+        },
+        {
+          "fieldId": "OperatorLicenseNumber",
+          "value": "D999888777"
+        },
+        {
+          "fieldId": "raceCode",
+          "value": "W"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "GA"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ]
+    },
+    {
+      "n": 15,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "comboKeyRef": "ZWAR.N",
+      "expectedKeyRef": "ZWAR.N",
+      "kind": "combo",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "JOHN"
+        },
+        {
+          "fieldId": "raceCode",
+          "value": "W"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "n": 16,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "comboKeyRef": "ZWAR.N",
+      "expectedKeyRef": "ZWAR.N",
+      "kind": "any-field",
+      "tier": "Full",
+      "anyField": "ImageIndicator",
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "JOHN"
+        },
+        {
+          "fieldId": "raceCode",
+          "value": "W"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ]
+    },
+    {
+      "n": 17,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "comboKeyRef": "ZWAR.N",
+      "expectedKeyRef": "ZWAR.N",
+      "kind": "any",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "JOHN"
         },
         {
           "fieldId": "raceCode",
@@ -401,47 +454,8 @@
       "n": 18,
       "entity": "Person",
       "query": "DriverLicenseQuery",
-      "comboKeyRef": "ZWAR.O",
-      "expectedKeyRef": "ZWAR.O",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "OperatorLicenseNumber",
-          "value": "D999888777"
-        },
-        {
-          "fieldId": "raceCode",
-          "value": "W"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "N"
-        }
-      ]
-    },
-    {
-      "n": 19,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "ZWAR.N",
-      "expectedKeyRef": "ZWAR.N",
+      "comboKeyRef": "ZLDR.N",
+      "expectedKeyRef": "ZLDR.N",
       "kind": "combo",
       "tier": "Full",
       "fills": [
@@ -458,21 +472,17 @@
           "value": "JOHN"
         },
         {
-          "fieldId": "raceCode",
-          "value": "W"
-        },
-        {
           "fieldId": "SexCode",
           "value": "M"
         }
       ]
     },
     {
-      "n": 20,
+      "n": 19,
       "entity": "Person",
       "query": "DriverLicenseQuery",
-      "comboKeyRef": "ZWAR.N",
-      "expectedKeyRef": "ZWAR.N",
+      "comboKeyRef": "ZLDR.N",
+      "expectedKeyRef": "ZLDR.N",
       "kind": "any-field",
       "tier": "Full",
       "anyField": "ImageIndicator",
@@ -490,12 +500,43 @@
           "value": "JOHN"
         },
         {
-          "fieldId": "raceCode",
-          "value": "W"
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ]
+    },
+    {
+      "n": 20,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "comboKeyRef": "ZLDR.N",
+      "expectedKeyRef": "ZLDR.N",
+      "kind": "any",
+      "tier": "Full",
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "JOHN"
         },
         {
           "fieldId": "SexCode",
           "value": "M"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "GA"
         },
         {
           "fieldId": "ImageIndicator",
@@ -505,135 +546,6 @@
     },
     {
       "n": 21,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "ZWAR.N",
-      "expectedKeyRef": "ZWAR.N",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "raceCode",
-          "value": "W"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "N"
-        }
-      ]
-    },
-    {
-      "n": 22,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "ZLDR.N",
-      "expectedKeyRef": "ZLDR.N",
-      "kind": "combo",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        }
-      ]
-    },
-    {
-      "n": 23,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "ZLDR.N",
-      "expectedKeyRef": "ZLDR.N",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "ImageIndicator",
-      "fills": [
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "N"
-        }
-      ]
-    },
-    {
-      "n": 24,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "ZLDR.N",
-      "expectedKeyRef": "ZLDR.N",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "BirthDate",
-          "value": "1990-01-15"
-        },
-        {
-          "fieldId": "NameLast",
-          "value": "DOE"
-        },
-        {
-          "fieldId": "NameFirst",
-          "value": "JOHN"
-        },
-        {
-          "fieldId": "SexCode",
-          "value": "M"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "N"
-        }
-      ]
-    },
-    {
-      "n": 25,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "ZLDR.O",
@@ -646,7 +558,7 @@
       }
     },
     {
-      "n": 26,
+      "n": 22,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "ZLDR.O",
@@ -666,7 +578,7 @@
       ]
     },
     {
-      "n": 27,
+      "n": 23,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "ZLDR.O",
@@ -689,7 +601,7 @@
       ]
     },
     {
-      "n": 28,
+      "n": 24,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "ZDRV.N",
@@ -716,7 +628,7 @@
       ]
     },
     {
-      "n": 29,
+      "n": 25,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "ZDRV.N",
@@ -748,7 +660,7 @@
       ]
     },
     {
-      "n": 30,
+      "n": 26,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "ZDRV.N",
@@ -779,7 +691,7 @@
       ]
     },
     {
-      "n": 31,
+      "n": 27,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "ZDRV.O",
@@ -792,7 +704,7 @@
       }
     },
     {
-      "n": 32,
+      "n": 28,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "ZDRV.O",
@@ -812,7 +724,7 @@
       ]
     },
     {
-      "n": 33,
+      "n": 29,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": "ZDRV.O",
@@ -831,7 +743,7 @@
       ]
     },
     {
-      "n": 34,
+      "n": 30,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": null,
@@ -863,7 +775,7 @@
       "guardrailLoser": "ZLDR.N"
     },
     {
-      "n": 35,
+      "n": 31,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": null,
@@ -895,7 +807,7 @@
       "guardrailLoser": "ZLDR.N"
     },
     {
-      "n": 36,
+      "n": 32,
       "entity": "Person",
       "query": "DriverHistoryQuery",
       "comboKeyRef": null,
@@ -927,7 +839,7 @@
       "guardrailLoser": "ZDRV.N"
     },
     {
-      "n": 37,
+      "n": 33,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "ZGUN",
@@ -946,7 +858,7 @@
       ]
     },
     {
-      "n": 38,
+      "n": 34,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "ZART",
@@ -965,7 +877,7 @@
       ]
     },
     {
-      "n": 39,
+      "n": 35,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "ZBOA.H",
@@ -978,7 +890,7 @@
       }
     },
     {
-      "n": 40,
+      "n": 36,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "ZBOA.H",
@@ -998,7 +910,7 @@
       ]
     },
     {
-      "n": 41,
+      "n": 37,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "ZBOA.H",
@@ -1018,7 +930,7 @@
       ]
     },
     {
-      "n": 42,
+      "n": 38,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "ZBOA.H",
@@ -1041,7 +953,7 @@
       ]
     },
     {
-      "n": 43,
+      "n": 39,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "ZBOA.R",
@@ -1054,7 +966,7 @@
       }
     },
     {
-      "n": 44,
+      "n": 40,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "ZBOA.R",
@@ -1074,7 +986,7 @@
       ]
     },
     {
-      "n": 45,
+      "n": 41,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "ZBOA.R",
@@ -1093,7 +1005,7 @@
       ]
     },
     {
-      "n": 46,
+      "n": 42,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,

@@ -3,7 +3,7 @@
   "version": "2.0",
   "tier": "Full",
   "note": "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-  "testCount": 52,
+  "testCount": 49,
   "formDefaults": {
     "Vehicle": {
       "LicensePlateTypeCode": "PC",
@@ -507,41 +507,25 @@
       "n": 20,
       "entity": "Vehicle",
       "query": "VehicleRegistrationQuery",
-      "comboKeyRef": "4",
-      "expectedKeyRef": "RQ.P",
-      "kind": "any",
+      "comboKeyRef": null,
+      "expectedKeyRef": "4",
+      "kind": "guardrail",
       "tier": "Full",
       "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
         {
           "fieldId": "LicensePlateNumber",
           "value": "TEST123"
         },
         {
-          "fieldId": "RegistrationState",
-          "value": "GA"
+          "fieldId": "caRequestPurposeCode",
+          "value": "C"
         },
         {
-          "fieldId": "LicensePlateTypeCode",
-          "value": "PC"
-        },
-        {
-          "fieldId": "LicensePlateYear",
-          "value": "2025"
-        },
-        {
-          "fieldId": "VehicleMakeCode",
-          "value": "CNST_FORD"
-        },
-        {
-          "fieldId": "vehicleYear",
-          "value": "2023"
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
         }
       ],
-      "reroutedFrom": "4"
+      "guardrailLoser": "RQ.V"
     },
     {
       "n": 21,
@@ -565,34 +549,10 @@
           "value": "1HGCM82633A123456"
         }
       ],
-      "guardrailLoser": "RQ.V"
-    },
-    {
-      "n": 22,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "comboKeyRef": null,
-      "expectedKeyRef": "4",
-      "kind": "guardrail",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "VehicleIdentificationNumber",
-          "value": "1HGCM82633A123456"
-        }
-      ],
       "guardrailLoser": "4V"
     },
     {
-      "n": 23,
+      "n": 22,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.N",
@@ -627,7 +587,7 @@
       ]
     },
     {
-      "n": 24,
+      "n": 23,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "DQ.O",
@@ -650,7 +610,7 @@
       ]
     },
     {
-      "n": 25,
+      "n": 24,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.N",
@@ -673,7 +633,7 @@
       ]
     },
     {
-      "n": 26,
+      "n": 25,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.N",
@@ -701,7 +661,7 @@
       ]
     },
     {
-      "n": 27,
+      "n": 26,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.N",
@@ -728,7 +688,7 @@
       ]
     },
     {
-      "n": 28,
+      "n": 27,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": "L1.O",
@@ -747,31 +707,7 @@
       ]
     },
     {
-      "n": 29,
-      "entity": "Person",
-      "query": "DriverLicenseQuery",
-      "comboKeyRef": "L1.O",
-      "expectedKeyRef": "DQ.O",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "OperatorLicenseNumber",
-          "value": "D999888777"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        }
-      ],
-      "reroutedFrom": "L1.O"
-    },
-    {
-      "n": 30,
+      "n": 28,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": null,
@@ -807,7 +743,7 @@
       "guardrailLoser": "DQ.N"
     },
     {
-      "n": 31,
+      "n": 29,
       "entity": "Person",
       "query": "DriverLicenseQuery",
       "comboKeyRef": null,
@@ -835,7 +771,7 @@
       "guardrailLoser": "L1.N"
     },
     {
-      "n": 32,
+      "n": 30,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -854,7 +790,7 @@
       ]
     },
     {
-      "n": 33,
+      "n": 31,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -878,7 +814,7 @@
       ]
     },
     {
-      "n": 34,
+      "n": 32,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -902,7 +838,7 @@
       ]
     },
     {
-      "n": 35,
+      "n": 33,
       "entity": "Firearm",
       "query": "GunQuery",
       "comboKeyRef": "QGB",
@@ -929,7 +865,7 @@
       ]
     },
     {
-      "n": 36,
+      "n": 34,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA.S",
@@ -944,6 +880,54 @@
         {
           "fieldId": "serialNumber",
           "value": "GUN12345"
+        }
+      ]
+    },
+    {
+      "n": 35,
+      "entity": "Article",
+      "query": "ArticleSingleQuery",
+      "comboKeyRef": "QA.S",
+      "expectedKeyRef": "QA.S",
+      "kind": "any-field",
+      "tier": "Full",
+      "anyField": "articleBrand",
+      "fills": [
+        {
+          "fieldId": "caRequestPurposeCode",
+          "value": "C"
+        },
+        {
+          "fieldId": "serialNumber",
+          "value": "GUN12345"
+        },
+        {
+          "fieldId": "articleBrand",
+          "value": "SONY"
+        }
+      ]
+    },
+    {
+      "n": 36,
+      "entity": "Article",
+      "query": "ArticleSingleQuery",
+      "comboKeyRef": "QA.S",
+      "expectedKeyRef": "QA.S",
+      "kind": "any-field",
+      "tier": "Full",
+      "anyField": "ArticleTypeCode",
+      "fills": [
+        {
+          "fieldId": "caRequestPurposeCode",
+          "value": "C"
+        },
+        {
+          "fieldId": "serialNumber",
+          "value": "GUN12345"
+        },
+        {
+          "fieldId": "ArticleTypeCode",
+          "value": "BBICYCL"
         }
       ]
     },
@@ -953,54 +937,6 @@
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA.S",
       "expectedKeyRef": "QA.S",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "articleBrand",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "serialNumber",
-          "value": "GUN12345"
-        },
-        {
-          "fieldId": "articleBrand",
-          "value": "SONY"
-        }
-      ]
-    },
-    {
-      "n": 38,
-      "entity": "Article",
-      "query": "ArticleSingleQuery",
-      "comboKeyRef": "QA.S",
-      "expectedKeyRef": "QA.S",
-      "kind": "any-field",
-      "tier": "Full",
-      "anyField": "ArticleTypeCode",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "serialNumber",
-          "value": "GUN12345"
-        },
-        {
-          "fieldId": "ArticleTypeCode",
-          "value": "BBICYCL"
-        }
-      ]
-    },
-    {
-      "n": 39,
-      "entity": "Article",
-      "query": "ArticleSingleQuery",
-      "comboKeyRef": "QA.S",
-      "expectedKeyRef": "QA.S",
       "kind": "any",
       "tier": "Full",
       "fills": [
@@ -1023,7 +959,7 @@
       ]
     },
     {
-      "n": 40,
+      "n": 38,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA.O",
@@ -1042,7 +978,7 @@
       ]
     },
     {
-      "n": 41,
+      "n": 39,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA.O",
@@ -1066,7 +1002,7 @@
       ]
     },
     {
-      "n": 42,
+      "n": 40,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA.O",
@@ -1090,7 +1026,7 @@
       ]
     },
     {
-      "n": 43,
+      "n": 41,
       "entity": "Article",
       "query": "ArticleSingleQuery",
       "comboKeyRef": "QA.O",
@@ -1117,7 +1053,7 @@
       ]
     },
     {
-      "n": 44,
+      "n": 42,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQ.H",
@@ -1140,7 +1076,7 @@
       ]
     },
     {
-      "n": 45,
+      "n": 43,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "BQ.R",
@@ -1163,7 +1099,7 @@
       ]
     },
     {
-      "n": 46,
+      "n": 44,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "4V.B",
@@ -1182,31 +1118,7 @@
       ]
     },
     {
-      "n": 47,
-      "entity": "Boat",
-      "query": "BoatQuery",
-      "comboKeyRef": "4V.B",
-      "expectedKeyRef": "BQ.H",
-      "kind": "any",
-      "tier": "Full",
-      "fills": [
-        {
-          "fieldId": "caRequestPurposeCode",
-          "value": "C"
-        },
-        {
-          "fieldId": "BoatHullIdNumber",
-          "value": "FL1234AB56H7"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "GA"
-        }
-      ],
-      "reroutedFrom": "4V.B"
-    },
-    {
-      "n": 48,
+      "n": 45,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QB.O",
@@ -1225,7 +1137,7 @@
       ]
     },
     {
-      "n": 49,
+      "n": 46,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "QB.O",
@@ -1248,7 +1160,7 @@
       ]
     },
     {
-      "n": 50,
+      "n": 47,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": "4B",
@@ -1267,7 +1179,7 @@
       ]
     },
     {
-      "n": 51,
+      "n": 48,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,
@@ -1291,7 +1203,7 @@
       "guardrailLoser": "BQ.R"
     },
     {
-      "n": 52,
+      "n": 49,
       "entity": "Boat",
       "query": "BoatQuery",
       "comboKeyRef": null,

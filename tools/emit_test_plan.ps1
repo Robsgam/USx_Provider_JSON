@@ -268,6 +268,20 @@ $tests = New-Object System.Collections.Generic.List[object]
 $formDefaultsByEntity = [ordered]@{}
 $n = 0
 
+# Two tests with the SAME fill set are the SAME SUBMISSION -- the officer types identical input and
+# the platform can only do one thing with it, so they can never be told apart in evidence and the
+# second can never receive its own log. Emitting both creates a permanently-unsatisfiable "owed
+# test" and, worse, lets a capture be content-matched to whichever label sorts first.
+# PROVEN 2026-07-29 on an FL_FCIC Boat run: n=76 (Hull+decal) had byte-identical fills to n=71
+# (Hull+decal); the capture landed under n=71's label and n=76 read as owed forever. Five of FL's
+# seven "missing" Boat tests were this, plus both of CA_CLETS's. Deduped here so plan coverage is
+# a measurable number instead of an unreachable target.
+# Keeps the FIRST occurrence in plan order and records what was folded into it -- never a silent drop.
+function Get-FillKey($fills) {
+    return ((@($fills) | Where-Object { $_ -and $_.fieldId } |
+             ForEach-Object { "$($_.fieldId)=$($_.value)" } | Sort-Object) -join '|')
+}
+
 # Resolve expectedKeyRef by SIMULATION for the structural kinds too (combo / any-field /
 # any) -- guardrails already did this (see Get-SimFiringKeyRef below). A test's own fill can
 # REROUTE it: adding a higher-priority identifier as an any[] field makes an earlier combo
@@ -426,6 +440,37 @@ foreach ($ent in $entities) {
             $tests.Add($test)
         }
     }
+}
+
+# ── DROP TESTS WHOSE NOMINAL COMBO CANNOT FIRE ───────────────────────────────────
+# A test where expectedKeyRef != comboKeyRef is REROUTED: its own fill makes an earlier combo win
+# first-match, so the combo it is named for never runs. Such a test must not be emitted at all:
+#   - the driver submits it, the import names the log from comboKeyRef, and the result is a log
+#     asserting a combo that did not fire -- audit_log_combo_attribution then FAILS it, correctly.
+#     (FL_FCIC produced exactly 6 such logs on the 2026-07-29 Boat run.)
+#   - the combo that DOES fire already has its own test with the same or narrower fill, so no
+#     coverage is lost by dropping this one.
+#   - and it can never be satisfied: 5 of FL's 7 "owed" tests had byte-identical fills to tests
+#     that already had logs (n=76 Hull+decal == n=71 Hull+decal), so no separate evidence exists.
+# Renaming them was tried first (2026-07-29) and was worse -- the import does not use this repo's
+# label function, so a renamed test could never receive a log and simply read as owed forever.
+# Dropping is the honest fix: the reroute is still visible in the reroutedFrom/expectedKeyRef of
+# the LOG-BEARING sibling and in audit_combo_reachability's dead-combo report.
+$kept    = New-Object System.Collections.Generic.List[object]
+$dropped = New-Object System.Collections.Generic.List[string]
+foreach ($t in $tests) {
+    if ($t.reroutedFrom) {
+        $dropped.Add("$($t.comboKeyRef)$(if($t.anyField){"/$($t.anyField)"}) [$($t.kind)] -- its fill fires $($t.expectedKeyRef) instead, so this combo never runs")
+        continue
+    }
+    $kept.Add($t)
+}
+if ($dropped.Count -gt 0) {
+    Write-Host "  [plan] dropped $($dropped.Count) unrunnable test(s) (nominal combo cannot fire for its own fill):" -ForegroundColor DarkYellow
+    $dropped | ForEach-Object { Write-Host "         $_" -ForegroundColor DarkGray }
+    $i = 0
+    foreach ($t in $kept) { $i++; $t.n = $i }
+    $tests = $kept
 }
 
 $plan = [ordered]@{

@@ -33,18 +33,21 @@ function Get-CmPlanLabel($t) {
         if ($t.guardrailLoser) { return "$($t.expectedKeyRef)_guardrail_vs_$($t.guardrailLoser)" }
         return "$($t.expectedKeyRef)_guardrail"
     }
-    # A REROUTED test (emit_test_plan.ps1 sets reroutedFrom when the test's own fill makes an
-    # earlier combo win first-match) must be labelled by the combo that ACTUALLY fires, never
-    # by the one it cannot reach -- otherwise the captured log asserts a combo that never ran
-    # and no downstream check can tell, because the wire XML carries no keyRef. That produced
-    # 17 misattributed logs (TX_TLETS x8, FL_FCIC x7, CA_CLETS x2; found 2026-07-29 by
-    # audit_log_combo_attribution.ps1). Same convention guardrail labels already use:
-    # winner first, "_over_<unreachable>" carrying what the fill defeated.
-    # Non-rerouted labels are byte-identical to before, so no existing filename churns.
-    if ($t.reroutedFrom) {
-        $suffix = if ($t.kind -eq 'any-field') { "_af_$($t.anyField)" } elseif ($t.kind -eq 'any') { '_any' } else { '' }
-        return "$($t.expectedKeyRef)$suffix" + "_over_$($t.reroutedFrom)"
-    }
+    # NOTE ON REROUTED TESTS (reroutedFrom, set by emit_test_plan.ps1 when a test's own fill makes
+    # an earlier combo win first-match): their LABEL DELIBERATELY STAYS comboKeyRef-based.
+    # I briefly renamed them "<winner>_af_<field>_over_<unreachable>" on 2026-07-29 so a filename
+    # could not assert a combo that never ran. That was WRONG for two reasons, both proven the same
+    # day by an FL_FCIC Boat run:
+    #   1. The IMPORT path names a log from comboKeyRef/kind/anyField, not from this function, so a
+    #      renamed test could NEVER receive a log -- it just showed as permanently owed. It created
+    #      7 phantom "missing tests" on FL_FCIC and nearly sent Rob to re-run them.
+    #   2. Five of those seven had BYTE-IDENTICAL fills to tests that already had logs (e.g. n=76
+    #      Hull+decal == n=71 Hull+decal). A rerouted test with the same fill as another test IS
+    #      the same submission -- the platform cannot distinguish them, so it can never be
+    #      separately evidenced and must not be counted as separate coverage.
+    # The reroute information is still recorded where it is actually useful: expectedKeyRef (the
+    # combo that really fires) and reroutedFrom (the one it cannot reach) in the PLAN, plus
+    # audit_log_combo_attribution.ps1, which replays the recorded fill and needs no filename help.
     if ($t.kind -eq 'any')       { return "$($t.comboKeyRef)_any" }
     if ($t.kind -eq 'any-field') { return "$($t.comboKeyRef)_af_$($t.anyField)" }
     return $t.comboKeyRef
