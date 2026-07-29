@@ -662,6 +662,37 @@ if (-not (Test-Path $sqvrTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2k: Rendered Form Review (audit_form_review.ps1) -- ADVISORY, never blocks
+#  Every other gate proves the REQUEST is correct. None proves the FORM is usable. Through
+#  2026-07 every label/title/layout defect was caught by a human opening the rendered form --
+#  a card titled "NCIC FIREARM QUERY" among "SEARCH BY" siblings, "Sex (optional)" beside
+#  "Date of Birth (required with Name)", fields wrapping mid-row. No tool flagged any of them.
+#  This records WHICH BUILD a human actually reviewed. Advisory because a review is a human
+#  act that must not be manufacturable to satisfy a gate.
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2k: Rendered Form Review (advisory)"
+$fbTool = Join-Path $toolDir "audit_form_review.ps1"
+if (-not (Test-Path $fbTool)) {
+    Info "audit_form_review.ps1 not found -- form-review check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $fbJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $fbJson) { continue }
+        $fbOut = & powershell -ExecutionPolicy Bypass -File $fbTool -Path $fbJson 2>&1 | Out-String
+        if ($fbOut -match '\[PASS\]\s*(v[\d.]+) reviewed') {
+            Pass "$provName -- rendered form reviewed at $($Matches[1])"
+        } else {
+            $why = if ($fbOut -match 'no form-review record') { 'never reviewed' }
+                   elseif ($fbOut -match 'no review recorded at') { 'not reviewed at current build' }
+                   elseif ($fbOut -match 'CHANGES-REQUESTED') { 'CHANGES-REQUESTED outstanding' }
+                   else { 'no review on record' }
+            Info "$provName -- $why (advisory; tools\audit_form_review.ps1 -Record)"
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"

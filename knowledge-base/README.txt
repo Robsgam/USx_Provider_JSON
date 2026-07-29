@@ -272,6 +272,18 @@ TOOLS
     attribute-name condition logic). FAILs on drift. Run live by enforce Phase 2d.
     Usage: .\audit_simulator_parity.ps1 [-Path <json>] [-OutFile <path>]
 
+  tools/audit_form_review.ps1
+    Has a HUMAN looked at the rendered form for THIS build? Every other gate proves the
+    REQUEST is correct; none proves the FORM is usable. Through 2026-07 every label/title/
+    layout defect was caught by a person opening the rendered form -- a card titled
+    "NCIC FIREARM QUERY" among "SEARCH BY" siblings, "Sex (optional)" beside "Date of Birth
+    (required with Name)" on one card, fields wrapping mid-row. No tool flagged any of them.
+    Records WHICH BUILD was reviewed in docs/tracking/<PROVIDER>_FORM_REVIEW.txt
+    (<version> | <date> | <reviewer> | APPROVED or CHANGES-REQUESTED | <notes>).
+    ADVISORY, always exit 0, surfaced by enforce PHASE 2k: a review is a human act and must
+    not be manufacturable to satisfy a gate. Promote to blocking per-provider before shipping.
+    Usage: .\audit_form_review.ps1 -Path <json> [-Record -Reviewer <name> [-Verdict ...]]
+
   tools/audit_sqvr_integrity.ps1
     Is the SQVR still telling the truth about the JSON? The SQVR is hand-maintained prose
     ASSERTING which combos exist, how many, and at what version -- and nothing verified it, so

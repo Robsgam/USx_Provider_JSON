@@ -1,0 +1,126 @@
+PRODUCTION TRIAGE -- "a query isn't working, what do I check?"
+================================================================================
+Created 2026-07-29. Purpose: when a customer reports a broken query, get from symptom to
+cause without guessing and without needing the person who built the provider.
+
+READ THIS FIRST -- THE THREE FACTS THAT PREVENT MOST WRONG DIAGNOSES
+--------------------------------------------------------------------------------
+ 1. ONE QIDM SENDS ONE TRANSACTION. The FIRST matching combination in the array fires;
+    later matches do NOT send a second transaction. But the serialized field pool is the
+    UNION of set[]+any[] of ALL matching combos (LIMITATION #1), so a combo that did NOT
+    win can still put fields on the wire. LIVE-PROVEN -- see QIDM_REFERENCE.txt.
+ 2. THE WIRE XML CARRIES NO keyRef. You cannot tell from a captured request which
+    combination fired. Do not infer it from a log filename either -- filenames have been
+    wrong. Determine it with tools/test_commsys.ps1, never by eye.
+ 3. WE HAVE NEVER SEEN A REAL RESPONSE. No provider has a live state connection, so
+    "response" problems are almost always response-MAPPING (QRDM) problems, not transport.
+
+STEP 0 -- ESTABLISH WHAT IS ACTUALLY INSTALLED
+--------------------------------------------------------------------------------
+ Do not debug the repo when the tenant is running something else.
+   providers/IMPORT_LEDGER.md      <- which JSON version is in which tenant
+   tools/portfolio_status.ps1      <- what the repo currently holds
+ A version mismatch explains a large share of "it used to work" reports. The officer guide
+ (docs/deliverables/OFFICER_GUIDE_<P>.pdf) carries a build stamp -- if the customer's sheet
+ says a different build than the ledger, that alone may be the whole complaint.
+
+--------------------------------------------------------------------------------
+SYMPTOM: "I fill the form and nothing happens / no query goes out"
+--------------------------------------------------------------------------------
+ CAUSE A -- no combination matched the fill.
+   Every combo has required (set[]) fields. If one is empty, that combo cannot fire.
+   CHECK: tools\test_commsys.ps1 -Path <json> -Entity <Entity>
+          Read the [SKIP] lines -- each states the missing set[] field.
+   NOTE: the simulator seeds form initialValues, so it models what the officer really sees.
+ CAUSE B -- the officer cleared a pre-filled field.
+   A defaulted field (State, Plate Type/Year, Image, Fin. Resp. Type) that is in a combo's
+   set[] makes that combo fail when blanked. Ask what they cleared.
+ CAUSE C -- the query checkbox was deselected, or another query deselected it.
+   See queriesToDeselect (one-directional/opt-in) in QIDM_REFERENCE.txt.
+
+--------------------------------------------------------------------------------
+SYMPTOM: "It runs the WRONG query / I get different data than expected"
+--------------------------------------------------------------------------------
+ This is first-match ordering, and it is usually working as designed.
+   CHECK: tools\test_commsys.ps1 with the officer's exact fill -> ">> PLATFORM FIRES: X".
+   If X is not what they expected, one of these applies:
+     - IDENTIFIER PRIORITY. Filling two identifiers is resolved by design (Plate beats VIN,
+       OLN beats Name, Hull beats Registration). Expected, not a bug -- explain it.
+     - IN-STATE vs OUT-OF-STATE. A State value routes to a different transaction. Leaving
+       State blank is the in-state path on most providers. Check the field's label hint.
+     - A DEAD COMBO. If the expected combo can never win, it is unreachable:
+       CHECK: tools\audit_combo_reachability.ps1 -Path <json>
+       A registered dead combo is documented in <P>_ACCEPTED_DIVERGENCES.txt.
+ If the officer wants the other query, the fix is usually to clear the higher-priority
+ identifier -- NOT a config change.
+
+--------------------------------------------------------------------------------
+SYMPTOM: "Too much / the wrong data is sent" (state complains, or an audit flags it)
+--------------------------------------------------------------------------------
+ The union-pool rule (fact 1). A non-winning combo's any[] fields ride along.
+   CHECK: test_commsys.ps1 prints ">> UNION POOL (platform serializes): ..." -- that is
+          exactly what goes on the wire.
+   FIX: gate the combos apart with EXISTENCE-ONLY conditions (EXISTS / NOT_EXISTS).
+   NEVER use a value comparison (EQUALS/NOT_EQUALS/IN/REGEX): a single value-comparison
+   operator disables the ENTIRE conditions array, so the combo then fires unconditionally.
+   That is LIMITATION #37, the poisoned-array rule, and it has bitten this project before.
+
+--------------------------------------------------------------------------------
+SYMPTOM: "The response is empty / says Mock results / fields are blank or garbled"
+--------------------------------------------------------------------------------
+ Response MAPPING (QRDM), not transport.
+   CHECK: tools\simulate_response.ps1 -Path <json>   (synthetic data, no live system needed)
+          Target is 0 MISSING / 0 UNMAPPED. Anything else is the defect.
+   Common causes: wrong codeTypeCategory/codeTypeSource pairing (see FIELD_REFERENCE.txt
+   table -- e.g. vehicle make must NOT use NCIC_FIREARM_MAKE), or a handler not applied.
+
+--------------------------------------------------------------------------------
+SYMPTOM: "CAD/OnScene doesn't populate the form"
+--------------------------------------------------------------------------------
+ A CAD field name mismatch. CAD sends specific tokens; the form fieldId must match exactly,
+ including case. There are 22 PascalCase CAD tokens (CLAUDE.md) plus deliberate camelCase
+ exceptions (licensePlateNumber in-state, serialNumber, vehicleYear, raceCode).
+   CHECK: tools\audit_cad.ps1 -Path <json>
+ Precedent: a Firearm serial field named GunSerialNumber never populated because CAD sends
+ camelCase serialNumber (fixed across NJ/FL/HI/TX/CCH). A caliber field named gunCaliber
+ failed for the mirror-image reason (CA_CLETS v2.18).
+ ALSO: CAD ignores form initialValues -- a field CAD must supply needs a combo defaults[]
+ entry, not just a form default (audit_cad CHECK 6).
+
+--------------------------------------------------------------------------------
+SYMPTOM: "The photo/image doesn't come back"
+--------------------------------------------------------------------------------
+ ImageIndicator needs ALL THREE (FIELD_REFERENCE.txt Section 9): QIDM attribute size=1,
+ a FormSelect initialValue, and membership in some combo's set[]/any[]. Miss any one and it
+ does not serialize at all. Because it must always be defaulted, it can NEVER be used as an
+ existence routing gate (BUILD_RULES 20b).
+
+--------------------------------------------------------------------------------
+SYMPTOM: "A dropdown is empty"
+--------------------------------------------------------------------------------
+ Wrong code-type pairing, or the tenant lacks that code table.
+   CHECK: FIELD_REFERENCE.txt Section 2 pairing table; tools\report_picklists.ps1
+   Known: NCIC gives an EMPTY article-type list -- article type must use codeTypeSource
+   CA_CLETS. VEHICLE_MAKE must be a FormSelect (never FormInput) on every provider.
+
+--------------------------------------------------------------------------------
+ESCALATION -- when it is NOT ours
+--------------------------------------------------------------------------------
+ Confirm the request we send is correct, then hand off with that evidence:
+   1. tools\test_commsys.ps1 -> the exact XML we generate for their fill.
+   2. The matching committed log under providers/<P>/logs/<Entity>/ if one exists.
+   3. tools\audit_log_metadata.ps1 -Provider <P> -> proves every wire field is
+      metadata-valid for that transaction.
+ If all three are clean, the request is well-formed per the provider's own metadata and the
+ issue is downstream (CommSys, the state, or tenant config/credentials). Known platform-side
+ defects are in PLATFORM_BUG_REPORT.txt -- check there before raising a new one.
+
+DO NOT, WHILE TRIAGING
+--------------------------------------------------------------------------------
+ - Hand-edit a JSON to test a theory. Change the build script and rebuild; enforce compares
+   the committed JSON against a fresh build and will fail a hand-patch.
+ - Bump a version to ship a fix without accepting the consequence: ANY version bump resets
+   that provider's entire test package and buys a full tenant re-sweep.
+ - Write an unproven platform behaviour into the KB as fact. Mark it
+   "STATUS: HYPOTHESIS <discriminating test>" until a committed log proves it;
+   tools\verify_claims.ps1 enforces this.

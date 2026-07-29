@@ -667,6 +667,20 @@ foreach ($pd in $providerDirs) {
         Pass "${provName} -- CLAUDE.md version matches build script (v${scriptVersion})"
     }
 
+    # The CLAUDE.md provider row must ALSO carry a validator score. Added 2026-07-29 after a
+    # hand-edit of the CA_SAN_LUIS_OBISPO row (the v2.1 rewrite) silently DROPPED its
+    # "65P/0F/0W" score: the version check above still passed, sync_provider_table had no score
+    # pattern left to match so it reported "no change", and the portfolio table under-reported
+    # with nothing flagging it. Cheap guard for an easy-to-repeat hand-edit mistake.
+    $rowLine = @($claudeMdLines | Where-Object { $_ -match "^\|\s*$docPrefix\s*\|" }) | Select-Object -First 1
+    if ($rowLine) {
+        if ($rowLine -notmatch '\d+P/\d+F/\d+W') {
+            Fail "${provName} -- CLAUDE.md provider row has no validator score (expected NNP/NF/NW)"
+        } else {
+            Pass "${provName} -- CLAUDE.md row carries a validator score"
+        }
+    }
+
     # Check STATUS.txt version
     $statusFile = Find-DocsPath $pd.FullName 'tracking' "${docPrefix}_STATUS.txt"
     if (Test-Path $statusFile) {
