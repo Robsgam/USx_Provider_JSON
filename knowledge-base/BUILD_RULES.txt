@@ -1879,3 +1879,35 @@ See also:
     fallbacks (DQN/BQ/BQH) win; at runtime the badge combo may. Report INDETERMINATE,
     never a mismatch. AZ RISK: if the platform does not populate dexStateUserId, the whole
     badge family silently falls back -- CONFIRM ON THE FIRST QUERY of AZ's first sweep.
+
+
+================================================================================
+22. ONE PROVIDER PER TENANT -- WHAT THIS MEANS FOR PRIORITISATION (Rob 2026-07-29)
+================================================================================
+
+  RULING: a tenant uses EXACTLY ONE provider. No customer is ever configured with two
+  states' providers. A genuine multi-state provider can only be built by CommSys, and it
+  would arrive as its OWN provider with its OWN discrete metadata XML + devdoc -- i.e. it
+  comes through the normal new-provider path, it is NOT a merge of existing providers.
+
+  CONSEQUENCE -- CROSS-PROVIDER COSMETIC CONSISTENCY HAS NO CUSTOMER VALUE.
+  A Florida officer never sees Hawaii's wording. So a label/title difference BETWEEN
+  providers is invisible to every customer, always. Its only value is maintenance comfort
+  for whoever builds providers.
+
+  THEREFORE, when deciding whether to spend a version bump on cosmetics, weigh it against
+  the real cost: ANY bump resets that provider's ENTIRE test package and buys a full tenant
+  re-sweep (35-118 tests of Rob's hands-on time per provider). Cross-provider label
+  alignment does NOT justify that. WITHIN-provider inconsistency still can -- one officer
+  does see one form, so a contradiction on a single card (e.g. "Sex (optional)" next to
+  "Date of Birth (required with Name)") is a real defect.
+
+  WORKED EXAMPLE (2026-07-29): the portfolio was split 3-3 on "VIN" vs "Vehicle
+  Identification Number", plus assorted per-provider drift (NJ Firearm/Article titles, HI
+  "License Plate Number", CA "Hull ID"). Fixing all of it meant 6 bumps and ~440 tenant
+  tests. Under this ruling that work buys ZERO customer benefit, so it was deliberately NOT
+  done -- strategy "freeze and ship". Record such a decision, do not silently re-open it
+  every time someone notices the drift again.
+
+  DO NOT use this ruling to excuse: functional routing differences, within-provider
+  contradictions, or a stale/wrong OFFICER GUIDE (that IS customer-facing, per Section 21).
