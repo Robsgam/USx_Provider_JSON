@@ -1,6 +1,6 @@
-TX_TLETS v4.12 -- TEST MATRIX
+TX_TLETS v4.13 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-27
+Generated: 2026-07-29
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -42,9 +42,9 @@ Boat (1 card, 6 fields):
     ROW 1: RegistrationNumber [Inp 11], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE]
     ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-QIDM SUMMARY (6 QIDMs, 19 combos)
+QIDM SUMMARY (6 QIDMs, 17 combos)
 ----------------------------------------
-  VehicleInsuranceRegistrationQuery: 5 combos (RQ x2, DPSI x1, VIN x1, REG x1), autoSelect=true
+  VehicleInsuranceRegistrationQuery: 3 combos (DPSI x1, VIN x1, REG x1), autoSelect=true
   DriverLicenseQuery: 3 combos (DQ x2, CPLNam x1), autoSelect=true
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 2 combos (QG x2)
@@ -101,34 +101,24 @@ ENTITY 1: PERSON (14 tests -- 2 cards, 5 combos)
 14  Person      Deselect: DH deselects DL.            [    ]
               Fill both query fields. Check deselect behavior.
 
-ENTITY 2: VEHICLE (12 tests -- 1 card, 5 combos)
+ENTITY 2: VEHICLE (7 tests -- 1 card, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-15  Vehicle     RQ+Plate           LicensePlateNumber=TEST123, LicensePl... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (RQLicensePlateNumber)
-16  Vehicle     RQ+Plate           + regionId, RegistrationState   [    ]
-              Expected: any[] fields present in XML output.
-17  Vehicle     REG+Plate          LicensePlateNumber=TEST123, LicensePl... [    ]
+15  Vehicle     REG+Plate          LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber)
-18  Vehicle     REG+Plate          + RegistrationState             [    ]
+16  Vehicle     REG+Plate          + regionId, RegistrationState   [    ]
               Expected: any[] fields present in XML output.
-19  Vehicle     RQ+VIN             VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (RQVehicleIdentificationNumber)
-20  Vehicle     RQ+VIN             + regionId, RegistrationState, VehicleMakeCode, vehicleYear [    ]
-              Expected: any[] fields present in XML output.
-21  Vehicle     VIN+VIN            VehicleIdentificationNumber=1HGCM8263... [    ]
+17  Vehicle     VIN+VIN            VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (VINVehicleIdentificationNumber)
-22  Vehicle     VIN+VIN            + RegistrationState, vehicleYear [    ]
+18  Vehicle     VIN+VIN            + regionId, RegistrationState, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-23  Vehicle     DPSI+StickerNumber  stickerNumber=STK1234567         [    ]
+19  Vehicle     DPSI+StickerNumber  stickerNumber=STK1234567         [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (DPSIStickerNumber)
-24  Vehicle     DPSI+StickerNumber  + RegistrationState             [    ]
+20  Vehicle     DPSI+StickerNumber  + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-25  Vehicle     Guardrail: REGLicensePlateNumber>VINVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
+21  Vehicle     Guardrail: REGLicensePlateNumber>VINVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber). VIN+financialResponsibilityType absent from XML.
-26  Vehicle     Guardrail: REGLicensePlateNumber>RQVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
-              Expected: VehicleInsuranceRegistrationQuery fires (REGLicensePlateNumber). VIN absent from XML.
 
 ENTITY 3: BOAT (14 tests -- 1 card, 5 combos)
 ------------------------------------------------------------------------
@@ -138,33 +128,33 @@ ENTITY 3: BOAT (14 tests -- 1 card, 5 combos)
   WARN -- FIELD CONSTRAINTS for BoatQuery (read METADATA_REFERENCE.txt before running tests):
          Must be filled if ImageIndicator = Y
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
-27  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+22  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber)
-28  Boat        BQ+Hull+State      + ImageIndicator, relatedHitSearchIndicator [    ]
+23  Boat        BQ+Hull+State      + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-29  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
+24  Boat        QB+Hull            BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QBBoatHullIdNumber)
-30  Boat        QB+Hull            + ImageIndicator, relatedHitSearchIndicator [    ]
+25  Boat        QB+Hull            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-31  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
+26  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
               Expected: BoatQuery fires (BQRegistrationNumber)
-32  Boat        BQ+Reg+State       + ImageIndicator, relatedHitSearchIndicator [    ]
+27  Boat        BQ+Reg+State       + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-33  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
+28  Boat        QB+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QBRegistrationNumber)
-34  Boat        QB+Reg             + ImageIndicator, relatedHitSearchIndicator [    ]
+29  Boat        QB+Reg             + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-35  Boat        QB+NCIC            NCICNumber=X123456789            [    ]
+30  Boat        QB+NCIC            NCICNumber=X123456789            [    ]
               Expected: BoatQuery fires (QBNCICNumber)
-36  Boat        QB+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
+31  Boat        QB+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-37  Boat        Guardrail: BQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+32  Boat        Guardrail: BQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber). Reg+RegistrationState absent from XML.
-38  Boat        Guardrail: BQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+33  Boat        Guardrail: BQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber). Reg absent from XML.
-39  Boat        Guardrail: BQRegistrationNumber>QBRegistrationNumber  RegistrationState=GA, RegistrationNum... [    ]
+34  Boat        Guardrail: BQRegistrationNumber>QBRegistrationNumber  RegistrationState=GA, RegistrationNum... [    ]
               Expected: BoatQuery fires (BQRegistrationNumber). Reg absent from XML.
-40  Boat        Guardrail: BQRegistrationNumber>QBBoatHullIdNumber  RegistrationState=GA             [    ]
+35  Boat        Guardrail: BQRegistrationNumber>QBBoatHullIdNumber  RegistrationState=GA             [    ]
               Expected: BoatQuery fires (BQRegistrationNumber). Hull absent from XML.
 
 ENTITY 4: FIREARM (4 tests -- 1 card, 2 combos)
@@ -175,13 +165,13 @@ ENTITY 4: FIREARM (4 tests -- 1 card, 2 combos)
   WARN -- FIELD CONSTRAINTS for GunQuery (read METADATA_REFERENCE.txt before running tests):
          Must be filled if ImageIndicator = Y
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
-41  Firearm     QG+Serial          serialNumber=GUN12345            [    ]
+36  Firearm     QG+Serial          serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QGGunSerialNumber)
-42  Firearm     QG+Serial          + GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator [    ]
+37  Firearm     QG+Serial          + GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-43  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
+38  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
               Expected: GunQuery fires (QGNCICNumber)
-44  Firearm     QG+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
+39  Firearm     QG+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (4 tests -- 1 card, 2 combos)
@@ -192,24 +182,24 @@ ENTITY 5: ARTICLE (4 tests -- 1 card, 2 combos)
   WARN -- FIELD CONSTRAINTS for ArticleSingleQuery (read METADATA_REFERENCE.txt before running tests):
          Must be filled if ImageIndicator = Y
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
-45  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
+40  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
-46  Article     QA+Serial          + ImageIndicator, relatedHitSearchIndicator [    ]
+41  Article     QA+Serial          + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-47  Article     QA+NCIC            NCICNumber=X123456789            [    ]
+42  Article     QA+NCIC            NCICNumber=X123456789            [    ]
               Expected: ArticleSingleQuery fires (QANCICNumber)
-48  Article     QA+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
+43  Article     QA+NCIC            + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 48 tests
+TOTAL: 43 tests
 
-COMBO COVERAGE (19/19):
-  VehicleInsuranceRegistrationQuery: 5/5 -- T15(RQ+Plate), T17(REG+Plate), T19(RQ+VIN), T21(VIN+VIN), T23(DPSI+StickerNumber)
+COMBO COVERAGE (17/17):
+  VehicleInsuranceRegistrationQuery: 3/3 -- T15(REG+Plate), T17(VIN+VIN), T19(DPSI+StickerNumber)
   DriverLicenseQuery: 3/3 -- T1(DQ+Name), T3(DQ+OLN), T5(CPLNam+CPLName)
   DriverHistoryQuery: 2/2 -- T7(KQ+Name), T9(KQ+OLN)
-  GunQuery: 2/2 -- T41(Serial), T43(NCIC)
-  ArticleSingleQuery: 2/2 -- T45(Serial), T47(NCIC)
-  BoatQuery: 5/5 -- T27(BQ+Hull), T29(QB+Hull), T31(BQ+Reg), T33(QB+Reg), T35(QB+NCIC)
+  GunQuery: 2/2 -- T36(Serial), T38(NCIC)
+  ArticleSingleQuery: 2/2 -- T40(Serial), T42(NCIC)
+  BoatQuery: 5/5 -- T22(BQ+Hull), T24(QB+Hull), T26(BQ+Reg), T28(QB+Reg), T30(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.12.json
+IMPORT FILE: TX_TLETS_v4.13.json

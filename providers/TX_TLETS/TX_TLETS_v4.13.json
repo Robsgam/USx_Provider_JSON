@@ -7526,6 +7526,7 @@
                                                                                                              "financialResponsibilityType"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "regionId",
                                                                                                              "RegistrationState"
                                                                                                          ],
                                                                                                  "defaults":  [
@@ -7550,41 +7551,13 @@
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
-                                                                                                             "LicensePlateNumber",
-                                                                                                             "LicensePlateYear",
-                                                                                                             "LicensePlateTypeCode"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "regionId",
-                                                                                                             "RegistrationState"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "State",
-                                                                                                                      "value":  "TX"
-                                                                                                                  },
-                                                                                                                  {
-                                                                                                                      "field":  "LicensePlateYear",
-                                                                                                                      "value":  "2026"
-                                                                                                                  },
-                                                                                                                  {
-                                                                                                                      "field":  "LicensePlateTypeCode",
-                                                                                                                      "value":  "PC"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "RQLicensePlateNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
                                                                                                              "VehicleIdentificationNumber",
                                                                                                              "financialResponsibilityType"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "regionId",
                                                                                                              "RegistrationState",
+                                                                                                             "VehicleMakeCode",
                                                                                                              "vehicleYear"
                                                                                                          ],
                                                                                                  "defaults":  [
@@ -7634,39 +7607,9 @@
                                                                             "primaryFieldReference":  "StickerNumber",
                                                                             "keyReference":  "DPSIStickerNumber",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "VehicleIdentificationNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "regionId",
-                                                                                                             "RegistrationState",
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "vehicleYear"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "State",
-                                                                                                                      "value":  "TX"
-                                                                                                                  }
-                                                                                                              ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "LicensePlateNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "RQVehicleIdentificationNumber",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleInsuranceRegistrationQuery -- 5 combos (REG/RQ/VIN+FRT/DPSI). QV plate/VIN removed v4.9 (ungated subset shadows, platform auto-fired).",
+                                                   "description":  "VehicleInsuranceRegistrationQuery -- 3 combos (REG/VIN+FRT/DPSI). QV plate/VIN removed v4.9 (ungated subset shadows, platform auto-fired); RQ plate/VIN removed v4.13 (DEAD -- unreachable behind REG/VIN via the prefilled FinancialResponsibilityType).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "TX_TLETS_VehicleInsuranceRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -8601,7 +8544,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS v4.12",
+                        "description":  "Provider configuration for TX_TLETS v4.13",
                         "name":  "TX_TLETS",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS"

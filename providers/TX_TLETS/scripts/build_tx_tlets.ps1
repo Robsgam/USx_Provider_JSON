@@ -169,7 +169,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.12"
+    [string]$Version = "4.13"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -215,9 +215,13 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('RegistrationState','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
+        # regionId ADDED to this any[] at v4.13: it was riding RQLicensePlateNumber's any[], and that
+        # combo is now removed (see below). A devdoc-OPTIONAL combination field is never dropped
+        # (Rob's standing rule), so it moves to the surviving plate combo. Registered divergence.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
+        # regionId + VehicleMakeCode ADDED to this any[] at v4.13 for the same reason -- they were
+        # riding RQVehicleIdentificationNumber's any[], now removed. vehicleYear was already here.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
         # QVLicensePlateNumber + QVVehicleIdentificationNumber REMOVED v4.9 (DEX-1284 shadow review,
         # Rob-confirmed). Both were ungated SUBSET-SHADOWS: QV{Plate} subset of REG/RQ, QV{VIN} subset
@@ -227,9 +231,26 @@ $vehRegQuery = [PSCustomObject]@{
         # the QV combination) is KEPT and moved to the RQ plate + RQ VIN any[] -- a devdoc-optional
         # combination field is never dropped; it serializes into the union pool the auto-fired regional
         # QV reads. in-state/OOS are separately kept + gated -- QV was not that.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        # ── RQLicensePlateNumber + RQVehicleIdentificationNumber REMOVED v4.13 ──────────────
+        # Rob's v4.9 subset-shadow ruling applied to the two combos it missed. Both were DEAD --
+        # unreachable at ANY fill under first-match ordering, because the combo ordered before each
+        # of them matches whenever they do:
+        #   RQ{Plate} <- REGLicensePlateNumber (index 0). Its only extra set[] field is
+        #                financialResponsibilityType, which the form PRE-FILLS 'E', so REG's set is
+        #                always satisfied and REG always wins.
+        #   RQ{VIN}   <- VINVehicleIdentificationNumber (index 2), same prefilled-FRT reason.
+        # They were missed at v4.9 only because test_commsys did not then seed form initialValues:
+        # with FRT blank, REG/VIN reported "[SKIP] missing set" and the RQ combos looked like the
+        # live ones. Simulator fixed 2026-07-29; audit_combo_reachability (enforce 2h) now gates this.
+        # PROOF they never fired: TX_TLETS_v4.12_REGLicensePlateNumber.txt carries BOTH
+        # FinancialResponsibilityType (REG's set field) AND LicensePlateTypeCode (RQ's) in ONE
+        # transaction -- REG fired and the LIMITATION #1 union pool dragged RQ's field along.
+        # Officer impact: NONE. REG returns registration + financial responsibility (a superset of
+        # plain RQ registration); VIN likewise. VehReg 5 -> 3 combos, 17 CommSys total.
+        # regionId / VehicleMakeCode preserved on the surviving combos above -- never drop a
+        # devdoc-optional combination field.
     )
-    description = 'VehicleInsuranceRegistrationQuery -- 5 combos (REG/RQ/VIN+FRT/DPSI). QV plate/VIN removed v4.9 (ungated subset shadows, platform auto-fired).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+    description = 'VehicleInsuranceRegistrationQuery -- 3 combos (REG/VIN+FRT/DPSI). QV plate/VIN removed v4.9 (ungated subset shadows, platform auto-fired); RQ plate/VIN removed v4.13 (DEAD -- unreachable behind REG/VIN via the prefilled FinancialResponsibilityType).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
 # --- DriverLicenseQuery (3 combos) ---

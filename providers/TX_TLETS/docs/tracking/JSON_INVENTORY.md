@@ -48,6 +48,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v4.13 (2026-07-29)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_v4.13.json | v4.13 | Current | 76P/0F/0W/0LIM. |
 ## v4.12 (2026-07-27)
 
 | File | Version | Status | Notes |

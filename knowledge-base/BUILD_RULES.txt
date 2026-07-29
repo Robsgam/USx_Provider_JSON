@@ -1911,3 +1911,51 @@ See also:
 
   DO NOT use this ruling to excuse: functional routing differences, within-provider
   contradictions, or a stale/wrong OFFICER GUIDE (that IS customer-facing, per Section 21).
+
+
+================================================================================
+23. FORM QUERIES ARE FIRST PRIORITY -- CAD INJECTION NEVER TAKES PRECEDENCE
+================================================================================
+  RULING (Rob, 2026-07-29). Applies to ALL PROVIDERS, not one.
+
+  The USx FORM is the product. Queries launched from the form are the first priority and
+  MUST be preserved. Anything arriving by CAD-event INJECTION (the CAD screen pushing
+  vehicle/person data into Universal Search rather than through our form) has to conform to
+  the best USx provider we can build. We accommodate injection where we can, but it NEVER
+  takes precedence over form behaviour.
+
+  WHAT THIS MEANS IN PRACTICE
+   - Do NOT degrade a form query to make an injected query work. Concretely: do not remove a
+     field from the CAD_DISPATCH/FIRST_RESPONDER layout variants, do not drop a routing
+     condition, and do not reorder combos, if doing so weakens what the form can do.
+   - An injected query that routes to a less specific transaction is an ACCEPTED outcome, not
+     a defect to fix in provider config, when the fix would cost form capability.
+   - Where injection cannot supply something our design needs, the gap belongs to the
+     injection layer. Raise it there; do not bend the provider around it.
+   - This does not license ignoring injection. Keep the CAD field names aligned (the 22
+     PascalCase CAD tokens), keep combo defaults[] covering initialValue any[] fields
+     (audit_cad CHECK 5/6), and keep both layout variants present. Those cost the form nothing.
+
+  WHY THIS RULE EXISTS -- two 2026-07-29 cases it settles:
+   1. NY home-state strip (DEX-1284). CAD injection supplies the home state, which selects the
+      out-of-state combo. The only config lever is removing RegistrationState from the CAD
+      layout variants -- which would stop an officer running an OUT-OF-STATE plate from inside
+      a CAD event. That trades form capability for injection convenience: REJECTED by this rule.
+      Also note the cited eSUN precedent is worse than useless -- see Section 22 note and
+      UNIVERSAL_SEARCH_HANDLERS.txt section 4: deployed eSUN has 7 dead combos of 20 and cannot
+      perform an out-of-state query at all.
+   2. Attention / EmailAddress "X" (DEX-1283). The X is a gate-FEEDER, not a value -- see below.
+
+  DRIVER-HISTORY QUERIES FROM CAD INJECTION -- KNOWN GLOBAL LIMITATION (Rob, 2026-07-29)
+  DH queries do NOT work from CAD injection on any provider that shares the Person screen
+  between DriverLicense and DriverHistory. The DH fields are DH-SUFFIXED duplicates
+  (OperatorLicenseNumberDH, NameFirstDH, BirthDateDH, SexCodeDH, RegistrationStateDH ...) which
+  exist precisely to isolate DH from DL on one form. Injection populates the CAD token names
+  (OperatorLicenseNumber, NameFirst, ...), so the DH-suffixed twins stay empty and no DH combo
+  can satisfy its set[]. This is inherent to the DH-suffix isolation pattern (LIMITATION #26),
+  which is required to keep DL and DH independently selectable on a shared Person form --
+  i.e. it is the FORM requirement winning, exactly as this section directs.
+  DO NOT "fix" this by pointing DH attributes at the unsuffixed CAD tokens: that would
+  re-couple DL and DH and break the form for every officer, to serve injection.
+  Affected: every provider with a DH query on a shared Person screen (NY, FL, TX, CA_CLETS,
+  HI, LA, MD, NM, OH, TN, SLO, Ventura, eSUN, AZ).

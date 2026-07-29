@@ -2,14 +2,35 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.12** | Generated: 2026-07-27
+Current: **v4.13** | Generated: 2026-07-29
 
 ---
 
-## v4.12 -- 2026-07-27 -- Pipeline rebuild
+## v4.13 -- 2026-07-29 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
+
+## v4.12 -- 2026-07-27 -- Person 2-card fold -- OPTIONS duplicated onto DL + DH (direct Rob feedback)
+
+**CHANGED:** Folded the standalone SEARCH OPTIONS card away -- Person is now 2 cards (DRIVER LICENSE
+  + DRIVER HISTORY), with the State / NCIC Image / Reason Code options DUPLICATED onto the BOTTOM  
+  row of EACH card:  
+    - DL card last row (ROW_PER_DL_OPT): State + NCIC Image + Reason Code -- shared fieldIds  
+      (RegistrationState/ImageIndicator/reasonCode), DriverLicenseQuery unchanged. The single  
+      hidden EmailAddress feeder moved here too (ROW_PER_DL_OE).  
+    - DH card last row (ROW_PER_DH_OPT): DH-suffixed copies (RegistrationStateDH/ImageIndicatorDH/  
+      reasonCodeDH) -- unique fieldIds, self-contained DH like NY/HI. The DriverHistoryQuery  
+      attributes (State/ImageIndicator/ReasonCode sourceField) + KQName/KQOLN any[] were re-sourced  
+      to the DH-suffixed names. Attribute names + wire targetFields UNCHANGED -> wire request identical.  
+  EmailAddress is NOT duplicated: the single shared hidden feeder on the DL card serves both QIDMs  
+  (both still source 'emailAddress'), so the RND-57165 handler (separate eng team) is UNTOUCHED.  
+  This resolves the v4.8 "OPTIONS card kept / fold deferred" note.  
+**REASON:** Rob 2026-07-27 -- "fix person to be 2 card and duplicate the search options into each card
+  dl and dh; make it the last line of each card." verify_build 16P/0W/0F; test_commsys confirms  
+  KQName/KQOLN still fire (OLN>Name guardrail intact). Layout + DH-sourcing change (wire-identical).  
+  ALL 5 ENTITIES RESET at v4.12 (block by version). CCH rebuilt in lockstep (BASE-SYNC -> v4.12).  
+  NOT yet re-tested.  
 
 ## v4.11 -- 2026-07-27 -- UPPERCASE card titles (Rob global decision, NO functional change)
 

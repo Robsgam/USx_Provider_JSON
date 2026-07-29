@@ -1,4 +1,23 @@
-﻿==============================================================================
+TX_TLETS_CCH -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+=========================================================
+JSON version: v1.9
+Last updated: 2026-07-29
+BASE-SYNC: TX_TLETS v4.13 (base-6 QIDMs kept in lockstep with the base provider)
+Live test: NEVER USx-tenant-tested at any version.
+
+v1.9 (2026-07-29, lockstep with TX_TLETS v4.13): RQLicensePlateNumber +
+  RQVehicleIdentificationNumber REMOVED from VehicleInsuranceRegistrationQuery. Both were DEAD --
+  unreachable at any fill because the combo ordered before each of them (REGLicensePlateNumber /
+  VINVehicleIdentificationNumber) matches whenever they do, their only extra set[] field being
+  FinancialResponsibilityType which the form pre-fills 'E'. Per Rob's binding v4.9 subset-shadow
+  ruling. regionId preserved onto REG's any[]; regionId + VehicleMakeCode preserved onto the VIN
+  combo's any[] (never drop a devdoc-optional combination field) -- both registered as
+  promoted-to-any divergences. VehReg 5 -> 3 combos. The 8 CCH transactions are UNTOUCHED.
+
+NOTE ON FORMAT: the body below is the generated metadata transaction inventory
+(extract_queries.ps1 from TX_TLETS_CCH.xml), not the hand-maintained per-combo block format the
+tenant-tested providers use. It is left as-is; audit_sqvr_integrity.ps1 handles both shapes.
+==============================================================================
   QUERY TRANSACTIONS IN METADATA (check devdoc for supported query list)
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
   Source: TX_TLETS_CCH.xml
