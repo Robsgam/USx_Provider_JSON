@@ -78,15 +78,58 @@ function Get-ProviderTestState {
         $perEntity[$e] = @{ Count=$files.Count; Pass=$p; Fail=$f; Pend=$pend; Unk=$u }
     }
 
+    # ── PLAN COVERAGE (added 2026-07-29) ──────────────────────────────────────────
+    # Counting logs and their RESULT lines answers "did what we ran pass?", NOT "did we run
+    # everything?". Without comparing against the TEST PLAN, a provider reads ALL-PASS while
+    # plan tests were never captured -- FL_FCIC reported "ALL-PASS 5/5, PASS=111" with 7 Boat
+    # tests missing, and TX_TLETS reported ALL-PASS while QGNCICNumber (the Firearm-by-NCIC
+    # BASE combo test) had never been captured at all, hidden behind its own _af_/_any
+    # variants. That is the same class as the log-attribution gap: an assertion nothing checks.
+    # Owed plan tests now force PARTIAL. enforce PHASE 6 tolerates INCOMPLETE-consistent, so
+    # this tells the truth WITHOUT blocking the pipeline on work that is simply still owed.
+    $owed = 0
+    $planFile = $null
+    if (Test-Path $logsDir) {
+        $planFile = Get-ChildItem $logsDir -File -Filter "*_TEST_PLAN_v${ver}.json" -ErrorAction SilentlyContinue |
+                    Select-Object -First 1
+    }
+    if ($planFile) {
+        $lblFn = Join-Path $PSScriptRoot '_content_match.ps1'
+        if (Test-Path $lblFn) { . $lblFn }
+        try {
+            $plan = Get-Content $planFile.FullName -Raw | ConvertFrom-Json
+            foreach ($e in $script:TS_Entities) {
+                $wanted = @($plan.tests | Where-Object { "$($_.entity)" -eq $e })
+                if ($wanted.Count -eq 0) { continue }
+                $eDir2 = Join-Path $logsDir $e
+                $have = @()
+                if (Test-Path $eDir2) {
+                    $have = @(Get-ChildItem $eDir2 -File -Filter "${Name}_v${ver}_*.txt" -ErrorAction SilentlyContinue |
+                              ForEach-Object { $_.BaseName -replace "^$([regex]::Escape($Name))_v$([regex]::Escape($ver))_", '' })
+                }
+                $miss = 0
+                foreach ($t in $wanted) {
+                    $lbl = if (Get-Command Get-CmPlanLabel -ErrorAction SilentlyContinue) { Get-CmPlanLabel $t } else { "$($t.comboKeyRef)" }
+                    if ($have -notcontains $lbl) { $miss++ }
+                }
+                if ($miss -gt 0) {
+                    $owed += $miss
+                    if ($perEntity.Contains($e)) { $perEntity[$e].Owed = $miss }
+                }
+            }
+        } catch { $owed = 0 }   # unreadable plan must not corrupt the verdict
+    }
+
     $state = if ($provFail -gt 0) { 'HAS-FAIL' }
              elseif ($entMissing -eq $script:TS_Entities.Count) { 'NEVER-TESTED' }
-             elseif ($entMissing -gt 0 -or $provPend -gt 0 -or $provUnk -gt 0) { 'PARTIAL' }
+             elseif ($entMissing -gt 0 -or $provPend -gt 0 -or $provUnk -gt 0 -or $owed -gt 0) { 'PARTIAL' }
              else { 'ALL-PASS' }
 
     [pscustomobject]@{
         Provider=$Name; Version=$ver; State=$state
         Pass=$provPass; Fail=$provFail; Pending=$provPend; Unknown=$provUnk
         EntitiesTested=$entTested; EntitiesMissing=$entMissing; PerEntity=$perEntity
+        OwedPlanTests=$owed
     }
 }
 
