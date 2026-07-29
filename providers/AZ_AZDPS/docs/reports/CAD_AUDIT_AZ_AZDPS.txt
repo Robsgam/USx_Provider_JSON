@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.2.json
-  Generated: 2026-07-28 18:28
+  Source: AZ_AZDPS_v3.3.json
+  Generated: 2026-07-28 22:07
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: AZ_AZDPS_v3.2
+ CAD AUDIT: AZ_AZDPS_v3.3
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -44,7 +44,7 @@ CAD AUDIT
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [PASS] attention: in QIF and CAD list
     [PASS] purposeCode: in QIF and CAD list
-    [PASS] relatedHitSearchIndicator: in QIF and CAD list
+    [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] socialSecurityNumber: in QIF as 'SocialSecurityNumber' (PascalCase USx fieldIds)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -54,10 +54,10 @@ CAD AUDIT
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressZipCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressZone: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] age: in QIF as 'Age' (PascalCase USx fieldIds)
+    [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] height: in QIF as 'Height' (PascalCase USx fieldIds)
+    [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] dexStateUserId: in QIF, not in CAD list (provider-specific)
     [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
@@ -67,14 +67,6 @@ CAD AUDIT
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] RegistrationStateDH: in QIF, not in CAD list (provider-specific)
-    [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
-    [INFO] ExpandedNameSearchCode: in QIF, not in CAD list (provider-specific)
-    [INFO] ExpandedBirthDateSearchCode: in QIF, not in CAD list (provider-specific)
-    [INFO] Weight: in QIF, not in CAD list (provider-specific)
-    [INFO] EyeColorCode: in QIF, not in CAD list (provider-specific)
-    [INFO] HairColorCode: in QIF, not in CAD list (provider-specific)
-    [INFO] AreaCode: in QIF, not in CAD list (provider-specific)
-    [INFO] FormORI: in QIF, not in CAD list (provider-specific)
   Firearm:
     [PASS] serialNumber: in QIF and CAD list
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -151,8 +143,6 @@ CAD AUDIT
     [PASS] QIDM 'AZ_AZDPS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
-    [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry': all sourceFields match QIF fieldIds (case-sensitive)
-    [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry': all sourceFields match QIF fieldIds (case-sensitive)
 
 --- CHECK 5: CAD Defaults Coverage ---
     [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVR -- defaults cover all initialValue any[] fields
@@ -169,10 +159,6 @@ CAD AUDIT
     [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo ACQBH -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo BQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo BQH -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo ACQW -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo ACQWN -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo ACQM -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo ACQMN -- defaults cover all initialValue any[] fields
     [PASS] RMS QIDM 'RMS Person Search query': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] RMS QIDM 'RMS Vehicle search query': all sourceFields match QIF fieldIds (case-sensitive)
 
@@ -180,6 +166,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 75 PASS / 0 FAIL / 0 WARN / 75 INFO
+Total: 66 PASS / 0 FAIL / 0 WARN / 70 INFO
 
 

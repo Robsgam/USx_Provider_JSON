@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.2.json
-  Generated: 2026-07-28 18:28
+  Source: AZ_AZDPS_v3.3.json
+  Generated: 2026-07-28 22:07
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: AZ_AZDPS_v3.2
+ POST-BUILD VERIFICATION: AZ_AZDPS_v3.3
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -21,8 +21,9 @@ POST-BUILD VERIFICATION
   [PASS] RMS QIDM name/sourceField/combo consistency checked
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
-  [INFO] Shared fieldIds (CommSys+RMS): 10
-  [INFO] CommSys-only: 36 [dexStateUserId, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, nameMiddle, nameSuffix, attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, purposeCode, SexCodeDH, RegistrationStateDH, GunCaliber, GunMake, GunModel, serialNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber, ExpandedBirthDateSearchCode, ExpandedNameSearchCode, NCICNumber, Age, AreaCode, EyeColorCode, FormORI, HairColorCode, Height, Weight]
+  [INFO] Shared fieldIds (CommSys+RMS): 9
+  [INFO] CommSys-only: 26 [dexStateUserId, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, nameMiddle, nameSuffix, attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, purposeCode, SexCodeDH, RegistrationStateDH, GunCaliber, GunMake, GunModel, serialNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] RMS-only (expected for RMS-specific fields): 1
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -38,10 +39,10 @@ POST-BUILD VERIFICATION
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
-  [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
+  [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (10) are a subset of CommSys combo fields (46) (RMS-generic allowed)
+  [PASS] RMS combo fields (10) are a subset of CommSys combo fields (35) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -77,11 +78,7 @@ POST-BUILD VERIFICATION
   [INFO] Field 'GunMake' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'GunModel' (any[]-only) label='Model' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted ("Stolen Check" per DEX-1284 (any[] optional))
-  [INFO] Field 'ExpandedBirthDateSearchCode' (any[]-only) label='Exp DOB Search' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
-  [INFO] Field 'ExpandedNameSearchCode' (any[]-only) label='Exp Name Search' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
-  [INFO] Field 'AreaCode' (any[]-only) label='Area Code' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
-  [INFO] Field 'FormORI' (any[]-only) label='Form ORI' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
-  [PASS] All form field labels have required routing hint qualifiers (49 fields scanned) (7 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (39 fields scanned) (7 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

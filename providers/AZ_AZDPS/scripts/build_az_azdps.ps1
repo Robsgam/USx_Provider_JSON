@@ -4,6 +4,20 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_az_azdps.ps1
 #
+# v3.3 (2026-07-28, SCOPE CORRECTION -- direct Rob directive): build ONLY the devdoc "Basic Queries
+#   Supported" section. The AZ Basic list is exactly 6 queries (ArticleSingleQuery, BoatQuery,
+#   DriverHistoryQuery, DriverLicenseQuery, GunQuery, VehicleRegistrationQuery). WMPIWantedPersonInquiry
+#   + WMPIMissingPersonInquiry are NOT in it (they live in a separate "Wanted Missing Person Inquiries
+#   (WMP-I)" devdoc section) -- so they are REMOVED: both QIDMs deleted, the Person WANTED/MISSING card
+#   removed, Person is now 2 cards (DRIVER LICENSE + DRIVER HISTORY) like the rest of the portfolio.
+#   raceCode was the only WMPI-card field the RMS person search still needs (race <- raceCode), so it
+#   was RELOCATED to the DL card (bare "Race", NJ/CA pattern). The other WMPI-only fields (NCICNumber,
+#   ExpandedName/BirthDate, Age/Height/Weight/Eye/Hair/AreaCode/FormORI, Person relatedHitSearchIndicator)
+#   are gone with the card. This clears the 18 audit_metadata WARNs (they were the metadata-vs-Basic
+#   delta for the out-of-scope WMPI paths -- the "no combo left behind rule is BASIC-scoped" lesson).
+#   Rationale: I had proposed BUILDING the unbuilt WMPI paths to satisfy those WARNs -- the inverse of
+#   the devdoc-authority rule; Rob corrected it. Layout + query-set change (removes 2 non-Basic queries),
+#   no change to the 6 retained queries' wire. ALL 5 ENTITIES RESET at v3.3. NOT yet USx-tenant-tested.
 # v3.2 (2026-07-28, DEX-1284 convention pass -- direct Rob feedback, layout/label-only, NO functional
 #   change): brought AZ from the pre-DEX-1284 methodology in line with the FL/NJ/HI/NY/TX/CA portfolio.
 #   STRUCTURE: Vehicle 3 cards (OPTIONS+PLATE+VIN) -> 1; Boat 3 cards (OPTIONS+REG+HULL) -> 1; Person
@@ -60,11 +74,10 @@
 #   GunQuery                         ACQG (Badge+Serial)
 #   ArticleSingleQuery               ACQA (Badge+Type+Serial)
 #   BoatQuery                        ACQB (Reg+Badge), ACQBH (Hull+Badge), BQ (Reg), BQH (Hull)
-#   WMPIWantedPersonInquiry          ACQW (Name+DOB+Sex+Race), ACQWN (NCICNumber -- invented)
-#   WMPIMissingPersonInquiry         ACQM (Name+descriptors), ACQMN (NCICNumber -- invented)
+#   (WMPI Wanted/Missing REMOVED v3.3 -- not in the devdoc "Basic Queries Supported" section.)
 #
-# ENTITIES (5 QUERYINPUTFORM -- multi-card each):
-#   Vehicle (3 cards), Person (7 cards), Firearm (1 card), Article (1 card), Boat (3 cards)
+# ENTITIES (5 QUERYINPUTFORM):
+#   Vehicle (1 card), Person (2 cards: DL+DH), Firearm (1 card), Article (1 card), Boat (1 card)
 #
 # STATE: NCIC pattern confirmed (attributeTypeId=STATE, codeTypeProvider=NCIC)
 # SEX: NIBRS confirmed (attributeTypeId=SEX, codeTypeProvider=NIBRS)
@@ -83,8 +96,6 @@
 #   AzAzdpsDriverLicenseQuery  : ACWL (Badge+Name), DQN (Name -- invented), DQ (OLN), DQSS (SSN)
 #   DriverHistoryQuery         : KQ (OLN), KQH (Name -- invented)
 #   BoatQuery                  : ACQB (Reg+Badge), ACQBH (Hull+Badge), BQ (Reg), BQH (Hull)
-#   WMPIWantedPersonInquiry    : ACQW (Name+DOB+Sex+Race), ACQWN (NCIC -- invented)
-#   WMPIMissingPersonInquiry   : ACQM (Name+descriptors), ACQMN (NCIC -- invented)
 #
 # LABEL-OVERRIDE: LicensePlateTypeCode -- merely-defaulted convenience field (initialValue PC), no
 #   routing meaning; bare label is the accepted portfolio pattern (NY/TX precedent, CHECK 15 Rule 3)
@@ -92,7 +103,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.2'
+$Version = '3.3'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -514,128 +525,6 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
-# =====================================================================
-# 1j. WMPIWantedPersonInquiry -- ACQW (Name+DOB+Sex+Race), ACQWN (NCIC, invented)
-# =====================================================================
-$wantedQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{
-            name        = 'BirthDate'
-            rule        = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
-            size        = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
-        }
-        [PSCustomObject]@{ name = 'ExpandedBirthDateSearchCode'; size = 1; sourceField = @('ExpandedBirthDateSearchCode'); targetField = 'ExpandedBirthDateSearchCode' }
-        [PSCustomObject]@{ name = 'ExpandedNameSearchCode';    size = 1;  sourceField = @('ExpandedNameSearchCode');    targetField = 'ExpandedNameSearchCode' }
-        [PSCustomObject]@{
-            name        = 'Name'
-            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
-            size        = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
-        }
-        [PSCustomObject]@{ name = 'NCICNumber';                size = 10; sourceField = @('NCICNumber');                targetField = 'NCICNumber' }
-        [PSCustomObject]@{ name = 'RaceCode';                  size = 1;  sourceField = @('raceCode');                  targetField = 'RaceCode';  codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1;  sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
-        [PSCustomObject]@{ name = 'SexCode';                   size = 1;  sourceField = @('SexCode');                   targetField = 'SexCode';  codeTypeProvider = 'NIBRS' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                # NCIC>Name guardrail: NCICNumber NOT_EXISTS gates this Name+descriptors combo OUT
-                # when an NCIC number is present (ACQWN fires alone). NCIC removed from any[] per
-                # gate-xor-companion (CHECK 14).
-                set = @('NameLast','NameFirst','BirthDate','SexCode','raceCode')
-                any = @('ExpandedBirthDateSearchCode','ExpandedNameSearchCode','nameMiddle','nameSuffix','relatedHitSearchIndicator')
-                conditions = @(
-                    [PSCustomObject]@{ field = @('NCICNumber'); operator = 'NOT_EXISTS' }
-                )
-            }
-            primaryFieldReference = 'Name'
-            keyReference          = 'ACQW'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                # NCIC is top of the NCIC>Name pair -- no gate. Name-composite removed from any[] so
-                # the NCIC pool never carries the person name.
-                set = @('NCICNumber')
-                any = @('BirthDate','ExpandedBirthDateSearchCode','ExpandedNameSearchCode','raceCode','relatedHitSearchIndicator','SexCode')
-            }
-            primaryFieldReference = 'NCICNumber'
-            keyReference          = 'ACQWN'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'Mapping for WMPIWantedPersonInquiry (ACQW Name+DOB+Sex+Race + ACQWN NCIC)'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'AZ_AZDPS_WMPIWantedPersonInquiry'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'AZ_AZDPS'
-    providerType    = 'Commsys'
-    query           = 'WMPIWantedPersonInquiry'
-    queryLabel      = 'Wanted Person'
-    targetEntity    = 'Person'
-}
-
-# =====================================================================
-# 1k. WMPIMissingPersonInquiry -- ACQM (Name+descriptors), ACQMN (NCIC, invented)
-# =====================================================================
-$missingQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'Age';                      size = 2;  sourceField = @('Age');                      targetField = 'Age' }
-        [PSCustomObject]@{ name = 'AreaCode';                 size = 3;  sourceField = @('AreaCode');                 targetField = 'AreaCode' }
-        [PSCustomObject]@{ name = 'ExpandedNameSearchCode';   size = 1;  sourceField = @('ExpandedNameSearchCode');   targetField = 'ExpandedNameSearchCode' }
-        [PSCustomObject]@{ name = 'EyeColorCode';             size = 3;  sourceField = @('EyeColorCode');             targetField = 'EyeColorCode' }
-        [PSCustomObject]@{ name = 'FormORI';                  size = 9;  sourceField = @('FormORI');                  targetField = 'FormORI' }
-        [PSCustomObject]@{ name = 'HairColorCode';            size = 3;  sourceField = @('HairColorCode');            targetField = 'HairColorCode' }
-        [PSCustomObject]@{ name = 'Height';                   size = 3;  sourceField = @('Height');                   targetField = 'Height' }
-        [PSCustomObject]@{
-            name        = 'Name'
-            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
-            size        = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
-        }
-        [PSCustomObject]@{ name = 'NCICNumber';               size = 10; sourceField = @('NCICNumber');               targetField = 'NCICNumber' }
-        [PSCustomObject]@{ name = 'RaceCode';                 size = 1;  sourceField = @('raceCode');                 targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'RelatedHitSearchIndicator';size = 1;  sourceField = @('relatedHitSearchIndicator');targetField = 'RelatedHitSearchIndicator' }
-        [PSCustomObject]@{ name = 'SexCode';                  size = 1;  sourceField = @('SexCode');                  targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'Weight';                   size = 3;  sourceField = @('Weight');                   targetField = 'Weight' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                # NCIC>Name guardrail: NCICNumber NOT_EXISTS gates this Name+descriptors combo OUT
-                # when an NCIC number is present (ACQMN fires alone). NCIC removed from any[] per
-                # gate-xor-companion (CHECK 14).
-                set = @('Age','SexCode','raceCode','Height','Weight','EyeColorCode','HairColorCode','NameLast','NameFirst')
-                any = @('AreaCode','ExpandedNameSearchCode','FormORI','nameMiddle','nameSuffix','relatedHitSearchIndicator')
-                conditions = @(
-                    [PSCustomObject]@{ field = @('NCICNumber'); operator = 'NOT_EXISTS' }
-                )
-            }
-            primaryFieldReference = 'Name'
-            keyReference          = 'ACQM'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                # NCIC is top of the NCIC>Name pair -- no gate. Name-composite removed from any[] so
-                # the NCIC pool never carries the person name.
-                set = @('NCICNumber')
-                any = @('Age','AreaCode','ExpandedNameSearchCode','EyeColorCode','FormORI','HairColorCode','Height','raceCode','relatedHitSearchIndicator','SexCode','Weight')
-            }
-            primaryFieldReference = 'NCICNumber'
-            keyReference          = 'ACQMN'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'Mapping for WMPIMissingPersonInquiry (ACQM Name+descriptors + ACQMN NCIC)'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'AZ_AZDPS_WMPIMissingPersonInquiry'
-    type            = 'QUERYINPUTDATAMAPPING'
-    provider        = 'AZ_AZDPS'
-    providerType    = 'Commsys'
-    query           = 'WMPIMissingPersonInquiry'
-    queryLabel      = 'Missing Person'
-    targetEntity    = 'Person'
-}
 
 # =====================================================================
 # BUNDLE 2: ENTITIES (QUERYINPUTFORM, provider=MARK43) -- MULTI-CARD
@@ -680,13 +569,10 @@ $vehicleForm = [PSCustomObject]@{
     targetEntity = 'Vehicle'
 }
 
-# PERSON -- 7 cards: OPTIONS, DL, NAME, DH-OLN, DH-NAME, WANTED/MISSING, MISSING PHYSICAL
-# Shared fields: RegistrationState, dexStateUserId, RegistrationStateDH on OPTIONS card
-# v3.2: consolidated 7 cards -> 3 (DL / DH / Wanted-Missing). Shared hidden fields (badge, StateDH)
-# fold onto the card that uses them. NOTE: the two WMPI queries SOURCE the DL card's shared Name/DOB/
-# Sex fields (verified from their QIDM set[]/any[]) -- so the DL name stays VISIBLE on the DL card and
-# a Wanted/Missing name search reads it from there (shared-name design, unchanged wire; the officer
-# fills Name on the Driver License card + descriptors on the Wanted/Missing card).
+# PERSON -- 2 cards (v3.3): DRIVER LICENSE + DRIVER HISTORY. (v3.2 consolidated the old 7 cards to 3;
+# v3.3 then removed the WANTED/MISSING card with the out-of-Basic-scope WMPI queries.) Shared hidden
+# fields fold onto the consuming card: dexStateUserId badge on DL; RegistrationStateDH (SelH) +
+# Attention feeder on DH. raceCode (RMS person-search "race") lives on the DL card.
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
@@ -708,9 +594,11 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDate_Input';  node = Dt  'BirthDate'  'Date of Birth'  'ROW_PER_DL_3' }
                 @{ id = 'SexCode_Input';    node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
-            # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
-            @{ id = 'ROW_PER_DL_4'; cols = @('6'); fields = @(
+            @{ id = 'ROW_PER_DL_4'; cols = @('6','6'); fields = @(
+                # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
                 @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DL_4' }
+                # LABEL-OVERRIDE: raceCode -- bare "Race" (any[]/RMS-only person-search field; relocated from the removed WMPI card, v3.3)
+                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
             )}
             @{ id = 'ROW_PER_DL_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_Per'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_PER_DL_BADGE' }
@@ -746,40 +634,9 @@ $perLayout = MakeLayouts @(
             )}
         )
     }
-    @{
-        id    = 'CARD_PER_WM'
-        title = 'WANTED / MISSING PERSON SEARCH BY NCIC NUMBER, "OR" NAME (name entered on the Driver License card)'
-        rows  = @(
-            @{ id = 'ROW_PER_WM_1'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NCIC_Input';    node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_PER_WM_1' }
-                @{ id = 'RaceCode_Input';node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_WM_1' }
-                @{ id = 'RelHit_Input';  node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_PER_WM_1' }
-            )}
-            @{ id = 'ROW_PER_WM_2'; cols = @('4','4'); fields = @(
-                # LABEL-OVERRIDE: ExpandedNameSearchCode -- bare per DEX-1284 lean pass (any[] optional)
-                @{ id = 'ExpandName_Input'; node = Inp 'ExpandedNameSearchCode'      'Exp Name Search' '1' 'ROW_PER_WM_2' }
-                # LABEL-OVERRIDE: ExpandedBirthDateSearchCode -- bare per DEX-1284 lean pass (any[] optional)
-                @{ id = 'ExpandDOB_Input';  node = Inp 'ExpandedBirthDateSearchCode' 'Exp DOB Search'  '1' 'ROW_PER_WM_2' }
-            )}
-            # Missing-person physical descriptors (ACQM set[]).
-            @{ id = 'ROW_PER_WM_3'; cols = @('2','2','2','3','3'); fields = @(
-                @{ id = 'Age_Input';    node = Inp 'Age'    'Age'    '2' 'ROW_PER_WM_3' }
-                @{ id = 'Height_Input'; node = Inp 'Height' 'Height' '3' 'ROW_PER_WM_3' }
-                @{ id = 'Weight_Input'; node = Inp 'Weight' 'Weight' '3' 'ROW_PER_WM_3' }
-                @{ id = 'Eye_Input';    node = Sel 'EyeColorCode'  'Eye Color'  @{ codeTypeCategory = 'NCIC_EYE_COLOR';  codeTypeSource = 'NCIC' } 'ROW_PER_WM_3' }
-                @{ id = 'Hair_Input';   node = Sel 'HairColorCode' 'Hair Color' @{ codeTypeCategory = 'NCIC_HAIR_COLOR'; codeTypeSource = 'NCIC' } 'ROW_PER_WM_3' }
-            )}
-            @{ id = 'ROW_PER_WM_4'; cols = @('4','4'); fields = @(
-                # LABEL-OVERRIDE: AreaCode -- bare per DEX-1284 lean pass (any[] optional)
-                @{ id = 'AreaCode_Input'; node = Inp 'AreaCode' 'Area Code' '3' 'ROW_PER_WM_4' }
-                # LABEL-OVERRIDE: FormORI -- bare per DEX-1284 lean pass (any[] optional)
-                @{ id = 'FormORI_Input';  node = Inp 'FormORI'  'Form ORI'  '9' 'ROW_PER_WM_4' }
-            )}
-        )
-    }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- 3 cards (v3.2, consolidated from 7): DRIVER LICENSE (OLN/SSN/Name/DOB/Sex/State + hidden badge), DRIVER HISTORY (DH-suffix + hidden StateDH/Attention), WANTED/MISSING (NCIC/Race/descriptors; sources the DL card shared Name). DL + DH + Wanted + Missing queries.'
+    description  = 'Person queries -- 2 cards (v3.3): DRIVER LICENSE (OLN/SSN/Name/DOB/Sex/State/Race + hidden badge) + DRIVER HISTORY (DH-suffix + hidden StateDH/Attention). WMPI Wanted/Missing removed v3.3 (out of devdoc Basic Queries Supported scope); Race relocated to the DL card for RMS person search.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -901,7 +758,7 @@ $provBundle = [PSCustomObject]@{
     name           = 'AZ_AZDPS'
     type           = 'BUNDLE'
     description    = "Provider configuration for AZ_AZDPS v${Version}"
-    configurations = @($auth, $results, $qmf, $vehQuery, $dlQuery, $dhistQuery, $gunQuery, $artQuery, $boatQuery, $wantedQuery, $missingQuery)
+    configurations = @($auth, $results, $qmf, $vehQuery, $dlQuery, $dhistQuery, $gunQuery, $artQuery, $boatQuery)
     provider       = 'AZ_AZDPS'
 }
 

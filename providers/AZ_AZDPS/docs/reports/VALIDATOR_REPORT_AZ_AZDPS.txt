@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.2.json
-  Generated: 2026-07-28 18:28
+  Source: AZ_AZDPS_v3.3.json
+  Generated: 2026-07-28 22:07
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -15,7 +15,7 @@ VALIDATOR RESULTS
 === PHASE 1: Bundle Structure ===
   [PASS] bundles array present (3 bundles)
   [PASS] Bundle 'ENTITIES': 5 configurations
-  [PASS] Bundle 'AZ_AZDPS': 11 configurations
+  [PASS] Bundle 'AZ_AZDPS': 9 configurations
   [PASS] Bundle 'RMS': 6 configurations
   [PASS] ENTITIES bundle is first
   [PASS] ENTITIES bundle provider='MARK43'
@@ -25,7 +25,7 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
-  [PASS] QIF 'ENTITY_Person' -> Person : 35 fieldIds
+  [PASS] QIF 'ENTITY_Person' -> Person : 24 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
@@ -45,11 +45,6 @@ VALIDATOR RESULTS
   [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery' -> Article : 4 attrs, 1 combos
   [PASS] QIDM 'AZ_AZDPS_BoatQuery' -> Boat : 5 attrs, 4 combos
   [PASS] QIDM 'AZ_AZDPS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' -> Person : 8 attrs, 2 combos
-  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' SexCode has codeTypeProvider='NIBRS' (AP #2)
-  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' -> Person : 13 attrs, 2 combos
-  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' SexCode has codeTypeProvider='NIBRS' (AP #2)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
 
@@ -58,7 +53,7 @@ VALIDATOR RESULTS
   [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
          AZ_AZDPS_AzAzdpsDriverLicenseQuery (query=AzAzdpsDriverLicenseQuery, deselect=DriverHistoryQuery)
          AZ_AZDPS_DriverHistoryQuery (query=DriverHistoryQuery, deselect=AzAzdpsDriverLicenseQuery)
-  [PASS] Person : 4 QIDMs, 1 QIF(s)
+  [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
   [PASS] Firearm : 1 QIDMs, 1 QIF(s)
@@ -90,13 +85,9 @@ VALIDATOR RESULTS
   [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'ACQBH': all set[]/any[] fields resolvable
   [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'BQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'BQH': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo 'ACQW': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_WMPIWantedPersonInquiry' combo 'ACQWN': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo 'ACQM': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_WMPIMissingPersonInquiry' combo 'ACQMN': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 72 PASS / 0 FAIL / 0 WARN
+  RESULTS: 63 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.

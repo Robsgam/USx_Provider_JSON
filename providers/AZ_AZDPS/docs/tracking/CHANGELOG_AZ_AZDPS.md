@@ -2,9 +2,25 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.2** | Generated: 2026-07-28
+Current: **v3.3** | Generated: 2026-07-28
 
 ---
+
+## v3.3 -- 2026-07-28 -- SCOPE CORRECTION -- build only devdoc "Basic Queries Supported" (direct Rob directive)
+
+**CHANGED:** Removed WMPIWantedPersonInquiry + WMPIMissingPersonInquiry -- they are NOT in the AZ
+  devdoc "Basic Queries Supported" section (which is exactly 6: Article/Boat/DH/DL/Gun/VehReg);  
+  they live in a separate "Wanted Missing Person Inquiries (WMP-I)" section. Both QIDMs deleted +  
+  dropped from the provider bundle; the Person WANTED/MISSING card removed -> Person is now 2 cards  
+  (DRIVER LICENSE + DRIVER HISTORY), matching the portfolio. raceCode (the only WMPI-card field the  
+  RMS person search still needs: race <- raceCode) RELOCATED to the DL card (bare "Race"). Other  
+  WMPI-only fields (NCICNumber, ExpandedName/BirthDate, Age/Height/Weight/Eye/Hair/AreaCode/FormORI,  
+  Person relatedHitSearchIndicator) removed with the card. Clears the 18 audit_metadata WARNs (they  
+  were the metadata-vs-Basic delta for the out-of-scope WMPI paths).  
+**REASON:** Rob -- "stick to basic supported queries section only." I had (wrongly) proposed BUILDING
+  the unbuilt WMPI paths to clear the WARNs -- the inverse of the devdoc-authority rule (devdoc Basic  
+  list = build scope; metadata is field-authority, not a build checklist). Query-set change (removes  
+  2 non-Basic queries); the 6 retained queries' wire is unchanged. ALL 5 ENTITIES RESET at v3.3.  
 
 ## v3.2 -- 2026-07-28 -- DEX-1284 convention pass (direct Rob feedback, layout/label-only, NO functional change)
 
