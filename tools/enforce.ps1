@@ -628,6 +628,40 @@ if (-not (Test-Path $attrTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2j: SQVR Integrity (audit_sqvr_integrity.ps1)
+#  The SQVR is hand-maintained prose asserting which combos exist and how many. Nothing
+#  verified it, so it rotted on every combo add/remove -- and it is the document a tester
+#  reads to decide what to test, so rot converts straight into wasted tenant-test time.
+#  Caught 2026-07-29: TX_TLETS listed the QV combos removed at v4.9 + "21 combos (7 Vehicle)";
+#  AZ_AZDPS still had the v3.3-deleted WMPI combos as [PENDING] work + "8 QIDMs / 18 combos".
+#  Blocks explicitly marked DORMANT / REMOVED / NOT BUILT / OUT OF SCOPE report [NOTE].
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2j: SQVR Integrity"
+$sqvrTool = Join-Path $toolDir "audit_sqvr_integrity.ps1"
+if (-not (Test-Path $sqvrTool)) {
+    Info "audit_sqvr_integrity.ps1 not found -- SQVR integrity check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $sqJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $sqJson) { continue }
+        $sqOut = & powershell -ExecutionPolicy Bypass -File $sqvrTool -Path $sqJson 2>&1 | Out-String
+        $sm = [regex]::Match($sqOut, '\[FAIL\]\s*(\d+)\s*stale SQVR')
+        if ($sm.Success) {
+            Fail "$provName -- $($sm.Groups[1].Value) stale SQVR assertion(s) (run audit_sqvr_integrity.ps1)"
+            $sqOut -split "`n" | Where-Object { $_ -match 'STALE:|stated |Architecture line|SQVR says' } |
+                Select-Object -First 6 | ForEach-Object { Out "       $($_.Trim())" }
+        } elseif ($sqOut -match '\[INFO\] no SQVR file') {
+            Info "$provName -- no SQVR file"
+        } else {
+            $nn = ([regex]::Matches($sqOut, '\[NOTE\]')).Count
+            $s2 = if ($nn -gt 0) { " ($nn documented-unbuilt note(s))" } else { "" }
+            Pass "$provName -- SQVR consistent with the JSON$s2"
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"

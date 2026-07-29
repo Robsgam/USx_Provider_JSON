@@ -3,17 +3,18 @@ AZ_AZDPS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-28
 JSON version: v3.3
-Validator: 70 PASS / 0 FAIL / 0 WARN / 4 LIMITATION / 18 FIRE / 0 SKIP
+Validator: see docs/reports/VALIDATOR_REPORT_AZ_AZDPS.txt (authoritative) -- v3.3 = 0 FAIL / 0 WARN. Hardcoded counts removed 2026-07-29: they were stale (quoted a pre-v3.3 70/4LIM/18FIRE run) and duplicated a generated report.
 Live test: PENDING (import not yet performed)
 
-Architecture: 8 CommSys QIDMs + 2 RMS QIDMs + AUTH, 5 QIFs, 18 combos
-Badge: dexStateUserId (hidden InpH, auto-populated via CommsysGetDexStateUserIdRuleHandler)
+Architecture: 6 CommSys QIDMs + 2 RMS QIDMs + AUTH, 5 QIFs, 14 combos
+  (was "8 QIDMs / 18 combos" -- stale since v3.3 removed both WMPI QIDMs and their 4 combos as out-of-devdoc-Basic-scope. Corrected 2026-07-29.)
+Badge: dexStateUserId -- VISIBLE FormInput with NO initialValue in v3.3 (verified 2026-07-29); the AUTH UserName attr uses CommsysGetDexStateUserIdRuleHandler. NOTE: prior text called this a "hidden InpH", which does not match the built JSON. It is a set[] field on ACVR/ACVRV/ACWL/ACQB/ACQBH, so if the platform does NOT populate it those badge combos cannot fire and the no-badge fallbacks (DQN/BQ/BQH) win -- CONFIRM ON THE FIRST QUERY of AZ's first tenant sweep.
 State: NCIC pattern (RegistrationState, attributeTypeId=STATE, codeTypeProvider=NCIC, initialValue=AZ)
 Sex: NIBRS (attributeTypeId=SEX, codeTypeProvider=NIBRS)
 Race: NIBRS (attributeTypeId=RACE, codeTypeProvider=NIBRS) -- AP #3 validator fix applied
 Date: yyyyMMdd (AZ format)
 DH: DH-suffix fieldIds (LIMITATION #26 isolation)
-WMPI: WantedPerson + MissingPerson inquiry paths on Person entity
+WMPI: REMOVED v3.3 -- not in the devdoc "Basic Queries Supported" list (separate WMP-I section)
 
 NJ CROSS-REFERENCE (GATE 7): Applied 2026-04-30
   AUTH keyReference='AUTH' -- [PENDING]
@@ -193,8 +194,17 @@ KNOWN LIMITATIONS (4):
   Priority -- Reg+Hull both filled: ACQB fires (Reg wins with badge) [PENDING]
 
 ================================================================================
-7. WMPIWantedPersonInquiry -- Person Entity (Wanted)
+7. WMPIWantedPersonInquiry -- Person Entity (Wanted)  [REMOVED v3.3 -- NOT devdoc-Basic]
 ================================================================================
+
+  *** REMOVED AT v3.3 (2026-07-28, Rob scope correction). NOT built, NOT to be tested. ***
+  The AZ devdoc "Basic Queries Supported" list is exactly 6 queries (Article / Boat /
+  DriverHistory / DriverLicense / Gun / VehicleRegistration). WMPI is a SEPARATE devdoc
+  section ("Wanted Missing Person Inquiries (WMP-I)"), so both WMPI QIDMs and the Person
+  WANTED/MISSING card were deleted. The combo blocks below are retained for history only --
+  their [PENDING] markers are NOT open test work. Lesson: "no combo left behind" is
+  Basic-scoped; audit_metadata WARNs for out-of-Basic combos are EXPECTED, never a build
+  trigger. Marker corrected 2026-07-29 (the v3.3 change did not update this file).
 
   QIDM: AZ_AZDPS_WMPIWantedPersonInquiry
   QIF:  ENTITY_Person
@@ -218,7 +228,7 @@ KNOWN LIMITATIONS (4):
   Priority -- Name+NCICNumber both filled: ACQW fires [PENDING]
 
 ================================================================================
-8. WMPIMissingPersonInquiry -- Person Entity (Missing)
+8. WMPIMissingPersonInquiry -- Person Entity (Missing)  [REMOVED v3.3 -- NOT devdoc-Basic]
 ================================================================================
 
   QIDM: AZ_AZDPS_WMPIMissingPersonInquiry

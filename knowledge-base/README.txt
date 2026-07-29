@@ -272,8 +272,27 @@ TOOLS
     attribute-name condition logic). FAILs on drift. Run live by enforce Phase 2d.
     Usage: .\audit_simulator_parity.ps1 [-Path <json>] [-OutFile <path>]
 
-  tools/audit_log_combo_attribution.ps1
-    Did each saved test log's NAMED combo actually fire? The wire XML carries NO keyRef
+  tools/audit_sqvr_integrity.ps1
+    Is the SQVR still telling the truth about the JSON? The SQVR is hand-maintained prose
+    ASSERTING which combos exist, how many, and at what version -- and nothing verified it, so
+    it rotted on every combo add/remove. It is also the document a tester reads to decide what
+    to test, so rot converts directly into wasted tenant-test time.
+    Checks: (1) every `keyReference:` named in the SQVR exists in the JSON, unless its block or
+    enclosing numbered section is marked DORMANT / REMOVED / NOT BUILT / OUT OF SCOPE / NOT
+    APPLICABLE / APPROVED SKIP (those report [NOTE] -- e.g. HI_HCJDC_OFML's QVV/QVP are
+    legitimately documented dormant); (2) stated totals ("Total CommSys combos: N",
+    "N CommSys QIDMs", "Architecture: ... N combos") match the JSON; (3) the stated
+    "JSON version:" matches the active JSON filename.
+    Deliberately NOT checked: whether every JSON combo has an SQVR block -- 13 never-tested
+    providers use a lighter format with no per-combo blocks, and flagging those would be pure
+    noise plus pressure for a pointless mass-rewrite.
+    Found 2026-07-29: TX_TLETS (listed the QV combos removed at v4.9 + "21 combos / 7 Vehicle"),
+    AZ_AZDPS (v3.3-deleted WMPI combos still marked [PENDING] test work + "8 QIDMs / 18 combos"
+    + a "hidden InpH" badge description that does not match the built JSON).
+    Gated by enforce PHASE 2j.
+    Usage: .\audit_sqvr_integrity.ps1 -Path <json> [-OutFile <path>]
+
+  tools/audit_log_combo_attribution.ps1    Did each saved test log's NAMED combo actually fire? The wire XML carries NO keyRef
     (MessageType is just the query name), so a log named for combo A is indistinguishable
     from one where a sibling B fired -- "84 logs PASS" can silently mean "76 combos
     exercised, 8 filed under combos that never ran". Replays each log's recorded QUERY
