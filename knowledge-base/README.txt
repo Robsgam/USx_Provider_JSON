@@ -713,6 +713,29 @@ TOOLS
     (flat Choice/Field) and NY_NYSPIN_EJUSTICE (nested Choice/Set). A fourth shape exists too:
     TX GunQuery/QG puts a nested <Set> and a bare <Field> as SIBLINGS in one <Choice>.
     Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+  tools/audit_suppression_scope.ps1
+    SUPPRESSION SCOPE -- is each accepted divergence as narrow as it was GRANTED? READ-ONLY,
+    changes no verdict, cannot turn a provider red. An ACCEPTED_DIVERGENCES row records ONE
+    adjudicated decision about ONE field on ONE combo, but audit_metadata's Test-AllowListed
+    matched on (query,keyRef,field) and DISCARDED the Rule column -- so a row saying "regionId may
+    ride in RQ{VIN} any[]" also silenced the OPPOSITE defect, "regionId wrongly PROMOTED INTO
+    set[]". Invisible for months because suppression leaves no trace: a check that stops speaking
+    looks exactly like a check with nothing to say. Found only by mutation testing --
+    audit_gate_efficacy flipped promote-any-to-set from KILLED to SURVIVED the moment 4 legitimate
+    promoted-to-any rows were added to TX_TLETS.
+    THE ACCEPTED-DIVERGENCE TAX: every entry buys a blind spot, and its WIDTH is set by how
+    precisely the suppression is keyed, not by what the entry claims. 2026-07-30 baseline:
+    116 rows / 209 over-broad suppressions / 15 providers; 3 call sites still direction-blind
+    (audit_metadata CHECK 4e, CHECK 4, CHECK 5).
+    FIXABLE CHEAPLY because the rule vocabulary ALREADY encodes direction (promoted-to-set vs
+    promoted-to-any vs demoted-to-any vs not-built) -- the enforcement just threw the name away.
+    Fix = pass -IgnoreRule at each blind call site; CHECK 4d is the worked pattern.
+    Narrowing can turn a GREEN provider RED (a real finding stops being silenced), so it is a
+    release-timing call: one provider at a time, never a portfolio sweep.
+    Its $checks call-site inventory is HAND-MAINTAINED -- add a registry-reading check without
+    listing it there and this tool under-reports. Re-derive with
+    Select-String tools\*.ps1 -Pattern 'ACCEPTED_DIVERGENCES|Test-AllowListed'.
+    Usage: .\audit_suppression_scope.ps1 [-Provider <NAME>] [-Detail] [-OutFile <path>]
   tools/audit_requirement_fidelity.ps1
     REQUIREMENT FIDELITY -- does each BUILT combination require EXACTLY what its metadata branch
     requires? The dimension no other gate measured. audit_metadata asks whether a field is
