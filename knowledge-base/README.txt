@@ -703,7 +703,42 @@ TOOLS
     'Name'/'OperatorLicenseNumber'; built set[] says NameLast,NameFirst / OperatorLicenseNumberDH).
     Getting any of that wrong silently reports every combo as an empty-set SHADOW -- validate any
     change against TX_TLETS, whose answer is known (17 built / 4 PREFILL-DEAD / 0 SHADOW / 0 MISSING).
+    NESTED-CHOICE NOTE (2026-07-30) -- a <Choice> may contain nested <Set> children, not just
+    <Field>: <Set><Choice><Set>..</Set><Set>..</Set></Choice><Any>..</Any></Set>. Each nested
+    <Set> is a complete ALTERNATIVE requirement set (typically the in-state vs out-of-state
+    branch), so one metadata Combination expands to N logical combinations. A Choice/Field-only
+    XPath returns EMPTY on that shape and the outer <Set> reads requirement-free -- which is how
+    NY_NYSPIN_EJUSTICE's DALL x2 and RVEH were wrongly reported MISSING. 13 of 18 providers use
+    the nested shape (TX_TLETS has 60), so validate any parser change against BOTH TX_TLETS
+    (flat Choice/Field) and NY_NYSPIN_EJUSTICE (nested Choice/Set). A fourth shape exists too:
+    TX GunQuery/QG puts a nested <Set> and a bare <Field> as SIBLINGS in one <Choice>.
     Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+  tools/audit_requirement_fidelity.ps1
+    REQUIREMENT FIDELITY -- does each BUILT combination require EXACTLY what its metadata branch
+    requires? The dimension no other gate measured. audit_metadata asks whether a field is
+    metadata-DEFINED; audit_query_trace whether a combo EXISTS; audit_combo_reachability whether
+    the form can REACH it; 6d audit_log_metadata whether a captured request SATISFIES a combo. A
+    combination can pass all four while built LOOSER than the spec, and 6d cannot ever catch that
+    because it validates the log against the combination AS WE BUILT IT -- a gate that reads its
+    expectation from the artifact under test cannot see that the artifact is wrong. This one reads
+    the expectation from the XML only.
+      UNDER-REQUIRED  metadata mandatory, built optional/absent -> can send an INCOMPLETE request
+      OVER-PERMITTED  built any[] member the branch does not define -> can send a rejected field
+    Found NY RVEHOUT: the out-of-state plate branch requires Plate+PlateTypeCode+PlateYear+State
+    all mandatory; we built set[Plate,State] with the other two in any[].
+    WARN-only by design -- a build may legitimately tighten or split a branch, and only Rob rules
+    on combination semantics. NEVER auto-tighten a set[]: a mandatory field the form PREFILLS
+    becomes an always-true discriminator and kills every sibling after it (BUILD_RULES 24).
+    FALSE-POSITIVE SOURCES, all four hit on the first run -- fix these before believing output:
+    Name is a COMPOSITE (metadata 'Name' vs built NameLast/First/Middle/Suffix) and must match
+    BIDIRECTIONALLY; form-only fields (ImageIndicator/State/PurposeCode/Attention/email/reasonCode)
+    are never over-permits; the metadata->built assignment must be 1:1 and indexed POSITIONALLY,
+    because a transaction can declare the SAME keyRef twice (NY RNAM, TX QB/RQ, FL FRQ) and every
+    duplicate carries alt=0, so a natural key collides; and aliases matter
+    (GunSerialNumber/ArticleSerialNumber -> serialNumber, CaRequestPurposeCode -> purposeCode,
+    State -> RegistrationState). Unbuilt/parked combos (TX QV, QW) spill their alternatives onto a
+    sibling and read as UNDER-REQUIRED -- adjudicate against the accepted-divergence registry.
+    Usage: .\audit_requirement_fidelity.ps1 [-Provider <NAME>] [-OutFile <path>]
   tools/audit_devdoc_combinations.ps1
     DEVDOC -> BUILT, at COMBINATION granularity (enforce PHASE 2p). The one direction nothing
     else checked. PHASE 2e checks BUILT->devdoc and only by QUERY NAME ("is BoatQuery in the
