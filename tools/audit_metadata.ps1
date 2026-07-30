@@ -1013,6 +1013,69 @@ function Audit-Provider {
     if (-not $promoteHit) { Out-Pass "  No fields over-promoted from metadata any[] to set[]" }
 
     # ══════════════════════════════════════════════════════════════════════════
+    # CHECK 4e: Field DEMOTED from metadata set[] to any[]  (the mirror of 4d)
+    #
+    # WHY THIS EXISTS (2026-07-30): 4d has always caught PROMOTION (metadata any[] -> built
+    # set[]) but nothing caught the opposite. A field metadata marks REQUIRED that we build as
+    # OPTIONAL lets the query fire WITHOUT it -- the provider can reject the request or answer a
+    # different question than the officer asked. That asymmetry is why NJ_NJCJIS shipped
+    # VehicleRegistrationQuery with RandomRequest / State / LicensePlateTypeCode all demoted to
+    # any[], unregistered, while sitting ALL-PASS on 35 tenant logs: the tests passed because
+    # they only ever exercised what the build allowed, and no gate compared against the
+    # metadata's own required list. Same family as the PREFILL-DEAD blind spot found the same
+    # week -- every check validated what EXISTS, none checked what the spec DEMANDS.
+    #
+    # A demotion can be legitimate (a handler supplies the value, or the provider tolerates the
+    # omission) -- so it is FAIL-with-an-escape-hatch: record it in
+    # <PROVIDER>_ACCEPTED_DIVERGENCES.txt with a reason and it downgrades to [NOTE], exactly
+    # like 4d. What must never happen again is it being invisible.
+    Out-Line ""
+    Out-Line "--- CHECK 4e: Field demoted to any[] vs metadata set[] ---"
+    $demoteHit = $false
+    foreach ($q in $qidms) {
+        $qn = [string]$q.query
+        if (-not $q.combinations) { continue }
+        foreach ($c in @($q.combinations)) {
+            $kr3 = if ($c.keyReference) { [string]$c.keyReference } else { [string]$c.keyRef }
+            if (-not ($c.requirements -and $c.requirements.any)) { continue }
+            foreach ($af in @($c.requirements.any)) {
+                $afS = [string]$af
+                if (-not $afS) { continue }
+                # Only a problem when metadata has it REQUIRED and NOT also optional. A field
+                # metadata lists in BOTH set[] and any[] (different combos of the same query) is
+                # legitimately optional here -- do not flag it.
+                if (-not (Test-InMetaSet $qn $afS)) { continue }
+                if (Test-InMetaAny $qn $afS) { continue }
+                # A defaulted field MUST live in any[] per the platform rule 4d enforces
+                # (initialValue is not counted toward set[]). Flagging it here would demand the
+                # exact opposite of 4d and make the two checks unsatisfiable together.
+                if (Test-IsDefaulted $afS) { continue }
+                # COMPOSITE GUARD: one metadata field can expand to several form fields. Metadata
+                # requires a single 'Name'; the build splits it into NameLast+NameFirst (set[]) plus
+                # nameMiddle/nameSuffix (any[]). Every one of those maps back to 'Name', so without
+                # this guard each optional component reads as a demotion of a satisfied requirement
+                # -- it produced 6 false FAILs on TX_TLETS, 14 on TX_TLETS_CCH and 2 on NY the first
+                # time this check ran. The requirement is met if ANY OTHER field already in THIS
+                # combo's set[] resolves to the same metadata token.
+                $metaTok = Resolve-MetaToken $afS
+                $satisfied = $false
+                foreach ($sfChk in @($c.requirements.set)) {
+                    if (-not $sfChk) { continue }
+                    if ((Resolve-MetaToken ([string]$sfChk)) -eq $metaTok) { $satisfied = $true; break }
+                }
+                if ($satisfied) { continue }
+                if (Test-AllowListed $qn $kr3 $afS) {
+                    Out-Note "  keyRef ${kr3}: '$afS' in any[] but metadata set[] -- ACCEPTED per registry"
+                } else {
+                    Out-Fail "  keyRef ${kr3} ($qn): '$afS' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in ${providerName}_ACCEPTED_DIVERGENCES.txt"
+                    $demoteHit = $true
+                }
+            }
+        }
+    }
+    if (-not $demoteHit) { Out-Pass "  No metadata-required fields demoted to any[]" }
+
+    # ══════════════════════════════════════════════════════════════════════════
     # CHECK 4b: Choice-Set Option Coverage
     # Metadata combinations can have a Choice structure: two Set options, where
     # Option A is the minimal in-state path and Option B adds PurposeCode,
