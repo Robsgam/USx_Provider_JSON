@@ -1959,3 +1959,42 @@ See also:
   re-couple DL and DH and break the form for every officer, to serve injection.
   Affected: every provider with a DH query on a shared Person screen (NY, FL, TX, CA_CLETS,
   HI, LA, MD, NM, OH, TN, SLO, Ventura, eSUN, AZ).
+
+================================================================================
+RULE 24 -- NEVER DEFAULT A ROUTING FIELD (form-reachable combinations)
+================================================================================
+
+  NEVER set a form initialValue -- or a combo defaults[] entry -- on a field that appears in
+  ANY combination's set[] for that query.
+
+  WHY: the platform fires the FIRST matching combo. A prefilled required field means the combo
+  requiring it matches on EVERY submission, so every other combo becomes permanently unreachable
+  FROM THE FORM. The officer cannot get to it no matter what they type.
+
+  This is not theoretical. Found 2026-07-30 across 6 providers / 35 combinations:
+    TX_TLETS / TX_TLETS_CCH  FRT=E + PlateYear + PlateTypeCode  hid all 4 RQ/QV combos
+    CA_CLETS / CA_CONTRA_COSTA  purposeCode=C                   hid 12 combos EACH
+    HI_HCJDC_OFML  vehicleTypeCode=1                            hid 2
+    OH_LEADS  PlateType=PC + PlateYear                          hid 1
+  Worse, the prefill MANUFACTURES a false diagnosis: the hidden combos look like "dead combos"
+  under reachability analysis. TX v4.13 DELETED two of them on that basis -- and they were the
+  devdoc's two "(OutofState)" vehicle paths, so officers lost out-of-state plate and VIN search
+  entirely. The removal was recorded as "Officer impact none: REG/VIN return a superset," which
+  was false: an in-state DMV query is not a superset of an out-of-state Nlets query.
+
+  HOW TO COMPLY
+  1. Before adding any default, check whether the field is in a set[] anywhere for that query.
+     If yes -> do not default it. Only any[]-only fields are safe, and even then prefer blank
+     (see the State decision tree in FIELD_REFERENCE.txt Section 5 / LIMITATION #30).
+  2. Before declaring a combo DEAD, remove the prefill and re-check. Never delete a
+     devdoc-supported combo whose only problem is our own default.
+  3. Run  tools\audit_query_trace.ps1 -Provider <name>  -- PREFILL-DEAD names the exact prefill
+     to remove. GATED: enforce PHASE 2n FAILS on any PREFILL-DEAD combination.
+  4. CAD does not change this. THE FORM COMES FIRST (Rule 23): CAD ignores form initialValue, so
+     the temptation is a combo defaults[] entry -- but that counts as always-present for routing
+     and re-creates the bug. Convenience for CAD never justifies removing an officer search path.
+
+  RELATED GATES (all portfolio-wide, all run on every provider):
+    enforce 2n   audit_query_trace          PREFILL-DEAD / SHADOW / MISSING per metadata combo
+    enforce 2h   audit_combo_reachability   dead combos among those BUILT
+    audit_metadata CHECK 4d / 4e            any[]->set[] promotion / set[]->any[] demotion

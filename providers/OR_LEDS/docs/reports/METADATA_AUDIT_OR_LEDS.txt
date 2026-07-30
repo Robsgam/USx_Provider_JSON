@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OR_LEDS
   Source: OR_LEDS_v2.0.json
-  Generated: 2026-07-27 17:20
+  Generated: 2026-07-30 12:23
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-07-27 17:20
+ Generated: 2026-07-30 12:23
 ============================================================
 
 ============================================================
@@ -112,6 +112,9 @@ METADATA AUDIT
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
   [PASS]   No fields over-promoted from metadata any[] to set[]
 
+--- CHECK 4e: Field demoted to any[] vs metadata set[] ---
+  [FAIL]   keyRef DQ.N (DriverLicenseQuery): 'SexCode' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in OR_LEDS_ACCEPTED_DIVERGENCES.txt
+
 --- CHECK 4b: Choice-Set Option Coverage ---
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
@@ -145,6 +148,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 67 PASS / 0 FAIL / 1 WARN
+Total: 67 PASS / 1 FAIL / 1 WARN
 ============================================================
 

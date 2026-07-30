@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>OH_LEADS — Officer Query Guide v2.0</title>
+<style>@page { size: portrait; margin: 0.6cm; }
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
+h1 { font-size: 15pt; margin: 0 0 2px; }
+.howto { color:#444; font-size: 8pt; margin: 0 0 8px; }
+section.entity { margin: 0 0 7px; page-break-inside: avoid; }
+h2 { font-size: 10.5pt; background:#1f3b57; color:#fff; padding:3px 7px; border-radius:3px; margin: 7px 0 3px; }
+table.qt { width:100%; border-collapse:collapse; table-layout:fixed; margin: 0 0 5px; }
+table.qt caption { caption-side: top; text-align:left; font-weight:600; color:#1f3b57; font-size:9pt; padding:2px 0 1px; }
+table.qt th, table.qt td { border:1px solid #cdd8e3; padding:2px 5px; text-align:left; vertical-align:top; overflow-wrap:break-word; }
+table.qt thead th { background:#eef3f8; font-size:8pt; font-weight:700; }
+th.sb, td.sb { width:24%; font-weight:600; }
+th.req, td.req { width:38%; }
+th.opt, td.opt { width:38%; }
+td.req { color:#7a1f1f; }
+td.opt { color:#3a5a3a; }
+thead th.req { color:#7a1f1f; }
+thead th.opt { color:#3a5a3a; }
+.pre { color:#666; font-style:italic; }
+footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }</style></head><body>
+<h1>OH_LEADS — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.0)</span></h1>
+<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
+<section class='entity'><h2>Vehicle</h2>
+<table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Plate Number (in-state)</td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span>, Dealer Plate Type</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Plate Number (out-of-state)</td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span></td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Plate Number (in-state)</td><td class='req'>Plate Number, Plate Type <span class='pre'>(PC)</span></td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Vehicle Identification Number (out-of-state)</td><td class='req'>Vehicle Identification Number, Vehicle Make, Vehicle Year</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Vehicle Identification Number (in-state)</td><td class='req'>Vehicle Identification Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Owner SSN</td><td class='req'>Owner SSN</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Name</td><td class='req'>Owner Last Name, Owner First Name</td><td class='opt'>County Code</td></tr>
+</tbody></table>
+</section>
+<section class='entity'><h2>Person</h2>
+<table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>License Number (out-of-state)</td><td class='req'>License Number</td><td class='opt'>Image <span class='pre'>(N)</span>, State</td></tr>
+<tr><td class='sb'>License Number (in-state)</td><td class='req'>License Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Name (out-of-state)</td><td class='req'>Last Name, First Name, Date of Birth, Sex</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Name (in-state)</td><td class='req'>Last Name, First Name</td><td class='opt'>&mdash;</td></tr>
+</tbody></table>
+<table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Name</td><td class='req'>Last Name, First Name, Date of Birth, Sex</td><td class='opt'>Purpose Code, State, Attention <span class='pre'>(X)</span></td></tr>
+<tr><td class='sb'>License Number</td><td class='req'>License Number</td><td class='opt'>Purpose Code, State, Attention <span class='pre'>(X)</span></td></tr>
+</tbody></table>
+</section>
+<section class='entity'><h2>Firearm</h2>
+<table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Serial Number</td><td class='req'>Serial Number</td><td class='opt'>Make, Caliber, Y for NCIC stolen</td></tr>
+</tbody></table>
+</section>
+<section class='entity'><h2>Article</h2>
+<table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Serial Number</td><td class='req'>Article Type, Serial Number</td><td class='opt'>Image <span class='pre'>(N)</span>, Y for NCIC stolen</td></tr>
+<tr><td class='sb'>NCIC Number</td><td class='req'>NCIC Number</td><td class='opt'>Image <span class='pre'>(N)</span>, Y for NCIC stolen</td></tr>
+</tbody></table>
+</section>
+<section class='entity'><h2>Boat</h2>
+<table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
+<tr><td class='sb'>Hull ID Number</td><td class='req'>Hull ID Number</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Hull ID Number</td><td class='req'>Hull ID Number</td><td class='opt'>Image <span class='pre'>(N)</span>, Y for NCIC stolen</td></tr>
+<tr><td class='sb'>Registration Number</td><td class='req'>Registration Number</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Registration Number</td><td class='req'>Registration Number</td><td class='opt'>Image <span class='pre'>(N)</span>, Y for NCIC stolen</td></tr>
+</tbody></table>
+</section>
+
+<footer>OH_LEADS build v2.0 &middot; Generated 2026-07-30 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
+</body></html>

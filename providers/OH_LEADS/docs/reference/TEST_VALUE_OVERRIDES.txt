@@ -1,0 +1,7 @@
+# TEST_VALUE_OVERRIDES.txt -- fieldId=value  OR  <Entity>.fieldId=value (entity-scoped wins)
+#
+# NCIC record numbers are TYPED BY LEADING LETTER per NCIC file, and NCICNumber is one fieldId
+# reused across entities -- so a bare override cannot be valid for more than one. A generic value
+# ('X...') makes the provider reject the query, which yields a log proving the field TRANSMITS but
+# not that the query RESOLVES (TX v4.15, BUILD_RULES 24 family).
+Article.NCICNumber=A123456789

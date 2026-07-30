@@ -2,7 +2,7 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.14** | Generated: 2026-07-28
+Current: **v4.14** | Generated: 2026-07-30
 
 ---
 

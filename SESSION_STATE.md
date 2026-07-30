@@ -12,7 +12,7 @@
 > 4. Numbers here must be derived, not remembered — run `tools\portfolio_status.ps1` and
 >    `tools\enforce.ps1`.
 
-**Last updated:** 2026-07-29 · **Branch:** `rebuild/az_azdps_v3.0` (184+ ahead of `main`, unmerged
+**Last updated:** 2026-07-30 · **Branch:** `main` (the working branch — the long-lived `rebuild/az_azdps_v3.0` was fast-forward merged 2026-07-30, 216 commits; `audit_branch_currency.ps1` now watches the gap)
 by choice — `main` stays at the last tenant-tested state)
 
 ---
@@ -21,8 +21,9 @@ by choice — `main` stays at the last tenant-tested state)
 
 **Nothing is in flight. Waiting on Rob.** Last session ended deliberately, tree clean, all pushed.
 
-When Rob is ready, the queue is: **NY v4.17 re-test** and **TX v4.13 re-test** (both reset by their
-bumps, both from T1). Neither has been started — no partial sweep to resume.
+When Rob is ready the queue is **NY v4.17 re-test** (from T1, never started). TX is DONE at v4.16
+(ALL-PASS 95/95, triple-gated). Order after NY: NJ, FL, then CA_CLETS, HI — "wire in the TX
+controls, then run each through" (Rob 2026-07-30). Everything outside those 6 is TABLED.
 
 **Run the `usx-resume` skill before acting on this.** It sweeps for environment state this file
 cannot see (captures stranded in Downloads, stray `watch_captures` processes, a build script bumped
@@ -47,20 +48,24 @@ assertion. If you get a FAIL or WARN, the tool is right and this file is out of 
 | FL_FCIC | v7.12 | ALL-PASS (Boat re-run 2026-07-29, 47 captures) |
 | CA_CLETS | v2.22 | ALL-PASS |
 | NY_NYSPIN_EJUSTICE | **v4.17** | **re-test owed from T1** (DH row split — bump reset it) |
-| TX_TLETS | **v4.16** | **ALL-PASS 95/95** (7/7 vehicle combos form-reachable; DH card mirrored) | **re-sweep owed from T1** (DH card mirrored; v4.15 was ALL-PASS 95/95) | **re-sweep owed from T1** (DEX-1283 #4 UI bump; v4.14 was ALL-PASS 93/93) |
-| TX_TLETS_CCH | **v1.12** | never tenant-tested (BASE-SYNC v4.16, in lockstep) | never tenant-tested, 160 owed (BASE-SYNC v4.15, in lockstep) |
+| TX_TLETS | **v4.16** | **ALL-PASS 95/95** — 7/7 vehicle combos form-reachable, 0 PREFILL-DEAD |
+| TX_TLETS_CCH | **v1.12** | never tenant-tested (160 owed; BASE-SYNC v4.16, verified in lockstep) |
 | other 13 | — | never tenant-tested |
 
 ## What is actually owed
 
-1. **NY v4.17 re-test** (67-ish tests) and **TX v4.13 re-test** (~77). TX's sweep absorbs the
-   `QGNCICNumber` Firearm gap that was previously owed.
-2. **Jira: HOLD.** Rob's instruction 2026-07-29 — do **not** comment on DEX-1283 (TX) or DEX-1284
+1. **NY v4.17 re-test** (~67 tests, from T1). Step 1 is the empty-`set[]` metadata parser question
+   flagged `NY-METADATA-PARSER-UNKNOWN` — resolve that before trusting NY's query-trace verdict.
+2. **31 PREFILL-DEAD combos remain** (CA_CLETS 12, CA_CONTRA_COSTA 12, HI 2, OH_LEADS 1) — each
+   already flagged in its own PENDING_UPDATES.txt, fixed at that provider's turn. **BUILD_RULES 24**
+   is the rule; `enforce` PHASE 2n is the gate. Removing a prefill is what RESTORES the combo —
+   never delete a devdoc-supported combo that only our own default made unreachable.
+3. **Jira: HOLD.** Rob's instruction 2026-07-29 — do **not** comment on DEX-1283 (TX) or DEX-1284
    (NY), and hold the regular per-provider Jira update **until after testing**.
-3. **AZ_AZDPS v3.3** — never tenant-tested. Before its first sweep, confirm on the **first query**
+4. **AZ_AZDPS v3.3** — never tenant-tested. Before its first sweep, confirm on the **first query**
    that the platform populates `dexStateUserId`, or all 5 badge combos silently fall back to
    DQN/BQ/BQH.
-4. **4 providers have no devdoc text extract** → NJ, FL, LA_LEMS, CA_CLETS_OCATS were fixed
+5. **4 providers have no devdoc text extract** → NJ, FL, LA_LEMS, CA_CLETS_OCATS were fixed
    2026-07-29; if `audit_structure` CHECK 9b warns again, run
    `pdftotext source/<P>.pdf source/<P>_DEVDOC.txt`.
 
@@ -69,7 +74,7 @@ assertion. If you get a FAIL or WARN, the tool is right and this file is out of 
 - **NY home-state strip / DEX-1284.** Only config lever is removing `RegistrationState` from NY's
   CAD layout variants, which would stop an officer running an out-of-state plate from a CAD event.
   **BUILD_RULES §23 forbids that trade.** Correct fix is the injection layer. Not started.
-- **Branch merge to `main`** — what actually ships to a customer?
+- ~~Branch merge to `main`~~ — DONE 2026-07-30 (fast-forward, no merge commit).
 - **LA_LEMS `DQ`** and **TN_TIES prose divergence file** — Rob: "handled when we get to them."
   Do NOT re-raise as open issues; both leave enforce green.
 

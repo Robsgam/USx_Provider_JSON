@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
   Source: CA_VENTURA_COUNTY_v2.0.json
-  Generated: 2026-07-27 17:19
+  Generated: 2026-07-30 12:21
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-07-27 17:19
+ Generated: 2026-07-30 12:21
 ============================================================
 
 ============================================================
@@ -182,6 +182,10 @@ METADATA AUDIT
   [NOTE]   keyRef ID.B2: 'caRequestPurposeCodeDH' in set[] but metadata any[] -- ACCEPTED per registry
   [PASS]   No fields over-promoted from metadata any[] to set[]
 
+--- CHECK 4e: Field demoted to any[] vs metadata set[] ---
+  [FAIL]   keyRef IN.L1 (DriverLicenseQuery): 'RegistrationState' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in CA_VENTURA_COUNTY_ACCEPTED_DIVERGENCES.txt
+  [FAIL]   keyRef ID.L1 (DriverLicenseQuery): 'RegistrationState' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in CA_VENTURA_COUNTY_ACCEPTED_DIVERGENCES.txt
+
 --- CHECK 4b: Choice-Set Option Coverage ---
 
 --- CHECK 5: Primary Field Coverage (HARD GATE) ---
@@ -243,6 +247,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 184 PASS / 0 FAIL / 0 WARN
+Total: 184 PASS / 2 FAIL / 0 WARN
 ============================================================
 
