@@ -158,7 +158,34 @@ foreach ($ent in $order) {
             $isStolen = ($setFields | Where-Object { $_ -match '(?i)relatedHit|stolen' }).Count -gt 0
             if ($isStolen) { $hint = ' (stolen / wanted check)' }
             elseif ($primaryCounts[$primary] -gt 1) {
-                if ($c.state -eq 'Out') { $hint = ' (out-of-state)' } elseif ($c.state -eq 'In') { $hint = ' (in-state)' }
+                # Several combos search by the SAME identifier, so the officer sees repeated rows and
+                # cannot tell them apart. Prefer the combo's own in/out marking; fall back to naming
+                # the field that actually DIFFERS between the rows.
+                if ($c.state -eq 'Out') { $hint = ' (out-of-state)' }
+                elseif ($c.state -eq 'In') { $hint = ' (in-state)' }
+                else {
+                    # FALLBACK ADDED 2026-07-30. On TX_TLETS every Vehicle and Person combo carries
+                    # state='In/Out', so neither branch above ever fired and the guide printed TWO
+                    # IDENTICAL "Search by Plate Number" rows (and two "VIN" rows) -- the officer had
+                    # no way to tell the out-of-state path from the in-state one.
+                    # Setting `state` from the devdoc's own (InState)/(OutofState) labels was tried and
+                    # REVERTED: validate.ps1 reads `state` as a ROUTING signal ("separate In/Out combos
+                    # + prefilled State field = LIMITATION #30"), so overloading it as documentation
+                    # raised 2 LIMITATIONs. The disambiguation belongs in the REPORT, not the config.
+                    # This derives the hint from the data instead: whichever required field this combo
+                    # has that its same-named siblings do not.
+                    $sibs = @($combos | Where-Object { [string]$_.primaryFieldReference -eq $primary -and $_ -ne $c })
+                    $mine = @(); if ($c.requirements -and $c.requirements.set) { $mine = @($c.requirements.set | ForEach-Object { [string]$_ }) }
+                    $theirs = @()
+                    foreach ($s in $sibs) { if ($s.requirements -and $s.requirements.set) { $theirs += @($s.requirements.set | ForEach-Object { [string]$_ }) } }
+                    $only = @($mine | Where-Object { $theirs -notcontains $_ })
+                    if ($only.Count -gt 0) {
+                        $names = @($only | ForEach-Object { FieldName $_ ([string]$q.targetEntity) })
+                        $hint = " (with $($names -join ' + '))"
+                    } elseif ($mine.Count -eq 1 -and $theirs.Count -gt 1) {
+                        $hint = ' (on its own)'
+                    }
+                }
             }
 
             # required (set) and optional (any) -> field names, skipping hidden; default shown as (value)

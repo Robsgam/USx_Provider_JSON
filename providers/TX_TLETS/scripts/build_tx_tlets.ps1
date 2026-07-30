@@ -1,5 +1,15 @@
 # build_tx_tlets.ps1  -- TX_TLETS v4.7
 # Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
+# DO NOT set combo `state` from the devdoc (InState)/(OutofState) labels. Tried 2026-07-30 so the
+# officer guide could tell the two plate paths apart; it built clean but raised 2 LIMITATION #30s,
+# because validate.ps1 reads `state` as a ROUTING signal ("separate In/Out combos + a prefilled
+# State field = routing affected"). That property is load-bearing for the heuristic, so overloading
+# it as documentation has side effects. BoatQuery can carry discrete BQ=Out/QB=In because State
+# genuinely IS its discriminator there; on Vehicle and Person it is not (PlateTypeCode/FRT/RegionId
+# and SexCode are). The officer-guide problem was REAL and was fixed in the DELIVERABLE instead:
+# render_officer_guide now disambiguates same-named rows by the field that differs -- "Plate Number
+# (with Plate Type)" vs "(with Fin. Resp. Type)". Fix the report, not the config, when the config
+# change has side effects.
 # 19 CommSys combos: 5 VehReg + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat
 # v4.12 (2026-07-27, direct Rob feedback -- Person 2-card fold, layout+DH-sourcing change): folded
 #   the standalone SEARCH OPTIONS card away -- Person is now 2 cards (DL + DH), with the State/NCIC
