@@ -29,7 +29,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.14 | ALL-PASS (35 logs) |
 | NY_NYSPIN_EJUSTICE | v4.17 | NEVER-TESTED — 67 test(s) owed |
-| TX_TLETS | v4.18 | NEVER-TESTED — 89 test(s) owed |
+| TX_TLETS | v4.18 | ALL-PASS (89 logs) |
 | _14 others_ | — | never tenant-tested: AZ_AZDPS, CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 — `0 FAIL / 0 WARN`.
