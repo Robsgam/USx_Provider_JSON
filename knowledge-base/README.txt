@@ -765,6 +765,41 @@ TOOLS
     something). A tool must not manufacture that acceptance. Record dispositions under rule
     `devdoc-optional-unreachable`, then promote to blocking.
     Usage: .\audit_devdoc_optionals.ps1 -Path <json> [-Verbose2] [-OutFile <path>]
+  tools/audit_gate_efficacy.ps1
+    MUTATION TESTING FOR THE GATE SUITE -- the only tool here that audits the TOOLS instead of the
+    config. Answers the question that makes every other green light meaningful: "does this gate
+    actually FAIL when the defect it exists to catch is present?"
+    Origin (Rob 2026-07-30: "i need a way for me to trust your output. make it happen."): "0 FAIL"
+    is produced identically by (a) a correct config and (b) a broken/inert check, and Rob had no way
+    to tell them apart. Not hypothetical -- in ONE session: sync_provider_table was silently inert
+    for all 20 providers (score regex demanded a /LIM segment the table no longer had);
+    audit_query_trace read metadata field names from InnerText instead of @reference and called
+    every combination an empty-set SHADOW; audit_devdoc_combinations hit the PowerShell
+    single-element-array unwrap and claimed 20/20 UNBUILT on a 21/21-correct provider; audit_metadata
+    CHECK 4e compared against the query-wide set[] union instead of per-keyReference.
+    METHOD: for each defect CLASS, inject that exact defect into a throwaway replica and run the
+    owning gate. Detection = findings INCREASE over baseline (not "any finding at all" -- some gates
+    legitimately carry adjudicated findings, e.g. audit_devdoc_optionals reports 3 NO-FIRE fills on
+    TX by design; demanding a spotless baseline would make those gates untestable). Counts [WARN]
+    as well as [FAIL], because several checks are deliberately warn-level.
+    KILLED = gate caught it, so its PASS is evidence. SURVIVED = gate is blind, so its PASS proves
+    nothing for that class. INVALID = harness misconfigured; fix the harness, not the gate.
+    DISCIPLINE THIS TOOL ENFORCES ON ITSELF: a mutation must CREATE the defect, not merely resemble
+    it. The first draft prefilled LicensePlateYear to test prefill-death -- but Year is in BOTH
+    RQ and REG set[], so it starves neither, and the tool falsely accused audit_combo_reachability.
+    The real mutation is prefilling LicensePlateTypeCode (RQ is index 0 and PlateTypeCode is its
+    only extra set[] field vs REG, so prefilling it starves REG) -- the exact prefill removed at
+    v4.14. Always verify the mutant on disk before believing a SURVIVED verdict.
+    FIRST RUN, TX_TLETS v4.18: 12 KILLED / 3 SURVIVED. The survivors are REAL GATE DEFECTS:
+      verify_build VehicleMakeCode gate -- recurses all 3 layout variants then Sort-Object -Unique,
+        so a field that is FormInput in `default` but FormSelect in CAD_DISPATCH reports PASS.
+        Proven: mutant on disk reads {"resolvedName":"FormInput"} and the gate printed
+        "[PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect".
+      audit_metadata CHECK 4e -- does not detect stickerNumber demoted out of DPSI set[] into any[].
+        The keyRef-scoping guard is ruled out (0 suppression traces when instrumented); an earlier
+        continue short-circuits. Root cause NOT yet isolated.
+      audit_metadata CHECK 4d -- does not detect regionId forced into RQ{VIN} set[].
+    Usage: .\audit_gate_efficacy.ps1 -Provider TX_TLETS [-Only <substring>] [-Scratch <dir>] [-OutFile <path>]
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
     consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1
