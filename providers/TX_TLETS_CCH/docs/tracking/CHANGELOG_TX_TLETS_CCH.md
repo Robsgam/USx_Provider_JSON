@@ -2,9 +2,17 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.10** | Generated: 2026-07-30
+Current: **v1.11** | Generated: 2026-07-30
 
 ---
+
+## v1.11 -- 2026-07-30 -- DEX-1283 #4 UI adjustments (lockstep w/ TX_TLETS v4.15) -- layout + labels only
+
+**CHANGED:** Person DL rows restructured to match TX main: ROW_PER_L1 6/6 = OLN + CPL/DWI/RDL,
+  ROW_PER_N1 6/6 = First + Last, NEW ROW_PER_N1B 6/6 = MI + Suffix. messageKey relabelled  
+  'Message Key' -> 'CPL/DWI/RDL (optional)'. BASE-SYNC -> TX_TLETS v4.15.  
+**REASON:** Lockstep. No QIDM/combo/wire change -- validator 114P/0F/0W, verify_build 16P/0F/0W,
+  query_trace 34 built / 0 PREFILL-DEAD, variant sync clean. Never tenant-tested; 160 owed.  
 
 ## v1.10 -- 2026-07-30 -- Vehicle: all 7 metadata combinations FORM-REACHABLE (lockstep w/ TX_TLETS v4.14)
 

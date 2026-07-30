@@ -120,8 +120,8 @@
                 "props": {
                   "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -417,8 +417,8 @@
                 "props": {
                   "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -781,8 +781,8 @@
                 "props": {
                   "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1067,6 +1067,7 @@
                 "nodes": [
                   "ROW_PER_L1",
                   "ROW_PER_N1",
+                  "ROW_PER_N1B",
                   "ROW_PER_N2",
                   "ROW_PER_DL_OPT",
                   "ROW_PER_DL_OE"
@@ -1081,13 +1082,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "OperatorLicenseNumber_Input"
+                  "OperatorLicenseNumber_Input",
+                  "messageKey_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DL"
@@ -1108,6 +1111,22 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_L1"
               },
+              "messageKey_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "messageKey",
+                  "label": "CPL/DWI/RDL (optional)",
+                  "maxLength": "3"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_PER_L1"
+              },
               "ROW_PER_N1": {
                 "type": {
                   "resolvedName": "Row"
@@ -1115,21 +1134,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "3",
-                    "3",
-                    "2",
-                    "2",
-                    "2"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input",
-                  "nameMiddle_Input",
-                  "nameSuffix_Input",
-                  "messageKey_Input"
+                  "NameLast_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DL"
@@ -1166,6 +1179,26 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_N1"
               },
+              "ROW_PER_N1B": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "nameMiddle_Input",
+                  "nameSuffix_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DL"
+              },
               "nameMiddle_Input": {
                 "type": {
                   "resolvedName": "FormInput"
@@ -1180,7 +1213,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_N1"
+                "parent": "ROW_PER_N1B"
               },
               "nameSuffix_Input": {
                 "type": {
@@ -1196,23 +1229,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_N1"
-              },
-              "messageKey_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "messageKey",
-                  "label": "Message Key",
-                  "maxLength": "3"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_N1"
+                "parent": "ROW_PER_N1B"
               },
               "ROW_PER_N2": {
                 "type": {
@@ -1296,8 +1313,8 @@
                 "props": {
                   "fieldId": "RegistrationState",
                   "label": "State",
-                  "initialValue": "TX",
-                  "attributeTypeId": "STATE"
+                  "attributeTypeId": "STATE",
+                  "initialValue": "TX"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1314,8 +1331,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1653,8 +1670,8 @@
                 "props": {
                   "fieldId": "RegistrationStateDH",
                   "label": "State",
-                  "initialValue": "TX",
-                  "attributeTypeId": "STATE"
+                  "attributeTypeId": "STATE",
+                  "initialValue": "TX"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1671,8 +1688,8 @@
                   "fieldId": "ImageIndicatorDH",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1955,8 +1972,8 @@
                 "props": {
                   "fieldId": "raceCodeCCH",
                   "label": "Race (CCH)",
-                  "codeTypeCategory": "NIBRS_RACE",
-                  "codeTypeSource": "NIBRS"
+                  "codeTypeSource": "NIBRS",
+                  "codeTypeCategory": "NIBRS_RACE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2184,8 +2201,8 @@
                 "props": {
                   "fieldId": "imageIndicatorCCH",
                   "label": "Image (CCH)",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2201,8 +2218,8 @@
                 "props": {
                   "fieldId": "relatedHitSearchIndicatorCCH",
                   "label": "Related Hit Search (CCH)",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2557,6 +2574,7 @@
                 "nodes": [
                   "ROW_PER_L1",
                   "ROW_PER_N1",
+                  "ROW_PER_N1B",
                   "ROW_PER_N2",
                   "ROW_PER_DL_OPT",
                   "ROW_PER_DL_OE"
@@ -2571,13 +2589,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "OperatorLicenseNumber_Input"
+                  "OperatorLicenseNumber_Input",
+                  "messageKey_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DL"
@@ -2598,6 +2618,22 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_L1"
               },
+              "messageKey_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "messageKey",
+                  "label": "CPL/DWI/RDL (optional)",
+                  "maxLength": "3"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_PER_L1"
+              },
               "ROW_PER_N1": {
                 "type": {
                   "resolvedName": "Row"
@@ -2605,21 +2641,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "3",
-                    "3",
-                    "2",
-                    "2",
-                    "2"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input",
-                  "nameMiddle_Input",
-                  "nameSuffix_Input",
-                  "messageKey_Input"
+                  "NameLast_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DL"
@@ -2656,6 +2686,26 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_N1"
               },
+              "ROW_PER_N1B": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "nameMiddle_Input",
+                  "nameSuffix_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DL"
+              },
               "nameMiddle_Input": {
                 "type": {
                   "resolvedName": "FormInput"
@@ -2670,7 +2720,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_N1"
+                "parent": "ROW_PER_N1B"
               },
               "nameSuffix_Input": {
                 "type": {
@@ -2686,23 +2736,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_N1"
-              },
-              "messageKey_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "messageKey",
-                  "label": "Message Key",
-                  "maxLength": "3"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_N1"
+                "parent": "ROW_PER_N1B"
               },
               "ROW_PER_N2": {
                 "type": {
@@ -2786,8 +2820,8 @@
                 "props": {
                   "fieldId": "RegistrationState",
                   "label": "State",
-                  "initialValue": "TX",
-                  "attributeTypeId": "STATE"
+                  "attributeTypeId": "STATE",
+                  "initialValue": "TX"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2804,8 +2838,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3143,8 +3177,8 @@
                 "props": {
                   "fieldId": "RegistrationStateDH",
                   "label": "State",
-                  "initialValue": "TX",
-                  "attributeTypeId": "STATE"
+                  "attributeTypeId": "STATE",
+                  "initialValue": "TX"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3161,8 +3195,8 @@
                   "fieldId": "ImageIndicatorDH",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3445,8 +3479,8 @@
                 "props": {
                   "fieldId": "raceCodeCCH",
                   "label": "Race (CCH)",
-                  "codeTypeCategory": "NIBRS_RACE",
-                  "codeTypeSource": "NIBRS"
+                  "codeTypeSource": "NIBRS",
+                  "codeTypeCategory": "NIBRS_RACE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3674,8 +3708,8 @@
                 "props": {
                   "fieldId": "imageIndicatorCCH",
                   "label": "Image (CCH)",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3691,8 +3725,8 @@
                 "props": {
                   "fieldId": "relatedHitSearchIndicatorCCH",
                   "label": "Related Hit Search (CCH)",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4114,6 +4148,7 @@
                 "nodes": [
                   "ROW_PER_L1",
                   "ROW_PER_N1",
+                  "ROW_PER_N1B",
                   "ROW_PER_N2",
                   "ROW_PER_DL_OPT",
                   "ROW_PER_DL_OE"
@@ -4128,13 +4163,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "12"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
-                  "OperatorLicenseNumber_Input"
+                  "OperatorLicenseNumber_Input",
+                  "messageKey_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DL"
@@ -4155,6 +4192,22 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_L1"
               },
+              "messageKey_Input": {
+                "type": {
+                  "resolvedName": "FormInput"
+                },
+                "displayName": "Input",
+                "props": {
+                  "fieldId": "messageKey",
+                  "label": "CPL/DWI/RDL (optional)",
+                  "maxLength": "3"
+                },
+                "isCanvas": false,
+                "hidden": false,
+                "nodes": [],
+                "linkedNodes": {},
+                "parent": "ROW_PER_L1"
+              },
               "ROW_PER_N1": {
                 "type": {
                   "resolvedName": "Row"
@@ -4162,21 +4215,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "3",
-                    "3",
-                    "2",
-                    "2",
-                    "2"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirst_Input",
-                  "NameLast_Input",
-                  "nameMiddle_Input",
-                  "nameSuffix_Input",
-                  "messageKey_Input"
+                  "NameLast_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DL"
@@ -4213,6 +4260,26 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_N1"
               },
+              "ROW_PER_N1B": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "nameMiddle_Input",
+                  "nameSuffix_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DL"
+              },
               "nameMiddle_Input": {
                 "type": {
                   "resolvedName": "FormInput"
@@ -4227,7 +4294,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_N1"
+                "parent": "ROW_PER_N1B"
               },
               "nameSuffix_Input": {
                 "type": {
@@ -4243,23 +4310,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_N1"
-              },
-              "messageKey_Input": {
-                "type": {
-                  "resolvedName": "FormInput"
-                },
-                "displayName": "Input",
-                "props": {
-                  "fieldId": "messageKey",
-                  "label": "Message Key",
-                  "maxLength": "3"
-                },
-                "isCanvas": false,
-                "hidden": false,
-                "nodes": [],
-                "linkedNodes": {},
-                "parent": "ROW_PER_N1"
+                "parent": "ROW_PER_N1B"
               },
               "ROW_PER_N2": {
                 "type": {
@@ -4343,8 +4394,8 @@
                 "props": {
                   "fieldId": "RegistrationState",
                   "label": "State",
-                  "initialValue": "TX",
-                  "attributeTypeId": "STATE"
+                  "attributeTypeId": "STATE",
+                  "initialValue": "TX"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4361,8 +4412,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4700,8 +4751,8 @@
                 "props": {
                   "fieldId": "RegistrationStateDH",
                   "label": "State",
-                  "initialValue": "TX",
-                  "attributeTypeId": "STATE"
+                  "attributeTypeId": "STATE",
+                  "initialValue": "TX"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4718,8 +4769,8 @@
                   "fieldId": "ImageIndicatorDH",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5002,8 +5053,8 @@
                 "props": {
                   "fieldId": "raceCodeCCH",
                   "label": "Race (CCH)",
-                  "codeTypeCategory": "NIBRS_RACE",
-                  "codeTypeSource": "NIBRS"
+                  "codeTypeSource": "NIBRS",
+                  "codeTypeCategory": "NIBRS_RACE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5231,8 +5282,8 @@
                 "props": {
                   "fieldId": "imageIndicatorCCH",
                   "label": "Image (CCH)",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5248,8 +5299,8 @@
                 "props": {
                   "fieldId": "relatedHitSearchIndicatorCCH",
                   "label": "Related Hit Search (CCH)",
-                  "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "YES_NO_UNKNOWN"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5704,8 +5755,8 @@
                 "props": {
                   "fieldId": "GunMake",
                   "label": "Gun Make",
-                  "codeTypeCategory": "NCIC_FIREARM_MAKE",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_FIREARM_MAKE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5743,8 +5794,8 @@
                 "props": {
                   "fieldId": "GunCaliber",
                   "label": "Caliber",
-                  "codeTypeCategory": "NCIC_FIREARM_CALIBER",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_FIREARM_CALIBER"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5761,8 +5812,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5779,8 +5830,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5916,8 +5967,8 @@
                 "props": {
                   "fieldId": "GunMake",
                   "label": "Gun Make",
-                  "codeTypeCategory": "NCIC_FIREARM_MAKE",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_FIREARM_MAKE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5955,8 +6006,8 @@
                 "props": {
                   "fieldId": "GunCaliber",
                   "label": "Caliber",
-                  "codeTypeCategory": "NCIC_FIREARM_CALIBER",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_FIREARM_CALIBER"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5973,8 +6024,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5991,8 +6042,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6195,8 +6246,8 @@
                 "props": {
                   "fieldId": "GunMake",
                   "label": "Gun Make",
-                  "codeTypeCategory": "NCIC_FIREARM_MAKE",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_FIREARM_MAKE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6234,8 +6285,8 @@
                 "props": {
                   "fieldId": "GunCaliber",
                   "label": "Caliber",
-                  "codeTypeCategory": "NCIC_FIREARM_CALIBER",
-                  "codeTypeSource": "NCIC"
+                  "codeTypeSource": "NCIC",
+                  "codeTypeCategory": "NCIC_FIREARM_CALIBER"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6252,8 +6303,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6270,8 +6321,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6427,8 +6478,8 @@
                 "props": {
                   "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
-                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
-                  "codeTypeSource": "CA_CLETS"
+                  "codeTypeSource": "CA_CLETS",
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6483,8 +6534,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6501,8 +6552,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6620,8 +6671,8 @@
                 "props": {
                   "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
-                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
-                  "codeTypeSource": "CA_CLETS"
+                  "codeTypeSource": "CA_CLETS",
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6676,8 +6727,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6694,8 +6745,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6880,8 +6931,8 @@
                 "props": {
                   "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
-                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
-                  "codeTypeSource": "CA_CLETS"
+                  "codeTypeSource": "CA_CLETS",
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6936,8 +6987,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6954,8 +7005,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7128,7 +7179,7 @@
                 "displayName": "Select",
                 "props": {
                   "fieldId": "RegistrationState",
-                  "label": "State (leave blank for TX)",
+                  "label": "State",
                   "attributeTypeId": "STATE"
                 },
                 "isCanvas": false,
@@ -7184,8 +7235,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7202,8 +7253,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7338,7 +7389,7 @@
                 "displayName": "Select",
                 "props": {
                   "fieldId": "RegistrationState",
-                  "label": "State (leave blank for TX)",
+                  "label": "State",
                   "attributeTypeId": "STATE"
                 },
                 "isCanvas": false,
@@ -7394,8 +7445,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7412,8 +7463,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7615,7 +7666,7 @@
                 "displayName": "Select",
                 "props": {
                   "fieldId": "RegistrationState",
-                  "label": "State (leave blank for TX)",
+                  "label": "State",
                   "attributeTypeId": "STATE"
                 },
                 "isCanvas": false,
@@ -7671,8 +7722,8 @@
                   "fieldId": "ImageIndicator",
                   "label": "NCIC Image",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "N"
+                  "initialValue": "N",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7689,8 +7740,8 @@
                   "fieldId": "relatedHitSearchIndicator",
                   "label": "Stolen Check",
                   "codeTypeCategory": "YES_NO_UNKNOWN",
-                  "codeTypeSource": "NCIC",
-                  "initialValue": "Y"
+                  "initialValue": "Y",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -11182,7 +11233,7 @@
           "targetEntity": "Person"
         }
       ],
-      "description": "Provider configuration for TX_TLETS_CCH v1.10",
+      "description": "Provider configuration for TX_TLETS_CCH v1.11",
       "name": "TX_TLETS_CCH",
       "type": "BUNDLE",
       "provider": "TX_TLETS_CCH"

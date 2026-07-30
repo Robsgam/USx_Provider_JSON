@@ -1,5 +1,5 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.10
-# BASE-SYNC: TX_TLETS v4.14   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.15   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.5 (2026-07-27, DEX-1284 shadow correction, lockstep w/ TX_TLETS v4.9 + a CCH-only metadata fix):
 #   (base-6) removed QVLicensePlateNumber + QVVehicleIdentificationNumber (ungated subset-shadows,
 #   platform auto-fired -- see TX_TLETS v4.9); KEPT regionId (optional combination field) moved to the
@@ -92,7 +92,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.10"
+    [string]$Version = "1.11"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -592,17 +592,19 @@ $perLayout = MakeLayouts @(
             # OLN alone on the top line (Rob 2026-07-27, lockstep w/ TX_TLETS main v4.10) -- the DL
             # card now mirrors the DH card's 3-line structure (OLN / Name / DOB+Sex). DOB + Sex were
             # previously lumped onto the OLN row (6/3/3); moved to their own ROW_PER_N2.
-            @{ id = 'ROW_PER_L1'; cols = @('12'); fields = @(
+            # DEX-1283 #4 (lockstep w/ TX_TLETS v4.15): OLN + CPL/DWI/RDL on the top line, name
+            # split First+Last / MI+Suffix so no row is uneven in CAD.
+            @{ id = 'ROW_PER_L1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_L1' }
+                @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'CPL/DWI/RDL (optional)' '3' 'ROW_PER_L1' }
             )}
-            # Name order First-before-Last (TX_TLETS main v4.3 convention); messageKey moved onto
-            # this row (v4.2 removed the old ROW_PER_N2 -- Race/ExpandedDOB/RegionId only fed the dropped QWName).
-            @{ id = 'ROW_PER_N1'; cols = @('3','3','2','2','2'); fields = @(
+            @{ id = 'ROW_PER_N1'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name' '30' 'ROW_PER_N1' }
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '30' 'ROW_PER_N1' }
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '30' 'ROW_PER_N1' }
-                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1' }
-                @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'Message Key' '3' 'ROW_PER_N1' }
+            )}
+            @{ id = 'ROW_PER_N1B'; cols = @('6','6'); fields = @(
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '30' 'ROW_PER_N1B' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1B' }
             )}
             # DOB + Sex on their own row (moved off ROW_PER_L1 2026-07-27), matching DH's ROW_PER_DHN2.
             @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
@@ -787,7 +789,7 @@ $boaLayout = MakeLayouts @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '11' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for TX)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCICNumber_Input';                node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_2' }

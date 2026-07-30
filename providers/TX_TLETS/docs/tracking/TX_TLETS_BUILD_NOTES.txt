@@ -4,6 +4,17 @@ Provider: TX_TLETS
 State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 --------------------------------------------------------------------------------
+v4.15  2026-07-30  DEX-1283 #4 UI adjustments (Leo CAD review) -- layout + labels only
+  CHANGED: Person DL card rows restructured per the ticket: ROW_PER_L1 6/6 = OLN + CPL/DWI/RDL;
+    ROW_PER_N1 6/6 = First + Last; NEW ROW_PER_N1B 6/6 = MI + Suffix; ROW_PER_N2 6/6 = DOB + Sex
+    (was OLN alone on a 12, then First/Last/MI/Suffix/messageKey crammed on a 3/3/2/2/2). messageKey
+    relabelled 'Message Key' -> 'CPL/DWI/RDL (optional)'; its LABEL-OVERRIDE removed since the '('
+    qualifier now satisfies verify_build CHECK 15 natively. Boat State label
+    'State (leave blank for TX)' -> bare 'State' (it was the only non-bare State label in the file).
+  REASON: DEX-1283 #4, uneven fields wrapping in CAD. NO QIDM, combo, routing or wire change --
+    query_trace still 21 built / 0 PREFILL-DEAD / 0 SHADOW / 0 MISSING; verify_build 16P/0F/0W.
+    Version bump archives the v4.14 93-log sweep; re-sweep owed (Rob: log collection is not a
+    burden, do the right fix). CCH v1.11 lockstep owed.
 v4.14  2026-07-30  Vehicle: all 7 metadata combinations made FORM-REACHABLE (prefills removed, RQ/QV restored)
   CHANGED: Removed the four routing-affecting Vehicle prefills -- LicensePlateTypeCode=PC,
     LicensePlateYear=<year>, financialResponsibilityType=E, RegistrationState=TX -- from BOTH the

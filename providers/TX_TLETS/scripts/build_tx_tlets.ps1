@@ -169,7 +169,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.14"
+    [string]$Version = "4.15"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -451,7 +451,7 @@ $provBundle = [PSCustomObject]@{
 # LABEL-OVERRIDE: nameSuffix -- bare "Suffix" per lean pass (any[] optional)
 # LABEL-OVERRIDE: nameMiddleDH -- bare "MI" per lean pass (any[] optional)
 # LABEL-OVERRIDE: nameSuffixDH -- bare "Suffix" per lean pass (any[] optional)
-# LABEL-OVERRIDE: messageKey -- bare "Message Key" per lean pass (any[]-only in CPL combo)
+# messageKey: label is now 'CPL/DWI/RDL (optional)' (DEX-1283 #4) -- has a '(' qualifier, no LABEL-OVERRIDE needed
 # LABEL-OVERRIDE: GunMake -- bare "Gun Make" per lean pass (any[] optional)
 # LABEL-OVERRIDE: GunCaliber -- bare "Caliber" per lean pass (any[] optional)
 # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per lean pass (any[] optional)
@@ -537,20 +537,21 @@ $perLayout = MakeLayouts @(
             # 3-line structure (OLN line / Name line / DOB+Sex line). DOB + Sex were previously
             # lumped onto the OLN row (6/3/3); moved to their own row (ROW_PER_N2) so the primary
             # identifier stands alone on top, matching CARD_PER_DH.
-            @{ id = 'ROW_PER_L1'; cols = @('12'); fields = @(
+            # DEX-1283 #4 (Leo CAD review): OLN pairs with CPL/DWI/RDL on the top line; name split
+            # First+Last / MI+Suffix so no row is uneven in CAD. messageKey relabelled from the bare
+            # 'Message Key' -- the ticket asked for the value list only, and the '(' qualifier now
+            # satisfies verify_build CHECK 15 natively (its LABEL-OVERRIDE is no longer needed).
+            @{ id = 'ROW_PER_L1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_L1' }
+                @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'CPL/DWI/RDL (optional)' '3' 'ROW_PER_L1' }
             )}
-            # Name order First-before-Last (Rob-confirmed 2026-07-17 -- was Last-before-First,
-            # the one regression that contradicted every other reviewed provider NJ/CA/HI/NY/FL).
-            # "(Name search)"/"(required with Name)" helpers dropped (Rob-confirmed 2026-07-17) --
-            # NameFirst/NameLast/BirthDate/SexCode are all set[]-required on DQName, never any[]-only
-            # anywhere else, so bare labels carry no CHECK-15 exposure.
-            @{ id = 'ROW_PER_N1'; cols = @('3','3','2','2','2'); fields = @(
+            @{ id = 'ROW_PER_N1'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name' '30' 'ROW_PER_N1' }
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '30' 'ROW_PER_N1' }
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '30' 'ROW_PER_N1' }
-                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1' }
-                @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'Message Key' '3' 'ROW_PER_N1' }
+            )}
+            @{ id = 'ROW_PER_N1B'; cols = @('6','6'); fields = @(
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '30' 'ROW_PER_N1B' }
+                @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1B' }
             )}
             # DOB + Sex on their own row (moved off ROW_PER_L1 2026-07-27), matching DH's ROW_PER_DHN2.
             @{ id = 'ROW_PER_N2'; cols = @('6','6'); fields = @(
@@ -672,7 +673,7 @@ $boaLayout = MakeLayouts @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '11' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for TX)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NCICNumber_Input';                node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_2' }

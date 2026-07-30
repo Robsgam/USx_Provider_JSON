@@ -1,4 +1,4 @@
-TX_TLETS v4.14 -- TEST MATRIX
+TX_TLETS v4.15 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-30
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -15,11 +15,12 @@ Vehicle (1 card, 10 fields):
 
 Person (2 cards, 24 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
-    ROW 1: OperatorLicenseNumber [Inp 20]
-    ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 30], messageKey [Inp 3]
-    ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
-    ROW 4: RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
-    ROW 5: emailAddress [Inp X, 80]
+    ROW 1: OperatorLicenseNumber [Inp 20], messageKey [Inp 3]
+    ROW 2: NameFirst [Inp 30], NameLast [Inp 30]
+    ROW 3: nameMiddle [Inp 30], nameSuffix [Inp 30]
+    ROW 4: BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 5: RegistrationState [Sel STATE, TX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], reasonCode [Inp C, 1]
+    ROW 6: emailAddress [Inp X, 80]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: Attention [Inp X, 30]
     ROW 2: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
@@ -226,4 +227,4 @@ COMBO COVERAGE (21/21):
   ArticleSingleQuery: 2/2 -- T52(Serial), T54(NCIC)
   BoatQuery: 5/5 -- T34(BQ+Hull), T36(QB+Hull), T38(BQ+Reg), T40(QB+Reg), T42(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.14.json
+IMPORT FILE: TX_TLETS_v4.15.json
