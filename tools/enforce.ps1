@@ -792,6 +792,54 @@ if (-not (Test-Path $qtTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2p: Devdoc Combination Coverage (audit_devdoc_combinations.ps1)
+# ══════════════════════════════════════════════════════════════════════════════
+#  The DEVDOC -> BUILT direction, at COMBINATION granularity -- the one direction no other
+#  gate has ever checked. PHASE 2e checks BUILT -> devdoc and only at QUERY-NAME level
+#  ("is BoatQuery in the Basic Queries Supported list?"). PHASE 2n enumerates METADATA but
+#  scoped to transactions that already have a QIDM. Everything else enumerates the JSON.
+#  So a devdoc-listed combination that was never built was invisible to the entire gate
+#  stack -- and could not fail a test either, because the test plan is generated FROM the
+#  JSON (no combo -> no test -> no failure).
+#
+#  Found 2026-07-30 on TX_TLETS v4.16, which was reporting 36 PASS / 0 FAIL / 0 WARN with
+#  95/95 tenant tests: devdoc BoatQuery #2 (out-of-state boat by owner Name+BirthDate) and
+#  DriverLicenseQuery #3 (Name+BirthDate+SexCode+RaceCode) were both unbuilt AND unrecorded.
+#  Both are defensible -- but "defensible" is a human judgement that must be RECORDED in
+#  <P>_ACCEPTED_DIVERGENCES.txt (rule devdoc-combo-unbuilt), not an absence nothing can see.
+#
+#  Gates on UNWIRED only: a mandatory devdoke field present in NO built combo's set[]/any[]
+#  for that query. That is mechanical and needs no judgement. The softer "no exact set[]
+#  match" case is [NOTE] (metadata is field-authority and may legitimately require more).
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2p: Devdoc Combination Coverage (devdoc -> built)"
+$dcTool = Join-Path $toolDir "audit_devdoc_combinations.ps1"
+if (-not (Test-Path $dcTool)) {
+    Info "audit_devdoc_combinations.ps1 not found -- devdoc combination check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $dcJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $dcJson) { continue }
+        $dcOut = & powershell -ExecutionPolicy Bypass -File $dcTool -Path $dcJson 2>&1 | Out-String
+        $dcM = [regex]::Match($dcOut, 'RESULT:\s*(\d+) FAIL\s*/\s*(\d+) NOTE')
+        if (-not $dcM.Success) {
+            Info "$provName -- devdoc combination check produced no parseable totals"
+            continue
+        }
+        $dcFail = [int]$dcM.Groups[1].Value; $dcNote = [int]$dcM.Groups[2].Value
+        if ($dcFail -gt 0) {
+            Fail "$provName -- $dcFail devdoc-listed combination(s) UNBUILT with a mandatory field wired nowhere; build it or record it (tools\audit_devdoc_combinations.ps1 -Path $dcJson)"
+            $dcOut -split "`n" | Where-Object { $_ -match '\[FAIL\]' } | Select-Object -First 6 |
+                ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            $sfx = if ($dcNote -gt 0) { " [$dcNote note(s) for human review]" } else { "" }
+            Pass "$provName -- every devdoc combination is built or recorded as accepted$sfx"
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 # ══════════════════════════════════════════════════════════════════════════════

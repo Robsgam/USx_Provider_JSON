@@ -704,6 +704,42 @@ TOOLS
     Getting any of that wrong silently reports every combo as an empty-set SHADOW -- validate any
     change against TX_TLETS, whose answer is known (17 built / 4 PREFILL-DEAD / 0 SHADOW / 0 MISSING).
     Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+  tools/audit_devdoc_combinations.ps1
+    DEVDOC -> BUILT, at COMBINATION granularity (enforce PHASE 2p). The one direction nothing
+    else checked. PHASE 2e checks BUILT->devdoc and only by QUERY NAME ("is BoatQuery in the
+    Basic Queries Supported list?" -- yes, for months, while ~24 combinations under those 6 names
+    were never compared to anything). PHASE 2n enumerates METADATA but only for transactions that
+    already have a QIDM. Every other tool enumerates the JSON. So a devdoc-listed combination that
+    was never built sat outside the whole gate stack -- and could not fail a test either, because
+    the TEST PLAN IS GENERATED FROM THE JSON: no combo, no test, no failure.
+    Origin (2026-07-30): TX_TLETS v4.16 read 36 PASS / 0 FAIL / 0 WARN with 95/95 tenant tests,
+    and two devdoc-Basic combinations were unbuilt AND unrecorded -- BoatQuery #2 "(OutofState)
+    Name, BirthDate, State" (out-of-state boat by OWNER NAME) and DriverLicenseQuery #3
+    "Name, BirthDate, SexCode, RaceCode" (= metadata keyRef QW). Both defensible on inspection
+    (metadata BoatQuery defines no Name/BirthDate; TX builds -SkipRace so RaceCode is wired
+    nowhere) -- but defensible is a HUMAN judgement that must be RECORDED, not an absence.
+    [FAIL] UNWIRED  = a mandatory devdoc field for that path is in NO built combo's set[]/any[]
+                      for that query. Mechanical, no judgement needed. Suppress by recording it
+                      in docs/tracking/<P>_ACCEPTED_DIVERGENCES.txt, rule devdoc-combo-unbuilt.
+    [NOTE] NO-EXACT = all mandatory fields wired but no single set[] covers them. Usually
+                      legitimate (metadata is field-authority and may require more, or one devdoc
+                      item is split across keyRefs). Human review, never blocks.
+    PARSER NOTE -- devdoc text is pdftotext output, so it wraps and repeats; the tool glues
+    continuation lines, attributes each "Possible Combinations" line to the nearest preceding
+    <X>Query heading, strips (InState)/(OutofState) qualifiers, and treats [bracketed] fields as
+    optional. It maps devdoc field NAMES to fieldIds via an alias table that is load-bearing, not
+    cosmetic: the first portfolio run reported 48 FAIL, and the AZ ones were false -- AZ wires
+    BadgeNumber as dexStateUserId, and OR/TN/OH wire ArticleSerialNumber as the generic
+    serialNumber. TWO parser bugs were caught pre-ship and both are guarded now: (1) a function
+    returning @($x) UNWRAPS to a bare string in PowerShell, so callers doing [0] took the first
+    CHARACTER -- every wired set became a set of letters and the tool claimed 20/20 UNBUILT on a
+    provider that is 21/21 correct; (2) it now FAILS LOUDLY if the built-side walk finds no
+    queries or a query with 0 wired fields, instead of reporting that as a coverage gap.
+    -Explain prints both the parsed devdoc items AND the built-side wired inventory -- a parser
+    that cannot show its intermediate state is indistinguishable from one that is silently wrong,
+    which is the entire failure class this tool exists for. Validate any change against TX_TLETS,
+    whose answer is known: 0 FAIL / 4 NOTE with the divergences recorded (2 FAIL without them).
+    Usage: .\audit_devdoc_combinations.ps1 -Path <json> | -All [-Explain] [-OutFile <path>]
 
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
