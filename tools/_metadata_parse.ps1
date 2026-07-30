@@ -63,6 +63,22 @@ function Test-MetaFormOnly([string]$f) {
 #   <Any>                 -> optional, ignored for required-sets
 # FL/NJ use flat Sets (no Choice) -> one alternative = the flat field list. NY uses <Choice>
 # (e.g. Vehicle plate: {Plate} OR {Plate,Type,Year,State}) -> multiple alternatives.
+# ARRAY-UNWRAP HAZARD -- this function returns an array OF ARRAYS, and PowerShell destroys that
+# shape twice over unless every step is written defensively. Both traps were LIVE here until
+# 2026-07-30 and silently degraded the grammar above into something much weaker:
+#   1. `return $combos` on a ONE-alternative result unwraps to the bare inner field array, so the
+#      caller receives string[] instead of string[][]. Fixed with Write-Output -NoEnumerate.
+#   2. `$alts += (Get-MetaAltSets $opt)` then ENUMERATES that unwrapped array and appends each
+#      FIELD as its own alternative.
+# Net effect on NY_NYSPIN_EJUSTICE's documented example: {Plate} OR {Plate,Type,Year,State} came
+# back as FIVE single-field alternatives -- [Plate], [Plate], [Type], [Year], [State]. Every
+# consumer then believed a one-field request satisfied the four-field branch. audit_log_metadata
+# (gate 6d) is the consumer that matters: it validated 6 providers' logs against requirements it
+# had silently shredded, and it could not fail, because a single-field set matches almost anything.
+# The comment block above was CORRECT the whole time -- documented intent, degraded implementation,
+# no gate on the gate. Use `+= ,@(...)` for every append, and -NoEnumerate on every return.
+# Verify a change here with:  Get-MetadataTransactions on NY VehicleRegistrationQuery must yield
+# exactly TWO RVEH alternatives, the second of which has FOUR fields.
 function Get-MetaAltSets($setNode) {
     $direct = @()
     $groups = @()   # each entry = an array-of-alternatives (from a Choice or nested Set)
@@ -75,7 +91,10 @@ function Get-MetaAltSets($setNode) {
             'Choice' {
                 $alts = @()
                 foreach ($opt in $child.ChildNodes) {
-                    if ($opt.LocalName -eq 'Set') { $alts += (Get-MetaAltSets $opt) }
+                    if ($opt.LocalName -eq 'Set') {
+                        # each returned alternative must be appended as ONE element, not spliced
+                        foreach ($a in (Get-MetaAltSets $opt)) { $alts += ,@($a) }
+                    }
                     elseif ($opt.LocalName -eq 'Field') {
                         $r = $opt.GetAttribute('reference'); if (-not $r) { $r = $opt.GetAttribute('name') }
                         if ($r) { $alts += ,@($r) }
@@ -83,7 +102,10 @@ function Get-MetaAltSets($setNode) {
                 }
                 if ($alts.Count) { $groups += ,$alts }
             }
-            'Set' { $sub = Get-MetaAltSets $child; if ($sub.Count) { $groups += ,$sub } }
+            'Set' {
+                $sub = @(); foreach ($a in (Get-MetaAltSets $child)) { $sub += ,@($a) }
+                if ($sub.Count) { $groups += ,$sub }
+            }
             # 'Any' ignored -- optional fields do not constrain the required set.
         }
     }
@@ -96,7 +118,7 @@ function Get-MetaAltSets($setNode) {
         }
         $combos = $next
     }
-    return $combos
+    Write-Output $combos -NoEnumerate
 }
 
 function Get-MetadataTransactions {
