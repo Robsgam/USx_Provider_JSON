@@ -42,6 +42,7 @@ param([string]$Provider, [switch]$Detail, [string]$OutFile)
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+. (Join-Path $PSScriptRoot '_divergence_rules.ps1')
 $lines = @()
 function Out-Line([string]$s, [string]$c = 'Gray') { $script:lines += $s; Write-Host $s -ForegroundColor $c }
 
@@ -50,22 +51,18 @@ function Out-Line([string]$s, [string]$c = 'Gray') { $script:lines += $s; Write-
 # 'to-any'     the decision is about placing/leaving a field in any[]
 # 'existence'  the decision is that a COMBINATION is not built / not reachable
 # 'other'      adjudications that license no field-placement or existence check on their own
-function Get-RuleClass([string]$rule) {
-    $r = $rule.ToLower()
-    if ($r -eq 'promoted-to-set')                                { return 'to-set' }
-    if ($r -in @('promoted-to-any','demoted-to-any','added-to-any')) { return 'to-any' }
-    if ($r -match 'not-built|unbuilt|shadow|dead-combo|dropped-combo|missing-primary-combo') { return 'existence' }
-    return 'other'
-}
+# Delegates to _divergence_rules.ps1 -- the SAME classifier audit_metadata enforces with. If the
+# measurer and the enforcer disagreed about what a rule name means, this whole report is fiction.
+function Get-RuleClass([string]$rule) { return (Get-DivergenceRuleClass $rule) }
 
 # ── registry-reading checks, and the rule class each may LEGITIMATELY be licensed by ──
 # RuleAware = does the call site already consult the Rule column? Only CHECK 4d does (2026-07-30),
 # plus audit_requirement_fidelity, which was written rule-aware after this class was found.
 $checks = @(
     @{ Id='audit_metadata CHECK 4d  (field promoted INTO set[])';        Accepts='to-set';     RuleAware=$true  }
-    @{ Id='audit_metadata CHECK 4e  (field demoted to any[])';           Accepts='to-any';     RuleAware=$false }
-    @{ Id='audit_metadata CHECK 4   (combination field coverage)';       Accepts='existence';  RuleAware=$false }
-    @{ Id='audit_metadata CHECK 5   (primary-field combo present)';      Accepts='existence';  RuleAware=$false }
+    @{ Id='audit_metadata CHECK 4e  (field demoted to any[])';           Accepts='to-any';     RuleAware=$false; OptIn=$true }
+    @{ Id='audit_metadata CHECK 4   (combination field coverage)';       Accepts='existence';  RuleAware=$false; OptIn=$true }
+    @{ Id='audit_metadata CHECK 5   (primary-field combo present)';      Accepts='existence';  RuleAware=$false; OptIn=$true }
     @{ Id='audit_requirement_fidelity  OVER-PERMITTED';                  Accepts='to-any';     RuleAware=$true  }
     @{ Id='audit_requirement_fidelity  UNDER-REQUIRED / skip-unbuilt';   Accepts='existence';  RuleAware=$true  }
     @{ Id='audit_combo_reachability    (dead combo)';                    Accepts='existence';  RuleAware=$true  }
@@ -93,6 +90,9 @@ foreach ($d in $provDirs) {
         $rows += [pscustomobject]@{ Query=$p[0].Trim(); KeyRef=$p[1].Trim(); Field=$p[2].Trim(); Rule=$p[3].Trim() }
     }
     if (-not $rows.Count) { continue }
+    # A provider carrying the marker has the OptIn checks already narrowed -- do not report their
+    # rows as over-broad, or this tool credits a fix that has been applied and looks like it did not.
+    $optedIn = Test-DirectionAwareOptIn $f.FullName
 
     $pOver = 0; $rowDetail = @()
     foreach ($r in $rows) {
@@ -102,6 +102,7 @@ foreach ($d in $provDirs) {
         $over = @()
         foreach ($c in $checks) {
             if ($c.RuleAware) { continue }        # already consults the Rule column -> correctly scoped
+            if ($c.OptIn -and $optedIn) { continue }  # narrowed for THIS provider via the marker
             if ($c.Accepts -eq $cls) { continue } # this row genuinely licenses that check
             $over += $c.Id
         }
@@ -130,7 +131,7 @@ foreach ($k in ($byRule.Keys | Sort-Object { -$byRule[$_] })) {
 
 Out-Line ''
 Out-Line '  DIRECTION-BLIND CALL SITES (each silences EVERY rule class for a matched triple):'
-foreach ($c in $checks) { if (-not $c.RuleAware) { Out-Line ("    [BLIND]  " + $c.Id) 'Yellow' } }
+foreach ($c in $checks) { if (-not $c.RuleAware) { $m = if ($c.OptIn) { ' -- narrowed where the provider opted in' } else { '' }; Out-Line ("    [BLIND]  " + $c.Id + $m) 'Yellow' } }
 foreach ($c in $checks) { if ($c.RuleAware)      { Out-Line ("    [scoped] " + $c.Id) 'Green'  } }
 
 if ($Detail) {

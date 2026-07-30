@@ -16,6 +16,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot '_metadata_keyref_match.ps1')
+. (Join-Path $PSScriptRoot '_divergence_rules.ps1')
 
 $repoRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 # If tools/ is directly under repo root, adjust
@@ -406,16 +407,26 @@ function Audit-Provider {
             }
         }
     }
-    # -IgnoreRule names a rule that CANNOT license the calling check's defect class. A row carrying
-    # ONLY that rule stops suppressing; a row with any other rule still does. Opt-in per call site,
-    # so every existing check keeps its behaviour unless deliberately narrowed.
-    function Test-AllowListed([string]$q, [string]$kr, [string]$field, [string]$IgnoreRule) {
+    # DIRECTION-AWARE SUPPRESSION (2026-07-30). -AcceptClass names the rule class(es) that can
+    # legitimately license the CALLING check's defect class; a row of any other class no longer
+    # silences it. Classes come from _divergence_rules.ps1 so this enforcer and
+    # audit_suppression_scope.ps1 (the measurer) can never disagree about what a rule name means.
+    #
+    # GATED PER PROVIDER by the '# SUPPRESSION-SCOPE: direction-aware' marker in that provider's
+    # registry. Narrowing is stricter than legacy behaviour, so it can turn a GREEN provider RED
+    # when a real finding stops being silenced -- a release decision, one provider at a time.
+    # Without the marker, behaviour is exactly as before: location match alone suppresses.
+    $dirAware = Test-DirectionAwareOptIn $acceptedDivFile
+    function Test-AllowListed([string]$q, [string]$kr, [string]$field, [string[]]$AcceptClass) {
         $k = ('{0}|{1}|{2}' -f $q, $kr, $field).ToLower()
         if (-not $acceptedDiv.ContainsKey($k)) { return $false }
-        if (-not $IgnoreRule) { return $true }
-        foreach ($r in @($acceptedDiv[$k])) { if ($r -ne $IgnoreRule.ToLower()) { return $true } }
+        if (-not $script:dirAware -or -not $AcceptClass) { return $true }
+        foreach ($r in @($acceptedDiv[$k])) {
+            if ($AcceptClass -contains (Get-DivergenceRuleClass $r)) { return $true }
+        }
         return $false
     }
+    $script:dirAware = $dirAware
 
     # Same ACCEPTED_DIVERGENCES file, different rule namespace ('built-as'/'not-built' vs.
     # the field-level rules above) -- shared with extract_metadata_reference.ps1's BUILD
@@ -947,7 +958,7 @@ function Audit-Provider {
                             # Demote classification (metadata says set[], build has any[])
                             if (Test-IsDefaulted $xsf) {
                                 Out-Note "  keyRef ${kr}: XML set '$xsf' in any[] -- PRINCIPLED (defaulted field -> any[] per initialValue-not-counted-for-set)"
-                            } elseif (Test-AllowListed $qName $kr $xsf) {
+                            } elseif (Test-AllowListed $qName $kr $xsf @('existence','to-any')) {
                                 Out-Note "  keyRef ${kr}: XML set '$xsf' in any[] -- ACCEPTED per registry"
                             } else {
                                 Out-Fail "  keyRef ${kr}: XML set '$xsf' demoted to any[] with NO default and NO registry entry -- fix build or record in docs\${providerName}_ACCEPTED_DIVERGENCES.txt"
@@ -1034,7 +1045,7 @@ function Audit-Provider {
                 $sfS = [string]$sf
                 if (Test-InMetaSet $qn $sfS) { continue }          # metadata agrees set[] -> correct (PlateType/Year, VehicleType)
                 if (-not (Test-InMetaAny $qn $sfS)) { continue }    # not in metadata any either -> form-only/extra, not a promote
-                if (Test-AllowListed $qn $kr2 $sfS 'promoted-to-any') {
+                if (Test-AllowListed $qn $kr2 $sfS @('to-set')) {
                     Out-Note "  keyRef ${kr2}: '$sfS' in set[] but metadata any[] -- ACCEPTED per registry"
                 } else {
                     $defNote = if (Test-IsDefaulted $sfS) { ' (defaulted -- initialValue not counted for set[])' } else { '' }
@@ -1117,7 +1128,7 @@ function Audit-Provider {
                         if (-not $reqInAll) { continue }   # not required by THIS combination -- legitimate any[]
                     }
                 }
-                if (Test-AllowListed $qn $kr3 $afS) {
+                if (Test-AllowListed $qn $kr3 $afS @('to-any')) {
                     Out-Note "  keyRef ${kr3}: '$afS' in any[] but metadata set[] -- ACCEPTED per registry"
                 } else {
                     Out-Fail "  keyRef ${kr3} ($qn): '$afS' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in ${providerName}_ACCEPTED_DIVERGENCES.txt"
@@ -1355,7 +1366,7 @@ function Audit-Provider {
                     if ($tf -ieq $pfr) { $hasAttr = $true; break }
                 }
                 if ($hasAttr) {
-                    if (Test-AllowListed $qName $kr $pfr) {
+                    if (Test-AllowListed $qName $kr $pfr @('existence')) {
                         Out-Note "  $pfr`: QIDM has attribute but no combo as primaryFieldReference (keyRef $kr) -- ACCEPTED per registry"
                     } else {
                         Out-Fail "  $pfr`: QIDM has attribute but NO combo uses it as primaryFieldReference (missing combo for $kr path)"

@@ -1,3 +1,8 @@
+# SUPPRESSION-SCOPE: direction-aware
+# Each row silences ONLY checks whose defect class its RULE names (_divergence_rules.ps1).
+# Opted in 2026-07-30: TX was at 0 findings / gate efficacy 16-16, so the downside was bounded.
+# Other providers stay on legacy location-only suppression until their own rebuild turn --
+# narrowing can turn a green provider red, and that is a release decision, not a sweep.
 # TX_TLETS ACCEPTED METADATA DIVERGENCES
 # Read by tools/audit_metadata.ps1 (CHECK 4 / 4d). Each non-comment line records a
 # set/any divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].
