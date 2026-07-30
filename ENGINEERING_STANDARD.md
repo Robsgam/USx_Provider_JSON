@@ -126,3 +126,69 @@ All of the following, simultaneously, with no exceptions granted by narrative:
 - A human has looked at the rendered form (`audit_form_review`), pre- and post-test.
 
 Anything less is in progress, and must be reported as in progress.
+
+---
+
+## 6. Deferred work, with the data preserved
+
+Recorded so it is not re-derived. Deferred by decision, not forgotten.
+
+### 6.1 Mutation coverage is 1 provider deep (Rob 2026-07-30: "leave #3 alone but save the data")
+
+`audit_gate_efficacy.ps1` proves **15 defect classes** on **TX_TLETS only**. The other 19 providers'
+gates are therefore *unproven*, and by LAW 2 their PASS is not yet evidence — the gates are the same
+code, but the mutation table is TX-shaped (it names TX keyRefs: `DPSIStickerNumber`, `CPLName`,
+`RQVehicleIdentificationNumber`, `QGNCICNumber`, and TX fieldIds `LicensePlateTypeCode`,
+`stickerNumber`). Running it elsewhere needs a per-provider mutation map, not a new harness.
+
+The 15 proven classes: prefill-routing-field, dup-targetfield-request, demote-set-to-any,
+promote-any-to-set, poisoned-condition, drop-identifier-guardrail, vehiclemake-as-input,
+banned-pattern, inert-condition-field, toplevel-version-field, entities-bundle-not-first,
+missing-querylabel, drop-devdoc-optional, remove-a-built-combo, true-shadow-pair.
+
+**Two lessons already banked from it, which is why the data is worth keeping even while deferred:**
+1. A mutation must CREATE the defect, not resemble it (the LicensePlateYear-vs-LicensePlateTypeCode
+   lesson — prefilling a field that both rival combos require starves neither).
+2. "Found nothing" and "never looked" must be distinguishable, or a skipped subject reads as a clean
+   pass (`audit_metadata` scored 0 PASS / 0 FAIL / exit 0 with its XML missing).
+
+Also known and deferred: **TX_TLETS_CCH has 29 devdoc-optional defects** in its CCH-specific queries
+(IQ, QWI — dropped `BirthDate`/`RaceCode`, two NO-FIRE mandatory fills). Its base-6 is identical to
+TX and already fixed. Reproduce with
+`tools\audit_devdoc_optionals.ps1 -Path providers\TX_TLETS_CCH\TX_TLETS_CCH_v1.14.json`.
+
+### 6.2 TX minimal-plate entry fires NOTHING — open product decision
+
+Verified on v4.18 with the canonical predicate:
+
+| Officer types | What is sent |
+|---|---|
+| Plate only | **nothing** |
+| Plate + Year | **nothing** |
+| Plate + State | **nothing** |
+| Plate + State + RegionId | **nothing** |
+| Plate + Year + PlateType | `RQLicensePlateNumber` (devdoc OutofState #3) |
+| Plate + Year + FRT | `REGLicensePlateNumber` (devdoc InState #1) |
+
+**This hole was created by two individually-correct fixes.** Timeline, from the archived logs:
+- **≤ v4.13** — minimal plate entry DID fire, because the form prefilled PlateType/Year/FRT and those
+  prefills satisfied a combo. But the same prefills killed the OOS combos (the v4.13 deletion).
+- **v4.14 – v4.16** — minimal plate entry DID fire, via `QV{Plate}`. 15 archived logs submit a plate
+  with neither PlateType nor FRT, all of them `QV*` logs.
+- **v4.17+** — QV removed per the binding v4.9 shadow ruling. Nothing catches minimal plate entry.
+
+**Correction to an earlier claim of mine:** I wrote that these fills are "covered by the auto-fired
+QV". That is NOT established. The auto-fire model (NJ precedent) is the STATE running QV alongside a
+query the client sent. If no combo matches, no query is sent, so there is nothing for QV to attach
+to. Treat coverage as UNKNOWN until proven on the wire, not as a mitigation.
+
+Options, for Rob:
+- **A. Accept + say so on the form.** Require Plate + Year + (PlateType or FRT). No routing change.
+  Mandatory companion: the card must TELL the officer, because silent no-op is the worst outcome.
+- **B. Rebuild `QV{Plate}` as a terminal fallback** — ordered LAST, no conditions, so it can only win
+  when nothing more specific matches. Materially different from the v4.9 case, where QV was ordered
+  so that it STOLE fills from real combos; as a last-resort row it steals nothing. Restores all four
+  minimal fills. Cost: 20 combos, narrow reversal of the v4.9 ruling, v4.19 + full re-sweep.
+- **C. Escalate to CommSys.** The devdoc lists FinancialResponsibilityType as OPTIONAL on the
+  in-state plate query while the metadata REQUIRES it in `set[]` — a direct contradiction, and the
+  reason Plate+Year cannot be built at all. Also confirm whether QV auto-fires with no client query.
