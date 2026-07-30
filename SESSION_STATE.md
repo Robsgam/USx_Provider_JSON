@@ -47,8 +47,8 @@ assertion. If you get a FAIL or WARN, the tool is right and this file is out of 
 | FL_FCIC | v7.12 | ALL-PASS (Boat re-run 2026-07-29, 47 captures) |
 | CA_CLETS | v2.22 | ALL-PASS |
 | NY_NYSPIN_EJUSTICE | **v4.17** | **re-test owed from T1** (DH row split — bump reset it) |
-| TX_TLETS | **v4.13** | **re-test owed from T1** (2 dead RQ combos removed — bump reset it) |
-| TX_TLETS_CCH | **v1.9** | never tenant-tested (BASE-SYNC v4.13) |
+| TX_TLETS | **v4.14** | **re-test owed from T1** (2 dead RQ combos removed — bump reset it) |
+| TX_TLETS_CCH | **v1.9** | never tenant-tested -- **BASE-SYNC STALE (base is v4.14), rebuild owed** |
 | other 13 | — | never tenant-tested |
 
 ## What is actually owed

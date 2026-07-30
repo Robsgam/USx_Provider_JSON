@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.13.json
-  Generated: 2026-07-29 14:45
+  Source: TX_TLETS_v4.14.json
+  Generated: 2026-07-30 09:46
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_v4.13
+ POST-BUILD VERIFICATION: TX_TLETS_v4.14
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -40,7 +40,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (41) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (42) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -84,10 +84,11 @@ POST-BUILD VERIFICATION
   [PASS] All form field labels have required routing hint qualifiers (45 fields scanned) (11 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
-  [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
+  [FAIL] SHADOW: 'VINVehicleIdentificationNumber' fires before 'RQVehicleIdentificationNumber' on TX_TLETS_VehicleInsuranceRegistrationQuery minimal set[] payload -- add EXISTS condition to 'VINVehicleIdentificationNumber' or reorder so 'RQVehicleIdentificationNumber' comes first
+  [FAIL] SHADOW: 'VINVehicleIdentificationNumber' fires before 'QVVehicleIdentificationNumber' on TX_TLETS_VehicleInsuranceRegistrationQuery minimal set[] payload -- add EXISTS condition to 'VINVehicleIdentificationNumber' or reorder so 'QVVehicleIdentificationNumber' comes first
 
 ========================================
- VERIFICATION PASSED: 16 PASS / 0 WARN / 0 FAIL
+ VERIFICATION FAILED: 2 FAIL / 0 WARN / 15 PASS
 ========================================
 
 

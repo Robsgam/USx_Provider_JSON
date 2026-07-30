@@ -169,7 +169,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.13"
+    [string]$Version = "4.14"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -215,14 +215,34 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
-        # regionId ADDED to this any[] at v4.13: it was riding RQLicensePlateNumber's any[], and that
-        # combo is now removed (see below). A devdoc-OPTIONAL combination field is never dropped
-        # (Rob's standing rule), so it moves to the surviving plate combo. Registered divergence.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }) }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        # regionId + VehicleMakeCode ADDED to this any[] at v4.13 for the same reason -- they were
-        # riding RQVehicleIdentificationNumber's any[], now removed. vehicleYear was already here.
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'FinancialResponsibilityType'; value = 'E' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('RegistrationState'); defaults = @([PSCustomObject]@{ field = 'State'; value = 'TX' }) }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
+        # ── v4.14: ALL 7 METADATA COMBINATIONS, FORM-REACHABLE ───────────────────────────────
+        # v4.13 built only 3 of 7 and had DELETED RQ{Plate} + RQ{VIN} as "dead combos". They were
+        # never dead: the form prefilled FRT=E / PlateYear / PlateTypeCode, so the combo requiring
+        # those matched on every submission and nothing else could ever win first-match. Those two
+        # RQ combos are the devdoc's "(OutofState)" paths -- deleting them removed out-of-state
+        # plate and VIN search from the provider outright. The v4.13 note claiming "Officer impact
+        # none: REG/VIN return a superset" was wrong: an in-state TX DMV query is not a superset of
+        # an out-of-state Nlets query, it is a different destination system.
+        #
+        # Prefills are now GONE (see the Vehicle form rows), so the officer's own input selects the
+        # path. Ordered MOST-SPECIFIC-FIRST, which is what makes every one reachable:
+        #   plate + year + type -> RQ   (OutofState)      plate + year + FRT -> REG (InState+insurance)
+        #   plate alone         -> QV   (plain reg)        sticker            -> DPSI
+        #   VIN + FRT           -> VIN  (insurance)        VIN                -> RQ/QV{VIN}
+        # RQ{VIN} and QV{VIN} have IDENTICAL metadata set[] ({VIN}) -- the one true shadow pair
+        # here -- so they are split on the only optional that differs between them, RegionId.
+        # Verify with: tools\audit_query_trace.ps1 -Provider TX_TLETS  (expect 7/7, 0 prefill-dead)
+        #
+        # NO defaults[] on any of these. A combo default re-injects the value on the CAD path and
+        # counts as always-present for routing, which would re-create the exact bug. BUILD_RULES 23:
+        # form queries come first; CAD injection never takes precedence.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('regionId'); operator = 'EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('regionId'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
         # QVLicensePlateNumber + QVVehicleIdentificationNumber REMOVED v4.9 (DEX-1284 shadow review,
         # Rob-confirmed). Both were ungated SUBSET-SHADOWS: QV{Plate} subset of REG/RQ, QV{VIN} subset
         # of VIN+FRT -- the extra fields are FRT/Type/Year qualifiers of the SAME plate/VIN query
@@ -446,9 +466,17 @@ $vehLayout = MakeLayouts @(
             # card's OPTIONS row further down; same field/label, same override applies.
             @{ id = 'ROW_VEH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_VEH_1' }
+                # v4.14 -- NO PREFILLS ON THESE THREE. Each is a set[] field of some vehicle
+                # combination, so any initialValue makes the combo requiring it match on every
+                # submission and permanently hides the others FROM THE FORM. PlateType=PC +
+                # PlateYear=<year> + FRT=E hid all 4 RQ/QV combos, including the devdoc's two
+                # "(OutofState)" paths -- and that false "dead combo" reading is why v4.13 deleted
+                # RQ{Plate} and RQ{VIN}, removing out-of-state plate and VIN search entirely.
+                # See enforce PHASE 2n / tools\audit_query_trace.ps1. THE FORM COMES FIRST
+                # (BUILD_RULES 23): never trade a search path for a prefilled convenience value.
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
@@ -460,7 +488,11 @@ $vehLayout = MakeLayouts @(
             # VIN any[] pool, which the platform's auto-fired regional QV reads. Bare label, Rob's call.
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'stickerNumber_Input';               node = Inp 'stickerNumber' 'Sticker Number' '10' 'ROW_VEH_3' }
-                @{ id = 'financialResponsibilityType_Input'; node = Inp 'financialResponsibilityType' 'Fin. Resp. Type' '1' 'ROW_VEH_3' @{ initialValue = 'E' } }
+                # v4.14 -- FRT prefill removed (see ROW_VEH_1 note). It is REG/VIN's discriminator:
+                # prefilled 'E' it satisfied their set[] on every submission, so RQ/QV never fired.
+                # Officer types E (or R) when they want the insurance return; a bare plate now
+                # reaches the plain registration query (QV) as the devdoc intends.
+                @{ id = 'financialResponsibilityType_Input'; node = Inp 'financialResponsibilityType' 'Fin. Resp. Type' '1' 'ROW_VEH_3' }
                 @{ id = 'regionId_Input';                    node = Inp 'regionId' 'Region ID' '4' 'ROW_VEH_3' }
             )}
         )

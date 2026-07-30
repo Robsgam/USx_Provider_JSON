@@ -39,7 +39,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 3 | NY_NYSPIN_EJUSTICE | v4.17 |  | 75P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
 | 4 | AZ_AZDPS | v3.3 |  | 63P/0F/0W/0LIM | 0 | v3.1 (2026-07-24) existence-gate identifier-priority guardrails added (were demotion-only in v3.0); single-JSON; NOT USx-tenant-tested |
 | 5 | FL_FCIC | v7.12 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
-| 6 | TX_TLETS | v4.13 |  | 76P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
+| 6 | TX_TLETS | v4.14 |  | 81P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 8 | CA_CLETS | v2.22 |  | 77P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 9 | CA_VENTURA_COUNTY | v2.0 |  | 72P/0F/1W/1LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |

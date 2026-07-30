@@ -195,6 +195,18 @@ function Get-RoutingGateFields {
     foreach ($q in (Get-CommSysQidms -json $json)) {
         if (-not $q.combinations) { continue }
         foreach ($c in $q.combinations) {
+            # A set[] field IS a routing gate -- the STRONGEST one. The platform fires the first
+            # combo whose whole set[] is present, so a required field's presence/absence is what
+            # selects between siblings. This function previously counted only explicit conditions,
+            # which is why the "PlateType must default to PC" rule kept FAILing providers that
+            # correctly leave it blank: defaulting a set[] field makes the combo requiring it match
+            # on every submission and permanently hides its siblings FROM THE FORM (35 such
+            # combinations across 6 providers, found 2026-07-30; see enforce PHASE 2n /
+            # tools\audit_query_trace.ps1, and BUILD_RULES 23 -- the form comes first).
+            $sets = $null
+            try { $sets = $c.requirements.set } catch { }
+            if ($sets) { $gate += @($sets | Where-Object { $_ }) }
+
             $conds = $null
             try { $conds = $c.requirements.conditions } catch { }
             if (-not $conds) { continue }

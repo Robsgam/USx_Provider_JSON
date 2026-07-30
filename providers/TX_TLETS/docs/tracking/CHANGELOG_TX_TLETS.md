@@ -2,9 +2,34 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.13** | Generated: 2026-07-29
+Current: **v4.14** | Generated: 2026-07-30
 
 ---
+
+## v4.14 -- 2026-07-30 -- Vehicle: all 7 metadata combinations made FORM-REACHABLE (prefills removed, RQ/QV restored)
+
+**CHANGED:** Removed the four routing-affecting Vehicle prefills -- LicensePlateTypeCode=PC,
+  LicensePlateYear=<year>, financialResponsibilityType=E, RegistrationState=TX -- from BOTH the  
+  form initialValue and every combo defaults[]. Rebuilt the VehicleInsuranceRegistrationQuery  
+  combination array from 3 combos to all 7 in metadata, most-specific-first, and RESTORED  
+  RQLicensePlateNumber + RQVehicleIdentificationNumber (deleted at v4.13) plus  
+  QVLicensePlateNumber + QVVehicleIdentificationNumber. RQ{VIN} and QV{VIN} share an identical  
+  metadata set[] ({VIN}) -- the one real shadow pair -- split on RegionId EXISTS/NOT_EXISTS, the  
+  only optional that differs between them. Combos now select by officer input:  
+    plate+year+type -> RQ (OutofState) | plate+year+FRT -> REG (InState+insurance)  
+    plate -> QV | VIN+FRT -> VIN | VIN -> RQ/QV{VIN} by RegionId | sticker -> DPSI  
+**REASON:** v4.13 shipped 3 of 7 combinations and had DELETED the devdoc's two "(OutofState)" vehicle
+  paths as "dead combos" -- so out-of-state plate and VIN search did not exist in the provider.  
+  They were never dead: the form prefilled their discriminators, so the combo requiring the  
+  prefilled field matched on EVERY submission and nothing else could win first-match. The v4.13  
+  justification ("Officer impact none: REG/VIN return a superset") was wrong -- an in-state TX DMV  
+  query is not a superset of an out-of-state Nlets query, it is a different destination system.  
+  Found by tools\audit_query_trace.ps1, now gated by enforce PHASE 2n. 35 such combinations exist  
+  across 6 providers; TX is the first fixed. Rob 2026-07-30: "remove defaults that affect routing"  
+  + "the form comes first". Officer-facing change: a bare plate now returns plain registration (QV)  
+  instead of registration+insurance -- type FRT=E for the insurance return, as the devdoc intends.  
+  audit_query_trace: 21 built / 0 PREFILL-DEAD / 0 SHADOW / 0 MISSING. Reachability: 21/21.  
+  ALL 5 ENTITIES RESET at v4.14. CCH rebuild owed in lockstep (BASE-SYNC -> v4.14). NOT yet re-tested.  
 
 ## v4.13 -- 2026-07-29 -- Pipeline rebuild
 
