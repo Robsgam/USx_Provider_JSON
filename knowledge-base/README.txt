@@ -713,6 +713,24 @@ TOOLS
     (flat Choice/Field) and NY_NYSPIN_EJUSTICE (nested Choice/Set). A fourth shape exists too:
     TX GunQuery/QG puts a nested <Set> and a bare <Field> as SIBLINGS in one <Choice>.
     Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+  tools/_divergence_rules.ps1  (shared module, dot-sourced)
+    ONE definition of what an ACCEPTED_DIVERGENCES rule NAME means, so the ENFORCER
+    (audit_metadata) and the MEASURER (audit_suppression_scope) can never disagree -- if they did,
+    the measurement would be fiction. Classes: to-set (promoted-to-set) | to-any (promoted-to-any,
+    demoted-to-any, added-to-any) | existence (not-built, devdoc-combo-unbuilt,
+    metadata-shadow-autofired, dead-combo-*, dropped-combo, shadow-unbuilt-*, missing-primary-combo)
+    | other (devdoc-optional-unreachable, built-as, prefilled-mandatory-autopopulated,
+    precondition-adjudicated-satisfied). 'other' licenses NOTHING by design -- those rows adjudicate
+    officer-facing behaviour or a precondition, not field placement or combo existence; if one needs
+    to suppress a check, give it a properly-named rule rather than widening the class.
+    A check may only be silenced by a row whose class matches what that check tests. audit_metadata
+    Test-AllowListed takes -AcceptClass for this.
+    Test-DirectionAwareOptIn: per-provider gate. Narrowing is STRICTER than legacy behaviour and can
+    turn a GREEN provider RED (a real finding stops being silenced), so a provider opts in with
+    '# SUPPRESSION-SCOPE: direction-aware' in its <P>_ACCEPTED_DIVERGENCES.txt -- marker lives with
+    the data it governs, same convention as '# BASE-SYNC:'. Without it, behaviour is byte-identical
+    to before. TX_TLETS opted in 2026-07-30 (was 0 findings / 16-16 kills, so downside bounded);
+    every other provider opts in at its own rebuild turn, never as a portfolio sweep.
   tools/audit_suppression_scope.ps1
     SUPPRESSION SCOPE -- is each accepted divergence as narrow as it was GRANTED? READ-ONLY,
     changes no verdict, cannot turn a provider red. An ACCEPTED_DIVERGENCES row records ONE
