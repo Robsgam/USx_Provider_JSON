@@ -169,7 +169,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.16"
+    [string]$Version = "4.17"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -229,19 +229,37 @@ $vehRegQuery = [PSCustomObject]@{
         #   plate + year + type -> RQ   (OutofState)      plate + year + FRT -> REG (InState+insurance)
         #   plate alone         -> QV   (plain reg)        sticker            -> DPSI
         #   VIN + FRT           -> VIN  (insurance)        VIN                -> RQ/QV{VIN}
-        # RQ{VIN} and QV{VIN} have IDENTICAL metadata set[] ({VIN}) -- the one true shadow pair
-        # here -- so they are split on the only optional that differs between them, RegionId.
-        # Verify with: tools\audit_query_trace.ps1 -Provider TX_TLETS  (expect 7/7, 0 prefill-dead)
+        # v4.17 -- QV{Plate} + QV{VIN} REMOVED AGAIN, restoring Rob's binding v4.9 ruling.
+        # They were re-added at v4.14 in the same pass that (correctly) restored RQ{Plate}/RQ{VIN}
+        # from the v4.13 prefill-dead deletion. That was WRONG, and the two cases are NOT alike:
+        #   RQ{Plate}/RQ{VIN} are the devdoc's "(OutofState)" paths #3/#4 -- real officer capability
+        #     killed only by our own prefills. Restoring them was right; they STAY.
+        #   QV{Plate}/QV{VIN} are ungated SUBSET shadows and are NOT devdoc in-state or out-of-state
+        #     combinations at all. QV{Plate} is a subset of REG/RQ, QV{VIN} of VIN+FRT, and the extra
+        #     fields are FRT/Type/Year qualifiers of the SAME plate/VIN query, not a state
+        #     discriminator. The PLATFORM AUTO-FIRES the metadata QV transaction off the larger query
+        #     (same class as QW; NJ precedent -- the state auto-runs QV and the response is data-mined
+        #     via QRDM). An explicit combo adds no officer capability and steals fills from the real
+        #     combos.
+        # The tell that the re-add was an accident and not a decision: the v4.9 rationale block below
+        # was left in place, so the code contradicted its own adjacent comment for three versions.
+        # CLAUDE.md was never corrected either -- it still read "19 CommSys combos" while the JSON
+        # shipped 21, and CHECK 3j only validates the version/validator/tenant cells, not that prose.
+        # Verify with: tools\audit_query_trace.ps1 -Provider TX_TLETS
         #
         # NO defaults[] on any of these. A combo default re-injects the value on the CAD path and
         # counts as always-present for routing, which would re-create the exact bug. BUILD_RULES 23:
         # form queries come first; CAD injection never takes precedence.
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','LicensePlateTypeCode'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'RQLicensePlateNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateYear','financialResponsibilityType'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'REGLicensePlateNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('regionId','RegistrationState') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('regionId'); operator = 'EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'QVVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('regionId'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
+        # RQ{VIN}: FRT NOT_EXISTS is the ONLY discriminator it needs now (vs VIN+FRT above).
+        # The former 'regionId NOT_EXISTS' condition existed ONLY to split it from QV{VIN}; with QV
+        # gone that condition would make RQ{VIN} UNREACHABLE the moment an officer types a Region ID
+        # -- a self-inflicted hole of exactly the BUILD_RULES 24 shape. regionId rides in any[]
+        # instead (never drop a devdoc-optional combination field; the auto-fired QV reads it from
+        # the union pool).
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
         # QVLicensePlateNumber + QVVehicleIdentificationNumber REMOVED v4.9 (DEX-1284 shadow review,
         # Rob-confirmed). Both were ungated SUBSET-SHADOWS: QV{Plate} subset of REG/RQ, QV{VIN} subset
@@ -270,7 +288,7 @@ $vehRegQuery = [PSCustomObject]@{
         # regionId / VehicleMakeCode preserved on the surviving combos above -- never drop a
         # devdoc-optional combination field.
     )
-    description = 'VehicleInsuranceRegistrationQuery -- 3 combos (REG/VIN+FRT/DPSI). QV plate/VIN removed v4.9 (ungated subset shadows, platform auto-fired); RQ plate/VIN removed v4.13 (DEAD -- unreachable behind REG/VIN via the prefilled FinancialResponsibilityType).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+    description = 'VehicleInsuranceRegistrationQuery -- 5 combos (RQ plate, REG, VIN+FRT, RQ VIN, DPSI). All 5 form-reachable, no defaults[], no prefilled routing field (BUILD_RULES 24). QV plate/VIN NOT built: ungated subset shadows the platform auto-fires, not devdoc in/out combinations (Rob v4.9 ruling; re-added in error at v4.14, removed again v4.17). RQ plate/VIN ARE built -- they are the devdoc (OutofState) paths, wrongly deleted at v4.13 when our own prefills made them look dead.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
 # --- DriverLicenseQuery (3 combos) ---

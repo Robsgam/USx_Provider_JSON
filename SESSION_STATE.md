@@ -13,17 +13,21 @@
 >    `tools\enforce.ps1`.
 
 **Last updated:** 2026-07-30 · **Branch:** `main` (the working branch — the long-lived `rebuild/az_azdps_v3.0` was fast-forward merged 2026-07-30, 216 commits; `audit_branch_currency.ps1` now watches the gap)
-by choice — `main` stays at the last tenant-tested state)
 
 ---
 
 ## ▶ NEXT PHYSICAL ACTION
 
-**Nothing is in flight. Waiting on Rob.** Last session ended deliberately, tree clean, all pushed.
+**TX v4.17 re-sweep is owed from T1** (~85 tests; the v4.16 logs were archived by the bump).
+v4.17 removed the QV{Plate}/QV{VIN} metadata shadows, restoring Rob's binding v4.9 ruling after
+they were re-added in error at v4.14 — Vehicle is 5 combos, 19 total. Then **NY v4.17** (also from
+T1, never started). Order after: NJ, FL, then CA_CLETS, HI. Everything outside those 6 is TABLED.
 
-When Rob is ready the queue is **NY v4.17 re-test** (from T1, never started). TX is DONE at v4.16
-(ALL-PASS 95/95, triple-gated). Order after NY: NJ, FL, then CA_CLETS, HI — "wire in the TX
-controls, then run each through" (Rob 2026-07-30). Everything outside those 6 is TABLED.
+**Standing rule that cost three versions to relearn:** QV and QW are PLATFORM-AUTO-FIRED metadata
+shadows, NOT devdoc in/out combinations — never build them, and never "restore" them alongside a
+genuine prefill-dead fix. RQ{Plate}/RQ{VIN} are the OPPOSITE case (real devdoc "(OutofState)"
+paths) and STAY built. `audit_query_trace` reporting QV [MISSING] is EXPECTED; see
+TX_TLETS_ACCEPTED_DIVERGENCES rule `metadata-shadow-autofired`.
 
 **Run the `usx-resume` skill before acting on this.** It sweeps for environment state this file
 cannot see (captures stranded in Downloads, stray `watch_captures` processes, a build script bumped
@@ -48,8 +52,8 @@ assertion. If you get a FAIL or WARN, the tool is right and this file is out of 
 | FL_FCIC | v7.12 | ALL-PASS (Boat re-run 2026-07-29, 47 captures) |
 | CA_CLETS | v2.22 | ALL-PASS |
 | NY_NYSPIN_EJUSTICE | **v4.17** | **re-test owed from T1** (DH row split — bump reset it) |
-| TX_TLETS | **v4.16** | **ALL-PASS 95/95** — 7/7 vehicle combos form-reachable, 0 PREFILL-DEAD |
-| TX_TLETS_CCH | **v1.12** | never tenant-tested (160 owed; BASE-SYNC v4.16, verified in lockstep) |
+| TX_TLETS | **v4.17** | **re-sweep owed from T1** (QV shadows removed -> 19 combos; v4.16 was ALL-PASS 95/95) |
+| TX_TLETS_CCH | **v1.13** | never tenant-tested (BASE-SYNC v4.17, in lockstep) |
 | other 13 | — | never tenant-tested |
 
 ## What is actually owed

@@ -1,7 +1,7 @@
 ﻿TX_TLETS_CCH METADATA REFERENCE
 ================================
-Generated: 2026-07-29
-Source: TX_TLETS_CCH.xml (metadata) + TX_TLETS_CCH_v1.9.json
+Generated: 2026-07-30
+Source: TX_TLETS_CCH.xml (metadata) + TX_TLETS_CCH_v1.13.json
 Metadata: 113 total transactions, 14 queries built in JSON
 
 ================================================================================
@@ -386,13 +386,13 @@ METADATA COMBINATIONS (7 total):
   REG           LicensePlateNumber      LicensePlateNumber, LicensePlateYear, FinancialRes...  State
   VIN           VehicleIdentificationNumber  VehicleIdentificationNumber, FinancialResponsibili...  State
 
-BUILD COVERAGE (3 of 7 built):
+BUILD COVERAGE (5 of 7 built):
+  BUILT   RQLicensePlateNumber set[LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode]
   BUILT   REGLicensePlateNumber set[LicensePlateNumber, LicensePlateYear, financialResponsibilityType]
   BUILT   VINVehicleIdentificationNumber set[VehicleIdentificationNumber, financialResponsibilityType]
+  BUILT   RQVehicleIdentificationNumber set[VehicleIdentificationNumber]
   BUILT   DPSIStickerNumber set[stickerNumber]
-  UNBUILT RQ             LicensePlateNumber
   UNBUILT QV             LicensePlateNumber
-  UNBUILT RQ             VehicleIdentificationNumber
   UNBUILT QV             VehicleIdentificationNumber
 
 ================================================================================
@@ -414,21 +414,19 @@ BUILD SUMMARY
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         5      3     2  60%
   GunQuery                                   1      2     0  200%
-  VehicleInsuranceRegistrationQuery          7      3     4  43%
+  VehicleInsuranceRegistrationQuery          7      5     2  71%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   34     33     6  97%
+  TOTAL                                   34     35     4  103%
 
 ================================================================================
-UNBUILT METADATA COMBOS (8 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)
 ================================================================================
 
   KQ             OperatorLicenseNumber    (DriverHistoryQuery)
   QW             Name                     (DriverLicenseQuery)
   RSDWW          OperatorLicenseNumber    (DriverLicenseQuery)
   DQ             OperatorLicenseNumber    (DriverLicenseQuery)
-  RQ             LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
   QV             LicensePlateNumber       (VehicleInsuranceRegistrationQuery)
-  RQ             VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
   QV             VehicleIdentificationNumber (VehicleInsuranceRegistrationQuery)
 
 ================================================================================
