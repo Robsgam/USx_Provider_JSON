@@ -293,3 +293,35 @@ on 6c and 16/16 on `audit_gate_efficacy`.
 **Why it was not applied:** the edit belongs inside a per-log loop that was not read, and editing
 blind into unread code is exactly what produced three prior failed attempts (wrong plan file;
 props-vs-node hidden level; an inert TEST_VALUE_OVERRIDES entry). The diagnosis was the hard part.
+
+##### Exact insertion point for the 6c assertion (read 2026-07-30, so it need not be re-derived)
+
+`audit_log_content.ps1`, inside `foreach ($p in $parsed)` — insert **after L68**, where `$t` (the
+matched plan test) is resolved and before the `$t.kind -eq 'guardrail'` branch at L74.
+
+Variables already in scope at that point:
+* `$p.Fs` — parsed QUERY STRING field set (the form snapshot)
+* `$p.Content` — full log; the wire body is extracted at L85 as
+  `'(?s)COMMSYS XML\s*-+\s*(.*?)(COMMSYS XML RESPONSE|RMS QUERY|FIELD ANALYSIS)'`
+* `$fd` — that entity's `formDefaults` (computed L62:
+  `$plan.formDefaults.PSObject.Properties[$cand.entity].Value`) — **note it is currently scoped to the
+  `$cand` loop, so it must be recomputed for `$t.entity` after the match**
+* `$t.comboKeyRef` / `$t.expectedKeyRef` — the winning combo
+
+**THE ONE OPEN DESIGN CHOICE, and it is why this was not applied blind:** 6c never loads the provider
+JSON, so it has no `set[]` to test membership against. Pick one:
+  (a) have `emit_test_plan.ps1` write each combo test's `set[]` into the plan (small, keeps 6c
+      plan-only, consistent with "the plan is the contract"); or
+  (b) load the JSON in 6c via `Get-ProviderRootJson` and look the combo up by keyRef **scoped to the
+      test's entity** — L77-82 documents why un-scoped keyRef lookup is wrong (NY Boat and Vehicle
+      both use RVEH/RCAR).
+(a) is preferable: it keeps 6c's inputs to plan + logs, which is what makes it independent of the JSON.
+
+Reuse the existing `$onWire` value-matcher (L92-96) rather than writing a new one — it already handles
+the substring-collision case and the fact that Name serialises as `DOE, JOHN`. It is currently defined
+inside the guardrail branch; hoist it above L74 to share it.
+
+**LAW 2 requirement:** add a mutation to `audit_gate_efficacy.ps1` that strips a prefilled `set[]`
+field from a committed log's wire and confirms 6c FAILs. Without it the new assertion has no failure
+proof and is indistinguishable from a check that cannot fire.
+**Regression guard:** TX_TLETS must stay 89/89 on 6c and 16/16 on gate efficacy afterwards.
