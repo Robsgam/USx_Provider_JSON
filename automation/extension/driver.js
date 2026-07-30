@@ -139,7 +139,7 @@
       // a real array; storing the raw plan value here crashed __usxBulkFetch mid-batch.
       manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: new Date().toISOString() });
       // MUST await -- clickSendClear is async (it polls up to 6s for Send to enable). Calling it
-// bare returns a Promise, so `sent.ok`/`sent.err` are both undefined: every test logs
+      // bare returns a Promise, so `sent.ok`/`sent.err` are both undefined: every test logs
       // "NOT submitted (undefined)" even when the click lands, and the run does not wait for the
       // submit to happen before filling the next combo. Live-caught on the TX v4.14 Vehicle run
       // 2026-07-30 (all 7 tests reported NOT submitted while the fills were visibly working).

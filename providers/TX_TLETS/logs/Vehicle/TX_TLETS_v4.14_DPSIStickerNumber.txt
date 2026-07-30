@@ -1,0 +1,70 @@
+================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: DPSIStickerNumber (DPSIStickerNumber (auto))
+Date: 2026-07-30 10:06:29
+Result: PASS
+JSON Version: 4.14
+Entity Fingerprint: 9c34e21b034d39ab94c4c9989d4631742da2f2ae3a5591fc67cb642e2b3c46d9
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"stickerNumber":"STK1234567"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYSNEM7ACE1XE51WB8R1YVGF">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
+            <Id>01KYSNEM7ACE1XE51WB8R1YVGF</Id>
+            <StickerNumber>STK1234567</StickerNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYSNEM7ACE1XE51WB8R1YVGF
+  StickerNumber                  STK1234567
+
+NOTES
+-----
+Automated capture (txId 01KYSNEM7ACE1XE51WB8R1YVGF). kind=combo; anyField=; expectedKeyRef=DPSIStickerNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
