@@ -120,8 +120,8 @@
                 "props": {
                   "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -207,8 +207,8 @@
                 "props": {
                   "fieldId": "VehicleMakeCode",
                   "label": "Vehicle Make",
-                  "codeTypeProvider": "NCIC",
-                  "attributeTypeId": "VEHICLE_MAKE"
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -417,8 +417,8 @@
                 "props": {
                   "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -504,8 +504,8 @@
                 "props": {
                   "fieldId": "VehicleMakeCode",
                   "label": "Vehicle Make",
-                  "codeTypeProvider": "NCIC",
-                  "attributeTypeId": "VEHICLE_MAKE"
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -657,8 +657,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -781,8 +781,8 @@
                 "props": {
                   "fieldId": "LicensePlateTypeCode",
                   "label": "Plate Type",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE"
+                  "codeTypeCategory": "NCIC_LICENSE_PLATE_TYPE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -868,8 +868,8 @@
                 "props": {
                   "fieldId": "VehicleMakeCode",
                   "label": "Vehicle Make",
-                  "codeTypeProvider": "NCIC",
-                  "attributeTypeId": "VEHICLE_MAKE"
+                  "attributeTypeId": "VEHICLE_MAKE",
+                  "codeTypeProvider": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1274,8 +1274,8 @@
                 "props": {
                   "fieldId": "SexCode",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1406,6 +1406,7 @@
                   "ROW_PER_DHA",
                   "ROW_PER_DHL1",
                   "ROW_PER_DHN1",
+                  "ROW_PER_DHN1B",
                   "ROW_PER_DHN2",
                   "ROW_PER_DH_OPT"
                 ],
@@ -1454,8 +1455,8 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "8",
-                    "4"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
@@ -1507,19 +1508,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "3",
-                    "3",
-                    "3",
-                    "3"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirstDH_Input",
-                  "NameLastDH_Input",
-                  "nameMiddleDH_Input",
-                  "nameSuffixDH_Input"
+                  "NameLastDH_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DH"
@@ -1556,6 +1553,26 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_DHN1"
               },
+              "ROW_PER_DHN1B": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "nameMiddleDH_Input",
+                  "nameSuffixDH_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DH"
+              },
               "nameMiddleDH_Input": {
                 "type": {
                   "resolvedName": "FormInput"
@@ -1570,7 +1587,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_DHN1"
+                "parent": "ROW_PER_DHN1B"
               },
               "nameSuffixDH_Input": {
                 "type": {
@@ -1586,7 +1603,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_DHN1"
+                "parent": "ROW_PER_DHN1B"
               },
               "ROW_PER_DHN2": {
                 "type": {
@@ -1631,8 +1648,8 @@
                 "props": {
                   "fieldId": "SexCodeDH",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1955,8 +1972,8 @@
                 "props": {
                   "fieldId": "sexCodeCCH",
                   "label": "Sex (CCH)",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -1972,8 +1989,8 @@
                 "props": {
                   "fieldId": "raceCodeCCH",
                   "label": "Race (CCH)",
-                  "codeTypeSource": "NIBRS",
-                  "codeTypeCategory": "NIBRS_RACE"
+                  "codeTypeCategory": "NIBRS_RACE",
+                  "codeTypeSource": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2201,8 +2218,8 @@
                 "props": {
                   "fieldId": "imageIndicatorCCH",
                   "label": "Image (CCH)",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "YES_NO_UNKNOWN"
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2218,8 +2235,8 @@
                 "props": {
                   "fieldId": "relatedHitSearchIndicatorCCH",
                   "label": "Related Hit Search (CCH)",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "YES_NO_UNKNOWN"
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2781,8 +2798,8 @@
                 "props": {
                   "fieldId": "SexCode",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -2913,6 +2930,7 @@
                   "ROW_PER_DHA",
                   "ROW_PER_DHL1",
                   "ROW_PER_DHN1",
+                  "ROW_PER_DHN1B",
                   "ROW_PER_DHN2",
                   "ROW_PER_DH_OPT"
                 ],
@@ -2961,8 +2979,8 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "8",
-                    "4"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
@@ -3014,19 +3032,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "3",
-                    "3",
-                    "3",
-                    "3"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirstDH_Input",
-                  "NameLastDH_Input",
-                  "nameMiddleDH_Input",
-                  "nameSuffixDH_Input"
+                  "NameLastDH_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DH"
@@ -3063,6 +3077,26 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_DHN1"
               },
+              "ROW_PER_DHN1B": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "nameMiddleDH_Input",
+                  "nameSuffixDH_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DH"
+              },
               "nameMiddleDH_Input": {
                 "type": {
                   "resolvedName": "FormInput"
@@ -3077,7 +3111,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_DHN1"
+                "parent": "ROW_PER_DHN1B"
               },
               "nameSuffixDH_Input": {
                 "type": {
@@ -3093,7 +3127,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_DHN1"
+                "parent": "ROW_PER_DHN1B"
               },
               "ROW_PER_DHN2": {
                 "type": {
@@ -3138,8 +3172,8 @@
                 "props": {
                   "fieldId": "SexCodeDH",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3462,8 +3496,8 @@
                 "props": {
                   "fieldId": "sexCodeCCH",
                   "label": "Sex (CCH)",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3479,8 +3513,8 @@
                 "props": {
                   "fieldId": "raceCodeCCH",
                   "label": "Race (CCH)",
-                  "codeTypeSource": "NIBRS",
-                  "codeTypeCategory": "NIBRS_RACE"
+                  "codeTypeCategory": "NIBRS_RACE",
+                  "codeTypeSource": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3708,8 +3742,8 @@
                 "props": {
                   "fieldId": "imageIndicatorCCH",
                   "label": "Image (CCH)",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "YES_NO_UNKNOWN"
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -3725,8 +3759,8 @@
                 "props": {
                   "fieldId": "relatedHitSearchIndicatorCCH",
                   "label": "Related Hit Search (CCH)",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "YES_NO_UNKNOWN"
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4073,8 +4107,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4355,8 +4389,8 @@
                 "props": {
                   "fieldId": "SexCode",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -4487,6 +4521,7 @@
                   "ROW_PER_DHA",
                   "ROW_PER_DHL1",
                   "ROW_PER_DHN1",
+                  "ROW_PER_DHN1B",
                   "ROW_PER_DHN2",
                   "ROW_PER_DH_OPT"
                 ],
@@ -4535,8 +4570,8 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "8",
-                    "4"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
@@ -4588,19 +4623,15 @@
                 "displayName": "Row",
                 "props": {
                   "templateColumns": [
-                    "3",
-                    "3",
-                    "3",
-                    "3"
+                    "6",
+                    "6"
                   ]
                 },
                 "isCanvas": true,
                 "hidden": false,
                 "nodes": [
                   "NameFirstDH_Input",
-                  "NameLastDH_Input",
-                  "nameMiddleDH_Input",
-                  "nameSuffixDH_Input"
+                  "NameLastDH_Input"
                 ],
                 "linkedNodes": {},
                 "parent": "CARD_PER_DH"
@@ -4637,6 +4668,26 @@
                 "linkedNodes": {},
                 "parent": "ROW_PER_DHN1"
               },
+              "ROW_PER_DHN1B": {
+                "type": {
+                  "resolvedName": "Row"
+                },
+                "displayName": "Row",
+                "props": {
+                  "templateColumns": [
+                    "6",
+                    "6"
+                  ]
+                },
+                "isCanvas": true,
+                "hidden": false,
+                "nodes": [
+                  "nameMiddleDH_Input",
+                  "nameSuffixDH_Input"
+                ],
+                "linkedNodes": {},
+                "parent": "CARD_PER_DH"
+              },
               "nameMiddleDH_Input": {
                 "type": {
                   "resolvedName": "FormInput"
@@ -4651,7 +4702,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_DHN1"
+                "parent": "ROW_PER_DHN1B"
               },
               "nameSuffixDH_Input": {
                 "type": {
@@ -4667,7 +4718,7 @@
                 "hidden": false,
                 "nodes": [],
                 "linkedNodes": {},
-                "parent": "ROW_PER_DHN1"
+                "parent": "ROW_PER_DHN1B"
               },
               "ROW_PER_DHN2": {
                 "type": {
@@ -4712,8 +4763,8 @@
                 "props": {
                   "fieldId": "SexCodeDH",
                   "label": "Sex",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5036,8 +5087,8 @@
                 "props": {
                   "fieldId": "sexCodeCCH",
                   "label": "Sex (CCH)",
-                  "codeTypeProvider": "NIBRS",
-                  "attributeTypeId": "SEX"
+                  "attributeTypeId": "SEX",
+                  "codeTypeProvider": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5053,8 +5104,8 @@
                 "props": {
                   "fieldId": "raceCodeCCH",
                   "label": "Race (CCH)",
-                  "codeTypeSource": "NIBRS",
-                  "codeTypeCategory": "NIBRS_RACE"
+                  "codeTypeCategory": "NIBRS_RACE",
+                  "codeTypeSource": "NIBRS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5282,8 +5333,8 @@
                 "props": {
                   "fieldId": "imageIndicatorCCH",
                   "label": "Image (CCH)",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "YES_NO_UNKNOWN"
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5299,8 +5350,8 @@
                 "props": {
                   "fieldId": "relatedHitSearchIndicatorCCH",
                   "label": "Related Hit Search (CCH)",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "YES_NO_UNKNOWN"
+                  "codeTypeCategory": "YES_NO_UNKNOWN",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5755,8 +5806,8 @@
                 "props": {
                   "fieldId": "GunMake",
                   "label": "Gun Make",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_FIREARM_MAKE"
+                  "codeTypeCategory": "NCIC_FIREARM_MAKE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5794,8 +5845,8 @@
                 "props": {
                   "fieldId": "GunCaliber",
                   "label": "Caliber",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_FIREARM_CALIBER"
+                  "codeTypeCategory": "NCIC_FIREARM_CALIBER",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -5967,8 +6018,8 @@
                 "props": {
                   "fieldId": "GunMake",
                   "label": "Gun Make",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_FIREARM_MAKE"
+                  "codeTypeCategory": "NCIC_FIREARM_MAKE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6006,8 +6057,8 @@
                 "props": {
                   "fieldId": "GunCaliber",
                   "label": "Caliber",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_FIREARM_CALIBER"
+                  "codeTypeCategory": "NCIC_FIREARM_CALIBER",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6109,8 +6160,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6246,8 +6297,8 @@
                 "props": {
                   "fieldId": "GunMake",
                   "label": "Gun Make",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_FIREARM_MAKE"
+                  "codeTypeCategory": "NCIC_FIREARM_MAKE",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6285,8 +6336,8 @@
                 "props": {
                   "fieldId": "GunCaliber",
                   "label": "Caliber",
-                  "codeTypeSource": "NCIC",
-                  "codeTypeCategory": "NCIC_FIREARM_CALIBER"
+                  "codeTypeCategory": "NCIC_FIREARM_CALIBER",
+                  "codeTypeSource": "NCIC"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6478,8 +6529,8 @@
                 "props": {
                   "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
-                  "codeTypeSource": "CA_CLETS",
-                  "codeTypeCategory": "NCIC_ARTICLE_TYPE"
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
+                  "codeTypeSource": "CA_CLETS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6671,8 +6722,8 @@
                 "props": {
                   "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
-                  "codeTypeSource": "CA_CLETS",
-                  "codeTypeCategory": "NCIC_ARTICLE_TYPE"
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
+                  "codeTypeSource": "CA_CLETS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6812,8 +6863,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -6931,8 +6982,8 @@
                 "props": {
                   "fieldId": "ArticleTypeCode",
                   "label": "Article Type",
-                  "codeTypeSource": "CA_CLETS",
-                  "codeTypeCategory": "NCIC_ARTICLE_TYPE"
+                  "codeTypeCategory": "NCIC_ARTICLE_TYPE",
+                  "codeTypeSource": "CA_CLETS"
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -7530,8 +7581,8 @@
                 "props": {
                   "fieldId": "CAD_EVENT_SELECT_VALUE",
                   "label": "Event",
-                  "performSearchAhead": true,
-                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE"
+                  "attributeTypeId": "CAD_EVENT_SELECT_VALUE",
+                  "performSearchAhead": true
                 },
                 "isCanvas": false,
                 "hidden": false,
@@ -11233,7 +11284,7 @@
           "targetEntity": "Person"
         }
       ],
-      "description": "Provider configuration for TX_TLETS_CCH v1.11",
+      "description": "Provider configuration for TX_TLETS_CCH v1.12",
       "name": "TX_TLETS_CCH",
       "type": "BUNDLE",
       "provider": "TX_TLETS_CCH"

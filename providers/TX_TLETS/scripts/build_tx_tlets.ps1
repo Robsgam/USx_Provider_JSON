@@ -169,7 +169,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.15"
+    [string]$Version = "4.16"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -584,19 +584,21 @@ $perLayout = MakeLayouts @(
             # "(DH)" qualifier dropped from every label (Rob-confirmed 2026-07-17, mirrors
             # FL_FCIC/NY_NYSPIN_EJUSTICE/HI_HCJDC_OFML) -- the card's own "DRIVER HISTORY" title
             # already disambiguates it from "DRIVER LICENSE"; labels now match DL's phrasing.
-            @{ id = 'ROW_PER_DHL1'; cols = @('8','4'); fields = @(
+            # v4.16/v1.12 (DEX-1283 #4, Rob): DH now MIRRORS the DL card exactly -- OLN paired on a
+            # 6/6, name split First+Last then MI+Suffix. DH previously kept OLN on an 8/4 and all
+            # four name fields crammed on a 3/3/3/3, i.e. the same uneven-field problem the ticket
+            # reported, just on the other card. Applying the fix to DL only was too literal a read.
+            @{ id = 'ROW_PER_DHL1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DHL1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DHL1' @{ initialValue = 'C' } }
             )}
-            # Name order First-before-Last (Rob-confirmed 2026-07-17), matches DL.
-            # "(Name search)"/"(required with Name)" helpers dropped (Rob-confirmed 2026-07-17),
-            # mirrors DL -- NameFirstDH/NameLastDH/BirthDateDH/SexCodeDH are all set[]-required on
-            # KQName, never any[]-only anywhere else, so bare labels carry no CHECK-15 exposure.
-            @{ id = 'ROW_PER_DHN1'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_DHN1'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_PER_DHN1' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_PER_DHN1' }
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '30' 'ROW_PER_DHN1' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DHN1' }
+            )}
+            @{ id = 'ROW_PER_DHN1B'; cols = @('6','6'); fields = @(
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '30' 'ROW_PER_DHN1B' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DHN1B' }
             )}
             @{ id = 'ROW_PER_DHN2'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input';    node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DHN2' }

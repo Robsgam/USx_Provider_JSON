@@ -1,0 +1,10 @@
+# TEST_VALUE_OVERRIDES.txt -- per-provider test values for emit_test_plan / generate_test_matrix.
+# Format: fieldId=value   OR   <Entity>.fieldId=value  (entity-scoped wins over bare)
+#
+# NCIC record numbers are TYPED BY THEIR LEADING LETTER per NCIC file, so the same NCICNumber
+# fieldId needs a different value per entity. v4.15 sent X123456789 for all three and the
+# provider errored on every NCIC query -- 'X' is not a valid file prefix. Those logs proved the
+# field transmits, not that the query resolves.
+Article.NCICNumber=A123456789
+Firearm.NCICNumber=G123456789
+Boat.NCICNumber=B123456789

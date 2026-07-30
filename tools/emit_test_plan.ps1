@@ -108,8 +108,11 @@ function Get-ScopedOptions([string]$entity, [string]$fid) {
 # Test value per DOM fieldId (case-insensitive). Delegates to the shared resolver
 # (tools/_combo_value_resolver.ps1) -- see that module's header for the documented
 # behavioral differences from generate_test_matrix.ps1's copy of this same-named function.
+# $script:CurEntity is set by the per-entity loop below so entity-scoped overrides
+# ('<Entity>.<fieldId>=value') can resolve -- needed where one fieldId is reused across entities
+# but requires a different valid value each time (NCICNumber: A/G/B-prefixed per NCIC file).
 function Get-TestValue([string]$fid, [bool]$isOOS) {
-    return Get-ComboTestValue -FieldId $fid -IsOOS $isOOS -Caller 'EmitTestPlan' -Overrides $script:ValueOverrides
+    return Get-ComboTestValue -FieldId $fid -IsOOS $isOOS -Caller 'EmitTestPlan' -Overrides $script:ValueOverrides -Entity $script:CurEntity
 }
 
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
@@ -305,6 +308,7 @@ function Resolve-ExpectedKeyRef($entQidms, $fills, $entDefaults, $structuralKr) 
 }
 
 foreach ($ent in $entities) {
+    $script:CurEntity = $ent   # for entity-scoped test-value overrides
     $fieldIds = Get-QifFieldIds $qifByEntity[$ent]
     $hiddenIds = @(Get-QifHiddenFieldIds $qifByEntity[$ent])
     $formDefaultsByEntity[$ent] = Get-QifFormDefaults $qifByEntity[$ent]

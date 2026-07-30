@@ -1,5 +1,5 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.10
-# BASE-SYNC: TX_TLETS v4.15   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.16   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.5 (2026-07-27, DEX-1284 shadow correction, lockstep w/ TX_TLETS v4.9 + a CCH-only metadata fix):
 #   (base-6) removed QVLicensePlateNumber + QVVehicleIdentificationNumber (ungated subset-shadows,
 #   platform auto-fired -- see TX_TLETS v4.9); KEPT regionId (optional combination field) moved to the
@@ -92,7 +92,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.11"
+    [string]$Version = "1.12"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -635,16 +635,21 @@ $perLayout = MakeLayouts @(
             )}
             # "(DH...)" qualifier dropped from every label (TX_TLETS main v4.3 convention, mirrors
             # FL/NY/HI) -- the card's own "DRIVER HISTORY" title disambiguates it from "DRIVER LICENSE".
-            @{ id = 'ROW_PER_DHL1'; cols = @('8','4'); fields = @(
+            # v4.16/v1.12 (DEX-1283 #4, Rob): DH now MIRRORS the DL card exactly -- OLN paired on a
+            # 6/6, name split First+Last then MI+Suffix. DH previously kept OLN on an 8/4 and all
+            # four name fields crammed on a 3/3/3/3, i.e. the same uneven-field problem the ticket
+            # reported, just on the other card. Applying the fix to DL only was too literal a read.
+            @{ id = 'ROW_PER_DHL1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DHL1' }
                 @{ id = 'purposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DHL1' @{ initialValue = 'C' } }
             )}
-            # Name order First-before-Last (TX_TLETS main v4.3), matches DL.
-            @{ id = 'ROW_PER_DHN1'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_DHN1'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_PER_DHN1' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_PER_DHN1' }
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '30' 'ROW_PER_DHN1' }
-                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DHN1' }
+            )}
+            @{ id = 'ROW_PER_DHN1B'; cols = @('6','6'); fields = @(
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '30' 'ROW_PER_DHN1B' }
+                @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DHN1B' }
             )}
             @{ id = 'ROW_PER_DHN2'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input';    node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DHN2' }

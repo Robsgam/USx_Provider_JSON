@@ -2,9 +2,22 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.15** | Generated: 2026-07-30
+Current: **v4.16** | Generated: 2026-07-30
 
 ---
+
+## v4.16 -- 2026-07-30 -- DH card mirrored to DL + entity-scoped NCIC test values
+
+**CHANGED:** DH rows now match DL exactly -- ROW_PER_DHL1 6/6 (OLN + Purpose Code), ROW_PER_DHN1 6/6
+  (First + Last), NEW ROW_PER_DHN1B 6/6 (MI + Suffix). DH had kept OLN on an 8/4 and all four  
+  name fields on a 3/3/3/3. Both Person cards now read 6/6 x4 then the 4/4/4 options row.  
+**REASON:** Rob -- applying DEX-1283 #4 to DL only was too literal; DH had the same uneven-field
+  problem the ticket reported. Layout only, no QIDM/combo/wire change (query_trace unchanged).  
+  Paired with entity-scoped test-value overrides ('<Entity>.fieldId=value', new) so NCICNumber  
+  sends a valid per-file prefix: Article A123456789 / Firearm G123456789 / Boat B123456789.  
+  v4.15 sent X123456789 for all three and the provider errored on every NCIC query -- 'X' is  
+  not a valid NCIC file prefix, so those logs proved the field transmits, not that the query  
+  resolves. Test-data change only; it does not itself bump the JSON.  
 
 ## v4.15 -- 2026-07-30 -- DEX-1283 #4 UI adjustments (Leo CAD review) -- layout + labels only
 

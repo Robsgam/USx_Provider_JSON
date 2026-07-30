@@ -65,8 +65,21 @@ function Get-ComboTestValue {
         [Parameter(Mandatory)][bool]$IsOOS,
         [Parameter(Mandatory)][ValidateSet('EmitTestPlan', 'GenerateTestMatrix')][string]$Caller,
         [hashtable]$Overrides = @{},
-        [string]$FieldDefault = $null
+        [string]$FieldDefault = $null,
+        [string]$Entity = $null
     )
+    # ENTITY-SCOPED OVERRIDES ('<Entity>.<fieldId>=value') take precedence over the bare
+    # 'fieldId=value' form. Added 2026-07-30: some fieldIds are REUSED across entities but need a
+    # DIFFERENT valid value per entity, and a bare override cannot express that. NCICNumber is the
+    # case that forced it -- Article, Gun and Boat all use the same fieldId, but an NCIC record
+    # number is typed by its leading letter per NCIC file, so one value can only ever be valid for
+    # one of them. TX sent X123456789 for all three and the provider errored on every NCIC query
+    # (Rob, v4.15 sweep); those logs proved the field transmits but not that the query resolves.
+    if ($Entity) {
+        foreach ($k in $Overrides.Keys) {
+            if ($k -ieq "$Entity.$FieldId") { return $Overrides[$k] }
+        }
+    }
     foreach ($k in $Overrides.Keys) {
         if ($k -ieq $FieldId) { return $Overrides[$k] }
     }
