@@ -264,3 +264,32 @@ RegistrationStateDH]`. **Regression guard:** TX_TLETS must stay 89/89 on 6c and 
 
 **Interim mitigation:** on the first `DALLOUT`/`DALHOUT` test of any sweep, read the wire and
 confirm `<Requestor>` is present. One human look settles whether the prefill works at all.
+
+#### requestorDH -- RESOLVED DIAGNOSIS (2026-07-30, 4th pass, VERIFIED not inferred)
+
+Supersedes the paragraphs above. Two facts, both checked against the artifacts:
+
+1. `requestorDH` **IS** node-hidden -- the flag is `layout.default.<node>.hidden`, **NOT**
+   `props.hidden`. `Get-QifHiddenFieldIds` reads the node level. Checking `props.hidden` is what
+   produced my wrong claim that "NY's Person form has zero hidden fields". It carries
+   `initialValue='X'` (the gate-feeder sentinel, same as TX Attention/emailAddress).
+2. **The plan ALREADY records it.** `NY_NYSPIN_EJUSTICE_TEST_PLAN_v4.19.json` `formDefaults.Person` =
+   `{ImageIndicator=Y, ImageIndicatorDH=Y, purposeCodeDH=C, nyNyspinTransactionNameDH=DALL,
+   requestorDH=X}`.
+
+**So NO `emit_test_plan.ps1` change is needed** -- the data is present, and my whole `expectedInWire`
+design was redundant. The gap is entirely in 6c: `audit_log_content.ps1` uses `formDefaults` as an
+**allow-list** (so an extra snapshot field is not mistaken for another test's optional -- see its L50
+comment) and **never as an assertion**.
+
+**THE FIX -- one file, one rule:** in `audit_log_content.ps1`, for each log, require that every
+`formDefaults` field which is also a `set[]` member of the winning combo is PRESENT in that log's
+captured wire. `formDefaults` entries that are not `set[]` members stay advisory.
+
+**Needs its own mutation** -- strip a prefilled `set[]` field from a log's wire and confirm 6c FAILs --
+or the new assertion has no failure proof, which is LAW 2. **Regression guard:** TX_TLETS stays 89/89
+on 6c and 16/16 on `audit_gate_efficacy`.
+
+**Why it was not applied:** the edit belongs inside a per-log loop that was not read, and editing
+blind into unread code is exactly what produced three prior failed attempts (wrong plan file;
+props-vs-node hidden level; an inert TEST_VALUE_OVERRIDES entry). The diagnosis was the hard part.
