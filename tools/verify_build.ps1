@@ -962,6 +962,46 @@ if ($providerBundle) {
     Info "No provider bundle -- skipping combo reachability check"
 }
 
+# ── CHECK 15: Duplicate targetField within one configuration ──────────────────
+# FIELD_REFERENCE Section 4 names this as the ACTUAL failure mode behind the FL_FCIC sex-code
+# reverse-lookup failure: "The prior 'FL instance doesn't support reverse-lookup' conclusion was
+# WRONG (corrected 2026-04-20). Actual failure mode: DUPLICATE targetField in the same QIDM."
+# That was diagnosed once, written into the KB -- and then nothing ever checked for it again.
+# Found 2026-07-30 by an adversarial sweep: 5 duplicates per provider on ALL 20 providers (100
+# instances), every one of them emitted by a shared builder, e.g. RMS_Results maps BOTH
+# itemCategoryAttrDetail.displayValue AND itemCategoryAttrDetail.id to 'BodyStyle' -- one silently
+# wins and which one is undefined.
+#
+# SEVERITY SPLIT, deliberately:
+#   REQUEST QIDMs (QUERYINPUTDATAMAPPING) -> FAIL. Two attributes writing one outbound field means
+#     the wire value is undefined; there is no legitimate reason for it.
+#   *_Results / QRDM (response mapping)   -> INFO. A duplicate target can be an intentional
+#     fallback (a plain passthrough plus a rule+fallbackRule variant), and Rob has ruled response
+#     behaviour out of scope for now (demo-mode responses must not be built against). Reported so
+#     it is visible and countable, never blocking.
+Write-Host ""
+Write-Host "--- CHECK 15: Duplicate targetField within a configuration ---" -ForegroundColor Yellow
+$dupReq = 0; $dupResp = 0
+foreach ($bnd in @($json.bundles)) {
+    foreach ($cfg in @($bnd.configurations)) {
+        if (-not $cfg.attributes) { continue }
+        $isResponse = ("$($cfg.name)" -match 'Results$') -or ("$($cfg.type)" -match 'RESULT|RESPONSE')
+        $seenTf = @{}
+        foreach ($a in @($cfg.attributes)) {
+            $tf = "$($a.targetField)"
+            if (-not $tf) { continue }
+            if ($seenTf.ContainsKey($tf)) {
+                $msg = "duplicate targetField '$tf' in '$($cfg.name)' -- attrs '$($seenTf[$tf])' and '$($a.name)' both write it; which one lands is undefined"
+                if ($isResponse) { Info "$msg (response mapping -- INFO per scope ruling)"; $dupResp++ }
+                else { Fail "$msg (FIELD_REFERENCE Sec 4 -- this is the documented reverse-lookup killer)"; $dupReq++ }
+            } else { $seenTf[$tf] = "$($a.name)" }
+        }
+    }
+}
+if ($dupReq -eq 0) {
+    Pass "No duplicate targetField in any REQUEST QIDM$(if($dupResp){" ($dupResp in response mappings -- INFO, see CHECK 15 header)"})"
+}
+
 # ── SUMMARY ───────────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan

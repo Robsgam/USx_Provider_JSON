@@ -452,10 +452,20 @@ function Build-Xml($qidm, $combo, $formData) {
     if ($combo.requirements -and $combo.requirements.any)  { $relevantFields += @($combo.requirements.any) }
     $relevantFields = $relevantFields | Select-Object -Unique
 
+    # ILLUSTRATIVE ENVELOPE -- NOT the wire format. Verified against 814 captured logs 2026-07-30:
+    # the real request is  <api:Transaction id="01K..."><LawEnforcementTransaction version="1.0">
+    # <Mnemonic>...  and it carries ZERO <MessageKey> elements on EVERY combo. The only time
+    # <MessageKey> appears on the wire is when the officer fills the CPL/DWI/RDL form field, which
+    # maps to the metadata MessageKey FIELD -- the transaction key is not serialized at all.
+    # The '<Transaction>' + '<MessageKey>$msgKey</MessageKey>' lines below are a readability aid so
+    # a human can see WHICH combo the simulator matched. Do NOT diff this against a captured log
+    # and do NOT read the MessageKey line as evidence of anything on the wire. This simulator's job
+    # is combo MATCHING (which keyRef wins), not wire reproduction; audit_log_metadata is what
+    # validates real captured XML against the metadata.
     $sb = [System.Text.StringBuilder]::new()
     [void]$sb.AppendLine('<?xml version="1.0" encoding="UTF-8"?>')
-    [void]$sb.AppendLine('<Transaction>')
-    [void]$sb.AppendLine("  <MessageKey>$msgKey</MessageKey>")
+    [void]$sb.AppendLine('<Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->')
+    [void]$sb.AppendLine("  <MessageKey>$msgKey</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->")
 
     foreach ($attr in $qidm.attributes) {
         $sourceFields = @()

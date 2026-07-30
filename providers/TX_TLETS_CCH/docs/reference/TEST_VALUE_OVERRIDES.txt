@@ -8,3 +8,12 @@
 Article.NCICNumber=A123456789
 Firearm.NCICNumber=G123456789
 Boat.NCICNumber=B123456789
+# messageKey (CPL/DWI/RDL) -- the value MUST NOT be "CPL".
+# The archived af_messageKey test used messageKey=CPL, which is byte-identical to the metadata
+# keyReference of the combo it fires (CPL). The wire showed <MessageKey>CPL</MessageKey> -- which
+# is consistent with BOTH "the form field was transmitted" and "the platform stamped the
+# transaction key", so the test could not distinguish them and proved nothing. Confirmed
+# 2026-07-30 that the real wire carries NO transaction MessageKey (0 occurrences across every
+# captured combo; root is <LawEnforcementTransaction>), so the field IS the only source -- but the
+# test value must still differ from the keyRef to be evidence. See feedback_toggle_tests_differ_from_default.
+Person.messageKey=DWI
