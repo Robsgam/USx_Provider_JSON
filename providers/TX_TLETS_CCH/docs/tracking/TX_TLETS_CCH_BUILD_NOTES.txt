@@ -2,6 +2,22 @@
   BUILD NOTES: TX_TLETS_CCH
   Created: 2026-06-09
 ================================================================
+v1.10  2026-07-30  Vehicle: all 7 metadata combinations FORM-REACHABLE (lockstep w/ TX_TLETS v4.14)
+  CHANGED: Removed the four routing-affecting Vehicle prefills (LicensePlateTypeCode=PC,
+    LicensePlateYear=<year>, financialResponsibilityType=E, RegistrationState=TX) from the form and
+    dropped every combo defaults[] entry. Replaced the 3-combo VehicleInsuranceRegistrationQuery
+    block with all 7 metadata combos, most-specific-first, RESTORING RQLicensePlateNumber +
+    RQVehicleIdentificationNumber (deleted v1.9) and QVLicensePlateNumber +
+    QVVehicleIdentificationNumber (deleted v1.5). RQ{VIN}/QV{VIN} share an identical metadata set[]
+    ({VIN}) and are split on RegionId EXISTS/NOT_EXISTS + FRT NOT_EXISTS; QV{VIN} is ordered BEFORE
+    RQ{VIN} because verify_build CHECK 14 only credits an EXISTS condition on the earlier combo.
+    BASE-SYNC marker -> TX_TLETS v4.14. Stale header/description comments corrected.
+  REASON: Lockstep with the TX_TLETS v4.14 fix. CCH carried its OWN copy of the vehicle block and
+    still had the entire original bug: the prefills satisfied their siblings' set[] on every
+    submission, so RQ/QV could never win first-match. RQ is the devdoc's "(OutofState)" path, so
+    CCH would have shipped with out-of-state plate and VIN search broken. audit_query_trace went
+    4 PREFILL-DEAD -> 0; validator 114P/0F/0W; verify_build 16P/0F/0W; reachability 33/33.
+    CCH has never been tenant-tested, so no test package was reset.
 v1.9  2026-07-29  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
   REASON: Scheduled rebuild

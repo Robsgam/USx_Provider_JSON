@@ -2,4 +2,3 @@
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
 # Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:FORM-REACHABLE-COMBOS] Remove routing-affecting form defaults so every devdoc Basic combination is reachable FROM THE FORM. Prefills that satisfy a required field make a sibling combo win first-match forever. Per audit_query_trace: TX_TLETS/TX_TLETS_CCH = FRT=E + PlateYear=2026 (4 combos, incl. both OutofState paths - also restore RQ+QV, deleted v4.13 as false dead-combos); CA_CLETS = purposeCode=C (12 combos); HI_HCJDC_OFML = vehicleTypeCode=1 (2 combos). Also stop defaulting State where it is any[]-only (TX/AZ/NJ). Gated by enforce PHASE 2n. (flagged 2026-07-30)
