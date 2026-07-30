@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.18"
+    [string]$Version = "4.19"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -591,12 +591,17 @@ $vehLayout = MakeLayouts @(
             # LABEL-OVERRIDE: LicensePlateTypeCode -- Rob's explicit exception; bare "Plate Type" is
             # the intended officer-facing wording. Merely-defaulted (initialValue=PC), officer-editable,
             # any[] optional -- CHECK 15 Rule 3's "(optional)" qualifier is not wanted here.
-            # LABEL-OVERRIDE: LicensePlateYear -- Rob's explicit exception; bare "Plate Year" intended
+            # LABEL-OVERRIDE: LicensePlateYear -- 'Plate Year (out-of-state)' at v4.19. v4.18 removed this
+# field's initialValue and dropped it from RVEH's any[] (devdoc #1's in-state optionals are
+# [ImageIndicator, LicensePlateTypeCode] only), which left a VISIBLE field that is in NO in-state
+# combination -- an in-state officer typing a plate year had it silently dropped. Spec-correct but a
+# usability trap created by the v4.18 fix. The qualifier tells the officer the field belongs to the
+# out-of-state path, where devdoc #3 makes it MANDATORY alongside Plate Type and State.
             # (initialValue=current year, officer-editable, any[] optional).
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{} }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (out-of-state)' '4' 'ROW_VEH_1' @{} }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }

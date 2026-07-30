@@ -1,2 +1,29 @@
 # PENDING_UPDATES -- empty. All items resolved at v4.18 (2026-07-30); the narrative
 # moved to NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt, which is the version source of truth.
+
+[OPEN -- TOOLING, 2026-07-30] requestorDH is metadata-MANDATORY and NO gate can verify it ships.
+  WHAT: built DALLOUT set[] = OperatorLicenseNumberDH, purposeCodeDH, requestorDH,
+        RegistrationStateDH  (DALHOUT likewise). The v4.19 TEST_PLAN drives only three of the four --
+        requestorDH is absent from every DALLOUT/DALHOUT fill list, because it is a HIDDEN
+        auto-populated field and the plan lists officer-enterable fields.
+
+  WHY NEITHER LOG GATE CATCHES A FAILURE -- this is the part worth keeping:
+    6c audit_log_content compares the log's QUERY STRING to the PLAN's fill-set. requestorDH is not
+       in the plan, so 6c has nothing to assert and passes.
+    6d audit_log_metadata requires the wire field-set to satisfy SOME metadata alternative. Metadata
+       DriverHistoryQuery DALL alt1 is [OperatorLicenseNumber] ALONE (the in-state branch), so a wire
+       carrying OLN + purposeCode + State but NO Requestor still satisfies alt1 and 6d passes.
+    So if the auto-population ever fails, a mandatory field silently vanishes from the wire and the
+    package still reads green. Registry rule prefilled-mandatory-autopopulated records the DESIGN;
+    nothing verifies the RESULT.
+
+  FIX (do with fresh context, do NOT guess at it): emit_test_plan_spec.ps1 should emit form-PREFILLED
+  set[] members as an EXPECTED-IN-WIRE assertion even though the driver cannot type them -- then 6c
+  has something to check. Distinct from `fills` (what the driver enters); call it expectedInWire.
+  Alternative considered and REJECTED: making requestorDH visible so the plan can drive it. That
+  contradicts the accepted prefilled-mandatory-autopopulated design and the Automated Attention
+  standard, and trades a verification gap for a UX regression.
+
+  INTERIM MITIGATION for the v4.19 sweep: on the first DALLOUT/DALHOUT test, read the wire XML and
+  confirm <Requestor> is present. One human look settles whether the prefill works at all; the
+  tooling fix then protects it going forward.
