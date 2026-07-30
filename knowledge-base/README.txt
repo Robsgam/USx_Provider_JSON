@@ -673,6 +673,16 @@ TOOLS
     the two cannot drift. Exports Get-ProviderTestState / Get-ProviderValidatorScore /
     Get-ProviderMethodology.
 
+  tools/audit_branch_currency.ps1
+    BRANCH CURRENCY (enforce PHASE 2o, ADVISORY -- never blocks). Warns when the long-lived working
+    branch drifts from main: main older than N days, branch more than N commits ahead, or a branch
+    named for ONE provider carrying commits that touch others. Origin (Rob 2026-07-30, "keep these
+    things in line... so nothing gets stale and nothing gets left behind"): nothing watched the gap
+    and it reached 216 commits / 8 days unnoticed, while main's TX still could not run out-of-state
+    plate or VIN queries. Advisory because Rob imports JSON from the provider ROOT FOLDER (working
+    tree), so branch state does not affect installs -- the point is that drift becomes a decision
+    instead of an accident. Merging is a human call about what ships to a customer.
+    Usage: .\audit_branch_currency.ps1 [-MaxAhead 50] [-MaxMainAgeDays 7] [-OutFile <path>]
   tools/audit_query_trace.ps1
     QUERY TRACE -- every metadata combination -> built? reachable? if not, WHY? Answers the one
     question no other gate asks: "are we missing a COMBINATION, and is one of our own form

@@ -85,6 +85,16 @@ function Import-CaptureFile($path, $label) {
     }
     # import_captured_tests.ps1 archives (moves) the file into automation/captures; this is a
     # harmless no-op if it's already gone.
+    # KEEP CLAUDE.md's tenant-test cell CURRENT AUTOMATICALLY. Importing logs changes log-truth,
+    # which changes that cell -- and enforce CHECK 3j gates it. TWICE on 2026-07-30 a completed
+    # sweep left the cell reading "NEVER 0/5" while log-truth said ALL-PASS, blocking enforce until
+    # someone remembered to re-run the sync by hand. A step that must be remembered is a step that
+    # gets skipped, so the ingest now does it (Rob: "keep these things in line... nothing stale").
+    # Idempotent -- sync_provider_table only writes when a cell actually differs.
+    try { & (Join-Path $PSScriptRoot 'sync_provider_table.ps1') *>&1 |
+            Where-Object { $_ -match '\(updated\)' } |
+            ForEach-Object { Write-Host "[WATCH] CLAUDE.md synced: $($_.Trim())" -ForegroundColor Cyan } }
+    catch { Write-Host "[WATCH] sync_provider_table errored (non-fatal)" -ForegroundColor DarkYellow }
     Remove-Item $path -Force -ErrorAction SilentlyContinue
     return $summary
 }

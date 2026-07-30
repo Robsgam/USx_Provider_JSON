@@ -794,6 +794,27 @@ if (-not (Test-Path $qtTool)) {
 # ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2o: Branch Currency (audit_branch_currency.ps1) -- ADVISORY, never blocks
+#  Nothing watched the gap between the working branch and main, so it reached 216 commits /
+#  8 days without anyone deciding to let it. Rob imports from the provider ROOT FOLDER, so
+#  branch state does not affect installs -- that is why this warns rather than fails. It
+#  exists so drift is a decision, not an accident (Rob 2026-07-30: "keep these things in
+#  line... so nothing gets stale and nothing gets left behind").
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2o: Branch Currency (advisory)"
+$bcTool = Join-Path $toolDir "audit_branch_currency.ps1"
+if (-not (Test-Path $bcTool)) {
+    Info "audit_branch_currency.ps1 not found -- branch-currency check skipped"
+} else {
+    $bcOut = & powershell -ExecutionPolicy Bypass -File $bcTool 2>&1 | Out-String
+    $bcWarns = @($bcOut -split "`n" | Where-Object { $_ -match '^\s*\[WARN\]' })
+    if ($bcWarns.Count -gt 0) {
+        foreach ($w in $bcWarns) { Info ($w -replace '^\s*\[WARN\]\s*','branch drift: ') }
+    } else {
+        Pass "Branch currency: within thresholds (no stale main / no oversized gap)"
+    }
+}
 SectionHeader "PHASE 3: Doc Version Sync"
 
 # Check 3j prerequisite -- reported ONCE, not per provider.
