@@ -12,7 +12,8 @@
 > 4. Numbers here must be derived, not remembered — run `tools\portfolio_status.ps1` and
 >    `tools\enforce.ps1`.
 
-
+
+
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
 **Last updated:** 2026-07-30 (generated) · **Branch:** `main`
@@ -39,18 +40,17 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ---
 
-## ▶ NEXT PHYSICAL ACTION
+## NEXT PHYSICAL ACTION
 
-**TX v4.17 re-sweep is owed from T1** (~85 tests; the v4.16 logs were archived by the bump).
-v4.17 removed the QV{Plate}/QV{VIN} metadata shadows; v4.18 fixed 17 dropped devdoc optionals (BirthDate on CPL, FRT on DPSI), restoring Rob's binding v4.9 ruling after
-they were re-added in error at v4.14 — Vehicle is 5 combos, 19 total. Then **NY v4.17** (also from
-T1, never started). Order after: NJ, FL, then CA_CLETS, HI. Everything outside those 6 is TABLED.
+**TX_TLETS v4.18 is the solid one and needs nothing.** ALL-PASS 89/89, enforce 39 PASS/0 FAIL/0 WARN,
+gate efficacy KILLED 16/16, requirement fidelity 0/0, 0 over-broad suppressions. Do not re-sweep it.
 
-**Standing rule that cost three versions to relearn:** QV and QW are PLATFORM-AUTO-FIRED metadata
-shadows, NOT devdoc in/out combinations — never build them, and never "restore" them alongside a
-genuine prefill-dead fix. RQ{Plate}/RQ{VIN} are the OPPOSITE case (real devdoc "(OutofState)"
-paths) and STAY built. `audit_query_trace` reporting QV [MISSING] is EXPECTED; see
-TX_TLETS_ACCEPTED_DIVERGENCES rule `metadata-shadow-autofired`.
+**Rob's call on NY before its 67-test sweep.** NY v4.17 Vehicle has two recorded metadata-fidelity
+findings (`RVEHOUT` demotes two mandatory fields; `RVEH` over-permits `LicensePlateYear`). Rob PARKED
+the ruling 2026-07-30. The cost of sweeping first: fixing them later bumps to v4.18 and archives all
+67 fresh logs. Settling it first costs one build. See NY PENDING_UPDATES.txt "[OPEN 2026-07-30]".
+
+Order after NY: NJ, FL, then CA_CLETS, HI. Everything outside those 6 is TABLED.
 
 **Run the `usx-resume` skill before acting on this.** It sweeps for environment state this file
 cannot see (captures stranded in Downloads, stray `watch_captures` processes, a build script bumped
@@ -68,9 +68,17 @@ assertion. If you get a FAIL or WARN, the tool is right and this file is out of 
 
 ## What is actually owed
 
-1. **NY v4.17 re-test** (~67 tests, from T1). Step 1 is the empty-`set[]` metadata parser question
-   flagged `NY-METADATA-PARSER-UNKNOWN` — resolve that before trusting NY's query-trace verdict.
-2. **31 PREFILL-DEAD combos remain** (CA_CLETS 12, CA_CONTRA_COSTA 12, HI 2, OH_LEADS 1) — each
+1. **NY v4.17 re-test** (~67 tests, from T1). The `NY-METADATA-PARSER-UNKNOWN` flag is RESOLVED
+   (nested `<Choice><Set>`; NY's DriverHistory build is metadata-exact). Two Vehicle fidelity
+   findings remain OPEN awaiting Rob -- settle them before spending 67 tests.
+2. **170 over-broad divergence suppressions across 14 providers** (`tools\audit_suppression_scope.ps1`).
+   Every accepted divergence buys a blind spot; TX_TLETS is at 0 via the
+   `# SUPPRESSION-SCOPE: direction-aware` marker. Add the marker at each provider's own rebuild turn,
+   never as a sweep -- narrowing can turn a green provider red. TX_TLETS_CCH (29) is the natural next.
+3. **CA_CLETS has a REAL shipped defect**, flagged `[UNDER-REQUIRED-CHOICE-BRANCH]`: `IG.QGH` needs
+   `purposeCode+Name+(Age OR BirthDate)`, both discriminators were built optional, and a committed
+   PASS log shipped with neither. Two independent gates agree. Fixed at CA_CLETS's turn.
+4. **31 PREFILL-DEAD combos remain** (CA_CLETS 12, CA_CONTRA_COSTA 12, HI 2, OH_LEADS 1) — each
    already flagged in its own PENDING_UPDATES.txt, fixed at that provider's turn. **BUILD_RULES 24**
    is the rule; `enforce` PHASE 2n is the gate. Removing a prefill is what RESTORES the combo —
    never delete a devdoc-supported combo that only our own default made unreachable.
