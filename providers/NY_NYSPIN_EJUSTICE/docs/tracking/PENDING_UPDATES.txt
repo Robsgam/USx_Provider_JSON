@@ -2,4 +2,14 @@
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
 # Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:NY-METADATA-PARSER-UNKNOWN] audit_query_trace reports 3 NY combos (DALL x2, RVEH) with an EMPTY set[]. Unresolved whether NY metadata genuinely omits Requirements for those combos or the parser misses NY XML shape. NY audit verdict is NOT trustworthy until this is settled -- resolve as step 1 of NY work, before acting on any NY finding. (flagged 2026-07-30)
+# RESOLVED 2026-07-30 -- [FLAG:NY-METADATA-PARSER-UNKNOWN] cleared. The question was whether
+# NY metadata genuinely omits Requirements for DALL x2 / RVEH, or whether audit_query_trace
+# misses NY's XML shape. ANSWERED: the metadata genuinely has an empty <Set> for those three,
+# and each carries ANY content with NO CHOICE (DALL: ImageIndicator + NyNyspinTransactionName;
+# RVEH: ImageIndicator). That is a requirement-free 'any-of' combination, which
+# _sim_helpers Test-ComboMatches already implements ('if set[] is empty, at least one any[]
+# present'). NOT the TX shape -- TX's ArticleSingleQuery QA had an empty <Set> plus
+# CHOICE=[NCICNumber], so its requirement lived in the Choice. No parser change was needed;
+# the hypothesis is disproved rather than carried forward. The 3 query_trace MISSING lines
+# remain EXPECTED: containment matching cannot affirm a combo whose metadata set[] is empty,
+# and NY does build DriverHistoryQuery. Adjudicate them, do not 'fix' them.

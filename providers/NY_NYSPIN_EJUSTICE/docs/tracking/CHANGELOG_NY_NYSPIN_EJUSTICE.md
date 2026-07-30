@@ -6,7 +6,7 @@ Current: **v4.17** | Generated: 2026-07-30
 
 ---
 
-## v4.17 -- 2026-07-29 -- Pipeline rebuild
+## v4.17 -- 2026-07-30 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild

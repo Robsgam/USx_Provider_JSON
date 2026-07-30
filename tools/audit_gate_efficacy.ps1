@@ -150,10 +150,64 @@ function Get-Node($j, [string]$entity, [string]$fieldId) {
     return $null
 }
 
+# ── PER-PROVIDER MUTATION MAPS ────────────────────────────────────────────────────────
+# The table below names REAL keyRefs and fieldIds, so it is provider-shaped by necessity. A
+# provider without a map cannot be mutation-tested, and by LAW 2 its gates' PASS is therefore not
+# yet evidence -- say so rather than implying coverage.
+#
+# NY_NYSPIN_EJUSTICE IS THE KEYREF-COLLISION PROVIDER (BUILD_RULES 13): it reuses RVEH and RCAR on
+# BOTH VehicleRegistrationQuery AND BoatQuery. Every NY mutation must therefore be QUERY-SCOPED --
+# Get-Cfg by QIDM name first, then Get-Combo within it. A bare keyRef lookup would silently mutate
+# the Boat combo while claiming to test Vehicle, which is the exact bug that produced 8 bogus
+# "NO COMBO FIRES" results in audit_log_combo_attribution on 2026-07-29.
+#
+# NY prefill note, verified 2026-07-30: purposeCodeDH='C' and requestorDH='X' ARE prefilled AND ARE
+# in DALHOUT/DALLOUT set[]. That is the BUILD_RULES 24 shape but NOT a violation here -- the
+# discriminator is RegistrationStateDH EXISTS/NOT_EXISTS, which is correctly NOT prefilled, so no
+# combination is hidden (query_trace: 0 PREFILL-DEAD). The prefill-dead mutation below therefore
+# targets RegistrationStateDH, the field that IS the discriminator, because a mutation must CREATE
+# the defect rather than merely resemble it.
+$PROV_MUTS = @{
+  'NY_NYSPIN_EJUSTICE' = @(
+    @{ Id='ny-prefill-discriminator'
+       Desc='initialValue on RegistrationStateDH -- it is the EXISTS/NOT_EXISTS discriminator between DALHOUT/DALH and DALLOUT/DALL, so prefilling it permanently decides the gate and starves the in-state pair'
+       Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+       Mut={ param($j) $n=Get-Node $j 'Person' 'RegistrationStateDH'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'NY' -Force } }
+
+    @{ Id='ny-keyref-collision-scope'
+       Desc='break the BoatQuery RVEH combo only -- a query-scoped gate must still catch it while the identically-named VehicleRegistrationQuery RVEH stays intact (BUILD_RULES 13)'
+       Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
+       Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'RVEH'
+             $cm.requirements.set=@('RegistrationState'); $cm.requirements.any=@('RegistrationNumber') } }
+
+    @{ Id='ny-drop-oos-guardrail'
+       Desc='remove RegistrationStateDH EXISTS from DALLOUT so the out-of-state DH path is no longer discriminated from DALL'
+       Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
+       Mut={ param($j) $c=Get-Cfg $j '*_DriverHistoryQuery'; $cm=Get-Combo $c 'DALLOUT'
+             $cm.requirements.conditions=@($cm.requirements.conditions | Where-Object { "$($_.field)" -notmatch 'RegistrationStateDH' }) } }
+
+    @{ Id='ny-dup-targetfield'
+       Desc='two attributes writing one outbound targetField in a REQUEST QIDM (FIELD_REFERENCE Sec 4)'
+       Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
+       Mut={ param($j) $c=Get-Cfg $j '*_GunQuery'; $a=$c.attributes[0].PSObject.Copy(); $a.name='ClonedForMutation'; $c.attributes=@($c.attributes)+$a } }
+
+    @{ Id='ny-remove-a-built-combo'
+       Desc='delete the VehicleRegistrationQuery RCAR combo (VIN-only, in-state) -- a real search path disappears'
+       Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+       Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'
+             $cm=Get-Combo $c 'RVIN'; $cm.requirements.set=@('VehicleIdentificationNumber')
+             $cm.requirements.conditions=@() } }
+
+    @{ Id='ny-toplevel-version-field'
+       Desc='a top-level version field, which the platform rejects (deserialised as Integer)'
+       Gate='validate.ps1'; Args={ @('-Path',$workJson) }
+       Mut={ param($j) $j | Add-Member -NotePropertyName version -NotePropertyValue '4.17' -Force } }
+  )
+}
 # ── THE MUTATION TABLE ────────────────────────────────────────────────────────────────
 # Each entry: the defect class, the gate that owns it, and the exact injection.
 $MUTS = @(
-  @{ Id='prefill-routing-field'
+  @{ Id='prefill-routing-field'; OnlyProvider='TX_TLETS'
      Desc='initialValue on LicensePlateTypeCode -- RQ{Plate} is index 0 and its ONLY extra set[] field vs REG is PlateTypeCode, so prefilling it makes RQ match on Plate+Year alone and REG becomes unreachable. This is the EXACT prefill removed at v4.14. (First draft of this harness prefilled LicensePlateYear instead, which is in BOTH combos set[] and therefore starves neither -- it falsely accused the gate. A mutation must CREATE the defect, not merely resemble it.)'
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $n=Get-Node $j 'Vehicle' 'LicensePlateTypeCode'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'PC' -Force } }
@@ -163,25 +217,25 @@ $MUTS = @(
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_GunQuery'; $a=$c.attributes[0].PSObject.Copy(); $a.name='ClonedForMutation'; $c.attributes=@($c.attributes)+$a } }
 
-  @{ Id='demote-set-to-any'
+  @{ Id='demote-set-to-any'; OnlyProvider='TX_TLETS'
      Desc='stickerNumber moved out of DPSI set[] into any[] (audit_metadata CHECK 4e)'
      Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*VehicleInsuranceRegistrationQuery'; $cm=Get-Combo $c 'DPSIStickerNumber'
            $cm.requirements.set=@('RegistrationState'); $cm.requirements.any=@('stickerNumber') } }
 
-  @{ Id='promote-any-to-set'
+  @{ Id='promote-any-to-set'; OnlyProvider='TX_TLETS'
      Desc='regionId forced into RQ{VIN} set[] though metadata has it in any[] (CHECK 4d)'
      Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*VehicleInsuranceRegistrationQuery'; $cm=Get-Combo $c 'RQVehicleIdentificationNumber'
            $cm.requirements.set=@('VehicleIdentificationNumber','regionId') } }
 
-  @{ Id='poisoned-condition'
+  @{ Id='poisoned-condition'; OnlyProvider='TX_TLETS'
      Desc='a value-comparison routing condition, which poisons the whole conditions array (AP/LIMIT)'
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QBNCICNumber'
            $cm.requirements | Add-Member -NotePropertyName conditions -NotePropertyValue @([pscustomobject]@{field=@('RegistrationState');operator='EQUALS';value='TX'}) -Force } }
 
-  @{ Id='drop-identifier-guardrail'
+  @{ Id='drop-identifier-guardrail'; OnlyProvider='TX_TLETS'
      Desc='remove the Plate>VIN guardrail (LicensePlateNumber NOT_EXISTS) from RQ{VIN} (CHECK 10)'
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*VehicleInsuranceRegistrationQuery'
@@ -205,7 +259,7 @@ $MUTS = @(
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $n=Get-Node $j 'Vehicle' 'LicensePlateNumber'; $n.props.fieldId='LicensePlateNumberIn' } }
 
-  @{ Id='inert-condition-field'
+  @{ Id='inert-condition-field'; OnlyProvider='TX_TLETS'
      Desc='conditions[].field pointing at a non-existent fieldId, so the gate never fires (CHECK 11)'
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'CPLName'
@@ -226,13 +280,13 @@ $MUTS = @(
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_ArticleSingleQuery'; $c.PSObject.Properties.Remove('queryLabel') } }
 
-  @{ Id='drop-devdoc-optional'
+  @{ Id='drop-devdoc-optional'; OnlyProvider='TX_TLETS'
      Desc='BirthDate removed from CPLName any[], so a devdoc-legal optional cannot transmit'
      Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'CPLName'
            $cm.requirements.any=@($cm.requirements.any | Where-Object { "$_" -ne 'BirthDate' }) } }
 
-  @{ Id='remove-a-built-combo'
+  @{ Id='remove-a-built-combo'; OnlyProvider='TX_TLETS'
      Desc='delete DPSIStickerNumber entirely (a whole devdoc search path disappears)'
      Gate='audit_devdoc_combinations.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*VehicleInsuranceRegistrationQuery'
@@ -244,12 +298,21 @@ $MUTS = @(
                foreach($nid in @($lay.PSObject.Properties.Name)){ if("$($lay.$nid.props.fieldId)" -eq 'stickerNumber'){ $lay.PSObject.Properties.Remove($nid) } } } } }
            $c.attributes=@($c.attributes | Where-Object { "$($_.name)" -ne 'StickerNumber' }) } }
 
-  @{ Id='true-shadow-pair'
+  @{ Id='true-shadow-pair'; OnlyProvider='TX_TLETS'
      Desc='two combos with identical set[] and no discriminator, so the later one is unreachable'
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_GunQuery'; $cm=Get-Combo $c 'QGNCICNumber'
            $cm.requirements.set=@('serialNumber') } }
 )
+
+# Fold in this provider's own map. A provider with no map still runs the generic mutations, but
+# report the shortfall rather than letting a thin run look like full coverage.
+if ($PROV_MUTS.ContainsKey($Provider)) {
+    $MUTS += @($PROV_MUTS[$Provider])
+    Emit "  provider-specific mutations for ${Provider}: $(@($PROV_MUTS[$Provider]).Count)" $null
+} elseif ($Provider -ne 'TX_TLETS') {
+    Emit "  [NOTE] no provider-specific mutation map for $Provider -- the generic mutations below name TX keyRefs and will report INVALID here. That is honest, not a pass." 'Yellow'
+}
 
 # ── run ───────────────────────────────────────────────────────────────────────────────
 $killed=0; $survived=0; $invalid=0
@@ -259,6 +322,11 @@ Emit ("  " + ("-"*88)) $null
 
 foreach ($m in $MUTS) {
     if ($Only -and "$($m.Id)" -notlike "*$Only*") { continue }
+    # A mutation that names concrete keyRefs/fieldIds is provider-shaped and must not be run
+    # elsewhere. Running TX's combo mutations against NY produced 8 INVALID ("property 'set' cannot
+    # be found") plus 1 false SURVIVED -- noise that buries the 6 real NY verdicts and, worse, looked
+    # like a blind gate. Skip silently; the per-provider map is what supplies real coverage.
+    if ($m.OnlyProvider -and $m.OnlyProvider -ne $Provider) { continue }
 
     # BASELINE: the gate must be clean on the pristine replica, or the harness is at fault
     Reset-Mutant
