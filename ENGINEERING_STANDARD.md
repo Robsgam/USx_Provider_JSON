@@ -231,3 +231,36 @@ EXTERNAL fact; hand-write only judgement.**
 hash-gated reports for the first group and runs the newer gates live. There is no duplicated
 execution to remove. Checked 2026-07-30 rather than assumed; do not "optimise" this into a cache
 that can go stale.
+### Deferred: prefilled-mandatory fields have no wire verification (found 2026-07-30)
+
+A combination's `set[]` may include a field the officer never types -- hidden and auto-populated
+(NY `DALLOUT` carries `requestorDH`; the Automated Attention standard does the same on several
+providers). **No gate can currently verify such a field reaches the wire**, and the reason is worth
+stating because it is a two-gate hole, not an oversight in one tool:
+
+* **6c `audit_log_content`** compares the log to the **plan's** `fills`. A hidden field is not in
+  `fills` -- the driver cannot type it -- so 6c has nothing to assert and passes.
+* **6d `audit_log_metadata`** requires the wire field-set to satisfy **some** metadata alternative.
+  NY's `DALL` **alt1 is `[OperatorLicenseNumber]` alone** (the in-state branch), so a wire
+  carrying OLN + PurposeCode + State but **no Requestor** still satisfies alt1 and passes.
+
+The accepted-divergence rule `prefilled-mandatory-autopopulated` records the **design**. Nothing
+checks the **result**. If a prefill ever fails, a metadata-mandatory field silently vanishes from the
+wire and the package still reads green -- the exact class this standard exists to prevent.
+
+**The fix is TWO parts and part 1 alone is inert:**
+1. `emit_test_plan.ps1` -- emit `expectedInWire`: `set[]` members of the WINNING combo that are
+   not in `fills`. Keep it **separate** from `fills`; folding them in would make every such test
+   look unfillable to the driver.
+2. `audit_log_content.ps1` (6c) -- assert each `expectedInWire` field is present in the captured wire.
+
+**Two mistakes already made here, do not repeat them:** the first attempt edited
+`emit_test_plan_spec.ps1`, but 6c globs `\${Provider}_TEST_PLAN_v*.json` which does **not** match
+`TEST_PLAN_SPEC_v*` -- two plan files exist per provider and they are not interchangeable. And the
+traversal returned empty on all 40 tests, so validate it against the known answer first: NY
+`DALLOUT` `set[]` must resolve to `[OperatorLicenseNumberDH, purposeCodeDH, requestorDH,
+RegistrationStateDH]`. **Regression guard:** TX_TLETS must stay 89/89 on 6c and 16/16 on
+`audit_gate_efficacy`, and the new assertion needs its own mutation or it has no failure proof.
+
+**Interim mitigation:** on the first `DALLOUT`/`DALHOUT` test of any sweep, read the wire and
+confirm `<Requestor>` is present. One human look settles whether the prefill works at all.
