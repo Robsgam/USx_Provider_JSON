@@ -113,8 +113,19 @@ foreach ($b in $j.bundles) {
             foreach ($nid in $lay.PSObject.Properties.Name) {
                 $p = $lay.$nid.props
                 if ($p -and $p.fieldId) {
-                    $k = Canon "$($p.fieldId)"
-                    if (-not $formFields[$e].ContainsKey($k)) { $formFields[$e][$k] = "$($p.fieldId)" }
+                    # DH-AWARE INDEX. Canon() strips the trailing 'DH', so NameLastDH and NameLast both
+                    # canonicalise to 'namelast' and a single first-wins map kept whichever came first
+                    # (the DL control). Every DriverHistory test then filled DL fields, DH combos
+                    # require DH-suffixed fields, and all 14 DH tests came back NO-FIRE -- a generator
+                    # artifact reported as if it were a provider defect. Keep the two families in
+                    # SEPARATE key spaces and let the caller ask for the one it needs.
+                    $raw = "$($p.fieldId)"
+                    $k = Canon $raw
+                    if ($raw -cmatch 'DH$') {
+                        if (-not $formFields[$e].ContainsKey("dh|$k")) { $formFields[$e]["dh|$k"] = $raw }
+                    } else {
+                        if (-not $formFields[$e].ContainsKey($k)) { $formFields[$e][$k] = $raw }
+                    }
                 }
             }
         }
@@ -162,12 +173,28 @@ function Get-Value([string]$devField, [string]$fieldId, [string]$ent) {
         }
     }
 }
-function Resolve-FieldIds([string]$devField, [string]$ent) {
+function Resolve-FieldIds([string]$devField, [string]$ent, [bool]$preferDH) {
     $c = Canon $devField
     $want = if ($expand.ContainsKey($c)) { @($expand[$c]) } else { @($c) }
     $out = @()
-    foreach ($w in $want) { if ($formFields[$ent] -and $formFields[$ent].ContainsKey($w)) { $out += $formFields[$ent][$w] } }
+    foreach ($w in $want) {
+        if (-not $formFields[$ent]) { continue }
+        # A DH-targeted query must drive the DH-suffixed controls; fall back to the plain family only
+        # for fields that have no DH twin (e.g. Attention, which exists once).
+        if ($preferDH -and $formFields[$ent].ContainsKey("dh|$w")) { $out += $formFields[$ent]["dh|$w"] }
+        elseif ($formFields[$ent].ContainsKey($w))                 { $out += $formFields[$ent][$w] }
+    }
     return ,@($out)
+}
+# Is this query DH-targeted? Derived from the QIDM's OWN combo fields, never from its name -- a
+# name test would miss a provider that suffixes differently.
+function Test-IsDhQuery($qidm) {
+    foreach ($cm in @($qidm.combinations)) {
+        foreach ($fl in (@($cm.requirements.set) + @($cm.requirements.any))) {
+            if ("$fl" -cmatch 'DH$') { return $true }
+        }
+    }
+    return $false
 }
 
 # ── 5. build the plan: mandatory-only, then one test per optional ─────────────────────
@@ -175,6 +202,7 @@ $tests = @(); $n = 0; $unreachable = 0; $nofire = 0
 foreach ($it in ($items | Sort-Object Query, Num)) {
     if (-not $qidms.ContainsKey($it.Query)) { continue }   # query not built at all -- 2p owns that
     $ent = "$($qidms[$it.Query].targetEntity)"
+    $isDh = Test-IsDhQuery $qidms[$it.Query]
 
     $subsets = @( ,@() )                                   # mandatory-only first
     foreach ($o in $it.Opt) { $subsets += ,@($o) }          # then each optional on its own
@@ -182,7 +210,7 @@ foreach ($it in ($items | Sort-Object Query, Num)) {
     foreach ($sub in $subsets) {
         $fills = @(); $miss = @()
         foreach ($fld in (@($it.Mand) + @($sub))) {
-            $ids = Resolve-FieldIds $fld $ent
+            $ids = Resolve-FieldIds $fld $ent $isDh
             if (-not $ids.Count) { $miss += $fld; continue }
             foreach ($id in $ids) { $fills += [pscustomobject]@{ fieldId = $id; value = (Get-Value $fld $id $ent) } }
         }
