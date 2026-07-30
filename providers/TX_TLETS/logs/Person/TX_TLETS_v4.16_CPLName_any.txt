@@ -1,0 +1,92 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverLicenseQuery
+Combo: CPLName_any (CPLName_any (auto))
+Date: 2026-07-30 11:59:15
+Result: PASS
+JSON Version: 4.16
+Entity Fingerprint: 69ba75f0e94f3b791b1c7ecb553a3f91fbb9d34c4be5708e9e0a61f0464ca4b2
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","ImageIndicator":"N","ImageIndicatorDH":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","RegistrationStateDH":"Texas","emailAddress":"X","messageKey":"CPL","purposeCodeDH":"C","reasonCode":"F","reasonCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYSVVME1PFGHF7JHGA2FVMK1">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KYSVVME1PFGHF7JHGA2FVMK1</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <MessageKey>CPL</MessageKey>
+            <State>GA</State>
+            <ReasonCode>F</ReasonCode>
+            <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress>
+            <Name>DOE,JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "registrationStateAttrId": "69509555361"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYSVVME1PFGHF7JHGA2FVMK1
+  ImageIndicator                 N
+  MessageKey                     CPL
+  State                          GA
+  ReasonCode                     F
+  EmailAddress                   ROB.SGAMBELLONE@MARK43.COM
+  Name                           DOE,JOHN
+
+NOTES
+-----
+Automated capture (txId 01KYSVVME1PFGHF7JHGA2FVMK1). kind=any; anyField=; expectedKeyRef=CPLName; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

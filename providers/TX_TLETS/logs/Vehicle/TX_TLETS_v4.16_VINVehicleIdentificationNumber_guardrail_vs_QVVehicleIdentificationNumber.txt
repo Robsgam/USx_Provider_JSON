@@ -1,0 +1,84 @@
+================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: VINVehicleIdentificationNumber_guardrail_vs_QVVehicleIdentificationNumber (VINVehicleIdentificationNumber_guardrail_vs_QVVehicleIdentificationNumber (auto))
+Date: 2026-07-30 11:56:15
+Result: PASS
+JSON Version: 4.16
+Entity Fingerprint: 9c34e21b034d39ab94c4c9989d4631742da2f2ae3a5591fc67cb642e2b3c46d9
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"VehicleIdentificationNumber":"1HGCM82633A123456","financialResponsibilityType":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYSV9Q14FA5QZ4AR11SNG4GY">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
+            <Id>01KYSV9Q14FA5QZ4AR11SNG4GY</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYSV9Q14FA5QZ4AR11SNG4GY
+  VehicleIdentificationNumber    1HGCM82633A123456
+  FinancialResponsibilityType    Y
+
+NOTES
+-----
+Automated capture (txId 01KYSV9Q14FA5QZ4AR11SNG4GY). kind=guardrail; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

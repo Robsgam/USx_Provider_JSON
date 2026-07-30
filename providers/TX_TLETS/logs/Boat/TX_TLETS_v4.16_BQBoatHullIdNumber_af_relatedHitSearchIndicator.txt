@@ -1,0 +1,76 @@
+================================================================
+TEST LOG: TX_TLETS Boat BoatQuery
+Combo: BQBoatHullIdNumber_af_relatedHitSearchIndicator (BQBoatHullIdNumber_af_relatedHitSearchIndicator (auto))
+Date: 2026-07-30 12:03:24
+Result: PASS
+JSON Version: 4.16
+Entity Fingerprint: 015580cfeb3290b466435ad6405e2e8239b6b17e7e35c905f3b16c1de75f1329
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N","RegistrationState":"Georgia","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYSW4YWHJCN7SQWXZC1SGMF8">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KYSW4YWHJCN7SQWXZC1SGMF8</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYSW4YWHJCN7SQWXZC1SGMF8
+  RelatedHitSearchIndicator      N
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 N
+  State                          GA
+
+NOTES
+-----
+Automated capture (txId 01KYSW4YWHJCN7SQWXZC1SGMF8). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=BQBoatHullIdNumber; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
