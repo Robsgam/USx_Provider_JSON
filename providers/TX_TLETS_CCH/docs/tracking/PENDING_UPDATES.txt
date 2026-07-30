@@ -1,9 +1,5 @@
-# PENDING_UPDATES.txt -- CA_CLETS
+# PENDING_UPDATES.txt -- TX_TLETS_CCH
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
 # Clear by running the build script (it removes this file on successful build).
 #
-# [CLEARED 2026-07-02] EMIT-GUARDRAIL-SIM -- TEST_PLAN v2.12 regenerated with simulated guardrail
-# expectedKeyRefs; live full re-run (93/93 PASS) proved all guardrail routings: IA.QV (Plate>VIN),
-# ID.L1 / IR.QVC.O / IR.QVC.N (OLN/CII/Name cascade), NLTS.KQ.O (DH OLN>Name), IA.QB.H (Hull>Reg).
-# The old heuristic had mislabelled these as OOS NLTS.* keyRefs. No config change.
 [FLAG:FORM-REACHABLE-COMBOS] Remove routing-affecting form defaults so every devdoc Basic combination is reachable FROM THE FORM. Prefills that satisfy a required field make a sibling combo win first-match forever. Per audit_query_trace: TX_TLETS/TX_TLETS_CCH = FRT=E + PlateYear=2026 (4 combos, incl. both OutofState paths - also restore RQ+QV, deleted v4.13 as false dead-combos); CA_CLETS = purposeCode=C (12 combos); HI_HCJDC_OFML = vehicleTypeCode=1 (2 combos). Also stop defaulting State where it is any[]-only (TX/AZ/NJ). Gated by enforce PHASE 2n. (flagged 2026-07-30)

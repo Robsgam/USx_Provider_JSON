@@ -1,0 +1,5 @@
+# PENDING_UPDATES.txt -- OH_LEADS
+# Lines without a leading '#' block enforce.ps1 and prevent testing.
+# Clear by running the build script (it removes this file on successful build).
+#
+[FLAG:FORM-REACHABLE-COMBOS] Remove routing-affecting form defaults so every devdoc Basic combination is reachable FROM THE FORM. Found by enforce PHASE 2n / audit_query_trace across ALL providers: CA_CONTRA_COSTA = 12 combos (purposeCode=C, same as its CA_CLETS twin), OH_LEADS = 1 combo. Run tools\audit_query_trace.ps1 -Provider <name> for the exact prefill to remove. (flagged 2026-07-30)

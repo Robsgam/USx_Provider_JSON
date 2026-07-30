@@ -734,6 +734,64 @@ if (-not (Test-Path $ssTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2n: Query Trace -- FORM-REACHABLE COMBINATION GATE (audit_query_trace.ps1)
+#
+#  THE FORM COMES FIRST (Rob 2026-07-29/30, BUILD_RULES 23). Every combination the devdoc
+#  supports must be drivable by an officer FROM THE FORM. A default that fills a field some
+#  combination REQUIRES makes a sibling combination win first-match forever -- the officer can
+#  never reach the other one, no matter what they type.
+#
+#  WHY THIS GATE EXISTS -- a gap that stood for months while everything read green:
+#    TX_TLETS shipped 3 of 7 vehicle combinations at 141 PASS / 0 FAIL, and its two devdoc
+#    "(OutofState)" paths were DELETED as "dead combos" when they were only unreachable because
+#    the form prefilled their discriminators (FRT=E, PlateYear=2026). Officers lost out-of-state
+#    plate and VIN queries. Nothing caught it, because every existing check validated what
+#    EXISTS rather than comparing against the metadata's combination list:
+#      - 2e audit_supported_queries : BUILT -> devdoc. Blind to a combo never built.
+#      - audit_metadata CHECK 5     : PRIMARY-FIELD coverage. An in-state combo covering 'plate'
+#                                     hides a missing out-of-state variant on the same field.
+#      - 2h audit_combo_reachability: only walks combos already in the JSON.
+#      - the TEST PLAN itself       : generated FROM the JSON, so a missing combo yields no test.
+#                                     79 passing tests prove nothing about what is absent, and
+#                                     the wire XML carries no keyRef to reveal which combo fired.
+#
+#  PREFILL-DEAD is a hard FAIL: it is always our own doing and always fixable by removing the
+#  default. SHADOW/MISSING are reported by the tool but NOT gated here -- those need devdoc
+#  adjudication (metadata is field authority, devdoc is query authority, so a MISSING may be
+#  legitimately out of Basic scope).
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2n: Query Trace (form-reachable combinations)"
+$qtTool = Join-Path $toolDir "audit_query_trace.ps1"
+if (-not (Test-Path $qtTool)) {
+    Info "audit_query_trace.ps1 not found -- form-reachable combination check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $qtJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $qtJson) { continue }
+        $qtOut = & powershell -ExecutionPolicy Bypass -File $qtTool -Provider $provName 2>&1 | Out-String
+        $qtM = [regex]::Match($qtOut, 'TOTALS:\s*(\d+) built\s*/\s*(\d+) PREFILL-DEAD.*?/\s*(\d+) SHADOW\s*/\s*(\d+) MISSING')
+        if (-not $qtM.Success) {
+            Info "$provName -- query trace produced no parseable totals (metadata shape unrecognized?)"
+            continue
+        }
+        $qtBuilt = [int]$qtM.Groups[1].Value; $qtDead = [int]$qtM.Groups[2].Value
+        $qtShadow = [int]$qtM.Groups[3].Value; $qtMissing = [int]$qtM.Groups[4].Value
+        if ($qtDead -gt 0) {
+            Fail "$provName -- $qtDead metadata combination(s) UNREACHABLE FROM THE FORM because our own default fills a field they require; remove the prefill (tools\audit_query_trace.ps1 -Provider $provName)"
+            $qtOut -split "`n" | Where-Object { $_ -match 'PREFILL-DEAD|wins via' } | Select-Object -First 8 |
+                ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            $extra = @()
+            if ($qtShadow -gt 0)  { $extra += "$qtShadow shadow" }
+            if ($qtMissing -gt 0) { $extra += "$qtMissing missing (adjudicate vs devdoc)" }
+            $suffix = if ($extra.Count) { " [" + ($extra -join ', ') + "]" } else { "" }
+            Pass "$provName -- all $qtBuilt metadata combination(s) form-reachable; 0 prefill-dead$suffix"
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 SectionHeader "PHASE 3: Doc Version Sync"
