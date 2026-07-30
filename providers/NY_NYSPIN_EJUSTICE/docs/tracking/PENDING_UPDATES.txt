@@ -13,3 +13,35 @@
 # the hypothesis is disproved rather than carried forward. The 3 query_trace MISSING lines
 # remain EXPECTED: containment matching cannot affirm a combo whose metadata set[] is empty,
 # and NY does build DriverHistoryQuery. Adjudicate them, do not 'fix' them.
+
+[STEP 1 COMPLETE 2026-07-30] NY devdoc NOTEs read and adjudicated. Rob approved the sequence
+  1 read NOTEs / 2 fix RVEHOUT+RVEH / 3 add suppression marker / 4 build v4.18 + gates + mutation
+  map / 5 one 67-test sweep. Cosmetic retests deferred by Rob ("we will worry about retests later").
+
+  NOTE 3 -- VehicleRegistrationQuery #3, no combo set[] covers
+    [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State].
+    NOT a separate issue: this IS the RVEHOUT under-requirement, found independently by enforce
+    PHASE 2p from the DEVDOC side while audit_requirement_fidelity found it from the METADATA side.
+    Devdoc line 139 #3 reads "(Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+    State, [ImageIndicator]" -- all four MANDATORY, only ImageIndicator bracketed. Devdoc and
+    metadata AGREE, so no product ruling is required and none was sought. Fixing RVEHOUT clears
+    this NOTE. Devdoc #1 "(In) LicensePlateNumber, [ImageIndicator, LicensePlateTypeCode]" also
+    settles the RVEH over-permit: LicensePlateYear is NOT a devdoc optional on the in-state path,
+    so the never-drop-a-devdoc-optional rule does NOT apply and it comes OUT of RVEH any[].
+
+  NOTES 1 + 2 -- DriverLicenseQuery #3 [BirthDate, Name, SexCode, State] and #4
+    [OperatorLicenseNumber, State]. OPEN, and they may be the SAME defect class as RVEHOUT.
+    Reasoning: NY's own convention for out-of-state IS State-in-set[] -- DriverHistory's DALLOUT and
+    DALHOUT both carry RegistrationStateDH in set[]. If DriverLicenseQuery's OOS paths do not, its
+    two out-of-state combos are under-required the same way RVEHOUT is, making this a THREE-combo
+    fix rather than one. DO THIS FIRST at step 2: dump NY's DriverLicenseQuery combos, compare to
+    devdoc DriverLicenseQuery #3/#4, and treat any State/mandatory gap as the same class.
+    Do NOT assume the notes are benign because NY routes some state by EXISTS conditions -- the
+    RVEHOUT case proves a condition-based split can still leave mandatory fields optional.
+
+  STEP 2 ENTRY POINT (nothing built yet, no version bumped, tree clean):
+    RVEHOUT  set[] += LicensePlateTypeCode, LicensePlateYear   (remove both from any[])
+    RVEH     any[] -= LicensePlateYear
+    + whatever the DriverLicenseQuery comparison above turns up
+    NY Vehicle form has ZERO initialValues, so BUILD_RULES 24 is satisfied for the Vehicle change;
+    RE-CHECK prefills on the Person form before touching DL combos.
