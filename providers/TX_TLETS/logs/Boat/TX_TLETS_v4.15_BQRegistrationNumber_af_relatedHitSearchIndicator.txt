@@ -1,0 +1,76 @@
+================================================================
+TEST LOG: TX_TLETS Boat BoatQuery
+Combo: BQRegistrationNumber_af_relatedHitSearchIndicator (BQRegistrationNumber_af_relatedHitSearchIndicator (auto))
+Date: 2026-07-30 11:26:16
+Result: PASS
+JSON Version: 4.15
+Entity Fingerprint: 015580cfeb3290b466435ad6405e2e8239b6b17e7e35c905f3b16c1de75f1329
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","RegistrationNumber":"FL1234AB","RegistrationState":"Georgia","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYSSZH6KXQTE62VZ7QNWFSYA">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KYSSZH6KXQTE62VZ7QNWFSYA</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYSSZH6KXQTE62VZ7QNWFSYA
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 N
+  State                          GA
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01KYSSZH6KXQTE62VZ7QNWFSYA). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=BQRegistrationNumber; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
