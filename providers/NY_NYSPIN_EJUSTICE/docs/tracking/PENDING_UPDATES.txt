@@ -45,3 +45,36 @@
     + whatever the DriverLicenseQuery comparison above turns up
     NY Vehicle form has ZERO initialValues, so BUILD_RULES 24 is satisfied for the Vehicle change;
     RE-CHECK prefills on the Person form before touching DL combos.
+
+[BLOCKER FOUND 2026-07-30 -- STEP 2 PLAN WAS WRONG, DO NOT APPLY IT AS WRITTEN]
+  I stated twice that NY's Vehicle form has ZERO initialValues and that BUILD_RULES 24 was therefore
+  satisfied. THAT WAS FALSE. build_ny_nyspin_ejustice.ps1 L599 prefills LicensePlateYear with
+  $currentYear, and BOTH RVEHOUT (L177) and RVEH (L183) additionally carry defaults[] setting
+  LicensePlateYear=$currentYear and LicensePlateTypeCode='PC'. My "zero prefills" came from a JSON
+  traversal that returned empty for an unrelated reason and I read the empty result as evidence --
+  the same silent-empty failure I spent the day cataloguing, this time load-bearing on a plan.
+
+  WHY IT BLOCKS THE FIX: promoting LicensePlateTypeCode + LicensePlateYear into RVEHOUT's set[]
+  while both are form-prefilled AND combo-defaulted makes them ALWAYS-PRESENT -- mandatory in name
+  only. The officer never chooses them, routing cannot discriminate on them, and it is exactly
+  BUILD_RULES 24, the defect that cost TX_TLETS three versions and deleted two real OOS paths.
+
+  WHAT MUST BE DECIDED FIRST (Rob -- this is a genuine product tradeoff, not a mechanical fix):
+  The devdoc AND metadata agree the OOS plate path needs Plate+PlateTypeCode+PlateYear+State, all
+  mandatory. Honouring that properly means the officer TYPES all four. Options:
+    A. Remove the LicensePlateYear form initialValue and the PlateYear/PlateType defaults[] from
+       RVEHOUT, then promote both into set[]. Spec-correct. Cost: an OOS plate lookup becomes a
+       4-field entry, and in-state RVEH loses its year/type convenience defaults unless they are
+       kept on RVEH only (they can be -- defaults are per-combo).
+    B. Keep the prefills and record the divergence: RVEHOUT stays as built, accepting that we can
+       send an OOS plate query the spec calls incomplete. Same shape as the FL/TX
+       devdoc-optional-unreachable rulings.
+    C. Keep prefills but promote to set[] anyway. REJECT -- this is the BUILD_RULES 24 trap and
+       gives a false sense of compliance while changing nothing about what is actually sent.
+  Recommend A with defaults[] retained on RVEH (in-state) only, so in-state convenience survives
+  and the OOS path becomes genuinely spec-correct.
+
+  ALREADY DONE and safe to keep (no version bump, JSON untouched at v4.17):
+    - DLICN/DLIC State NOTEs recorded as devdoc-models-oos-metadata-does-not (metadata is
+      field-authority; fidelity gate confirms zero DL divergence)
+    - '# SUPPRESSION-SCOPE: direction-aware' marker added to the registry
