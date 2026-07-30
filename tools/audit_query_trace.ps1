@@ -186,14 +186,52 @@ foreach ($pn in ($targets | Sort-Object)) {
         # My first pass fell into both and reported every set[] as empty -- which made all 17
         # combos look like identical-signature SHADOWs. Caught only because TX's ground truth was
         # already known; that is why this parser is validated against a provider with a known answer.
-        foreach ($cb in $t.SelectNodes('.//*[local-name()="Combination"]')) {
+        # ── A <Choice> MAY CONTAIN NESTED <Set> ELEMENTS, NOT JUST <Field> ──────────────────
+        # THIRD shape, found on NY_NYSPIN_EJUSTICE 2026-07-30 and missed by both earlier readings:
+        #   <Set><Choice><Set><Field .../></Set><Set><Field .../><Field .../></Set></Choice>
+        #        <Any><Field .../></Any></Set>
+        # Each nested <Set> is an ALTERNATIVE complete requirement set -- "either these fields, or
+        # those". TX only ever had <Choice><Field/></Choice>, so a Choice/Field-only XPath read TX
+        # correctly and returned EMPTY on NY. The outer <Set> then looked requirement-free, which is
+        # how three real NY requirement structures (DriverHistoryQuery DALL x2, VehicleRegistration
+        # RVEH) were reported as empty-set and MISSING, and how I wrongly concluded and RECORDED that
+        # NY's empty-Set combos "carry ANY content with NO CHOICE". Decoded, they are exactly the
+        # in-state / out-of-state pairs NY builds as DALL/DALLOUT, DALH/DALHOUT, RVEH/RVEHOUT.
+        # A Combination carrying a Choice-of-Sets is therefore EXPANDED into one logical combination
+        # per alternative, so each can be matched against the keyRef that implements it. Anything
+        # less makes the gate under-read the spec, which is the one thing it exists to prevent.
+        # LIMITATION #36 names NY as the Choice-set provider -- the KB said so and the XPath still
+        # did not descend. Validate any change here against BOTH TX (Choice/Field) and NY (Choice/Set).
+        $expanded = @()
+        foreach ($cb0 in $t.SelectNodes('.//*[local-name()="Combination"]')) {
+            $sn0 = $cb0.SelectSingleNode('./*[local-name()="Requirements"]/*[local-name()="Set"]')
+            $altSets = @()
+            if ($sn0) { $altSets = @($sn0.SelectNodes('./*[local-name()="Choice"]/*[local-name()="Set"]')) }
+            if ($altSets.Count -gt 0) {
+                $ai = 0
+                foreach ($alt in $altSets) {
+                    $ai++
+                    $expanded += [pscustomobject]@{ Node = $cb0; Alt = $alt; AltIdx = $ai; AltTotal = $altSets.Count }
+                }
+            } else {
+                $expanded += [pscustomobject]@{ Node = $cb0; Alt = $null; AltIdx = 0; AltTotal = 0 }
+            }
+        }
+        foreach ($ex in $expanded) {
+            $cb = $ex.Node
             $kr = "$($cb.keyReference)"; if (-not $kr) { $kr = "$($cb.keyRef)" }
+            if ($ex.AltTotal -gt 1) { $kr = "$kr[alt$($ex.AltIdx)/$($ex.AltTotal)]" }
             $set = @(); $any = @(); $choice = @()
             $setNode = $cb.SelectSingleNode('./*[local-name()="Requirements"]/*[local-name()="Set"]')
             if ($setNode) {
                 foreach ($f in $setNode.SelectNodes('./*[local-name()="Field"]'))              { $set    += "$($f.reference)" }
                 foreach ($f in $setNode.SelectNodes('./*[local-name()="Any"]/*[local-name()="Field"]'))    { $any    += "$($f.reference)" }
                 foreach ($f in $setNode.SelectNodes('./*[local-name()="Choice"]/*[local-name()="Field"]')) { $choice += "$($f.reference)" }
+            }
+            # this alternative's own fields become the REQUIRED set for this logical combination
+            if ($ex.Alt) {
+                foreach ($f in $ex.Alt.SelectNodes('./*[local-name()="Field"]'))                        { $set += "$($f.reference)" }
+                foreach ($f in $ex.Alt.SelectNodes('./*[local-name()="Any"]/*[local-name()="Field"]'))  { $any += "$($f.reference)" }
             }
             $set    = @($set    | Where-Object { $_ })
             $any    = @($any    | Where-Object { $_ })
