@@ -2,9 +2,14 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.13** | Generated: 2026-07-30
+Current: **v1.14** | Generated: 2026-07-30
 
 ---
+
+## v1.14 -- 2026-07-30 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.13 -- 2026-07-30 -- Pipeline rebuild
 

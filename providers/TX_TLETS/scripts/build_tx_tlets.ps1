@@ -169,7 +169,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.17"
+    [string]$Version = "4.18"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -260,7 +260,7 @@ $vehRegQuery = [PSCustomObject]@{
         # instead (never drop a devdoc-optional combination field; the auto-fired QV reads it from
         # the union pool).
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('financialResponsibilityType','RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
         # QVLicensePlateNumber + QVVehicleIdentificationNumber REMOVED v4.9 (DEX-1284 shadow review,
         # Rob-confirmed). Both were ungated SUBSET-SHADOWS: QV{Plate} subset of REG/RQ, QV{VIN} subset
         # of VIN+FRT -- the extra fields are FRT/Type/Year qualifiers of the SAME plate/VIN query
@@ -329,7 +329,7 @@ $dlQuery = [PSCustomObject]@{
         # QWName (Wanted Person, Name+DOB with Sex/Race/RegionId/ExpandedDOB all optional)
         # intentionally NOT built (v4.2) -- platform-auto-sent shadow query, see header comment.
         # CPL Name (merged v3.4)
-        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('emailAddress','ImageIndicator','messageKey','nameMiddle','nameSuffix','reasonCode','RegistrationState'); defaults = $imgDefs; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'CPLName'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('BirthDate','emailAddress','ImageIndicator','messageKey','nameMiddle','nameSuffix','reasonCode','RegistrationState'); defaults = $imgDefs; conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'Name'; keyReference = 'CPLName'; state = 'In/Out' }
         # DQ OLN (merged v3.4)
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('OperatorLicenseNumber'); any = @('emailAddress','ImageIndicator','reasonCode','RegistrationState'); defaults = $imgDefs }; primaryFieldReference = 'OperatorLicenseNumber'; keyReference = 'DQOLN'; state = 'In/Out' }
     )

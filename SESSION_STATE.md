@@ -19,7 +19,7 @@
 ## ▶ NEXT PHYSICAL ACTION
 
 **TX v4.17 re-sweep is owed from T1** (~85 tests; the v4.16 logs were archived by the bump).
-v4.17 removed the QV{Plate}/QV{VIN} metadata shadows, restoring Rob's binding v4.9 ruling after
+v4.17 removed the QV{Plate}/QV{VIN} metadata shadows; v4.18 fixed 17 dropped devdoc optionals (BirthDate on CPL, FRT on DPSI), restoring Rob's binding v4.9 ruling after
 they were re-added in error at v4.14 — Vehicle is 5 combos, 19 total. Then **NY v4.17** (also from
 T1, never started). Order after: NJ, FL, then CA_CLETS, HI. Everything outside those 6 is TABLED.
 
@@ -52,8 +52,8 @@ assertion. If you get a FAIL or WARN, the tool is right and this file is out of 
 | FL_FCIC | v7.12 | ALL-PASS (Boat re-run 2026-07-29, 47 captures) |
 | CA_CLETS | v2.22 | ALL-PASS |
 | NY_NYSPIN_EJUSTICE | **v4.17** | **re-test owed from T1** (DH row split — bump reset it) |
-| TX_TLETS | **v4.17** | **re-sweep owed from T1** (QV shadows removed -> 19 combos; v4.16 was ALL-PASS 95/95) |
-| TX_TLETS_CCH | **v1.13** | never tenant-tested (BASE-SYNC v4.17, in lockstep) |
+| TX_TLETS | **v4.18** | **re-sweep owed from T1** (devdoc optionals fixed; 19 combos) |
+| TX_TLETS_CCH | **v1.14** | never tenant-tested (BASE-SYNC v4.18, in lockstep) |
 | other 13 | — | never tenant-tested |
 
 ## What is actually owed

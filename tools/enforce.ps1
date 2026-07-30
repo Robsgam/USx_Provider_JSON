@@ -840,6 +840,48 @@ if (-not (Test-Path $dcTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2q: Devdoc Optionals x Routing (audit_devdoc_optionals.ps1) -- ADVISORY
+# ══════════════════════════════════════════════════════════════════════════════
+#  Every devdoc combination against EVERY SUBSET of its [bracketed] optionals. Every other gate
+#  checks only MANDATORY fields, and an optional can do two invisible things: change which combo
+#  wins first-match (or match NOTHING, if our set[] demands a field the devdoc calls optional),
+#  or be silently NOT TRANSMITTED because it is in no matching combo's set[]/any[].
+#
+#  Found 2026-07-30 on TX_TLETS v4.17 at 36 PASS / 0 FAIL: 20 devdoc-legal fills were defective --
+#  17 dropped an optional the devdoc lists (BirthDate on CPL, FinancialResponsibilityType on DPSI;
+#  metadata omits both from any[], and Rob's standing rule is that a devdoc-OPTIONAL combination
+#  field is never dropped, it rides in any[]), and 3 fired no combo at all.
+#
+#  ADVISORY, deliberately: the residual class is "a devdoc-legal fill sends no query", whose
+#  disposition is a PRODUCT judgement (accept that the platform auto-fires the shadow that would
+#  have covered it, vs. build something). Rob makes that call -- a tool must not manufacture the
+#  acceptance. Promote to blocking once each provider's dispositions are recorded under rule
+#  `devdoc-optional-unreachable`.
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2q: Devdoc Optionals x Routing (advisory)"
+$doTool = Join-Path $toolDir "audit_devdoc_optionals.ps1"
+if (-not (Test-Path $doTool)) {
+    Info "audit_devdoc_optionals.ps1 not found -- optional-subset routing check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $doJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $doJson) { continue }
+        $doOut = & powershell -ExecutionPolicy Bypass -File $doTool -Path $doJson 2>&1 | Out-String
+        $doM = [regex]::Match($doOut, 'RESULT:\s*(\d+) FAIL\s*/\s*(\d+) NOTE')
+        if (-not $doM.Success) { Info "$provName -- devdoc-optional check produced no parseable totals"; continue }
+        $doF = [int]$doM.Groups[1].Value; $doN = [int]$doM.Groups[2].Value
+        if ($doF -gt 0) {
+            Info "$provName -- $doF devdoc-legal optional fill(s) defective (NO-FIRE or dropped optional) -- ADVISORY, needs a product call: tools\audit_devdoc_optionals.ps1 -Path $doJson"
+            $doOut -split "`n" | Where-Object { $_ -match '\[FAIL\]' } | Select-Object -First 5 |
+                ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            Pass "$provName -- every devdoc optional subset routes and transmits$(if($doN){" [$doN note(s)]"})"
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 3: Documentation Version Sync
 # ══════════════════════════════════════════════════════════════════════════════
 # ══════════════════════════════════════════════════════════════════════════════

@@ -409,15 +409,30 @@ function Audit-Provider {
     # (PlateType/Year, VehicleTypeCode) is correct and must NOT be flagged.
     $metaSetUnion = @{}   # query(lower) -> @{ token = $true } present in any metadata SET
     $metaAnyUnion = @{}   # query(lower) -> @{ token = $true } present in any metadata ANY
+    # PER-COMBINATION index, keyed by the METADATA keyReference. The unions above are query-wide,
+    # which is correct for CHECK 4d (over-promotion) but WRONG for 4e (demotion): a field that is
+    # set[]-mandatory in ONE combination is not thereby mandatory in its SIBLINGS. Without this,
+    # adding a devdoc-optional field to combo B's any[] is misreported as demoting combo A's
+    # requirement -- it produced exactly 2 false FAILs on TX_TLETS v4.18 (FinancialResponsibilityType
+    # added to DPSI any[] read as demoting REG's set[]; BirthDate added to CPL any[] read as demoting
+    # DQ's). Same keyRef-scoping bug BUILD_RULES 13 documents, in a new place.
+    $metaSetByKeyRef = @{}   # query(lower) -> metaKeyRef(lower) -> @{ token = $true }
     foreach ($txn in $xmlQueryTxns) {
         $qkey = ([string]$txn.name).ToLower()
         if (-not $metaSetUnion.ContainsKey($qkey)) { $metaSetUnion[$qkey] = @{}; $metaAnyUnion[$qkey] = @{} }
+        if (-not $metaSetByKeyRef.ContainsKey($qkey)) { $metaSetByKeyRef[$qkey] = @{} }
         $xc = $null; try { $xc = @($txn.Combinations.Combination) } catch { }
         foreach ($cmb in $xc) {
             if (-not $cmb) { continue }
             $r = Get-XmlComboRequirements $cmb
             foreach ($f in @($r.Set)) { if ($f) { $metaSetUnion[$qkey][([string]$f).ToLower()] = $true } }
             foreach ($f in @($r.Any)) { if ($f) { $metaAnyUnion[$qkey][([string]$f).ToLower()] = $true } }
+            $mkr = ''
+            try { $mkr = ([string]$cmb.keyReference).ToLower() } catch { }
+            if ($mkr) {
+                if (-not $metaSetByKeyRef[$qkey].ContainsKey($mkr)) { $metaSetByKeyRef[$qkey][$mkr] = @{} }
+                foreach ($f in @($r.Set)) { if ($f) { $metaSetByKeyRef[$qkey][$mkr][([string]$f).ToLower()] = $true } }
+            }
         }
     }
     function Resolve-MetaToken([string]$jsf) {
@@ -1064,6 +1079,25 @@ function Audit-Provider {
                     if ((Resolve-MetaToken ([string]$sfChk)) -eq $metaTok) { $satisfied = $true; break }
                 }
                 if ($satisfied) { continue }
+                # KEYREF SCOPING (BUILD_RULES 13). The unions above are query-wide, so a field that
+                # is set[]-mandatory in a SIBLING combination looks mandatory here too. A demotion is
+                # only real if the METADATA COMBINATION THIS combo derives from requires the field.
+                # Our keyRefs are synthetic: metadata keyRef + a field suffix (DPSI -> DPSIStickerNumber,
+                # CPL -> CPLName), so match by prefix and require the field in EVERY metadata
+                # combination that could be the source. If none corresponds, fall back to the union
+                # (better to over-report than to go silent).
+                $qkLow = $qn.ToLower(); $krLow = $kr3.ToLower()
+                if ($metaSetByKeyRef.ContainsKey($qkLow)) {
+                    $cands = @($metaSetByKeyRef[$qkLow].Keys | Where-Object { $krLow.StartsWith($_) })
+                    if ($cands.Count) {
+                        $reqInAll = $true
+                        foreach ($cd in $cands) {
+                            $sets = $metaSetByKeyRef[$qkLow][$cd]
+                            if (-not ($sets.ContainsKey($metaTok) -or $sets.ContainsKey($afS.ToLower()))) { $reqInAll = $false; break }
+                        }
+                        if (-not $reqInAll) { continue }   # not required by THIS combination -- legitimate any[]
+                    }
+                }
                 if (Test-AllowListed $qn $kr3 $afS) {
                     Out-Note "  keyRef ${kr3}: '$afS' in any[] but metadata set[] -- ACCEPTED per registry"
                 } else {

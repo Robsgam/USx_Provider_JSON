@@ -741,6 +741,30 @@ TOOLS
     whose answer is known: 0 FAIL / 4 NOTE with the divergences recorded (2 FAIL without them).
     Usage: .\audit_devdoc_combinations.ps1 -Path <json> | -All [-Explain] [-OutFile <path>]
 
+  tools/audit_devdoc_optionals.ps1
+    Every devdoc combination x EVERY SUBSET of its [bracketed] optionals (enforce PHASE 2q,
+    ADVISORY). Every other gate checks only MANDATORY fields. An optional can do two things that
+    a mandatory-only check cannot see:
+      1. NO-FIRE / RE-ROUTE -- the fill matches no combo (our set[] demands a field the devdoc
+         calls optional), or adding the optional changes which keyRef wins first-match.
+      2. DROPPED OPTIONAL -- the officer types a devdoc-legal optional, it is in no matching
+         combo's set[]/any[] (so the LIMITATION #1 union pool does not carry it either), and it
+         is silently not transmitted. The query succeeds, just narrower than asked. Nothing errors.
+    Origin (2026-07-30, Rob: "account for every combination with every combination of optionals --
+    that was a long standing directive"): TX_TLETS v4.17 sat at 36 PASS / 0 FAIL while 20 of 252
+    devdoc-legal fills were defective. 17 dropped an optional (BirthDate on CPL, FRT on DPSI --
+    metadata omits both from any[]; Rob's standing rule is that a devdoc-OPTIONAL combination
+    field is NEVER dropped, it rides in any[]). Fixed at v4.18. The other 3 fire no combo at all.
+    Reuses the devdoc parser from audit_devdoc_combinations.ps1 via its -Explain output, and
+    _sim_helpers.ps1 (Get-FiringKeyRef / Test-ComboMatches) for routing -- deliberately NOT a
+    second parser or a second predicate; four parser bugs in this toolchain came from
+    re-implementing something that already existed. Prefills are seeded into every fill because a
+    form initialValue is present on every real submission.
+    ADVISORY on purpose: the residual "devdoc-legal fill sends no query" class is a PRODUCT call
+    (accept that the platform auto-fires the shadow that would have covered it, vs build
+    something). A tool must not manufacture that acceptance. Record dispositions under rule
+    `devdoc-optional-unreachable`, then promote to blocking.
+    Usage: .\audit_devdoc_optionals.ps1 -Path <json> [-Verbose2] [-OutFile <path>]
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
     consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1
