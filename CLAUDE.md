@@ -5,6 +5,14 @@ All ConnectCIC provider JSON configurations, knowledge base, and shared tools in
 Owner: rob.sgambellone@mark43.com
 Consolidated: 2026-05-04
 
+## THE ENGINEERING STANDARD — read this first
+
+**`ENGINEERING_STANDARD.md` (repo root) is the top-level contract for what "done" means.** Three
+laws (the form comes first; a gate that cannot fail is not a gate; authority is directional and both
+directions must be checked), the 6-stage lifecycle with the gate that owns each stage — build →
+spec → reachability → tenant test → **Jira entry** → **import record** — the catalogue of defect
+classes that have shipped past a green board, the rules for building a gate, and the definition of
+"finished" for a provider. Do not restate its rules elsewhere; point at it.
 ## Repo Structure
 
 ```

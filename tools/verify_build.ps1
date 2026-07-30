@@ -341,11 +341,22 @@ function Find-VehicleMakeFields($node) {
     }
 }
 if ($entitiesBundle) { Find-VehicleMakeFields $entitiesBundle }
-foreach ($vm in ($vmFields | Sort-Object fieldId -Unique)) {
+# NO -Unique COLLAPSE. The recursion visits all THREE layout variants (default, CAD_DISPATCH,
+# FIRST_RESPONDER), so `Sort-Object fieldId -Unique` kept ONE row per fieldId and whichever variant
+# sorted first decided the verdict. PROVEN by mutation 2026-07-30: with the `default` variant set to
+# {"resolvedName":"FormInput"} on disk, the untouched CAD_DISPATCH copy won the -Unique and this gate
+# printed "[PASS] ... is FormSelect". A build that broke only the default layout sailed past a HARD
+# gate (free-text make breaks both the dropdown and the QRDM VehicleMakeName lookup). Judge every
+# occurrence on its own; de-duplicate the PASS message only, never the verdict.
+$vmSeenPass = @{}
+foreach ($vm in $vmFields) {
     if ($vm.type -eq 'FormInput') {
         Fail "VehicleMakeCode field '$($vm.fieldId)' is FormInput -- MUST be FormSelect (Sel) with attributeTypeId=VEHICLE_MAKE (CLAUDE.md Code Type Pairings; free-text make breaks the dropdown + QRDM VehicleMakeName lookup)"
     } elseif ($vm.type -eq 'FormSelect') {
-        Pass "VehicleMakeCode field '$($vm.fieldId)' is FormSelect (VEHICLE_MAKE dropdown)"
+        if (-not $vmSeenPass.ContainsKey("$($vm.fieldId)")) {
+            Pass "VehicleMakeCode field '$($vm.fieldId)' is FormSelect (VEHICLE_MAKE dropdown)"
+            $vmSeenPass["$($vm.fieldId)"] = $true
+        }
     }
 }
 

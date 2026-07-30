@@ -905,6 +905,36 @@ if (-not (Test-Path $bcTool)) {
         Pass "Branch currency: within thresholds (no stale main / no oversized gap)"
     }
 }
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2r: Lifecycle Tail -- Jira entry + import record (ADVISORY)
+# ══════════════════════════════════════════════════════════════════════════════
+#  Stages 5 and 6 of ENGINEERING_STANDARD.md, which had NO gate of any kind. Coverage stopped at
+#  "the JSON is correct and tested", so a version could be built, tested, documented and pushed
+#  with the DEX ticket four versions behind and no line in IMPORT_LEDGER.md -- and nothing noticed.
+#  The ticket is what the rest of the org reads; the ledger is the only answer to "where is version
+#  X installed" that is not memory (which CLAUDE.md forbids).
+#  ADVISORY on purpose: Jira gets placed ON HOLD by instruction, and Foundation-tenant imports are
+#  another party's action on another party's schedule. A gate that blocks the build because an
+#  external party has not acted teaches everyone to bypass it. This removes the ability to LOSE the
+#  fact, not the delay. Use audit_lifecycle.ps1 -Strict to make it blocking.
+SectionHeader "PHASE 2r: Lifecycle Tail -- Jira + import record (advisory)"
+$lcTool = Join-Path $toolDir "audit_lifecycle.ps1"
+if (-not (Test-Path $lcTool)) {
+    Info "audit_lifecycle.ps1 not found -- lifecycle tail (Jira + import record) NOT checked"
+} else {
+    foreach ($pd in $providers) {
+        $lcOut = & powershell -ExecutionPolicy Bypass -File $lcTool -Provider $pd.Name 2>&1 | Out-String
+        $lcGaps = @($lcOut -split "`n" | Where-Object { $_ -match '\[GAP \]' })
+        if ($lcGaps.Count -gt 0) {
+            Info "$($pd.Name) -- $($lcGaps.Count) lifecycle-tail gap(s), advisory: tools\audit_lifecycle.ps1 -Provider $($pd.Name)"
+            $lcGaps | Select-Object -First 4 | ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            Pass "$($pd.Name) -- lifecycle tail recorded (Jira names the version; ledger accounts for it)"
+        }
+    }
+}
+
 SectionHeader "PHASE 3: Doc Version Sync"
 
 # Check 3j prerequisite -- reported ONCE, not per provider.

@@ -203,7 +203,11 @@ function Audit-Provider {
     }
 
     if (-not $xmlPath) {
-        Out-Line "  [SKIP] No XML metadata found for $providerName"
+        # VACUOUS PASS, CLOSED 2026-07-30. This used to Out-Line a [SKIP] and return, so the tool exited 0
+        # with "Providers checked: 0 / 0 PASS / 0 FAIL" -- indistinguishable from a clean audit to
+        # enforce PHASE 2b, which reads the report. A gate asked to audit a provider and unable to
+        # find that provider's authority document has NOT passed; it has failed to run.
+        Out-Fail "  No XML metadata found for $providerName -- this audit CANNOT run, and a tool that cannot run has not PASSED. Expected source\$providerName.xml (variants inherit their base's; see CLAUDE.md Provider Variants)"
         Out-Line ""
         return
     }

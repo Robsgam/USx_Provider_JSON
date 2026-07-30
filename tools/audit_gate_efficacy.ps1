@@ -78,12 +78,17 @@ Emit "  source JSON : $jsonLeaf" $null
 Emit "  replica     : $work" $null
 
 # ── build the replica (everything a gate reads, except logs) ──────────────────────────
-if (Test-Path $work) { Get-ChildItem $work -Recurse -File | ForEach-Object { $_.Delete() } }
+# Rebuild the replica COMPLETELY, directories included. Deleting only FILES and then
+# Copy-Item -Recurse into a surviving directory nests it (source -> source\source), which silently
+# strips the metadata XML out of the gates' reach. That happened on 2026-07-30 and produced two
+# FALSE "SURVIVED" verdicts: audit_metadata could not find the XML, scored 0 PASS / 0 FAIL on BOTH
+# baseline and mutant, and the zero delta read as "gate is blind".
+if (Test-Path $work) { [System.IO.Directory]::Delete($work, $true) }
 New-Item -ItemType Directory -Force -Path $work | Out-Null
 Copy-Item $srcJson (Join-Path $work $jsonLeaf) -Force
 foreach ($sub in 'source','scripts','docs') {
     $s = Join-Path $srcDir $sub
-    if (Test-Path $s) { Copy-Item $s (Join-Path $work $sub) -Recurse -Force }
+    if (Test-Path $s) { Copy-Item $s -Destination $work -Recurse -Force }
 }
 $workJson = Join-Path $work $jsonLeaf
 $pristine = Get-Content $workJson -Raw
@@ -99,9 +104,16 @@ function Run-Gate([string]$tool, [string[]]$argsList) {
     # 2026-07-30 -- the first run of this harness falsely accused CHECK 9 for exactly that.
     $nFail = @([regex]::Matches($out,'\[FAIL\]')).Count
     $nWarn = @([regex]::Matches($out,'\[WARN\]')).Count
+    # VACUOUS-RUN DETECTOR. "no findings" and "ran no checks" are different things, and a gate that
+    # skipped its subject entirely looks identical to a clean pass. audit_metadata emits
+    # "[SKIP] No XML metadata found" + "Providers checked: 0" + exit 0 when the XML is missing, so a
+    # harness that only counted findings called it blind when it had never looked. Any run with zero
+    # PASS lines, or an explicit 0-subjects summary, is VACUOUS and cannot support a verdict.
+    $nPass = @([regex]::Matches($out,'\[PASS\]')).Count
+    $vacuous = ($nPass -eq 0 -and $nFail -eq 0 -and $nWarn -eq 0) -or ($out -match 'Providers checked:\s*0') -or ($out -match '\[SKIP\] No XML metadata')
     $first = ''
     foreach ($l in ($out -split "`n")) { if ($l -match '\[FAIL\]|\[WARN\]') { $first = $l.Trim(); break } }
-    return @{ N = ($nFail + $nWarn); NFail = $nFail; NWarn = $nWarn; Detail = $first; Ok = $true }
+    return @{ N = ($nFail + $nWarn); NFail = $nFail; NWarn = $nWarn; NPass = $nPass; Vacuous = $vacuous; Detail = $first; Ok = $true }
 }
 
 # JSON mutation helper: load, mutate via scriptblock, write back
@@ -245,6 +257,10 @@ foreach ($m in $MUTS) {
     $base = Run-Gate $m.Gate (& $m.Args)
     if (-not $base.Ok) {
         Emit ("  {0,-26} {1,-34} [INVALID] {2}" -f $m.Id,$m.Gate,$base.Detail) 'Yellow'; $invalid++; continue
+    }
+    if ($base.Vacuous) {
+        Emit ("  {0,-26} {1,-34} [INVALID] baseline run was VACUOUS (0 PASS / skipped subject) -- the gate never looked, so nothing can be concluded" -f $m.Id,$m.Gate) 'Yellow'
+        $invalid++; continue
     }
     # NOTE: the baseline is allowed to be non-zero. Some gates legitimately carry known,
     # adjudicated findings (audit_devdoc_optionals reports 3 NO-FIRE fills on TX by design).

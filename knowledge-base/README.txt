@@ -800,6 +800,21 @@ TOOLS
         continue short-circuits. Root cause NOT yet isolated.
       audit_metadata CHECK 4d -- does not detect regionId forced into RQ{VIN} set[].
     Usage: .\audit_gate_efficacy.ps1 -Provider TX_TLETS [-Only <substring>] [-Scratch <dir>] [-OutFile <path>]
+  tools/audit_lifecycle.ps1
+    THE LIFECYCLE TAIL (enforce PHASE 2r, ADVISORY) -- stages 5 and 6, which had NO gate at all:
+    STAGE 5 is the Jira entry (docs/tracking/DEX_TICKET.md must name the CURRENT version) and
+    STAGE 6 is the import record (providers/IMPORT_LEDGER.md must ACCOUNT for the current version --
+    either an install record or an explicit not-yet-imported line).
+    Origin (Rob 2026-07-30: "all gates need to operate from initial build/rebuild all the way to
+    posting the jira entry and logging where jsons are imported"): coverage stopped at "the JSON is
+    correct and tested". A version could be built, tested, documented and pushed with no Jira comment
+    and no ledger line, and nothing noticed -- so the ticket the rest of the org reads drifts behind
+    the repo, and "where is version X installed" gets answered from memory, which CLAUDE.md forbids.
+    ADVISORY by design (-Strict to block): Jira updates get placed ON HOLD, and Foundation-tenant
+    imports are another party's action on another party's schedule. A gate that blocks a build
+    because an external party has not acted teaches everyone to bypass it. What this removes is not
+    the delay -- it is the ability to LOSE the fact. A GAP is not a build defect.
+    Usage: .\audit_lifecycle.ps1 [-Provider <NAME>] [-Strict] [-OutFile <path>]
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
     consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1

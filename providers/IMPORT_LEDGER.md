@@ -65,3 +65,14 @@ done
 ```
 
 _Last reconciled: 2026-07-28._
+
+### TX_TLETS / TX_TLETS_CCH -- built, NOT YET IMPORTED (recorded 2026-07-30)
+
+- **TX_TLETS v4.18** -- built + gated (enforce 0 FAIL / 0 WARN), **not imported to any tenant.**
+  Tenant re-sweep owed from T1; the v4.16 logs were archived by the v4.17/v4.18 bumps. The USx
+  provider tenant still holds whatever was last installed there -- log-derived, not assumed.
+- **TX_TLETS_CCH v1.14** -- built + gated, **never tenant-tested, not imported.** BASE-SYNC v4.18.
+
+Recorded because `audit_lifecycle.ps1` (enforce PHASE 2r) treats SILENCE as the defect: "built but
+not imported" is a perfectly good state and must be WRITTEN, so that "where is v4.18 installed" is
+never answered from memory.
