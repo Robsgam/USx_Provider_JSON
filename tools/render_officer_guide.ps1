@@ -47,10 +47,13 @@ function Prettify([string]$tok) {
     return ((Get-Culture).TextInfo.ToTitleCase($t.ToLower()))
 }
 
-# --- fieldId -> label, fieldId -> default value, hidden set (from ENTITIES QIFs, default variant) ---
+# --- (entity|fieldId) -> label / default value / hidden, from ENTITIES QIFs, default variant ---
+# KEYED BY ENTITY. See the FieldName/DefaultValue/IsHidden header below for why a bare fieldId key
+# silently produced WRONG defaults in the officer-facing guide.
 $labelOf = @{}; $valueOf = @{}; $hiddenOf = @{}
 foreach ($cfg in $entitiesBundle.configurations) {
     if ($cfg.type -ne 'QUERYINPUTFORM') { continue }
+    $entKey = ([string]$cfg.targetEntity).ToLower()
     $lv = $null; try { $lv = $cfg.layout.default } catch { }
     if (-not $lv) { continue }
     foreach ($prop in $lv.PSObject.Properties) {
@@ -58,7 +61,7 @@ foreach ($cfg in $entitiesBundle.configurations) {
         if (-not $node -or -not $node.props) { continue }
         $fid = $null; try { $fid = $node.props.fieldId } catch { }
         if (-not $fid) { continue }
-        $k = ([string]$fid).ToLower()
+        $k = "$entKey|" + ([string]$fid).ToLower()
         if (-not $labelOf.ContainsKey($k)) { $labelOf[$k] = [string]$node.props.label }
         $iv = $null; try { $iv = $node.props.initialValue } catch { }
         if ($null -ne $iv -and "$iv".Trim() -ne '') { $valueOf[$k] = [string]$iv }
@@ -82,18 +85,29 @@ function Get-AttrMap($qidm) {
     return $m
 }
 
-# Resolve a field token (sourceField/fieldId) to a clean human name
-function FieldName([string]$tok) {
-    $k = $tok.ToLower()
+# Resolve a field token (sourceField/fieldId) to a clean human name.
+# ENTITY-SCOPED. These three lookups were keyed by BARE fieldId until 2026-07-30, which silently
+# cross-contaminated the OFFICER-FACING guide, because the same fieldId lives on several entities
+# with DIFFERENT defaults and the last one written won:
+#   ImageIndicator    Person 'Y' vs Firearm/Article/Boat 'N' -> guide printed "NCIC Image (N)" on
+#                     Driver License, where it is actually Y.
+#   RegistrationState Person 'TX' vs Vehicle/Boat none       -> guide printed "State (TX)" on Vehicle
+#                     searches, which have had NO default since v4.14 removed the routing prefills.
+#                     It told officers a field was pre-filled when it is blank.
+# $labelOf had a first-wins guard; $valueOf had none. Both are now keyed "<entity>|<fieldId>".
+# Same entity-blind class as the BUILD_RULES 13 keyRef collisions: a bare-name lookup across scopes
+# is never safe. Pass the QIDM's targetEntity at every call site.
+function FieldName([string]$tok, [string]$ent) {
+    $k = "$($ent.ToLower())|$($tok.ToLower())"
     if ($labelOf.ContainsKey($k) -and $labelOf[$k]) { return (CleanName $labelOf[$k]) }
     return (Prettify $tok)
 }
-function DefaultValue([string]$tok) {
-    $k = $tok.ToLower()
+function DefaultValue([string]$tok, [string]$ent) {
+    $k = "$($ent.ToLower())|$($tok.ToLower())"
     if ($valueOf.ContainsKey($k)) { return $valueOf[$k] }
     return $null
 }
-function IsHidden([string]$tok) { return $hiddenOf.ContainsKey($tok.ToLower()) }
+function IsHidden([string]$tok, [string]$ent) { return $hiddenOf.ContainsKey("$($ent.ToLower())|$($tok.ToLower())") }
 
 # Friendly "search by" name for a combo's primaryFieldReference
 function PrimaryName($qidm, [string]$primary) {
@@ -102,7 +116,7 @@ function PrimaryName($qidm, [string]$primary) {
     if ($am.ContainsKey($primary)) {
         $sf = @($am[$primary])
         if ($sf.Count -gt 1 -or $primary -match 'Name') { return 'Name' }
-        if ($sf.Count -eq 1) { return (FieldName ([string]$sf[0])) }
+        if ($sf.Count -eq 1) { return (FieldName ([string]$sf[0]) ([string]$qidm.targetEntity)) }
     }
     if ($primary -match 'Name') { return 'Name' }
     return (Prettify $primary)
@@ -150,15 +164,15 @@ foreach ($ent in $order) {
             # required (set) and optional (any) -> field names, skipping hidden; default shown as (value)
             $reqParts = @()
             foreach ($f in $setFields) {
-                $fs = [string]$f; if (IsHidden $fs) { continue }
-                $nm = FieldName $fs; $dv = DefaultValue $fs
+                $fs = [string]$f; if (IsHidden $fs ([string]$q.targetEntity)) { continue }
+                $nm = FieldName $fs ([string]$q.targetEntity); $dv = DefaultValue $fs ([string]$q.targetEntity)
                 if ($dv) { $reqParts += "$(Esc $nm) <span class='pre'>($(Esc $dv))</span>" }
                 else { $reqParts += (Esc $nm) }
             }
             $optParts = @()
             foreach ($f in $anyFields) {
-                $fs = [string]$f; if (IsHidden $fs) { continue }
-                $nm = FieldName $fs; $dv = DefaultValue $fs
+                $fs = [string]$f; if (IsHidden $fs ([string]$q.targetEntity)) { continue }
+                $nm = FieldName $fs ([string]$q.targetEntity); $dv = DefaultValue $fs ([string]$q.targetEntity)
                 if ($dv) { $optParts += "$(Esc $nm) <span class='pre'>($(Esc $dv))</span>" }
                 else { $optParts += (Esc $nm) }
             }
