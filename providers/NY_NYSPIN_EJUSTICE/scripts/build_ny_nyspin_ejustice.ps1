@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.17"
+    [string]$Version = "4.18"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -174,13 +174,13 @@ $vehQuery = [PSCustomObject]@{
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RVEHOUT'
             state                 = 'Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('ImageIndicator','LicensePlateTypeCode'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RVEH'
             state                 = 'In'
@@ -595,8 +595,8 @@ $vehLayout = MakeLayouts @(
             # (initialValue=current year, officer-editable, any[] optional).
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{} }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }

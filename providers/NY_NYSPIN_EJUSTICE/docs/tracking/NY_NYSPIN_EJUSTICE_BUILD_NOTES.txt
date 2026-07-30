@@ -3,6 +3,10 @@ NY_NYSPIN_EJUSTICE -- BUILD NOTES
 Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
 Clean restart from XML metadata as sole source of truth.
 See SQVR_main.txt for test results. See STATUS.txt for test matrix.
+v4.18  2026-07-30  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v4.17  2026-07-30  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
   REASON: Scheduled rebuild
@@ -382,3 +386,146 @@ v1.5 (2026-05-11) -- LIMITATION elimination pass
 CHANGED: DH-suffix fieldIds, queriesToDeselect, combo ordering
 RESULT: BASE 74P/0F/0W/0LIM | MC 74P/0F/0W/0LIM
 
+================================================================================
+v4.18 -- 2026-07-30 -- OOS plate path made spec-correct (Rob ruling: OPTION A)
+================================================================================
+CHANGED
+  FORM    LicensePlateTypeCode initialValue 'PC' REMOVED
+          LicensePlateYear     initialValue $currentYear REMOVED
+  RVEHOUT set[] = LicensePlateNumber, RegistrationState, LicensePlateTypeCode, LicensePlateYear
+          any[] = ImageIndicator                     (was set[Plate,State] + the other two in any[])
+  RVEH    any[] = ImageIndicator, LicensePlateTypeCode   (LicensePlateYear REMOVED)
+          defaults[] KEPT on both combos.
+
+REASON
+  Two defects, each confirmed by TWO independent gates from opposite directions.
+  1. RVEHOUT UNDER-REQUIRED. Devdoc #3 reads "(Out) LicensePlateNumber, LicensePlateTypeCode,
+     LicensePlateYear, State, [ImageIndicator]" -- four MANDATORY, only ImageIndicator bracketed --
+     and metadata RVEH alt2 says exactly the same. We had built two of those four as optional, so an
+     officer could fire an out-of-state plate query the spec calls incomplete. Found by
+     audit_requirement_fidelity (metadata side) AND enforce PHASE 2p NOTE (devdoc side).
+  2. RVEH OVER-PERMITTED LicensePlateYear. Devdoc #1's optionals are [ImageIndicator,
+     LicensePlateTypeCode] only, so PlateYear is NOT a devdoc optional on the in-state path and the
+     never-drop-a-devdoc-optional rule does not apply.
+
+  WHY THE FORM PREFILLS HAD TO GO, and why defaults[] did NOT:
+  Promoting the two fields into set[] while the FORM prefilled them would have made them
+  always-present -- mandatory in name only, changing nothing about what is transmitted while turning
+  the gate green. That is BUILD_RULES 24, the defect that cost TX_TLETS three versions. Removing the
+  form initialValue is what makes the requirement real: the officer now enters the actual plate type
+  and year instead of shipping PC/current-year guesses to another state's DMV.
+  defaults[] stay because audit_combo_reachability counts ONLY form initialValue as always-present,
+  never combo defaults -- so CAD injection can still supply plate type/year (audit_cad CHECK 6)
+  without re-creating the trap.
+
+  Also at v4.18: DriverLicenseQuery #3/#4 devdoc NOTEs adjudicated as
+  devdoc-models-oos-metadata-does-not (metadata carries State in Any[]; metadata is field-authority;
+  fidelity gate confirms zero DL divergence) -- NOT a defect, no split required. And the registry
+  opted in to '# SUPPRESSION-SCOPE: direction-aware' (NY was at 6 over-broad suppressions).
+
+RESULT  2h all combos reachable / 2n all 16 metadata combinations form-reachable, 0 prefill-dead,
+        0 missing (was 15 + 1 missing) / 2s requirement fidelity 0 under-required 0 over-permitted.
+        Full 67-test tenant sweep owed from T1.
+
+--- prior PENDING_UPDATES content, retained for history ---
+# PENDING_UPDATES.txt -- NY_NYSPIN_EJUSTICE
+# Lines without a leading '#' block enforce.ps1 and prevent testing.
+# Clear by running the build script (it removes this file on successful build).
+#
+# RESOLVED 2026-07-30 -- [FLAG:NY-METADATA-PARSER-UNKNOWN] cleared. The question was whether
+# NY metadata genuinely omits Requirements for DALL x2 / RVEH, or whether audit_query_trace
+# misses NY's XML shape. ANSWERED: the metadata genuinely has an empty <Set> for those three,
+# and each carries ANY content with NO CHOICE (DALL: ImageIndicator + NyNyspinTransactionName;
+# RVEH: ImageIndicator). That is a requirement-free 'any-of' combination, which
+# _sim_helpers Test-ComboMatches already implements ('if set[] is empty, at least one any[]
+# present'). NOT the TX shape -- TX's ArticleSingleQuery QA had an empty <Set> plus
+# CHOICE=[NCICNumber], so its requirement lived in the Choice. No parser change was needed;
+# the hypothesis is disproved rather than carried forward. The 3 query_trace MISSING lines
+# remain EXPECTED: containment matching cannot affirm a combo whose metadata set[] is empty,
+# and NY does build DriverHistoryQuery. Adjudicate them, do not 'fix' them.
+
+[RESOLVED v4.18 2026-07-30 -- step 1 complete, all steps 1-4 applied] NY devdoc NOTEs read and adjudicated. Rob approved the sequence
+  1 read NOTEs / 2 fix RVEHOUT+RVEH / 3 add suppression marker / 4 build v4.18 + gates + mutation
+  map / 5 one 67-test sweep. Cosmetic retests deferred by Rob ("we will worry about retests later").
+
+  NOTE 3 -- VehicleRegistrationQuery #3, no combo set[] covers
+    [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State].
+    NOT a separate issue: this IS the RVEHOUT under-requirement, found independently by enforce
+    PHASE 2p from the DEVDOC side while audit_requirement_fidelity found it from the METADATA side.
+    Devdoc line 139 #3 reads "(Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+    State, [ImageIndicator]" -- all four MANDATORY, only ImageIndicator bracketed. Devdoc and
+    metadata AGREE, so no product ruling is required and none was sought. Fixing RVEHOUT clears
+    this NOTE. Devdoc #1 "(In) LicensePlateNumber, [ImageIndicator, LicensePlateTypeCode]" also
+    settles the RVEH over-permit: LicensePlateYear is NOT a devdoc optional on the in-state path,
+    so the never-drop-a-devdoc-optional rule does NOT apply and it comes OUT of RVEH any[].
+
+  NOTES 1 + 2 -- DriverLicenseQuery #3 [BirthDate, Name, SexCode, State] and #4
+    [OperatorLicenseNumber, State]. OPEN, and they may be the SAME defect class as RVEHOUT.
+    Reasoning: NY's own convention for out-of-state IS State-in-set[] -- DriverHistory's DALLOUT and
+    DALHOUT both carry RegistrationStateDH in set[]. If DriverLicenseQuery's OOS paths do not, its
+    two out-of-state combos are under-required the same way RVEHOUT is, making this a THREE-combo
+    fix rather than one. DO THIS FIRST at step 2: dump NY's DriverLicenseQuery combos, compare to
+    devdoc DriverLicenseQuery #3/#4, and treat any State/mandatory gap as the same class.
+    Do NOT assume the notes are benign because NY routes some state by EXISTS conditions -- the
+    RVEHOUT case proves a condition-based split can still leave mandatory fields optional.
+
+  STEP 2 ENTRY POINT (nothing built yet, no version bumped, tree clean):
+    RVEHOUT  set[] += LicensePlateTypeCode, LicensePlateYear   (remove both from any[])
+    RVEH     any[] -= LicensePlateYear
+    + whatever the DriverLicenseQuery comparison above turns up
+    NY Vehicle form has ZERO initialValues, so BUILD_RULES 24 is satisfied for the Vehicle change;
+    RE-CHECK prefills on the Person form before touching DL combos.
+
+[RESOLVED v4.18 2026-07-30 -- was a blocker, Rob ruled OPTION A and it is applied]
+  I stated twice that NY's Vehicle form has ZERO initialValues and that BUILD_RULES 24 was therefore
+  satisfied. THAT WAS FALSE. build_ny_nyspin_ejustice.ps1 L599 prefills LicensePlateYear with
+  $currentYear, and BOTH RVEHOUT (L177) and RVEH (L183) additionally carry defaults[] setting
+  LicensePlateYear=$currentYear and LicensePlateTypeCode='PC'. My "zero prefills" came from a JSON
+  traversal that returned empty for an unrelated reason and I read the empty result as evidence --
+  the same silent-empty failure I spent the day cataloguing, this time load-bearing on a plan.
+
+  WHY IT BLOCKS THE FIX: promoting LicensePlateTypeCode + LicensePlateYear into RVEHOUT's set[]
+  while both are form-prefilled AND combo-defaulted makes them ALWAYS-PRESENT -- mandatory in name
+  only. The officer never chooses them, routing cannot discriminate on them, and it is exactly
+  BUILD_RULES 24, the defect that cost TX_TLETS three versions and deleted two real OOS paths.
+
+  WHAT MUST BE DECIDED FIRST (Rob -- this is a genuine product tradeoff, not a mechanical fix):
+  The devdoc AND metadata agree the OOS plate path needs Plate+PlateTypeCode+PlateYear+State, all
+  mandatory. Honouring that properly means the officer TYPES all four. Options:
+    A. Remove the LicensePlateYear form initialValue and the PlateYear/PlateType defaults[] from
+       RVEHOUT, then promote both into set[]. Spec-correct. Cost: an OOS plate lookup becomes a
+       4-field entry, and in-state RVEH loses its year/type convenience defaults unless they are
+       kept on RVEH only (they can be -- defaults are per-combo).
+    B. Keep the prefills and record the divergence: RVEHOUT stays as built, accepting that we can
+       send an OOS plate query the spec calls incomplete. Same shape as the FL/TX
+       devdoc-optional-unreachable rulings.
+    C. Keep prefills but promote to set[] anyway. REJECT -- this is the BUILD_RULES 24 trap and
+       gives a false sense of compliance while changing nothing about what is actually sent.
+  Recommend A with defaults[] retained on RVEH (in-state) only, so in-state convenience survives
+  and the OOS path becomes genuinely spec-correct.
+
+  ALREADY DONE and safe to keep (no version bump, JSON untouched at v4.17):
+    - DLICN/DLIC State NOTEs recorded as devdoc-models-oos-metadata-does-not (metadata is
+      field-authority; fidelity gate confirms zero DL divergence)
+    - '# SUPPRESSION-SCOPE: direction-aware' marker added to the registry
+
+[RESOLUTION v4.18 2026-07-30] Rob ruled OPTION A. Applied in build_ny_nyspin_ejustice.ps1:
+  FORM  LicensePlateTypeCode initialValue 'PC'  REMOVED
+        LicensePlateYear     initialValue $currentYear REMOVED
+        -> the officer now enters real plate type/year for an out-of-state plate instead of
+           transmitting PC/current-year guesses to another state's DMV.
+  RVEHOUT set[] = LicensePlateNumber, RegistrationState, LicensePlateTypeCode, LicensePlateYear
+          any[] = ImageIndicator
+        -> honours devdoc #3 "(Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+           State, [ImageIndicator]" and metadata RVEH alt2, which AGREE. Clears both the
+           audit_requirement_fidelity UNDER-REQUIRED finding and the enforce 2p NOTE for
+           VehicleRegistrationQuery #3 -- one fix, two gates.
+  RVEH    any[] = ImageIndicator, LicensePlateTypeCode  (LicensePlateYear REMOVED)
+        -> devdoc #1's optionals are [ImageIndicator, LicensePlateTypeCode] only; PlateYear is not
+           a devdoc optional on the in-state path, so the never-drop-a-devdoc-optional rule does
+           not apply. Clears the OVER-PERMITTED finding.
+  defaults[] KEPT on both combos. This is the key detail: audit_combo_reachability counts only FORM
+  initialValue as always-present, never combo defaults[], so keeping defaults leaves CAD injection
+  able to supply plate type/year (audit_cad CHECK 6) WITHOUT re-creating the BUILD_RULES 24 trap of
+  a prefilled mandatory field. Removing the form prefill is what makes the requirement real;
+  removing the defaults would only have broken CAD.

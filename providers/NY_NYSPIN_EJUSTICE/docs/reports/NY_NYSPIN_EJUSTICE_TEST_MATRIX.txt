@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE v4.17 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.18 -- TEST MATRIX
 ==================================================
 Generated: 2026-07-30
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -9,7 +9,7 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 8 fields):
   CARD_VEH (VEHICLE REGISTRATION SEARCH BY PLATE, "OR" VIN):
-    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
 
@@ -105,7 +105,7 @@ ENTITY 2: VEHICLE (12 tests -- 1 card, 4 combos)
 --  ----------  --------------------------------------------------  ------
 19  Vehicle     RVEH+RVEH          LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (RVEH)
-20  Vehicle     RVEH+RVEH          + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
+20  Vehicle     RVEH+RVEH          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
 21  Vehicle     RCAR+VIN           VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RCAR)
@@ -117,7 +117,7 @@ ENTITY 2: VEHICLE (12 tests -- 1 card, 4 combos)
               Expected: any[] fields present in XML output.
 25  Vehicle     RVEHOU+RVEHOUT+State  LicensePlateNumber=TEST123, Registrat... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOUT)
-26  Vehicle     RVEHOU+RVEHOUT+State  + ImageIndicator, LicensePlateTypeCode, LicensePlateYear [    ]
+26  Vehicle     RVEHOU+RVEHOUT+State  + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
 27  Vehicle     Guardrail: RVEHOUT>RVIN  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RVEHOUT). VIN+RegistrationState absent from XML.
@@ -186,4 +186,4 @@ COMBO COVERAGE (16/16):
   ArticleSingleQuery: 1/1 -- T45(AINQ)
   BoatQuery: 4/4 -- T31(RVEH+RVEH), T33(RCAR+Hull), T35(BVEH+BVEH), T37(BVIN+BVIN)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.17.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.18.json
