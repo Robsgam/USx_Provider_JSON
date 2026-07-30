@@ -174,7 +174,14 @@ $PROV_MUTS = @{
        Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
        Mut={ param($j) $n=Get-Node $j 'Person' 'RegistrationStateDH'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'NY' -Force } }
 
-    @{ Id='ny-keyref-collision-scope'
+    @{ Id='ny-fidelity-demote-mandatory'; OnlyProvider='NY_NYSPIN_EJUSTICE'
+     Desc='LicensePlateYear demoted from RVEHOUT set[] to any[] though devdoc #3 AND metadata RVEH alt2 both make it mandatory -- the exact defect fixed at v4.18, so the gate that found it must be proven able to find it again.'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RVEHOUT'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'LicensePlateYear' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'LicensePlateYear') } }
+
+  @{ Id='ny-keyref-collision-scope'
        Desc='break the BoatQuery RVEH combo only -- a query-scoped gate must still catch it while the identically-named VehicleRegistrationQuery RVEH stays intact (BUILD_RULES 13)'
        Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
        Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'RVEH'
