@@ -837,6 +837,32 @@ TOOLS
     (neither exists on the lib's return -- it is State/Pass/Fail/Pending/OwedPlanTests) and rendered
     every row "unknown (0 logs)". -DryRun caught that before a byte was written.
     Usage: .\sync_session_state.ps1 [-DryRun]
+  tools/emit_test_plan_spec.ps1
+    Generates the test plan from the DEVDOC + METADATA instead of from the built JSON.
+    Origin (Rob 2026-07-30: "the test json needs to be wired to the metadata and dev doc and not the
+    json itself"): emit_test_plan.ps1 derives every test from the JSON's own combinations, so the
+    plan is a MIRROR of what was built and can only confirm what is there -- no combo, no test, no
+    failure. That is exactly how TX_TLETS held 95/95 ALL-PASS while carrying 2 unbuilt devdoc paths,
+    17 untransmittable devdoc optionals, and 3 devdoc-legal fills that send no query. A mirror cannot
+    see an omission.
+    Deriving from the SPEC inverts the failure modes into visibility:
+      devdoc path never built     -> test exists, driver submits, NOTHING FIRES -> FAIL
+      devdoc optional not carried -> test fills it, wire lacks it -> FAIL (audit_log_metadata)
+      the Plate+Year NO-FIRE case -> tested and loud, instead of structurally untestable
+    WHAT THE JSON STILL SUPPLIES, and only this: the fieldId to type into and its entity. The driver
+    must address real controls. It gets NO vote on the test population -- if a devdoc field has no
+    form control the test is emitted as UNREACHABLE, which is the finding, not a reason to skip.
+    Reuses (never re-parses): audit_devdoc_combinations -Explain for items, the metadata XML for
+    type/maxLength value synthesis, TEST_VALUE_OVERRIDES for entity-scoped values, and
+    _sim_helpers Get-FiringKeyRef to state which combo SHOULD fire.
+    Writes logs/<P>_TEST_PLAN_SPEC_v<X.Y>.json -- a SEPARATE file from the JSON-derived plan on
+    purpose. The DELTA between the two is the artifact worth reading: tests the spec demands that the
+    build cannot serve. First run, TX_TLETS v4.18: 74 tests, 17 expected NO-FIRE, 5 UNREACHABLE,
+    versus 89 JSON-derived tests of which ZERO could fail on an omission.
+    NOT YET TRIAGED: only 3 of the 17 NO-FIRE are the known accepted plate fills. The other 14 are
+    unexamined -- they may be real findings or artifacts of the one-optional-at-a-time subsetting and
+    synthesised values. Triage before treating any of them as defects.
+    Usage: .\emit_test_plan_spec.ps1 -Provider <NAME> [-DryRun]
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
     consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1
