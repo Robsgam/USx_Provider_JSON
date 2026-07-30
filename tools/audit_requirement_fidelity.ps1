@@ -22,12 +22,27 @@
     wrong -- the same closed-loop failure that let the test plan be generated FROM the JSON.
     This tool reads the expectation from the XML only.
 
-  THE OTHER HALF OF WHY: nested <Choice><Set> was invisible to four gates written on 2026-07-30
-    (audit_devdoc_combinations, audit_devdoc_optionals, emit_test_plan_spec, audit_log_metadata all
-    have ZERO Choice handling), while audit_metadata CHECK 4b and extract_metadata_reference had
-    handled it correctly for months. 13 of 18 providers use the nested shape -- TX_TLETS has 60 of
-    them, so TX's ALL-PASS was signed off by Choice-blind gates too. Read the existing parsers
-    before writing a new one (ENGINEERING_STANDARD LAW 4).
+  THE OTHER HALF OF WHY -- and the first version of this comment got it WRONG, so read the
+  correction, not the headline. I claimed four gates were "Choice-blind" on the basis of
+  `grep Choice <file>` returning nothing. That test cannot tell "handled elsewhere" from "not
+  handled", which is the same un-failable-check disease this tool exists to fight. What was
+  actually true, after checking:
+    audit_query_trace            -- genuinely broken on nested Choice/Set. Fixed 2026-07-30.
+    audit_log_metadata (6d)      -- NOT blind. It delegates to _metadata_parse.ps1, which DID
+                                    recurse Choice/Set... but two PowerShell array-unwrap traps
+                                    shredded a 4-field branch into 4 single-field alternatives, so
+                                    6d could not fail on any nested-Choice combination. Fixed
+                                    2026-07-30; that fix immediately exposed a real CA_CLETS defect
+                                    (IG.QGH shipped purposeCode+Name with neither Age nor BirthDate,
+                                    satisfying no metadata alternative -- as a PASS log).
+    audit_devdoc_combinations / audit_devdoc_optionals / emit_test_plan_spec
+                                 -- DEVDOC-driven. They never consume XML Choice. Nothing to fix.
+  So one tool was blind, one was degraded, three were irrelevant -- and TX_TLETS's ALL-PASS was NOT
+  signed off by a Choice-blind 6d, contrary to what I first reported. TX re-verified 89/89 against
+  real requirement sets afterwards. 13 of 18 providers use the nested shape (TX has 60), so validate
+  any metadata-parser change against BOTH TX (flat Choice/Field) and NY (nested Choice/Set).
+  Read the existing parsers before writing a new one (ENGINEERING_STANDARD LAW 4) -- this file
+  shipped a duplicate Choice walk for one afternoon and got the grammar wrong twice over.
 
   VERDICTS
     UNDER-REQUIRED  metadata says MANDATORY, we built it optional or absent  -> can send an
@@ -97,41 +112,50 @@ $formOnly = @('imageindicator', 'registrationstate', 'attention', 'purposecode',
               'dexstateuserid', 'messagekey', 'messagecontinuekeycode')
 
 # ── metadata: expand each Combination into one entry per Choice alternative ────────────
+# REQUIRED SETS COME FROM THE SHARED PARSER, not a local copy. The first version of this file
+# hand-rolled its own <Choice> walk -- in a tool whose header lectures about LAW 4 -- and got the
+# grammar WRONG in two ways the shared one gets right: it never recursed past one nesting level,
+# and it folded a bare <Choice><Field> into the OPTIONAL pool when that field is actually an
+# ALTERNATIVE (TX GunQuery/QG: 'serial(+caliber/make) OR NCICNumber'). Get-MetaAltSets does the
+# full recursive cross-product. Using it means a future grammar fix lands in ONE place, and it is
+# the same requirement source gate 6d uses -- so this gate and 6d can no longer disagree about
+# what the spec says, which was the whole point.
+. (Join-Path $PSScriptRoot '_metadata_parse.ps1')
+
 function Get-MetaAlternatives([string]$xmlPath) {
+    $tx  = Get-MetadataTransactions -XmlPath $xmlPath
+    # Get-MetaAltSets deliberately DROPS <Any> (optional fields cannot constrain a required set),
+    # but OVER-PERMITTED needs to know what the combination legitimately allows. Collect the
+    # optional pool separately, as the UNION of every <Any> at any depth inside the combination,
+    # keyed by transaction+keyRef. Union rather than per-branch: a slightly WIDER optional pool can
+    # only suppress an over-permit finding, never invent one, and over-permit is advisory. Keying by
+    # keyRef also merges duplicate-keyRef occurrences, which is the same conservative direction.
     $x = [xml](Get-Content $xmlPath -Raw)
-    $out = @()
+    $anyPool = @{}
     foreach ($t in $x.SelectNodes('//*[local-name()="Transaction"]')) {
-        $tn = "$($t.GetAttribute('name'))"
-        if (-not $tn) { continue }
+        $tn = "$($t.GetAttribute('name'))"; if (-not $tn) { continue }
         foreach ($cb in $t.SelectNodes('.//*[local-name()="Combination"]')) {
-            $kr = "$($cb.GetAttribute('keyReference'))"
-            $sn = $cb.SelectSingleNode('./*[local-name()="Requirements"]/*[local-name()="Set"]')
-            if (-not $sn) { continue }
-            # fields declared at the OUTER level apply to every alternative
-            $baseSet = @(); $baseAny = @()
-            foreach ($f in $sn.SelectNodes('./*[local-name()="Field"]'))                       { $baseSet += "$($f.GetAttribute('reference'))" }
-            foreach ($f in $sn.SelectNodes('./*[local-name()="Any"]/*[local-name()="Field"]')) { $baseAny += "$($f.GetAttribute('reference'))" }
-            # flat <Choice><Field> -- a mandatory one-of, so NOT individually mandatory. Optional
-            # for fidelity purposes; audit_metadata CHECK 4b owns one-of coverage.
-            # FOURTH shape, TX_TLETS GunQuery/QG: a nested <Set> and a bare <Field> as SIBLINGS in
-            # one <Choice> -- 'either serial(+caliber/make) OR NCICNumber'. Folding the bare Field
-            # into baseAny understates it (it is an alternative, not an optional extra), but it
-            # cannot produce a false UNDER-REQUIRED, and TX correctly splits it into two combos.
-            foreach ($f in $sn.SelectNodes('./*[local-name()="Choice"]/*[local-name()="Field"]')) { $baseAny += "$($f.GetAttribute('reference'))" }
-            $alts = @($sn.SelectNodes('./*[local-name()="Choice"]/*[local-name()="Set"]'))
-            if ($alts.Count -eq 0) {
-                $out += [pscustomobject]@{ Query = $tn; KeyRef = $kr; Alt = 0; AltTotal = 0
-                                           Set = @($baseSet | Where-Object { $_ }); Any = @($baseAny | Where-Object { $_ }) }
-            } else {
-                $i = 0
-                foreach ($a in $alts) {
-                    $i++
-                    $s = @($baseSet); $n = @($baseAny)
-                    foreach ($f in $a.SelectNodes('./*[local-name()="Field"]'))                       { $s += "$($f.GetAttribute('reference'))" }
-                    foreach ($f in $a.SelectNodes('./*[local-name()="Any"]/*[local-name()="Field"]')) { $n += "$($f.GetAttribute('reference'))" }
-                    $out += [pscustomobject]@{ Query = $tn; KeyRef = $kr; Alt = $i; AltTotal = $alts.Count
-                                               Set = @($s | Where-Object { $_ }); Any = @($n | Where-Object { $_ }) }
-                }
+            $k = "$tn|$($cb.GetAttribute('keyReference'))"
+            if (-not $anyPool.ContainsKey($k)) { $anyPool[$k] = @() }
+            foreach ($f in $cb.SelectNodes('.//*[local-name()="Any"]/*[local-name()="Field"]')) {
+                $r = "$($f.GetAttribute('reference'))"; if ($r) { $anyPool[$k] += $r }
+            }
+        }
+    }
+    $out = @()
+    foreach ($qname in @($tx.Keys | Sort-Object)) {
+        foreach ($c in $tx[$qname].combos) {
+            $kr    = "$($c.keyReference)"
+            $sets  = @($c.requiredSets)
+            $total = $sets.Count
+            $pool  = @()
+            if ($anyPool.ContainsKey("$qname|$kr")) { $pool = @($anyPool["$qname|$kr"] | Sort-Object -Unique) }
+            $i = 0
+            foreach ($rs in $sets) {
+                $i++
+                $out += [pscustomobject]@{ Query = $qname; KeyRef = $kr
+                                           Alt = $(if ($total -gt 1) { $i } else { 0 }); AltTotal = $total
+                                           Set = @(@($rs) | Where-Object { $_ }); Any = $pool }
             }
         }
     }
@@ -164,6 +188,50 @@ foreach ($d in $dirs) {
     if (-not $xml) { $xml = @(Get-ChildItem "$($d.FullName)\source" -Filter '*.xml' -File -ErrorAction SilentlyContinue) | Select-Object -First 1 }
     if (-not $xml) { Out-Line "`n=== $($d.Name) ===" 'Cyan'; Out-Line '  [FAIL] no metadata XML in source/ -- cannot verify fidelity' 'Red'; $totUnmatched++; continue }
 
+    # ── ACCEPTED-DIVERGENCE REGISTRY ──────────────────────────────────────────────────
+    # Without this the gate cries wolf on decisions ALREADY adjudicated and recorded, which is how
+    # a gate teaches people to ignore it. TX_TLETS is the case: all 9 of its first-run findings are
+    # registered -- regionId/VehicleMakeCode/VehicleYear ride in any[] under `promoted-to-any`
+    # (Rob standing rule: never DROP a devdoc-optional combination field), and the UNDER-REQUIRED
+    # ones are spillover from QV/QW, which are deliberately unbuilt platform-auto-fired shadows.
+    # A deliberately-unbuilt metadata alternative must be SKIPPED, not force-matched to a sibling:
+    # force-matching is what reported CPL against DQOLN and QV against RQ{VIN}.
+    # Same convention as audit_combo_reachability / audit_log_combo_attribution: registered =>
+    # [NOTE], never [WARN], so a genuinely NEW fidelity defect still stands out.
+    $unbuiltRows = @(); $promoted = @{}
+    $dvf = @(Get-ChildItem (Join-Path $d.FullName 'docs') -Recurse -Filter '*ACCEPTED_DIVERGENCES*' -File -ErrorAction SilentlyContinue) | Select-Object -First 1
+    if ($dvf) {
+        foreach ($ln in (Get-Content $dvf.FullName)) {
+            $p = $ln -split '\|'
+            if ($p.Count -lt 4) { continue }
+            $q = $p[0].Trim(); $k = $p[1].Trim(); $fd = $p[2].Trim(); $rule = $p[3].Trim()
+            # The registry keyRef column holds the BUILT combo name (QVLicensePlateNumber) or a
+            # devdoc pointer ("(devdoc #3)"), while a METADATA keyRef is bare (QV, QW). Exact
+            # matching therefore suppressed nothing on TX. Bridge it three ways, deliberately
+            # generous -- registered-unbuilt only ever downgrades WARN to NOTE, and the NOTE count
+            # is printed so over-suppression stays visible:
+            #   exact | registry keyRef PREFIXED by the metadata keyRef (QV -> QVLicensePlateNumber)
+            #   | the row TEXT names the metadata keyRef on a word boundary (the QW row is filed
+            #     under "(devdoc #3)" and says "metadata keyRef QW" in its reason).
+            if ($rule -match '(?i)shadow|unbuilt') {
+                $unbuiltRows += [pscustomobject]@{ Query = $q; KeyRef = $k; Rule = $rule; Text = $ln }
+            }
+            if ($rule -match '(?i)promoted-to-any')     { $promoted["$q|$k|$(Canon $fd)"] = $rule }
+        }
+    }
+
+    function Test-RegisteredUnbuilt([string]$q, [string]$kr) {
+        if (-not $kr) { return $false }
+        foreach ($r in $script:unbuiltRows) {
+            if ($r.Query -ne $q -and $r.Query -ne '*') { continue }
+            if ($r.KeyRef -eq $kr) { return $true }
+            if ($r.KeyRef.StartsWith($kr)) { return $true }
+            if ($r.Text -match "\b$([regex]::Escape($kr))\b") { return $true }
+        }
+        return $false
+    }
+    $script:unbuiltRows = $unbuiltRows
+
     $meta = Get-MetaAlternatives $xml.FullName
     $raw  = Get-Content $jp -Raw | ConvertFrom-Json
 
@@ -184,7 +252,7 @@ foreach ($d in $dirs) {
     }
 
     Out-Line "`n=== $($d.Name)  ($(Split-Path $jp -Leaf)) ===" 'Cyan'
-    $pUnder = 0; $pOver = 0; $pMatched = 0
+    $pUnder = 0; $pOver = 0; $pMatched = 0; $pNote = 0
 
     # ── ONE-TO-ONE ASSIGNMENT, per query ──────────────────────────────────────────────
     # The first draft matched each metadata alternative INDEPENDENTLY, so several alternatives
@@ -200,7 +268,7 @@ foreach ($d in $dirs) {
     foreach ($q in @($meta | ForEach-Object { $_.Query } | Sort-Object -Unique)) {
         if (-not $built.ContainsKey($q)) { continue }
         $used  = @{}
-        $alts  = @($meta | Where-Object { $_.Query -eq $q } | Sort-Object { -(@($_.Set).Count) })
+        $alts  = @($meta | Where-Object { $_.Query -eq $q -and -not (Test-RegisteredUnbuilt $_.Query $_.KeyRef) } | Sort-Object { -(@($_.Set).Count) })
         foreach ($m in $alts) {
             $mS = @($m.Set | ForEach-Object { Canon $_ }); $mA = @($m.Any | ForEach-Object { Canon $_ })
             $best = $null; $bestScore = -999; $bestKey = $null
@@ -221,6 +289,7 @@ foreach ($d in $dirs) {
 
     foreach ($m in $meta) {
         if (-not $built.ContainsKey($m.Query)) { continue }   # query not built: 2p/2e own that
+        if (Test-RegisteredUnbuilt $m.Query $m.KeyRef) { $pNote++; continue }
         $b0 = $assign["$($m.Idx)"]
         if (-not $b0) { continue }
         $mSetC = @($m.Set | ForEach-Object { Canon $_ })
@@ -245,6 +314,7 @@ foreach ($d in $dirs) {
             $w = $bAnyC[$i]
             if ((Test-Has $mSetC $w) -or (Test-Has $mAnyC $w)) { continue }
             if ($formOnly -contains $w) { continue }
+            if ($promoted.ContainsKey("$($m.Query)|$($b0.KeyRef)|$w")) { $pNote++; continue }
             $over += "$($b0.Any[$i])"
         }
 
@@ -258,8 +328,9 @@ foreach ($d in $dirs) {
         }
     }
 
-    if (-not $pUnder -and -not $pOver) { Out-Line "  [PASS] $pMatched matched branch(es), 0 UNDER-REQUIRED / 0 OVER-PERMITTED" 'Green' }
-    else { Out-Line "  ---- $pMatched matched branch(es): $pUnder UNDER-REQUIRED, $pOver OVER-PERMITTED" 'Yellow' }
+    $noteTxt = if ($pNote) { " [$pNote registered divergence(s) -> NOTE]" } else { '' }
+    if (-not $pUnder -and -not $pOver) { Out-Line "  [PASS] $pMatched matched branch(es), 0 UNDER-REQUIRED / 0 OVER-PERMITTED$noteTxt" 'Green' }
+    else { Out-Line "  ---- $pMatched matched branch(es): $pUnder UNDER-REQUIRED, $pOver OVER-PERMITTED$noteTxt" 'Yellow' }
     $totUnder += $pUnder; $totOver += $pOver; $totMatched += $pMatched
 }
 

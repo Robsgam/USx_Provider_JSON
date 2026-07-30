@@ -729,6 +729,16 @@ TOOLS
     WARN-only by design -- a build may legitimately tighten or split a branch, and only Rob rules
     on combination semantics. NEVER auto-tighten a set[]: a mandatory field the form PREFILLS
     becomes an always-true discriminator and kills every sibling after it (BUILD_RULES 24).
+    REGISTRY-AWARE: reads <P>_ACCEPTED_DIVERGENCES.txt and downgrades registered decisions to
+    [NOTE]. A metadata alternative registered shadow/unbuilt (TX QV, QW) is SKIPPED rather than
+    force-matched to a sibling -- force-matching is what reported CPL against DQOLN. A field
+    registered `promoted-to-any` is not an over-permit (Rob standing rule: never DROP a
+    devdoc-optional combination field, ride it in any[]). Registry keyRefs are BUILT names
+    (QVLicensePlateNumber) or devdoc pointers ("(devdoc #3)") while metadata keyRefs are bare
+    (QV, QW), so matching is exact | prefix | word-boundary-in-row-text, deliberately generous;
+    the NOTE count is printed so over-suppression stays visible. TX_TLETS: 0/0 with 12 NOTE.
+    NON-VACUITY is proven live, not asserted: the same gate reports NY RVEHOUT and 17 CA_CLETS
+    findings, so the suppression has not disabled it.
     FALSE-POSITIVE SOURCES, all four hit on the first run -- fix these before believing output:
     Name is a COMPOSITE (metadata 'Name' vs built NameLast/First/Middle/Suffix) and must match
     BIDIRECTIONALLY; form-only fields (ImageIndicator/State/PurposeCode/Attention/email/reasonCode)
