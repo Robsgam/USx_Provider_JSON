@@ -12,7 +12,30 @@
 > 4. Numbers here must be derived, not remembered — run `tools\portfolio_status.ps1` and
 >    `tools\enforce.ps1`.
 
-**Last updated:** 2026-07-30 · **Branch:** `main` (the working branch — the long-lived `rebuild/az_azdps_v3.0` was fast-forward merged 2026-07-30, 216 commits; `audit_branch_currency.ps1` now watches the gap)
+
+
+<!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
+**Last updated:** 2026-07-30 (generated) · **Branch:** `main`
+
+## Tenant-test state — GENERATED, do not hand-edit
+
+Derived from `_test_status_lib.ps1`, the same primitives `portfolio_status.ps1` and the
+CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_session_state.ps1`.
+
+| Provider | Ver | State |
+|---|---|---|
+| CA_CLETS | v2.22 | ALL-PASS (90 logs) |
+| FL_FCIC | v7.12 | ALL-PASS (111 logs) |
+| HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
+| NJ_NJCJIS | v4.14 | ALL-PASS (35 logs) |
+| NY_NYSPIN_EJUSTICE | v4.17 | NEVER-TESTED — 67 test(s) owed |
+| TX_TLETS | v4.18 | NEVER-TESTED — 89 test(s) owed |
+| _14 others_ | — | never tenant-tested: AZ_AZDPS, CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
+
+**Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 — `0 FAIL / 0 WARN`.
+No PASS count is recorded here on purpose: it moves every time a gate is added, so an
+absolute number is guaranteed to go stale and teach the next session to distrust this file.
+<!-- END GENERATED -->
 
 ---
 
@@ -42,19 +65,6 @@ Do NOT record the PASS count here. It grows every time a gate is added (it moved
 hour of this file being created, purely from new gates), so an absolute number is guaranteed to go
 stale and teaches the next session to distrust the file. `0 FAIL / 0 WARN` is the only durable
 assertion. If you get a FAIL or WARN, the tool is right and this file is out of date.
-
-## Tenant-test state (derive it: `tools\portfolio_status.ps1`)
-
-| Provider | Ver | State |
-|---|---|---|
-| HI_HCJDC_OFML | v4.14 | ALL-PASS |
-| NJ_NJCJIS | v4.14 | ALL-PASS |
-| FL_FCIC | v7.12 | ALL-PASS (Boat re-run 2026-07-29, 47 captures) |
-| CA_CLETS | v2.22 | ALL-PASS |
-| NY_NYSPIN_EJUSTICE | **v4.17** | **re-test owed from T1** (DH row split — bump reset it) |
-| TX_TLETS | **v4.18** | **re-sweep owed from T1** (devdoc optionals fixed; 19 combos) |
-| TX_TLETS_CCH | **v1.14** | never tenant-tested (BASE-SYNC v4.18, in lockstep) |
-| other 13 | — | never tenant-tested |
 
 ## What is actually owed
 

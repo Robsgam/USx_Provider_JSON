@@ -220,7 +220,10 @@ if (-not $batchMode) {
 
     # Step 4: Sync CLAUDE.md
     Step "Sync CLAUDE.md provider table"
-    $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_provider_table.ps1" 2>&1 | Out-String
+    $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_provider_table.ps1" 2>&1 | Out-String
+    # SESSION_STATE's derived block is GENERATED, never hand-typed -- it was hand-corrected 3x on
+    # 2026-07-30 before this was automated. audit_session_state (enforce 2l) gates it; this keeps it true.
+    & (Join-Path $PSScriptRoot 'sync_session_state.ps1') | Out-Null
     if ($output -match 'Updated (\d+)') {
         $count = $Matches[1]
         if ([int]$count -gt 0) {

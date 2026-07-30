@@ -815,6 +815,28 @@ TOOLS
     because an external party has not acted teaches everyone to bypass it. What this removes is not
     the delay -- it is the ability to LOSE the fact. A GAP is not a build defect.
     Usage: .\audit_lifecycle.ps1 [-Provider <NAME>] [-Strict] [-OutFile <path>]
+  tools/sync_session_state.ps1
+    GENERATES the derived block of SESSION_STATE.md (run by pipeline after sync_provider_table).
+    Origin (Rob 2026-07-30: "check for duplication of data that keeps drifting... remove redundant
+    steps or automate them"): "TX_TLETS is at v4.18" is stored in FOURTEEN places and enforce spends
+    FIFTEEN assertions reconciling them. Almost all fourteen are generated; exactly three were typed
+    by hand -- SESSION_STATE.md, IMPORT_LEDGER.md, DEX_TICKET.md. SESSION_STATE was hand-corrected
+    THREE times on 2026-07-30 alone. audit_session_state (enforce 2l) gates it, but gating a
+    hand-maintained file only reports the drift afterwards; it does not prevent it.
+    IMPORT_LEDGER stays manual ON PURPOSE -- it records an EXTERNAL act (someone imported something
+    into a tenant), and generating it would be fabricating evidence. DEX_TICKET stays manual because
+    Rob holds the Jira trigger.
+    GENERATED: the Last-updated stamp, the branch line, the tenant-test table -- all from
+    _test_status_lib.ps1, the same primitives portfolio_status and the CLAUDE.md table use, so the
+    three cannot disagree. NEVER TOUCHED: next-physical-action, what-is-owed, open-decisions,
+    hard-won-rules. Judgement does not belong to a generator.
+    A provider earns a named row if it was tenant-tested at some point -- now (ALL-PASS/PARTIAL) or
+    previously (archived logs => a bump reset it, re-sweep owed). Every provider owes plan tests, so
+    "owed > 0" alone named all 20 and defeated the collapse.
+    -DryRun prints the block without writing. Use it: the first draft guessed .Verdict/.LogCount
+    (neither exists on the lib's return -- it is State/Pass/Fail/Pending/OwedPlanTests) and rendered
+    every row "unknown (0 logs)". -DryRun caught that before a byte was written.
+    Usage: .\sync_session_state.ps1 [-DryRun]
   tools/_claude_table_cells.ps1  (shared module, dot-sourced)
     Canonical renderers for the DERIVED cells of the CLAUDE.md Provider Status table,
     consumed by BOTH the writer (sync_provider_table.ps1) and the checker (enforce.ps1
