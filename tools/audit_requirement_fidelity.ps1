@@ -61,7 +61,7 @@
   Usage: .\audit_requirement_fidelity.ps1 [-Provider <NAME>] [-OutFile <path>]
 #>
 
-param([string]$Provider, [string]$OutFile)
+param([string]$Provider, [string]$Path, [string]$OutFile)
 
 $ErrorActionPreference = 'Stop'
 $toolDir  = $PSScriptRoot
@@ -174,14 +174,25 @@ Out-Line '  REQUIREMENT FIDELITY -- built mandatory/optional vs metadata, per Ch
 Out-Line ("  " + (Get-Date -Format 'yyyy-MM-dd HH:mm'))
 Out-Line ('=' * 80)
 
-$dirs = Get-ChildItem (Join-Path $repoRoot 'providers') -Directory | Sort-Object Name
-if ($Provider) { $dirs = @($dirs | Where-Object { $_.Name -eq $Provider }) }
-if (-not $dirs) { Out-Line "  [FAIL] provider '$Provider' not found" 'Red'; exit 1 }
+# -Path audits ONE json plus its sibling source/ -- the layout audit_gate_efficacy.ps1 builds for a
+# mutation replica. Without it this gate could not be mutation-tested at all, i.e. there was no
+# proof it could FAIL, which is precisely LAW 2 and precisely what this tool was written to police.
+# A replica has no docs/, so no divergence registry loads and findings are unsuppressed -- correct
+# for mutation testing, where detection is measured as an INCREASE over the same-mode baseline.
+if ($Path) {
+    if (-not (Test-Path $Path)) { Out-Line "  [FAIL] -Path not found: $Path" 'Red'; exit 1 }
+    $pn = [System.IO.Path]::GetFileNameWithoutExtension($Path) -replace '_v[0-9]+\.[0-9]+$', ''
+    $dirs = @([pscustomobject]@{ FullName = (Split-Path $Path -Parent); Name = $pn })
+} else {
+    $dirs = Get-ChildItem (Join-Path $repoRoot 'providers') -Directory | Sort-Object Name
+    if ($Provider) { $dirs = @($dirs | Where-Object { $_.Name -eq $Provider }) }
+    if (-not $dirs) { Out-Line "  [FAIL] provider '$Provider' not found" 'Red'; exit 1 }
+}
 
 $totUnder = 0; $totOver = 0; $totMatched = 0; $totUnmatched = 0
 
 foreach ($d in $dirs) {
-    $jp = Get-ProviderRootJson -ProvDir $d.FullName -Provider $d.Name
+    $jp = if ($Path) { $Path } else { Get-ProviderRootJson -ProvDir $d.FullName -Provider $d.Name }
     if (-not $jp) { continue }
     $xml = @(Get-ChildItem "$($d.FullName)\source" -Filter '*.xml' -File -ErrorAction SilentlyContinue |
              Where-Object { $_.BaseName -eq $d.Name }) | Select-Object -First 1
@@ -226,7 +237,14 @@ foreach ($d in $dirs) {
             if ($r.Query -ne $q -and $r.Query -ne '*') { continue }
             if ($r.KeyRef -eq $kr) { return $true }
             if ($r.KeyRef.StartsWith($kr)) { return $true }
-            if ($r.Text -match "\b$([regex]::Escape($kr))\b") { return $true }
+            # An EXPLICIT phrase only -- never a bare word-boundary hit on the reason prose.
+            # Bare \bKR\b over-suppressed a REAL combination: the QV shadow row explains QV is
+            # "an ungated SUBSET of REG (Plate+Year+FRT)", so metadata REG matched the QV row and
+            # the whole REG branch was skipped as registered-unbuilt. TX then read 0 UNDER-REQUIRED
+            # partly because REG was not being checked at all, and audit_gate_efficacy caught it as
+            # a SURVIVED mutation -- the harness was right and this suppression was wrong.
+            # A registry row that means "metadata keyRef X is unbuilt" must SAY so.
+            if ($r.Text -match "(?i)metadata\s+keyRef\s+$([regex]::Escape($kr))\b") { return $true }
         }
         return $false
     }

@@ -229,6 +229,13 @@ $MUTS = @(
      Mut={ param($j) $c=Get-Cfg $j '*VehicleInsuranceRegistrationQuery'; $cm=Get-Combo $c 'RQVehicleIdentificationNumber'
            $cm.requirements.set=@('VehicleIdentificationNumber','regionId') } }
 
+  @{ Id='fidelity-demote-mandatory'; OnlyProvider='TX_TLETS'
+     Desc='LicensePlateYear demoted from REG set[] to any[] though metadata REG REQUIRES it (audit_requirement_fidelity UNDER-REQUIRED). Proves the fidelity gate can fail -- until -Path was added it could not even be run against a replica, so it had no failure proof at all.'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*VehicleInsuranceRegistrationQuery'; $cm=Get-Combo $c 'REGLicensePlateNumber'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'LicensePlateYear' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'LicensePlateYear') } }
+
   @{ Id='poisoned-condition'; OnlyProvider='TX_TLETS'
      Desc='a value-comparison routing condition, which poisons the whole conditions array (AP/LIMIT)'
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }

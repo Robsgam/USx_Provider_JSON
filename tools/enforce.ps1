@@ -935,6 +935,37 @@ if (-not (Test-Path $lcTool)) {
     }
 }
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2s: Requirement Fidelity -- built mandatory/optional vs metadata (ADVISORY)
+# ══════════════════════════════════════════════════════════════════════════════
+#  The dimension no other phase measured. 2b asks whether a field is metadata-DEFINED, 2n whether a
+#  combination EXISTS, 2h whether the form can REACH it, 6d whether a captured request SATISFIES a
+#  combination. All four can pass while a combination is built LOOSER than the spec, and 6d can
+#  never catch that because it validates the log against the combination AS WE BUILT IT.
+#  Found live on 2026-07-30: NY RVEHOUT demoted two metadata-MANDATORY fields to any[], and
+#  CA_CLETS IG.QGH shipped a request with neither Age nor BirthDate -- as a PASS log.
+#  ADVISORY (Info, not Warn) by Rob 2026-07-30: a build may legitimately tighten or split a branch,
+#  only Rob rules on combination semantics, and CA_CLETS currently carries 17 findings awaiting its
+#  own rebuild turn -- blocking on them would just teach everyone to bypass the phase. Registered
+#  accepted-divergence entries already report as NOTE, so what surfaces here is genuinely new.
+SectionHeader "PHASE 2s: Requirement Fidelity -- built vs metadata mandatory/optional (advisory)"
+$rfTool = Join-Path $toolDir "audit_requirement_fidelity.ps1"
+if (-not (Test-Path $rfTool)) {
+    Info "audit_requirement_fidelity.ps1 not found -- requirement fidelity NOT checked"
+} else {
+    foreach ($pd in $providers) {
+        $rfOut  = & powershell -ExecutionPolicy Bypass -File $rfTool -Provider $pd.Name 2>&1 | Out-String
+        $rfW    = @($rfOut -split "`n" | Where-Object { $_ -match '\[WARN\]' })
+        $rfNote = if ($rfOut -match '(\d+) registered divergence') { $Matches[1] } else { '0' }
+        if ($rfW.Count -gt 0) {
+            Info "$($pd.Name) -- $($rfW.Count) requirement-fidelity finding(s), advisory: tools\audit_requirement_fidelity.ps1 -Provider $($pd.Name)"
+            $rfW | Select-Object -First 4 | ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            Pass "$($pd.Name) -- requirement fidelity clean (0 under-required / 0 over-permitted; $rfNote registered)"
+        }
+    }
+}
+
 SectionHeader "PHASE 3: Doc Version Sync"
 
 # Check 3j prerequisite -- reported ONCE, not per provider.
