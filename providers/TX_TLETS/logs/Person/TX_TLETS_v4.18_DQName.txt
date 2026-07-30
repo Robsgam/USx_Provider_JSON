@@ -1,0 +1,96 @@
+================================================================
+TEST LOG: TX_TLETS Person DriverLicenseQuery
+Combo: DQName (DQName (auto))
+Date: 2026-07-30 15:59:26
+Result: PASS
+JSON Version: 4.18
+Entity Fingerprint: 5c0cc88090ae8c17d2dcd418608fd5c9679584c1ba7f8ea11807c9cdef6ec74a
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","BirthDate":"1990-01-15","ImageIndicator":"Y","ImageIndicatorDH":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Texas","RegistrationStateDH":"Texas","SexCode":"Male","emailAddress":"X","purposeCodeDH":"C","reasonCode":"C","reasonCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYT9J9NJMA76ETMZ5FCGX8PJ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KYT9J9NJMA76ETMZ5FCGX8PJ</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>TX</State>
+            <SexCode>M</SexCode>
+            <ReasonCode>C</ReasonCode>
+            <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE,JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "lastName": "DOE",
+    "firstName": "JOHN",
+    "sexAttrId": "69509553096",
+    "dateOfBirth": "1990-01-15",
+    "registrationStateAttrId": "69509558547"
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYT9J9NJMA76ETMZ5FCGX8PJ
+  ImageIndicator                 Y
+  State                          TX
+  SexCode                        M
+  ReasonCode                     C
+  EmailAddress                   ROB.SGAMBELLONE@MARK43.COM
+  BirthDate                      01151990
+  Name                           DOE,JOHN
+
+NOTES
+-----
+Automated capture (txId 01KYT9J9NJMA76ETMZ5FCGX8PJ). kind=combo; anyField=; expectedKeyRef=DQName; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
