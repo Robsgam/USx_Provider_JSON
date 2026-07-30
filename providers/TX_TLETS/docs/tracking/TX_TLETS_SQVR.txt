@@ -179,13 +179,13 @@ v3.4 CHANGES (from v3.3):
   Fields: GunSerialNumber, GunMake(23), GunCaliber, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QG Serial -- NCIC Gun (Serial Number) [PENDING]
+  QG Serial -- NCIC Gun (Serial Number) [CONFIRMED]
     keyReference: QGGunSerialNumber
     set: GunSerialNumber
     any: GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QG NCIC -- NCIC Gun (NCIC Number) [PENDING]
+  QG NCIC -- NCIC Gun (NCIC Number) [CONFIRMED]
     keyReference: QGNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -201,14 +201,14 @@ v3.4 CHANGES (from v3.3):
   Fields: ArticleSerialNumber, ArticleTypeCode, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QA Serial+Type -- NCIC Article (Serial + Type) [PENDING]
+  QA Serial+Type -- NCIC Article (Serial + Type) [CONFIRMED]
     keyReference: QAArticleSerialNumber
     set: ArticleSerialNumber, ArticleTypeCode
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
     CONFIRMED: T26 2026-06-17. Serial=ART99999 + Type=BBICYCL. XML: ArticleSerialNumber + ArticleTypeCode. No NCICNumber.
 
-  QA NCIC -- NCIC Article (NCIC Number) [PENDING]
+  QA NCIC -- NCIC Article (NCIC Number) [CONFIRMED]
     keyReference: QANCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
