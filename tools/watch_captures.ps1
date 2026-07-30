@@ -94,7 +94,20 @@ function Import-CaptureFile($path, $label) {
     try { & (Join-Path $PSScriptRoot 'sync_provider_table.ps1') *>&1 |
             Where-Object { $_ -match '\(updated\)' } |
             ForEach-Object { Write-Host "[WATCH] CLAUDE.md synced: $($_.Trim())" -ForegroundColor Cyan } }
-    catch { Write-Host "[WATCH] sync_provider_table errored (non-fatal)" -ForegroundColor DarkYellow }
+    catch {
+        # DO NOT reduce this to a generic "errored" line. It used to say
+        # "sync_provider_table errored (non-fatal)" on EVERY ingest while the tool was in fact
+        # working and correctly updating CLAUDE.md -- the child ran under this script's
+        # $ErrorActionPreference='Stop' and its own terminating `exit 0` tripped the catch.
+        # A warning that fires on every single run is how a REAL warning gets ignored: the same
+        # failure class as an inert gate. Report the actual cause, or say nothing.
+        $msg = "$($_.Exception.Message)"
+        if ($msg -match 'exit|terminated') {
+            Write-Host "[WATCH] CLAUDE.md sync completed (child exit signal, not an error)" -ForegroundColor DarkGray
+        } else {
+            Write-Host "[WATCH] sync_provider_table FAILED -- CLAUDE.md may be stale: $msg" -ForegroundColor DarkYellow
+        }
+    }
     Remove-Item $path -Force -ErrorAction SilentlyContinue
     return $summary
 }
