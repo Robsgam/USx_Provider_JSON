@@ -394,12 +394,27 @@ function Audit-Provider {
             $parts = $s -split '\|'
             if ($parts.Count -ge 3) {
                 $k = ('{0}|{1}|{2}' -f $parts[0].Trim(), $parts[1].Trim(), $parts[2].Trim()).ToLower()
-                $acceptedDiv[$k] = $true
+                # KEEP THE RULE. It used to be discarded, which made every suppression
+                # DIRECTION-BLIND: registering "regionId may ride in RQ{VIN} any[]" (rule
+                # promoted-to-any) also silenced CHECK 4d, whose defect is the OPPOSITE -- a field
+                # wrongly PROMOTED INTO set[]. Measured 2026-07-30: audit_gate_efficacy flipped
+                # promote-any-to-set from KILLED to SURVIVED the moment 4 legitimate
+                # promoted-to-any rows were added. Every accepted divergence was silently buying a
+                # wider blind spot than it was granted.
+                if (-not $acceptedDiv.ContainsKey($k)) { $acceptedDiv[$k] = @() }
+                $acceptedDiv[$k] += $(if ($parts.Count -ge 4) { $parts[3].Trim().ToLower() } else { '' })
             }
         }
     }
-    function Test-AllowListed([string]$q, [string]$kr, [string]$field) {
-        return $acceptedDiv.ContainsKey(('{0}|{1}|{2}' -f $q, $kr, $field).ToLower())
+    # -IgnoreRule names a rule that CANNOT license the calling check's defect class. A row carrying
+    # ONLY that rule stops suppressing; a row with any other rule still does. Opt-in per call site,
+    # so every existing check keeps its behaviour unless deliberately narrowed.
+    function Test-AllowListed([string]$q, [string]$kr, [string]$field, [string]$IgnoreRule) {
+        $k = ('{0}|{1}|{2}' -f $q, $kr, $field).ToLower()
+        if (-not $acceptedDiv.ContainsKey($k)) { return $false }
+        if (-not $IgnoreRule) { return $true }
+        foreach ($r in @($acceptedDiv[$k])) { if ($r -ne $IgnoreRule.ToLower()) { return $true } }
+        return $false
     }
 
     # Same ACCEPTED_DIVERGENCES file, different rule namespace ('built-as'/'not-built' vs.
@@ -1019,7 +1034,7 @@ function Audit-Provider {
                 $sfS = [string]$sf
                 if (Test-InMetaSet $qn $sfS) { continue }          # metadata agrees set[] -> correct (PlateType/Year, VehicleType)
                 if (-not (Test-InMetaAny $qn $sfS)) { continue }    # not in metadata any either -> form-only/extra, not a promote
-                if (Test-AllowListed $qn $kr2 $sfS) {
+                if (Test-AllowListed $qn $kr2 $sfS 'promoted-to-any') {
                     Out-Note "  keyRef ${kr2}: '$sfS' in set[] but metadata any[] -- ACCEPTED per registry"
                 } else {
                     $defNote = if (Test-IsDefaulted $sfS) { ' (defaulted -- initialValue not counted for set[])' } else { '' }
