@@ -110,7 +110,15 @@ function Run-Gate([string]$tool, [string[]]$argsList) {
     # harness that only counted findings called it blind when it had never looked. Any run with zero
     # PASS lines, or an explicit 0-subjects summary, is VACUOUS and cannot support a verdict.
     $nPass = @([regex]::Matches($out,'\[PASS\]')).Count
-    $vacuous = ($nPass -eq 0 -and $nFail -eq 0 -and $nWarn -eq 0) -or ($out -match 'Providers checked:\s*0') -or ($out -match '\[SKIP\] No XML metadata')
+    # "Did the gate RUN?" must not be inferred from [PASS] alone. Not every gate emits [PASS] --
+    # audit_devdoc_optionals emits only [FAIL]/[NOTE]/[SKIP] plus a RESULT total, and a [PASS]-only
+    # test declared it VACUOUS once TX went clean (0 FAIL / 0 WARN / 11 NOTE), i.e. the detector
+    # misfired exactly when the provider became correct. Evidence of work = any verdict marker OR a
+    # parseable RESULT/RESULTS total. Fixed 2026-07-30.
+    $nNote  = @([regex]::Matches($out,'\[NOTE\]|\[SKIP\]|\[INFO\]')).Count
+    $hasTot = ($out -match '(?m)RESULTS?:\s*\d+') -or ($out -match 'Total:\s*\d+')
+    $ranSomething = ($nPass + $nFail + $nWarn + $nNote) -gt 0 -or $hasTot
+    $vacuous = (-not $ranSomething) -or ($out -match 'Providers checked:\s*0') -or ($out -match '\[SKIP\] No XML metadata')
     $first = ''
     foreach ($l in ($out -split "`n")) { if ($l -match '\[FAIL\]|\[WARN\]') { $first = $l.Trim(); break } }
     return @{ N = ($nFail + $nWarn); NFail = $nFail; NWarn = $nWarn; NPass = $nPass; Vacuous = $vacuous; Detail = $first; Ok = $true }
