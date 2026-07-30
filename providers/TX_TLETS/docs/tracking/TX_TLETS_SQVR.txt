@@ -3,9 +3,9 @@ TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-30
 JSON version: v4.14
-Live test: v4.5 full re-test 2026-07-17 (first live pass since v4.0; single-day batch import,
+Live test: v4.14 full re-test 2026-07-30 (93/93 ALL-PASS). Prior: v4.5 2026-07-17 (first live pass since v4.0; single-day batch import,
            all 21 combos across all 5 entities, EmailAddress automation confirmed live)
-Validator: 80 PASS / 0 FAIL / 0 WARN / 0 LIM (v4.5)
+Validator: 81 PASS / 0 FAIL / 0 WARN / 0 LIM (v4.14)
 Verify: CLEAN (0 FAIL, 0 WARN -- 3 fields carry accepted LABEL-OVERRIDE tags, see build script)
 
 NOTE: v3.8 imported 2026-06-17. DH redesigned: 4 combos (KQNameImg/KQName/KQOLNImg/KQOLN).
@@ -38,7 +38,7 @@ v3.4 CHANGES (from v3.3):
     any: RegistrationState
     state: In/Out
 
-  RQ Plate -- Nlets Vehicle Registration (Plate+Year+PlateType) [REMOVED v4.13 -- was DEAD]
+  RQ Plate -- Nlets Vehicle Registration, devdoc (OutofState) plate path (Plate+Year+PlateType) [CONFIRMED]
     keyReference: RQLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
     any: RegistrationState
@@ -67,7 +67,26 @@ v3.4 CHANGES (from v3.3):
     state: In/Out
     CONFIRMED: T18 2026-06-17. StickerNumber=TEST123. XML: StickerNumber + State=TX (default). No plate or VIN fields.
 
-  RQ VIN -- Nlets Vehicle Registration (VIN+Make+Year) [REMOVED v4.13 -- was DEAD]
+  QV Plate -- NCIC/Nlets plain Vehicle Registration by plate (Plate only) [CONFIRMED]
+    keyReference: QVLicensePlateNumber
+    set: LicensePlateNumber
+    any: RegionId, RegistrationState
+    state: In/Out
+    CONFIRMED: v4.14 2026-07-30. Restored at v4.14 (wrongly removed v4.9). Reached when the officer
+      types a plate ALONE -- no PlateYear, no FRT, no PlateType. Log: TX_TLETS_v4.14_QVLicensePlateNumber.txt
+
+  QV VIN -- NCIC/Nlets plain Vehicle Registration by VIN (VIN only) [CONFIRMED]
+    keyReference: QVVehicleIdentificationNumber
+    set: VehicleIdentificationNumber
+    any: RegionId
+    state: In/Out
+    CONFIRMED: v4.14 2026-07-30. Restored at v4.14 (wrongly removed v4.9). Shares an identical
+      metadata set[] ({VIN}) with RQ VIN -- the one true shadow pair -- so it is split on RegionId
+      EXISTS (RQ VIN takes RegionId NOT_EXISTS); both also require FRT NOT_EXISTS so VIN+FRT wins
+      when insurance is wanted. Ordered BEFORE RQ VIN (verify_build CHECK 14 only credits an EXISTS
+      condition on the earlier combo). Log: TX_TLETS_v4.14_QVVehicleIdentificationNumber_any.txt
+
+  RQ VIN -- Nlets Vehicle Registration, devdoc (OutofState) VIN path (VIN+Make+Year) [CONFIRMED]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
@@ -271,7 +290,7 @@ SUMMARY
 
   CommSys QIDMs: 6 (VehicleInsuranceReg, DriverLicense, DriverHistory,
                      GunQuery, ArticleSingle, BoatQuery)
-  Total CommSys combos: 21 (3 Vehicle + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat)
+  Total CommSys combos: 21 (7 Vehicle + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat)
       (was stated as 21 / "7 Vehicle" -- stale since v4.9 removed QV Plate + QV VIN; the
        per-combo blocks were cleaned at v4.10 but this summary was missed. Fixed 2026-07-29.)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
@@ -289,9 +308,10 @@ SUMMARY
     Firearm (2/2): QGGunSerialNumber, QGNCICNumber
     Article (2/2): QAArticleSerialNumber, QANCICNumber
     Boat (5/5): BQRegistrationNumber, BQBoatHullIdNumber, QBRegistrationNumber, QBBoatHullIdNumber, QBNCICNumber
-    Coverage: 21/21 combos (100%), 87 test logs, audit_log_content.ps1 87/87 content-verified.
-    LIMITATION: QVVehicleIdentificationNumber (permanently shadowed by RQ VIN, form routing --
-      still exercised directly via any[]-af test, see log).
+    Coverage: 21/21 combos (100%), 93 test logs, 93/93 content-verified (6c) + 93/93 metadata-verified (6d) + 93/93 combo-attribution verified (2i). ALL-PASS 5/5 entities.
+NOTE: QVVehicleIdentificationNumber is REACHABLE as of v4.14 -- split from RQ VIN by a RegionId
+      EXISTS/NOT_EXISTS condition (+ FRT NOT_EXISTS). The pre-v4.14 "permanently shadowed"
+      claim was wrong: our own form prefills, not the platform, made it unreachable.
     NOTE (legacy, v3.6): VehicleMakeCode form sent FORD, XML serialized PASS_FORD. Platform NCIC
           VEHICLE_MAKE code type adds PASS_ prefix internally. devdoc maxLen=4; PASS_FORD is 9 chars.
           Not fixable config-side (FormSelect attributeTypeId=VEHICLE_MAKE is the correct pattern --
