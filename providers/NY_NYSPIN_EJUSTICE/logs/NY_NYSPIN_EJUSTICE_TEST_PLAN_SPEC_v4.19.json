@@ -1,0 +1,1059 @@
+{
+  "provider": "NY_NYSPIN_EJUSTICE",
+  "version": "4.19",
+  "derivedFrom": "devdoc + metadata (NOT the built JSON)",
+  "note": "expectedKeyRef=NO-FIRE means the devdoc allows this fill but no built combo matches -- the driver should submit it and the sweep should record that nothing was sent. UNREACHABLE means a devdoc field has no form control at all.",
+  "testCount": 40,
+  "tests": [
+    {
+      "n": 1,
+      "entity": "Article",
+      "query": "ArticleSingleQuery",
+      "specSource": "devdoc ArticleSingleQuery #1",
+      "optionalsAdded": [],
+      "expectedKeyRef": "AINQ",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "ArticleSerialNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ArticleTypeCode",
+          "value": "TEST123"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 2,
+      "entity": "Article",
+      "query": "ArticleSingleQuery",
+      "specSource": "devdoc ArticleSingleQuery #1",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "AINQ",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "ArticleSerialNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ArticleTypeCode",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 3,
+      "entity": "Article",
+      "query": "ArticleSingleQuery",
+      "specSource": "devdoc ArticleSingleQuery #1",
+      "optionalsAdded": [
+        "RelatedHitSearchIndicator"
+      ],
+      "expectedKeyRef": "AINQ",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "ArticleSerialNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ArticleTypeCode",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "relatedHitSearchIndicator",
+          "value": "Y"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 4,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "specSource": "devdoc BoatQuery #1",
+      "optionalsAdded": [],
+      "expectedKeyRef": "RCAR",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BoatHullIdNumber",
+          "value": "TEST123"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 5,
+      "entity": "Boat",
+      "query": "BoatQuery",
+      "specSource": "devdoc BoatQuery #1",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "RCAR",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BoatHullIdNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 6,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #1",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DALH",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDateDH",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLastDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirstDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "SexCodeDH",
+          "value": "M"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 7,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #1",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DALH",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDateDH",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLastDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirstDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "SexCodeDH",
+          "value": "M"
+        },
+        {
+          "fieldId": "ImageIndicatorDH",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 8,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #1",
+      "optionalsAdded": [
+        "NyNyspinTransactionName"
+      ],
+      "expectedKeyRef": "DALH",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDateDH",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLastDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirstDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "SexCodeDH",
+          "value": "M"
+        },
+        {
+          "fieldId": "nyNyspinTransactionNameDH",
+          "value": "TEST"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 9,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #2",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DALL",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumberDH",
+          "value": "TEST123"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 10,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #2",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DALL",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumberDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ImageIndicatorDH",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 11,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #2",
+      "optionalsAdded": [
+        "NyNyspinTransactionName"
+      ],
+      "expectedKeyRef": "DALL",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumberDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "nyNyspinTransactionNameDH",
+          "value": "TEST"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 12,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #3",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DALHOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDateDH",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLastDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirstDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "purposeCodeDH",
+          "value": "C"
+        },
+        {
+          "fieldId": "requestorDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "SexCodeDH",
+          "value": "M"
+        },
+        {
+          "fieldId": "RegistrationStateDH",
+          "value": "TX"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 13,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #3",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DALHOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDateDH",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLastDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirstDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "purposeCodeDH",
+          "value": "C"
+        },
+        {
+          "fieldId": "requestorDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "SexCodeDH",
+          "value": "M"
+        },
+        {
+          "fieldId": "RegistrationStateDH",
+          "value": "TX"
+        },
+        {
+          "fieldId": "ImageIndicatorDH",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 14,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #3",
+      "optionalsAdded": [
+        "NyNyspinTransactionName"
+      ],
+      "expectedKeyRef": "DALHOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDateDH",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLastDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirstDH",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "purposeCodeDH",
+          "value": "C"
+        },
+        {
+          "fieldId": "requestorDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "SexCodeDH",
+          "value": "M"
+        },
+        {
+          "fieldId": "RegistrationStateDH",
+          "value": "TX"
+        },
+        {
+          "fieldId": "nyNyspinTransactionNameDH",
+          "value": "TEST"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 15,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #4",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DALLOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumberDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "purposeCodeDH",
+          "value": "C"
+        },
+        {
+          "fieldId": "requestorDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "RegistrationStateDH",
+          "value": "TX"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 16,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #4",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DALLOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumberDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "purposeCodeDH",
+          "value": "C"
+        },
+        {
+          "fieldId": "requestorDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "RegistrationStateDH",
+          "value": "TX"
+        },
+        {
+          "fieldId": "ImageIndicatorDH",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 17,
+      "entity": "Person",
+      "query": "DriverHistoryQuery",
+      "specSource": "devdoc DriverHistoryQuery #4",
+      "optionalsAdded": [
+        "NyNyspinTransactionName"
+      ],
+      "expectedKeyRef": "DALLOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumberDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "purposeCodeDH",
+          "value": "C"
+        },
+        {
+          "fieldId": "requestorDH",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "RegistrationStateDH",
+          "value": "TX"
+        },
+        {
+          "fieldId": "nyNyspinTransactionNameDH",
+          "value": "TEST"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 18,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #1",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DLICN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 19,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #1",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DLICN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 20,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #2",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DLIC",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumber",
+          "value": "TEST123"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 21,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #2",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DLIC",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 22,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #3",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DLICN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 23,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #3",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DLICN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "BirthDate",
+          "value": "1990-01-15"
+        },
+        {
+          "fieldId": "NameLast",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "NameFirst",
+          "value": "DOE"
+        },
+        {
+          "fieldId": "SexCode",
+          "value": "M"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 24,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #4",
+      "optionalsAdded": [],
+      "expectedKeyRef": "DLIC",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 25,
+      "entity": "Person",
+      "query": "DriverLicenseQuery",
+      "specSource": "devdoc DriverLicenseQuery #4",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "DLIC",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "OperatorLicenseNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 26,
+      "entity": "Firearm",
+      "query": "GunQuery",
+      "specSource": "devdoc GunQuery #1",
+      "optionalsAdded": [],
+      "expectedKeyRef": "GINQ",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "serialNumber",
+          "value": "TEST123"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 27,
+      "entity": "Firearm",
+      "query": "GunQuery",
+      "specSource": "devdoc GunQuery #1",
+      "optionalsAdded": [
+        "GunCaliber"
+      ],
+      "expectedKeyRef": "GINQ",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "serialNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "GunCaliber",
+          "value": "TEST"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 28,
+      "entity": "Firearm",
+      "query": "GunQuery",
+      "specSource": "devdoc GunQuery #1",
+      "optionalsAdded": [
+        "GunMake"
+      ],
+      "expectedKeyRef": "GINQ",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "serialNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "GunMake",
+          "value": "TEST123"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 29,
+      "entity": "Firearm",
+      "query": "GunQuery",
+      "specSource": "devdoc GunQuery #1",
+      "optionalsAdded": [
+        "RelatedHitSearchIndicator"
+      ],
+      "expectedKeyRef": "GINQ",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "serialNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "relatedHitSearchIndicator",
+          "value": "Y"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 30,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #1",
+      "optionalsAdded": [],
+      "expectedKeyRef": "RVEH",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "LicensePlateNumber",
+          "value": "TEST123"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 31,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #1",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "RVEH",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "LicensePlateNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 32,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #1",
+      "optionalsAdded": [
+        "LicensePlateTypeCode"
+      ],
+      "expectedKeyRef": "RVEH",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "LicensePlateNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "LicensePlateTypeCode",
+          "value": "PC"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 33,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #2",
+      "optionalsAdded": [],
+      "expectedKeyRef": "RCAR",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 34,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #2",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "RCAR",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 35,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #3",
+      "optionalsAdded": [],
+      "expectedKeyRef": "RVEHOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "LicensePlateNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "LicensePlateTypeCode",
+          "value": "PC"
+        },
+        {
+          "fieldId": "LicensePlateYear",
+          "value": "2026"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 36,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #3",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "RVEHOUT",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "LicensePlateNumber",
+          "value": "TEST123"
+        },
+        {
+          "fieldId": "LicensePlateTypeCode",
+          "value": "PC"
+        },
+        {
+          "fieldId": "LicensePlateYear",
+          "value": "2026"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 37,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #4",
+      "optionalsAdded": [],
+      "expectedKeyRef": "RVIN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 38,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #4",
+      "optionalsAdded": [
+        "ImageIndicator"
+      ],
+      "expectedKeyRef": "RVIN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        },
+        {
+          "fieldId": "ImageIndicator",
+          "value": "N"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 39,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #4",
+      "optionalsAdded": [
+        "VehicleMakeCode"
+      ],
+      "expectedKeyRef": "RVIN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        },
+        {
+          "fieldId": "VehicleMakeCode",
+          "value": "TEST"
+        }
+      ],
+      "expectedInWire": []
+    },
+    {
+      "n": 40,
+      "entity": "Vehicle",
+      "query": "VehicleRegistrationQuery",
+      "specSource": "devdoc VehicleRegistrationQuery #4",
+      "optionalsAdded": [
+        "VehicleYear"
+      ],
+      "expectedKeyRef": "RVIN",
+      "unwiredFields": [],
+      "fills": [
+        {
+          "fieldId": "VehicleIdentificationNumber",
+          "value": "1HGCM82633A123456"
+        },
+        {
+          "fieldId": "RegistrationState",
+          "value": "TX"
+        },
+        {
+          "fieldId": "vehicleYear",
+          "value": "2026"
+        }
+      ],
+      "expectedInWire": []
+    }
+  ]
+}
