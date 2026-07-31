@@ -144,6 +144,61 @@ foreach ($pn in $targets) {
     Out-Line ("  [3] combo priority / order     {0}" -f $(if ($rankBad.Count) { "$($rankBad.Count) SUBSET-AHEAD-OF-SUPERSET" } else { "$rank combos, most-specific-first respected" })) $(if ($rankBad.Count) { 'Red' } else { 'Green' })
     foreach ($l in ($rankBad | Select-Object -First 4)) { Out-Line "        $l" 'Red'; $short += "PRIORITY/SHADOW-RANK: $l" }
 
+    # ── 3b. DEVDOC-ORDER  (Rob 2026-07-31: ordering has TWO lines) ────────────────────
+    # Line 1 is specificity (check 3 above). Line 2 is the DEVDOC LISTING ORDER, and it is the
+    # TIEBREAKER when two DIFFERENT queries could both execute on the fields the officer filled.
+    # NJ Boat is the case that forced this: hull and registration-number are separate,
+    # equally-specific single-identifier searches -- specificity CANNOT resolve them, and the devdoc's
+    # order is the product answer. Nothing verified it; Rob caught that, the tooling did not.
+    # An inversion (a devdoc-later item placed BEFORE a devdoc-earlier one) is a defect ONLY when the
+    # earlier-positioned combo is UNGATED -- a condition on it (e.g. NJ's QB carrying
+    # 'BoatHullIdNumber NOT_EXISTS') legitimately hands the over-fill back to the devdoc-earlier path.
+    $ddItems = @{}
+    $ddRaw = Run-Tool 'audit_devdoc_combinations.ps1' @('-Path', $jsonPath, '-Explain')
+    foreach ($ln in ($ddRaw -split "`n")) {
+        $mm = [regex]::Match($ln, 'devdoc\s+(\S+)\s+#(\d+):\s*mand=\[([^\]]*)\]')
+        if (-not $mm.Success) { continue }
+        $q = $mm.Groups[1].Value; $num = [int]$mm.Groups[2].Value
+        $mand = @($mm.Groups[3].Value -split ',' | ForEach-Object { ($_ -replace '[^A-Za-z0-9]','').ToLower() } | Where-Object { $_ })
+        if (-not $ddItems.ContainsKey($q)) { $ddItems[$q] = @() }
+        $ddItems[$q] += [pscustomobject]@{ Num = $num; Mand = $mand }
+    }
+    $ordBad = @()
+    foreach ($b in $json.bundles) {
+        foreach ($c in $b.configurations) {
+            if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+            if ("$($c.provider)" -eq 'RMS' -or "$($c.name)" -match '^RMS ') { continue }
+            $qn = ($c.name -replace "^$([regex]::Escape($pn))_", '')
+            if (-not $ddItems.ContainsKey($qn)) { continue }
+            $cms = @($c.combinations)
+            # map each built combo -> the devdoc item whose mandatory set it best covers
+            $mapped = @()
+            for ($i = 0; $i -lt $cms.Count; $i++) {
+                $cs = @($cms[$i].requirements.set | ForEach-Object { ($_ -replace '[^A-Za-z0-9]','').ToLower() })
+                $best = $null; $bestScore = -999
+                foreach ($it in $ddItems[$qn]) {
+                    $sc = 0
+                    foreach ($w in $it.Mand) { if ($cs -contains $w) { $sc += 3 } else { $sc -= 2 } }
+                    foreach ($w in $cs) { if ($it.Mand -notcontains $w) { $sc -= 1 } }
+                    if ($sc -gt $bestScore) { $bestScore = $sc; $best = $it }
+                }
+                if ($best -and $bestScore -gt 0) {
+                    $mapped += [pscustomobject]@{ Pos = $i; Kr = "$($cms[$i].keyReference)"; Dd = $best.Num
+                                                 Cond = @($cms[$i].requirements.conditions).Count; Set = $cs }
+                }
+            }
+            for ($a = 0; $a -lt $mapped.Count; $a++) {
+                for ($z = $a + 1; $z -lt $mapped.Count; $z++) {
+                    if ($mapped[$a].Dd -le $mapped[$z].Dd) { continue }      # order agrees with devdoc
+                    if ($mapped[$a].Cond -gt 0) { continue }                 # gated -> handled correctly
+                    $ordBad += "$qn/$($mapped[$a].Kr) implements devdoc #$($mapped[$a].Dd) but sits at position $($mapped[$a].Pos+1), AHEAD of $($mapped[$z].Kr) which implements devdoc #$($mapped[$z].Dd) at position $($mapped[$z].Pos+1) -- and it is UNGATED, so on a fill satisfying both, the devdoc-LATER path fires"
+                }
+            }
+        }
+    }
+    Out-Line ("  [3b] devdoc listing order      {0}" -f $(if ($ordBad.Count) { "$($ordBad.Count) INVERSION(S)" } else { 'built order agrees with devdoc, or gated' })) $(if ($ordBad.Count) { 'Red' } else { 'Green' })
+    foreach ($l in ($ordBad | Select-Object -First 4)) { Out-Line "        $l" 'Red'; $short += "DEVDOC-ORDER INVERSION: $l" }
+
     # ── 5. fidelity / reachability / trace ────────────────────────────────────────────
     $o5 = Run-Tool 'audit_requirement_fidelity.ps1' @('-Provider', $pn)
     $m5 = [regex]::Match($o5, 'TOTALS:\s*(\d+) branch.*?/\s*(\d+) UNDER-REQUIRED\s*/\s*(\d+) OVER-PERMITTED')

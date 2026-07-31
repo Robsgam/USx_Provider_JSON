@@ -653,3 +653,31 @@ evidence and must never be generalised from one provider to another.
 
 PORTFOLIO 2q AFTER THE FIX: TX 0 FAIL / 11 NOTE (252 fills) | NY 0 FAIL / 0 NOTE (54) |
 FL 0 FAIL / 12 NOTE (69) | NJ 0 FAIL / 4 NOTE (56).
+
+##### DEVDOC-ORDER check wired into PHASE 1 (2026-07-31) -- check [3b]
+
+Rob: ordering has TWO lines. Line 1 is SPECIFICITY (check [3]: an ungated subset ahead of a superset
+steals every fill). Line 2 is the DEVDOC LISTING ORDER, and it is the TIEBREAKER when two DIFFERENT
+queries could both execute on the fields the officer filled. NJ Boat forced it: hull and
+registration-number are separate, equally-specific single-identifier searches, so specificity CANNOT
+resolve them and the devdoc's order is the product answer. Nothing verified this -- Rob caught it.
+
+[3b] maps each built combination to the devdoc item whose mandatory set it best covers, then flags an
+INVERSION: a devdoc-LATER item positioned AHEAD of a devdoc-EARLIER one. An inversion is a defect ONLY
+when the earlier-positioned combo is UNGATED -- a condition on it (NJ's QB carries
+'BoatHullIdNumber NOT_EXISTS') legitimately hands the over-fill back to the devdoc-earlier path, which
+is exactly how NJ ends up correct despite QB sitting first in the array.
+
+RESULT on all five: NJ / TX / NY / FL / CA_CLETS all report "built order agrees with devdoc, or gated".
+
+NON-VACUITY MEASURED, because five-for-five on a first run is the signature of a check that cannot
+fail: 5 of 8 NJ combos map to a devdoc item, 14 of 19 TX, 22 of 30 FL. Real comparisons are happening.
+
+TWO LIMITS, stated rather than buried:
+  1. The UNMAPPED remainder (3/8 NJ, 5/19 TX, 8/30 FL) are synthetic combos with no devdoc
+     counterpart, and they get NO order verification. Order between two synthetic combos, or between
+     a synthetic and a devdoc-mapped one, is still unchecked.
+  2. FAILURE CAPABILITY IS NOT PROVEN. No mutation exists for [3b], so its green is not yet evidence
+     under LAW 2. Add one to audit_gate_efficacy that swaps two devdoc-mapped combos in an array and
+     strips the earlier one's conditions -- it must report an INVERSION. Until that exists, treat
+     [3b] PASS as "no inversion found among mapped combos", not "ordering is correct".
