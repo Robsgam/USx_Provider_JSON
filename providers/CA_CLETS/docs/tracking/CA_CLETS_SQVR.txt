@@ -3,7 +3,7 @@ CA_CLETS -- Supported Query Validation Report
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-31
 JSON version: v2.23
-Validator: 77 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Validator: 79 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: COMPLETE + INTEGRITY-CERTIFIED -- v2.12 zero-error pass 2026-07-02: 93/93
   submitted+captured, 0 label corrections, 0 unmatched, content audit 87/87, wire XML
   identical to prior verified pass, enforce 26P/0F/0W. Logs are a verified faithful record
@@ -73,8 +73,8 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
 ================================================================================
 
   Entity: Person | QIDM: CA_CLETS_DriverLicenseQuery | autoSelect: true
-  8 combos: 2 NLTS (OOS), 4 IR.QVC (criminal records), 2 in-state (ID.L1 OLN, IN.L1 name)
-  OLN cascade:  OLN+State -> NLTS.DQ ; OLN+CII(no State) -> IR.QVC.O ; OLN-only -> ID.L1
+  9 combos: 2 NLTS (OOS), 5 IR.QVC (criminal records: O/OS/C/S/N), 2 in-state (ID.L1 OLN, IN.L1 name)
+  OLN cascade:  OLN+State -> NLTS.DQ ; OLN+CII(no State) -> IR.QVC.O ; OLN+SSN(no State/CII) -> IR.QVC.OS ; OLN-only -> ID.L1
   Name cascade: Name+State -> NLTS.DQ.N ; Name+Sex(no State) -> IR.QVC.N ; Name-only -> IN.L1
   (OLN>Name priority: all Name combos gated OLN NOT_EXISTS)
 
@@ -90,11 +90,28 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
     conditions: OLN NOT_EXISTS, RegistrationState EXISTS
     keyReference: NLTS.DQ.N
 
-  IR.QVC.O -- Criminal records by OLN+CII [PENDING]
-    set: PurposeCode, OperatorLicenseNumber, criminalIdNumber
-    any: socialSecurityNumber, age
+  IR.QVC.O -- Criminal records by OLN, CII branch [PENDING]
+    set: PurposeCode, OperatorLicenseNumber
+    any: criminalIdNumber, socialSecurityNumber, age
     conditions: RegistrationState NOT_EXISTS, criminalIdNumber EXISTS
     keyReference: IR.QVC.O
+    note: v2.23 -- criminalIdNumber REMOVED from set[]. Metadata IR.QVC{OperatorLicenseNumber}
+          variant #3 is Set[CaRequestPurposeCode, OperatorLicenseNumber]
+          Any[CriminalIdNumber, SocialSecurityNumber], so CII was never mandatory. Requiring it
+          sent OLN+SSN fills through to ID.L1, whose metadata defines NO optionals, and the SSN
+          was silently not transmitted (devdoc DriverLicenseQuery #6).
+
+  IR.QVC.OS -- Criminal records by OLN, SSN branch [PENDING]
+    set: PurposeCode, OperatorLicenseNumber
+    any: socialSecurityNumber, age
+    conditions: RegistrationState NOT_EXISTS, criminalIdNumber NOT_EXISTS, socialSecurityNumber EXISTS
+    keyReference: IR.QVC.OS   (synthetic; LIMITATION #21/#36 -- provider routes by field content)
+    note: v2.23 NEW. Same metadata variant #3 as IR.QVC.O, SSN branch of the OR -- conditions are
+          AND-only, so "CII or SSN present" needs two combos. criminalIdNumber is deliberately NOT
+          in any[] here: this combo gates on its ABSENCE, so carrying it would be a field that can
+          never serialize (gate XOR companion -- verify_build CHECK 12).
+    TEST THIS: OLN + SSN, no State, no CII. The wire MUST carry SocialSecurityNumber. At v2.22 this
+          fill fired ID.L1 and dropped the SSN.
 
   IR.QVC.C -- Criminal records by CII [PENDING]
     set: PurposeCode, criminalIdNumber
@@ -117,8 +134,11 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   ID.L1 -- In-state OLN query (catchall) [PENDING]
     set: PurposeCode, OperatorLicenseNumber
     any: (none)
-    conditions: RegistrationState NOT_EXISTS, criminalIdNumber NOT_EXISTS
+    conditions: RegistrationState NOT_EXISTS, criminalIdNumber NOT_EXISTS, socialSecurityNumber NOT_EXISTS
     keyReference: ID.L1   (real devdoc keyRef; restored v2.12)
+    note: v2.23 -- socialSecurityNumber NOT_EXISTS ADDED. This combo's metadata variants (#1/#2)
+          define NO optionals, so when it swallowed an OLN+SSN fill the SSN could not ride and was
+          dropped. The gate now hands that fill to IR.QVC.OS.
 
   ID.L1_guardrail -- OLN>Name: OLN+Name co-entry (no State/CII) -> only ID.L1 fires, Name absent from XML [PENDING]
   IR.QVC.O_guardrail -- OLN+CII co-entry (no State) -> IR.QVC.O fires (criminal-records path wins over plain OLN) [PENDING]
