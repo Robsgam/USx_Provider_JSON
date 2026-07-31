@@ -106,7 +106,7 @@ function Resolve-Fid([string]$name, $qidm, $formIds) {
     return $name
 }
 
-$grand = [ordered]@{ Built=0; Missing=0; PrefillDead=0; Shadow=0 }
+$grand = [ordered]@{ Built=0; Missing=0; PrefillDead=0; Shadow=0; Noted=0 }
 
 Emit "" $null
 Emit "================================================================================" 'Cyan'
@@ -129,6 +129,27 @@ foreach ($pn in ($targets | Sort-Object)) {
 
     $json = [System.IO.File]::ReadAllText($jsonPath, [System.Text.UTF8Encoding]::new($false)) | ConvertFrom-Json
     [xml]$xml = Get-Content $xmlPath -Raw
+
+    # ── accepted-divergence registry, keyed by metadata keyRef ──────────────────────────
+    # This tool had NO registry path for PREFILL-DEAD, only MISSING/SHADOW, so a combination
+    # already ruled deliberately-unbuilt still FAILed enforce as "unreachable" -- and the message
+    # says "remove that prefill to recover this combo". On HI_HCJDC_OFML that instruction would
+    # have stripped the Vehicle Type default and cost 46 ALL-PASS logs to chase two QV shadows
+    # Rob has ruled must never be built. Advice that dangerous must be registry-aware.
+    $accepted = @{}
+    $accFile = @(Get-ChildItem (Join-Path $provDir 'docs') -Recurse -Filter '*ACCEPTED_DIVERGENCES*' -File -ErrorAction SilentlyContinue) | Select-Object -First 1
+    if ($accFile) {
+        foreach ($ln in (Get-Content $accFile.FullName)) {
+            $s = $ln.Trim(); if (-not $s -or $s.StartsWith('#')) { continue }
+            $pp = $s -split '\|'; if ($pp.Count -lt 4) { continue }
+            $kr = $pp[1].Trim(); $rule = $pp[3].Trim()
+            # only rules that mean NOT BUILT / not-ours-to-reach may excuse a PREFILL-DEAD.
+            # 'RESTORED' excluded: a restored combo IS built and must still be reachable.
+            if ($rule -match '(?i)shadow|unbuilt|not-built|dropped-combo|dead-combo' -and $rule -notmatch '(?i)restored') {
+                if ($kr) { $accepted[$kr] = "$rule -- $($pp[4].Trim().Substring(0,[Math]::Min(120,$pp[4].Trim().Length)))" }
+            }
+        }
+    }
 
     # ── form prefills (initialValue) across all QIFs, by fieldId ──
     $prefill = @{}
@@ -318,7 +339,19 @@ foreach ($pn in ($targets | Sort-Object)) {
                 if ($allPrefilled -and $these.Count) { $culprits += "$($bc.KeyRef) wins via $($these -join ',')" }
             }
 
-            if ($culprits.Count) {
+            # A combination REGISTERED as deliberately unbuilt (platform-auto-fired shadow, devdoc
+            # out-of-scope) is not ours to reach, so reporting it as PREFILL-DEAD is noise -- and
+            # actively dangerous noise: it names a prefill and says "remove that prefill to recover
+            # this combo", which on HI_HCJDC_OFML would have stripped the Vehicle Type default and
+            # burned 46 ALL-PASS logs to chase two QV shadows Rob has ruled must never be built.
+            # PREFILL-DEAD had no registry path at all while MISSING/SHADOW did; this closes that.
+            $accKey = "$($mc.KeyRef)"
+            $isAccPd = $accepted.ContainsKey($accKey)
+            if ($culprits.Count -and $isAccPd) {
+                $grand.Noted++
+                $rows.Add("    [NOTE]         $($mc.KeyRef) set[$($mc.Set -join ',')] -- prefill-shadowed but REGISTERED as deliberately unbuilt")
+                $rows.Add("                   -> $($culprits[0]) ; ACCEPTED: $($accepted[$accKey])")
+            } elseif ($culprits.Count) {
                 $grand.PrefillDead++; $findings++
                 $rows.Add("    [PREFILL-DEAD] $($mc.KeyRef) set[$($mc.Set -join ',')]")
                 $rows.Add("                   -> $($culprits[0]) ; remove that prefill to recover this combo")

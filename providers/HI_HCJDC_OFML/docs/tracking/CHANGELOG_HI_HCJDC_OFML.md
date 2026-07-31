@@ -6,7 +6,7 @@ Current: **v4.14** | Generated: 2026-07-31
 
 ---
 
-## v4.14 -- 2026-07-28 -- Layout review -- Vehicle 1-card collapse + Boat order tidy (direct Rob feedback, NO functional change)
+## v4.14 -- 2026-07-30 -- Layout review -- Vehicle 1-card collapse + Boat order tidy (direct Rob feedback, NO functional change)
 
 **CHANGED:** From the HI v4.13 rendered-form review (mirrors FL v7.11/v7.12 + NJ v4.14):
   (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE  
