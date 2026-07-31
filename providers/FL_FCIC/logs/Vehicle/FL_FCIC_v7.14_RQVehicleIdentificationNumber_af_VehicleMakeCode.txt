@@ -1,0 +1,91 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: RQVehicleIdentificationNumber_af_VehicleMakeCode (RQVehicleIdentificationNumber_af_VehicleMakeCode (auto))
+Date: 2026-07-31 14:25:02
+Result: PASS
+JSON Version: 7.14
+Entity Fingerprint: 86f91b62ae683b87f0ecaebb79d32b3120833f578ccd281f8fe081b12abc84a4
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","VehicleMakeCode":"FORD"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYWPKPWCBJF12W3WJPM3HF27">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KYWPKPWCBJF12W3WJPM3HF27</Id>
+            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69510834680
+      ],
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYWPKPWCBJF12W3WJPM3HF27
+  VehicleMakeCode                CNST_FORD
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
+  State                          GA
+
+NOTES
+-----
+Automated capture (txId 01KYWPKPWCBJF12W3WJPM3HF27). kind=any-field; anyField=VehicleMakeCode; expectedKeyRef=RQVehicleIdentificationNumber; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
