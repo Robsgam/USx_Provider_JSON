@@ -110,6 +110,16 @@ function Test-Has([string[]]$pool, [string]$want) {
 $formOnly = @('imageindicator', 'registrationstate', 'attention', 'purposecode', 'requestor',
               'emailaddress', 'reasoncode', 'relatedhitsearchindicator', 'randomrequest',
               'dexstateuserid', 'messagekey', 'messagecontinuekeycode')
+# IDENTIFIER fields -- the thing the officer is actually searching BY. These must dominate the
+# metadata-alternative -> built-combo pairing: a plate alternative must never be matched to a VIN
+# combo just because both happen to share State and ImageIndicator. Getting this wrong is what
+# reported NJ's FULL{plate} against RANDFULLN (the VIN combo) as UNDER-REQUIRED on fields the VIN
+# combo has no business carrying. Everything not on this list is a qualifier, not a search path.
+$identifierFields = @('licenseplatenumber', 'vehicleidentificationnumber', 'operatorlicensenumber',
+                      'serialnumber', 'boathullidnumber', 'registrationnumber', 'ncicnumber',
+                      'decalnumber', 'stickernumber', 'processcontrolnumber', 'titlelieninformation',
+                      'coastguarddocumentnumber', 'criminalidnumber', 'socialsecuritynumber',
+                      'stateidnumber', 'owner appliednumber', 'ownerappliednumber', 'namelast', 'name')
 
 # ── metadata: expand each Combination into one entry per Choice alternative ────────────
 # REQUIRED SETS COME FROM THE SHARED PARSER, not a local copy. The first version of this file
@@ -297,17 +307,38 @@ foreach ($d in $dirs) {
             $mS = @($m.Set | ForEach-Object { Canon $_ }); $mA = @($m.Any | ForEach-Object { Canon $_ })
             $best = $null; $bestScore = -999; $bestKey = $null
             $ci = -1
+            # N:1 IS LEGAL, and forcing 1:1 was the bug. When metadata alternatives OUTNUMBER built
+            # combos, sharing is REQUIRED: NJ has 4 alternatives (RAND/FULL x plate/VIN) against 2
+            # built combos, so RAND{plate} AND FULL{plate} both belong to RANDFULL. Forcing 1:1 left
+            # two alternatives to pair with whatever was left -- FULL{plate} landed on RANDFULLN, the
+            # VIN combo, which legitimately has no plate fields, and was reported as UNDER-REQUIRED.
+            # The original 1:1 was added for FL's FRQ collapse, but that was MIS-PAIRING, not
+            # sharing. The real fix is scoring: an IDENTIFIER field must dominate, so a plate
+            # alternative can never pair to a VIN combo. Identifier agreement is what makes a pairing
+            # meaningful -- everything else is a qualifier.
             foreach ($cd in @($built[$q])) {
                 $ci++
-                if ($used.ContainsKey($ci)) { continue }
                 $cS = @($cd.Set | ForEach-Object { Canon $_ })
                 $score = 0
-                foreach ($w in $mS) { if (Test-Has $cS $w) { $score += 3 } else { $score -= 1 } }
-                foreach ($w in $cS) { if (-not (Test-Has $mS $w) -and -not (Test-Has $mA $w)) { $score -= 2 } }
-                if ($cd.KeyRef -eq $m.KeyRef) { $score += 2 }
+                foreach ($w in $mS) {
+                    $isId = $identifierFields -contains $w
+                    if (Test-Has $cS $w) { $score += $(if ($isId) { 12 } else { 3 }) }
+                    else                 { $score -= $(if ($isId) { 12 } else { 1 }) }
+                }
+                foreach ($w in $cS) {
+                    if ((Test-Has $mS $w) -or (Test-Has $mA $w)) { continue }
+                    $score -= $(if ($identifierFields -contains $w) { 12 } else { 2 })
+                }
+                # Built keyRefs follow 'metadata keyRef + identifier suffix' across the whole
+                # portfolio (QB -> QBBoatHullIdNumber, FRQ -> FRQLicensePlateNumber, RAND -> RANDFULL).
+                # Without a PREFIX bonus, metadata QB{hull} and built FBQBoatHullIdNumber tie with
+                # QBBoatHullIdNumber on the identifier alone and array order decides -- which paired
+                # FL's QB alternatives to the FBQ family and invented 4 over-permits.
+                if ($cd.KeyRef -eq $m.KeyRef) { $score += 10 }
+                elseif ($cd.KeyRef -like "$($m.KeyRef)*") { $score += 8 }
                 if ($score -gt $bestScore) { $bestScore = $score; $best = $cd; $bestKey = $ci }
             }
-            if ($best -ne $null) { $used[$bestKey] = $true; $assign["$($m.Idx)"] = $best }
+            if ($best -ne $null) { $assign["$($m.Idx)"] = $best }
         }
     }
 
