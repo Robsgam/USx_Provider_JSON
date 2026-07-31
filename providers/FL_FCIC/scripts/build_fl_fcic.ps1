@@ -241,7 +241,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.13"
+    [string]$Version = "7.14"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -310,7 +310,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('LicensePlateNumber')
-                any        = @('LicensePlateYear','VehicleMakeCode','vehicleYear','ImageIndicator')
+                any        = @('LicensePlateYear','ImageIndicator')   # v7.14: VehicleMakeCode/vehicleYear REMOVED -- metadata FRQ{Plate} any[] is [LicensePlateYear, Requestor, ImageIndicator] and the FL devdoc lists neither, so riding them here was an out-of-spec over-send (audit_requirement_fidelity OVER-PERMITTED). They remain available on the OOS RQ{VIN} combo, where metadata DOES define them.
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @(
                     [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }
@@ -324,7 +324,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('VehicleIdentificationNumber')
-                any        = @('VehicleMakeCode','vehicleYear','ImageIndicator')
+                any        = @('ImageIndicator')   # v7.14: VehicleMakeCode/vehicleYear REMOVED -- metadata FRQ{VIN} any[] is [Requestor, VINSequenceNumber, ImageIndicator]; neither field is defined on this branch nor listed in the FL devdoc. NOT touched on the OOS RQ{VIN} combo below, where metadata does define them.
                 # v6.0: RegistrationState NOT_EXISTS (was @('State') -- inert, attr-name not sourceField; now live, isolates in-state FRQ from OOS RQ)
                 #       + LicensePlateNumber NOT_EXISTS (Plate>VIN guardrail -- VIN combo exits pool when officer also enters a plate)
                 conditions = @(

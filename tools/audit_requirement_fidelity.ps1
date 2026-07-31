@@ -209,7 +209,7 @@ foreach ($d in $dirs) {
     # force-matching is what reported CPL against DQOLN and QV against RQ{VIN}.
     # Same convention as audit_combo_reachability / audit_log_combo_attribution: registered =>
     # [NOTE], never [WARN], so a genuinely NEW fidelity defect still stands out.
-    $unbuiltRows = @(); $promoted = @{}
+    $unbuiltRows = @(); $promoted = @{}; $demoted = @{}
     $dvf = @(Get-ChildItem (Join-Path $d.FullName 'docs') -Recurse -Filter '*ACCEPTED_DIVERGENCES*' -File -ErrorAction SilentlyContinue) | Select-Object -First 1
     if ($dvf) {
         foreach ($ln in (Get-Content $dvf.FullName)) {
@@ -224,14 +224,20 @@ foreach ($d in $dirs) {
             #   exact | registry keyRef PREFIXED by the metadata keyRef (QV -> QVLicensePlateNumber)
             #   | the row TEXT names the metadata keyRef on a word boundary (the QW row is filed
             #     under "(devdoc #3)" and says "metadata keyRef QW" in its reason).
-            if ($rule -match '(?i)shadow|unbuilt') {
+            if ($rule -match '(?i)shadow|unbuilt|not-built|dropped-combo|dead-combo' -and $rule -notmatch '(?i)restored') {   # 'not-built' does NOT contain 'unbuilt' (hyphenated), so FL's QW|*|not-built and QV|*|not-built rows were silently INERT. 'RESTORED' excluded because a restored combo IS built -- including it cost TX 2 branches of coverage.
                 $unbuiltRows += [pscustomobject]@{ Query = $q; KeyRef = $k; Rule = $rule; Text = $ln }
             }
             if ($rule -match '(?i)promoted-to-any')     { $promoted["$q|$k|$(Canon $fd)"] = $rule }
+            # UNDER-REQUIRED had NO registry path at all -- a DELIBERATE demotion of a
+            # metadata-mandatory field into any[] could never be recorded, so NJ's documented
+            # RANDFULL/RANDFULLN merge kept being re-reported as 7 findings forever. 'demoted-to-any'
+            # is the to-any-class rule that says: we know metadata calls this mandatory, we ride it in
+            # any[] on purpose, and here is why.
+            if ($rule -match '(?i)demoted-to-any')      { $demoted["$q|$k|$(Canon $fd)"] = $rule }
         }
     }
 
-    function Test-RegisteredUnbuilt([string]$q, [string]$kr) {
+    function Test-RegisteredUnbuilt([string]$q, [string]$kr, [string[]]$altSet) {
         if (-not $kr) { return $false }
         foreach ($r in $script:unbuiltRows) {
             if ($r.Query -ne $q -and $r.Query -ne '*') { continue }
@@ -286,7 +292,7 @@ foreach ($d in $dirs) {
     foreach ($q in @($meta | ForEach-Object { $_.Query } | Sort-Object -Unique)) {
         if (-not $built.ContainsKey($q)) { continue }
         $used  = @{}
-        $alts  = @($meta | Where-Object { $_.Query -eq $q -and -not (Test-RegisteredUnbuilt $_.Query $_.KeyRef) } | Sort-Object { -(@($_.Set).Count) })
+        $alts  = @($meta | Where-Object { $_.Query -eq $q -and -not (Test-RegisteredUnbuilt $_.Query $_.KeyRef @($_.Set)) } | Sort-Object { -(@($_.Set).Count) })
         foreach ($m in $alts) {
             $mS = @($m.Set | ForEach-Object { Canon $_ }); $mA = @($m.Any | ForEach-Object { Canon $_ })
             $best = $null; $bestScore = -999; $bestKey = $null
@@ -307,7 +313,7 @@ foreach ($d in $dirs) {
 
     foreach ($m in $meta) {
         if (-not $built.ContainsKey($m.Query)) { continue }   # query not built: 2p/2e own that
-        if (Test-RegisteredUnbuilt $m.Query $m.KeyRef) { $pNote++; continue }
+        if (Test-RegisteredUnbuilt $m.Query $m.KeyRef @($m.Set)) { $pNote++; continue }
         $b0 = $assign["$($m.Idx)"]
         if (-not $b0) { continue }
         $mSetC = @($m.Set | ForEach-Object { Canon $_ })
@@ -323,6 +329,12 @@ foreach ($d in $dirs) {
         for ($i = 0; $i -lt $mSetC.Count; $i++) {
             $w = $mSetC[$i]
             if (Test-Has $bSetC $w) { continue }
+            # A DELIBERATE demotion, recorded with rule 'demoted-to-any', is a decision -- not an
+            # omission. Before this, UNDER-REQUIRED had NO registry path at all, so NJ's documented
+            # RANDFULL/RANDFULLN merge (metadata RAND and FULL are byte-identical, so building both
+            # would guarantee a dead combo) was re-reported as 7 findings on every single run with no
+            # way to ever close them. OVER-PERMITTED always had $promoted; this is its counterpart.
+            if ($demoted.ContainsKey("$($m.Query)|$($b0.KeyRef)|$w")) { $pNote++; continue }
             $where = if (Test-Has $bAnyC $w) { 'built any[]' } else { 'ABSENT' }
             $under += "$($m.Set[$i]) ($where)"
         }

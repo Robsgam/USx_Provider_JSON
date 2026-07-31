@@ -2,9 +2,14 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.13** | Generated: 2026-07-30
+Current: **v7.14** | Generated: 2026-07-31
 
 ---
+
+## v7.14 -- 2026-07-31 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v7.13 -- 2026-07-30 -- Dropped-optional fix: RegistrationNumber on the FBQ hull path
 

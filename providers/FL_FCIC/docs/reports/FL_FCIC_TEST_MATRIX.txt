@@ -1,6 +1,6 @@
-FL_FCIC v7.13 -- TEST MATRIX
+FL_FCIC v7.14 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-30
+Generated: 2026-07-31
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -106,7 +106,7 @@ ENTITY 2: VEHICLE (15 tests -- 1 card, 5 combos)
 --  ----------  --------------------------------------------------  ------
 19  Vehicle     FRQ+Plate          LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (FRQLicensePlateNumber)
-20  Vehicle     FRQ+Plate          + VehicleMakeCode, vehicleYear, ImageIndicator [    ]
+20  Vehicle     FRQ+Plate          + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
 21  Vehicle     RQ+Plate+State     LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RQLicensePlateNumber)
@@ -114,7 +114,7 @@ ENTITY 2: VEHICLE (15 tests -- 1 card, 5 combos)
               Expected: any[] fields present in XML output.
 23  Vehicle     FRQ+VIN            VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
-24  Vehicle     FRQ+VIN            + VehicleMakeCode, vehicleYear, ImageIndicator [    ]
+24  Vehicle     FRQ+VIN            + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
 25  Vehicle     RQ+VIN+State       VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
@@ -249,4 +249,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T70(Serial), T72(OAN), T74(NCIC), T76(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T37(QB+Hull), T39(FBQ+Reg), T41(BQ+Reg), T42(QB+Reg), T44(BQ+Name), T45(FBQ+Decal), T47(FBQ+TitleLien), T49(QB+CG), T51(QB+NCIC), T53(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.13.json
+IMPORT FILE: FL_FCIC_v7.14.json
