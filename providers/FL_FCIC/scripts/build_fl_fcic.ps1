@@ -241,7 +241,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.12"
+    [string]$Version = "7.13"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -716,7 +716,7 @@ $boatQuery = [PSCustomObject]@{
                 # when Hull fires, any[] fields present in the form are sent regardless of conditions.
                 # Reg was in Hull's any[], causing Reg to leak into XML even when Hull>Reg guardrail
                 # correctly blocked FBQRegistrationNumber from firing.
-                any        = @('decalNumber','titleLienInformation','ImageIndicator')
+                any        = @('decalNumber','titleLienInformation','RegistrationNumber','ImageIndicator')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');             operator = 'NOT_EXISTS' }
                     # relatedHitSearchIndicator (camelCase = QIF fieldId); NOT RelatedHitSearchIndicator
@@ -746,7 +746,7 @@ $boatQuery = [PSCustomObject]@{
                 set        = @('RegistrationNumber')
                 # v6.0: Hull removed from any[] -- the Hull>Reg guardrail below makes this combo
                 # fire ONLY when Hull is absent, so Hull can never coexist here (would self-contradict).
-                any        = @('decalNumber','titleLienInformation','ImageIndicator')
+                any        = @('decalNumber','titleLienInformation','RegistrationNumber','ImageIndicator')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');           operator = 'NOT_EXISTS' }
                     # relatedHitSearchIndicator (camelCase = QIF fieldId); NOT RelatedHitSearchIndicator

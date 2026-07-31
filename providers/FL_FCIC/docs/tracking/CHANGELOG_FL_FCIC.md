@@ -2,9 +2,28 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.12** | Generated: 2026-07-30
+Current: **v7.13** | Generated: 2026-07-30
 
 ---
+
+## v7.13 -- 2026-07-30 -- Dropped-optional fix: RegistrationNumber on the FBQ hull path
+
+**CHANGED:** FBQBoatHullIdNumber any[] += RegistrationNumber (and the sibling FBQ combo at the
+same any[] shape). No form change, no routing change.  
+**REASON:** enforce 2q FAILed on 5 devdoc-optional subsets -- BoatQuery #1/#2 +[RegistrationNumber]
+fired FBQBoatHullIdNumber, but RegistrationNumber was in NO matching combo set[]/any[], so an  
+officer entering a hull AND a registration number lost the reg number SILENTLY. Same class as  
+TX_TLETS 17 dropped devdoc optionals. DETERMINATE, no product ruling needed: metadata FBQ  
+set[BoatHullIdNumber] already lists any[DecalNumber, RegistrationNumber, Requestor,  
+TitleLienInformation], so riding it satisfies BOTH metadata (field authority) and the standing  
+rule never to DROP a devdoc-optional combination field.  
+NOT CHANGED, deliberately: devdoc VehicleRegistrationQuery #3 (TitleLienInformation) stays  
+UNBUILT -- Gordon Hallof sunset that path at v7.4 ("Remove Title/Lien info all together"). The  
+enforce 2p FAIL was BOOKKEEPING: it had been recorded under keyRef FRQTitleLienInformation with  
+rule not-built, which 2p does not accept for devdoc coverage. Re-filed as (devdoc #3) /  
+devdoc-combo-unbuilt. Rebuilding that combo would reinstate a path a stakeholder killed -- the  
+TX QV error class. Do not "fix" it.  
+**RESULT:** all 5 entities re-test from T1; v7.12 111 logs archived by the bump.
 
 ## v7.12 -- 2026-07-30 -- Entity display-order change (direct Rob feedback)
 

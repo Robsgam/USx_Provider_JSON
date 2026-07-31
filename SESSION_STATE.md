@@ -26,7 +26,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | Provider | Ver | State |
 |---|---|---|
 | CA_CLETS | v2.22 | ALL-PASS (90 logs) |
-| FL_FCIC | v7.12 | ALL-PASS (111 logs) |
+| FL_FCIC | v7.13 | NEVER-TESTED — 113 test(s) owed |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.14 | ALL-PASS (35 logs) |
 | NY_NYSPIN_EJUSTICE | v4.19 | ALL-PASS (64 logs) |
