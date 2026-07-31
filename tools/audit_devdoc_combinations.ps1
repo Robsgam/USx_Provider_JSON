@@ -151,7 +151,18 @@ function Get-DevdocCombinations([string]$txtPath) {
     #    Possible Combinations line to the section that owns it
     $heads = @()
     for ($i = 0; $i -lt $raw.Count; $i++) {
-        if ($raw[$i] -match '^\s*([A-Z][A-Za-z0-9]*Query)\s*$') { $heads += [pscustomobject]@{ Line = $i; Name = $Matches[1] } }
+        # A query heading is the query name at the START of a line -- ALONE, or followed by the
+        # field-table column headers on the SAME line. NJ_NJCJIS uses the second layout:
+        #     'BoatQuery                      XML Tag Name         M/C/O    Size    Possible Values'
+        # Requiring the name alone ($ anchor) meant NJ produced almost no headings, so every
+        # "Possible Combinations" block had no OWNER and was skipped -- 2 of 11 blocks parsed, and
+        # enforce PHASE 2p reported [PASS] over the other nine for months. The items themselves were
+        # being glued correctly all along; the OWNER lookup was the failure.
+        # Two-or-more spaces after the name is what distinguishes a column-header line from prose.
+        if ($raw[$i] -match '^\s*([A-Z][A-Za-z0-9]*Query)\s*$' -or
+            $raw[$i] -match '^\s*([A-Z][A-Za-z0-9]*Query)\s{2,}\S') {
+            $heads += [pscustomobject]@{ Line = $i; Name = $Matches[1] }
+        }
     }
 
     $out = @{}

@@ -619,3 +619,37 @@ multi-line-devdoc provider -- as UNPROVEN rather than clean.
 `<P>_TEST_PLAN_v<X.Y>.json` (35 tests, all five entities, 0 unfireable), which is exactly what
 validated TX's 89 and NY's 64. The spec plan is an additional independent check, not the sweep's
 gate.
+
+##### DEVDOC PARSER FIXED 2026-07-31 -- the owner regex, not the line gluing
+
+The real cause was NOT multi-line item gluing (that worked). It was the QUERY-HEADING regex:
+`^\s*([A-Z][A-Za-z0-9]*Query)\s*$` demanded the query name ALONE on a line. NJ_NJCJIS puts it on the
+SAME line as the field-table headers --
+    'BoatQuery                      XML Tag Name         M/C/O    Size    Possible Values'
+-- so almost no headings were found, every "Possible Combinations" block had no OWNER, and the block
+was skipped. NJ parsed 2 of 11 blocks and enforce 2p/2q reported [PASS] over the other nine for
+months. Now also accepts a name followed by two-or-more spaces and column text.
+
+KNOWN-ANSWER VALIDATION (do this on any future change here):
+    NJ_NJCJIS  2 devdoc items (Vehicle only) -> 9 items across ALL FIVE entities; 2q fills
+               evaluated went to 56.
+    TX_TLETS   UNCHANGED at 20 items with both accepted divergences intact (inline format control).
+
+**AND IT IMMEDIATELY FOUND A REAL NJ DEFECT** that had been invisible: devdoc BoatQuery #1 is
+`BoatHullIdNumber [ImageIndicator, RegistrationNumber]`, and filling hull + reg number silently
+dropped the reg number. Adjudicated as `devdoc-optional-unreachable`, NOT fixed, and the reasoning is
+the interesting part:
+
+    FL_FCIC v7.13  metadata FBQ set[BoatHullIdNumber] any[.., RegistrationNumber, ..]
+                   -> metadata ALLOWS it -> ADDED to any[], both authorities satisfied
+    NJ_NJCJIS      metadata QB set[BoatHullIdNumber] any[ImageIndicator]        (no RegistrationNumber)
+                   metadata QB set[RegistrationNumber] any[ImageIndicator]      (separate path)
+                   -> metadata does NOT allow it -> riding it would be an OVER-PERMIT against FIELD
+                      authority. Registered instead.
+
+Same symptom, opposite metadata, opposite answer. This is now the third pair (FL vs HI on
+vehicleYear, FL vs NJ on RegistrationNumber) proving the per-provider authority check is the deciding
+evidence and must never be generalised from one provider to another.
+
+PORTFOLIO 2q AFTER THE FIX: TX 0 FAIL / 11 NOTE (252 fills) | NY 0 FAIL / 0 NOTE (54) |
+FL 0 FAIL / 12 NOTE (69) | NJ 0 FAIL / 4 NOTE (56).
