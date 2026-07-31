@@ -302,6 +302,23 @@ foreach ($d in $dirs) {
         }
     }
 
+    # SELF-CHECK: an UNBUILT-class registry row whose KeyRef names a combo that IS BUILT silently
+    # suppresses that combo's whole comparison via Test-RegisteredUnbuilt (exact or prefix match
+    # against the metadata keyRef). That is how coverage quietly drops while the finding count stays
+    # at zero -- indistinguishable from a clean run unless you watch BRANCHES-COMPARED.
+    # Live-caught TWICE: FL_FCIC's 'FRQTitleLienInformation | not-built' row muted all four FRQ
+    # branches (27 compared while 3 were dark), and on 2026-07-31 a 'VehicleRegistrationQuery |
+    # IA.QV | devdoc-combo-unbuilt' row added by hand dropped CA_CLETS from 27 branches to 26 --
+    # IA.QV is built and working; only the devdoc ITEM was unbuilt. An unbuilt-class row must name
+    # the unbuilt thing (e.g. '(devdoc #1)'), never a live combo.
+    $allBuiltKrs = @{}
+    foreach ($qk in $built.Keys) { foreach ($cmb in $built[$qk]) { if ($cmb.KeyRef) { $allBuiltKrs["$($cmb.KeyRef)"] = $qk } } }
+    foreach ($rr in $unbuiltRows) {
+        if ($rr.KeyRef -and $allBuiltKrs.ContainsKey($rr.KeyRef)) {
+            Out-Line ("  [NOTE] REGISTRY OVER-SUPPRESSION RISK: unbuilt-class row '$($rr.Query) | $($rr.KeyRef) | $($rr.Rule)' names a combo that IS BUILT (in $($allBuiltKrs[$rr.KeyRef])). That row suppresses this combo's comparison entirely -- point the keyRef at the unbuilt devdoc item instead (e.g. '(devdoc #N)') and re-check BRANCHES-COMPARED.") 'Yellow'
+        }
+    }
+
     Out-Line "`n=== $($d.Name)  ($(Split-Path $jp -Leaf)) ===" 'Cyan'
     $pUnder = 0; $pOver = 0; $pMatched = 0; $pNote = 0
 

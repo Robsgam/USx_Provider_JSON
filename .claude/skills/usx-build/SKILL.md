@@ -115,7 +115,14 @@ Three outcomes, and the authorities decide which:
 **Cite the variant in the Reason.** A registry row whose reason is a claim rather than evidence is
 how a wrong diagnosis outlives its author.
 
-**Two registry traps, both live-caught:**
+**Three registry traps, all live-caught:**
+- **An UNBUILT-class row must name the UNBUILT thing, never a live combo.** Rules matching
+  `shadow|unbuilt|not-built|dropped-combo|dead-combo` make `audit_requirement_fidelity` skip that
+  keyRef's whole comparison. Registering CA's unbuilt devdoc VehReg #1 under `KeyRef = IA.QV`
+  suppressed the **built and working** `IA.QV` branch and dropped coverage 27 → 26 with the finding
+  count still at 0. Use `(devdoc #N)`. The tool now emits
+  `[NOTE] REGISTRY OVER-SUPPRESSION RISK` when an unbuilt-class row names a built combo — if you see
+  it, fix the row, don't ignore it.
 - `audit_devdoc_optionals`' `Test-Accepted` matches the registry `Field` against the *filled*
   fields — for a "(mandatory only) NO COMBO FIRES" the un-filled optional is **not** one of them.
   Register a **mandatory** field of that devdoc item.
