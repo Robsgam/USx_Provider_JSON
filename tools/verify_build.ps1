@@ -947,6 +947,29 @@ if ($providerBundle) {
                 $primaryInPayload = $primSrc | Where-Object { $payload.ContainsKey($_) -and $payload[$_] }
                 if (-not $primaryInPayload) { continue }
 
+                # A CANNOT FIRE UNLESS ITS ENTIRE set[] IS SATISFIED. This check previously tested
+                # only A's primaryFieldReference, so any earlier combo sharing B's primary field was
+                # declared a shadower even when A required a field B's payload does not contain.
+                # That is the same subset/superset logic audit_combo_reachability already applies, and
+                # its absence here is why the two gates disagreed.
+                #
+                # Live-caught 2026-07-31 on CA_eSUN v2.1, splitting QGH into QGH.A set[..,GunAge] and
+                # QGH.B set[..,GunBirthDate] per the metadata Choice-in-Set rule (QIDM_REFERENCE 1b).
+                # Both share primaryFieldReference 'Name', so CHECK 14 FAILed claiming QGH.A shadows
+                # QGH.B -- but QGH.A needs GunAge, which is absent from QGH.B's payload, so it cannot
+                # fire. Its two suggested remedies were both wrong: "add EXISTS to QGH.A" is a
+                # tautology (GunAge is already in that combo's set[]), and "reorder QGH.B first" would
+                # put devdoc #2 ahead of #1 and create a REAL inversion. Meanwhile
+                # audit_combo_reachability reported 19/19 reachable and audit_devdoc_order PASSed.
+                # The identical CA_CLETS/CA_CONTRA_COSTA split escaped this only because those combos
+                # carry no conditions, so the check never examined them.
+                $aSetSatisfied = $true
+                foreach ($af in @($A.requirements.set)) {
+                    if (-not $af) { continue }
+                    if (-not ($payload.ContainsKey($af) -and $payload[$af])) { $aSetSatisfied = $false; break }
+                }
+                if (-not $aSetSatisfied) { continue }
+
                 # Check A's conditions against the payload
                 $aConditionsPass = $true
                 foreach ($cond in @($A.requirements.conditions)) {

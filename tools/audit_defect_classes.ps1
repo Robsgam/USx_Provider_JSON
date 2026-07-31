@@ -9,7 +9,14 @@
   ##           causes -- no field aliasing (metadata 'Age' vs built 'GunAge', so it flagged   ##
   ##           the very combos just fixed) and no variant matching by primaryFieldReference   ##
   ##           (compared the built CII combo against the {Name} variant's Choice group).      ##
-  ##    run 2: 9 candidates after both fixes. CA_eSUN correctly cleared, but CA_CLETS IN.L1   ##
+  ##    run 4: 6 candidates. CA_CLETS and CA_eSUN cleared. The 5 remaining CA_CONTRA_COSTA     ##
+##           IR.QVC.* rows are ALL FALSE and prove the primaryFieldReference restriction is  ##
+##           NOT taking effect: CC metadata IR.QVC{Name} has LOOSER variants (so IR.QVC.N    ##
+##           must be suppressed) and the CII/OLN/SSN families have NO Choice-in-Set at all   ##
+##           (so those four should never have been compared against {Name}). PFs are         ##
+##           correctly declared in the JSON. Symptom isolated, cause NOT found -- instrument ##
+##           the $fam narrowing next. STILL DO NOT QUOTE ITS OUTPUT.                         ##
+##    run 2: 9 candidates after both fixes. CA_eSUN correctly cleared, but CA_CLETS IN.L1   ##
   ##           and IR.QVC.N plus five CA_CONTRA_COSTA IR.QVC.* rows are still FALSE -- each   ##
   ##           has a LOOSER metadata variant (Choice nested inside <Any>) that legitimately   ##
   ##           permits what is built, and the $looser suppression is not catching it.         ##
@@ -99,10 +106,21 @@ function Canon([string]$s) { return ($s -replace '[^A-Za-z0-9]', '').ToLower() }
 # in EITHER direction, anchored so 'age' cannot match 'imageindicator' or 'salvage'.
 function Test-FieldSame([string]$metaField, [string]$builtField) {
     $m = Canon $metaField; $b = Canon $builtField
+    if (-not $m -or -not $b) { return $false }
     if ($m -eq $b) { return $true }
-    # entity/card prefix or suffix around the metadata name (gun|veh|dh|out ...), not a mid-word hit
-    if ($b -match "^[a-z]{0,6}$([regex]::Escape($m))$") { return $true }
-    if ($b -match "^$([regex]::Escape($m))[a-z]{0,4}$") { return $true }
+    # Anchored containment in BOTH directions. The build may PREFIX per entity/card (GunAge,
+    # VehBirthDate, BirthDateDH) or the metadata name may be LONGER than the built one
+    # (metadata CaRequestPurposeCode <-> built purposeCode; metadata State <-> built
+    # RegistrationState). Only a shared prefix or suffix counts, never a mid-word hit, so 'Age'
+    # cannot match 'imageindicator' and 'Name' cannot match 'NCICNumber'.
+    # A >=4 length floor was WRONG: it killed 'Age' (3 chars) so CA_eSUN's GunAge stopped matching
+    # and the combos just fixed were flagged again. Short metadata names are real ('Age', 'Sex').
+    # For them, only accept the ENTITY-PREFIX shape (built ENDS WITH meta, e.g. GunAge/VehAge) --
+    # that is the pattern builds actually use, and it avoids the loose hits a bare contains would give.
+    if ($m.Length -lt 4) { return $b.EndsWith($m) }
+    if ($b.Length -lt 4) { return $m.EndsWith($b) }
+    if ($b.StartsWith($m) -or $b.EndsWith($m)) { return $true }
+    if ($m.StartsWith($b) -or $m.EndsWith($b)) { return $true }
     return $false
 }
 function Test-InList([string]$metaField, [string[]]$builtList) {
