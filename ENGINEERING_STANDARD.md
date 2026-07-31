@@ -489,3 +489,34 @@ adjudicate, not a regression to undo.
 **Two independent gate blind spots were found in one session by mutation testing alone:**
 this one, and audit_metadata CHECK 4's union-based coverage. Neither was visible from a green board.
 Both were found only because a mutation was expected to fail and did not.
+
+##### GATE 1 FIXED (2026-07-31): reachability now catches a self-unsatisfiable combo
+
+`audit_combo_reachability` only searched for a SHADOWER. It now ALSO reports a combo whose own
+`X NOT_EXISTS` condition sits on a form-PREFILLED field -- permanently false, so the combo can never
+fire whatever its siblings do. Validated two ways: the mutated NJ replica is now `[FAIL] DEAD COMBO
+(self-unsatisfiable)` naming `LicensePlateNumber=AAA1234`, AND it independently rediscovered
+LA_LEMS `DriverLicenseQuery/DQ` (required `ImageIndicator=Y` prefill defeats `ImageIndicator
+NOT_EXISTS`) -- a case found BY HAND on 2026-07-29 -- while correctly honouring its accepted
+divergence as `[NOTE]`. All 20 providers re-run: 0 FAIL, no false positives.
+**NJ_NJCJIS gate efficacy 6/8 -> 7/8.**
+
+##### GATE 2 STILL OPEN: audit_metadata CHECK 4 union coverage
+`nj-drop-metadata-mandatory` still SURVIVES. Removing metadata-mandatory `RandomRequest` from
+`RANDFULL` leaves CHECK 4 at 92 PASS / 0 FAIL because it tests coverage across the UNION of the
+sibling combos implementing a keyRef (`covered by RANDFULL,RANDFULLN`). Repointing the mutation at
+`audit_requirement_fidelity` (which IS per-combination) was attempted and the edit SILENTLY NO-OP'd
+on a multi-line CRLF `.Replace` -- the fourth such failure in one session. **Use the Edit tool for
+multi-line changes in this repo, and always grep to confirm the change landed.**
+
+##### $demoted guard added, and it surfaced a MATCHER artifact worth fixing
+`demoted-to-any` suppression now requires the field to ACTUALLY be in the built `any[]`. A registered
+decision that says "it rides in any[]" must not also excuse the strictly worse state of the field
+being transmittable NOWHERE. Correct -- and it exposed NJ's remaining 2 findings as a matcher
+artifact, NOT a defect: metadata `FULL{plate}` (needs LicensePlateNumber + LicensePlateTypeCode) is
+being paired to `RANDFULLN`, the VIN combo, which legitimately has neither. NJ has FOUR metadata
+alternatives against TWO built combos, so two alternatives must share a partner and the greedy 1:1
+assignment picks badly.
+**FIX:** when alternatives outnumber built combos, allow N:1 assignment (several alternatives may
+map to one combo) and score by IDENTIFIER agreement first -- a plate alternative must never pair to a
+VIN combo. Verify with the pins: TX 19br 0/0 12NOTE, NY 16br 0/0, FL 27br 0/0 8NOTE, NJ 8br 0/0.

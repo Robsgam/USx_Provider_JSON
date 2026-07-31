@@ -334,7 +334,7 @@ foreach ($d in $dirs) {
             # RANDFULL/RANDFULLN merge (metadata RAND and FULL are byte-identical, so building both
             # would guarantee a dead combo) was re-reported as 7 findings on every single run with no
             # way to ever close them. OVER-PERMITTED always had $promoted; this is its counterpart.
-            if ($demoted.ContainsKey("$($m.Query)|$($b0.KeyRef)|$w")) { $pNote++; continue }
+            if ($demoted.ContainsKey("$($m.Query)|$($b0.KeyRef)|$w") -and (Test-Has $bAnyC $w)) { $pNote++; continue }   # the registered decision is "it RIDES IN any[]" -- if the field is absent from any[] TOO it is not the situation that was granted, and must still report. Without this guard the entry also excused a strictly WORSE state (field transmittable nowhere), which is what let nj-drop-metadata-mandatory survive.
             $where = if (Test-Has $bAnyC $w) { 'built any[]' } else { 'ABSENT' }
             $under += "$($m.Set[$i]) ($where)"
         }
