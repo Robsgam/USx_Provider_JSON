@@ -713,6 +713,28 @@ TOOLS
     (flat Choice/Field) and NY_NYSPIN_EJUSTICE (nested Choice/Set). A fourth shape exists too:
     TX GunQuery/QG puts a nested <Set> and a bare <Field> as SIBLINGS in one <Choice>.
     Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+  tools/build_phase1.ps1
+    PHASE 1 -- BUILD. ONE command, hands-off, ends in a SHORTCOMINGS report with an INTERPRETATION
+    section. Rob 2026-07-31: the whole process is three functions -- BUILD (this), TEST (manual
+    render check + tenant log capture/ingest + build-log iteration + third-party updates), and
+    FINALIZE (a store for COMPLETED JSONs, deliberately unspecified until we get there).
+    Phase 1 proves, in Rob's order: (1) every devdoc combination accounted for, (2) every OPTIONAL
+    field combination accounted for, (3) queries PRIORITISED as the devdoc lists them, (4) shadow
+    queries identified and unable to fire ahead of a higher-order/more-required combination,
+    (5) fidelity + reachability + trace, (6) gate efficacy, (7) enforce.
+    CHECKS 3 AND 4 ARE NEW and are the generalisation of the most expensive lesson of 2026-07-29..31:
+    the platform fires the FIRST matching combination, so ORDER IS SEMANTICS. An UNGATED combination
+    whose set[] is a strict SUBSET of a later one steals every fill from it -- exactly what TX's
+    QV/QW did. That was hand-ruled three times and regressed twice because NO gate looked at order.
+    The check flags subset-ahead-of-superset unless the earlier combo carries a discriminating
+    condition.
+    The INTERPRETATION section is the point, not decoration: it encodes the judgement calls already
+    paid for -- check built?/devdoc-Basic?/subset-shadowed? before removing any prefill (HI's 2 and
+    CA's 12 were all already-adjudicated shadows, and removing CA's mandatory-everywhere purposeCode
+    prefill would break CAD); fix order or add a condition, NEVER delete the superset (that cost TX
+    two out-of-state paths at v4.13); and the devdoc test on a dropped optional points OPPOSITE ways
+    on FL v7.14 vs HI M55S, so run it per provider.
+    Usage: .\build_phase1.ps1 -Provider <NAME> [-Rebuild] | -All [-OutFile <path>]
   tools/_divergence_rules.ps1  (shared module, dot-sourced)
     ONE definition of what an ACCEPTED_DIVERGENCES rule NAME means, so the ENFORCER
     (audit_metadata) and the MEASURER (audit_suppression_scope) can never disagree -- if they did,
