@@ -1,0 +1,72 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Boat BoatQuery
+Combo: RCAR (RCAR (auto))
+Date: 2026-07-30 20:38:33
+Result: PASS
+JSON Version: 4.19
+Entity Fingerprint: 32d0d0e406094b15279fb3ab4c7092ea24f2a6d450072421c3633bfc5fa9f6b4
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYTSP0JDZNFVT8VP9481WSK1">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KYTSP0JDZNFVT8VP9481WSK1</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>N</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYTSP0JDZNFVT8VP9481WSK1
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 N
+
+NOTES
+-----
+Automated capture (txId 01KYTSP0JDZNFVT8VP9481WSK1). kind=combo; anyField=; expectedKeyRef=RCAR; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
