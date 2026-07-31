@@ -421,3 +421,39 @@ before drawing any conclusion.
 **NJ_NJCJIS is 6/8 and therefore does NOT meet the bar.** One survivor is a real, now-documented
 gate gap; one is an unlanded mutation. Neither is evidence of a defect in NJ v4.14 itself, whose
 substantive gates (enforce 40/0/0, reproducible, 35 plan tests all fireable) are clean.
+
+##### FL_FCIC fidelity: a FAKE 0/0 caught, and the fix regressed TX -- both recorded (2026-07-30)
+
+Rob: "I do not feel like you are giving FL and NJ the same attention TX got." Correct. TX had every
+fidelity finding individually adjudicated to 0/0; FL and NJ were only being REPORTED. Working FL
+properly surfaced two things:
+
+**1. FL's already-adjudicated rows were never honoured.** `Test-RegisteredUnbuilt` matches rule
+`shadow|unbuilt`, and **`not-built` does NOT contain `unbuilt`** (hyphenated). FL's registry rows
+`DriverLicenseQuery|QW|*|not-built` and `VehicleRegistrationQuery|QV|*|not-built` were therefore
+inert. Widen the rule regex to `shadow|unbuilt|not-built|dead-combo|dropped-combo`. SAFE on its own.
+
+**2. Widening it alone produced a FAKE 0/0 on FL -- do not accept that result.** Branches compared
+fell **30 -> 27**: the row `FRQTitleLienInformation` PREFIX-matches metadata keyRef `FRQ`, so it
+suppressed ALL FOUR FRQ alternatives, including the plate and VIN branches that ARE built. Same class
+as the TX REG over-suppression. Watch the BRANCHES-COMPARED count, not just the finding count -- a
+suppression fix that lowers coverage is not a fix.
+
+**3. The obvious tightening REGRESSES TX and was reverted.** Requiring a prefix match to also name a
+field present in that alternative's `set[]` restored FL to 30 branches / 5 real findings, but took
+TX from 0/0 with 12 NOTE to 2 UNDER / 2 OVER with 9 NOTE -- TX's QV and RQ suppressions rely on the
+loose prefix. Reverted to keep the portfolio in a known-good state.
+CORRECT FIX (not yet applied): match a registry row to an alternative when the row's Field is in that
+alternative's `set[]` **OR** the row's Field is `*` **OR** the row's keyRef equals the metadata keyRef
+exactly. Verify against ALL FOUR: TX must stay 19 branches 0/0 with 12 NOTE, NY 16 branches 0/0,
+FL must stay at 30 branches, NJ at 8.
+
+**FL's 5 GENUINE findings, still unadjudicated (metadata verified, no ruling guessed):**
+metadata `FRQ set[LicensePlateNumber] any[LicensePlateYear, Requestor, ImageIndicator]` and
+`FRQ set[VehicleIdentificationNumber] any[Requestor, VINSequenceNumber, ImageIndicator]` -- so
+**VehicleMakeCode and vehicleYear are in NEITHER FRQ any[]**, and we ride both on both combos. The FL
+devdoc's "Possible Combinations" lines do NOT mention them either, so the TX `promoted-to-any`
+justification ("never DROP a devdoc-optional") does NOT apply here. They are either genuine
+over-sends to remove, or a divergence needing its own reasoning. Rob's call.
+Plus `FRQVehicleIdentificationNumber UNDER-REQUIRED: TitleLienInformation` -- spillover from the
+Gordon-sunset combo, which the corrected suppression above should absorb.
