@@ -520,3 +520,38 @@ assignment picks badly.
 **FIX:** when alternatives outnumber built combos, allow N:1 assignment (several alternatives may
 map to one combo) and score by IDENTIFIER agreement first -- a plate alternative must never pair to a
 VIN combo. Verify with the pins: TX 19br 0/0 12NOTE, NY 16br 0/0, FL 27br 0/0 8NOTE, NJ 8br 0/0.
+
+##### NJ_NJCJIS reached the gold standard 2026-07-31: 8/8 mutations, 0/0 fidelity, 41/0/0 enforce
+
+Root cause of NJ's last findings was the fidelity matcher's 1:1 assignment, which is simply WRONG
+when metadata alternatives OUTNUMBER built combos. NJ has 4 alternatives (RAND/FULL x plate/VIN)
+against 2 built combos, so sharing is REQUIRED -- RAND{plate} and FULL{plate} BOTH belong to
+RANDFULL. Forcing 1:1 pushed FULL{plate} onto RANDFULLN, the VIN combo, which legitimately carries
+no plate fields. The 1:1 had been added for FL's FRQ collapse, but that was MIS-PAIRING, not sharing.
+FIX = scoring, not exclusion: identifier fields weigh 12 vs 3 for qualifiers, plus a +8 keyRef-prefix
+bonus for the portfolio convention `built = metadataKeyRef + identifierSuffix`.
+EVERY provider gained or held coverage while getting cleaner -- the direction that distinguishes a
+real fix from a suppression: TX 19br 0/0 (control, unchanged), NY 16br 0/0 (control, unchanged),
+FL 27br 0/0, NJ 8->10br 0/0, HI 12->14br 4/4->0/3, CA_CLETS 25->27br 17/18->6/11.
+
+NJ FINAL: enforce 41 PASS/0 FAIL/0 WARN | fidelity 10br 0/0 10 NOTE | gate efficacy 8/8 SURVIVED 0
+| 6c 35/35 | 6d 35/35 | 2i 35/35 | reproducible | 35 plan tests all fireable | ALL-PASS 5/5.
+
+##### OPEN, harness-only: fl-fidelity-demote-mandatory
+Target CONFIRMED valid -- `FRQDecalNumber set[decalNumber, LicensePlateYear]` really does carry
+LicensePlateYear, and demoting it must produce UNDER-REQUIRED. The mutation still reports SURVIVED,
+so the failure is in the harness APPLYING it, not in the target choice. DIAGNOSE BY asserting the
+mutated replica JSON actually shows LicensePlateYear moved out of that combo's set[] -- the same
+check that exposed the earlier NJ prefill mutation as never landing. Do NOT conclude the fidelity
+gate is blind: it demonstrably catches this exact class on NJ (nj-fidelity-demote-mandatory KILLED)
+and on the same file for other combos.
+NOTE the earlier version of this mutation was defeated by RE-PAIRING, not blindness: it demoted the
+HULL identifier out of FBQBoatHullIdNumber, and once matching became identifier-first the alternative
+simply re-paired to QBBoatHullIdNumber which still had the hull. A mutation must create a defect the
+matcher cannot route around -- demote a QUALIFIER, never the identifier.
+
+##### audit_metadata CHECK 4 union coverage -- STILL a real, unfixed gap
+Documented above. nj-drop-metadata-mandatory was REPOINTED to audit_requirement_fidelity, which owns
+the class per-combination and now KILLS it. That closes the MUTATION, not the GAP: CHECK 4 remains
+union-based and would still miss a field dropped from one of several sibling combos. Fixing CHECK 4
+is a separate task with all 20 providers as the regression set.

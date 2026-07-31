@@ -228,11 +228,11 @@ $MUTS = @(
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationNumber' }) } }
 
   @{ Id='fl-fidelity-demote-mandatory'; OnlyProvider='FL_FCIC'
-     Desc='BoatHullIdNumber demoted from FBQBoatHullIdNumber set[] to any[] though metadata FBQ requires it'
+     Desc='LicensePlateYear demoted from FRQDecalNumber set[] to any[] though metadata FRQ{Decal} requires set[DecalNumber, LicensePlateYear]. Demotes a QUALIFIER, deliberately NOT the identifier: the first version demoted BoatHullIdNumber out of FBQBoatHullIdNumber, and once the matcher became identifier-first that alternative simply RE-PAIRED to QBBoatHullIdNumber (which still carried the hull) and no finding appeared -- the mutation was defeated by re-pairing rather than by gate blindness. A mutation must create a defect the matcher cannot route around.'
      Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
-     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'FBQBoatHullIdNumber'
-           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'BoatHullIdNumber' })
-           $cm.requirements.any=@(@($cm.requirements.any)+'BoatHullIdNumber') } }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'FRQDecalNumber'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'LicensePlateYear' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'LicensePlateYear') } }
 
   @{ Id='fl-prefill-routing-field'; OnlyProvider='FL_FCIC'
      Desc='LicensePlateNumber given a form initialValue while it is a set[] discriminator -- BUILD_RULES 24, the class that killed 35 combos across 6 providers'
@@ -249,7 +249,16 @@ $MUTS = @(
 
   @{ Id='nj-drop-metadata-mandatory'; OnlyProvider='NJ_NJCJIS'
      Desc='RandomRequest removed from RANDFULL entirely. NJ rides RandomRequest/State/PlateType in any[] precisely so BOTH byte-identical metadata variants (RAND and FULL) stay satisfiable, so dropping it makes a metadata-MANDATORY field unreachable in that combination. GATE CORRECTED 2026-07-30: this was first aimed at audit_devdoc_optionals, which correctly stayed SILENT -- RandomRequest is metadata-mandatory and is NOT listed as a devdoc optional, so no optional subset was being dropped and 2q had nothing to say. A mutation must be aimed at the gate that OWNS the defect class; audit_metadata owns combination field coverage.'
-     Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
+     # GATE CORRECTED TWICE. First aimed at audit_devdoc_optionals, which correctly stayed silent --
+     # RandomRequest is metadata-MANDATORY, not a devdoc optional, so no optional subset was dropped.
+     # Then at audit_metadata, which ALSO cannot see it: its CHECK 4 tests coverage across the UNION
+     # of the sibling combos implementing a keyRef ("covered by RANDFULL,RANDFULLN"), so a field
+     # removed from ONE combination still passes while the other carries it. That union blindness is
+     # a REAL documented gap (ENGINEERING_STANDARD) and is NOT fixed here.
+     # audit_requirement_fidelity is per-combination and DOES own this class. It reports because the
+     # 'demoted-to-any' registry entry only excuses the field RIDING IN any[]; removing it entirely
+     # leaves it transmittable NOWHERE, which is not the state that was granted.
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RANDFULL'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RandomRequest' }) } }
 
