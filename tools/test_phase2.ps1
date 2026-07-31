@@ -125,8 +125,12 @@ if ($PostIngest) {
     $g2 = Run-Tool 'audit_log_metadata.ps1' @('-Provider', $Provider)
     $g3 = Run-Tool 'audit_log_combo_attribution.ps1' @('-Path', $jsonPath)
     foreach ($p in @(@('6c log-content',$g1), @('6d log-metadata',$g2), @('2i attribution',$g3))) {
-        $ok = $p[1] -notmatch '\bFAIL\b'
+        # Judge the VERDICT LINE, never the whole output. Substring-matching \bFAIL\b across every
+        # line means any explanatory text containing the word flips the result: audit_log_content's
+        # "RESULT: 0 FAIL / 36 verified" summary made a fully green 6c report as FAILED
+        # (2026-07-31). The tools' verdict lines are the contract -- 'PASS:'/'FAIL:'/'[PASS]'/'[FAIL]'.
         $sum = @($p[1] -split "`n" | Where-Object { $_ -match 'PASS:|FAIL:|PASS\]|FAIL\]' } | Select-Object -Last 1)
+        $ok = if ($sum) { $sum[0] -notmatch 'FAIL' } else { $false }
         Out-Line ("      {0,-18} {1}" -f $p[0], $(if ($sum) { $sum[0].Trim() } else { 'no verdict line' })) $(if ($ok) { 'Green' } else { 'Red' })
         if (-not $ok) { $block += "$($p[0]) FAILED" }
     }

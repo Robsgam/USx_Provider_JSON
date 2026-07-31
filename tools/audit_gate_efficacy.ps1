@@ -134,9 +134,14 @@ function Run-Gate([string]$tool, [string[]]$argsList) {
 function Set-Mutant([scriptblock]$mut) {
     $j = $pristine | ConvertFrom-Json
     & $mut $j
-    ($j | ConvertTo-Json -Depth 60) | Set-Content $workJson -Encoding utf8
+    # WRITE UTF-8 WITHOUT BOM, EXPLICITLY. `Set-Content -Encoding utf8` emits a BOM under Windows
+    # PowerShell 5.1 (pwsh 7 does not), and validate.ps1 correctly FAILs on a BOM -- so whenever
+    # this harness runs under 5.1, EVERY mutation gets "killed" by the BOM check instead of by the
+    # gate that owns its defect, and the KILLED score becomes meaningless. Found 2026-07-31 by
+    # fuzz_gate_efficacy.ps1, which carried the same line and scored a fake CAUGHT 30/30 under 5.1.
+    [System.IO.File]::WriteAllText($workJson, ($j | ConvertTo-Json -Depth 60), (New-Object System.Text.UTF8Encoding($false)))
 }
-function Reset-Mutant { Set-Content $workJson -Value $pristine -NoNewline -Encoding utf8 }
+function Reset-Mutant { [System.IO.File]::WriteAllText($workJson, $pristine, (New-Object System.Text.UTF8Encoding($false))) }
 
 function Get-Cfg($j, [string]$nameLike) {
     foreach ($b in $j.bundles) { foreach ($c in $b.configurations) { if ("$($c.name)" -like $nameLike) { return $c } } }

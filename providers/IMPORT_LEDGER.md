@@ -21,13 +21,13 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 
 | Provider | URL | DEX | Installed (logged) | Repo | Note |
 |---|---|---|---|---|---|
-| NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.10 (archived) | v4.13 | v4.11 relabel + v4.12 consolidation + v4.13 UPPERCASE titles built; all 5 reset — re-import+capture pending |
-| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.12 (118 logs) | v7.12 | current (tenant-complete 2026-07-28: v7.11 UI/label fixes + v7.12 Vehicle-first order, ALL-PASS 118/118) |
-| HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.11 (archived) | v4.13 | v4.12 relabel + v4.13 UPPERCASE titles + Boat-stolen audit fix built; all 5 reset — re-import+capture pending |
-| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.16 (67 logs) | v4.16 | current (tenant-complete 2026-07-27, UPPERCASE-title re-sweep) |
-| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.12 (84 logs) | v4.12 | current (tenant-complete 2026-07-27, Person 2-card-fold re-sweep) |
-| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | none (logs archived) | v2.19 | last tenant-tested v2.12; v2.13-v2.19 built (v2.19 = in/out gating fix, FUNCTIONAL), not re-captured — re-test owed |
-| AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.1 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22 |
+| NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.15 (36 logs) | v4.15 | current (tenant-complete 2026-07-31, ALL-PASS 36/36, four log gates green) |
+| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | none (logs archived) | v7.14 | v7.13 dropped-optional fix + v7.14 FRQ over-permit removal built; package reset — re-import+capture owed (109 plan tests) |
+| HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.14 (46 logs) | v4.14 | current (tenant-complete, ALL-PASS 46/46) |
+| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.19 (64 logs) | v4.19 | current (tenant-complete, ALL-PASS 64/64) |
+| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.18 (89 logs) | v4.18 | current (tenant-complete, ALL-PASS 89/89, 16/16 mutations killed) |
+| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | v2.22 (90 logs) | v2.22 | logs current at v2.22, but the provider is BLOCKED on 4 enforce FAILs + 6 under-required findings — do not treat the log count as "done" |
+| AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.3 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22. Confirm `dexStateUserId` populates on the FIRST query or all 5 badge combos silently fall back |
 
 All other providers (CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,
 CA_eSUN, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES,
@@ -40,9 +40,9 @@ in repo, awaiting first tenant import.
 
 | Tenant | Provider | Version | Imported | Notes |
 |---|---|---|---|---|
-| Newark Foundation | NJ_NJCJIS | v4.14 | 2026-07-28 | current — v4.10→v4.14 (relabel + Person consolidation + UPPERCASE titles + Vehicle 1-card collapse + Boat title) |
+| Newark Foundation | NJ_NJCJIS | v4.14 | 2026-07-28 | **BEHIND repo v4.15** — v4.15 adds RegistrationNumber to Boat QBN any[] (hull search now transmits the reg number instead of dropping it, devdoc BoatQuery #1). Manual re-import owed |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
-| Miami Springs Foundation | FL_FCIC | v7.12 | 2026-07-28 | current — v7.8→v7.12 (v7.9 relabel + v7.10 UPPERCASE + v7.11 UI/label fixes + v7.12 Vehicle-first order) |
+| Miami Springs Foundation | FL_FCIC | v7.12 | 2026-07-28 | **BEHIND repo v7.14** — v7.13 adds RegistrationNumber to FBQBoatHullIdNumber any[] (dropped-optional fix); v7.14 removes VehicleMakeCode/vehicleYear over-permits from FRQ{Plate} and FRQ{VIN}. Manual re-import owed |
 | North Miami Foundation | FL_FCIC | v7.12 | 2026-07-28 | current — v7.8→v7.12 (v7.9 relabel + v7.10 UPPERCASE + v7.11 UI/label fixes + v7.12 Vehicle-first order) |
 | Balcones Heights TX Foundation | TX_TLETS | v4.12 | 2026-07-27 | v4.2→v4.7→v4.10→v4.12 (Person 2-card fold); current |
 

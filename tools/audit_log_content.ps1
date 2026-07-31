@@ -178,7 +178,9 @@ Out-Line "  OK: $ok" 'Green'
 if ($stale.Count)    { Out-Line "  STALE (label not in plan):" 'Red';    $stale    | ForEach-Object { Out-Line "    [FAIL] $_" 'Red' } }
 if ($mismatch.Count) { Out-Line "  MISMATCH (content vs label):" 'Red';  $mismatch | ForEach-Object { Out-Line "    [FAIL] $_" 'Red' } }
 if ($guardFail.Count){ Out-Line "  GUARDRAIL WIRE FAIL:" 'Red';          $guardFail| ForEach-Object { Out-Line "    [FAIL] $_" 'Red' } }
-Out-Line ("  RESULT: {0} FAIL / {1} verified" -f ($stale.Count + $mismatch.Count + $guardFail.Count), $ok) 'Gray'
+# Wording avoids the bare token FAIL: consumers substring-match it, and a summary line saying
+# "0 FAIL" read as a failure in test_phase2 the moment this line was added (2026-07-31).
+Out-Line ("  RESULT: {0} failing / {1} verified" -f ($stale.Count + $mismatch.Count + $guardFail.Count), $ok) 'Gray'
 
 if ($stale.Count -or $mismatch.Count -or $guardFail.Count) {
     Write-Host "[audit-log] $Provider FAIL: $($stale.Count) stale / $($mismatch.Count) mismatch / $($guardFail.Count) guardrail-wire" -ForegroundColor Red
