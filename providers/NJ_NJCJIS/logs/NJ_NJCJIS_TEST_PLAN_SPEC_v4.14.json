@@ -1,180 +1,198 @@
-{
-  "provider": "NJ_NJCJIS",
-  "version": "4.14",
-  "derivedFrom": "devdoc + metadata (NOT the built JSON)",
-  "note": "expectedKeyRef=NO-FIRE means the devdoc allows this fill but no built combo matches -- the driver should submit it and the sweep should record that nothing was sent. UNREACHABLE means a devdoc field has no form control at all.",
-  "testCount": 7,
-  "tests": [
-    {
-      "n": 1,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "specSource": "devdoc VehicleRegistrationQuery #1",
-      "optionalsAdded": [],
-      "expectedKeyRef": "RANDFULL",
-      "unwiredFields": [],
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "RandomRequest",
-          "value": "T"
-        }
-      ]
-    },
-    {
-      "n": 2,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "specSource": "devdoc VehicleRegistrationQuery #1",
-      "optionalsAdded": [
-        "ImageIndicator"
-      ],
-      "expectedKeyRef": "RANDFULL",
-      "unwiredFields": [],
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "RandomRequest",
-          "value": "T"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "N"
-        }
-      ]
-    },
-    {
-      "n": 3,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "specSource": "devdoc VehicleRegistrationQuery #1",
-      "optionalsAdded": [
-        "LicensePlateTypeCode"
-      ],
-      "expectedKeyRef": "RANDFULL",
-      "unwiredFields": [],
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "RandomRequest",
-          "value": "T"
-        },
-        {
-          "fieldId": "LicensePlateTypeCode",
-          "value": "PC"
-        }
-      ]
-    },
-    {
-      "n": 4,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "specSource": "devdoc VehicleRegistrationQuery #1",
-      "optionalsAdded": [
-        "LicensePlateYear"
-      ],
-      "expectedKeyRef": "RANDFULL",
-      "unwiredFields": [],
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "RandomRequest",
-          "value": "T"
-        },
-        {
-          "fieldId": "LicensePlateYear",
-          "value": "2026"
-        }
-      ]
-    },
-    {
-      "n": 5,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "specSource": "devdoc VehicleRegistrationQuery #1",
-      "optionalsAdded": [
-        "State"
-      ],
-      "expectedKeyRef": "RANDFULL",
-      "unwiredFields": [],
-      "fills": [
-        {
-          "fieldId": "LicensePlateNumber",
-          "value": "TEST123"
-        },
-        {
-          "fieldId": "RandomRequest",
-          "value": "T"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "TX"
-        }
-      ]
-    },
-    {
-      "n": 6,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "specSource": "devdoc VehicleRegistrationQuery #2",
-      "optionalsAdded": [],
-      "expectedKeyRef": "RANDFULLN",
-      "unwiredFields": [],
-      "fills": [
-        {
-          "fieldId": "RandomRequest",
-          "value": "T"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "TX"
-        },
-        {
-          "fieldId": "VehicleIdentificationNumber",
-          "value": "1HGCM82633A123456"
-        }
-      ]
-    },
-    {
-      "n": 7,
-      "entity": "Vehicle",
-      "query": "VehicleRegistrationQuery",
-      "specSource": "devdoc VehicleRegistrationQuery #2",
-      "optionalsAdded": [
-        "ImageIndicator"
-      ],
-      "expectedKeyRef": "RANDFULLN",
-      "unwiredFields": [],
-      "fills": [
-        {
-          "fieldId": "RandomRequest",
-          "value": "T"
-        },
-        {
-          "fieldId": "RegistrationState",
-          "value": "TX"
-        },
-        {
-          "fieldId": "VehicleIdentificationNumber",
-          "value": "1HGCM82633A123456"
-        },
-        {
-          "fieldId": "ImageIndicator",
-          "value": "N"
-        }
-      ]
-    }
-  ]
+﻿{
+    "provider":  "NJ_NJCJIS",
+    "version":  "4.14",
+    "derivedFrom":  "devdoc + metadata (NOT the built JSON)",
+    "note":  "expectedKeyRef=NO-FIRE means the devdoc allows this fill but no built combo matches -- the driver should submit it and the sweep should record that nothing was sent. UNREACHABLE means a devdoc field has no form control at all.",
+    "testCount":  7,
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RANDFULL",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RandomRequest",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "RANDFULL",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RandomRequest",
+                                        "value":  "T"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "LicensePlateTypeCode"
+                                         ],
+                      "expectedKeyRef":  "RANDFULL",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RandomRequest",
+                                        "value":  "T"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "LicensePlateYear"
+                                         ],
+                      "expectedKeyRef":  "RANDFULL",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RandomRequest",
+                                        "value":  "T"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "RANDFULL",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RandomRequest",
+                                        "value":  "T"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RANDFULLN",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RandomRequest",
+                                        "value":  "T"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "RANDFULLN",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RandomRequest",
+                                        "value":  "T"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  }
+              ]
 }

@@ -713,6 +713,25 @@ TOOLS
     (flat Choice/Field) and NY_NYSPIN_EJUSTICE (nested Choice/Set). A fourth shape exists too:
     TX GunQuery/QG puts a nested <Set> and a bare <Field> as SIBLINGS in one <Choice>.
     Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+  tools/test_phase2.ps1
+    PHASE 2 -- TEST. Pre-flight before a sweep (-Provider X) and validation after each ingest
+    (-PostIngest). Rob 2026-07-31, after having to force the spec-plan check himself: "this gap I had
+    to force you to close needs to be wired in when I say test."
+    So STEP 1 is the SPEC-PLAN vs JSON-PLAN comparison, and it BLOCKS. emit_test_plan derives tests
+    from the BUILT JSON -- a MIRROR, where no combo means no test means no failure -- and that is what
+    6c validates against. emit_test_plan_spec derives from DEVDOC + METADATA and is the INDEPENDENT
+    statement. The DELTA is the point: a JSON plan LARGER than the spec plan is not reassuring, it
+    usually means the spec parser could not read the devdoc and the independent check covers nothing.
+    NJ_NJCJIS is the proof case -- JSON plan 35 tests / 5 entities, spec plan 7 / Vehicle only,
+    because NJ's devdoc uses a MULTI-LINE "Possible Combinations" layout the parser reads only INLINE.
+    Its enforce 2p read [PASS] over nine unparsed blocks and nobody would have known.
+    RULE: the spec plan must cover every entity the JSON plan covers; a missing entity means 2p/2q
+    PASS on that provider is UNPROVEN for it, not clean. A sweep may still proceed on the JSON plan
+    (that is what validated TX's 89 and NY's 64), but the shortfall is REPORTED, never silent.
+    -PostIngest runs all FOUR log gates -- 6c content, 6d metadata, 2i attribution, plan completeness
+    -- because two is provably not enough: FL and TX both passed 6c+6d while carrying mis-attributed
+    logs and uncaptured plan tests.
+    Usage: .\test_phase2.ps1 -Provider <NAME> [-PostIngest] [-OutFile <path>]
   tools/build_phase1.ps1
     PHASE 1 -- BUILD. ONE command, hands-off, ends in a SHORTCOMINGS report with an INTERPRETATION
     section. Rob 2026-07-31: the whole process is three functions -- BUILD (this), TEST (manual
