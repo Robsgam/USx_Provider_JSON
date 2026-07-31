@@ -25,6 +25,27 @@
   ##  against the {Name} variant. Their PFs ARE correctly declared in the JSON. Next step:      ##
   ##  instrument the $fam narrowing and the $looser predicate rather than guessing again.       ##
   ##                                                                                            ##
+  ##  run 5 -> still 5 false CA_CONTRA_COSTA rows. NARROWED FURTHER but NOT CLOSED:             ##
+  ##    * The logic is CORRECT when replicated standalone. Feeding built IR.QVC.C / PF=          ##
+  ##      'CriminalIdNumber' through the same steps by hand gives: exact match 0, prefix         ##
+  ##      candidates [IR.QVC, IR.Q], family IR.QVC size 12, samePf = 2, variants-with-           ##
+  ##      Choice-in-Set after restriction = 0 -> NO FINDING. That is the right answer.           ##
+  ##    * So the tool is not executing what the code appears to say. $cm.PF is the suspect:      ##
+  ##      the restriction is guarded by `if ($cm.PF)`, and an empty PF silently skips it and     ##
+  ##      leaves $fam as the whole 12-variant family, which is exactly the observed symptom      ##
+  ##      (rows for IR.QVC.C/.O/.OS/.S all citing the {Name} variant they should never see).     ##
+  ##      NEXT STEP: dump $cm.PF for each built combo INSIDE the loop. Do not reason about it    ##
+  ##      again -- five reasoning passes have each been wrong.                                   ##
+  ##    * Ground truth for the suppression, printed from CC metadata, so the fix has a target:   ##
+  ##      IR.QVC{Name} has 5 variants --                                                        ##
+  ##        ChoiceInSet=[]                Mand=[CaRequestPurposeCode,Name,SexCode]   <- LOOSER   ##
+  ##        ChoiceInSet=[BirthDate|Age]   Mand=[CaRequestPurposeCode,Name,SexCode]               ##
+  ##        ChoiceInSet=[]                Mand=[...,SexCode,BirthDate]               <- LOOSER   ##
+  ##        ChoiceInSet=[Age|BirthDate]   Mand=[...,RegistrationOnlyIndicator,SexCode]           ##
+  ##        ChoiceInSet=[BirthDate|Age]   Mand=[...,RequestingAgencyId]                          ##
+  ##      Built IR.QVC.N is set[purposeCode,NameLast,NameFirst,SexCode], which SATISFIES the     ##
+  ##      first LOOSER variant's Mand -> it must be suppressed. All 5 CC rows are FALSE.         ##
+  ##                                                                                            ##
   ##  Do not wire this anywhere until the CA-family run yields exactly CA_VENTURA_COUNTY.       ##
   ##  A scanner that cries wolf on fixed providers is worse than no scanner -- it teaches the   ##
   ##  next session to ignore it.                                                                ##

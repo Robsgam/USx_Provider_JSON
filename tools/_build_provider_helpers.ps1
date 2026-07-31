@@ -206,4 +206,46 @@ function Write-ProviderJson {
         exit 1
     }
     Write-Host "Validation passed." -ForegroundColor Green
+
+    # ── TEST-PACKAGE FRESHNESS: a direct build MUST NOT leave a stale package ────────────────────
+    # pipeline.ps1 calls reset_test_package.ps1 as its step 1, but invoking a provider's build script
+    # DIRECTLY skipped it -- so the prior version's TEST_PLAN survived a version bump and kept naming
+    # combos that no longer exist. That is not a cosmetic gap: audit_simulator_parity is a GLOBAL
+    # cross-check over EVERY provider's plan, so one stale plan made [FAIL] simulator parity appear on
+    # five unrelated providers, and the iterate-phase gate then flipped all six tested providers from
+    # ENFORCED to BLOCKED. One self-inflicted defect, six providers' worth of false signal.
+    #
+    # This happened TWICE on 2026-07-31 -- CA_CONTRA_COSTA v2.2, then CA_eSUN v2.1 an hour later,
+    # AFTER the rule had been written into the usx-build skill as Step 4b. A rule I demonstrably
+    # ignore twice in one session is a MECHANISM problem, not a memory problem. So the build now does
+    # it, the same way this function already refuses to leave a stale sibling root JSON above.
+    #
+    # reset_test_package is itself version-gated and idempotent: it archives logs and regenerates the
+    # plan ONLY when the version actually changed, so a same-version rebuild is a no-op. Failure here
+    # WARNS rather than aborts -- the JSON is already written and validated, and a reset problem must
+    # not masquerade as a build failure.
+    if ($Version) {
+        $provDir  = Split-Path $OutPath -Parent
+        $provName = Split-Path $provDir -Leaf
+        $tvFile   = Join-Path $provDir 'logs\.test_version'
+        $stamped  = if (Test-Path $tvFile) { (Get-Content $tvFile -Raw).Trim() } else { '' }
+        if ($stamped -and ($stamped -replace '^v','') -ne ($Version -replace '^v','')) {
+            Write-Host ""
+            Write-Host "  Test package is stamped v$stamped but this build is v$Version -- resetting" -ForegroundColor Yellow
+            $resetPath = Join-Path $PSScriptRoot 'reset_test_package.ps1'
+            if (Test-Path $resetPath) {
+                try {
+                    & powershell.exe -ExecutionPolicy Bypass -File $resetPath -Provider $provName -Force 2>&1 |
+                        Where-Object { $_ -match 'RESET|archived|reset |cleared|stamped|regenerated|WARN' } |
+                        ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
+                } catch {
+                    Write-Host "  [WARN] reset_test_package failed: $_" -ForegroundColor Red
+                    Write-Host "  [WARN] RUN IT MANUALLY: tools\reset_test_package.ps1 -Provider $provName -Force" -ForegroundColor Red
+                }
+            }
+            Write-Host "  REMINDER: docs are NOT synced by a direct build -- run" -ForegroundColor Yellow
+            Write-Host "    tools\build_report.ps1 -Path $OutPath ; tools\sync_version_docs.ps1 -Provider $provName ; tools\sync_provider_table.ps1" -ForegroundColor Yellow
+            Write-Host "  (or just use tools\pipeline.ps1 -Provider $provName, which does all of it)" -ForegroundColor Yellow
+        }
+    }
 }
