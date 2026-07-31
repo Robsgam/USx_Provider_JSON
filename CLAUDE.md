@@ -566,6 +566,24 @@ its gates, so the phase word maps to a command, not to a checklist someone has t
 Two is not enough and neither is one: `pipeline.ps1` builds, but only PHASE 1 asks *whether the
 build matches the devdoc*; `enforce` gates the repo, but only PHASE 2 proves the wire.
 
+**Each phase has a SKILL that packages its reasoning** (`.claude/skills/`). The skill is where the
+non-obvious traps live — read it before running the phase, not after it fails:
+
+| Skill | Phase / trigger |
+|---|---|
+| `usx-build` | **PHASE 1.** "rebuild X", "audit X", any provider-JSON change. Authority-reading rules (`<Choice>` position; METADATA_REFERENCE flattens branches), the two lines of ordering, FIX-vs-REGISTER, LAW 2 mutation discipline, and the verdict-by-substring / BOM / array-unwrap traps. |
+| `usx-test-iterate` | **PHASE 2.** "let's test X", or a devdoc/metadata change needing reconciliation. Routes through `test_phase2`; includes the submitted-vs-captured reconciliation that a lost Chrome download otherwise hides. |
+| `usx-new-provider` | A brand-new provider from XML/PDF (naming gate first). |
+| `usx-add-cch` | A CCH/"supported-stuff" variant of an existing base. |
+| `usx-resume` | Session restart — sweeps for environment state no document can hold. |
+
+**Two standing instructions that are NOT gaps and must never be listed as owed work:**
+- **Jira is HELD** (2026-07-31) until the process and results are fully trusted. `enforce` PHASE 2r
+  will print a `[GAP] DEX_TICKET.md does NOT name vX.Y` for every provider — expected, advisory.
+- **The rendered form review is Rob's own MANUAL gate.** PHASE 2k prints `[INFO] not reviewed` as its
+  steady state. Never prompt for it; be ready to record it with
+  `audit_form_review.ps1 -Record -Reviewer <name>`.
+
 Three commands run everything else. No manual checklists.
 
 | Action | Command |

@@ -21,6 +21,31 @@ both in enforce PHASE 6, neither skippable:
   field-set satisfies a real metadata combination's required `set[]` (log ↔ metadata). This is the
   direct check; do not treat the transitive metadata↔JSON↔plan chain as a substitute for it.
 
+### A-0. ONE COMMAND OWNS THIS PHASE — `test_phase2.ps1`
+
+**Run `tools\test_phase2.ps1 -Provider <NAME>` before the sweep and
+`tools\test_phase2.ps1 -Provider <NAME> -PostIngest` after every batch.** Everything in A0–A7 below
+is what it orchestrates; read them for the *reasoning*, but do not hand-run the pieces first.
+
+- Pre-flight: **[1]** SPEC-vs-JSON plan coverage (an INDEPENDENT devdoc+metadata-derived statement,
+  not a mirror of the JSON — a JSON plan LARGER than the spec plan usually means the spec parser
+  read nothing) · **[2]** package alignment + unfireable-test check · **[3]** environment
+  (stranded captures, stray watchers). Ends `PRE-FLIGHT CLEAR` or names what blocks.
+- `-PostIngest`: the FOUR log gates — 6c content, 6d metadata, 2i attribution, plan completeness.
+
+**RECONCILE SUBMITTED vs CAPTURED PER ENTITY.** The driver prints `plan run complete: N queries
+submitted`; the watcher prints `Imported: M PASS`. **If M ≠ N for that entity, say so immediately.**
+Chrome reuses `usx_captured_batch_labeled.json`, so a batch that is never captured before the next
+entity downloads is silently LOST. CA_CLETS v2.23 Firearm fired 7 queries whose capture vanished
+under the Article batch, and it surfaced three entities later as "Firearm 0 logs" — with
+`IG.QGH.A`/`IG.QGH.B`, the whole point of that rebuild, unproven. Confirm each entity's count as it
+lands; do not wait for plan completeness to notice.
+
+**Verify the fix, not just the gates.** After a rebuild that fixed a wire defect, read the wire
+values for the specific combos that changed — a green 89/89 does not tell you the field now
+transmits. CA v2.23 needed `IR.QVC.OS` to show `SocialSecurityNumber` and `IG.QGH.A`/`.B` to carry
+`Age`/`BirthDate` respectively. State those checks up front so the sweep has a stated objective.
+
 ### A0. GATE 1 check, always first
 
 Any version bump restarts testing from Test 1 — full stop, no resuming mid-matrix. Confirm
