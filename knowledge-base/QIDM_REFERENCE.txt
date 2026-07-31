@@ -84,6 +84,66 @@ SECTION 1 -- QIDM PROPERTY REFERENCE
     Wrong property name causes silent null, then import rejection.
 
 ================================================================================
+SECTION 1b -- <Choice> POSITION IS LOAD-BEARING (metadata grammar)
+================================================================================
+
+  Added 2026-07-31 after this single distinction decided REAL-vs-FALSE on four
+  findings in one session, while being documented nowhere.
+
+  In a metadata <Combination>'s <Requirements>, a <Choice> means "exactly one of
+  these". WHERE it sits decides whether that one is REQUIRED:
+
+    <Set>                                    <Set>
+      <Field reference="Name" />               <Field reference="Name" />
+      <Choice>                                 <Any>
+        <Field reference="Age" />                <Choice>
+        <Field reference="BirthDate" />            <Field reference="Age" />
+      </Choice>                                    <Field reference="BirthDate" />
+    </Set>                                       </Choice>
+                                               </Any>
+    Choice INSIDE <Set>:                     </Set>
+    ONE OF Age|BirthDate is MANDATORY
+                                             Choice inside <Any>:
+                                             BOTH are OPTIONAL
+
+  BUILD CONSEQUENCE. For a Choice inside <Set> you CANNOT express "one of these two"
+  in a single combination -- set[] has no OR. SPLIT into one combination per branch,
+  each carrying its own discriminator in set[]. Order them by the DEVDOC listing
+  order (the branches are disjoint peers, so specificity cannot separate them --
+  BUILD_RULES line 2 of the ordering rule).
+
+  THE TWO WORKED EXAMPLES, because they look identical and have opposite answers:
+
+  CA_CLETS IG.QGH{Name} -- REAL DEFECT, fixed v2.23. Three metadata variants:
+      #4  Set[CaRequestPurposeCode, Name, SexCode] Any[Choice[Age|BirthDate]]
+      #5  Set[CaRequestPurposeCode, Name, Choice[Age|BirthDate]]
+      #6  Set[CaRequestPurposeCode, Choice[Age|BirthDate], Name]
+    Built as ONE combo set[purposeCode,Name] any[BirthDate,age], which satisfies
+    NONE of them: #4 additionally requires SexCode (not carried), and #5/#6 put the
+    Choice inside <Set>. So a Name-only gun query was accepted and sent, and a
+    committed PASS log shipped exactly that. Gate 6d FAILed it; 6c and 2i passed it,
+    because content and attribution cannot see a MISSING REQUIREMENT.
+    Fix: split into IG.QGH.A (set[..,age]) and IG.QGH.B (set[..,BirthDate]),
+    devdoc #2 (Age) before #3 (BirthDate). Wire-proven 2026-07-31: .A carried Age=35
+    with no DOB, .B carried DOB=19900115 with no Age.
+
+  CA_CLETS IR.QVC.N{Name} -- NOT a defect, registered. Its variant #1 is
+      Set[CaRequestPurposeCode, Name, SexCode] Any[Choice[Age|BirthDate], RaceCode]
+    i.e. the Choice IS inside <Any>, so both qualifiers are legitimately optional and
+    the built combo implements variant #1 exactly. audit_requirement_fidelity reports
+    it only because it pairs against the STRICTER variants #2/#3. Promoting either
+    discriminator into set[] would make the plain Name+Sex search unreachable.
+
+  RULE OF THUMB: before calling a "both discriminators optional" combo a defect,
+  check whether ANY variant of that keyRef puts the Choice inside <Any>. If one does
+  and we implement it, REGISTER with that variant cited. If none does, SPLIT.
+
+  ⚠️ docs/reference/<P>_METADATA_REFERENCE.txt CANNOT answer this -- it flattens the
+  branches to one row per (keyRef, primaryField) showing only the common mandatory
+  prefix. Read the raw XML <Requirements> per <Combination>. See CLAUDE.md's Source
+  Authority table, which now says so explicitly.
+
+================================================================================
 SECTION 2 -- COMBINATION BASICS
 ================================================================================
 
