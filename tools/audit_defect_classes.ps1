@@ -4,31 +4,30 @@
   ############################################################################################
   ##  EXPERIMENTAL -- DO NOT QUOTE ITS OUTPUT AS FINDINGS. NOT WIRED INTO ANY GATE.          ##
   ##                                                                                          ##
-  ##  It has FAILED its known-answer test TWICE (2026-07-31):                                ##
-  ##    run 1: reported 19 C1 candidates on the CA family; true answer was 1.                ##
-  ##           causes -- no field aliasing (metadata 'Age' vs built 'GunAge', so it flagged   ##
-  ##           the very combos just fixed) and no variant matching by primaryFieldReference   ##
-  ##           (compared the built CII combo against the {Name} variant's Choice group).      ##
-  ##    run 4: 6 candidates. CA_CLETS and CA_eSUN cleared. The 5 remaining CA_CONTRA_COSTA     ##
-##           IR.QVC.* rows are ALL FALSE and prove the primaryFieldReference restriction is  ##
-##           NOT taking effect: CC metadata IR.QVC{Name} has LOOSER variants (so IR.QVC.N    ##
-##           must be suppressed) and the CII/OLN/SSN families have NO Choice-in-Set at all   ##
-##           (so those four should never have been compared against {Name}). PFs are         ##
-##           correctly declared in the JSON. Symptom isolated, cause NOT found -- instrument ##
-##           the $fam narrowing next. STILL DO NOT QUOTE ITS OUTPUT.                         ##
-##    run 2: 9 candidates after both fixes. CA_eSUN correctly cleared, but CA_CLETS IN.L1   ##
-  ##           and IR.QVC.N plus five CA_CONTRA_COSTA IR.QVC.* rows are still FALSE -- each   ##
-  ##           has a LOOSER metadata variant (Choice nested inside <Any>) that legitimately   ##
-  ##           permits what is built, and the $looser suppression is not catching it.         ##
-  ##                                                                                          ##
-  ##  The ONE row both runs agree on and that is independently confirmed by hand:             ##
-  ##    CA_VENTURA_COUNTY GunQuery/IG.QGH -- carries NO discriminator at all.                 ##
-  ##                                                                                          ##
-  ##  FIX BEFORE USE: make the looser-variant suppression work (it must find a same-PF variant##
-  ##  whose Choice sits inside <Any> and whose own mandatory set we satisfy), then re-run the  ##
-  ##  known-answer test until the CA family yields exactly CA_VENTURA_COUNTY. Only then wire  ##
-  ##  it anywhere. A scanner that cries wolf on fixed providers is worse than no scanner --   ##
-  ##  it teaches the next session to ignore it.                                               ##
+  ##  KNOWN-ANSWER TEST: run it against the CA family, whose true state was established BY HAND ##
+  ##  on 2026-07-31. The correct answer is EXACTLY ONE row -- CA_VENTURA_COUNTY GunQuery/       ##
+  ##  IG.QGH, which carries no discriminator at all. Four runs so far:                          ##
+  ##    run 1 -> 19 candidates. No field aliasing (metadata 'Age' vs built 'GunAge', so it      ##
+  ##             flagged the very combos just FIXED) and no variant matching by                 ##
+  ##             primaryFieldReference (compared the built CII combo against the {Name} Choice).##
+  ##    run 2 -> 9.  Both of the above addressed.                                               ##
+  ##    run 3 -> 7.  Bidirectional anchored alias (CaRequestPurposeCode <-> purposeCode).       ##
+  ##                 CA_CLETS fully cleared.                                                    ##
+  ##    run 4 -> 6.  Removed a >=4 length floor I had added myself, which killed the 3-char     ##
+  ##                 'Age' and re-broke run 1's case. CA_eSUN cleared.                          ##
+  ##                                                                                            ##
+  ##  REMAINING BUG -- symptom isolated, CAUSE NOT FOUND. The 5 CA_CONTRA_COSTA IR.QVC.* rows   ##
+  ##  are ALL FALSE and they prove the primaryFieldReference restriction is not taking effect.  ##
+  ##  Verified straight from CC metadata: IR.QVC{Name} has 5 variants of which 2 are LOOSER     ##
+  ##  (Choice inside <Any>), so IR.QVC.N must be suppressed; and the {CriminalIdNumber},        ##
+  ##  {OperatorLicenseNumber} and {SocialSecurityNumber} families contain ONLY looser variants  ##
+  ##  with no Choice-in-Set at all, so IR.QVC.C/.O/.OS/.S should never have been compared       ##
+  ##  against the {Name} variant. Their PFs ARE correctly declared in the JSON. Next step:      ##
+  ##  instrument the $fam narrowing and the $looser predicate rather than guessing again.       ##
+  ##                                                                                            ##
+  ##  Do not wire this anywhere until the CA-family run yields exactly CA_VENTURA_COUNTY.       ##
+  ##  A scanner that cries wolf on fixed providers is worse than no scanner -- it teaches the   ##
+  ##  next session to ignore it.                                                                ##
   ############################################################################################
 
   Rob 2026-07-31: "i want this process to be fruitful."
