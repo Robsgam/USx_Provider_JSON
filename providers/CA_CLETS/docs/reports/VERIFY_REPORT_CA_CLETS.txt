@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS
   Source: CA_CLETS_v2.23.json
-  Generated: 2026-07-31 15:34
+  Generated: 2026-07-31 15:38
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -51,7 +51,7 @@ POST-BUILD VERIFICATION
   [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
 --- CHECK 12: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
-  [FAIL] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'IR.QVC.OS': NOT_EXISTS field 'criminalIdNumber' is also in any[] -- dead config (can never serialize) + poisons test conductor; remove it from any[] (gate XOR companion)
+  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -88,7 +88,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION FAILED: 1 FAIL / 0 WARN / 16 PASS
+ VERIFICATION PASSED: 17 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

@@ -441,11 +441,15 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         # --- IR.QVC.OLN+SSN: same metadata variant #3, SSN branch of the OR. Synthetic keyRef
-        #     suffix '.OS' (LIMITATION #21/#36 -- provider routes by field content, not keyRef). ---
+        #     suffix '.OS' (LIMITATION #21/#36 -- provider routes by field content, not keyRef).
+        # criminalIdNumber is deliberately ABSENT from any[] even though metadata variant #3 lists it:
+        # this combo gates on 'criminalIdNumber NOT_EXISTS', so carrying it in any[] would be a field
+        # that can never serialize here (gate XOR companion -- verify_build CHECK 12 caught exactly
+        # that on the first cut of this combo). The CII path is IR.QVC.O above, which does carry it. ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','OperatorLicenseNumber')
-                any        = @('criminalIdNumber','socialSecurityNumber','age')
+                any        = @('socialSecurityNumber','age')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )

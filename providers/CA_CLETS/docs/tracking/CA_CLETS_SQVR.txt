@@ -157,10 +157,22 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
   2 combos
 
-  IG.QGH -- Owner Name query (cross-entity) [PENDING]
-    set: PurposeCode, NameLast, NameFirst
+  IG.QGH.A -- Owner Name + Age query (cross-entity) [PENDING]
+    set: PurposeCode, NameLast, NameFirst, Age
     any: (none)
-    keyReference: IG.QGH
+    keyReference: IG.QGH.A
+    note: devdoc GunQuery #2 "(in/Out) Name, Age" -- Age is MANDATORY (no brackets). Split from
+          the single IG.QGH combo at v2.23, which carried both qualifiers in any[] and therefore
+          satisfied NO metadata variant (#4 requires SexCode; #5/#6 put Choice[Age|BirthDate]
+          INSIDE Set, making one of them required).
+
+  IG.QGH.B -- Owner Name + DOB query (cross-entity) [PENDING]
+    set: PurposeCode, NameLast, NameFirst, BirthDate
+    any: (none)
+    keyReference: IG.QGH.B
+    note: devdoc GunQuery #3 "(In/Out) Name, BirthDate" -- BirthDate is MANDATORY. Ordered AFTER
+          IG.QGH.A per devdoc listing order (#2 before #3); the two set[]s are disjoint peers, so
+          specificity cannot separate them and the devdoc order is the tiebreaker.
 
   IG.QGB -- Serial Number query [PENDING]
     set: PurposeCode, SerialNumber
