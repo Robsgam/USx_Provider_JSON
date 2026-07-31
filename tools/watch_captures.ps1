@@ -93,7 +93,7 @@ function Import-CaptureFile($path, $label) {
     # Idempotent -- sync_provider_table only writes when a cell actually differs.
     try { & (Join-Path $PSScriptRoot 'sync_provider_table.ps1') *>&1 |
             Where-Object { $_ -match '\(updated\)' } |
-            ForEach-Object { Write-Host "[WATCH] CLAUDE.md synced: $($_.Trim())" -ForegroundColor Cyan } }
+            ForEach-Object { Write-Host "[WATCH] CLAUDE.md synced: $($_.ToString().Trim())" -ForegroundColor Cyan } }   # ToString() first: *>&1 merges Write-Host output as InformationRecord, which has no .Trim() -- this silently failed every ingest 2026-07-30 and left the CLAUDE.md tenant cell stale until enforce caught it
     catch {
         # DO NOT reduce this to a generic "errored" line. It used to say
         # "sync_provider_table errored (non-fatal)" on EVERY ingest while the tool was in fact
