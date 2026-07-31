@@ -589,3 +589,33 @@ NOT establish that (a) we build that combination, (b) we SHOULD build it, or (c)
 cause. Check all three -- built?, devdoc-Basic?, subset-shadowed? -- before removing any default.
 Removing a prefill that is mandatory-everywhere breaks CAD; removing one that guards a
 deliberately-unbuilt shadow burns a tenant re-sweep for no gain.
+
+##### DEVDOC PARSER GAP (2026-07-31): the multi-line "Possible Combinations" format is unread
+
+`audit_devdoc_combinations` (enforce PHASE 2p) and everything built on it -- `audit_devdoc_optionals`
+(2q) and `emit_test_plan_spec` -- parse combinations only when they sit INLINE on the
+`Possible Combinations` line, e.g. `Possible Combinations 1. (In) Plate, [State] 2. ...`. That is the
+TX / FL / CA_CLETS / NY devdoc format.
+
+**NJ_NJCJIS uses a MULTI-LINE format** -- `Possible Combinations (fields within the square brackets
+are optional)` followed by the combinations on SUBSEQUENT lines. NJ's devdoc has ELEVEN such blocks
+and the parser reads TWO, both from VehicleRegistrationQuery. Article, Boat, Firearm and
+DriverLicense yield ZERO devdoc items.
+
+**CONSEQUENCE:** NJ's `[PASS] every devdoc combination is built or recorded` is VACUOUS for 9 of 11
+blocks, and `emit_test_plan_spec` generated 7 Vehicle-only tests against a JSON plan of 35 across
+five entities. The spec-derived plan -- the whole point of which is to be an INDEPENDENT statement of
+what must be testable rather than a mirror of the JSON -- cannot serve NJ at all in its current form.
+Any provider whose devdoc uses the multi-line layout has the same hole; TX and NY do not, which is
+part of why they survived the process and NJ's clean 2p meant less than it appeared to.
+
+**FIX:** teach the parser to continue reading after the `Possible Combinations` header until the next
+section boundary, so the numbered items are collected whether inline or on following lines. VALIDATE
+against a known answer in BOTH formats: TX must still report its 4 items per query (inline) and NJ
+must go from 2 items to all 11 blocks (multi-line). Until then, treat 2p/2q PASS on NJ -- and on any
+multi-line-devdoc provider -- as UNPROVEN rather than clean.
+
+**Does NOT block the NJ tenant sweep.** 6c/`audit_log_content` validates against the JSON-derived
+`<P>_TEST_PLAN_v<X.Y>.json` (35 tests, all five entities, 0 unfireable), which is exactly what
+validated TX's 89 and NY's 64. The spec plan is an additional independent check, not the sweep's
+gate.
