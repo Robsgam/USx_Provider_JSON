@@ -1,0 +1,91 @@
+================================================================
+TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
+Combo: RANDFULLN_af_ImageIndicator (RANDFULLN_af_ImageIndicator (auto))
+Date: 2026-07-31 13:29:49
+Result: PASS
+JSON Version: 4.15
+Entity Fingerprint: 194bc54748f4a1d558059f3ef33a2deddc4fe5a875c047e806f33d25cb77cd31
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey","VehicleIdentificationNumber":"1HGCM82633A123456"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYWKH9AYD67BPVRRRBMKE2J9">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KYWKH9AYD67BPVRRRBMKE2J9</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>NJ</State>
+            <RandomRequest>N</RandomRequest>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69509884952
+      ],
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KYWKH9AYD67BPVRRRBMKE2J9
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 Y
+  State                          NJ
+  RandomRequest                  N
+
+NOTES
+-----
+Automated capture (txId 01KYWKH9AYD67BPVRRRBMKE2J9). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RANDFULLN; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
