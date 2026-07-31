@@ -1,0 +1,80 @@
+================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
+Combo: DALLOUT_any (DALLOUT_any (auto))
+Date: 2026-07-30 20:36:16
+Result: PASS
+JSON Version: 4.19
+Entity Fingerprint: 819c223a6c1769fabb79058911e0063fe587841bca38560facdc0b1cf6cee88a
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","ImageIndicatorDH":"N","OperatorLicenseNumberDH":"D999888777","RegistrationStateDH":"New Jersey","nyNyspinTransactionNameDH":"DLIC","purposeCodeDH":"C","requestorDH":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYTSGRC8HDYNGMCBKA0J3HAW">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KYTSGRC8HDYNGMCBKA0J3HAW</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>NJ</State>
+            <NyNyspinTransactionName>DLIC</NyNyspinTransactionName>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <Requestor>SGAMBELLONE R</Requestor>
+            <PurposeCode>C</PurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KYTSGRC8HDYNGMCBKA0J3HAW
+  ImageIndicator                 N
+  State                          NJ
+  NyNyspinTransactionName        DLIC
+  OperatorLicenseNumber          D999888777
+  Requestor                      SGAMBELLONE R
+  PurposeCode                    C
+
+NOTES
+-----
+Automated capture (txId 01KYTSGRC8HDYNGMCBKA0J3HAW). kind=any; anyField=; expectedKeyRef=DALLOUT; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
