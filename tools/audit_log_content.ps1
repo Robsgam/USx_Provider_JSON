@@ -140,7 +140,15 @@ foreach ($p in $parsed) {
         # This does NOT make the gate unfailable: a losing identifier that is NOT in the winner's
         # pool still FAILs, which is the real signal (wrong combo fired, or the platform over-sent
         # beyond the winner's pool -- LIMITATION #1).
-        if ($winner -and $allQidms.Count) {
+        # NOT gated on $winner. The pool comes from the JSON, which is always present and is the
+        # authority on what a combo may carry; $winner is a PLAN lookup that legitimately fails for
+        # a combo with no kind='combo' base test. Tying the two together made this exemption silently
+        # unavailable for exactly the newest combos -- CA_CLETS v2.23 IR.QVC.O and IR.QVC.OS have 0
+        # kind='combo' plan tests, so $wIdNames stayed EMPTY and every identifier in the fill was
+        # scored a "loser", producing 5 FAILs that named the WINNER'S OWN set[]/any[] fields as leaks.
+        # The diagnostic NOTE was inside this same branch, so nothing explained it either. Found
+        # 2026-07-31 mid-sweep; the fix I shipped that morning had this hole from the start.
+        if ($allQidms.Count) {
             $wh = Get-ComboByKeyRef $allQidms $t.expectedKeyRef $t.query
             if ($wh) { $wIdNames += (Get-WinnerPoolIds $wh.qidm $wh.combo) }
             else { Out-Line "  [NOTE] $($p.Label): winner combo '$($t.expectedKeyRef)' not resolvable (query='$($t.query)') -- pool exemption unavailable, base-test fills only" 'DarkYellow' }
