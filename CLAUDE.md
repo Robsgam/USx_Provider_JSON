@@ -376,7 +376,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (65 scripts + 14 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
+## Tools (79 scripts + 16 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
@@ -416,6 +416,11 @@ Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_lay
 | `audit_sqvr_integrity.ps1` | **SQVR TRUTH GATE** (enforce 2j) -- the SQVR is hand-maintained prose asserting which combos exist/how many/what version, and nothing verified it, so it rotted on every combo add-remove; it's also what a tester reads to decide what to test. Checks SQVR-named keyRefs exist in the JSON (blocks/sections marked DORMANT-REMOVED-NOT BUILT-OUT OF SCOPE report [NOTE]), stated combo/QIDM totals match, and stated JSON version matches. Does NOT require every combo to have a block (13 providers use a lighter format) | `-Path <json>` `-OutFile` |
 | `audit_log_combo_attribution.ps1` | **LOG ATTRIBUTION GATE** -- did each saved log's NAMED combo actually fire? The wire XML carries no keyRef, so this was unverifiable and a green package could overstate coverage (17 of 417 logs were filed under combos that never ran, found 2026-07-29). Replays each log's recorded QUERY STRING (routing is existence-based, so field presence decides the winner) through the owning QIDM in array order, using the canonical `_sim_helpers` predicate. Scopes the QIDM by the log header's QUERY NAME, never bare keyRef (they collide across QIDMs -- BUILD_RULES 13). Stale logs on registered `dead-combo*` divergences report [NOTE] | `-Path <json>` `-OutFile` |
 | `audit_combo_reachability.ps1` | **DEAD-COMBO GATE** (fill-independent) -- the platform fires the FIRST matching combo, so combo A is unreachable if a B ordered before it matches whenever A does. Silent case: B's extra `set[]` fields are all form-prefilled (`initialValue`), so B always wins. Such a combo still validates, still counts toward coverage, and can carry a PASS log -- the wire XML has no keyRef, so a log named for A can't be distinguished from one where B fired. Counts only form `initialValue` as always-present; resolves EXISTS/NOT_EXISTS on prefilled fields; skips RMS cascades. `dead-combo*` accepted divergences report [NOTE] not [FAIL] | `-Path <json>` `-OutFile` |
+| `audit_gate_efficacy.ps1` | **MUTATION TESTING FOR THE GATES** (LAW 2 -- a gate that cannot fail is not a gate). Injects each known defect CLASS into a throwaway replica and checks the owning gate actually FAILs. KILLED=its PASS is evidence; SURVIVED=that gate is blind, its PASS proves nothing for that class. Catalogue is hand-authored, so its score is bounded by what we thought of -- pair it with `fuzz_gate_efficacy.ps1` | `-Provider <name>` `-Only <substr>` `-OutFile` |
+| `fuzz_gate_efficacy.ps1` | **RANDOM mutation testing** -- what the hand-authored catalogue structurally cannot do. Mutation sites are ENUMERATED FROM THE JSON (set↔any, drop, over-permit from a sibling combo, drop-conditions, swap-order, prefill, Select→Input), aimed at nothing; the whole gate panel runs and the only question is whether ANY gate reacted. Survivors are CANDIDATES needing triage, not verdicts. `-Seed` makes runs reproducible. Wired into `build_phase1` step 6b | `-Provider <name>` `-Mutations <n>` `-Seed <int>` `-OutFile` |
+| `audit_devdoc_order.ps1` | **DEVDOC-ORDER TIEBREAKER GATE** (PHASE 1 step 3b) -- line 2 of the ordering rule: when two DIFFERENT queries could both execute on the filled fields, the devdoc-earlier one must fire. Flags an INVERSION only when the devdoc-later combo sits ahead AND is UNGATED (a discriminating condition legitimately defers). Only combos that MAP to a devdoc item are checked; mapped/unmapped counts printed every run | `-Path <json>` `-OutFile` |
+| `audit_requirement_fidelity.ps1` | **PER-COMBINATION mandatory/optional fidelity** (enforce PHASE 2s, advisory) -- built `set[]`/`any[]` vs the metadata alternative it implements. Catches UNDER-REQUIRED (a metadata-mandatory field demoted to `any[]` or absent) and OVER-PERMITTED. Where `audit_metadata` CHECK 4 tests the sibling-combo UNION and so cannot see a field missing from ONE combination | `-Path <json>` `-OutFile` |
+| `audit_lifecycle.ps1` | **LIFECYCLE TAIL** (enforce PHASE 2r, advisory) -- stages 5 and 6, previously ungated: the Jira entry (`DEX_TICKET.md` names the current version) and the import record (`IMPORT_LEDGER.md` accounts for it, either an install or an explicit not-yet-imported line -- silence is the defect) | `-Provider <name>` |
 | `audit_repo.ps1` | Full monorepo audit (18 categories: banned patterns, versions, docs, structure, cross-provider, camelCase) | `-Category <1-18>` |
 | `audit_cross_provider.ps1` | Cross-provider consistency (defaults, versions, queryLabels, code types, field types, camelCase) | `-Path <providers-dir>` `-OutFile` |
 | `audit_structure.ps1` | Provider folder structure (naming, required dirs/files, reports, freshness) | `-Path <provider-dir>` `-OutFile` |
@@ -544,7 +549,22 @@ When you need information, use ONLY the source listed below. Do NOT substitute r
 
 ## Workflow
 
-Three commands run everything. No manual checklists.
+### The three phases — what "rebuild", "test", and "finalize" each mean
+
+Rob's model: **"you need to build the entire process around 3 functions — when I say rebuild or
+build, when I say test, and when I save/finalize it."** Each phase has ONE orchestrator that owns
+its gates, so the phase word maps to a command, not to a checklist someone has to remember.
+
+| Phase word | Command | What it owns |
+|---|---|---|
+| **"build" / "rebuild"** | `build_phase1.ps1 -Provider <NAME>` | HANDS-OFF. Proves the build against the sources before a human is asked for anything: [1] every devdoc combination built, [2] every devdoc optional routes AND transmits, [3] combo priority (no ungated subset ahead of a superset), [3b] **devdoc listing order** as the tiebreaker, [4] per-combination requirement fidelity, [5] query trace / prefill-dead, [6] gate efficacy (hand-authored mutations), **[6b] random unaimed fuzz**, [7] enforce. Ends with SHORTCOMINGS + an INTERPRETATION decision tree rather than a bare pass/fail. |
+| **"test"** | `test_phase2.ps1 -Provider <NAME>` (then `-PostIngest`) | **AUTOMATED** — the browser driver runs the plan and the watcher ingests; the human's part is the rendered-form review (pre and post) evidenced on the Jira ticket. Pre-flight: [1] SPEC-vs-JSON plan coverage (an independent statement, not a JSON mirror), [2] package alignment + unfireable-test check, [3] environment. `-PostIngest` runs the FOUR log gates: 6c content, 6d metadata, 2i attribution, plan completeness. |
+| **"finalize" / "save"** | `enforce.ps1 -Provider <NAME>` → commit+push → `audit_lifecycle.ps1` | Exit 0 is the definition of done. The lifecycle tail (PHASE 2r) is what makes it *finished* rather than merely green: the Jira entry names the current version and the import ledger accounts for it. |
+
+Two is not enough and neither is one: `pipeline.ps1` builds, but only PHASE 1 asks *whether the
+build matches the devdoc*; `enforce` gates the repo, but only PHASE 2 proves the wire.
+
+Three commands run everything else. No manual checklists.
 
 | Action | Command |
 |---|---|

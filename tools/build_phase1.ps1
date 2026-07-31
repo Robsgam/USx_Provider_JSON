@@ -231,6 +231,31 @@ foreach ($pn in $targets) {
         if ($sv) { $short += "GATE EFFICACY: $sv mutation(s) SURVIVED -- those gates' PASS proves nothing for that defect class" }
     } else { $short += "GATE EFFICACY: no mutation map for $pn -- its green gates are UNPROVEN" }
 
+    # ── 6b. RANDOM mutation fuzz: the catalogue above only tests defects someone thought of ──
+    # Rob 2026-07-31: "can you generate random mutations? i feel like this is the same issue we had
+    # with testing the json queries against itself." Step 6's mutation map is hand-authored, so its
+    # KILLED score is bounded by our own imagination -- check and subject share an author and agree
+    # by construction. This step samples mutations ENUMERATED FROM THE JSON, aimed at nothing, and
+    # asks only whether any gate reacted. Sample is small on purpose (the panel is ~11 gates per
+    # mutation); -Seed is derived from the build so a survivor can be reproduced exactly.
+    # SURVIVORS ARE CANDIDATES, NOT VERDICTS -- some perturbations are harmless by construction
+    # (an any[] addition the devdoc already lists as optional; reordering two combos that can never
+    # both match). They are surfaced for triage, never auto-filed as defects.
+    $fuzzSeed = 0
+    # Seed from provider + JSON leaf (which carries the version), so the same build always fuzzes
+    # the same sample -- a survivor found here is reproducible, and a version bump reshuffles.
+    foreach ($ch in "$pn$(Split-Path $jsonPath -Leaf)".ToCharArray()) { $fuzzSeed = ($fuzzSeed * 31 + [int]$ch) % 2147483 }
+    $o7b = Run-Tool 'fuzz_gate_efficacy.ps1' @('-Provider', $pn, '-Mutations', '8', '-Seed', "$fuzzSeed")
+    $m7b = [regex]::Match($o7b, 'CAUGHT (\d+) / (\d+)\s+SURVIVED (\d+)')
+    if ($m7b.Success) {
+        $fs = [int]$m7b.Groups[3].Value
+        Out-Line ("  [6b] random fuzz (seed $fuzzSeed)  {0}/{1} caught, {2} survived" -f $m7b.Groups[1].Value,$m7b.Groups[2].Value,$fs) $(if ($fs) { 'Yellow' } else { 'Green' })
+        if ($fs) {
+            $sl = @([regex]::Matches($o7b, '(?m)^\s+- (.+)$') | ForEach-Object { $_.Groups[1].Value.Trim() })
+            $short += "RANDOM FUZZ: $fs unaimed mutation(s) SURVIVED -- TRIAGE each (a survivor may be a harmless edit, or a gate blind spot no hand-written mutation would find): $($sl -join '; ')"
+        }
+    } else { $short += "RANDOM FUZZ: did not report -- the unaimed-mutation check did not run, so only the hand-authored classes are proven" }
+
     # ── 7. enforce ────────────────────────────────────────────────────────────────────
     $o8 = Run-Tool 'enforce.ps1' @('-Provider', $pn, '-SkipGit')
     $m8 = [regex]::Match($o8, '(ENFORCED|BLOCKED):\s*(\d+) PASS / (\d+) FAIL / (\d+) WARN')

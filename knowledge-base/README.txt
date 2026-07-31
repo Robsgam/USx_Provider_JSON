@@ -949,6 +949,37 @@ TOOLS
         continue short-circuits. Root cause NOT yet isolated.
       audit_metadata CHECK 4d -- does not detect regionId forced into RQ{VIN} set[].
     Usage: .\audit_gate_efficacy.ps1 -Provider TX_TLETS [-Only <substring>] [-Scratch <dir>] [-OutFile <path>]
+  tools/fuzz_gate_efficacy.ps1
+    RANDOM mutation testing -- the companion audit_gate_efficacy structurally cannot be.
+    Origin (Rob 2026-07-31: "can you generate random mutations? i feel like this is the same issue
+    we had with testing the json queries against itself."). He is right and it is the same
+    circularity one level up: audit_gate_efficacy's catalogue is HAND-AUTHORED, so every entry is a
+    defect someone already thought of, aimed at the gate already known to own it. A 16/16 KILLED
+    score therefore proves the gates catch the ANTICIPATED classes and says nothing about the ones
+    nobody wrote a mutation for -- the same shape as validating a JSON against a plan derived from
+    that same JSON: check and subject share an author, so they agree by construction.
+    METHOD: remove the author. Mutation SITES are ENUMERATED FROM THE JSON ITSELF (118 on
+    NJ_NJCJIS) -- set->any, any->set, drop-set, drop-any, over-permit grafted from a SIBLING
+    combination (a real transaction field, not an invention, which would be caught trivially and
+    prove nothing), drop-conditions, swap-order, prefill a form field, FormSelect->FormInput. Then
+    the WHOLE panel runs and the only question asked is: did ANY gate react? Nothing is aimed.
+    Detection is by new finding TEXT, not a count delta (a mutation that WORSENS an existing finding
+    line is invisible to counting -- that hole produced two false SURVIVED verdicts on 2026-07-30).
+    A SURVIVOR IS A CANDIDATE, NOT A VERDICT. Harmless-by-construction edits survive CORRECTLY: an
+    any[] addition the devdoc already lists as optional, or reordering two combinations that can
+    never both match. Triage each; promote the triaged-real ones into audit_gate_efficacy $MUTS so
+    they become permanent regression tests, then fix the gate.
+    -Seed makes every run reproducible and is printed, so any survivor can be re-derived exactly.
+    WHAT ITS FIRST WIDE RUN FOUND WAS A DEFECT IN THE HARNESSES THEMSELVES: `Set-Content -Encoding
+    utf8` writes a BOM under Windows PowerShell 5.1 (pwsh 7 does not), and validate.ps1 rightly
+    FAILs on a BOM -- so under 5.1 EVERY mutation was "caught" by the BOM check rather than by the
+    gate owning its defect, scoring a meaningless CAUGHT 30/30. audit_gate_efficacy carried the
+    identical line, so its KILLED score was equally BOM-dependent under 5.1. Both now write UTF-8
+    without BOM explicitly. Lesson: a harness whose own artifact trips a gate cannot measure it.
+    audit_query_trace.ps1 is DELIBERATELY EXCLUDED from the panel (takes only -Provider, cannot be
+    aimed at a mutated replica; leaving it in reported a vacuous run on every mutation, which reads
+    as a gate that never objects). Its PREFILL-DEAD class is covered by audit_combo_reachability.
+    Usage: .\fuzz_gate_efficacy.ps1 -Provider <name> [-Mutations 15] [-Seed <int>] [-OutFile <path>]
   tools/audit_lifecycle.ps1
     THE LIFECYCLE TAIL (enforce PHASE 2r, ADVISORY) -- stages 5 and 6, which had NO gate at all:
     STAGE 5 is the Jira entry (docs/tracking/DEX_TICKET.md must name the CURRENT version) and
