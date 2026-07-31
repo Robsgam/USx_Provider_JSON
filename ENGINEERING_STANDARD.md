@@ -390,3 +390,34 @@ not gate blindness. Do not "fix" the gates for these:**
 
 **CONFIDENCE: FL_FCIC now meets the bar (9/9 + enforce 37/0/0 + reproducible + 113 tests, 0 unfireable).
 NJ_NJCJIS does NOT yet -- 2 of its 8 mutations have not shown its gates can fail.**
+
+##### REAL GATE BLIND SPOT found 2026-07-30: audit_metadata CHECK 4 coverage is UNION-based
+
+Proven by manual mutation, not inferred. Removing the metadata-MANDATORY field `RandomRequest` from
+NJ `RANDFULL`s `any[]` left `audit_metadata` at **92 PASS / 0 FAIL / 0 WARN, byte-identical to
+baseline**. The reason is visible in its own output:
+
+    [PASS]   keyRef RAND: set field 'RandomRequest' covered by RANDFULL,RANDFULLN
+
+CHECK 4 asks whether a metadata field is covered by the UNION of the sibling combos that implement
+that keyRef. So a field can be dropped from ONE combination and the check still passes because
+another combination still carries it. **Per-combination requirement loss is invisible to it.**
+That matters wherever one metadata keyRef is implemented as several synthetic combos -- NJ
+RANDFULL/RANDFULLN, TX RQ{Plate}/RQ{VIN}, FL FBQ x4, i.e. most of the portfolio.
+`audit_requirement_fidelity` is per-combination and DOES see this class, which is why it exists --
+but it is ADVISORY, so nothing BLOCKS on the defect today.
+FIX: make CHECK 4 report per-combination when a keyRef maps to multiple built combos, or promote the
+fidelity gate from advisory to blocking once its false-positive rate is understood. Either way,
+verify against the mutation `nj-drop-metadata-mandatory`, which must go KILLED.
+
+##### Still unproven: nj-prefill-routing-field
+NJ Vehicle `LicensePlateNumber` has NO `initialValue` property at all -- a manual direct assignment
+threw "The property initialValue cannot be found on this object". An earlier scan printed
+`initialValue=''` and I read that as an empty-string default; it was a NULL rendering as empty. So
+the mutation never lands and the SURVIVED verdict says nothing about the reachability gate either
+way. Add the property with Add-Member on the props object and ASSERT the replica JSON contains it
+before drawing any conclusion.
+
+**NJ_NJCJIS is 6/8 and therefore does NOT meet the bar.** One survivor is a real, now-documented
+gate gap; one is an unlanded mutation. Neither is evidence of a defect in NJ v4.14 itself, whose
+substantive gates (enforce 40/0/0, reproducible, 35 plan tests all fireable) are clean.

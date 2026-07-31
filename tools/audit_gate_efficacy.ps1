@@ -247,16 +247,22 @@ $MUTS = @(
            $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'LicensePlateNumber' })
            $cm.requirements.any=@(@($cm.requirements.any)+'LicensePlateNumber') } }
 
-  @{ Id='nj-drop-devdoc-optional'; OnlyProvider='NJ_NJCJIS'
-     Desc='RandomRequest removed from RANDFULL any[] -- NJ rides RandomRequest/State/PlateType in any[] precisely so BOTH identical metadata variants (RAND and FULL) stay satisfiable; dropping one breaks that'
-     Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
+  @{ Id='nj-drop-metadata-mandatory'; OnlyProvider='NJ_NJCJIS'
+     Desc='RandomRequest removed from RANDFULL entirely. NJ rides RandomRequest/State/PlateType in any[] precisely so BOTH byte-identical metadata variants (RAND and FULL) stay satisfiable, so dropping it makes a metadata-MANDATORY field unreachable in that combination. GATE CORRECTED 2026-07-30: this was first aimed at audit_devdoc_optionals, which correctly stayed SILENT -- RandomRequest is metadata-mandatory and is NOT listed as a devdoc optional, so no optional subset was being dropped and 2q had nothing to say. A mutation must be aimed at the gate that OWNS the defect class; audit_metadata owns combination field coverage.'
+     Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RANDFULL'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RandomRequest' }) } }
 
   @{ Id='nj-prefill-routing-field'; OnlyProvider='NJ_NJCJIS'
-     Desc='VehicleIdentificationNumber given a form initialValue while it is RANDFULLN set[] discriminator -- BUILD_RULES 24'
+     Desc='LicensePlateNumber given a form initialValue. RANDFULL is combination [1] set[LicensePlateNumber] with NO conditions and RANDFULLN is [2] gated LicensePlateNumber NOT_EXISTS, so a prefilled plate makes RANDFULL match every submission AND fails RANDFULLN gate -- RANDFULLN is orphaned outright. BUILD_RULES 24.'
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
-     Mut={ param($j) $n=Get-Node $j 'Vehicle' 'LicensePlateNumber'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AAA1234' -Force } }
+     # DIRECT ASSIGNMENT, not Add-Member: this field already HAS an initialValue property (empty
+     # string), and Add-Member -Force on an existing NoteProperty did not take, so the replica went
+     # unmutated and the harness reported SURVIVED against a gate that was never actually challenged.
+     # Set the property when it exists; only Add-Member when it does not.
+     Mut={ param($j) $n=Get-Node $j 'Vehicle' 'LicensePlateNumber'
+           if ($n.props.PSObject.Properties.Name -contains 'initialValue') { $n.props.initialValue = 'AAA1234' }
+           else { $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AAA1234' -Force } } }
 
   @{ Id='prefill-routing-field'; OnlyProvider='TX_TLETS'
      Desc='initialValue on LicensePlateTypeCode -- RQ{Plate} is index 0 and its ONLY extra set[] field vs REG is PlateTypeCode, so prefilling it makes RQ match on Plate+Year alone and REG becomes unreachable. This is the EXACT prefill removed at v4.14. (First draft of this harness prefilled LicensePlateYear instead, which is in BOTH combos set[] and therefore starves neither -- it falsely accused the gate. A mutation must CREATE the defect, not merely resemble it.)'
