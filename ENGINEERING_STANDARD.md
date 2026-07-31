@@ -555,3 +555,37 @@ Documented above. nj-drop-metadata-mandatory was REPOINTED to audit_requirement_
 the class per-combination and now KILLS it. That closes the MUTATION, not the GAP: CHECK 4 remains
 union-based and would still miss a field dropped from one of several sibling combos. Fixing CHECK 4
 is a separate task with all 20 providers as the regression set.
+
+##### CA_CLETS / HI "prefill-dead" is NOT a prefill defect -- corrected diagnosis 2026-07-31
+
+Rob asked for the FL treatment on both. Running it inverted the diagnosis, and one obvious fix
+would have caused real damage. RECORD THIS BEFORE TOUCHING EITHER PROVIDER.
+
+**CA_CLETS -- 12 reported PREFILL-DEAD. Do NOT remove the purposeCode prefill.**
+CA builds only FIVE Vehicle combos (NLTS.RQ.P, NLTS.RQ.V, IN.VP, IA.QVK, IA.QV). The 12
+IV.4x/IL.A1 combinations the gate names are metadata combos we DO NOT BUILD AT ALL.
+Two facts make removal wrong:
+  1. `CaRequestPurposeCode` is MANDATORY on every single CA_CLETS combination. Its prefill is what
+     lets CAD injection satisfy any combo at all -- removing it breaks every CA query from a CAD
+     event, which is a far worse regression than the reported finding.
+  2. Removal would not recover them anyway. `IA.QV set[purposeCode, LicensePlateNumber]` is a strict
+     SUBSET of `IV.4x set[purposeCode, LicensePlateNumber, LicensePlateTypeCode]`, so IA.QV shadows
+     them STRUCTURALLY, prefill or no prefill. The prefill is not the discriminator; the subset
+     relationship is.
+CORRECT RESOLUTION: adjudicate the 12 against CA's devdoc "Basic Queries Supported" list. Per
+`no-combo-left-behind is BASIC-scoped`, metadata combinations outside Basic scope are EXPECTED to be
+unbuilt and are registered, not built -- the same treatment as TX's QV/QW shadows. If any of the 12
+IS devdoc-Basic, it needs a discriminating condition (not a prefill change) so it can outrank IA.QV.
+
+**HI_HCJDC_OFML -- 2 reported PREFILL-DEAD.** `vehicleTypeCode` is prefilled (build script L732) and
+M55L/M55S require VehicleTypeCode while the two QV combinations do not, so M55L/M55S always win.
+Structurally this IS the TX v4.14 shape and removing the prefill would recover them -- BUT check
+first whether those QV combinations are the platform-auto-fired QV shadow class that Rob has ruled
+must stay unbuilt on TX and FL. If they are, the resolution is a registry entry, not a prefill
+removal, and removing the Vehicle Type default would also cost HI's 46 ALL-PASS logs for nothing.
+
+**THE GENERAL LESSON:** `[PREFILL-DEAD]` names a metadata combination that cannot be reached. It does
+NOT establish that (a) we build that combination, (b) we SHOULD build it, or (c) a prefill is the
+cause. Check all three -- built?, devdoc-Basic?, subset-shadowed? -- before removing any default.
+Removing a prefill that is mandatory-everywhere breaks CAD; removing one that guards a
+deliberately-unbuilt shadow burns a tenant re-sweep for no gain.
