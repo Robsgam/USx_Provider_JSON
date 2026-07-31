@@ -252,7 +252,24 @@ foreach ($d in $dirs) {
         foreach ($r in $script:unbuiltRows) {
             if ($r.Query -ne $q -and $r.Query -ne '*') { continue }
             if ($r.KeyRef -eq $kr) { return $true }
-            if ($r.KeyRef.StartsWith($kr)) { return $true }
+            # PREFIX BRIDGE, NARROWED. The registry names a BUILT combo (FRQTitleLienInformation)
+            # while a METADATA keyRef is bare (FRQ), so a prefix hit is needed to connect them. But a
+            # bare prefix hit says "the whole FRQ FAMILY is unbuilt" when the row actually retires ONE
+            # combination -- and FL_FCIC has exactly that row, so all FOUR FRQ metadata alternatives
+            # were silently skipped and never compared. That is why the fl-fidelity-demote-mandatory
+            # mutation SURVIVED: LicensePlateYear could be demoted out of FRQDecalNumber's set[] and
+            # this gate had nothing to say, because FRQ{Decal} was not being examined at all.
+            # A prefix hit must therefore also IDENTIFY the branch: the registry keyRef's suffix past
+            # the metadata keyRef (here 'TitleLienInformation') has to name one of THIS alternative's
+            # set[] fields. FRQ{TitleLien} matches and stays suppressed; FRQ{Decal}, FRQ{Plate} and
+            # FRQ{VIN} no longer do. An empty suffix is the exact-match case handled above.
+            if ($r.KeyRef.StartsWith($kr)) {
+                $suffix = $r.KeyRef.Substring($kr.Length).Trim()
+                if (-not $suffix) { return $true }
+                $sc = Canon $suffix
+                foreach ($sf in @($altSet)) { if ((Canon $sf) -eq $sc) { return $true } }
+                # named a sibling branch, not this one -- do NOT suppress
+            }
             # An EXPLICIT phrase only -- never a bare word-boundary hit on the reason prose.
             # Bare \bKR\b over-suppressed a REAL combination: the QV shadow row explains QV is
             # "an ungated SUBSET of REG (Plate+Year+FRT)", so metadata REG matched the QV row and
