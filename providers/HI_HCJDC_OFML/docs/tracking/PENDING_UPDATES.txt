@@ -3,3 +3,18 @@
 # Clear by running the build script (it removes this file on successful build).
 #
 [FLAG:FORM-REACHABLE-COMBOS] Remove routing-affecting form defaults so every devdoc Basic combination is reachable FROM THE FORM. Prefills that satisfy a required field make a sibling combo win first-match forever. Per audit_query_trace: TX_TLETS/TX_TLETS_CCH = FRT=E + PlateYear=2026 (4 combos, incl. both OutofState paths - also restore RQ+QV, deleted v4.13 as false dead-combos); CA_CLETS = purposeCode=C (12 combos); HI_HCJDC_OFML = vehicleTypeCode=1 (2 combos). Also stop defaulting State where it is any[]-only (TX/AZ/NJ). Gated by enforce PHASE 2n. (flagged 2026-07-30)
+
+[OPEN 2026-07-31] HI M55S OVER-PERMITS vehicleYear -- metadata evidence captured, fix is mechanical.
+  METADATA (authoritative): VehicleRegistrationQuery/M55S
+      set[VehicleTypeCode, VehicleIdentificationNumber]   any[]     <-- any[] is EMPTY
+  BUILT M55S carries vehicleYear in any[], so it is transmittable on a branch that defines NO
+  optional fields at all. Same class as FL_FCIC's FRQ VehicleMakeCode/vehicleYear over-send, fixed
+  at FL v7.14 by removing them from the two FRQ combos.
+  BEFORE FIXING, CHECK ONE THING: whether the HI devdoc lists VehicleYear as an optional on that
+  path. If it DOES, Rob's standing never-drop-a-devdoc-OPTIONAL rule applies and the answer is a
+  promoted-to-any registry entry (the TX regionId precedent), NOT removal. If it does NOT, remove it
+  from M55S any[] -- that was the deciding test on FL and it went the other way there.
+  COST: HI is ALL-PASS 46 logs at v4.14, so a JSON fix bumps the version and archives all 46 --
+  a full re-sweep of Rob's time. A registry entry costs nothing. That trade is Rob's call, which is
+  why this is recorded rather than applied.
+  Gate: tools\audit_requirement_fidelity.ps1 -Provider HI_HCJDC_OFML (14 br, 1 OVER-PERMITTED).

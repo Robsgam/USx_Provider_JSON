@@ -8,3 +8,32 @@
 # The old heuristic had mislabelled these as OOS NLTS.* keyRefs. No config change.
 [FLAG:FORM-REACHABLE-COMBOS] Remove routing-affecting form defaults so every devdoc Basic combination is reachable FROM THE FORM. Prefills that satisfy a required field make a sibling combo win first-match forever. Per audit_query_trace: TX_TLETS/TX_TLETS_CCH = FRT=E + PlateYear=2026 (4 combos, incl. both OutofState paths - also restore RQ+QV, deleted v4.13 as false dead-combos); CA_CLETS = purposeCode=C (12 combos); HI_HCJDC_OFML = vehicleTypeCode=1 (2 combos). Also stop defaulting State where it is any[]-only (TX/AZ/NJ). Gated by enforce PHASE 2n. (flagged 2026-07-30)
 [FLAG:UNDER-REQUIRED-CHOICE-BRANCH] Metadata Choice branch requires a field we built as optional any[], so an incomplete wire request can be sent and passes gate 6d. CA_CLETS IG.QGH: metadata needs purposeCode+Name+(Age OR BirthDate); built any[BirthDate,age] means NEITHER is required and log CA_CLETS_v2.22_IG.QGH.txt shipped with neither. NY RVEHOUT is the same class (PlateTypeCode+PlateYear mandatory in alt2, built optional). Gate: tools\audit_requirement_fidelity.ps1. Fix = split the Choice into one combo per branch, never prefill a newly-mandatory field (BUILD_RULES 24). (flagged 2026-07-30)
+
+[OPEN 2026-07-31] CA_CLETS 2 UNDER / 7 OVER -- metadata evidence captured for each.
+  1. IA.QV OVER-PERMITS LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear.
+     METADATA IA.QV plate alternatives allow ONLY:
+         set[CaRequestPurposeCode, LicensePlateNumber]  any[RelatedHitSearchIndicator, State]
+         set[CaRequestPurposeCode, LicensePlateNumber]  any[State]
+     VehicleMakeCode appears on the VIN alternative (any[RelatedHitSearchIndicator, VehicleMakeCode])
+     but NOT on any plate alternative, and PlateTypeCode/PlateYear/VehicleYear appear on NONE of the
+     ~10 IA.QV alternatives. So all four are genuine over-sends on a plate combo. Same class as
+     FL FRQ, fixed at FL v7.14 by removal. CHECK the CA devdoc first (FL's devdoc did NOT list them,
+     which is what made removal correct there rather than a promoted-to-any entry).
+  2. NLTS.DQ.N UNDER-REQUIRES SexCode (ABSENT) and BirthDate (built any[]).
+     METADATA has several NLTS.DQ name alternatives with DIFFERENT optional/mandatory splits:
+         set[CaRequestPurposeCode, Name, BirthDate, State]      any[SexCode]
+         set[CaRequestPurposeCode, Name, State]                 any[BirthDate, SexCode]
+         set[CaRequestPurposeCode, Name, SexCode, BirthDate, State]  any[]
+     A single built NLTS.DQ.N cannot satisfy the strictest of those AND stay usable, which is exactly
+     the shared-combo case the gate now understands -- but these alternatives are NOT currently
+     pairing to one combo, so verify the assignment before treating it as a defect. If they should
+     share, the union already covers it; if the strictest alternative is genuinely unbuilt, register
+     it. Do NOT promote SexCode into set[] without checking the Person form for a prefill first
+     (BUILD_RULES 24).
+  3. IR.QVC.O / IR.QVC.S OVER-PERMIT age. Metadata IR.QVC OLN/SSN/CII alternatives are
+     set[CaRequestPurposeCode, <identifier>] any[] or any[<other identifiers>] -- Age appears only on
+     the Name-based alternatives. Likely the same shared-combo case as #2.
+  ALSO STILL OPEN from 2026-07-30: the REAL shipped IG.QGH defect flagged
+  [UNDER-REQUIRED-CHOICE-BRANCH] -- metadata needs purposeCode+Name+(Age OR BirthDate) and a
+  committed PASS log shipped with neither. That one is a genuine wire defect, not a gate artifact.
+  COST: CA_CLETS is ALL-PASS 90 logs at v2.22 -- any JSON fix archives all 90.
