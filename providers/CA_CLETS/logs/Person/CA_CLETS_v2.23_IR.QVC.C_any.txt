@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: CA_CLETS Person DriverLicenseQuery
+Combo: IR.QVC.C_any (IR.QVC.C_any (auto))
+Date: 2026-07-31 16:15:06
+Result: PASS
+JSON Version: 2.23
+Entity Fingerprint: bfaedbd633d8777e6f66cb02d5fa39f7543c6e32ab7d85f91d357e1ea7ef721f
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"Attention":"X","criminalIdNumber":"CII123456","purposeCode":"C","purposeCodeDH":"C","socialSecurityNumber":"123456789"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYWWW1FKTGD01QE25S8PF1CK">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KYWWW1FKTGD01QE25S8PF1CK</Id>
+            <SocialSecurityNumber>123456789</SocialSecurityNumber>
+            <CriminalIdNumber>CII123456</CriminalIdNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KYWWW1FKTGD01QE25S8PF1CK
+  SocialSecurityNumber           123456789
+  CriminalIdNumber               CII123456
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KYWWW1FKTGD01QE25S8PF1CK). kind=any; anyField=; expectedKeyRef=IR.QVC.C; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
