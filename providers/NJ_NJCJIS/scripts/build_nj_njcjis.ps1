@@ -111,7 +111,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.14"
+    [string]$Version = "4.15"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -401,7 +401,17 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('BoatHullIdNumber')
-                any      = @('ImageIndicator')
+                # v4.15: RegistrationNumber added. Devdoc BoatQuery #1 is
+                # 'BoatHullIdNumber [ImageIndicator, RegistrationNumber]' -- hull is listed FIRST so
+                # it wins the over-fill (devdoc order is the tiebreaker between two equally-specific
+                # single-identifier queries), AND the winning combination is explicitly allowed to
+                # carry the reg number as an optional. Before this, filling hull + reg number fired
+                # QBN and SILENTLY DROPPED the reg number.
+                # NOT an over-permit: RegistrationNumber is a metadata QB field -- it is the set[] of
+                # the sibling alternative under the SAME keyRef QB -- so riding it here transmits a
+                # transaction-defined field, not an invented one. I first mis-registered this as
+                # devdoc-optional-unreachable by checking only the per-branch any[]; Rob corrected it.
+                any      = @('ImageIndicator','RegistrationNumber')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
                 )
