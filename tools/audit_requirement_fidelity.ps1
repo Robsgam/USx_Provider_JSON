@@ -342,11 +342,37 @@ foreach ($d in $dirs) {
         }
     }
 
+    # ── SHARED-COMBO UNION: one built combo may legitimately serve SEVERAL Choice alternatives ──
+    # Exposed by CA_CLETS 2026-07-31 and invisible on TX/NY/NJ/FL, none of which has this shape.
+    # Metadata offers a Choice of BirthDate OR Age; ONE built combo (IR.QVC.N, IG.QGH) serves both
+    # branches by carrying one in set[] and riding the other in any[] -- which is exactly right.
+    # Evaluating each alternative IN ISOLATION made every such pair report the OTHER branch's field
+    # as foreign, in perfectly mirrored pairs:
+    #     alt1 UNDER-REQUIRED BirthDate + OVER-PERMITTED age
+    #     alt2 UNDER-REQUIRED Age       + OVER-PERMITTED BirthDate
+    # Both directions cannot be true at once -- a mirrored pair is the signature of an isolation
+    # artifact, not a defect. So when several alternatives share a built combo, that combo's
+    # legitimate field pool is the UNION of their set[]+any[], and a field is only UNDER-REQUIRED if
+    # NO sharing alternative can satisfy it.
+    $shared = @{}
+    foreach ($mm in $meta) {
+        $bb = $assign["$($mm.Idx)"]
+        if (-not $bb) { continue }
+        $sk = "$($mm.Query)|$($bb.KeyRef)"
+        if (-not $shared.ContainsKey($sk)) { $shared[$sk] = @{ Set = @(); Any = @(); N = 0 } }
+        $shared[$sk].N++
+        $shared[$sk].Set += @($mm.Set | ForEach-Object { Canon $_ })
+        $shared[$sk].Any += @($mm.Any | ForEach-Object { Canon $_ })
+    }
+
     foreach ($m in $meta) {
         if (-not $built.ContainsKey($m.Query)) { continue }   # query not built: 2p/2e own that
         if (Test-RegisteredUnbuilt $m.Query $m.KeyRef @($m.Set)) { $pNote++; continue }
         $b0 = $assign["$($m.Idx)"]
         if (-not $b0) { continue }
+        $shKey  = "$($m.Query)|$($b0.KeyRef)"
+        $shN    = if ($shared.ContainsKey($shKey)) { $shared[$shKey].N } else { 1 }
+        $shPool = if ($shared.ContainsKey($shKey)) { @($shared[$shKey].Set) + @($shared[$shKey].Any) } else { @() }
         $mSetC = @($m.Set | ForEach-Object { Canon $_ })
         $mAnyC = @($m.Any | ForEach-Object { Canon $_ })
         $pMatched++
@@ -360,6 +386,7 @@ foreach ($d in $dirs) {
         for ($i = 0; $i -lt $mSetC.Count; $i++) {
             $w = $mSetC[$i]
             if (Test-Has $bSetC $w) { continue }
+            if ($shN -gt 1 -and (Test-Has $bAnyC $w)) { $pNote++; continue }   # shared combo: this branch requires it, a sibling branch treats it as optional, so riding it in any[] serves BOTH -- see SHARED-COMBO UNION above
             # A DELIBERATE demotion, recorded with rule 'demoted-to-any', is a decision -- not an
             # omission. Before this, UNDER-REQUIRED had NO registry path at all, so NJ's documented
             # RANDFULL/RANDFULLN merge (metadata RAND and FULL are byte-identical, so building both
@@ -375,6 +402,7 @@ foreach ($d in $dirs) {
             $w = $bAnyC[$i]
             if ((Test-Has $mSetC $w) -or (Test-Has $mAnyC $w)) { continue }
             if ($formOnly -contains $w) { continue }
+            if ($shN -gt 1 -and ($shPool -contains $w)) { $pNote++; continue }   # shared combo: another Choice branch served by this same combo DOES define the field
             if ($promoted.ContainsKey("$($m.Query)|$($b0.KeyRef)|$w")) { $pNote++; continue }
             $over += "$($b0.Any[$i])"
         }
