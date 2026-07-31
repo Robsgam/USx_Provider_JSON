@@ -214,6 +214,50 @@ $PROV_MUTS = @{
 # ── THE MUTATION TABLE ────────────────────────────────────────────────────────────────
 # Each entry: the defect class, the gate that owns it, and the exact injection.
 $MUTS = @(
+  # ── FL_FCIC ────────────────────────────────────────────────────────────────────────────
+  @{ Id='fl-drop-devdoc-optional'; OnlyProvider='FL_FCIC'
+     Desc='RegistrationNumber removed from FBQBoatHullIdNumber any[] -- reverts the exact v7.13 dropped-optional fix (officer types hull + reg number, reg number silently not transmitted). This mutation exists so that fix can never regress unnoticed.'
+     Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'FBQBoatHullIdNumber'
+           $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationNumber' }) } }
+
+  @{ Id='fl-fidelity-demote-mandatory'; OnlyProvider='FL_FCIC'
+     Desc='BoatHullIdNumber demoted from FBQBoatHullIdNumber set[] to any[] though metadata FBQ requires it'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'FBQBoatHullIdNumber'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'BoatHullIdNumber' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'BoatHullIdNumber') } }
+
+  @{ Id='fl-prefill-routing-field'; OnlyProvider='FL_FCIC'
+     Desc='LicensePlateNumber given a form initialValue while it is a set[] discriminator -- BUILD_RULES 24, the class that killed 35 combos across 6 providers'
+     Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) foreach($b in $j.bundles){foreach($c in $b.configurations){
+             if($c.type -ne 'QUERYINPUTFORM'){continue}
+             foreach($v in $c.layout.PSObject.Properties){ foreach($n in $v.Value.nodes.PSObject.Properties){
+               if("$($n.Value.props.fieldId)" -eq 'LicensePlateNumber'){ $n.Value.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AAA1234' -Force } } } } } } }
+
+  # ── NJ_NJCJIS ──────────────────────────────────────────────────────────────────────────
+  @{ Id='nj-fidelity-demote-mandatory'; OnlyProvider='NJ_NJCJIS'
+     Desc='LicensePlateNumber demoted from RANDFULL set[] to any[] though metadata RAND/FULL both require it'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RANDFULL'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'LicensePlateNumber' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'LicensePlateNumber') } }
+
+  @{ Id='nj-drop-devdoc-optional'; OnlyProvider='NJ_NJCJIS'
+     Desc='RandomRequest removed from RANDFULL any[] -- NJ rides RandomRequest/State/PlateType in any[] precisely so BOTH identical metadata variants (RAND and FULL) stay satisfiable; dropping one breaks that'
+     Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RANDFULL'
+           $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RandomRequest' }) } }
+
+  @{ Id='nj-prefill-routing-field'; OnlyProvider='NJ_NJCJIS'
+     Desc='VehicleIdentificationNumber given a form initialValue while it is RANDFULLN set[] discriminator -- BUILD_RULES 24'
+     Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) foreach($b in $j.bundles){foreach($c in $b.configurations){
+             if($c.type -ne 'QUERYINPUTFORM'){continue}
+             foreach($v in $c.layout.PSObject.Properties){ foreach($n in $v.Value.nodes.PSObject.Properties){
+               if("$($n.Value.props.fieldId)" -eq 'VehicleIdentificationNumber'){ $n.Value.props | Add-Member -NotePropertyName initialValue -NotePropertyValue '1FTPW14V78K123456' -Force } } } } } } }
+
   @{ Id='prefill-routing-field'; OnlyProvider='TX_TLETS'
      Desc='initialValue on LicensePlateTypeCode -- RQ{Plate} is index 0 and its ONLY extra set[] field vs REG is PlateTypeCode, so prefilling it makes RQ match on Plate+Year alone and REG becomes unreachable. This is the EXACT prefill removed at v4.14. (First draft of this harness prefilled LicensePlateYear instead, which is in BOTH combos set[] and therefore starves neither -- it falsely accused the gate. A mutation must CREATE the defect, not merely resemble it.)'
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }

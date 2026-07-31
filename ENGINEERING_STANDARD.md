@@ -325,3 +325,33 @@ inside the guardrail branch; hoist it above L74 to share it.
 field from a committed log's wire and confirms 6c FAILs. Without it the new assertion has no failure
 proof and is indistinguishable from a check that cannot fire.
 **Regression guard:** TX_TLETS must stay 89/89 on 6c and 16/16 on gate efficacy afterwards.
+
+##### FL/NJ mutation maps added 2026-07-30 -- 4 SURVIVORS, likely MY mutations not gate blindness
+
+`audit_gate_efficacy`: **FL_FCIC 8/9, NJ_NJCJIS 5/8 + 1 INVALID** (was 6 and 5 generic-only).
+Confirmed KILLED and therefore genuinely protected:
+* `fl-drop-devdoc-optional` (0 -> 6 findings) -- guards the v7.13 RegistrationNumber fix from
+  silent regression. This is the mutation that matters most on FL.
+* `fl-fidelity-demote-mandatory` (5 -> 7).
+
+**The 4 survivors, with the diagnosis to CHECK FIRST (do not assume gate blindness):**
+1. `fl-prefill-routing-field` and `nj-prefill-routing-field` -- both my mutations walk
+   `$v.Value.nodes.PSObject.Properties`, but the real layout shape is
+   `layout.<variant>.<nodeId>.props` with **no `.nodes` level**. The mutation almost certainly
+   applied NOTHING, so findings could not increase and the harness correctly said SURVIVED.
+   VERIFY by asserting the mutated replica JSON actually contains the injected `initialValue`
+   before believing either verdict.
+2. `nj-fidelity-demote-mandatory` and `nj-drop-devdoc-optional` -- NJ's fidelity baseline ALREADY
+   reports RANDFULL UNDER-REQUIRED for RandomRequest/State/LicensePlateTypeCode. Adding
+   LicensePlateNumber to that same finding **does not add a `[WARN]` LINE**, and the harness detects
+   by counting lines. So this is likely harness SENSITIVITY, not gate blindness: a mutation that
+   worsens an existing finding is invisible to a line-count detector.
+   FIX EITHER the mutation (target a combo with no existing finding) OR the harness (compare finding
+   TEXT, not just count). The latter is better and helps every provider.
+3. `vehiclemake-as-input` reports INVALID on NJ -- "Cannot bind argument to parameter 'InputObject'
+   because it is null", i.e. NJ has no node matching the mutation's VehicleMakeCode lookup. INVALID
+   is honest (not counted as a pass); scope the mutation or fix its lookup.
+
+**CONSEQUENCE FOR CONFIDENCE, stated plainly:** FL and NJ are NOT at the same evidential standard as
+TX (16/16) and NY (13/13). Their gates pass, but 4 mutations have not demonstrated those gates can
+fail. Do not quote FL/NJ confidence as equal to TX/NY until these are resolved.
