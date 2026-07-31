@@ -37,7 +37,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 | CA_VENTURA_COUNTY | providers/CA_VENTURA_COUNTY/ | v2.0 | 73P/0F/0W | NEVER 0/5 | 6 basic queries, CaRequestPurposeCode (visible Inp), DL+DH DH-suffix+queriesToDeselect, cross-entity (IN.VP/IG.QGH/NLTS.BQ.N), Attention auto-handler, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails | [changelog](providers/CA_VENTURA_COUNTY/docs/tracking/CHANGELOG_CA_VENTURA_COUNTY.md) |
 | CA_CONTRA_COSTA | providers/CA_CONTRA_COSTA/ | v2.2 | 79P/0F/0W | NEVER 0/5 | CA_CLETS twin (6 families / 40 combos / PascalCase / race kept in RMS); JAWS+SuperQuery unbuilt-in-metadata; RequestingAgencyId only on the (unbuilt) JAWS combos | [changelog](providers/CA_CONTRA_COSTA/docs/tracking/CHANGELOG_CA_CONTRA_COSTA.md) |
 | CA_CLETS_OCATS | providers/CA_CLETS_OCATS/ | v2.0 | 61P/0F/0W | NEVER 0/5 | CLETS_OCATS v21, 5 basic queries (no DH), VP owner search, CaRequestPurposeCode on all combos, OCATS-specific queries (warrants/juvenile/LARS) available-not-built | [changelog](providers/CA_CLETS_OCATS/docs/tracking/CHANGELOG_CA_CLETS_OCATS.md) |
-| CA_eSUN | providers/CA_eSUN/ | v2.0 | 71P/0F/0W | NEVER 0/5 | 6 QIDMs, CaRequestPurposeCode (visible Inp, officer-selectable), VP owner search, gun-by-name (QGH), Attention auto-handler, DL+DH DH-suffix+queriesToDeselect (visible DH cards), OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails | [changelog](providers/CA_eSUN/docs/tracking/CHANGELOG_CA_eSUN.md) |
+| CA_eSUN | providers/CA_eSUN/ | v2.1 | 72P/0F/0W | NEVER 0/5 | 6 QIDMs, CaRequestPurposeCode (visible Inp, officer-selectable), VP owner search, gun-by-name (QGH), Attention auto-handler, DL+DH DH-suffix+queriesToDeselect (visible DH cards), OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails | [changelog](providers/CA_eSUN/docs/tracking/CHANGELOG_CA_eSUN.md) |
 | CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v2.1 | 65P/0F/0W | NEVER 0/5 | Regional interface (not direct CLETS), DL+DH DH-suffix+queriesToDeselect, short keyRefs, no State initialValue (LIMITATION #30 in/out split), no ImageIndicator | [changelog](providers/CA_SAN_LUIS_OBISPO/docs/tracking/CHANGELOG_CA_SAN_LUIS_OBISPO.md) |
 | IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v2.0 | 61P/0F/0W | NEVER 0/5 | 5 basic queries (no DH), Z2/Z5 keyRefs, CDCName in AUTH, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails | [changelog](providers/IL_LEADS_OFML/docs/tracking/CHANGELOG_IL_LEADS_OFML.md) |
 | MD_METERS | providers/MD_METERS/ | v2.0 | 69P/0F/0W | NEVER 0/5 | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZWAR/ZLDR/ZDRV/ZBOA keyRefs, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails, State no-default | [changelog](providers/MD_METERS/docs/tracking/CHANGELOG_MD_METERS.md) |
@@ -376,7 +376,7 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (81 scripts + 16 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
+## Tools (82 scripts + 16 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 

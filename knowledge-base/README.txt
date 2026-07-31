@@ -1016,6 +1016,31 @@ TOOLS
     winning a name+state+hull over-fill is CORRECT, not the identifier-priority violation it looks
     like at a glance; verified against the devdoc 2026-07-31 after wrongly calling it a defect).
     Usage: .\audit_order_risk.ps1 [-Providers <list>]
+  tools/audit_defect_classes.ps1
+    ⚠️ EXPERIMENTAL -- DO NOT QUOTE ITS OUTPUT AS FINDINGS, NOT WIRED INTO ANY GATE. Read its header
+    banner before running it.
+    INTENT (Rob 2026-07-31: "i want this process to be fruitful"): by the fourth provider the session
+    was re-deriving the same handful of defect classes from scratch each time. The classes are now
+    KNOWN, so enumerate them across the portfolio in ONE ranked pass instead of 13 sequential
+    investigations. Reads each provider's OWN metadata -- never assumes a sibling's answer applies
+    (CA_CLETS_OCATS and CA_SAN_LUIS_OBISPO looked like certain suspects and were both CLEAN).
+    CLASSES: C1 collapsed <Choice>-in-<Set> (WIRE-INVALID -- request satisfies no metadata variant;
+    6d catches it, 6c/2i cannot); C2 over-required set[] (fill falls through to a looser combo whose
+    pool lacks the field, so an officer value is silently dropped); C3 an optional the query can carry
+    nowhere; C4 prefill on a routing field (BUILD_RULES 24, skipped when the field is in EVERY combo's
+    set[] and so cannot shadow).
+    WHY IT IS NOT TRUSTED YET: it has failed its known-answer test four times, improving each run
+    (19 -> 9 -> 7 -> 6 candidates against a CA family whose true answer is 1). Two of those failures
+    were it flagging combos that had just been FIXED, and one was a length floor the author added that
+    broke the first fix. The residual bug is characterised in the header: the primaryFieldReference
+    restriction is not taking effect, so CA_CONTRA_COSTA's IR.QVC.* rows are compared against the
+    {Name} variant's Choice group. Fix that, re-run until the CA family yields exactly
+    CA_VENTURA_COUNTY, and only then wire it anywhere.
+    THE LESSON IS WORTH MORE THAN THE TOOL SO FAR: validate a new parser against a known answer
+    BEFORE trusting a single number it produces. That discipline stopped 19, then 9, then 7, then 6
+    bogus findings from reaching a report -- the same rule that caught the vacuous fingerprint check
+    in audit_log_inflation and the registry over-suppression in audit_requirement_fidelity.
+    Usage: .\audit_defect_classes.ps1 [-Providers <list>] [-All] [-Class C1,C2] [-OutFile <path>]
   tools/audit_lifecycle.ps1
     THE LIFECYCLE TAIL (enforce PHASE 2r, ADVISORY) -- stages 5 and 6, which had NO gate at all:
     STAGE 5 is the Jira entry (docs/tracking/DEX_TICKET.md must name the CURRENT version) and

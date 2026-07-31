@@ -40,88 +40,46 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ---
 
-## ⛔ ON HOLD -- do not touch, do not re-raise
+## ⛔ ON HOLD / DO NOT RE-RAISE
 
-- **CA_CONTRA_COSTA** -- Rob 2026-07-31: *"put contra costa on hold until further notice."*
-  Parked CLEAN at **v2.2, enforce 36 PASS / 0 FAIL / 0 WARN**, test package reset (0 logs).
-  v2.2 fixed both defects it inherited from its CA_CLETS twin (IG.QGH Choice-in-Set split;
-  IR.QVC.O/IR.QVC.OS/ID.L1 SSN drop). What remains when the hold lifts is written up in
-  `providers/CA_CONTRA_COSTA/docs/tracking/PENDING_UPDATES.txt` -- including that **JAWS is not
-  buildable** (devdoc defers to a "JAWS Inquiry and Update Documentation" not in `source/`, and the
-  metadata has ZERO JAWS nodes). Do not rebuild, test, or re-raise its 7 advisory fidelity findings.
+- **CA_CONTRA_COSTA** -- Rob 2026-07-31 "on hold until further notice". Parked CLEAN at v2.2,
+  enforce 36P/0F/0W, test package reset. Everything owed is in its `PENDING_UPDATES.txt`, including
+  that **JAWS is unbuildable** (devdoc defers to a doc not in `source/`; metadata has ZERO JAWS nodes).
+- **Jira: ALL updates HELD** until the process is trusted. `enforce` 2r's `[GAP]` is EXPECTED.
+- **Form review is Rob's MANUAL gate.** `enforce` 2k's `[INFO] not reviewed` is the steady state.
+  Never prompt for it, never list it as owed. Record only when he says so.
+- LA_LEMS `DQ`, TN_TIES prose divergence -- "handled when we get to them."
+
+## STATE
+
+6 providers tenant-tested and ENFORCED 0 FAIL / 0 WARN (433 logs, four log gates green):
+TX v4.18 (89), NY v4.19 (64), NJ v4.15 (36), FL v7.14 (109), HI v4.14 (46), CA_CLETS v2.23 (89).
+8 more PHASE-1 audited and BLOCKED as expected (never-tested): AZ, LA_LEMS, MD_METERS, TN_TIES,
+OH_LEADS, NM, OR_LEDS, IL. **5 unaudited**: CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,
+TX_TLETS_CCH, and CA_CONTRA_COSTA (on hold).
+
 ## NEXT PHYSICAL ACTION
 
-**TX_TLETS v4.18 is the solid one and needs nothing.** ALL-PASS 89/89, enforce 39 PASS/0 FAIL/0 WARN,
-gate efficacy KILLED 16/16, requirement fidelity 0/0, 0 over-broad suppressions. Do not re-sweep it.
+1. **Finish `tools/audit_defect_classes.ps1`** (EXPERIMENTAL -- read its header banner). It has failed
+   its known-answer test 4x, improving 19->9->7->6 against a CA family whose true answer is 1. The
+   residual bug: the primaryFieldReference restriction is not taking effect, so CA_CONTRA_COSTA's
+   IR.QVC.* rows get compared to the {Name} Choice group. Fix, re-run until the CA family yields
+   exactly CA_VENTURA_COUNTY, THEN use it to enumerate findings in bulk. Do not quote it before that.
+2. **CA_VENTURA_COUNTY IG.QGH** carries NO Age/BirthDate discriminator -- confirmed by hand and
+   flagged `[FLAG:GUN-NAME-CHOICE-IN-SET]`. Its devdoc GunQuery section did not parse; get the
+   authority before fixing.
+3. Adjudicate the ~25 documented findings on the 8 audited providers (FIX-vs-REGISTER per
+   `usx-build` Step 3).
 
-**Rob's call on NY before its 67-test sweep.** NY v4.17 Vehicle has two recorded metadata-fidelity
-findings (`RVEHOUT` demotes two mandatory fields; `RVEH` over-permits `LicensePlateYear`). Rob PARKED
-the ruling 2026-07-30. The cost of sweeping first: fixing them later bumps to v4.18 and archives all
-67 fresh logs. Settling it first costs one build. See NY PENDING_UPDATES.txt "[OPEN 2026-07-30]".
+## RULES I BROKE TWICE TODAY -- READ BEFORE BUILDING
 
-Order after NY: NJ, FL, then CA_CLETS, HI. Everything outside those 6 is TABLED.
-
-**Run the `usx-resume` skill before acting on this.** It sweeps for environment state this file
-cannot see (captures stranded in Downloads, stray `watch_captures` processes, a build script bumped
-but not rebuilt). Do not start a bump, a sweep, or a Jira comment on your own initiative after a
-restart — Rob may have done things in the gap.
-
-## Gate status
-
-Run `tools\enforce.ps1 -SkipGit`. **Expect `0 FAIL / 0 WARN`.** That is the invariant.
-
-Do NOT record the PASS count here. It grows every time a gate is added (it moved 427→430 within an
-hour of this file being created, purely from new gates), so an absolute number is guaranteed to go
-stale and teaches the next session to distrust the file. `0 FAIL / 0 WARN` is the only durable
-assertion. If you get a FAIL or WARN, the tool is right and this file is out of date.
-
-## What is actually owed
-
-1. **NY v4.17 re-test** (~67 tests, from T1). The `NY-METADATA-PARSER-UNKNOWN` flag is RESOLVED
-   (nested `<Choice><Set>`; NY's DriverHistory build is metadata-exact). Two Vehicle fidelity
-   findings remain OPEN awaiting Rob -- settle them before spending 67 tests.
-2. **170 over-broad divergence suppressions across 14 providers** (`tools\audit_suppression_scope.ps1`).
-   Every accepted divergence buys a blind spot; TX_TLETS is at 0 via the
-   `# SUPPRESSION-SCOPE: direction-aware` marker. Add the marker at each provider's own rebuild turn,
-   never as a sweep -- narrowing can turn a green provider red. TX_TLETS_CCH (29) is the natural next.
-3. **CA_CLETS has a REAL shipped defect**, flagged `[UNDER-REQUIRED-CHOICE-BRANCH]`: `IG.QGH` needs
-   `purposeCode+Name+(Age OR BirthDate)`, both discriminators were built optional, and a committed
-   PASS log shipped with neither. Two independent gates agree. Fixed at CA_CLETS's turn.
-4. **31 PREFILL-DEAD combos remain** (CA_CLETS 12, CA_CONTRA_COSTA 12, HI 2, OH_LEADS 1) — each
-   already flagged in its own PENDING_UPDATES.txt, fixed at that provider's turn. **BUILD_RULES 24**
-   is the rule; `enforce` PHASE 2n is the gate. Removing a prefill is what RESTORES the combo —
-   never delete a devdoc-supported combo that only our own default made unreachable.
-3. **Jira: HOLD.** Rob's instruction 2026-07-29 — do **not** comment on DEX-1283 (TX) or DEX-1284
-   (NY), and hold the regular per-provider Jira update **until after testing**.
-4. **AZ_AZDPS v3.3** — never tenant-tested. Before its first sweep, confirm on the **first query**
-   that the platform populates `dexStateUserId`, or all 5 badge combos silently fall back to
-   DQN/BQ/BQH.
-5. **4 providers have no devdoc text extract** → NJ, FL, LA_LEMS, CA_CLETS_OCATS were fixed
-   2026-07-29; if `audit_structure` CHECK 9b warns again, run
-   `pdftotext source/<P>.pdf source/<P>_DEVDOC.txt`.
-
-## Open decisions (Rob's, do not decide these yourself)
-
-- **NY home-state strip / DEX-1284.** Only config lever is removing `RegistrationState` from NY's
-  CAD layout variants, which would stop an officer running an out-of-state plate from a CAD event.
-  **BUILD_RULES §23 forbids that trade.** Correct fix is the injection layer. Not started.
-- ~~Branch merge to `main`~~ — DONE 2026-07-30 (fast-forward, no merge commit).
-- **LA_LEMS `DQ`** and **TN_TIES prose divergence file** — Rob: "handled when we get to them."
-  Do NOT re-raise as open issues; both leave enforce green.
-
-## Hard-won rules you will otherwise re-derive (read before touching routing or tests)
-
-- **BUILD_RULES §20** — first-match firing + union pool; dead combos; a log cannot prove which
-  combo fired. **§21** — the firing model is LIVE-PROVEN, do not re-derive it. **§22** — one
-  provider per tenant, so cross-provider cosmetic drift has zero customer value (freeze & ship).
-  **§23** — form queries first; CAD injection never takes precedence; DH cannot work from CAD
-  injection at all (DH-suffixed fields).
-- **`knowledge-base/UNIVERSAL_SEARCH_HANDLERS.txt`** is the authoritative platform handler
-  registry. `RULE_HANDLERS.txt` only documents what we already build — checking only that file
-  produced a wrong "no such handler exists" answer on 2026-07-29.
-- **Never hand-edit a provider JSON.** Edit the build script; `enforce` rebuilds and compares.
-- **Any version bump resets that provider's whole test package.** Weigh every cosmetic change
-  against a full tenant re-sweep of Rob's hands-on time.
-- `pdftotext` **is** available at `C:\Program Files\Git\mingw64\bin\pdftotext.exe` (not on PATH).
-- `pwsh -File` **stringifies** array/hashtable args — `-Providers a,b` and `-Override @{}` fail
-  that way. Call the script in-session instead.
+- **After a DIRECT build-script run, run `reset_test_package.ps1` AND sync docs.** `pipeline.ps1` does
+  it; calling the provider script does not. I skipped it on CA_CONTRA_COSTA and again on CA_eSUN an
+  hour later; each time a stale plan broke the GLOBAL `audit_simulator_parity` check and made ONE
+  self-inflicted defect look like five unrelated provider failures. `usx-build` Step 4b.
+- **Use the Edit tool for multi-line text, never `.Replace()`** -- CRLF no-ops silently, and a 3-arg
+  call is read as a StringComparison and mangles the file.
+- **`powershell -File` stringifies array args** (`-Providers a,b` becomes one provider named "a,b").
+- **Never grep a whole tool output for `FAIL`** -- headers explain what a failure IS. Anchor on the
+  verdict line.
+- **A step that did not run is NOT a pass.** Always print the denominator (compared count, branches).

@@ -1,6 +1,6 @@
-CA_eSUN v2.0 -- TEST MATRIX
+CA_eSUN v2.1 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-30
+Generated: 2026-07-31
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -59,13 +59,13 @@ Boat (3 cards, 4 fields):
   CARD_BOA_REG (REGISTRATION SEARCH):
     RegistrationNumber [Inp 8]
 
-QIDM SUMMARY (6 QIDMs, 19 combos)
+QIDM SUMMARY (6 QIDMs, 20 combos)
 ----------------------------------------
   ArticleSingleQuery: 1 combos (QA x1)
   BoatQuery: 2 combos (BQ x2)
   DriverLicenseQuery: 4 combos (DQ x2, L1.O x1, L1.N x1), autoSelect=true, deselects: [DH]
   DriverHistoryQuery: 4 combos (KQ x2, L1.O.D x1, L1.N.D x1), autoSelect=true, deselects: [DL]
-  GunQuery: 2 combos (QG x2)
+  GunQuery: 3 combos (QG x3)
   VehicleRegistrationQuery: 6 combos (RQ x2, QV x2, VP.D x1, VP.N x1), autoSelect=true
 
 ================================================================================
@@ -180,7 +180,7 @@ ENTITY 3: BOAT (5 tests -- 3 cards, 2 combos)
 44  Boat        Guardrail: BQ.H>BQ.R  BoatHullIdNumber=FL1234AB56H7, caRequ... [    ]
               Expected: BoatQuery fires (BQ.H). caRequestPurposeCode+Reg absent from XML.
 
-ENTITY 4: FIREARM (5 tests -- 3 cards, 2 combos)
+ENTITY 4: FIREARM (7 tests -- 3 cards, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -188,31 +188,35 @@ ENTITY 4: FIREARM (5 tests -- 3 cards, 2 combos)
               Expected: GunQuery fires (QGB)
 46  Firearm     QG+B               + gunCaliber, firearmMake, gunTypeCode, RelatedSearchHitIndicator [    ]
               Expected: any[] fields present in XML output.
-47  Firearm     QG+H               caRequestPurposeCode=C, GunNameLast=T... [    ]
-              Expected: GunQuery fires (QGH)
-48  Firearm     QG+H               + GunBirthDate, GunAge          [    ]
-              Expected: any[] fields present in XML output.
-49  Firearm     Guardrail: QGB>QGH  serialNumber=GUN12345, caRequestPurpo... [    ]
-              Expected: GunQuery fires (QGB). caRequestPurposeCode+GunNameLast+GunNameFirst absent from XML.
+47  Firearm     QG+H.A             caRequestPurposeCode=C, GunNameLast=T... [    ]
+              Expected: GunQuery fires (QGH.A)
+48  Firearm     QG+H.B             caRequestPurposeCode=C, GunNameLast=T... [    ]
+              Expected: GunQuery fires (QGH.B)
+49  Firearm     Guardrail: QGB>QGH.A  serialNumber=GUN12345, caRequestPurpo... [    ]
+              Expected: GunQuery fires (QGB). caRequestPurposeCode+GunNameLast+GunNameFirst+GunAge absent from XML.
+50  Firearm     Guardrail: QGB>QGH.B  serialNumber=GUN12345, caRequestPurpo... [    ]
+              Expected: GunQuery fires (QGB). caRequestPurposeCode+GunNameLast+GunNameFirst+GunBirthDate absent from XML.
+51  Firearm     Guardrail: QGH.A>QGH.B  GunAge=TEST, caRequestPurposeCode=C, ... [    ]
+              Expected: GunQuery fires (QGH.A). caRequestPurposeCode+GunNameLast+GunNameFirst+GunBirthDate absent from XML.
 
 ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-50  Article     QA+caRequestPurposeCode  caRequestPurposeCode=C, serialNumber=... [    ]
+52  Article     QA+caRequestPurposeCode  caRequestPurposeCode=C, serialNumber=... [    ]
               Expected: ArticleSingleQuery fires (QA)
-51  Article     QA+caRequestPurposeCode  + articleBrand, articleCategory, articleTypeCode [    ]
+53  Article     QA+caRequestPurposeCode  + articleBrand, articleCategory, articleTypeCode [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 51 tests
+TOTAL: 53 tests
 
-COMBO COVERAGE (19/19):
-  ArticleSingleQuery: 1/1 -- T50(caRequestPurposeCode)
+COMBO COVERAGE (20/20):
+  ArticleSingleQuery: 1/1 -- T52(caRequestPurposeCode)
   BoatQuery: 2/2 -- T40(.H), T42(.R)
   DriverLicenseQuery: 4/4 -- T1(DQ+.O), T3(DQ+.N), T5(L1.O+L1.O), T6(L1.N+L1.N)
   DriverHistoryQuery: 4/4 -- T7(KQ+.O), T9(KQ+.N), T11(L1.O.D+L1.O.DH), T13(L1.N.D+L1.N.DH)
-  GunQuery: 2/2 -- T45(B), T47(H)
+  GunQuery: 3/3 -- T45(B), T47(H.A), T48(H.B)
   VehicleRegistrationQuery: 6/6 -- T20(RQ+.V), T22(RQ+.P), T24(QV+.V), T26(QV+.P), T28(VP.D+VP.D), T30(VP.N+VP.N)
 
-IMPORT FILE: CA_eSUN_v2.0.json
+IMPORT FILE: CA_eSUN_v2.1.json

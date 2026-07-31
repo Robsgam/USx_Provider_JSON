@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_eSUN_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.0** | Generated: 2026-07-30
+Current: **v2.1** | Generated: 2026-07-31
 
 ---
+
+## v2.1 -- 2026-07-31 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.0 -- 2026-07-23 -- Pipeline rebuild
 

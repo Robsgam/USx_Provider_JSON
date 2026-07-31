@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.0.json
-  Generated: 2026-07-30 12:21
+  Source: CA_eSUN_v2.1.json
+  Generated: 2026-07-31 19:32
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-07-30 12:21
+ Generated: 2026-07-31 19:32
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_eSUN
 ============================================================
   XML: CA_eSUN.xml
-  JSON: CA_eSUN_v2.0.json
+  JSON: CA_eSUN_v2.1.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -27,7 +27,6 @@ METADATA AUDIT
 
 --- CHECK 2: KeyReference Validation ---
   [PASS] QA: exists in XML ArticleSingleQuery
-  [PASS] QGH: exists in XML GunQuery
   [PASS] QGB: exists in XML GunQuery
 
 --- CHECK 3: Field Coverage ---
@@ -144,8 +143,8 @@ METADATA AUDIT
   [PASS]   keyRef QGB: any field 'GunMake' present
   [PASS]   keyRef QGB: any field 'GunTypeCode' present
   [PASS]   keyRef QGB: any field 'RelatedSearchHitIndicator' present
-  [PASS]   keyRef QGH: set field 'CaRequestPurposeCode' present
-  [PASS]   keyRef QGH: set field 'Name' present
+  [PASS]   keyRef QGH: set field 'CaRequestPurposeCode' covered by QGH.A,QGH.B
+  [PASS]   keyRef QGH: set field 'Name' covered by QGH.A,QGH.B
   VehicleRegistrationQuery:
   [PASS]   keyRef QV: set field 'CaRequestPurposeCode' covered by QV.V,QV.P
   [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by QV.V,QV.P
@@ -174,8 +173,7 @@ METADATA AUDIT
   [PASS]   No fields over-promoted from metadata any[] to set[]
 
 --- CHECK 4e: Field demoted to any[] vs metadata set[] ---
-  [FAIL]   keyRef L1.N (DriverLicenseQuery): 'BirthDate' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
-  [FAIL]   keyRef L1.N.DH (DriverHistoryQuery): 'BirthDateDH' DEMOTED to any[] but metadata REQUIRES it in set[] -- the query can fire without it; promote to set[] or record in CA_eSUN_ACCEPTED_DIVERGENCES.txt
+  [PASS]   No metadata-required fields demoted to any[]
 
 --- CHECK 4b: Choice-Set Option Coverage ---
 
@@ -237,6 +235,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 159 PASS / 2 FAIL / 1 WARN
+Total: 159 PASS / 0 FAIL / 1 WARN
 ============================================================
 
