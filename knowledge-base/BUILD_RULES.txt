@@ -1260,6 +1260,31 @@ See also:
   (FL QV pending). Do NOT treat the list as build scope in either direction
   until the platform confirms the semantics.
 
+  IT IS A STANDARD SECTION, NOT AN FL QUIRK -- swept 2026-07-31 at Rob's prompt
+  ("that snippet should be in every dev doc"). Present on 17 of 20 devdoc extracts,
+  with a near-identical list, so this is CommSys boilerplate rather than one
+  state's note:
+    - 14 providers verbatim: "NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle)"
+      (AZ, FL, HI, IL, LA, NM, NY, OR, TN, TX, TX_CCH, + see variants below)
+    - NJ_NJCJIS adds a state family: "NCIC (QA, QB, QG, QV, QW), NJWP, and DMV
+      (Person and Vehicle)"
+    - CA regionals (CLETS_OCATS, SAN_LUIS_OBISPO, VENTURA_COUNTY) name the DMV
+      differently: "DMV(IDOT) (Person and Vehicle)"
+    - OH_LEADS uses a variant HEADING: "Data-Mined Transactions & Fields:"
+      -- any parser looking for this section must not anchor on the exact heading.
+    - ABSENT from 3 extracts: MD_METERS, CA_CONTRA_COSTA, CA_eSUN. For the first
+      two the extract is suspiciously small (MD 8 kb / 399 lines, CA_CONTRA_COSTA
+      4 kb / 232 lines vs CA_eSUN's 142 kb), so treat absence there as a probable
+      INCOMPLETE pdftotext extract to re-run, NOT as evidence the section is
+      missing from the devdoc.
+
+  Rob's standing framing (2026-07-31): these are "automated assumption for now."
+  So the status is unchanged -- still PROVISIONAL, still not build scope in either
+  direction -- but the inference is now portfolio-wide rather than FL-specific, and
+  an unbuilt metadata combination whose key is in this list is the EXPECTED state
+  awaiting confirmation, not a coverage gap to go build. Cite this section when
+  adjudicating a "MISSING" metadata combination in that family (FL v7.14 carries 4).
+
   DEVDOCS CONTAIN NO KEY MNEMONICS: never justify building/skipping by a devdoc
   "key list" -- FL's devdoc has ZERO occurrences of FBQ/BQ/KQ/FDQ/RQ/DQ. Key
   mnemonics exist only in metadata MessageKey definitions. The devdoc "Possible
