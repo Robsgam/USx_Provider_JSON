@@ -1,5 +1,49 @@
 # PENDING_UPDATES.txt -- CA_CONTRA_COSTA
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
-# Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:FORM-REACHABLE-COMBOS] Remove routing-affecting form defaults so every devdoc Basic combination is reachable FROM THE FORM. Found by enforce PHASE 2n / audit_query_trace across ALL providers: CA_CONTRA_COSTA = 12 combos (purposeCode=C, same as its CA_CLETS twin), OH_LEADS = 1 combo. Run tools\audit_query_trace.ps1 -Provider <name> for the exact prefill to remove. (flagged 2026-07-30)
+# ═══ PROVIDER IS ON HOLD (Rob, 2026-07-31: "put contra costa on hold until further notice") ═══
+# Do NOT rebuild, test, or re-raise this provider's findings until Rob lifts the hold.
+# It is parked in an INTERNALLY CONSISTENT state at v2.2 -- not mid-bump -- so picking it back up is
+# a clean start: JSON/build script/STATUS/SQVR/JSON_INVENTORY/BUILD_NOTES/CHANGELOG/CLAUDE.md all
+# read v2.2 and 79P/0F/0W, and the test package was reset to v2.2 (0 logs, plan regenerated).
+#
+# CLEARED 2026-07-31 -- and the flag's DIAGNOSIS WAS WRONG, same as it was for CA_CLETS:
+# [FLAG:FORM-REACHABLE-COMBOS] claimed "12 combos (purposeCode=C, same as its CA_CLETS twin)".
+#   purposeCode is in EVERY CA-family combo's set[], so prefilling it satisfies that field equally
+#   for all of them and CANNOT shadow one over another. The 12 IV.4x/IL.A1 plate-type sub-variants
+#   are unreachable because IA.QV's set[] is a strict SUBSET of theirs -- structural first-match
+#   shadowing, present with or without the prefill. All 12 are registered accepted divergences and
+#   audit_query_trace reports 0 PREFILL-DEAD (recoverable). Removing the prefill would recover
+#   NOTHING and would break CAD injection on every CA combo, since CAD does not apply form
+#   initialValues (BUILD_RULES 12).
+#
+# WHAT v2.2 FIXED (both were REAL, verified against CONTRA COSTA'S OWN metadata, not assumed from
+# the CA_CLETS twin):
+#   - IG.QGH SPLIT into IG.QGH.A (set[..,age]) + IG.QGH.B (set[..,BirthDate]). The single collapsed
+#     combo satisfied NO metadata variant: #1 requires SexCode (not carried) and #2/#3 put
+#     Choice[Age|BirthDate] INSIDE <Set>, which makes one of them mandatory. See QIDM_REFERENCE.txt
+#     SECTION 1b. devdoc GunQuery #2 (Age) is ordered before #3 (BirthDate).
+#   - IR.QVC.O no longer requires criminalIdNumber (metadata variant #3 makes CII/SSN OPTIONAL);
+#     new IR.QVC.OS carries the SSN branch; ID.L1 gained socialSecurityNumber NOT_EXISTS. Without
+#     this, an OLN+SSN fill fell through to ID.L1 -- whose metadata defines NO optionals -- and the
+#     officer's SSN was accepted by the form and SILENTLY NOT TRANSMITTED.
+#
+# STILL OWED WHEN THE HOLD LIFTS (do not action now):
+#   1. 4 UNDER / 7 OVER fidelity findings, all the SAME CLASSES CA_CLETS had:
+#      REGISTER (looser metadata variant legitimately permits it): IR.QVC.N BirthDate/Age,
+#        NLTS.DQ.N SexCode/BirthDate.
+#      CANDIDATE REMOVALS pending the CC DEVDOC check: IA.QV over-permits LicensePlateTypeCode /
+#        LicensePlateYear / VehicleMakeCode / vehicleYear, and 'age' on IR.QVC.O / .C / .S.
+#        FL v7.14 precedent: removal is correct ONLY when the devdoc does not list the field either.
+#      When registering an unbuilt-class row, the keyRef must name the UNBUILT thing (e.g.
+#      "(devdoc #N)"), never a live combo -- that silently suppresses the combo's whole comparison
+#      (audit_requirement_fidelity now emits REGISTRY OVER-SUPPRESSION RISK if you get it wrong).
+#   2. 2 MISSING metadata combos (IR.QVC / NLTS.DQ set[CaRequestPurposeCode] only) -- adjudicate
+#      against the devdoc Basic list; a purpose-code-only query is almost certainly not a real search.
+#   3. JAWS IS NOT BUILDABLE from the sources we hold, and this is a fact not a judgement:
+#      the devdoc names CaContraCostaJawsWarrantQuery and CaContraCostaJawsPersonQuery but then says
+#      "See JAWS Inquiry and Update Documentation" -- a document NOT in source/ -- and Contra Costa's
+#      metadata contains ZERO JAWS nodes (no fields, no transactions, no combinations). To unblock:
+#      obtain that documentation AND metadata defining the two transactions. Rob 2026-07-31: "that
+#      may possibly change but its something that will eventually be built."
+#   4. A full 5-entity tenant sweep (test package is reset; 0 logs at v2.2).

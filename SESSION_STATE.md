@@ -40,6 +40,15 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ---
 
+## ⛔ ON HOLD -- do not touch, do not re-raise
+
+- **CA_CONTRA_COSTA** -- Rob 2026-07-31: *"put contra costa on hold until further notice."*
+  Parked CLEAN at **v2.2, enforce 36 PASS / 0 FAIL / 0 WARN**, test package reset (0 logs).
+  v2.2 fixed both defects it inherited from its CA_CLETS twin (IG.QGH Choice-in-Set split;
+  IR.QVC.O/IR.QVC.OS/ID.L1 SSN drop). What remains when the hold lifts is written up in
+  `providers/CA_CONTRA_COSTA/docs/tracking/PENDING_UPDATES.txt` -- including that **JAWS is not
+  buildable** (devdoc defers to a "JAWS Inquiry and Update Documentation" not in `source/`, and the
+  metadata has ZERO JAWS nodes). Do not rebuild, test, or re-raise its 7 advisory fidelity findings.
 ## NEXT PHYSICAL ACTION
 
 **TX_TLETS v4.18 is the solid one and needs nothing.** ALL-PASS 89/89, enforce 39 PASS/0 FAIL/0 WARN,
