@@ -149,6 +149,26 @@ re-run to prove the check still fails.
 
 **Promote any triaged-real fuzz survivor into `audit_gate_efficacy`'s `$MUTS`,** then fix the gate.
 
+## Step 4b — AFTER A DIRECT BUILD-SCRIPT RUN, RESET THE TEST PACKAGE
+
+`pipeline.ps1` calls `reset_test_package.ps1` for you (its step 1). **Calling
+`providers/<P>/scripts/build_<p>.ps1` directly does NOT** — so the prior version's TEST_PLAN
+survives the version bump, and its tests still name combos that no longer exist.
+
+```
+tools\reset_test_package.ps1 -Provider <NAME> -Force
+```
+
+**How this bites, and why it looks like someone else's bug:**
+`audit_simulator_parity` is a **GLOBAL** cross-check despite taking `-Path` — it walks EVERY
+provider's plan against the canonical firing walk. Rebuilding CA_CONTRA_COSTA to v2.2 without
+resetting left 4 stale plan tests expecting `ID.L1`/`IG.QGH`, and that made
+`[FAIL] simulator parity` appear on **all five** unrelated providers in the next batch, each looking
+like its own defect. One reset cleared all five (1173 plan tests across 20 plans agree).
+
+So: a per-provider gate can carry a GLOBAL finding. Before treating the same FAIL on N providers as
+N defects, check whether the tool is provider-scoped at all.
+
 ## Step 5 — FINALIZE
 
 ```

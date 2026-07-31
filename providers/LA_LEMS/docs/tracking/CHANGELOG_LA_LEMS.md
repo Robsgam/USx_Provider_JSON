@@ -2,7 +2,7 @@
 
 Auto-generated from `LA_LEMS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.0** | Generated: 2026-07-30
+Current: **v3.0** | Generated: 2026-07-31
 
 ---
 
