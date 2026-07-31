@@ -1,7 +1,7 @@
 ﻿CA_CLETS METADATA REFERENCE
 ============================
-Generated: 2026-07-28
-Source: CA_CLETS.xml (metadata) + CA_CLETS_v2.22.json
+Generated: 2026-07-31
+Source: CA_CLETS.xml (metadata) + CA_CLETS_v2.23.json
 Metadata: 179 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -117,11 +117,12 @@ METADATA COMBINATIONS (8 total):
   NLTS.DQ       Name                    CaRequestPurposeCode                                   --
   NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
 
-BUILD COVERAGE (8 of 8 built):
+BUILD COVERAGE (9 of 8 built):
   BUILT   NLTS.DQ.N      set[purposeCode, NameLast, NameFirst, RegistrationState]
   BUILT   NLTS.DQ        set[purposeCode, OperatorLicenseNumber, RegistrationState]
   BUILT   IR.QVC.N       set[purposeCode, NameLast, NameFirst, SexCode]
-  BUILT   IR.QVC.O       set[purposeCode, OperatorLicenseNumber, criminalIdNumber]
+  BUILT   IR.QVC.O       set[purposeCode, OperatorLicenseNumber]
+  BUILT   IR.QVC.OS      set[purposeCode, OperatorLicenseNumber]
   BUILT   IR.QVC.C       set[purposeCode, criminalIdNumber]
   BUILT   IR.QVC.S       set[purposeCode, socialSecurityNumber]
   BUILT   ID.L1          set[purposeCode, OperatorLicenseNumber]
@@ -147,8 +148,9 @@ METADATA COMBINATIONS (2 total):
   IG.QGB        GunSerialNumber         CaRequestPurposeCode, GunSerialNumber                  GunCaliber, GunMake, GunTyp...
   IG.QGH        Name                    CaRequestPurposeCode, Name                             --
 
-BUILD COVERAGE (2 of 2 built):
-  BUILT   IG.QGH         set[purposeCode, NameLast, NameFirst]
+BUILD COVERAGE (3 of 2 built):
+  BUILT   IG.QGH.A       set[purposeCode, NameLast, NameFirst, age]
+  BUILT   IG.QGH.B       set[purposeCode, NameLast, NameFirst, BirthDate]
   BUILT   IG.QGB         set[purposeCode, serialNumber]
 
 ================================================================================
@@ -233,11 +235,11 @@ BUILD SUMMARY
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
   BoatQuery                                  7      6     1  86%
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
-  DriverLicenseQuery                         8      8     0  100% (COMPLETE)
-  GunQuery                                   2      2     0  100% (COMPLETE)
+  DriverLicenseQuery                         8      9     0  112%
+  GunQuery                                   2      3     0  150%
   VehicleRegistrationQuery                  19      5    14  26%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   40     25    15  62%
+  TOTAL                                   40     27    15  68%
 
 ================================================================================
 UNBUILT METADATA COMBOS (15 combos in metadata, not in JSON)

@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.22.json
-  Generated: 2026-07-31 09:54
+  Source: CA_CLETS_v2.23.json
+  Generated: 2026-07-31 15:34
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS_v2.22
+ POST-BUILD VERIFICATION: CA_CLETS_v2.23
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -51,7 +51,7 @@ POST-BUILD VERIFICATION
   [PASS] All conditions[].field values reference valid QIF fieldIds (no inert conditions)
 
 --- CHECK 12: NOT_EXISTS field not in own set[]/any[] (gate-xor-companion) ---
-  [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
+  [FAIL] QIDM 'CA_CLETS_DriverLicenseQuery' combo 'IR.QVC.OS': NOT_EXISTS field 'criminalIdNumber' is also in any[] -- dead config (can never serialize) + poisons test conductor; remove it from any[] (gate XOR companion)
 
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -65,7 +65,6 @@ POST-BUILD VERIFICATION
   [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'addressCity' (any[]-only) label='City' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement))
   [INFO] Field 'addressStreetNumber' (any[]-only) label='Street Number' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement))
-  [INFO] Field 'age' (any[]-only) label='Age' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
   [INFO] Field 'addressCounty' (any[]-only) label='County' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
   [INFO] Field 'height' (any[]-only) label='Height' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
   [INFO] Field 'raceCode' (any[]-only) label='Race' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
@@ -89,7 +88,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION PASSED: 17 PASS / 0 WARN / 0 FAIL
+ VERIFICATION FAILED: 1 FAIL / 0 WARN / 16 PASS
 ========================================
 
 

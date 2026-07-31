@@ -128,7 +128,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.22"
+    [string]$Version = "2.23"
 )
 
 $ErrorActionPreference = "Stop"
@@ -343,10 +343,17 @@ $dlQuery = [PSCustomObject]@{
     )
     combinations = @(
         # --- NLTS.DQ.N: OOS name search (most specific — name + state required + OLN>Name guardrail) ---
+        # v2.23: SexCode ADDED to any[]. Metadata NLTS.DQ{Name} variant 2 is
+        #     Set[CaRequestPurposeCode, Name, State] Any[BirthDate, SexCode]
+        # which is exactly the alternative this combo implements -- but SexCode was not carried AT
+        # ALL, so an officer filling Name+State+Sex for an out-of-state driver lookup lost the Sex
+        # qualifier silently. Added to any[] (never set[]): the stricter variants that additionally
+        # REQUIRE BirthDate and/or SexCode stay unimplemented-by-choice and are registered, because
+        # promoting either into set[] would make the common Name+State search unreachable.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','NameLast','NameFirst','RegistrationState')
-                any        = @('BirthDate')
+                any        = @('BirthDate','SexCode')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -403,20 +410,29 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IR.QVC.N'
             state                 = 'In/Out'
         }
-        # --- IR.QVC.OLN: Criminal records by OLN + CII. NLTS.DQ fires first when State present
-        #     (RegistrationState EXISTS condition); IR.QVC.O fires OLN+CII when no State. ---
+        # --- IR.QVC.OLN: Criminal records by OLN, with CII/SSN as OPTIONAL qualifiers.
+        # v2.23 FIX -- criminalIdNumber REMOVED from set[]. It was never metadata-mandatory: the
+        # three metadata IR.QVC{OperatorLicenseNumber} variants are
+        #     #1 Set[CaRequestPurposeCode, OperatorLicenseNumber]
+        #     #2 Set[CaRequestPurposeCode, OperatorLicenseNumber]
+        #     #3 Set[CaRequestPurposeCode, OperatorLicenseNumber] Any[CriminalIdNumber, SocialSecurityNumber]
+        # so CII and SSN are OPTIONALS on this path (variant #3), never requirements. Requiring CII
+        # made an OLN+SSN fill fall through to ID.L1, whose pool has neither -- so the officer's SSN
+        # was accepted by the form and SILENTLY NOT TRANSMITTED. That is devdoc DriverLicenseQuery #6
+        # "(In/Out) OperatorLicenseNumber, [CriminalIdNumber, SocialSecurityNumber]", caught by
+        # audit_devdoc_optionals as "fires ID.L1 but optional(s) SocialSecurityNumber are in NO
+        # matching combo's set[]/any[]".
+        # Conditions are AND-only, so "CII or SSN present" needs TWO combos. Both must sit ahead of
+        # ID.L1, which keeps the OLN-alone path (metadata variants #1/#2).
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','OperatorLicenseNumber','criminalIdNumber')
-                any        = @('socialSecurityNumber','age')
+                set        = @('purposeCode','OperatorLicenseNumber')
+                any        = @('criminalIdNumber','socialSecurityNumber','age')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
-                    # v2.12: criminalIdNumber EXISTS -- OLN-without-CII routes in-state ID.L1;
-                    # OLN+CII fires this criminal super-inquiry. Keeps IR.QVC.O and ID.L1
-                    # mutually exclusive on the OLN path (both State NOT_EXISTS).
                     [PSCustomObject]@{ field = @('criminalIdNumber');  operator = 'EXISTS' }
                 )
             }
@@ -424,12 +440,39 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IR.QVC.O'
             state                 = 'In/Out'
         }
+        # --- IR.QVC.OLN+SSN: same metadata variant #3, SSN branch of the OR. Synthetic keyRef
+        #     suffix '.OS' (LIMITATION #21/#36 -- provider routes by field content, not keyRef). ---
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('purposeCode','OperatorLicenseNumber')
+                any        = @('criminalIdNumber','socialSecurityNumber','age')
+                defaults   = @(
+                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('criminalIdNumber');      operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('socialSecurityNumber');  operator = 'EXISTS' }
+                )
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'IR.QVC.OS'
+            state                 = 'In/Out'
+        }
         # --- IR.QVC.CriminalId: Criminal records by CII only. Blocked when OLN present.
-        #     OperatorLicenseNumber removed from any[] -- NOT_EXISTS XOR guard; SSN/Age stay. ---
+        #     OperatorLicenseNumber removed from any[] -- NOT_EXISTS XOR guard; SSN stays.
+        # v2.23: 'age' REMOVED from any[] -- a genuine over-send. Both metadata
+        # IR.QVC{CriminalIdNumber} variants are
+        #     Set[CaRequestPurposeCode, CriminalIdNumber]
+        #     Set[CaRequestPurposeCode, CriminalIdNumber] Any[OperatorLicenseNumber, SocialSecurityNumber]
+        # and NEITHER defines Age; devdoc DriverLicenseQuery #5 is "(In/Out) CriminalIdNumber,
+        # [OperatorLicenseNumber, SocialSecurityNumber]" -- also no Age. Both authorities agree, so
+        # this is a REMOVAL, not a promoted-to-any registry entry (FL v7.14 precedent: removal is
+        # correct precisely when the devdoc does not list the field either). ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','criminalIdNumber')
-                any        = @('socialSecurityNumber','age')
+                any        = @('socialSecurityNumber')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -459,9 +502,14 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         # --- ID.L1: pure in-state OLN lookup (catchall). Real devdoc keyRef. Fires when OLN
-        #     present with no State (OOS NLTS.DQ needs State EXISTS) and no CII (IR.QVC.O needs
-        #     CriminalIdNumber EXISTS) -- i.e. the plain "look up a local driver by OLN" case.
-        #     v2.12 restore: closed the in-state backstop gap left by v2.11's removal. ---
+        #     present with no State (OOS NLTS.DQ needs State EXISTS), no CII and no SSN -- i.e. the
+        #     plain "look up a local driver by OLN" case. Matches metadata IR-style variants #1/#2
+        #     (Set[CaRequestPurposeCode, OperatorLicenseNumber], no optionals).
+        #     v2.12 restore: closed the in-state backstop gap left by v2.11's removal.
+        # v2.23: socialSecurityNumber NOT_EXISTS ADDED. Without it this combo swallowed an OLN+SSN
+        #     fill (IR.QVC.O then required CII, so nothing ahead of ID.L1 matched) and dropped the
+        #     SSN silently, because ID.L1's metadata variants define NO optionals. The SSN branch now
+        #     lives on IR.QVC.OS above; this gate is what hands the fill over to it. ---
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','OperatorLicenseNumber')
@@ -470,8 +518,9 @@ $dlQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
                 conditions = @(
-                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('criminalIdNumber');  operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');    operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('criminalIdNumber');     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('socialSecurityNumber'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -610,17 +659,49 @@ $gunQuery = [PSCustomObject]@{
         }
     )
     combinations = @(
-        # IG.QGH: owner name search. Devdoc combos 2+3 add Age or BirthDate optionally.
+        # IG.QGH: owner name search -- SPLIT into one combo per discriminator at v2.23.
+        #
+        # WHAT WAS WRONG, and it shipped: the previous comment here read "Devdoc combos 2+3 add Age
+        # or BirthDate optionally" and built ONE combo with set[purposeCode,Name] any[BirthDate,age].
+        # Both authorities say otherwise:
+        #   DEVDOC  GunQuery #2 "(in/Out) Name, Age" and #3 "(In/Out) Name, BirthDate" -- NO square
+        #           brackets, so the discriminator is MANDATORY. Brackets are what marks an optional
+        #           in this devdoc (cf. #1 "GunSerialNumber, [GunCaliber, GunMake, GunTypeCode]").
+        #   METADATA the three IR-style IG.QGH{Name} variants are
+        #           #4 Set[CaRequestPurposeCode, Name, SexCode] Any[Choice[Age|BirthDate]]
+        #           #5 Set[CaRequestPurposeCode, Name, Choice[Age|BirthDate]]
+        #           #6 Set[CaRequestPurposeCode, Choice[Age|BirthDate], Name]
+        #           A <Choice> INSIDE <Set> means exactly one of its fields is REQUIRED (#5/#6);
+        #           only #4 makes it optional, and #4 additionally requires SexCode, which we do not
+        #           carry. So the single collapsed combo satisfied NO metadata variant at all.
+        # Consequence: a Name-only gun query was accepted and sent, and log CA_CLETS_v2.22_IG.QGH.txt
+        # shipped exactly that -- which is why enforce PHASE 6 gate 6d FAILed on 1 of 90 logs while
+        # 6c and 2i both passed it. Content and attribution cannot see a missing REQUIREMENT.
+        # Order: devdoc #2 (Age) precedes #3 (BirthDate), and the two set[]s are disjoint peers that
+        # specificity cannot separate, so the devdoc listing order is the tiebreaker (BUILD_RULES:
+        # line 2 of the ordering rule). audit_devdoc_order verifies it.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','NameLast','NameFirst')
-                any      = @('BirthDate','age')
+                set      = @('purposeCode','NameLast','NameFirst','age')
+                any      = @()
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
             }
             primaryFieldReference = 'Name'
-            keyReference          = 'IG.QGH'
+            keyReference          = 'IG.QGH.A'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set      = @('purposeCode','NameLast','NameFirst','BirthDate')
+                any      = @()
+                defaults = @(
+                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IG.QGH.B'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
