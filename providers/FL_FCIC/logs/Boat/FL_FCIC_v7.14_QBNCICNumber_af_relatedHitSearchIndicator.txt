@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBNCICNumber_af_relatedHitSearchIndicator (QBNCICNumber_af_relatedHitSearchIndicator (auto))
+Date: 2026-07-31 14:34:05
+Result: PASS
+JSON Version: 7.14
+Entity Fingerprint: 494c36a92f7c77f30015e52092acbc63a6f35c8355697976179e4501c72b27ce
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","NCICNumber":"B123456789","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KYWQ240J63CRGVQZTH5GGG0F">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KYWQ240J63CRGVQZTH5GGG0F</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <NCICNumber>B123456789</NCICNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KYWQ240J63CRGVQZTH5GGG0F
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 N
+  NCICNumber                     B123456789
+
+NOTES
+-----
+Automated capture (txId 01KYWQ240J63CRGVQZTH5GGG0F). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=QBNCICNumber; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
