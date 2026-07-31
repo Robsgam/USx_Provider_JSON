@@ -1,0 +1,26 @@
+
+[OPEN 2026-07-30 -- FL_FCIC BLOCKS enforce, 2 real defects, needs Rob's adjudication]
+  1. DROPPED OPTIONAL (officer input silently lost). enforce 2q, 5 failing subsets:
+     BoatQuery #1 +[RegistrationNumber] (and +Decal/+TitleLien combinations) fires
+     FBQBoatHullIdNumber, but RegistrationNumber is in NO matching combo's set[]/any[], so it is
+     NOT TRANSMITTED. An officer who types a hull AND a registration number loses the reg number
+     with no indication. Same class as TX_TLETS's 17 dropped devdoc optionals.
+     DECISION NEEDED: ride RegistrationNumber in FBQBoatHullIdNumber's any[] (Rob's standing rule --
+     never drop a devdoc-OPTIONAL combination field), or record it as devdoc-optional-unreachable.
+     Check FIRST whether metadata FBQ defines RegistrationNumber for that combination; if it does
+     not, riding it is an OVER-PERMIT and the answer may be the registry instead.
+  2. UNBUILT DEVDOC PATH. VehicleRegistrationQuery #3 is devdoc-listed but TitleLienInformation is
+     wired nowhere in that query. audit_query_trace also reports FRQ set[TitleLienInformation]
+     MISSING. Build it or record it.
+  3. query_trace also reports 3 further MISSING for adjudication: DriverHistoryQuery KQ
+     set[OperatorLicenseNumber,State]; DriverLicenseQuery QW set[BirthDate,Name] and
+     set[Name,OperatorLicenseNumber]. QW is the platform-auto-fired shadow class on TX -- check
+     whether the same ruling applies here before building anything.
+  4. Fidelity: 4 UNDER-REQUIRED / 4 OVER-PERMITTED over 30 branches (see
+     tools\audit_requirement_fidelity.ps1 -Provider FL_FCIC).
+  DO NOT RUN THE FL TENANT SWEEP UNTIL 1 AND 2 ARE RESOLVED. Its 111 existing logs are green
+  against a build that silently drops officer input -- precisely the false-green pattern the
+  2026-07-30 work existed to eliminate.
+
+  NOT a defect, resolved: the BUILD_NOTES date FAIL was doc drift only; sync_version_docs fixed it
+  without a version bump, so the 111 logs were preserved.

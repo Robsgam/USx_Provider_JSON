@@ -6,7 +6,7 @@ Current: **v4.14** | Generated: 2026-07-30
 
 ---
 
-## v4.14 -- 2026-07-28 -- Layout review -- Vehicle 1-card collapse + Boat title (direct Rob feedback, NO functional change)
+## v4.14 -- 2026-07-30 -- Layout review -- Vehicle 1-card collapse + Boat title (direct Rob feedback, NO functional change)
 
 **CHANGED:** Two changes from the NJ v4.13 rendered-form review (mirrors the FL v7.11/v7.12 pass):
   (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE  

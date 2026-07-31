@@ -6,7 +6,7 @@ Current: **v7.12** | Generated: 2026-07-30
 
 ---
 
-## v7.12 -- 2026-07-28 -- Entity display-order change (direct Rob feedback)
+## v7.12 -- 2026-07-30 -- Entity display-order change (direct Rob feedback)
 
 **CHANGED:** Default entity display order Person-first -> Vehicle-first:
   @('Person','Vehicle','Firearm','Article','Boat') -> @('Vehicle','Person','Firearm','Article',  

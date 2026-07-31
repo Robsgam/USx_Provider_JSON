@@ -2,7 +2,7 @@ NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
-v4.14  2026-07-28  Layout review -- Vehicle 1-card collapse + Boat title (direct Rob feedback, NO functional change)
+v4.14  2026-07-30  Layout review -- Vehicle 1-card collapse + Boat title (direct Rob feedback, NO functional change)
   CHANGED: Two changes from the NJ v4.13 rendered-form review (mirrors the FL v7.11/v7.12 pass):
     (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE
       "VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, \"OR\" VIN" card -- Row 1 Plate/Type/Year,
@@ -392,3 +392,20 @@ v2.0-mc  2026-04-28  MC variant of v2.0 BASE
 
 
 
+
+[AUDIT 2026-07-30] NJ_NJCJIS v4.14 verified green: enforce 40 PASS / 0 FAIL / 0 WARN.
+  The only blocker was a BUILD_NOTES/JSON date mismatch (doc drift); sync_version_docs cleared it
+  with NO version bump, so the 35 existing tenant logs were preserved.
+  audit_query_trace reports 4 SHADOW on VehicleRegistrationQuery -- EXPECTED AND BENIGN, explained
+  here so it is not re-litigated: metadata RAND and FULL carry BYTE-IDENTICAL requirement sets,
+  differing only in field ORDER --
+      RAND [LicensePlateNumber, RandomRequest, State, LicensePlateTypeCode]
+      FULL [LicensePlateNumber, State, LicensePlateTypeCode, RandomRequest]
+      RAND [VehicleIdentificationNumber, RandomRequest, State]
+      FULL [VehicleIdentificationNumber, State, RandomRequest]
+  Under first-match routing two identical signatures can never be distinguished, so building both
+  would guarantee one dead combo. NJ correctly MERGES them into RANDFULL (plate) and RANDFULLN
+  (VIN), requiring only the identifier in set[] and riding RandomRequest/State/PlateType in any[]
+  so BOTH metadata variants are satisfiable. The 7 audit_requirement_fidelity UNDER-REQUIRED
+  findings are the same artifact of that deliberate merge, not omissions.
+  The SHADOW is METADATA's property, not a build defect. Do not "fix" it by splitting the combos.
