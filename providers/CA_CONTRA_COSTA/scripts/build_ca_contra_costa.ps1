@@ -71,7 +71,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.1"
+    [string]$Version = "2.2"
 )
 
 $ErrorActionPreference = "Stop"
@@ -332,25 +332,53 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IR.QVC.N'
             state                 = 'In/Out'
         }
-        # --- IR.QVC.OLN: Criminal records by OLN + CII. NLTS.DQ fires first when State present
-        #     (RegistrationState EXISTS condition); IR.QVC.O fires OLN+CII when no State. ---
+        # --- IR.QVC.OLN: Criminal records by OLN, with CII/SSN as OPTIONAL qualifiers.
+        # v2.2 FIX (propagated from CA_CLETS v2.23 -- CONTRA COSTA IS A CA_CLETS TWIN AND CARRIED THE
+        # IDENTICAL DEFECT). criminalIdNumber REMOVED from set[]. Verified against CONTRA COSTA'S OWN
+        # metadata, not assumed from CA: its three IR.QVC{OperatorLicenseNumber} variants are
+        #     #1 Set[CaRequestPurposeCode, OperatorLicenseNumber]
+        #     #2 Set[CaRequestPurposeCode, OperatorLicenseNumber]
+        #     #3 Set[CaRequestPurposeCode, OperatorLicenseNumber] Any[CriminalIdNumber, SocialSecurityNumber]
+        # so CII/SSN are OPTIONALS here, never requirements. Requiring CII sent an OLN+SSN fill past
+        # this combo to ID.L1, whose metadata defines NO optionals -- the officer's SSN was accepted
+        # by the form and SILENTLY NOT TRANSMITTED (devdoc DriverLicenseQuery OLN item).
+        # Conditions are AND-only, so "CII or SSN present" needs TWO combos; both sit ahead of ID.L1,
+        # which keeps the OLN-alone path (variants #1/#2).
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set        = @('purposeCode','OperatorLicenseNumber','criminalIdNumber')
-                any        = @('socialSecurityNumber','age')
+                set        = @('purposeCode','OperatorLicenseNumber')
+                any        = @('criminalIdNumber','socialSecurityNumber','age')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
-                    # v2.12: criminalIdNumber EXISTS -- OLN-without-CII routes in-state ID.L1;
-                    # OLN+CII fires this criminal super-inquiry. Keeps IR.QVC.O and ID.L1
-                    # mutually exclusive on the OLN path (both State NOT_EXISTS).
                     [PSCustomObject]@{ field = @('criminalIdNumber');  operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'IR.QVC.O'
+            state                 = 'In/Out'
+        }
+        # --- IR.QVC.OLN+SSN: same metadata variant #3, SSN branch of the OR. Synthetic keyRef suffix
+        #     '.OS' (LIMITATION #21/#36 -- provider routes by field content, not keyRef).
+        #     criminalIdNumber deliberately ABSENT from any[]: this combo gates on its ABSENCE, so
+        #     carrying it would be a field that can never serialize (verify_build CHECK 12). ---
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('purposeCode','OperatorLicenseNumber')
+                any        = @('socialSecurityNumber','age')
+                defaults   = @(
+                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('criminalIdNumber');      operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('socialSecurityNumber');  operator = 'EXISTS' }
+                )
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'IR.QVC.OS'
             state                 = 'In/Out'
         }
         # --- IR.QVC.CriminalId: Criminal records by CII only. Blocked when OLN present.
@@ -398,9 +426,13 @@ $dlQuery = [PSCustomObject]@{
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
+                # v2.2: socialSecurityNumber NOT_EXISTS ADDED (propagated from CA_CLETS v2.23).
+                # ID.L1's metadata variants define NO optionals, so when it swallowed an OLN+SSN fill
+                # the SSN could not ride and was dropped. This gate hands that fill to IR.QVC.OS.
                 conditions = @(
-                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('criminalIdNumber');  operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');    operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('criminalIdNumber');     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('socialSecurityNumber'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -539,17 +571,45 @@ $gunQuery = [PSCustomObject]@{
         }
     )
     combinations = @(
-        # IG.QGH: owner name search. Devdoc combos 2+3 add Age or BirthDate optionally.
+        # IG.QGH: owner name search -- SPLIT into one combo per discriminator at v2.2.
+        #
+        # The previous comment here read "Devdoc combos 2+3 add Age or BirthDate optionally" and
+        # built ONE combo with set[purposeCode,Name] any[BirthDate,age]. That is wrong, and it is the
+        # same defect CA_CLETS shipped (fixed there at v2.23). Verified against CONTRA COSTA'S OWN
+        # metadata -- its three IG.QGH{Name} variants are:
+        #     #1 Set[CaRequestPurposeCode, Name, SexCode] Any[Choice[Age|BirthDate]]
+        #     #2 Set[CaRequestPurposeCode, Name, Choice[Age|BirthDate]]
+        #     #3 Set[CaRequestPurposeCode, Choice[Age|BirthDate], Name]
+        # A <Choice> INSIDE <Set> makes exactly one of its fields REQUIRED (#2/#3); only #1 makes the
+        # qualifier optional, and #1 additionally requires SexCode, which we do not carry. So the
+        # single collapsed combo satisfied NO variant and a Name-only gun query would be accepted and
+        # sent. set[] has no OR, so the only correct build is one combination per branch.
+        # See QIDM_REFERENCE.txt SECTION 1b for the <Choice>-position rule.
+        # Order: devdoc GunQuery #2 (Name, Age) precedes #3 (Name, BirthDate), and the two set[]s are
+        # disjoint peers that specificity cannot separate, so the devdoc listing order is the
+        # tiebreaker. audit_devdoc_order verifies it.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set      = @('purposeCode','NameLast','NameFirst')
-                any      = @('BirthDate','age')
+                set      = @('purposeCode','NameLast','NameFirst','age')
+                any      = @()
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
             }
             primaryFieldReference = 'Name'
-            keyReference          = 'IG.QGH'
+            keyReference          = 'IG.QGH.A'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set      = @('purposeCode','NameLast','NameFirst','BirthDate')
+                any      = @()
+                defaults = @(
+                    [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IG.QGH.B'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
