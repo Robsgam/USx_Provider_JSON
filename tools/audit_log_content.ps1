@@ -8,14 +8,29 @@
   Exit 0 only when: 0 stale (log label not in plan), 0 mismatch, 0 guardrail wire failures.
   Wired into enforce.ps1 PHASE 6 for providers that have a TEST_PLAN.
 
-  Usage: .\tools\audit_log_content.ps1 -Provider <name> [-Quiet]
+  Usage: .\tools\audit_log_content.ps1 -Provider <name> [-Quiet] [-Path <json>]
+
+  -Path overrides ONLY the provider JSON used for the guardrail winner-pool lookup; logs and the
+  test plan still come from the provider directory. It exists so audit_gate_efficacy can point the
+  guardrail-wire check at a mutated JSON copy (LAW 2 -- a gate that cannot fail is not a gate).
+  Same convention as audit_requirement_fidelity.ps1. If -Path is omitted the active root JSON is
+  resolved normally, so ordinary runs are unchanged.
 #>
 param(
-    [Parameter(Mandatory)][string]$Provider,
-    [switch]$Quiet
+    [string]$Provider,
+    [switch]$Quiet,
+    [string]$Path
 )
+# -Path alone is enough: derive the provider from the JSON filename so the efficacy harness can
+# invoke this gate the same way it invokes every other one (@('-Path',$workJson)).
+if (-not $Provider) {
+    if (-not $Path) { Write-Host "[audit-log] need -Provider or -Path" -ForegroundColor Red; exit 1 }
+    $Provider = [System.IO.Path]::GetFileNameWithoutExtension($Path) -replace '_v[0-9]+\.[0-9]+$', ''
+}
 
 . (Join-Path $PSScriptRoot '_content_match.ps1')
+. (Join-Path $PSScriptRoot '_sim_helpers.ps1')
+. (Join-Path $PSScriptRoot '_resolve_provider_json.ps1')
 
 function Out-Line($msg, $color = 'Gray') { if (-not $Quiet) { Write-Host $msg -ForegroundColor $color } }
 
@@ -52,6 +67,32 @@ foreach ($f in $logs) {
 $defaultsByMt = if ($plan.formDefaults) { @{} }
                 else { Build-CmDefaults @($parsed | ForEach-Object { [pscustomobject]@{ messageType = $_.MessageType; fs = $_.Fs } }) }
 
+# QIDMs for the winner-pool lookup in the guardrail check below (see the comment there).
+$allQidms = @()
+$provJsonPath = if ($Path) { $Path } else { Get-ProviderRootJson -ProvDir $provDir -Provider $Provider }
+if ($provJsonPath) {
+    try {
+        $pj = Get-Content $provJsonPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        foreach ($b in $pj.bundles) { foreach ($c in $b.configurations) {
+            if ($c.type -eq 'QUERYINPUTDATAMAPPING' -and "$($c.provider)" -ne 'RMS') { $allQidms += $c }
+        } }
+    } catch { }
+}
+# Uppercased set[] u any[] pool of a combo, in BOTH name spaces (attribute name and sourceField),
+# so it can be compared against a plan fill's fieldId whichever convention the provider uses.
+function Get-WinnerPoolIds($qidm, $combo) {
+    $pool = @()
+    foreach ($r in @(@($combo.requirements.set) + @($combo.requirements.any)) | Where-Object { $_ }) {
+        $pool += "$r".ToUpper()
+        $attr = @($qidm.attributes) | Where-Object { $_.name -ieq $r -or (@($_.sourceField) -contains $r) } | Select-Object -First 1
+        if ($attr) {
+            if ($attr.name) { $pool += "$($attr.name)".ToUpper() }
+            foreach ($sf in @($attr.sourceField | Where-Object { $_ })) { $pool += "$sf".ToUpper() }
+        }
+    }
+    return ($pool | Select-Object -Unique)
+}
+
 $stale = @(); $mismatch = @(); $guardFail = @(); $ok = 0
 foreach ($p in $parsed) {
     $cands = @($byLabel[$p.Label])
@@ -82,6 +123,29 @@ foreach ($p in $parsed) {
         if (-not $winner) { $winner = $plan.tests | Where-Object { $_.kind -eq 'combo' -and $_.comboKeyRef -eq $t.expectedKeyRef } | Select-Object -First 1 }
         $wIdNames = @()
         if ($winner) { $wIdNames = @(@($winner.fills) | Where-Object { $_ -and $_.fieldId -match $idRe } | ForEach-Object { $_.fieldId.ToUpper() }) }
+        # ...but the winner's BASE combo test is minimum-required-only, so a devdoc-sanctioned
+        # OPTIONAL identifier on the winner (an any[] entry) can never show up in $wIdNames -- and
+        # was therefore scored as a "losing identifier on the wire". Add the winner combo's real
+        # pool (set[] u any[]) from the JSON, which is the authoritative statement of what that
+        # combo may legitimately carry.
+        #
+        # Live-caught NJ_NJCJIS v4.15 Boat, 2026-07-31. devdoc BoatQuery #1 is
+        # mand=[BoatHullIdNumber] opt=[ImageIndicator, RegistrationNumber] -- the hull query is
+        # EXPLICITLY allowed to carry the registration number, which is exactly why v4.15 put
+        # RegistrationNumber in QBN's any[] (Rob's devdoc-order ruling: on a hull+regnum over-fill
+        # hull wins AND rides the regnum). The old rule called that a leak. Acting on it would have
+        # meant deleting the any[] entry and re-breaking the ruling -- the same error already made
+        # once on this exact field (see memory feedback_combo_order_devdoc_is_tiebreaker).
+        #
+        # This does NOT make the gate unfailable: a losing identifier that is NOT in the winner's
+        # pool still FAILs, which is the real signal (wrong combo fired, or the platform over-sent
+        # beyond the winner's pool -- LIMITATION #1).
+        if ($winner -and $allQidms.Count) {
+            $wh = Get-ComboByKeyRef $allQidms $t.expectedKeyRef $t.query
+            if ($wh) { $wIdNames += (Get-WinnerPoolIds $wh.qidm $wh.combo) }
+            else { Out-Line "  [NOTE] $($p.Label): winner combo '$($t.expectedKeyRef)' not resolvable (query='$($t.query)') -- pool exemption unavailable, base-test fills only" 'DarkYellow' }
+        }
+        $wIdNames = @($wIdNames | Select-Object -Unique)
         $xmlBody = if ($p.Content -match '(?s)COMMSYS XML\s*-+\s*(.*?)(COMMSYS XML RESPONSE|RMS QUERY|FIELD ANALYSIS)') { $Matches[1] } else { $p.Content }
         # Collision-aware: when a value is a substring of ANOTHER fill's value in the same test
         # (CA boat: RegistrationNumber FL1234AB is a prefix of hull FL1234AB56H7), a loose
@@ -105,9 +169,16 @@ foreach ($p in $parsed) {
 
 Out-Line "[audit-log] $Provider v$version -- $($parsed.Count) log(s) vs $($plan.tests.Count) plan test(s)" 'Cyan'
 Out-Line "  OK: $ok" 'Green'
-if ($stale.Count)    { Out-Line "  STALE (label not in plan):" 'Red';    $stale    | ForEach-Object { Out-Line "    $_" 'Red' } }
-if ($mismatch.Count) { Out-Line "  MISMATCH (content vs label):" 'Red';  $mismatch | ForEach-Object { Out-Line "    $_" 'Red' } }
-if ($guardFail.Count){ Out-Line "  GUARDRAIL WIRE FAIL:" 'Red';          $guardFail| ForEach-Object { Out-Line "    $_" 'Red' } }
+# Detail lines carry an explicit [FAIL] marker and the run always prints a RESULT total. Without
+# both, audit_gate_efficacy could not see this gate AT ALL: its vacuous-run detector needs a verdict
+# marker or a parseable RESULT to know the gate even looked, and its detection needs [FAIL]/[WARN]
+# to know it fired. This gate emitted neither, so registering a mutation against it returned
+# [INVALID] baseline VACUOUS -- i.e. one of the four log gates was exempt from mutation testing
+# while reporting green (found 2026-07-31).
+if ($stale.Count)    { Out-Line "  STALE (label not in plan):" 'Red';    $stale    | ForEach-Object { Out-Line "    [FAIL] $_" 'Red' } }
+if ($mismatch.Count) { Out-Line "  MISMATCH (content vs label):" 'Red';  $mismatch | ForEach-Object { Out-Line "    [FAIL] $_" 'Red' } }
+if ($guardFail.Count){ Out-Line "  GUARDRAIL WIRE FAIL:" 'Red';          $guardFail| ForEach-Object { Out-Line "    [FAIL] $_" 'Red' } }
+Out-Line ("  RESULT: {0} FAIL / {1} verified" -f ($stale.Count + $mismatch.Count + $guardFail.Count), $ok) 'Gray'
 
 if ($stale.Count -or $mismatch.Count -or $guardFail.Count) {
     Write-Host "[audit-log] $Provider FAIL: $($stale.Count) stale / $($mismatch.Count) mismatch / $($guardFail.Count) guardrail-wire" -ForegroundColor Red

@@ -34,10 +34,24 @@ $QueryEntity = @{
     'GunQuery' = 'Firearm'; 'ArticleSingleQuery' = 'Article'; 'BoatQuery' = 'Boat'
 }
 
-# Combo inference for captures that carry no combo (e.g. recovered existing dex-log entries):
-# the firing combo is the one whose ENTIRE set[] appears as elements in the request XML; the
-# most-specific (most set fields) wins. Lets us recover arbitrary tenant queries.
+# Combo inference for captures that carry no combo (e.g. recovered existing dex-log entries, and
+# EVERY guardrail test -- emit_test_plan leaves combo null by design there, so this function alone
+# decides the winner's label). Delegates to the canonical Get-FiringKeyRef.
+#
+# DO NOT re-walk "which combo fires" here. This function used to: it scored combos by how much of
+# their set[] appeared on the wire, took the highest score, and broke ties by array position --
+# but it never evaluated requirements.conditions. A combo gated OUT by its own condition therefore
+# beat the combo that actually fired, whenever the loser sat earlier in the array.
+#
+# Live-caught NJ_NJCJIS v4.15 Boat, 2026-07-31. BoatQuery is [1] QB set[RegistrationNumber]
+# + condition 'BoatHullIdNumber NOT_EXISTS', [2] QBN set[BoatHullIdNumber] any[..,RegistrationNumber].
+# The hull-beats-regnum guardrail fills BOTH, so QB is gated out and QBN fires (correctly, per
+# devdoc BoatQuery #1 = hull). Old inference saw RegistrationNumber on the wire, scored QB=1 =
+# QBN=1, kept the earlier QB, and filed the log as 'QB_guardrail_vs_QB'. Gates 6c and 2i both
+# failed it -- the JSON was right, the LABEL was wrong. _sim_helpers.ps1:43 already mandates
+# Get-FiringKeyRef for exactly this reason; this was the last tool still ignoring it.
 . "$toolDir\_resolve_provider_json.ps1"
+. "$toolDir\_sim_helpers.ps1"
 $script:jsonCache = @{}
 function Get-ProviderJsonCached($provider) {
     if ($script:jsonCache.ContainsKey($provider)) { return $script:jsonCache[$provider] }
@@ -55,26 +69,29 @@ function Get-QidmForQuery($provider, $query) {
 }
 function Infer-ComboFromXml($provider, $query, $xml) {
     $qidm = Get-QidmForQuery $provider $query; if (-not $qidm) { return $null }
+    # The wire carries TARGETFIELD element names; Get-FiringKeyRef expects a form fill keyed by
+    # sourceField / attribute name. Translate before asking. targetField (not .name) is what
+    # serializes -- an attribute NAME can be synthetic (e.g. OperatorLicenseNumberDH) purely so a
+    # NOT_EXISTS guardrail can reference it without colliding with a sibling combo's same-named
+    # attribute (FL_FCIC v5.1); keying off .name mis-inferred every such combo (FL_FCIC
+    # KQOperatorLicenseNumber guardrail, 2026-07-02).
     $present = @{}; foreach ($mt in [regex]::Matches($xml, '<(\w+)>')) { $present[$mt.Groups[1].Value.ToLower()] = $true }
-    $best = $null; $bestScore = -1
-    foreach ($c in $qidm.combinations) {
-        $set = @($c.requirements.set); if (-not $set) { continue }
-        $allPresent = $true; $score = 0
-        foreach ($s in $set) {
-            $elem = $s
-            $attr = $qidm.attributes | Where-Object { $_.name -ieq $s -or (@($_.sourceField) -contains $s) } | Select-Object -First 1
-            # targetField (not name) drives wire serialization -- attribute NAME can be made
-            # unique/synthetic (e.g. OperatorLicenseNumberDH) purely so a NOT_EXISTS guardrail
-            # condition can reference it without colliding with a sibling combo's same-named
-            # attribute (FL_FCIC build script v5.1). Using .name here mis-inferred the combo
-            # for every such field (FL_FCIC KQOperatorLicenseNumber guardrail, 2026-07-02).
-            if ($attr) { $elem = if ($attr.targetField) { $attr.targetField } else { $attr.name } }
-            if ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($s.ToLower())) { $score++ } else { $allPresent = $false }
-        }
-        if ($allPresent -and $score -gt $bestScore) { $best = $c; $bestScore = $score }
+    $formData = @{}
+    foreach ($a in @($qidm.attributes)) {
+        $tf = if ($a.targetField) { $a.targetField } else { $a.name }
+        if (-not $tf -or -not $present.ContainsKey("$tf".ToLower())) { continue }
+        # Register BOTH name spaces: set[]/any[] entries appear as either across the portfolio,
+        # and conditions[].field is the sourceField.
+        foreach ($sf in @($a.sourceField | Where-Object { $_ })) { $formData[$sf] = 'X' }
+        if ($a.name) { $formData[$a.name] = 'X' }
     }
-    if ($best) { if ($best.keyReference) { return $best.keyReference } else { return $best.keyRef } }
-    return $null
+    # Any wire element with no matching attribute still counts as present (a combo may name a
+    # form fieldId directly).
+    foreach ($k in $present.Keys) { if (-not $formData.ContainsKey($k)) { $formData[$k] = 'X' } }
+    # 'X' is a safe sentinel: only EXISTS/NOT_EXISTS can act on it, and a conditions array holding
+    # ANY value-comparison operator is poisoned in its entirety (QIDM_REFERENCE Sec 2a), so no
+    # condition ever compares the sentinel's value.
+    return Get-FiringKeyRef @($qidm) $formData
 }
 # Routing verification: does the wire actually carry the EXPECTED combo's set[] identifiers?
 # A correct capture always satisfies this (the fired combo IS the expected one, so its set[]

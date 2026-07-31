@@ -246,6 +246,12 @@ $MUTS = @(
      Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QB'
            $cm.requirements.conditions=@() } }
 
+  @{ Id='nj-guardrail-wire-leak'; OnlyProvider='NJ_NJCJIS'
+     Desc='RegistrationNumber removed from QBN any[], making the reg number a genuine OUT-OF-POOL identifier on the hull-wins guardrail wire. Guards the 2026-07-31 widening of the guardrail-wire exemption: that check used to compare only against the winner BASE combo test fills, which are minimum-required-only, so a devdoc-sanctioned OPTIONAL identifier on the winner (devdoc BoatQuery #1 lists RegistrationNumber as opt on the hull query) read as a leak. The exemption now uses the winner combo set[] u any[] POOL -- and this mutation proves that widening did not make the check unfailable: an identifier NOT in the pool still FAILs. Without it the widening would be indistinguishable from deleting the check.'
+     Gate='audit_log_content.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QBN'
+           $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationNumber' }) } }
+
   @{ Id='nj-fidelity-demote-mandatory'; OnlyProvider='NJ_NJCJIS'
      Desc='LicensePlateNumber demoted from RANDFULL set[] to any[] though metadata RAND/FULL both require it'
      Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
