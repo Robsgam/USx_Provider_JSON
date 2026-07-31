@@ -415,13 +415,22 @@ if (Test-Path $respSimPath) {
 #  Opt-in via -IncludeExtended; run tools/suggest_field_labels.ps1 directly any time.
 # ══════════════════════════════════════════════════════════════════════════════
 
+# Resolve the interpreter ONCE. Steps 12 and 13 used to hard-call `& pwsh`, which is NOT on PATH
+# when this script is itself invoked from Windows PowerShell 5.1 -- and that is exactly how
+# enforce.ps1 reaches it (enforce -> build-freshness regeneration -> build_report). The failure threw
+# a NativeCommandError that aborted enforce mid-run, so enforce produced NO verdict line at all and
+# build_phase1's step [7] silently printed nothing. Caught 2026-07-31 on the first batch of
+# never-tested providers: the six with fresh manifests never re-ran build_report, so the bug hid.
+# Both steps are ADVISORY outputs -- they must never be able to break the gate chain.
+$psExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } else { 'powershell' }
+
 if ($IncludeExtended) {
 Write-Host ""
 Write-Host "  [12/$stepCount] Running label review..." -ForegroundColor Yellow
 $labelReviewPath = Join-Path $toolDir "suggest_field_labels.ps1"
 $labelReviewFile  = Join-Path $ReportsDir "LABEL_REVIEW_$jsonName.txt"
 if (Test-Path $labelReviewPath) {
-    & pwsh -NoProfile -ExecutionPolicy Bypass -File $labelReviewPath -Path $resolvedStr -OutFile $labelReviewFile 2>&1 | Out-Null
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File $labelReviewPath -Path $resolvedStr -OutFile $labelReviewFile 2>&1 | Out-Null
     Write-Host "  [12/$stepCount] Saved: $labelReviewFile" -ForegroundColor Green
 } else {
     Write-Host "  [12/$stepCount] SKIPPED (suggest_field_labels.ps1 not found)" -ForegroundColor Gray
@@ -449,7 +458,7 @@ $officerGuidePath = Join-Path $toolDir "render_officer_guide.ps1"
 $officerHtml = Join-Path $DeliverablesDir "OFFICER_GUIDE_$jsonName.html"
 $officerPdf  = Join-Path $DeliverablesDir "OFFICER_GUIDE_$jsonName.pdf"
 if (Test-Path $officerGuidePath) {
-    & pwsh -NoProfile -ExecutionPolicy Bypass -File $officerGuidePath -Path $resolvedStr -OutFile $officerHtml -PdfFile $officerPdf 2>&1 | Out-Null
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File $officerGuidePath -Path $resolvedStr -OutFile $officerHtml -PdfFile $officerPdf 2>&1 | Out-Null
     if (Test-Path $officerHtml) { Write-Host "  [13/$stepCount] Saved: $officerHtml" -ForegroundColor Green }
     else { Write-Host "  [13/$stepCount] Officer guide not produced (advisory)" -ForegroundColor Gray }
 } else {

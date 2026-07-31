@@ -91,7 +91,19 @@ foreach ($pn in $targets) {
     function Run-Tool([string]$name, [string[]]$argl) {
         $p = Join-Path $toolDir $name
         if (-not (Test-Path $p)) { return "TOOL MISSING: $name" }
-        return (& powershell -ExecutionPolicy Bypass -File $p @argl 2>&1 | Out-String)
+        # try/catch + per-call ErrorActionPreference: a CHILD process writing to stderr surfaces as a
+        # NativeCommandError, and under the script-level $ErrorActionPreference='Stop' that is a
+        # TERMINATING error -- it killed the whole phase mid-run rather than failing one step.
+        # Live-caught 2026-07-31: enforce -> build_report's `& pwsh` (absent under Windows PowerShell
+        # 5.1) threw, and build_phase1 exited after step [6b] having printed no [7] line, no
+        # SHORTCOMINGS block, and no error. Nine green steps and a silent truncation reads exactly
+        # like success. A step that cannot report must say so loudly (see the [7] else branch).
+        $prev = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try   { $out = (& powershell -ExecutionPolicy Bypass -File $p @argl 2>&1 | Out-String) }
+        catch { $out = "TOOL THREW: $name -- $($_.Exception.Message)" }
+        finally { $ErrorActionPreference = $prev }
+        return $out
     }
 
     # ── 1. devdoc combination coverage ────────────────────────────────────────────────
@@ -262,6 +274,20 @@ foreach ($pn in $targets) {
     if ($m8.Success) {
         Out-Line ("  [7] enforce                    {0}: {1} PASS / {2} FAIL / {3} WARN" -f $m8.Groups[1].Value,$m8.Groups[2].Value,$m8.Groups[3].Value,$m8.Groups[4].Value) $(if ($m8.Groups[1].Value -eq 'ENFORCED') { 'Green' } else { 'Red' })
         if ($m8.Groups[1].Value -ne 'ENFORCED') { $short += "ENFORCE BLOCKED: $($m8.Groups[3].Value) FAIL / $($m8.Groups[4].Value) WARN" }
+    }
+    else {
+        # A STEP THAT DID NOT RUN IS NOT A PASS. There was no else here, so when enforce failed to
+        # produce a verdict line, [7] printed NOTHING and contributed NOTHING to SHORTCOMINGS --
+        # PHASE 1 could finish with an empty shortcomings list having never run the final gate.
+        # Live-caught 2026-07-31 on the first batch of never-tested providers: enforce regenerated
+        # stale reports, build_report step 12/13 hard-called `& pwsh` which is absent when the chain
+        # is invoked from Windows PowerShell 5.1, the NativeCommandError aborted enforce, and PHASE 1
+        # reported nine green steps and no seventh. The six providers already audited had fresh
+        # manifests, so build_report never re-ran and the hole stayed hidden.
+        $tail = @(($o8 -split "`n") | Where-Object { $_.Trim() } | Select-Object -Last 3) -join ' // '
+        Out-Line "  [7] enforce                    *** DID NOT REPORT A VERDICT -- treat as FAILED ***" 'Red'
+        Out-Line "      last output: $tail" 'DarkGray'
+        $short += "ENFORCE DID NOT REPORT: no 'ENFORCED:/BLOCKED: n PASS / n FAIL / n WARN' line was produced, so the final gate did not run. This is NOT a pass. Last output: $tail"
     }
 
     # ── SHORTCOMINGS + INTERPRETATION ────────────────────────────────────────────────
