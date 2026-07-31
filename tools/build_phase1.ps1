@@ -196,7 +196,12 @@ foreach ($pn in $targets) {
             }
         }
     }
-    Out-Line ("  [3b] devdoc listing order      {0}" -f $(if ($ordBad.Count) { "$($ordBad.Count) INVERSION(S)" } else { 'built order agrees with devdoc, or gated' })) $(if ($ordBad.Count) { 'Red' } else { 'Green' })
+    # delegate to audit_devdoc_order.ps1 -- ONE implementation, and it takes -Path so it can be
+    # mutation-tested. The inline copy above is kept only to compute $ordBad for the shortcomings
+    # list; the shared gate is the authority and the one enforce/efficacy exercise.
+    $odo = Run-Tool 'audit_devdoc_order.ps1' @('-Path', $jsonPath)
+    $odoMap = [regex]::Match($odo, 'mapped (\d+) of (\d+)')
+    Out-Line ("  [3b] devdoc listing order      {0}{1}" -f $(if ($ordBad.Count) { "$($ordBad.Count) INVERSION(S)" } else { 'built order agrees with devdoc, or gated' }), $(if ($odoMap.Success) { "  [$($odoMap.Groups[1].Value)/$($odoMap.Groups[2].Value) combos devdoc-mapped; unmapped NOT checked]" } else { '' })) $(if ($ordBad.Count) { 'Red' } else { 'Green' })
     foreach ($l in ($ordBad | Select-Object -First 4)) { Out-Line "        $l" 'Red'; $short += "DEVDOC-ORDER INVERSION: $l" }
 
     # ── 5. fidelity / reachability / trace ────────────────────────────────────────────

@@ -713,6 +713,28 @@ TOOLS
     (flat Choice/Field) and NY_NYSPIN_EJUSTICE (nested Choice/Set). A fourth shape exists too:
     TX GunQuery/QG puts a nested <Set> and a bare <Field> as SIBLINGS in one <Choice>.
     Usage: .\audit_query_trace.ps1 -Provider <name> | -Providers a,b | -All [-OutFile <path>]
+  tools/audit_devdoc_order.ps1
+    DEVDOC ORDER -- is the built combination order consistent with the DEVDOC listing order?
+    Rob 2026-07-31: ordering has TWO lines. Line 1 is SPECIFICITY (an ungated subset ahead of a
+    superset steals every fill -- audit_combo_reachability + build_phase1 [3]). Line 2 is the DEVDOC
+    LISTING ORDER, the TIEBREAKER when two DIFFERENT queries could both execute on the filled fields.
+    NJ Boat forced it: hull and registration-number are separate, EQUALLY-SPECIFIC single-identifier
+    searches, so specificity CANNOT resolve them and the devdoc's order is the product answer.
+    Nothing verified line 2 until now -- Rob caught that, the tooling did not, and it is the dimension
+    behind the QV/QW mess that was hand-ruled three times and regressed twice.
+    Flags an INVERSION -- a devdoc-LATER item positioned AHEAD of a devdoc-EARLIER one -- but ONLY
+    when the earlier-positioned combo is UNGATED. A condition on it legitimately hands the over-fill
+    back, which is exactly how NJ is CORRECT despite QB (devdoc #2) sitting first: QB carries
+    'BoatHullIdNumber NOT_EXISTS' so a hull fill defers to QBN (devdoc #1). Flagging that would be a
+    false positive.
+    MUTATION-PROVEN: nj-devdoc-order-inversion strips that guardrail and the gate goes 0 -> 2 findings
+    (KILLED). Takes -Path precisely so it CAN be mutation-tested; build_phase1 [3b] delegates here so
+    there is ONE implementation.
+    KNOWN LIMIT, PRINTED EVERY RUN: only combos that MAP to a devdoc item are checked. Synthetic
+    combos with no devdoc counterpart (3/8 NJ, 5/19 TX, 7/16 NY, 8/30 FL, 11/25 CA) get NO order
+    verification, and neither does the order BETWEEN two synthetics. The mapped/unmapped counts are
+    always shown so the coverage is never implied.
+    Usage: .\audit_devdoc_order.ps1 -Path <json> [-OutFile <path>]
   tools/test_phase2.ps1
     PHASE 2 -- TEST. Pre-flight before a sweep (-Provider X) and validation after each ingest
     (-PostIngest). Rob 2026-07-31, after having to force the spec-plan check himself: "this gap I had

@@ -240,6 +240,12 @@ $MUTS = @(
      Mut={ param($j) $n=Get-Node $j 'Vehicle' 'LicensePlateNumber'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AAA1234' -Force } }
 
   # ── NJ_NJCJIS ──────────────────────────────────────────────────────────────────────────
+  @{ Id='nj-devdoc-order-inversion'; OnlyProvider='NJ_NJCJIS'
+     Desc='BoatQuery combos left in devdoc-inverted order (QB=devdoc#2 ahead of QBN=devdoc#1) AND QB stripped of its BoatHullIdNumber NOT_EXISTS guardrail -- so a hull+regnum over-fill fires the devdoc-LATER path. This is line 2 of the ordering rule (Rob 2026-07-31): specificity cannot separate two equally-specific single-identifier searches, so the devdoc order decides. NJ is CORRECT today only because that guardrail defers to hull; remove it and the inversion becomes real.'
+     Gate='audit_devdoc_order.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QB'
+           $cm.requirements.conditions=@() } }
+
   @{ Id='nj-fidelity-demote-mandatory'; OnlyProvider='NJ_NJCJIS'
      Desc='LicensePlateNumber demoted from RANDFULL set[] to any[] though metadata RAND/FULL both require it'
      Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }

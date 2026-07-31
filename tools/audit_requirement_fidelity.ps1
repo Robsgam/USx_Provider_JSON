@@ -373,6 +373,14 @@ foreach ($d in $dirs) {
         $shKey  = "$($m.Query)|$($b0.KeyRef)"
         $shN    = if ($shared.ContainsKey($shKey)) { $shared[$shKey].N } else { 1 }
         $shPool = if ($shared.ContainsKey($shKey)) { @($shared[$shKey].Set) + @($shared[$shKey].Any) } else { @() }
+        # ANY-ONLY pool: the fields some sharing alternative treats as OPTIONAL. The UNDER-REQUIRED
+        # skip must key on THIS, not on "the combo is shared" -- otherwise a shared combo excuses ANY
+        # mandatory field being demoted to any[], which is a real defect. Measured 2026-07-31: the
+        # nj-fidelity-demote-mandatory mutation flipped KILLED -> SURVIVED because demoting
+        # LicensePlateNumber into any[] satisfied the too-broad rule, even though EVERY NJ alternative
+        # requires the plate. The BirthDate/Age case this was built for is different: there one branch
+        # genuinely lists the field as optional.
+        $shAny = if ($shared.ContainsKey($shKey)) { @($shared[$shKey].Any) } else { @() }
         $mSetC = @($m.Set | ForEach-Object { Canon $_ })
         $mAnyC = @($m.Any | ForEach-Object { Canon $_ })
         $pMatched++
@@ -386,7 +394,7 @@ foreach ($d in $dirs) {
         for ($i = 0; $i -lt $mSetC.Count; $i++) {
             $w = $mSetC[$i]
             if (Test-Has $bSetC $w) { continue }
-            if ($shN -gt 1 -and (Test-Has $bAnyC $w)) { $pNote++; continue }   # shared combo: this branch requires it, a sibling branch treats it as optional, so riding it in any[] serves BOTH -- see SHARED-COMBO UNION above
+            if ($shN -gt 1 -and (Test-Has $bAnyC $w) -and (Test-Has $shAny $w)) { $pNote++; continue }   # shared combo AND some sibling branch genuinely lists this field as OPTIONAL -> riding it in any[] serves both. Requiring $shAny is what keeps this from excusing a real demotion.
             # A DELIBERATE demotion, recorded with rule 'demoted-to-any', is a decision -- not an
             # omission. Before this, UNDER-REQUIRED had NO registry path at all, so NJ's documented
             # RANDFULL/RANDFULLN merge (metadata RAND and FULL are byte-identical, so building both
