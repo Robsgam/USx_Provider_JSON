@@ -113,6 +113,36 @@ foreach ($bundle in $json.bundles) {
             $aSet  = @($A.requirements.set)
             $aCond = @($A.requirements.conditions | ForEach-Object { "$($_.field)|$($_.operator)" })
 
+            # ── SELF-UNSATISFIABLE: A is dead on its OWN terms, no shadower required ────────
+            # Everything below this looks for a SHADOWER -- an earlier B that always matches when A
+            # does. That misses the simpler death: A carries 'X NOT_EXISTS' and X is FORM-PREFILLED,
+            # so the condition can NEVER be true and A can never fire, whatever its siblings do.
+            # PROVEN on NJ_NJCJIS 2026-07-31 with a verified-mutated replica: prefill
+            # LicensePlateNumber and RANDFULLN (gated 'LicensePlateNumber NOT_EXISTS') is orphaned
+            # outright, yet this gate reported "all reachable". That is the gate whose whole purpose
+            # is BUILD_RULES 24 missing a BUILD_RULES 24 defect.
+            # It matters portfolio-wide, not just here: identifier-priority guardrails
+            # (Plate/OLN/Hull NOT_EXISTS) are used on essentially every provider, so any prefill on
+            # an identifier silently orphans whatever that guardrail protects.
+            $selfDead = @()
+            foreach ($c in $aCond) {
+                $cf, $co = $c -split '\|'
+                if ($co -match 'NOT_EXISTS' -and $pre.ContainsKey($cf)) { $selfDead += "$cf=$($pre[$cf])" }
+            }
+            if ($selfDead.Count -gt 0) {
+                $isAcc = $accepted.ContainsKey($A.keyReference)
+                $tg = if ($isAcc) { "[NOTE]" } else { "[FAIL]" }
+                $cl = if ($isAcc) { "DarkYellow" } else { "Red" }
+                Emit ""
+                Emit "  $tg DEAD COMBO (self-unsatisfiable): $($qname -replace '.*_','')/$($A.keyReference)" $cl
+                Emit "         never fires -- its own NOT_EXISTS condition is on a FORM-PREFILLED field, so it can never hold"
+                Emit "         A.set=[$($aSet -join ', ')]"
+                Emit "         permanently-false condition(s): $($selfDead -join ', ')" "Yellow"
+                if ($isAcc) { Emit "         ACCEPTED (dead-combo): $($accepted[$A.keyReference])" "DarkYellow"; $noted++ }
+                else { Emit "         FIX: remove the form initialValue (BUILD_RULES 24), or drop the guardrail, or register an accepted divergence." "Yellow"; $dead++ }
+                continue
+            }
+
             for ($k = 0; $k -lt $i; $k++) {
                 $B = $combos[$k]
                 $bSet  = @($B.requirements.set)
