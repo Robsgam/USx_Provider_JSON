@@ -8,7 +8,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.0'
+$Version  = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_eSUN_v${Version}.json"
@@ -288,13 +288,50 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'RelatedSearchHitIndicator'; size = 1; sourceField = @('RelatedSearchHitIndicator'); targetField = 'RelatedSearchHitIndicator' }
     )
     combinations = @(
+        # QGH SPLIT into one combo per discriminator (v2.1). Clears [FLAG:GUN-NAME-CHOICE-IN-SET].
+        # Was set[caRequestPurposeCode,GunNameLast,GunNameFirst] any[GunBirthDate,GunAge], which
+        # satisfies NO metadata variant: CA_eSUN's OWN metadata puts Choice[Age|BirthDate] INSIDE
+        # <Set> on the QGH{Name} combination, which makes exactly one of them MANDATORY. So a
+        # Name-only gun-owner query was accepted by the form and SENT as a request the metadata calls
+        # invalid. Gate 6d catches that; 6c and 2i cannot, because content and attribution cannot see
+        # a MISSING REQUIREMENT (CA_CLETS shipped a committed PASS log doing exactly this).
+        # The devdoc agrees and is unambiguous: GunQuery "1. (In/Out) Age, Name" and
+        # "2. (In/Out) BirthDate, Name" carry NO square brackets, and brackets are precisely how this
+        # devdoc marks an optional (cf. #3 "GunSerialNumber, [GunCaliber, GunMake, GunTypeCode, ...]").
+        # set[] has no OR, so one combination per branch is the only correct build.
+        # Order: devdoc #1 is Age, #2 is BirthDate. The two set[]s are disjoint peers that specificity
+        # cannot separate, so the devdoc listing order is the tiebreaker (audit_devdoc_order verifies).
+        # See QIDM_REFERENCE.txt SECTION 1b. Precedent: CA_CLETS v2.23 (wire-proven: .A carried Age=35
+        # with no DOB, .B carried DOB=19900115 with no Age), CA_CONTRA_COSTA v2.2.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('caRequestPurposeCode','GunNameLast','GunNameFirst'); any = @('GunBirthDate','GunAge')
+                set = @('caRequestPurposeCode','GunNameLast','GunNameFirst','GunAge'); any = @()
                 conditions = @([PSCustomObject]@{ field = @('serialNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
-            keyReference          = 'QGH'
+            keyReference          = 'QGH.A'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('caRequestPurposeCode','GunNameLast','GunNameFirst','GunBirthDate'); any = @()
+                # GunAge NOT_EXISTS makes the two branches mutually exclusive and is what encodes the
+                # devdoc tiebreaker in the JSON: Age filled -> QGH.A (devdoc #1) fires and this combo
+                # defers; DOB only -> QGH.A cannot match and this fires; BOTH filled -> QGH.A wins,
+                # which is correct because devdoc #1 (Age, Name) precedes #2 (BirthDate, Name).
+                # Without it, verify_build CHECK 14 correctly flags QGH.B as shadowed by QGH.A on the
+                # minimal-set[] payload -- both carry the same serialNumber NOT_EXISTS gate, so the
+                # check has nothing to distinguish them. Same shape as NJ_NJCJIS Boat, where QB
+                # carries 'BoatHullIdNumber NOT_EXISTS' so a hull fill defers to QBN (devdoc #1).
+                # CA_CLETS/CA_CONTRA_COSTA did not need this only because their split combos carry no
+                # conditions at all, so CHECK 14 never examined them.
+                conditions = @(
+                    [PSCustomObject]@{ field = @('serialNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('GunAge');       operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'QGH.B'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
