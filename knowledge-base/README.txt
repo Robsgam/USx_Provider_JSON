@@ -980,6 +980,42 @@ TOOLS
     aimed at a mutated replica; leaving it in reported a vacuous run on every mutation, which reads
     as a gate that never objects). Its PREFILL-DEAD class is covered by audit_combo_reachability.
     Usage: .\fuzz_gate_efficacy.ps1 -Provider <name> [-Mutations 15] [-Seed <int>] [-OutFile <path>]
+  tools/audit_log_inflation.ps1
+    COVERAGE-INFLATION ATTACKS. Every other log gate asks "is what we sent correct?" -- none asks
+    "are these N logs actually N DISTINCT tests?", which is the cheapest way for a green 109/109 to
+    be a lie. Four attacks, all must be 0:
+      A CLONE      two logs with whitespace-normalised-identical wire XML = ONE test wearing two
+                   names, counted twice by every coverage metric.
+      B FPRINT     a log records the Entity Fingerprint it was captured against; if the JSON was
+                   rebuilt IN PLACE without a version bump, the log is stale while its filename
+                   still says current. Version equality cannot see that.
+      C ORPHAN     a wire field that is no longer a targetField of the current QIDM for that query
+                   = the log predates a field rename/removal. AUTH envelope elements
+                   (Session/Id/Authentication/UserName/ORI/Mnemonic) are excluded -- counting them
+                   produced exactly 6 false hits per log and buried any real orphan.
+      D DEGENERATE a _guardrail_ test whose two competing identifiers were filled with the SAME
+                   value proves nothing about priority; either combo "matches" that value.
+    First run 2026-07-31 over 434 logs / 6 providers: 0/0/0/0 on all four. That is real evidence the
+    tenant-test coverage is not inflated -- and it is the first such evidence, because nothing had
+    ever asked.
+    Read its header for the two bugs it caught in ITSELF (a vacuous fingerprint parse that passed
+    everything, and verdict-by-substring). Both are the house failure mode, not trivia.
+    Usage: .\audit_log_inflation.ps1 [-Providers <list>]
+  tools/audit_order_risk.ps1
+    THE HONEST ORDERING NUMBER. audit_devdoc_order truthfully says "mapped N of M -- unmapped combos
+    are NOT checked", which reads as "up to 44% of combos are unverified" and pushes the reader
+    toward reordering combos that are already deterministic. But ordering has TWO lines, and LINE 1
+    (specificity, via audit_combo_reachability) covers EVERY pair fill-independently. A pair is only
+    genuinely at risk when line 1 is silent AND line 2 does not cover it: neither set[] is a subset
+    of the other (they are peers), BOTH are ungated (a condition defers deterministically), and they
+    are co-satisfiable. Only then does nothing but the devdoc's listing order decide the winner.
+    First run 2026-07-31: TX 5, NY 0, NJ 0, FL 19, HI 0, CA_CLETS 2. So NY/NJ/HI ordering is FULLY
+    pinned by specificity + conditions and the devdoc-order coverage gap cannot affect them; FL's 19
+    are the Article/Boat/Gun NCIC-vs-identifier peers, which the devdoc DOES order explicitly (FL
+    Boat #10 Name precedes #11 Hull, and #10 lists BoatHullIdNumber as a legal optional -- so name
+    winning a name+state+hull over-fill is CORRECT, not the identifier-priority violation it looks
+    like at a glance; verified against the devdoc 2026-07-31 after wrongly calling it a defect).
+    Usage: .\audit_order_risk.ps1 [-Providers <list>]
   tools/audit_lifecycle.ps1
     THE LIFECYCLE TAIL (enforce PHASE 2r, ADVISORY) -- stages 5 and 6, which had NO gate at all:
     STAGE 5 is the Jira entry (docs/tracking/DEX_TICKET.md must name the CURRENT version) and
