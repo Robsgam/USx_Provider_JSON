@@ -355,3 +355,38 @@ Confirmed KILLED and therefore genuinely protected:
 **CONSEQUENCE FOR CONFIDENCE, stated plainly:** FL and NJ are NOT at the same evidential standard as
 TX (16/16) and NY (13/13). Their gates pass, but 4 mutations have not demonstrated those gates can
 fail. Do not quote FL/NJ confidence as equal to TX/NY until these are resolved.
+
+##### Gate-efficacy detection is now TEXT-AWARE (2026-07-30) -- FL/TX/NY all clean, NJ at 6/8
+
+The harness detected only `$mut.N -gt $base.N`, a COUNT of `[FAIL]`/`[WARN]` matches. That is blind to
+a mutation which makes an EXISTING finding worse instead of adding a new line -- so a gate that cannot
+see a defect DEGRADE looked identical to one that catches it. Detection now also compares finding
+TEXT and reports "N NEW finding text (count unchanged at X)". It earned its keep immediately:
+`nj-fidelity-demote-mandatory` flipped SURVIVED -> KILLED on exactly that clause.
+Also fixed: two prefill mutations hand-rolled a layout traversal instead of using the existing
+`Get-Node` helper the working TX mutation uses. Read the working sibling first.
+
+**After both fixes: FL_FCIC 9/9, TX_TLETS 16/16, NY_NYSPIN_EJUSTICE 13/13 -- all SURVIVED 0.**
+
+**NJ_NJCJIS is 6/8 + 1 INVALID. Two survivors remain, BOTH diagnosed as MY mutation-design errors,
+not gate blindness. Do not "fix" the gates for these:**
+1. `nj-drop-devdoc-optional` -- aimed at the WRONG GATE. It removes `RandomRequest` from RANDFULL's
+   `any[]` and expects `audit_devdoc_optionals` (2q) to fire, but `RandomRequest` is metadata-
+   MANDATORY (`RAND set[LicensePlateNumber, RandomRequest, State, LicensePlateTypeCode]`) and is NOT
+   listed as a devdoc optional -- the NJ devdoc "Possible Combinations" lines do not mention it. So
+   no optional subset is being dropped and 2q is CORRECT to stay silent. Repoint the mutation at
+   `audit_metadata.ps1`, which owns combination field coverage. A mutation must be aimed at the gate
+   that OWNS the defect class. (An attempt to repoint it silently no-op'd on a multi-line string
+   replace -- use the Edit tool or a single-line replace, and VERIFY the Gate= line changed.)
+2. `nj-prefill-routing-field` -- the DESIGN is right: RANDFULL is combination [1] `set[LicensePlateNumber]`
+   with no conditions and RANDFULLN is [2] gated `LicensePlateNumber NOT_EXISTS`, so prefilling the
+   plate should orphan RANDFULLN outright. It does not register. VERIFY FIRST that the mutated replica
+   JSON actually contains the injected `initialValue` on the Vehicle `LicensePlateNumber` node --
+   the field already carries `initialValue=''`, so an `Add-Member -Force` may be writing where a
+   direct property assignment is needed. Do not conclude the reachability gate is blind until the
+   replica is confirmed mutated.
+3. `vehiclemake-as-input` is INVALID on NJ (no matching node). INVALID is honest -- never counted as
+   a pass -- but scope or fix its lookup.
+
+**CONFIDENCE: FL_FCIC now meets the bar (9/9 + enforce 37/0/0 + reproducible + 113 tests, 0 unfireable).
+NJ_NJCJIS does NOT yet -- 2 of its 8 mutations have not shown its gates can fail.**

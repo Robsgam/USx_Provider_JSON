@@ -103,6 +103,12 @@ function Run-Gate([string]$tool, [string[]]$argsList) {
     # harness that only looked for [FAIL] would libel them as blind. Learned the hard way
     # 2026-07-30 -- the first run of this harness falsely accused CHECK 9 for exactly that.
     $nFail = @([regex]::Matches($out,'\[FAIL\]')).Count
+    # FULL finding TEXT, not just a count. Count-only detection is blind to a mutation that WORSENS
+    # an existing finding line instead of adding one -- measured 2026-07-30, when two NJ mutations
+    # reported SURVIVED purely because RANDFULL already carried an UNDER-REQUIRED line and the
+    # mutation added a field to it rather than a new line. A gate that cannot see a defect get worse
+    # is exactly the class this harness exists to expose, so it must not have that hole itself.
+    $fLines = @([regex]::Matches($out,'(?m)^.*\[(?:FAIL|WARN)\].*$') | ForEach-Object { $_.Value.Trim() })
     $nWarn = @([regex]::Matches($out,'\[WARN\]')).Count
     # VACUOUS-RUN DETECTOR. "no findings" and "ran no checks" are different things, and a gate that
     # skipped its subject entirely looks identical to a clean pass. audit_metadata emits
@@ -121,7 +127,7 @@ function Run-Gate([string]$tool, [string[]]$argsList) {
     $vacuous = (-not $ranSomething) -or ($out -match 'Providers checked:\s*0') -or ($out -match '\[SKIP\] No XML metadata')
     $first = ''
     foreach ($l in ($out -split "`n")) { if ($l -match '\[FAIL\]|\[WARN\]') { $first = $l.Trim(); break } }
-    return @{ N = ($nFail + $nWarn); NFail = $nFail; NWarn = $nWarn; NPass = $nPass; Vacuous = $vacuous; Detail = $first; Ok = $true }
+    return @{ N = ($nFail + $nWarn); NFail = $nFail; NWarn = $nWarn; NPass = $nPass; Vacuous = $vacuous; Detail = $first; Lines = $fLines; Ok = $true }
 }
 
 # JSON mutation helper: load, mutate via scriptblock, write back
@@ -231,10 +237,7 @@ $MUTS = @(
   @{ Id='fl-prefill-routing-field'; OnlyProvider='FL_FCIC'
      Desc='LicensePlateNumber given a form initialValue while it is a set[] discriminator -- BUILD_RULES 24, the class that killed 35 combos across 6 providers'
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
-     Mut={ param($j) foreach($b in $j.bundles){foreach($c in $b.configurations){
-             if($c.type -ne 'QUERYINPUTFORM'){continue}
-             foreach($v in $c.layout.PSObject.Properties){ foreach($n in $v.Value.nodes.PSObject.Properties){
-               if("$($n.Value.props.fieldId)" -eq 'LicensePlateNumber'){ $n.Value.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AAA1234' -Force } } } } } } }
+     Mut={ param($j) $n=Get-Node $j 'Vehicle' 'LicensePlateNumber'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AAA1234' -Force } }
 
   # ── NJ_NJCJIS ──────────────────────────────────────────────────────────────────────────
   @{ Id='nj-fidelity-demote-mandatory'; OnlyProvider='NJ_NJCJIS'
@@ -253,10 +256,7 @@ $MUTS = @(
   @{ Id='nj-prefill-routing-field'; OnlyProvider='NJ_NJCJIS'
      Desc='VehicleIdentificationNumber given a form initialValue while it is RANDFULLN set[] discriminator -- BUILD_RULES 24'
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
-     Mut={ param($j) foreach($b in $j.bundles){foreach($c in $b.configurations){
-             if($c.type -ne 'QUERYINPUTFORM'){continue}
-             foreach($v in $c.layout.PSObject.Properties){ foreach($n in $v.Value.nodes.PSObject.Properties){
-               if("$($n.Value.props.fieldId)" -eq 'VehicleIdentificationNumber'){ $n.Value.props | Add-Member -NotePropertyName initialValue -NotePropertyValue '1FTPW14V78K123456' -Force } } } } } } }
+     Mut={ param($j) $n=Get-Node $j 'Vehicle' 'LicensePlateNumber'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AAA1234' -Force } }
 
   @{ Id='prefill-routing-field'; OnlyProvider='TX_TLETS'
      Desc='initialValue on LicensePlateTypeCode -- RQ{Plate} is index 0 and its ONLY extra set[] field vs REG is PlateTypeCode, so prefilling it makes RQ match on Plate+Year alone and REG becomes unreachable. This is the EXACT prefill removed at v4.14. (First draft of this harness prefilled LicensePlateYear instead, which is in BOTH combos set[] and therefore starves neither -- it falsely accused the gate. A mutation must CREATE the defect, not merely resemble it.)'
@@ -405,8 +405,13 @@ foreach ($m in $MUTS) {
     try { Set-Mutant $m.Mut } catch {
         Emit ("  {0,-26} {1,-34} [INVALID] mutation could not be applied: {2}" -f $m.Id,$m.Gate,$_.Exception.Message) 'Yellow'; $invalid++; Reset-Mutant; continue }
     $mut = Run-Gate $m.Gate (& $m.Args)
-    if ($mut.N -gt $base.N) {
-        Emit ("  {0,-26} {1,-34} [KILLED]  findings {2} -> {3}" -f $m.Id,$m.Gate,$base.N,$mut.N) 'Green'
+    # KILLED if the finding COUNT rose OR any finding TEXT is new. The second clause catches a
+    # mutation that makes an EXISTING finding worse -- invisible to a count comparison.
+    $newLines = @($mut.Lines | Where-Object { @($base.Lines) -notcontains $_ })
+    if ($mut.N -gt $base.N -or $newLines.Count -gt 0) {
+        $how = if ($mut.N -gt $base.N) { "findings $($base.N) -> $($mut.N)" } else { "$($newLines.Count) NEW finding text (count unchanged at $($mut.N))" }
+        Emit ("  {0,-26} {1,-34} [KILLED]  {2}" -f $m.Id,$m.Gate,$how) 'Green'
+        if ($newLines.Count -gt 0) { Emit ("       $($newLines[0])") 'DarkGray' }
         Emit ("       $($mut.Detail)") 'DarkGray'
         $killed++
     } else {
