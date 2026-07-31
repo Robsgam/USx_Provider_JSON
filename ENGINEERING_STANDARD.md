@@ -457,3 +457,35 @@ justification ("never DROP a devdoc-optional") does NOT apply here. They are eit
 over-sends to remove, or a divergence needing its own reasoning. Rob's call.
 Plus `FRQVehicleIdentificationNumber UNDER-REQUIRED: TitleLienInformation` -- spillover from the
 Gordon-sunset combo, which the corrected suppression above should absorb.
+
+##### REAL BLIND SPOT #2 (2026-07-31): audit_combo_reachability misses a prefill that defeats NOT_EXISTS
+
+PROVEN, not inferred. Replica mutated and VERIFIED to contain the prefill (3 Vehicle nodes,
+3 occurrences of the injected value in the written JSON), and `audit_combo_reachability` still
+reported **[PASS] 6 combination(s) checked -- all reachable**. NJ_NJCJIS:
+
+    RANDFULL  [1]  set[LicensePlateNumber]           no conditions
+    RANDFULLN [2]  set[VehicleIdentificationNumber]  cond: LicensePlateNumber NOT_EXISTS
+
+Prefill `LicensePlateNumber` and RANDFULL matches EVERY submission while RANDFULLN's `NOT_EXISTS`
+can never be satisfied -- RANDFULLN is orphaned outright. The gate does not see it.
+
+**Why this matters more than the count:** enforce PHASE 2h exists to enforce BUILD_RULES 24, the
+defect class that killed 35 combinations across 6 providers. It catches the case where a prefill
+SATISFIES an earlier combo's `set[]` discriminator. It misses the case where the prefill DEFEATS a
+later combo's `NOT_EXISTS` guardrail. Identifier-priority guardrails (`Plate NOT_EXISTS`,
+`OLN NOT_EXISTS`, `Hull NOT_EXISTS`) are used on essentially every provider, so this hole is
+portfolio-wide, not NJ-specific.
+
+**FIX:** when evaluating reachability, treat a form-prefilled field as always-present on BOTH sides
+of a condition -- so `X NOT_EXISTS` where X is prefilled must resolve to permanently FALSE, making
+that combination unreachable. Its docs already claim it "resolves EXISTS/NOT_EXISTS on prefilled
+fields"; that claim is not borne out for the NOT_EXISTS direction.
+**VERIFY WITH:** the `nj-prefill-routing-field` mutation, which must flip SURVIVED -> KILLED, and
+`nj-prefill-routing-field`'s FL/TX equivalents must stay KILLED. Pin the portfolio: every provider's
+enforce must still read 0 FAIL afterwards -- if a real dead combo surfaces, that is a FINDING to
+adjudicate, not a regression to undo.
+
+**Two independent gate blind spots were found in one session by mutation testing alone:**
+this one, and audit_metadata CHECK 4's union-based coverage. Neither was visible from a green board.
+Both were found only because a mutation was expected to fail and did not.
