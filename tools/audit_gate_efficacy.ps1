@@ -348,7 +348,14 @@ $MUTS = @(
   @{ Id='vehiclemake-as-input'
      Desc='VehicleMakeCode changed from FormSelect to FormInput (hard gate: dropdown required)'
      Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
+     # N/A, NOT A HARNESS BUG: NJ_NJCJIS and HI_HCJDC_OFML carry NO VehicleMakeCode field in either
+     # the form or any QIDM (verified 2026-08-01 -- neither provider's devdoc COMBINATIONS require it;
+     # the devdoc's other mentions are response/field-definition tables). Get-Node returns $null and
+     # the mutation used to die with "Cannot bind argument to parameter 'InputObject'", which reads
+     # like a broken harness. Throw a clear message instead: the gate is not blind, there is simply
+     # nothing for it to check on that provider, and its silence there proves nothing either way.
      Mut={ param($j) $n=Get-Node $j 'Vehicle' 'VehicleMakeCode'
+           if (-not $n) { throw "N/A -- this provider has no VehicleMakeCode form field, so the VehicleMakeCode gate has nothing to check here (not a gate defect, not a harness defect)" }
            # Craft.js stores type as {"resolvedName":"FormSelect"}; older shapes use a bare string.
            if($n.type -is [string]){ $n.type='FormInput' }
            elseif($n.type.PSObject.Properties.Name -contains 'resolvedName'){ $n.type.resolvedName='FormInput' }

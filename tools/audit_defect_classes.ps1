@@ -46,6 +46,25 @@
   ##      Built IR.QVC.N is set[purposeCode,NameLast,NameFirst,SexCode], which SATISFIES the     ##
   ##      first LOOSER variant's Mand -> it must be suppressed. All 5 CC rows are FALSE.         ##
   ##                                                                                            ##
+  ##  run 6 -> CAUSE LOCATED, and it was NOT where five reasoning passes said. Added -Diag, which ##
+  ##  prints the real narrowing state, and ran it on CA_CONTRA_COSTA:                            ##
+  ##      [DIAG] IR.QVC.O  PF='OperatorLicenseNumber'  fam 1->1  samePf=0  choiceLeft=1          ##
+  ##                                                   PFsLeft=[Name]                            ##
+  ##  `fam 1->1` is the answer. The primaryFieldReference restriction was never broken -- it had ##
+  ##  nothing to restrict, because Get-MetaFamily returns a family of ONE whose PF is 'Name',    ##
+  ##  while a standalone call over the same XML with the same code returns TWELVE IR.QVC          ##
+  ##  variants. So the METADATA INVENTORY inside the provider loop is collapsing all 12 variants ##
+  ##  of a keyRef down to one, and every built combo then gets compared against whichever single ##
+  ##  variant survived (here the {Name} one) regardless of its own PF.                            ##
+  ##  That fully explains the symptom AND why samePf=0: there is no OperatorLicenseNumber variant ##
+  ##  left in $fam to match. It also explains why IR.QVC.N is flagged -- its looser sibling was   ##
+  ##  collapsed away too, so the $looser suppression has nothing to find.                        ##
+  ##  NEXT STEP, now narrow: print $meta.Count and the per-keyRef tally right after the metadata  ##
+  ##  parse (line ~196-222) and compare with the standalone count of 12. The parse code itself    ##
+  ##  reads correctly and matches the working standalone probe line for line, so suspect what     ##
+  ##  happens to $meta BETWEEN the parse and `$script:metaLocal = $meta` -- scoping of a function ##
+  ##  defined inside the foreach, or $meta being rebound. Do NOT reason further without printing. ##
+  ##                                                                                            ##
   ##  Do not wire this anywhere until the CA-family run yields exactly CA_VENTURA_COUNTY.       ##
   ##  A scanner that cries wolf on fixed providers is worse than no scanner -- it teaches the   ##
   ##  next session to ignore it.                                                                ##
@@ -107,6 +126,7 @@ param(
     [string[]]$Providers,
     [switch]$All,
     [string[]]$Class = @('C1','C2','C3','C4'),
+    [switch]$Diag,
     [string]$OutFile
 )
 
@@ -248,9 +268,26 @@ foreach ($p in $Providers) {
             # Choice group is meaningless and produced 11 false candidates on CA_CLETS alone in the
             # first known-answer run. If the built combo declares no primaryFieldReference, fall back
             # to the whole family rather than guessing.
+            $famBefore = $fam.Count
+            $samePfN = 0
             if ($cm.PF) {
                 $samePf = @($fam | Where-Object { (Canon $_.PF) -eq (Canon $cm.PF) })
+                $samePfN = $samePf.Count
                 if ($samePf.Count) { $fam = $samePf }
+            }
+            # -Diag prints the ACTUAL narrowing state. Five reasoning passes about why the restriction
+            # "was not taking effect" were each wrong, and a standalone replication of this exact logic
+            # gives the CORRECT answer (samePf>0, zero Choice-in-Set variants left, no finding) -- so the
+            # divergence is somewhere reasoning has not reached. Print it instead of theorising:
+            #   .\audit_defect_classes.ps1 -Providers CA_CONTRA_COSTA -Class C1 -Diag
+            # Expected for IR.QVC.C/.O/.OS/.S: PF non-empty, samePf>0, choiceLeft=0 -> NO finding.
+            # If the tool still emits findings for those while showing choiceLeft=0, the bug is BELOW
+            # this point (in the C1 emit block), not in the narrowing.
+            if ($Diag) {
+                $choiceLeft = @($fam | Where-Object { $_.ChoiceInSet.Count }).Count
+                E ("    [DIAG] {0,-14} PF='{1}'  fam {2}->{3}  samePf={4}  choiceLeft={5}  PFsLeft=[{6}]" -f `
+                    $cm.KeyRef, $cm.PF, $famBefore, $fam.Count, $samePfN, $choiceLeft,
+                    (($fam | ForEach-Object { $_.PF } | Select-Object -Unique) -join ',')) 'DarkCyan'
             }
             $setC = @($cm.Set | ForEach-Object { Canon $_ })
             $anyC = @($cm.Any | ForEach-Object { Canon $_ })

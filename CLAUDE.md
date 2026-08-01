@@ -147,7 +147,7 @@ The 22 USx CAD-integration field names (the ones CAD/OnScene auto-populate) are 
 | NJ_NIBRS_STATE | NJ_NIBRS | For OOS state dropdowns |
 | VEHICLE_BODY_STYLE | Provider-specific | NJ=NJ_NIBRS, CA=VEHICLE. NCIC = empty |
 | -- | **attributeTypeId** | -- |
-| VEHICLE_MAKE | NCIC (via attributeTypeId) | **MUST be FormSelect (Sel) on ALL providers.** Dropdown works. NEVER use FormInput. Confirmed: NJ, FL, CA_CLETS, TX USx-tenant-tested. |
+| VEHICLE_MAKE | NCIC (via attributeTypeId) | **MUST be FormSelect (Sel) wherever the field is built.** Dropdown works. NEVER use FormInput. Confirmed USx-tenant-tested: FL, CA_CLETS, TX, NY. **NOT ALL PROVIDERS CARRY IT** -- NJ_NJCJIS and HI_HCJDC_OFML build NO VehicleMakeCode field at all (verified 2026-08-01: absent from form AND every QIDM; neither provider's devdoc COMBINATIONS require it, and the devdoc's other mentions are response/field-definition tables). The earlier "Confirmed: NJ" claim here was wrong -- NJ has no such field to have confirmed. Consequence: verify_build's VehicleMakeCode check is VACUOUS on those two, and audit_gate_efficacy's `vehiclemake-as-input` mutation reports N/A there by design. |
 
 ### State Field
 
