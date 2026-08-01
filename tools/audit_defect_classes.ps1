@@ -54,7 +54,23 @@
 param(
     [string[]]$Providers,
     [switch]$All,
-    [string[]]$Class = @('C1','C2','C3','C4'),
+    # C1 ONLY by default. C2/C3/C4 are RETIRED -- each duplicated a gate that already answers its
+    # question CORRECTLY, and each was the WEAKER copy. Proven on HI_HCJDC_OFML, not argued:
+    #   C2 (over-required set[])  -> audit_requirement_fidelity.ps1 reports "14 branches compared,
+    #      0 UNDER-REQUIRED / 0 OVER-PERMITTED, 6 registered divergences" where C2 claimed NINE
+    #      wire-severity defects. C2's premise is simply wrong: it assumes set[] must mirror the
+    #      metadata mandatory list, but a SYNTHETIC keyRef SPLIT (LIMITATION #21, used across the
+    #      whole portfolio) deliberately makes set[] TIGHTER in order to route. So C2 flags every
+    #      synthetic split forever. audit_requirement_fidelity maps a built combo to the metadata
+    #      ALTERNATIVE it implements and honours the accepted-divergence registry -- the right shape.
+    #   C3 (optional carried nowhere) -> audit_devdoc_optionals.ps1 owns this, against the DEVDOC
+    #      (the query authority), not against metadata alone.
+    #   C4 (routing prefill)      -> audit_query_trace.ps1 PREFILL-DEAD owns BUILD_RULES 24 and
+    #      reported "13 built / 0 PREFILL-DEAD" with registered NOTEs on the same provider.
+    # They remain runnable via -Class for forensic comparison, but they are NOT findings and their
+    # counts (359/313/28 portfolio-wide vs C1's 1) are noise. Keeping a second, weaker copy of an
+    # existing authority is the anti-pattern this same file has now demonstrated three times.
+    [string[]]$Class = @('C1'),
     [switch]$Diag,
     [string]$OutFile
 )
@@ -347,9 +363,15 @@ E ('=' * 132) 'Cyan'
 E ("  providers scanned: {0}   classes: {1}" -f $Providers.Count, ($Class -join ','))
 E ''
 E '  C1 COLLAPSED CHOICE  = request satisfies NO metadata variant (WIRE-INVALID; 6d catches it, 6c/2i cannot)'
-E '  C2 OVER-REQUIRED SET = set[] demands what no variant requires -> fill falls to a looser combo, value silently dropped'
-E '  C3 OPTIONAL NOWHERE  = a permitted optional no combo of that query can carry'
-E '  C4 ROUTING PREFILL   = BUILD_RULES 24 (skipped when the field is in EVERY combo set[], which cannot shadow)'
+E '                         VERIFIED: known-answer test returns exactly 1, and agrees with 6d on the six'
+E '                         tenant-verified providers (0 there). Choice satisfaction is per-BRANCH, and a'
+E '                         branch may be a nested <Set> GROUP (TX QA: NCICNumber OR serial+type).'
+E ''
+E '  C2/C3/C4 RETIRED -- each duplicated a gate that already answers its question, and was the WEAKER' 'DarkGray'
+E '  copy. On HI_HCJDC_OFML: audit_requirement_fidelity = 0 UNDER/0 OVER over 14 branches where C2' 'DarkGray'
+E '  claimed 9; audit_query_trace = 0 PREFILL-DEAD where C4 duplicates it; audit_devdoc_optionals owns' 'DarkGray'
+E '  C3 against the DEVDOC. C2 also assumed set[] must mirror metadata-mandatory, which is wrong for' 'DarkGray'
+E '  every SYNTHETIC keyRef SPLIT (LIMITATION #21). Runnable via -Class for comparison; NOT findings.' 'DarkGray'
 E ''
 foreach ($cl in @('C1','C2','C3','C4')) {
     $rows = @($uniq | Where-Object { $_.Class -eq $cl })

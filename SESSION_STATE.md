@@ -74,16 +74,18 @@ confirms semantics -- which is exactly why this needs deciding rather than infer
 
 ## NEXT PHYSICAL ACTION
 
-1. **Finish `tools/audit_defect_classes.ps1`** (EXPERIMENTAL -- read its header banner). It has failed
-   its known-answer test 4x, improving 19->9->7->6 against a CA family whose true answer is 1. The
-   residual bug: the primaryFieldReference restriction is not taking effect, so CA_CONTRA_COSTA's
-   IR.QVC.* rows get compared to the {Name} Choice group. Fix, re-run until the CA family yields
-   exactly CA_VENTURA_COUNTY, THEN use it to enumerate findings in bulk. Do not quote it before that.
-2. **CA_VENTURA_COUNTY IG.QGH** carries NO Age/BirthDate discriminator -- confirmed by hand and
-   flagged `[FLAG:GUN-NAME-CHOICE-IN-SET]`. Its devdoc GunQuery section did not parse; get the
-   authority before fixing.
-3. Adjudicate the ~25 documented findings on the 8 audited providers (FIX-vs-REGISTER per
+1. **CA_VENTURA_COUNTY IG.QGH** -- the ONLY C1 candidate in the whole portfolio, now confirmed twice
+   (by hand, and by the verified scanner). Its GunQuery `set[]` satisfies NO branch of metadata's
+   mandatory `Choice[Age|BirthDate]`, so the request is wire-invalid. Flagged
+   `[FLAG:GUN-NAME-CHOICE-IN-SET]`. **Its devdoc GunQuery section did not parse -- get the query
+   authority before fixing.** Both fields exist in metadata, so this is tractable in one build pass.
+2. Adjudicate the ~25 documented findings on the 8 audited providers (FIX-vs-REGISTER per
    `usx-build` Step 3).
+
+`tools/audit_defect_classes.ps1` is **DONE for C1** (verified: known-answer = 1; agrees with 6d on
+the six). C2/C3/C4 are RETIRED as duplicates of `audit_requirement_fidelity` /
+`audit_devdoc_optionals` / `audit_query_trace` -- do not resurrect them; the evidence is in its
+param block. Not wired into any gate yet, deliberately.
 
 ## RULES I BROKE TWICE TODAY -- READ BEFORE BUILDING
 
@@ -92,7 +94,17 @@ confirms semantics -- which is exactly why this needs deciding rather than infer
   hour later; each time a stale plan broke the GLOBAL `audit_simulator_parity` check and made ONE
   self-inflicted defect look like five unrelated provider failures. `usx-build` Step 4b.
 - **Use the Edit tool for multi-line text, never `.Replace()`** -- CRLF no-ops silently, and a 3-arg
-  call is read as a StringComparison and mangles the file.
+  call is read as a StringComparison and mangles the file. **Broken a THIRD time on 2026-08-01**
+  (multi-line `.Replace()` reported success and changed nothing). There is no situation where
+  `.Replace()` on a multi-line block is the right tool. Reach for Edit first, every time.
+- **A gate that reads the WRONG AUTHORITY cannot fail honestly** -- it reports PASS or FAIL with
+  equal confidence and no denominator to betray it. Two instances found 2026-08-01 in one tool:
+  an alphabetical `*.xml` glob (read a 6-node excerpt as if it were 466-node metadata) and a
+  flattened `<Choice>` (a branch can be a nested `<Set>` GROUP, not just a `<Field>`).
+  **When two gates disagree, suspect the one that simplified its authority.**
+- **Before building a new check, ask which existing gate already owns the question.** 3 of 4 classes
+  in `audit_defect_classes` turned out to duplicate `audit_requirement_fidelity` /
+  `audit_devdoc_optionals` / `audit_query_trace`, each as the weaker copy.
 - **`powershell -File` stringifies array args** (`-Providers a,b` becomes one provider named "a,b").
 - **Never grep a whole tool output for `FAIL`** -- headers explain what a failure IS. Anchor on the
   verdict line.
