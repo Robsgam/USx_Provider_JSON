@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_VENTURA_COUNTY_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.1** | Generated: 2026-08-01
+Current: **v2.2** | Generated: 2026-08-01
 
 ---
+
+## v2.2 -- 2026-08-01 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.1 -- 2026-08-01 -- Pipeline rebuild
 

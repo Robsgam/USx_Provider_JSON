@@ -1,7 +1,7 @@
 ﻿CA_VENTURA_COUNTY METADATA REFERENCE
 =====================================
 Generated: 2026-08-01
-Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_v2.1.json
+Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_v2.2.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -121,14 +121,14 @@ METADATA COMBINATIONS (8 total):
   NLTS.DQ       Name                    CaRequestPurposeCode                                   --
   NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
 
-BUILD COVERAGE (3 of 8 built):
+BUILD COVERAGE (7 of 8 built):
+  BUILT   IR.QVC.NB      set[caRequestPurposeCode, NameLast, NameFirst, SexCode, BirthDate]
+  BUILT   IR.QVC.NA      set[caRequestPurposeCode, NameLast, NameFirst, SexCode, age]
   BUILT   IN.L1          set[caRequestPurposeCode, NameLast, NameFirst]
   BUILT   NLTS.DQ        set[caRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
+  BUILT   IR.QVC.C       set[caRequestPurposeCode, criminalIdNumber]
+  BUILT   IR.QVC.S       set[caRequestPurposeCode, socialSecurityNumber]
   BUILT   ID.L1          set[caRequestPurposeCode, OperatorLicenseNumber]
-  UNBUILT IR.QVC         Name
-  UNBUILT IR.QVC         OperatorLicenseNumber
-  UNBUILT IR.QVC         CriminalIdNumber
-  UNBUILT IR.QVC         SocialSecurityNumber
 
 ================================================================================
 5. GunQuery (version 1)
@@ -239,21 +239,17 @@ BUILD SUMMARY
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
   BoatQuery                                  7      6     1  86%
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
-  DriverLicenseQuery                         8      3     5  38%
+  DriverLicenseQuery                         8      7     1  88%
   GunQuery                                   2      3     0  150%
   VehicleRegistrationQuery                  20      5    15  25%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   43     23    21  53%
+  TOTAL                                   43     27    17  63%
 
 ================================================================================
-UNBUILT METADATA COMBOS (20 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (16 combos in metadata, not in JSON)
 ================================================================================
 
   IV.4B          RegistrationNumber       (BoatQuery)
-  IR.QVC         Name                     (DriverLicenseQuery)
-  IR.QVC         OperatorLicenseNumber    (DriverLicenseQuery)
-  IR.QVC         CriminalIdNumber         (DriverLicenseQuery)
-  IR.QVC         SocialSecurityNumber     (DriverLicenseQuery)
   IV.4I          LicensePlateNumber       (VehicleRegistrationQuery)
   IV.4C          LicensePlateNumber       (VehicleRegistrationQuery)
   IV.4M          LicensePlateNumber       (VehicleRegistrationQuery)

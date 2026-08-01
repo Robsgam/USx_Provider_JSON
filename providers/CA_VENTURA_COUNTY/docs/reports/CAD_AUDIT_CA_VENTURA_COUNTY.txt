@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
-  Source: CA_VENTURA_COUNTY_v2.1.json
-  Generated: 2026-08-01 09:44
+  Source: CA_VENTURA_COUNTY_v2.2.json
+  Generated: 2026-08-01 10:47
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_VENTURA_COUNTY_v2.1
+ CAD AUDIT: CA_VENTURA_COUNTY_v2.2
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -39,13 +39,13 @@ CAD AUDIT
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
-    [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] raceCode: in QIF and CAD list
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [PASS] attention: in QIF and CAD list
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] socialSecurityNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] socialSecurityNumber: in QIF and CAD list
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressState: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -54,11 +54,13 @@ CAD AUDIT
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressZipCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressZone: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] age: in QIF and CAD list
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] height: in QIF and CAD list
     [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] criminalIdNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] addressCounty: in QIF, not in CAD list (provider-specific)
     [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
     [INFO] caRequestPurposeCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
@@ -148,8 +150,12 @@ CAD AUDIT
     [PASS] QIDM 'CA_VENTURA_COUNTY_VehicleRegistrationQuery' combo IN.VP -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_VehicleRegistrationQuery' combo IA.QV -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_VehicleRegistrationQuery' combo IA.QVK -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_VENTURA_COUNTY_DriverLicenseQuery' combo IR.QVC.NB -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_VENTURA_COUNTY_DriverLicenseQuery' combo IR.QVC.NA -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverLicenseQuery' combo IN.L1 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverLicenseQuery' combo NLTS.DQ -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_VENTURA_COUNTY_DriverLicenseQuery' combo IR.QVC.C -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_VENTURA_COUNTY_DriverLicenseQuery' combo IR.QVC.S -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverLicenseQuery' combo ID.L1 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverHistoryQuery' combo NLTS.KQ.N -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverHistoryQuery' combo IN.B2 -- defaults cover all initialValue any[] fields
@@ -173,6 +179,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 80 PASS / 0 FAIL / 0 WARN / 63 INFO
+Total: 88 PASS / 0 FAIL / 0 WARN / 61 INFO
 
 

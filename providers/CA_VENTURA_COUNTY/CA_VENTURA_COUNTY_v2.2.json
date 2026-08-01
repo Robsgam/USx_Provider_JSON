@@ -133,7 +133,8 @@
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1"
+                                                                                                                                   "maxLength":  "1",
+                                                                                                                                   "initialValue":  "C"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -599,7 +600,8 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1"
+                                                                                                                                        "maxLength":  "1",
+                                                                                                                                        "initialValue":  "C"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -1146,7 +1148,8 @@
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1"
+                                                                                                                                           "maxLength":  "1",
+                                                                                                                                           "initialValue":  "C"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -1659,7 +1662,8 @@
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1"
+                                                                                                                                   "maxLength":  "1",
+                                                                                                                                   "initialValue":  "C"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -1682,7 +1686,8 @@
                                                                                                        "isCanvas":  true,
                                                                                                        "hidden":  false,
                                                                                                        "nodes":  [
-                                                                                                                     "ROW_PER_OLN_1"
+                                                                                                                     "ROW_PER_OLN_1",
+                                                                                                                     "ROW_PER_OLN_2"
                                                                                                                  ],
                                                                                                        "linkedNodes":  {
 
@@ -1716,7 +1721,7 @@
                                                                                                                       "displayName":  "Input",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                    "label":  "License Number",
+                                                                                                                                    "label":  "OLN",
                                                                                                                                     "maxLength":  "20"
                                                                                                                                 },
                                                                                                                       "isCanvas":  false,
@@ -1729,6 +1734,68 @@
                                                                                                                                       },
                                                                                                                       "parent":  "ROW_PER_OLN_1"
                                                                                                                   },
+                                                                                  "ROW_PER_OLN_2":  {
+                                                                                                        "type":  {
+                                                                                                                     "resolvedName":  "Row"
+                                                                                                                 },
+                                                                                                        "displayName":  "Row",
+                                                                                                        "props":  {
+                                                                                                                      "templateColumns":  [
+                                                                                                                                              "6",
+                                                                                                                                              "6"
+                                                                                                                                          ]
+                                                                                                                  },
+                                                                                                        "isCanvas":  true,
+                                                                                                        "hidden":  false,
+                                                                                                        "nodes":  [
+                                                                                                                      "CriminalIdNumber_Input",
+                                                                                                                      "SocialSecurityNumber_Input"
+                                                                                                                  ],
+                                                                                                        "linkedNodes":  {
+
+                                                                                                                        },
+                                                                                                        "parent":  "CARD_PER_OLN"
+                                                                                                    },
+                                                                                  "CriminalIdNumber_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormInput"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Input",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "criminalIdNumber",
+                                                                                                                               "label":  "CII Number",
+                                                                                                                               "maxLength":  "11"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_PER_OLN_2"
+                                                                                                             },
+                                                                                  "SocialSecurityNumber_Input":  {
+                                                                                                                     "type":  {
+                                                                                                                                  "resolvedName":  "FormInput"
+                                                                                                                              },
+                                                                                                                     "displayName":  "Input",
+                                                                                                                     "props":  {
+                                                                                                                                   "fieldId":  "socialSecurityNumber",
+                                                                                                                                   "label":  "SSN",
+                                                                                                                                   "maxLength":  "9"
+                                                                                                                               },
+                                                                                                                     "isCanvas":  false,
+                                                                                                                     "hidden":  false,
+                                                                                                                     "nodes":  [
+
+                                                                                                                               ],
+                                                                                                                     "linkedNodes":  {
+
+                                                                                                                                     },
+                                                                                                                     "parent":  "ROW_PER_OLN_2"
+                                                                                                                 },
                                                                                   "CARD_PER_NAME":  {
                                                                                                         "type":  {
                                                                                                                      "resolvedName":  "Card"
@@ -1741,7 +1808,9 @@
                                                                                                         "hidden":  false,
                                                                                                         "nodes":  [
                                                                                                                       "ROW_PER_NAME_1",
-                                                                                                                      "ROW_PER_NAME_2"
+                                                                                                                      "ROW_PER_NAME_2",
+                                                                                                                      "ROW_PER_NAME_3",
+                                                                                                                      "ROW_PER_NAME_4"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -1858,7 +1927,7 @@
                                                                                                         "displayName":  "Select",
                                                                                                         "props":  {
                                                                                                                       "fieldId":  "SexCode",
-                                                                                                                      "label":  "Sex (optional)",
+                                                                                                                      "label":  "Sex",
                                                                                                                       "attributeTypeId":  "SEX",
                                                                                                                       "codeTypeProvider":  "NIBRS"
                                                                                                                   },
@@ -1872,6 +1941,131 @@
                                                                                                                         },
                                                                                                         "parent":  "ROW_PER_NAME_2"
                                                                                                     },
+                                                                                  "ROW_PER_NAME_3":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "Age_Input",
+                                                                                                                       "RaceCode_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER_NAME"
+                                                                                                     },
+                                                                                  "Age_Input":  {
+                                                                                                    "type":  {
+                                                                                                                 "resolvedName":  "FormInput"
+                                                                                                             },
+                                                                                                    "displayName":  "Input",
+                                                                                                    "props":  {
+                                                                                                                  "fieldId":  "age",
+                                                                                                                  "label":  "Age",
+                                                                                                                  "maxLength":  "2"
+                                                                                                              },
+                                                                                                    "isCanvas":  false,
+                                                                                                    "hidden":  false,
+                                                                                                    "nodes":  [
+
+                                                                                                              ],
+                                                                                                    "linkedNodes":  {
+
+                                                                                                                    },
+                                                                                                    "parent":  "ROW_PER_NAME_3"
+                                                                                                },
+                                                                                  "RaceCode_Input":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "FormSelect"
+                                                                                                                  },
+                                                                                                         "displayName":  "Select",
+                                                                                                         "props":  {
+                                                                                                                       "fieldId":  "raceCode",
+                                                                                                                       "label":  "Race",
+                                                                                                                       "attributeTypeId":  "RACE",
+                                                                                                                       "codeTypeProvider":  "NIBRS"
+                                                                                                                   },
+                                                                                                         "isCanvas":  false,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "ROW_PER_NAME_3"
+                                                                                                     },
+                                                                                  "ROW_PER_NAME_4":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "6",
+                                                                                                                                               "6"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+                                                                                                                       "Height_Input",
+                                                                                                                       "AddressCounty_Input"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER_NAME"
+                                                                                                     },
+                                                                                  "Height_Input":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "FormInput"
+                                                                                                                },
+                                                                                                       "displayName":  "Input",
+                                                                                                       "props":  {
+                                                                                                                     "fieldId":  "height",
+                                                                                                                     "label":  "Height (optional)",
+                                                                                                                     "maxLength":  "3"
+                                                                                                                 },
+                                                                                                       "isCanvas":  false,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
+
+                                                                                                                       },
+                                                                                                       "parent":  "ROW_PER_NAME_4"
+                                                                                                   },
+                                                                                  "AddressCounty_Input":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "FormInput"
+                                                                                                                       },
+                                                                                                              "displayName":  "Input",
+                                                                                                              "props":  {
+                                                                                                                            "fieldId":  "addressCounty",
+                                                                                                                            "label":  "County Code (optional)",
+                                                                                                                            "maxLength":  "3"
+                                                                                                                        },
+                                                                                                              "isCanvas":  false,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "ROW_PER_NAME_4"
+                                                                                                          },
                                                                                   "CARD_PER_DH_OLN":  {
                                                                                                           "type":  {
                                                                                                                        "resolvedName":  "Card"
@@ -1941,7 +2135,8 @@
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "caRequestPurposeCodeDH",
                                                                                                                                      "label":  "Purpose Code (DH)",
-                                                                                                                                     "maxLength":  "1"
+                                                                                                                                     "maxLength":  "1",
+                                                                                                                                     "initialValue":  "C"
                                                                                                                                  },
                                                                                                                        "isCanvas":  false,
                                                                                                                        "hidden":  false,
@@ -2266,7 +2461,8 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1"
+                                                                                                                                        "maxLength":  "1",
+                                                                                                                                        "initialValue":  "C"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -2289,7 +2485,8 @@
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
-                                                                                                                          "ROW_PER_OLN_1"
+                                                                                                                          "ROW_PER_OLN_1",
+                                                                                                                          "ROW_PER_OLN_2"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
@@ -2323,7 +2520,7 @@
                                                                                                                            "displayName":  "Input",
                                                                                                                            "props":  {
                                                                                                                                          "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                         "label":  "License Number",
+                                                                                                                                         "label":  "OLN",
                                                                                                                                          "maxLength":  "20"
                                                                                                                                      },
                                                                                                                            "isCanvas":  false,
@@ -2336,6 +2533,68 @@
                                                                                                                                            },
                                                                                                                            "parent":  "ROW_PER_OLN_1"
                                                                                                                        },
+                                                                                       "ROW_PER_OLN_2":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "Row"
+                                                                                                                      },
+                                                                                                             "displayName":  "Row",
+                                                                                                             "props":  {
+                                                                                                                           "templateColumns":  [
+                                                                                                                                                   "6",
+                                                                                                                                                   "6"
+                                                                                                                                               ]
+                                                                                                                       },
+                                                                                                             "isCanvas":  true,
+                                                                                                             "hidden":  false,
+                                                                                                             "nodes":  [
+                                                                                                                           "CriminalIdNumber_Input",
+                                                                                                                           "SocialSecurityNumber_Input"
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "CARD_PER_OLN"
+                                                                                                         },
+                                                                                       "CriminalIdNumber_Input":  {
+                                                                                                                      "type":  {
+                                                                                                                                   "resolvedName":  "FormInput"
+                                                                                                                               },
+                                                                                                                      "displayName":  "Input",
+                                                                                                                      "props":  {
+                                                                                                                                    "fieldId":  "criminalIdNumber",
+                                                                                                                                    "label":  "CII Number",
+                                                                                                                                    "maxLength":  "11"
+                                                                                                                                },
+                                                                                                                      "isCanvas":  false,
+                                                                                                                      "hidden":  false,
+                                                                                                                      "nodes":  [
+
+                                                                                                                                ],
+                                                                                                                      "linkedNodes":  {
+
+                                                                                                                                      },
+                                                                                                                      "parent":  "ROW_PER_OLN_2"
+                                                                                                                  },
+                                                                                       "SocialSecurityNumber_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Input",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "socialSecurityNumber",
+                                                                                                                                        "label":  "SSN",
+                                                                                                                                        "maxLength":  "9"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_PER_OLN_2"
+                                                                                                                      },
                                                                                        "CARD_PER_NAME":  {
                                                                                                              "type":  {
                                                                                                                           "resolvedName":  "Card"
@@ -2348,7 +2607,9 @@
                                                                                                              "hidden":  false,
                                                                                                              "nodes":  [
                                                                                                                            "ROW_PER_NAME_1",
-                                                                                                                           "ROW_PER_NAME_2"
+                                                                                                                           "ROW_PER_NAME_2",
+                                                                                                                           "ROW_PER_NAME_3",
+                                                                                                                           "ROW_PER_NAME_4"
                                                                                                                        ],
                                                                                                              "linkedNodes":  {
 
@@ -2465,7 +2726,7 @@
                                                                                                              "displayName":  "Select",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "SexCode",
-                                                                                                                           "label":  "Sex (optional)",
+                                                                                                                           "label":  "Sex",
                                                                                                                            "attributeTypeId":  "SEX",
                                                                                                                            "codeTypeProvider":  "NIBRS"
                                                                                                                        },
@@ -2479,6 +2740,131 @@
                                                                                                                              },
                                                                                                              "parent":  "ROW_PER_NAME_2"
                                                                                                          },
+                                                                                       "ROW_PER_NAME_3":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "Row"
+                                                                                                                       },
+                                                                                                              "displayName":  "Row",
+                                                                                                              "props":  {
+                                                                                                                            "templateColumns":  [
+                                                                                                                                                    "6",
+                                                                                                                                                    "6"
+                                                                                                                                                ]
+                                                                                                                        },
+                                                                                                              "isCanvas":  true,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+                                                                                                                            "Age_Input",
+                                                                                                                            "RaceCode_Input"
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "CARD_PER_NAME"
+                                                                                                          },
+                                                                                       "Age_Input":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "FormInput"
+                                                                                                                  },
+                                                                                                         "displayName":  "Input",
+                                                                                                         "props":  {
+                                                                                                                       "fieldId":  "age",
+                                                                                                                       "label":  "Age",
+                                                                                                                       "maxLength":  "2"
+                                                                                                                   },
+                                                                                                         "isCanvas":  false,
+                                                                                                         "hidden":  false,
+                                                                                                         "nodes":  [
+
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "ROW_PER_NAME_3"
+                                                                                                     },
+                                                                                       "RaceCode_Input":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "FormSelect"
+                                                                                                                       },
+                                                                                                              "displayName":  "Select",
+                                                                                                              "props":  {
+                                                                                                                            "fieldId":  "raceCode",
+                                                                                                                            "label":  "Race",
+                                                                                                                            "attributeTypeId":  "RACE",
+                                                                                                                            "codeTypeProvider":  "NIBRS"
+                                                                                                                        },
+                                                                                                              "isCanvas":  false,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "ROW_PER_NAME_3"
+                                                                                                          },
+                                                                                       "ROW_PER_NAME_4":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "Row"
+                                                                                                                       },
+                                                                                                              "displayName":  "Row",
+                                                                                                              "props":  {
+                                                                                                                            "templateColumns":  [
+                                                                                                                                                    "6",
+                                                                                                                                                    "6"
+                                                                                                                                                ]
+                                                                                                                        },
+                                                                                                              "isCanvas":  true,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+                                                                                                                            "Height_Input",
+                                                                                                                            "AddressCounty_Input"
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "CARD_PER_NAME"
+                                                                                                          },
+                                                                                       "Height_Input":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "FormInput"
+                                                                                                                     },
+                                                                                                            "displayName":  "Input",
+                                                                                                            "props":  {
+                                                                                                                          "fieldId":  "height",
+                                                                                                                          "label":  "Height (optional)",
+                                                                                                                          "maxLength":  "3"
+                                                                                                                      },
+                                                                                                            "isCanvas":  false,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "ROW_PER_NAME_4"
+                                                                                                        },
+                                                                                       "AddressCounty_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "addressCounty",
+                                                                                                                                 "label":  "County Code (optional)",
+                                                                                                                                 "maxLength":  "3"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_PER_NAME_4"
+                                                                                                               },
                                                                                        "CARD_PER_DH_OLN":  {
                                                                                                                "type":  {
                                                                                                                             "resolvedName":  "Card"
@@ -2548,7 +2934,8 @@
                                                                                                                             "props":  {
                                                                                                                                           "fieldId":  "caRequestPurposeCodeDH",
                                                                                                                                           "label":  "Purpose Code (DH)",
-                                                                                                                                          "maxLength":  "1"
+                                                                                                                                          "maxLength":  "1",
+                                                                                                                                          "initialValue":  "C"
                                                                                                                                       },
                                                                                                                             "isCanvas":  false,
                                                                                                                             "hidden":  false,
@@ -2954,7 +3341,8 @@
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1"
+                                                                                                                                           "maxLength":  "1",
+                                                                                                                                           "initialValue":  "C"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -2977,7 +3365,8 @@
                                                                                                                "isCanvas":  true,
                                                                                                                "hidden":  false,
                                                                                                                "nodes":  [
-                                                                                                                             "ROW_PER_OLN_1"
+                                                                                                                             "ROW_PER_OLN_1",
+                                                                                                                             "ROW_PER_OLN_2"
                                                                                                                          ],
                                                                                                                "linkedNodes":  {
 
@@ -3011,7 +3400,7 @@
                                                                                                                               "displayName":  "Input",
                                                                                                                               "props":  {
                                                                                                                                             "fieldId":  "OperatorLicenseNumber",
-                                                                                                                                            "label":  "License Number",
+                                                                                                                                            "label":  "OLN",
                                                                                                                                             "maxLength":  "20"
                                                                                                                                         },
                                                                                                                               "isCanvas":  false,
@@ -3024,6 +3413,68 @@
                                                                                                                                               },
                                                                                                                               "parent":  "ROW_PER_OLN_1"
                                                                                                                           },
+                                                                                          "ROW_PER_OLN_2":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "Row"
+                                                                                                                         },
+                                                                                                                "displayName":  "Row",
+                                                                                                                "props":  {
+                                                                                                                              "templateColumns":  [
+                                                                                                                                                      "6",
+                                                                                                                                                      "6"
+                                                                                                                                                  ]
+                                                                                                                          },
+                                                                                                                "isCanvas":  true,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+                                                                                                                              "CriminalIdNumber_Input",
+                                                                                                                              "SocialSecurityNumber_Input"
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "CARD_PER_OLN"
+                                                                                                            },
+                                                                                          "CriminalIdNumber_Input":  {
+                                                                                                                         "type":  {
+                                                                                                                                      "resolvedName":  "FormInput"
+                                                                                                                                  },
+                                                                                                                         "displayName":  "Input",
+                                                                                                                         "props":  {
+                                                                                                                                       "fieldId":  "criminalIdNumber",
+                                                                                                                                       "label":  "CII Number",
+                                                                                                                                       "maxLength":  "11"
+                                                                                                                                   },
+                                                                                                                         "isCanvas":  false,
+                                                                                                                         "hidden":  false,
+                                                                                                                         "nodes":  [
+
+                                                                                                                                   ],
+                                                                                                                         "linkedNodes":  {
+
+                                                                                                                                         },
+                                                                                                                         "parent":  "ROW_PER_OLN_2"
+                                                                                                                     },
+                                                                                          "SocialSecurityNumber_Input":  {
+                                                                                                                             "type":  {
+                                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                                      },
+                                                                                                                             "displayName":  "Input",
+                                                                                                                             "props":  {
+                                                                                                                                           "fieldId":  "socialSecurityNumber",
+                                                                                                                                           "label":  "SSN",
+                                                                                                                                           "maxLength":  "9"
+                                                                                                                                       },
+                                                                                                                             "isCanvas":  false,
+                                                                                                                             "hidden":  false,
+                                                                                                                             "nodes":  [
+
+                                                                                                                                       ],
+                                                                                                                             "linkedNodes":  {
+
+                                                                                                                                             },
+                                                                                                                             "parent":  "ROW_PER_OLN_2"
+                                                                                                                         },
                                                                                           "CARD_PER_NAME":  {
                                                                                                                 "type":  {
                                                                                                                              "resolvedName":  "Card"
@@ -3036,7 +3487,9 @@
                                                                                                                 "hidden":  false,
                                                                                                                 "nodes":  [
                                                                                                                               "ROW_PER_NAME_1",
-                                                                                                                              "ROW_PER_NAME_2"
+                                                                                                                              "ROW_PER_NAME_2",
+                                                                                                                              "ROW_PER_NAME_3",
+                                                                                                                              "ROW_PER_NAME_4"
                                                                                                                           ],
                                                                                                                 "linkedNodes":  {
 
@@ -3153,7 +3606,7 @@
                                                                                                                 "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "SexCode",
-                                                                                                                              "label":  "Sex (optional)",
+                                                                                                                              "label":  "Sex",
                                                                                                                               "attributeTypeId":  "SEX",
                                                                                                                               "codeTypeProvider":  "NIBRS"
                                                                                                                           },
@@ -3167,6 +3620,131 @@
                                                                                                                                 },
                                                                                                                 "parent":  "ROW_PER_NAME_2"
                                                                                                             },
+                                                                                          "ROW_PER_NAME_3":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "Row"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Row",
+                                                                                                                 "props":  {
+                                                                                                                               "templateColumns":  [
+                                                                                                                                                       "6",
+                                                                                                                                                       "6"
+                                                                                                                                                   ]
+                                                                                                                           },
+                                                                                                                 "isCanvas":  true,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+                                                                                                                               "Age_Input",
+                                                                                                                               "RaceCode_Input"
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "CARD_PER_NAME"
+                                                                                                             },
+                                                                                          "Age_Input":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "FormInput"
+                                                                                                                     },
+                                                                                                            "displayName":  "Input",
+                                                                                                            "props":  {
+                                                                                                                          "fieldId":  "age",
+                                                                                                                          "label":  "Age",
+                                                                                                                          "maxLength":  "2"
+                                                                                                                      },
+                                                                                                            "isCanvas":  false,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "ROW_PER_NAME_3"
+                                                                                                        },
+                                                                                          "RaceCode_Input":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "FormSelect"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Select",
+                                                                                                                 "props":  {
+                                                                                                                               "fieldId":  "raceCode",
+                                                                                                                               "label":  "Race",
+                                                                                                                               "attributeTypeId":  "RACE",
+                                                                                                                               "codeTypeProvider":  "NIBRS"
+                                                                                                                           },
+                                                                                                                 "isCanvas":  false,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "ROW_PER_NAME_3"
+                                                                                                             },
+                                                                                          "ROW_PER_NAME_4":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "Row"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Row",
+                                                                                                                 "props":  {
+                                                                                                                               "templateColumns":  [
+                                                                                                                                                       "6",
+                                                                                                                                                       "6"
+                                                                                                                                                   ]
+                                                                                                                           },
+                                                                                                                 "isCanvas":  true,
+                                                                                                                 "hidden":  false,
+                                                                                                                 "nodes":  [
+                                                                                                                               "Height_Input",
+                                                                                                                               "AddressCounty_Input"
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "CARD_PER_NAME"
+                                                                                                             },
+                                                                                          "Height_Input":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "FormInput"
+                                                                                                                        },
+                                                                                                               "displayName":  "Input",
+                                                                                                               "props":  {
+                                                                                                                             "fieldId":  "height",
+                                                                                                                             "label":  "Height (optional)",
+                                                                                                                             "maxLength":  "3"
+                                                                                                                         },
+                                                                                                               "isCanvas":  false,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "ROW_PER_NAME_4"
+                                                                                                           },
+                                                                                          "AddressCounty_Input":  {
+                                                                                                                      "type":  {
+                                                                                                                                   "resolvedName":  "FormInput"
+                                                                                                                               },
+                                                                                                                      "displayName":  "Input",
+                                                                                                                      "props":  {
+                                                                                                                                    "fieldId":  "addressCounty",
+                                                                                                                                    "label":  "County Code (optional)",
+                                                                                                                                    "maxLength":  "3"
+                                                                                                                                },
+                                                                                                                      "isCanvas":  false,
+                                                                                                                      "hidden":  false,
+                                                                                                                      "nodes":  [
+
+                                                                                                                                ],
+                                                                                                                      "linkedNodes":  {
+
+                                                                                                                                      },
+                                                                                                                      "parent":  "ROW_PER_NAME_4"
+                                                                                                                  },
                                                                                           "CARD_PER_DH_OLN":  {
                                                                                                                   "type":  {
                                                                                                                                "resolvedName":  "Card"
@@ -3236,7 +3814,8 @@
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "caRequestPurposeCodeDH",
                                                                                                                                              "label":  "Purpose Code (DH)",
-                                                                                                                                             "maxLength":  "1"
+                                                                                                                                             "maxLength":  "1",
+                                                                                                                                             "initialValue":  "C"
                                                                                                                                          },
                                                                                                                                "isCanvas":  false,
                                                                                                                                "hidden":  false,
@@ -3583,7 +4162,8 @@
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1"
+                                                                                                                                   "maxLength":  "1",
+                                                                                                                                   "initialValue":  "C"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -3988,7 +4568,8 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1"
+                                                                                                                                        "maxLength":  "1",
+                                                                                                                                        "initialValue":  "C"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -4474,7 +5055,8 @@
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1"
+                                                                                                                                           "maxLength":  "1",
+                                                                                                                                           "initialValue":  "C"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -4925,7 +5507,8 @@
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1"
+                                                                                                                                   "maxLength":  "1",
+                                                                                                                                   "initialValue":  "C"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -5244,7 +5827,8 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1"
+                                                                                                                                        "maxLength":  "1",
+                                                                                                                                        "initialValue":  "C"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -5644,7 +6228,8 @@
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1"
+                                                                                                                                           "maxLength":  "1",
+                                                                                                                                           "initialValue":  "C"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -6033,7 +6618,8 @@
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "caRequestPurposeCode",
                                                                                                                                    "label":  "Purpose Code",
-                                                                                                                                   "maxLength":  "1"
+                                                                                                                                   "maxLength":  "1",
+                                                                                                                                   "initialValue":  "C"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -6468,7 +7054,8 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "caRequestPurposeCode",
                                                                                                                                         "label":  "Purpose Code",
-                                                                                                                                        "maxLength":  "1"
+                                                                                                                                        "maxLength":  "1",
+                                                                                                                                        "initialValue":  "C"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -6984,7 +7571,8 @@
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "caRequestPurposeCode",
                                                                                                                                            "label":  "Purpose Code",
-                                                                                                                                           "maxLength":  "1"
+                                                                                                                                           "maxLength":  "1",
+                                                                                                                                           "initialValue":  "C"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -8525,6 +9113,10 @@
                                                                                                                   {
                                                                                                                       "field":  "LicensePlateYear",
                                                                                                                       "value":  "2026"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
                                                                                                                   }
                                                                                                               ],
                                                                                                  "conditions":  [
@@ -8564,7 +9156,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "NLTS.RQ.V",
@@ -8579,7 +9177,13 @@
                                                                                                          ],
                                                                                                  "any":  [
 
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "IN.VP",
@@ -8606,6 +9210,10 @@
                                                                                                                   {
                                                                                                                       "field":  "LicensePlateYear",
                                                                                                                       "value":  "2026"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
                                                                                                                   }
                                                                                                               ]
                                                                                              },
@@ -8630,7 +9238,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "IA.QVK",
@@ -8713,9 +9327,124 @@
                                                                                           ],
                                                                           "targetField":  "State",
                                                                           "codeTypeProvider":  "NCIC"
+                                                                      },
+                                                                      {
+                                                                          "name":  "Age",
+                                                                          "size":  2,
+                                                                          "sourceField":  [
+                                                                                              "age"
+                                                                                          ],
+                                                                          "targetField":  "Age"
+                                                                      },
+                                                                      {
+                                                                          "name":  "CriminalIdNumber",
+                                                                          "size":  11,
+                                                                          "sourceField":  [
+                                                                                              "criminalIdNumber"
+                                                                                          ],
+                                                                          "targetField":  "CriminalIdNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "SocialSecurityNumber",
+                                                                          "size":  9,
+                                                                          "sourceField":  [
+                                                                                              "socialSecurityNumber"
+                                                                                          ],
+                                                                          "targetField":  "SocialSecurityNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "AddressCounty",
+                                                                          "size":  3,
+                                                                          "sourceField":  [
+                                                                                              "addressCounty"
+                                                                                          ],
+                                                                          "targetField":  "AddressCounty"
+                                                                      },
+                                                                      {
+                                                                          "name":  "Height",
+                                                                          "size":  3,
+                                                                          "sourceField":  [
+                                                                                              "height"
+                                                                                          ],
+                                                                          "targetField":  "Height"
+                                                                      },
+                                                                      {
+                                                                          "name":  "RaceCode",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "raceCode"
+                                                                                          ],
+                                                                          "targetField":  "RaceCode",
+                                                                          "codeTypeProvider":  "NIBRS"
                                                                       }
                                                                   ],
                                                    "combinations":  [
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "SexCode",
+                                                                                                             "BirthDate"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "addressCounty",
+                                                                                                             "height",
+                                                                                                             "raceCode"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "IR.QVC.NB",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "SexCode",
+                                                                                                             "age"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "addressCounty",
+                                                                                                             "height",
+                                                                                                             "raceCode"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "IR.QVC.NA",
+                                                                            "state":  "In/Out"
+                                                                        },
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
@@ -8735,7 +9464,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "IN.L1",
@@ -8758,7 +9493,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "NLTS.DQ",
@@ -8768,18 +9509,82 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
+                                                                                                             "criminalIdNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "socialSecurityNumber"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "CriminalIdNumber",
+                                                                            "keyReference":  "IR.QVC.C",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "socialSecurityNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "criminalIdNumber"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "SocialSecurityNumber",
+                                                                            "keyReference":  "IR.QVC.S",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "OperatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState"
-                                                                                                         ]
+                                                                                                             "RegistrationState",
+                                                                                                             "criminalIdNumber",
+                                                                                                             "socialSecurityNumber"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "ID.L1",
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- IN.L1 (Name), NLTS.DQ (OOS OLN), ID.L1 (OLN). autoSelect+queriesToDeselect DH.",
+                                                   "description":  "DriverLicenseQuery -- IR.QVC.NB/.NA (Name+Sex+DOB|Age, Choice split), IN.L1 (Name), NLTS.DQ (OOS OLN), IR.QVC.C (CII), IR.QVC.S (SSN), ID.L1 (OLN). autoSelect+queriesToDeselect DH.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "CA_VENTURA_COUNTY_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -8897,6 +9702,10 @@
                                                                                                                   {
                                                                                                                       "field":  "Attention",
                                                                                                                       "value":  "X"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCodeDH",
+                                                                                                                      "value":  "C"
                                                                                                                   }
                                                                                                               ],
                                                                                                  "conditions":  [
@@ -8933,6 +9742,10 @@
                                                                                                                   {
                                                                                                                       "field":  "Attention",
                                                                                                                       "value":  "X"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCodeDH",
+                                                                                                                      "value":  "C"
                                                                                                                   }
                                                                                                               ],
                                                                                                  "conditions":  [
@@ -8968,6 +9781,10 @@
                                                                                                                   {
                                                                                                                       "field":  "Attention",
                                                                                                                       "value":  "X"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCodeDH",
+                                                                                                                      "value":  "C"
                                                                                                                   }
                                                                                                               ],
                                                                                                  "conditions":  [
@@ -8996,6 +9813,10 @@
                                                                                                                   {
                                                                                                                       "field":  "Attention",
                                                                                                                       "value":  "X"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCodeDH",
+                                                                                                                      "value":  "C"
                                                                                                                   }
                                                                                                               ],
                                                                                                  "conditions":  [
@@ -9162,7 +9983,13 @@
                                                                                                              "GunCaliber",
                                                                                                              "firearmMake",
                                                                                                              "gunTypeCode"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "GunSerialNumber",
                                                                             "keyReference":  "IG.QGB",
@@ -9241,7 +10068,13 @@
                                                                                                              "articleBrand",
                                                                                                              "articleCategory",
                                                                                                              "ArticleTypeCode"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "ArticleSerialNumber",
                                                                             "keyReference":  "IP.QA.S",
@@ -9257,7 +10090,13 @@
                                                                                                              "articleBrand",
                                                                                                              "articleCategory",
                                                                                                              "ArticleTypeCode"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "OwnerAppliedNumber",
                                                                             "keyReference":  "IP.QA.O",
@@ -9368,7 +10207,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "NLTS.BQ.N",
@@ -9391,7 +10236,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "BoatHullIdNumber",
                                                                             "keyReference":  "NLTS.BQ.H",
@@ -9420,7 +10271,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "NLTS.BQ.R",
@@ -9434,7 +10291,13 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "RegistrationState"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "BoatHullIdNumber",
                                                                             "keyReference":  "IA.QB.H",
@@ -9448,7 +10311,13 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "RegistrationState"
-                                                                                                         ]
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "OwnerAppliedNumber",
                                                                             "keyReference":  "IA.QB.O",
@@ -9470,7 +10339,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "IA.QB.R",
@@ -9488,7 +10363,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_VENTURA_COUNTY v2.1 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for CA_VENTURA_COUNTY v2.2 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "CA_VENTURA_COUNTY",
                         "type":  "BUNDLE",
                         "provider":  "CA_VENTURA_COUNTY"

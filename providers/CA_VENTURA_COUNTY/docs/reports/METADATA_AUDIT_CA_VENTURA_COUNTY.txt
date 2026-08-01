@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
-  Source: CA_VENTURA_COUNTY_v2.1.json
-  Generated: 2026-08-01 09:44
+  Source: CA_VENTURA_COUNTY_v2.2.json
+  Generated: 2026-08-01 10:47
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-01 09:45
+ Generated: 2026-08-01 10:47
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_VENTURA_COUNTY
 ============================================================
   XML: CA_VENTURA_COUNTY.xml
-  JSON: CA_VENTURA_COUNTY_v2.1.json
+  JSON: CA_VENTURA_COUNTY_v2.2.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -62,11 +62,17 @@ METADATA AUDIT
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
   DriverLicenseQuery:
+  [PASS]   AddressCounty: in XML and QIDM
+  [PASS]   Age: in XML and QIDM
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
+  [PASS]   CriminalIdNumber: in XML and QIDM
+  [PASS]   Height: in XML and QIDM
   [PASS]   Name: in XML and QIDM
   [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   RaceCode: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
+  [PASS]   SocialSecurityNumber: in XML and QIDM
   [PASS]   State: in XML and QIDM
   GunQuery:
   [PASS]   Age: in XML and QIDM
@@ -142,6 +148,19 @@ METADATA AUDIT
   [PASS]   keyRef IN.L1: any field 'BirthDate' present
   [PASS]   keyRef ID.L1: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef ID.L1: set field 'OperatorLicenseNumber' present
+  [PASS]   keyRef IR.QVC: set field 'CaRequestPurposeCode' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: any field 'AddressCounty' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: any field 'Height' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: any field 'RaceCode' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: set field 'CaRequestPurposeCode' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: any field 'CriminalIdNumber' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: any field 'SocialSecurityNumber' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: set field 'CaRequestPurposeCode' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: set field 'CriminalIdNumber' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: any field 'SocialSecurityNumber' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: set field 'CaRequestPurposeCode' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: set field 'SocialSecurityNumber' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
+  [PASS]   keyRef IR.QVC: any field 'CriminalIdNumber' covered by IR.QVC.NB,IR.QVC.NA,IR.QVC.C,IR.QVC.S
   [PASS]   keyRef NLTS.DQ: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef NLTS.DQ: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef NLTS.DQ: set field 'OperatorLicenseNumber' present
@@ -177,6 +196,7 @@ METADATA AUDIT
   [PASS]   keyRef IN.VP: set field 'Name' present
 
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [NOTE]   keyRef IR.QVC.NB: 'BirthDate' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef NLTS.KQ.N: 'caRequestPurposeCodeDH' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef IN.B2: 'caRequestPurposeCodeDH' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef NLTS.KQ.O: 'caRequestPurposeCodeDH' in set[] but metadata any[] -- ACCEPTED per registry
@@ -201,8 +221,10 @@ METADATA AUDIT
   [PASS]   Name: at least one combo built (e.g. IN.B2)
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. ID.B2)
   DriverLicenseQuery: 4 metadata search paths
+  [PASS]   CriminalIdNumber: at least one combo built (e.g. IR.QVC)
   [PASS]   Name: at least one combo built (e.g. IN.L1)
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. ID.L1)
+  [PASS]   SocialSecurityNumber: at least one combo built (e.g. IR.QVC)
   GunQuery: 2 metadata search paths
   [PASS]   GunSerialNumber: at least one combo built (e.g. IG.QGB)
   [PASS]   Name: at least one combo built (e.g. IG.QGH)
@@ -229,10 +251,15 @@ METADATA AUDIT
   [PASS] NameFirstDH: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] caRequestPurposeCodeDH: maxLength 1 matches XML (PurposeCode)
+  [PASS] addressCounty: maxLength 3 matches XML (AddressCounty)
+  [PASS] age: maxLength 2 matches XML (Age)
   [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
+  [PASS] criminalIdNumber: maxLength 11 matches XML (CriminalIdNumber)
+  [PASS] height: maxLength 3 matches XML (Height)
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] socialSecurityNumber: maxLength 9 matches XML (SocialSecurityNumber)
   [PASS] age: maxLength 2 matches XML (Age)
   [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] serialNumber: maxLength 20 matches XML (GunSerialNumber)
@@ -248,6 +275,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 187 PASS / 0 FAIL / 0 WARN
+Total: 213 PASS / 0 FAIL / 0 WARN
 ============================================================
 

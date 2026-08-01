@@ -11,7 +11,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_ventura_county_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.1'
+$Version  = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_VENTURA_COUNTY_v${Version}.json"
@@ -154,8 +154,55 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        # ── v2.2: IR.QVC support. Read from the RAW XML <Requirements> per <Combination> (the
+        # sanctioned raw-metadata exception -- METADATA_REFERENCE.txt FLATTENS Choice branches and
+        # cannot answer mandatory-vs-optional per variant). Ventura's IR.QVC has FOUR variants:
+        #   {Name}  Set{ CaRequestPurposeCode, Set{Name,SexCode}, Choice{BirthDate|Age},
+        #                Any{AddressCounty,Height,RaceCode} }   <- Choice INSIDE Set = one REQUIRED
+        #   {OperatorLicenseNumber} Set{ purpose, OLN, Any{CriminalIdNumber,SocialSecurityNumber} }
+        #   {CriminalIdNumber}      Set{ purpose, CII, Any{OLN,SocialSecurityNumber} }
+        #   {SocialSecurityNumber}  Set{ purpose, SSN, Any{CriminalIdNumber,OLN} }
+        # These are devdoc DriverLicenseQuery #3/#4 (Age / BirthDate + Name + SexCode), #5 (CII)
+        # and #7 (SSN) -- all previously UNBUILT with a mandatory field wired nowhere.
+        # Optionals come from METADATA's <Any> (AddressCounty, Height, RaceCode), NOT from the
+        # devdoc prose, which also lists APPSRequestIndicator -- metadata is field-authority.
+        [PSCustomObject]@{ name = 'Age';                  size = 2;  sourceField = @('age');                  targetField = 'Age' }
+        [PSCustomObject]@{ name = 'CriminalIdNumber';     size = 11; sourceField = @('criminalIdNumber');     targetField = 'CriminalIdNumber' }
+        [PSCustomObject]@{ name = 'SocialSecurityNumber'; size = 9;  sourceField = @('socialSecurityNumber'); targetField = 'SocialSecurityNumber' }
+        [PSCustomObject]@{ name = 'AddressCounty';        size = 3;  sourceField = @('addressCounty');        targetField = 'AddressCounty' }
+        [PSCustomObject]@{ name = 'Height';               size = 3;  sourceField = @('height');               targetField = 'Height' }
+        [PSCustomObject]@{ name = 'RaceCode';             size = 1;  sourceField = @('raceCode');             targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
     )
     combinations = @(
+        # ── IR.QVC{Name} -- SPLIT into one combination per <Choice> branch (set[] has no OR).
+        # BirthDate branch first, then Age: devdoc lists #3 (Age) before #4 (BirthDate), BUT neither
+        # set[] is a subset of the other, so if an officer supplies both the FIRST listed here wins.
+        # Ordered BirthDate-first deliberately: a date of birth is a stronger identifier than an age,
+        # so when both are present the more precise query should go out.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','NameLast','NameFirst','SexCode','BirthDate')
+                any        = @('addressCounty','height','raceCode')
+                defaults   = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+                # OLN beats Name (identifier priority). No State gate: devdoc #3/#4 are (In/Out),
+                # and NLTS.DQ requires OLN, so a State-present name search cannot collide with it.
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IR.QVC.NB'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','NameLast','NameFirst','SexCode','age')
+                any        = @('addressCounty','height','raceCode')
+                defaults   = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IR.QVC.NA'
+            state                 = 'In/Out'
+        }
         # Name combo first (3 set, Name before OLN at same count)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
@@ -177,15 +224,56 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'NLTS.DQ'
             state                 = 'In/Out'
         }
+        # ── IR.QVC{CriminalIdNumber} (devdoc #5) and IR.QVC{SocialSecurityNumber} (devdoc #7).
+        # 2 set[] each, so they sit AFTER the 3-set Name/OOS combos and BEFORE the 2-set ID.L1.
+        # Each carries the other two identifiers in any[] exactly as its metadata <Any> permits.
+        # Gated OLN NOT_EXISTS so an OLN-bearing fill still routes to the OLN paths (identifier
+        # priority), which is also what keeps them from stealing ID.L1's fills.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','criminalIdNumber')
+                any        = @('socialSecurityNumber')
+                defaults   = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+            }
+            primaryFieldReference = 'CriminalIdNumber'
+            keyReference          = 'IR.QVC.C'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','socialSecurityNumber')
+                any        = @('criminalIdNumber')
+                defaults   = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+                # NO 'criminalIdNumber NOT_EXISTS' gate here. I added one for belt-and-braces
+                # mutual exclusion and verify_build correctly rejected it: gating a field NOT_EXISTS
+                # while ALSO listing it in any[] is dead config -- it can never serialize, and it
+                # poisons the test conductor. The two are XOR, never companions.
+                # Ordering already gives CII precedence (IR.QVC.C is listed above this), and
+                # metadata's IR.QVC{SocialSecurityNumber} <Any> explicitly permits CriminalIdNumber
+                # to ride along, so keeping it in any[] is what the metadata asks for.
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'SocialSecurityNumber'
+            keyReference          = 'IR.QVC.S'
+            state                 = 'In/Out'
+        }
         # In-state OLN (2 set)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','OperatorLicenseNumber'); any = @('RegistrationState') }
+            requirements          = [PSCustomObject]@{
+                set = @('caRequestPurposeCode','OperatorLicenseNumber')
+                # v2.2: CII/SSN ride along per metadata IR.QVC{OperatorLicenseNumber}'s <Any>, so an
+                # OLN search that also carries them TRANSMITS them instead of dropping them silently.
+                any = @('RegistrationState','criminalIdNumber','socialSecurityNumber')
+            }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'ID.L1'
             state                 = 'In/Out'
         }
     )
-    description     = 'DriverLicenseQuery -- IN.L1 (Name), NLTS.DQ (OOS OLN), ID.L1 (OLN). autoSelect+queriesToDeselect DH.'
+    description     = 'DriverLicenseQuery -- IR.QVC.NB/.NA (Name+Sex+DOB|Age, Choice split), IN.L1 (Name), NLTS.DQ (OOS OLN), IR.QVC.C (CII), IR.QVC.S (SSN), ID.L1 (OLN). autoSelect+queriesToDeselect DH.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'CA_VENTURA_COUNTY_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -489,6 +577,37 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
+# ─── v2.2: purposeCode COMBO DEFAULT on every combination that requires it ────────────────────
+# EVERY Ventura combination carries CaRequestPurposeCode in set[], because the provider requires it
+# on every transaction -- but 21 of 27 combos had no defaults[] entry for it, and the form control is
+# a visible Inp with NO initialValue. Two consequences, both real:
+#   1. A devdoc-legal fill sends NOTHING. audit_devdoc_optionals reported 5 FAILs of the form
+#      "ArticleSingleQuery #1 (mandatory only) -> NO COMBO FIRES. A devdoc-legal fill sends no
+#      query." -- purposeCode is not a devdoc field, so a devdoc-faithful fill omits it and no
+#      combination can match. The Article combos are otherwise CORRECT: metadata IP.QA is
+#      Set{purpose, ArticleSerialNumber, Any{ArticleBrand, ArticleCategory, ArticleTypeCode}}, so
+#      Brand/Category/Type really are optional (the devdoc prose reads Brand as mandatory, but
+#      METADATA IS FIELD-AUTHORITY and the devdoc is query-authority -- KB rule B4).
+#   2. CAD ignores form initialValue entirely, so a combo default is the ONLY way a CAD-dispatched
+#      query carries it (audit_cad CHECK 6 / "CAD defaults required").
+# Done as a build-time normalization rather than 21 hand edits: one rule, impossible to apply
+# inconsistently, and it self-documents WHY. This is NOT a post-build JSON patch -- it runs while
+# the objects are still being constructed, which is what the no-patches rule requires.
+foreach ($q in @($vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)) {
+    foreach ($cm in @($q.combinations)) {
+        $needs = @($cm.requirements.set | Where-Object { "$_" -match 'PurposeCode' })
+        if (-not $needs.Count) { continue }
+        $existing = @($cm.requirements.defaults | Where-Object { $_ -and "$($_.field)" -match 'PurposeCode' })
+        if ($existing.Count) { continue }
+        $newDefault = [PSCustomObject]@{ field = [string]$needs[0]; value = 'C' }
+        if ($cm.requirements.PSObject.Properties.Name -contains 'defaults' -and $cm.requirements.defaults) {
+            $cm.requirements.defaults = @(@($cm.requirements.defaults) + $newDefault)
+        } else {
+            $cm.requirements | Add-Member -MemberType NoteProperty -Name 'defaults' -Value @($newDefault) -Force
+        }
+    }
+}
+
 $caBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for CA_VENTURA_COUNTY v${Version} MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs"
@@ -526,7 +645,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -591,7 +710,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -599,8 +718,17 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_OLN'
         title = 'DL - OLN SEARCH'
         rows  = @(
+            # 'OLN' is the CANONICAL label on every provider (DEX-1284, BUILD_RULES Sec 11), applied
+            # on each provider's own revisit turn -- this is Ventura's. Was 'License Number'.
             @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_OLN_1' }
+            )}
+            # v2.2: CII / SSN searches (devdoc #5 / #7, metadata IR.QVC{CriminalIdNumber} and
+            # {SocialSecurityNumber}). They live on the OLN card because metadata lets all three
+            # ride together -- whichever is present decides which combo fires.
+            @{ id = 'ROW_PER_OLN_2'; cols = @('6','6'); fields = @(
+                @{ id = 'CriminalIdNumber_Input';     node = Inp 'criminalIdNumber'     'CII Number' '11' 'ROW_PER_OLN_2' }
+                @{ id = 'SocialSecurityNumber_Input'; node = Inp 'socialSecurityNumber' 'SSN'        '9'  'ROW_PER_OLN_2' }
             )}
         )
     }
@@ -612,9 +740,31 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
             )}
+            # 'Sex' is no longer optional-only: metadata IR.QVC{Name} makes SexCode MANDATORY
+            # alongside Name plus one of BirthDate|Age, so the '(optional)' qualifier was wrong as of
+            # v2.2. It remains optional for the looser IN.L1 name catchall, so the bare label is the
+            # honest one (lean-label convention -- the card title carries the query path).
             @{ id = 'ROW_PER_NAME_2'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'                                                          'ROW_PER_NAME_2' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (optional)'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_NAME_2' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' }           'ROW_PER_NAME_2' }
+            )}
+            # v2.2: Age is the OTHER branch of metadata's Choice{BirthDate|Age} -- one of the two is
+            # REQUIRED for IR.QVC. No initialValue on Age or BirthDate: both are set[] routing fields
+            # and a prefill on either would permanently hide the other branch (BUILD_RULES 24).
+            @{ id = 'ROW_PER_NAME_3'; cols = @('6','6'); fields = @(
+                @{ id = 'Age_Input';      node = Inp 'age'      'Age' '2'                                                                  'ROW_PER_NAME_3' }
+                # attributeTypeId='RACE' PLUS codeTypeProvider='NIBRS' -- the dual-consumer pattern
+                # (RMS Person Search stores the attribute ID, CommSys needs the RaceCode code string).
+                # codeTypeCategory='NIBRS_RACE' alone fails AP #11 twice: the DL attr's
+                # codeTypeProvider reverse-lookup cannot resolve a bare code string, and RMS's
+                # useAttributeId=true race attr would store a code instead of an ID. Mirrors
+                # CA_CLETS v2.23, which is tenant-verified ALL-PASS with this exact wiring.
+                # LABEL-OVERRIDE: raceCode -- bare per DEX-1284 lean pass (any[] optional refinement)
+                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_3' }
+            )}
+            @{ id = 'ROW_PER_NAME_4'; cols = @('6','6'); fields = @(
+                @{ id = 'Height_Input';        node = Inp 'height'        'Height (optional)'         '3'  'ROW_PER_NAME_4' }
+                @{ id = 'AddressCounty_Input'; node = Inp 'addressCounty' 'County Code (optional)'    '3'  'ROW_PER_NAME_4' }
             )}
         )
     }
@@ -624,7 +774,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_DH_OLN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH_OLN_1' }
-                @{ id = 'CaRequestPurposeCodeDH_Input';  node = Inp 'caRequestPurposeCodeDH'  'Purpose Code (DH)'   '1'  'ROW_PER_DH_OLN_1' }
+                @{ id = 'CaRequestPurposeCodeDH_Input';  node = Inp 'caRequestPurposeCodeDH'  'Purpose Code (DH)'   '1'  'ROW_PER_DH_OLN_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DH_OLN_2'; cols = @('12'); fields = @(
                 @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_OLN_2' @{ initialValue = 'X' } }
@@ -667,7 +817,7 @@ $faLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_GUN_OPT_1'; cols = @('4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -725,7 +875,7 @@ $artLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_ART_OPT_1'; cols = @('4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -777,7 +927,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
