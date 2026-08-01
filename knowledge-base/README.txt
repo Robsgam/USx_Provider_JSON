@@ -1270,6 +1270,36 @@ AUTHORITATIVE SOURCE FILES (read-only)
     everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
     equivalent fallbacks.)
 
+  tools/audit_provider_linkage.ps1
+    PROVIDER LINKAGE GATE (advisory). EVERY PROVIDER JSON IS STANDALONE. Its build
+    is justified by ITS OWN devdoc (query authority) and ITS OWN metadata XML
+    (field authority); CLAUDE.md + this knowledge-base are the only SHARED
+    authority. Flags a build script that names a DIFFERENT provider in code or
+    comment. Comments count: a comment is where the JUSTIFICATION lives, and a
+    justification that points at another provider is precisely the defect.
+    THE ONLY TWO DIRECTED LINKS (allowlisted):
+      1. CA_CONTRA_COSTA -> CA_CLETS  (explicit ruling: full CA_CLETS copy + JAWS)
+      2. <BASE>_<VARIANT> -> <BASE>   (CCH etc., declared by `# BASE-SYNC: <BASE>
+                                       vX.Y`, drift-gated by audit_variant_sync)
+    WHY THIS IS NOT COSMETIC -- the near-miss that produced the gate:
+      CA_CLETS and CA_VENTURA_COUNTY both have an IR.QVC{Name} DriverLicense
+      combination and they require OPPOSITE things. CA_CLETS's has FOUR metadata
+      variants, one of which puts Choice[Age|BirthDate] inside <Any> -- legally
+      OPTIONAL there, and CA_CLETS correctly registered a demoted-to-any
+      divergence. Ventura's has exactly ONE variant with the Choice inside <Set>
+      -- MANDATORY, so it must be split into one combination per branch. Copying
+      the "tenant-verified sibling" would have shipped a request Ventura's own
+      metadata calls invalid. A SIBLING PROVIDER IS NOT EVIDENCE; where it looks
+      like evidence it is actively misleading.
+    Excludes codeTypeSource/codeTypeProvider/codeTypeCategory lines -- e.g.
+    codeTypeSource='CA_CLETS' is the platform registry value NCIC_ARTICLE_TYPE
+    requires, not a provider link. (25 of the first 93 hits were exactly this; a
+    gate with false positives gets ignored, which is worse than no gate.)
+    Baseline 2026-08-01: 68 references across 20 providers. Deliberately ADVISORY
+    and NOT a flag_pending_fix flag -- comment provenance has zero wire impact, so
+    blocking six tenant-verified providers over it would be disproportionate.
+    Cleaned per provider at its own rebuild (one provider at a time).
+
   tools/audit_ps51_parse.ps1
     PS 5.1 PARSE GATE. Every tools/*.ps1 must parse on the engine that RUNS it.
     pipeline.ps1/enforce.ps1 invoke tools as `powershell -File` = Windows

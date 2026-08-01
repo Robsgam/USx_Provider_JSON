@@ -3,7 +3,7 @@
 # Phase 2 multi-card. Cross-entity combos (IN.VP, IG.QGH, NLTS.BQ.N).
 # CAD_DISPATCH + FIRST_RESPONDER context cards.
 #
-# KEY DIFFERENCE FROM CA_CLETS MC:
+# THIS PROVIDER'S OWN SHAPE (regional CLETS interface; standalone -- no sibling is authority):
 #   DriverHistoryQuery has in-state combos (IN.B2, ID.B2) in addition to NLTS.KQ OOS.
 #   DH has Attention (CommsysGetLastNameFirstNameInitialRuleHandler) + PurposeCode attrs.
 #   Article has ArticleCategory field.
@@ -162,8 +162,11 @@ $dlQuery = [PSCustomObject]@{
         #   {OperatorLicenseNumber} Set{ purpose, OLN, Any{CriminalIdNumber,SocialSecurityNumber} }
         #   {CriminalIdNumber}      Set{ purpose, CII, Any{OLN,SocialSecurityNumber} }
         #   {SocialSecurityNumber}  Set{ purpose, SSN, Any{CriminalIdNumber,OLN} }
-        # These are devdoc DriverLicenseQuery #3/#4 (Age / BirthDate + Name + SexCode), #5 (CII)
-        # and #7 (SSN) -- all previously UNBUILT with a mandatory field wired nowhere.
+        # These are THIS provider's devdoc DriverLicenseQuery #3/#4 (Age / BirthDate + Name +
+        # SexCode), #5 (CriminalIdNumber) and #7 (SocialSecurityNumber) -- all previously UNBUILT
+        # with a mandatory field wired nowhere. Sizes read from this XML's own <Field maxLength>:
+        # Age 2, CriminalIdNumber 11, SocialSecurityNumber 9, AddressCounty 3 (a county CODE, not a
+        # name), Height 3, RaceCode 1. Guessing them produced two server-reject WARNs first.
         # Optionals come from METADATA's <Any> (AddressCounty, Height, RaceCode), NOT from the
         # devdoc prose, which also lists APPSRequestIndicator -- metadata is field-authority.
         [PSCustomObject]@{ name = 'Age';                  size = 2;  sourceField = @('age');                  targetField = 'Age' }
@@ -289,7 +292,7 @@ $dlQuery = [PSCustomObject]@{
 # DriverHistoryQuery -- PascalCase, DH-suffix fieldIds (AP #14 pattern)
 # DH-suffix fields: OperatorLicenseNumberDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH, CaRequestPurposeCodeDH
 # Attention: auto-handler via dedicated hidden 'attention' feeder field (initialValue='X'), included
-# in every DH combo any[] + defaults[] Attention=X so the handler output serializes (AZ_AZDPS pattern).
+# in every DH combo any[] + defaults[] Attention=X so the handler output serializes (AP #27 feeder).
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{
@@ -410,7 +413,7 @@ $gunQuery = [PSCustomObject]@{
         # Name search -- SPLIT v2.1 into one combination per <Choice> branch. set[] has no OR, so a
         # Choice-inside-<Set> cannot be expressed in a single combination; it must become one combo
         # per branch (QIDM_REFERENCE Sec 1b, LIMITATION #21 synthetic keyRef). Mirrors the same fix
-        # already shipped on CA_CLETS v2.23 (IG.QGH.A/.B) and CA_eSUN v2.1.
+        # mandated by THIS provider's metadata: IG.QGH{Name} puts Choice[Age|BirthDate] inside <Set>.
         # Order follows the devdoc listing: #2 Name,Age precedes #3 Name,BirthDate. Neither set[] is
         # a subset of the other, so if an officer fills BOTH, .A wins -- which is the devdoc order.
         [PSCustomObject]@{
@@ -758,7 +761,7 @@ $perLayout = MakeLayouts @(
                 # codeTypeCategory='NIBRS_RACE' alone fails AP #11 twice: the DL attr's
                 # codeTypeProvider reverse-lookup cannot resolve a bare code string, and RMS's
                 # useAttributeId=true race attr would store a code instead of an ID. Mirrors
-                # CA_CLETS v2.23, which is tenant-verified ALL-PASS with this exact wiring.
+                # the dual-consumer requirement of this build's own RMS bundle + DL attr (AP #11, both directions).
                 # LABEL-OVERRIDE: raceCode -- bare per DEX-1284 lean pass (any[] optional refinement)
                 @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_3' }
             )}
