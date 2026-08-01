@@ -115,6 +115,54 @@ Three outcomes, and the authorities decide which:
 **Cite the variant in the Reason.** A registry row whose reason is a claim rather than evidence is
 how a wrong diagnosis outlives its author.
 
+### 3a — "silently not transmitted": RUN THE ADJUDICATOR, DO NOT READ THE WORDING
+
+`tools\audit_optional_scope.ps1 -Provider <NAME>` — do this **before** touching a dropped-optional
+finding. On 2026-08-01 the identical sentence
+
+> `#N +[Field] -> fires KEYREF but optional(s) Field are in NO matching combo's set[]/any[] --
+> silently not transmitted`
+
+was a **real dropped value** on AZ_AZDPS, CA_eSUN, CA_SAN_LUIS_OBISPO and OH_LEADS, and the **correct
+behaviour** on TX_TLETS_CCH, NM_NMLETS_OFML, OH_LEADS(boat), OR_LEDS, MD_METERS and TN_TIES. Eleven
+adjudications, same words, opposite answers. The wording carries no information — the metadata does.
+
+**Why the ambiguity is structural, not sloppiness:** the devdoc gives **one flat optional list per
+query**, while the metadata scopes optionals **per variant** — across separate transactions (in-state
+NCIC keyRef vs out-of-state Nlets keyRef) or across **Choice branches** (a nested `<Set>` scoping
+fields to one alternative). A flat list cannot express "optional, but only on the Nlets path".
+
+**The only question.** Never "is it in the devdoc bracket?" — it always is, that is why it fired:
+
+> **Does the FIRING combo's own metadata variant define this field?**
+> **YES → FIX** — add it to that combo's `any[]`; we are discarding what the officer typed.
+> **NO → REGISTER** — adding it would **OVER-PERMIT**, i.e. transmit a field that transaction does not
+> define. That is a *new* defect, and `audit_requirement_fidelity` will duly report it as
+> OVER-PERMITTED. "Adding it anyway to be safe" is not safe.
+
+Scope by **(query, keyRef, primaryFieldReference)**. A keyRef is **not** a variant: `OR_LEDS`'s `BQ`
+carries both `BQ{BoatHullIdNumber}` and `BQ{RegistrationNumber}`, and an unnarrowed lookup found
+`RegistrationNumber` on the *sibling* and recommended FIX on the **hull** combo. Two providers flipped
+FIX → REGISTER once PF narrowing was added.
+
+**Severity order — do not treat these as one bucket:**
+1. **UNDER-REQUIRED `set[]`** (a metadata-mandatory field sitting in `any[]`, with no looser variant)
+   → the query can fire **without** it and the request is **INVALID**. `OR_LEDS` DQ.N/SexCode.
+   6d catches this on a live log; **6c and 2i cannot** — a *missing requirement* is invisible to
+   content and attribution checks, which is how a committed PASS log once carried one.
+2. **Missing combination** — a metadata variant with no built counterpart, so fills fall to a looser
+   combo and the extra fields vanish. `CA_SAN_LUIS_OBISPO` DQ.N/QVC.N, `OH_LEADS` QWA.
+3. **Dropped optional** — narrower query than asked for, nothing errors.
+4. **Over-permitted** — a field the variant does not define. What you create by "fixing" a #3 wrongly.
+
+**When you add a missing combination, order it AHEAD of the looser one.** The looser combo's `set[]`
+is a strict subset, so first-match hands it every fill and the new path is dead on arrival.
+
+**A State gate belongs where the metadata FORKS BY state** — never on a variant that merely permits
+`State` as an optional. `TN_TIES` KQ.N was gated `RegistrationState EXISTS` while metadata
+`KQ{Name}` has `Any[State]`, which made an in-state driver-history name search **impossible** with no
+other name combo to fall through to.
+
 **Three registry traps, all live-caught:**
 - **An UNBUILT-class row must name the UNBUILT thing, never a live combo.** Rules matching
   `shadow|unbuilt|not-built|dropped-combo|dead-combo` make `audit_requirement_fidelity` skip that
