@@ -16,9 +16,9 @@
 
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-07-31 (generated) · **Branch:** `main`
+**Last updated:** 2026-08-01 (generated) | **Branch:** `main`
 
-## Tenant-test state — GENERATED, do not hand-edit
+## Tenant-test state -- GENERATED, do not hand-edit
 
 Derived from `_test_status_lib.ps1`, the same primitives `portfolio_status.ps1` and the
 CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_session_state.ps1`.
@@ -31,9 +31,9 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | NJ_NJCJIS | v4.15 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.19 | ALL-PASS (64 logs) |
 | TX_TLETS | v4.18 | ALL-PASS (89 logs) |
-| _14 others_ | — | never tenant-tested: AZ_AZDPS, CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
+| _14 others_ | -- | never tenant-tested: AZ_AZDPS, CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
-**Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 — `0 FAIL / 0 WARN`.
+**Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an
 absolute number is guaranteed to go stale and teach the next session to distrust this file.
 <!-- END GENERATED -->

@@ -1,6 +1,6 @@
-CA_VENTURA_COUNTY v2.0 -- TEST MATRIX
+CA_VENTURA_COUNTY v2.1 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-31
+Generated: 2026-08-01
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -34,14 +34,15 @@ Person (5 cards, 14 fields):
     ROW 1: NameFirstDH [Inp 30], NameLastDH [Inp 30]
     ROW 2: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
 
-Firearm (3 cards, 7 fields):
+Firearm (3 cards, 9 fields):
   CARD_GUN_OPT (OPTIONS):
     caRequestPurposeCode [Inp 1]
   CARD_GUN_SERIAL (SERIAL SEARCH):
     ROW 1: serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
   CARD_GUN_NAME (NAME SEARCH (Gun by Owner)):
-    NameFirst [Inp 30], NameLast [Inp 30]
+    ROW 1: NameFirst [Inp 30], NameLast [Inp 30]
+    ROW 2: BirthDate [FormDate], age [Inp 2]
 
 Article (3 cards, 6 fields):
   CARD_ART_OPT (OPTIONS):
@@ -65,12 +66,12 @@ Boat (5 cards, 8 fields):
     NameFirst [Inp 30], NameLast [Inp 30]
     BirthDate [FormDate]
 
-QIDM SUMMARY (6 QIDMs, 22 combos)
+QIDM SUMMARY (6 QIDMs, 23 combos)
 ----------------------------------------
   VehicleRegistrationQuery: 5 combos (IA.QV x1, IA.QVK x1, NLTS x2, IN x1), autoSelect=true
   DriverLicenseQuery: 3 combos (ID.L1 x1, NLTS x1, IN x1), autoSelect=true, deselects: [DH]
   DriverHistoryQuery: 4 combos (ID.B2 x1, IN x1, NLTS x2), autoSelect=true, deselects: [DL]
-  GunQuery: 2 combos (IG x2)
+  GunQuery: 3 combos (IG x3)
   ArticleSingleQuery: 2 combos (IP.QA. x2)
   BoatQuery: 6 combos (IA.QB. x3, NLTS x3)
 
@@ -172,7 +173,7 @@ ENTITY 3: VEHICLE (11 tests -- 4 cards, 5 combos)
 37  Vehicle     Guardrail: NLTS.RQ.P>IA.QVK  LicensePlateNumber=TEST123, caRequest... [    ]
               Expected: VehicleRegistrationQuery fires (NLTS.RQ.P). caRequestPurposeCode+VIN absent from XML.
 
-ENTITY 4: FIREARM (3 tests -- 3 cards, 2 combos)
+ENTITY 4: FIREARM (4 tests -- 3 cards, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -180,31 +181,33 @@ ENTITY 4: FIREARM (3 tests -- 3 cards, 2 combos)
               Expected: GunQuery fires (IG.QGB)
 39  Firearm     IG+.QGB            + GunCaliber, firearmMake, gunTypeCode [    ]
               Expected: any[] fields present in XML output.
-40  Firearm     IG+.QGH            caRequestPurposeCode=C, NameLast=DOE,... [    ]
-              Expected: GunQuery fires (IG.QGH)
+40  Firearm     IG+.QGH.B          caRequestPurposeCode=C, NameLast=DOE,... [    ]
+              Expected: GunQuery fires (IG.QGH.B)
+41  Firearm     IG+.QGH.A          caRequestPurposeCode=C, NameLast=DOE,... [    ]
+              Expected: GunQuery fires (IG.QGH.A)
 
 ENTITY 5: ARTICLE (4 tests -- 3 cards, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-41  Article     IP.QA.+IP.QA.O     caRequestPurposeCode=C, ownerAppliedN... [    ]
+42  Article     IP.QA.+IP.QA.O     caRequestPurposeCode=C, ownerAppliedN... [    ]
               Expected: ArticleSingleQuery fires (IP.QA.O)
-42  Article     IP.QA.+IP.QA.O     + articleBrand, articleCategory, ArticleTypeCode [    ]
+43  Article     IP.QA.+IP.QA.O     + articleBrand, articleCategory, ArticleTypeCode [    ]
               Expected: any[] fields present in XML output.
-43  Article     IP.QA.+IP.QA.S     caRequestPurposeCode=C, serialNumber=... [    ]
+44  Article     IP.QA.+IP.QA.S     caRequestPurposeCode=C, serialNumber=... [    ]
               Expected: ArticleSingleQuery fires (IP.QA.S)
-44  Article     IP.QA.+IP.QA.S     + articleBrand, articleCategory, ArticleTypeCode [    ]
+45  Article     IP.QA.+IP.QA.S     + articleBrand, articleCategory, ArticleTypeCode [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
-TOTAL: 44 tests
+TOTAL: 45 tests
 
-COMBO COVERAGE (22/22):
+COMBO COVERAGE (23/23):
   VehicleRegistrationQuery: 5/5 -- T27(IA.QV+IA.QV), T29(IN+.VP), T30(IA.QVK+IA.QVK), T32(NLTS+.RQ.V), T34(NLTS+.RQ.P)
   DriverLicenseQuery: 3/3 -- T9(ID.L1+ID.L1), T10(IN+.L1), T12(NLTS+.DQ)
   DriverHistoryQuery: 4/4 -- T13(NLTS+.KQ.O), T15(ID.B2+ID.B2), T17(NLTS+.KQ.N), T19(IN+.B2)
-  GunQuery: 2/2 -- T38(.QGB), T40(.QGH)
-  ArticleSingleQuery: 2/2 -- T41(IP.QA.O), T43(IP.QA.S)
+  GunQuery: 3/3 -- T38(.QGB), T40(.QGH.B), T41(.QGH.A)
+  ArticleSingleQuery: 2/2 -- T42(IP.QA.O), T44(IP.QA.S)
   BoatQuery: 6/6 -- T1(IA.QB.+IA.QB.H), T2(IA.QB.+IA.QB.O), T3(IA.QB.+IA.QB.R), T4(NLTS+.BQ.N), T5(NLTS+.BQ.H), T6(NLTS+.BQ.R)
 
-IMPORT FILE: CA_VENTURA_COUNTY_v2.0.json
+IMPORT FILE: CA_VENTURA_COUNTY_v2.1.json

@@ -1270,8 +1270,35 @@ AUTHORITATIVE SOURCE FILES (read-only)
     everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
     equivalent fallbacks.)
 
-  tools/_resolve_provider_xml.ps1
-    Shared metadata-XML resolver (Get-ProviderMetadataXml). The XML counterpart of
+  tools/audit_ps51_parse.ps1
+    PS 5.1 PARSE GATE. Every tools/*.ps1 must parse on the engine that RUNS it.
+    pipeline.ps1/enforce.ps1 invoke tools as `powershell -File` = Windows
+    PowerShell 5.1, while interactive work here often uses pwsh 7. The grammars
+    differ, so a tool can be written, run and "verified" under 7 and still be a
+    HARD PARSE FAILURE under 5.1 -- which appears as swallowed ParserError text,
+    not as a FAIL line in a report. Found 2026-08-01 when sync_session_state.ps1
+    silently broke pipeline step 8, and audit_defect_classes.ps1 had the same
+    defect while being used all day.
+    TWO 5.1-ONLY FAILURE MODES:
+      1. Non-ASCII inside a DOUBLE-QUOTED / interpolated string in a BOM-less
+         file. 5.1 decodes such a file as cp1252, and BOTH an em-dash
+         (U+2014 = E2 80 94) and a box-drawing char (U+2500 = E2 94 80) contain
+         byte 0x94, which cp1252 maps to a RIGHT DOUBLE QUOTATION MARK -- 5.1
+         treats that as a string delimiter, so the string ends mid-line.
+         The repo's 66 other BOM-less non-ASCII scripts are fine ONLY because
+         theirs sit in SINGLE-quoted strings, where 5.1 never scans for
+         interpolation. RULE: non-ASCII is fine in '...', NEVER in "...$x...".
+      2. Nested same-type quotes inside $( ), e.g. "$(if($b){" -- x"})" --
+         PS7 accepts it, 5.1 does not.
+    It PRINTS THE ENGINE VERSION and REFUSES to report a clean verdict unless
+    running on 5.1, because the first version of this very check was run by
+    pwsh 7, used the PS7 grammar, and reported "99 scanned / 0 failures" while
+    two files were broken. Same class as the JAWS-only XML misread: A CHECK THAT
+    CONSULTS THE WRONG AUTHORITY CANNOT FAIL HONESTLY.
+    Composed into doctor.ps1. LAW 2 verified: injecting an em-dash into an
+    interpolated string is caught, with the cause named.
+
+  tools/_resolve_provider_xml.ps1    Shared metadata-XML resolver (Get-ProviderMetadataXml). The XML counterpart of
     _resolve_provider_json.ps1, added 2026-08-01 because it did NOT exist: six tools
     each hand-rolled XML resolution and four used `Get-ChildItem source -Filter
     '*.xml' | Select-Object -First 1`, which is alphabetical, not authoritative.

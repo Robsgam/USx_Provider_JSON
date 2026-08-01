@@ -1,7 +1,7 @@
 ﻿CA_VENTURA_COUNTY METADATA REFERENCE
 =====================================
-Generated: 2026-07-24
-Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_v2.0.json
+Generated: 2026-08-01
+Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_v2.1.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -150,8 +150,9 @@ METADATA COMBINATIONS (2 total):
   IG.QGB        GunSerialNumber         CaRequestPurposeCode, GunSerialNumber                  GunCaliber, GunMake, GunTyp...
   IG.QGH        Name                    CaRequestPurposeCode, Name                             --
 
-BUILD COVERAGE (2 of 2 built):
-  BUILT   IG.QGH         set[caRequestPurposeCode, NameLast, NameFirst]
+BUILD COVERAGE (3 of 2 built):
+  BUILT   IG.QGH.A       set[caRequestPurposeCode, NameLast, NameFirst, age]
+  BUILT   IG.QGH.B       set[caRequestPurposeCode, NameLast, NameFirst, BirthDate]
   BUILT   IG.QGB         set[caRequestPurposeCode, serialNumber]
 
 ================================================================================
@@ -239,10 +240,10 @@ BUILD SUMMARY
   BoatQuery                                  7      6     1  86%
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
   DriverLicenseQuery                         8      3     5  38%
-  GunQuery                                   2      2     0  100% (COMPLETE)
+  GunQuery                                   2      3     0  150%
   VehicleRegistrationQuery                  20      5    15  25%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   43     22    21  51%
+  TOTAL                                   43     23    21  53%
 
 ================================================================================
 UNBUILT METADATA COMBOS (20 combos in metadata, not in JSON)

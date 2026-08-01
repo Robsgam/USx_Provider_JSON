@@ -99,6 +99,28 @@ $testData["Person"] = @{
     MiscellaneousDescriptiveText    = "TEST QUERY"
     AreaCode                        = "602"
     FormORI                         = "MK1234567"
+    # ── added 2026-08-01: see the note in the Vehicle table ──────────────────────────────────
+    # TX_TLETS_CCH suffixes EVERY CCH field with 'CCH' for full isolation (zero collision with the
+    # base-6), so not one of its CCH combos matched anything in this table and all of them reported
+    # "[SKIP] -- missing set". 19 of the 36 undriveable combos found portfolio-wide were CCH.
+    caRequestPurposeCodeDH          = "C"            # CA_VENTURA_COUNTY DH-suffixed purpose
+    OperatorLicenseExpirationYear   = "2028"         # MD_METERS ZWAR.O
+    attentionCCH                    = "SGAMBELLONE R"
+    birthDateCCH                    = "1990-01-15"
+    fbiNumberCCH                    = "123456AB7"
+    freeTextCCH                     = "TEST QUERY"
+    inquiryReasonCCH                = "C"
+    miscellaneousNumberCCH          = "MISC12345"
+    nameFirstCCH                    = "John"
+    nameLastCCH                     = "Doe"
+    nletsDestinationCCH             = "TX"
+    operatorCCH                     = "OP1"
+    purposeCodeCCH                  = "C"
+    raceCodeCCH                     = "W"
+    requestorCCH                    = "REQUESTOR"
+    sexCodeCCH                      = "M"
+    socialSecurityNumberCCH         = "123456789"
+    stateIdNumberCCH                = "TX1234567"
 }
 $testData["Vehicle"] = @{
     caRequestPurposeCode        = "C"
@@ -129,6 +151,24 @@ $testData["Vehicle"] = @{
     nameFirst                   = "John"
     addressCity                 = "Los Angeles"
     addressStreetNumber         = "123"
+    # ── added 2026-08-01: fields whose ABSENCE made real combos UNDRIVEABLE ──────────────────
+    # A portfolio sweep for "[SKIP] ... missing set:" found 36 combos across 7 providers that this
+    # simulator has NEVER exercised, because a set[] field had no test value here. That includes
+    # TX_TLETS, which is tenant-verified with 89 logs -- its browser sweep drives from the TEST PLAN
+    # and _combo_value_resolver, so the WIRE was covered while the simulator silently was not.
+    # A [SKIP] line is not a pass; it is a combo whose XML shape nothing ever checked.
+    financialResponsibilityType = "E"          # TX FRT -- devdoc value E
+    stickerNumber               = "12345678"   # TX DPSI
+    DealerLicensePlateNumber    = "D123456"    # TN_TIES dealer
+    DealerPlateType             = "D"          # OH_LEADS
+    HandicapPlacardNumber       = "H1234567"   # TN_TIES
+    TemporaryLicensePlateNumber = "T123456"    # TN_TIES
+    OwnerLastName               = "Doe"        # OH_LEADS owner cross-entity
+    OwnerFirstName              = "John"
+    OwnerSocialSecurityNumber   = "123456789"
+    VehNameLast                 = "Doe"        # CA_eSUN entity-prefixed fieldIds
+    VehNameFirst                = "John"
+    VehBirthDate                = "1990-01-15"
 }
 $testData["Firearm"] = @{
     caRequestPurposeCode      = "C"
@@ -146,6 +186,31 @@ $testData["Firearm"] = @{
     dexStateUserId            = "BADGE"
     nameLast                  = "Doe"
     nameFirst                 = "John"
+    # age / BirthDate / gunTypeCode added 2026-08-01. Without them, every gun-by-name combo that
+    # requires an Age-or-BirthDate discriminator reported "[SKIP] -- missing set: age" and was
+    # therefore NEVER DRIVEN by the simulator -- silently, on CA_CLETS and CA_eSUN as well as
+    # CA_VENTURA_COUNTY. A set[] field with no test value is not a passing combo, it is an
+    # UNEXERCISED one, and the [SKIP] line is easy to read past.
+    # The devdoc mandates one of these on a gun-by-name search (GunQuery combos "Name, Age" and
+    # "Name, BirthDate" are unbracketed), so the Choice is split into one combo per branch and BOTH
+    # values must exist here for both branches to be reachable in simulation.
+    # ISO yyyy-MM-dd matches the Person entity and what FormDate actually sends.
+    # ONE entry per field regardless of casing: PowerShell hash literals are case-INSENSITIVE, so
+    # adding both 'gunTypeCode' and 'GunTypeCode' is a duplicate-key error that kills the whole
+    # script. (Which is also why the pre-existing camelCase 'nameLast'/'nameFirst' already serve the
+    # PascalCase 'NameLast'/'NameFirst' sourceFields these providers use.)
+    age                       = "35"
+    BirthDate                 = "1990-01-15"
+    gunTypeCode               = "PI"
+    # ENTITY-PREFIXED variants. This table is keyed by LITERAL fieldId, so a provider that prefixes
+    # its Firearm fields per entity (CA_eSUN: GunNameLast/GunNameFirst/GunAge/GunBirthDate) matches
+    # NOTHING here and its gun-by-name combos are silently never driven -- which was the case until
+    # 2026-08-01. Adding a field to a build script is not enough; if the simulator cannot fill it,
+    # the combo is unexercised no matter how green the run looks.
+    GunNameLast               = "Doe"
+    GunNameFirst              = "John"
+    GunAge                    = "35"
+    GunBirthDate              = "1990-01-15"
 }
 $testData["Article"] = @{
     caRequestPurposeCode      = "C"

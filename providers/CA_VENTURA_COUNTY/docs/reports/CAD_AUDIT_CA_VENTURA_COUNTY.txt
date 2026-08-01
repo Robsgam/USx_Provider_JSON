@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
-  Source: CA_VENTURA_COUNTY_v2.0.json
-  Generated: 2026-07-31 21:50
+  Source: CA_VENTURA_COUNTY_v2.1.json
+  Generated: 2026-08-01 09:44
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_VENTURA_COUNTY_v2.0
+ CAD AUDIT: CA_VENTURA_COUNTY_v2.1
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -76,12 +76,12 @@ CAD AUDIT
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
     [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] age: in QIF and CAD list
     [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
   Article:
     [PASS] serialNumber: in QIF and CAD list
@@ -155,7 +155,8 @@ CAD AUDIT
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverHistoryQuery' combo IN.B2 -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverHistoryQuery' combo NLTS.KQ.O -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_DriverHistoryQuery' combo ID.B2 -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'CA_VENTURA_COUNTY_GunQuery' combo IG.QGH -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_VENTURA_COUNTY_GunQuery' combo IG.QGH.A -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_VENTURA_COUNTY_GunQuery' combo IG.QGH.B -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_GunQuery' combo IG.QGB -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_ArticleSingleQuery' combo IP.QA.S -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_VENTURA_COUNTY_ArticleSingleQuery' combo IP.QA.O -- defaults cover all initialValue any[] fields
@@ -172,6 +173,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 77 PASS / 0 FAIL / 0 WARN / 65 INFO
+Total: 80 PASS / 0 FAIL / 0 WARN / 63 INFO
 
 

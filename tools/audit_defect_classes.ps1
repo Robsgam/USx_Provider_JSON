@@ -378,7 +378,12 @@ foreach ($cl in @('C1','C2','C3','C4')) {
     if (-not $rows.Count) { continue }
     $col = switch ($cl) { 'C1' { 'Red' } 'C2' { 'Red' } 'C3' { 'Yellow' } default { 'Yellow' } }
     E ''
-    E ("  ─── $cl -- $($rows.Count) candidate(s) ───") $col
+    # ASCII only inside an INTERPOLATED string. A box-drawing char here (U+2500 = E2 94 80) is read
+    # by PowerShell 5.1 as cp1252 when the file has no BOM, and byte 0x94 decodes to a RIGHT CURLY
+    # QUOTE, which 5.1 treats as a string delimiter -> hard parse error. The repo's other 66 non-ASCII
+    # scripts get away with it because their box-drawing lives in SINGLE-quoted strings, where 5.1
+    # never looks for interpolation. Rule: non-ASCII is fine in '...', never in "...$x...".
+    E ("  --- $cl -- $($rows.Count) candidate(s) ---") $col
     foreach ($r in $rows) {
         E ("    {0,-22} v{1,-6} {2,-32} {3}" -f $r.P, $r.V, "$($r.Q)/$($r.K)", $r.What) $col
     }

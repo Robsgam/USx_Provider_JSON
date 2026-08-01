@@ -11,7 +11,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_ventura_county_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.0'
+$Version  = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_VENTURA_COUNTY_v${Version}.json"
@@ -293,6 +293,20 @@ $dhQuery = [PSCustomObject]@{
 # GunQuery -- PascalCase + cross-entity (Name for IG.QGH combo)
 $gunQuery = [PSCustomObject]@{
     attributes = @(
+        # Age + BirthDate added v2.1. The devdoc GunQuery COMBINATIONS are:
+        #   1. (In/Out) GunSerialNumber, [GunCaliber, GunMake, GunTypeCode]
+        #   2. (in/Out) Name, Age
+        #   3. (In/Out) Name, BirthDate
+        # #2 and #3 are UNBRACKETED -> Age / BirthDate are MANDATORY on a gun-by-name search, and
+        # the field row confirms it (M/C/O = C for both). Metadata agrees: IG.QGH{Name} puts
+        # Choice[Age|BirthDate] INSIDE <Set>, so exactly one is required. v2.0 built neither, which
+        # made every gun-by-name request satisfy NO metadata variant -- wire-invalid.
+        [PSCustomObject]@{ name = 'Age'; size = 2; sourceField = @('age'); targetField = 'Age' }
+        [PSCustomObject]@{
+            name = 'BirthDate'
+            rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
+            size = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
+        }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'GunCaliber';           size = 4;  sourceField = @('GunCaliber');            targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';              size = 3;  sourceField = @('firearmMake');           targetField = 'GunMake' }
@@ -305,11 +319,28 @@ $gunQuery = [PSCustomObject]@{
         }
     )
     combinations = @(
-        # Name search (3 set -- more specific, cross-entity)
+        # Name search -- SPLIT v2.1 into one combination per <Choice> branch. set[] has no OR, so a
+        # Choice-inside-<Set> cannot be expressed in a single combination; it must become one combo
+        # per branch (QIDM_REFERENCE Sec 1b, LIMITATION #21 synthetic keyRef). Mirrors the same fix
+        # already shipped on CA_CLETS v2.23 (IG.QGH.A/.B) and CA_eSUN v2.1.
+        # Order follows the devdoc listing: #2 Name,Age precedes #3 Name,BirthDate. Neither set[] is
+        # a subset of the other, so if an officer fills BOTH, .A wins -- which is the devdoc order.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst'); any = @() }
+            requirements          = [PSCustomObject]@{
+                set      = @('caRequestPurposeCode','NameLast','NameFirst','age'); any = @()
+                defaults = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+            }
             primaryFieldReference = 'Name'
-            keyReference          = 'IG.QGH'
+            keyReference          = 'IG.QGH.A'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set      = @('caRequestPurposeCode','NameLast','NameFirst','BirthDate'); any = @()
+                defaults = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'IG.QGH.B'
             state                 = 'In/Out'
         }
         # Serial search (2 set)
@@ -661,6 +692,14 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_NAME_1'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_GUN_NAME_1' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_GUN_NAME_1' }
+            )}
+            # v2.1: the devdoc requires Age OR BirthDate on a gun-by-name search (both unbracketed
+            # in combinations #2/#3), so these are NOT optional -- one of them must be filled for
+            # IG.QGH.A / .B to fire. No initialValue on either: they are set[] routing fields, and a
+            # prefill on a routing field permanently hides the other branch (BUILD_RULES 24).
+            @{ id = 'ROW_GUN_NAME_2'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_GUN_NAME_2' }
+                @{ id = 'Age_Input';       node = Inp 'age'       'Age' '2'       'ROW_GUN_NAME_2' }
             )}
         )
     }

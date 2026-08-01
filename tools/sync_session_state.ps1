@@ -1,4 +1,4 @@
-<#
+﻿<#
   sync_session_state.ps1 -- GENERATE the derived block of SESSION_STATE.md instead of hand-typing it.
 
   WHY THIS EXISTS (Rob 2026-07-30: "check for duplication of data that keeps drifting... remove
@@ -41,7 +41,7 @@ if (-not (Test-Path $statePath)) { Write-Host "  [ERROR] SESSION_STATE.md not fo
 $BEGIN = '<!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->'
 $END   = '<!-- END GENERATED -->'
 
-# ── derive ────────────────────────────────────────────────────────────────────────────
+# -- derive ----------------------------------------------------------------------------
 $today  = Get-Date -Format 'yyyy-MM-dd'
 $branch = (git -C $repoRoot branch --show-current 2>$null)
 if (-not $branch) { $branch = '(detached)' }
@@ -82,9 +82,9 @@ $never  = @($rows | Where-Object { $_.Verdict -match 'NEVER' -and -not $_.HasHis
 
 $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine($BEGIN)
-[void]$sb.AppendLine("**Last updated:** $today (generated) · **Branch:** ``$branch``")
+[void]$sb.AppendLine("**Last updated:** $today (generated) | **Branch:** ``$branch``")
 [void]$sb.AppendLine('')
-[void]$sb.AppendLine('## Tenant-test state — GENERATED, do not hand-edit')
+[void]$sb.AppendLine('## Tenant-test state -- GENERATED, do not hand-edit')
 [void]$sb.AppendLine('')
 [void]$sb.AppendLine('Derived from `_test_status_lib.ps1`, the same primitives `portfolio_status.ps1` and the')
 [void]$sb.AppendLine('CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_session_state.ps1`.')
@@ -92,24 +92,44 @@ $sb = [System.Text.StringBuilder]::new()
 [void]$sb.AppendLine('| Provider | Ver | State |')
 [void]$sb.AppendLine('|---|---|---|')
 foreach ($r in ($named | Sort-Object Name)) {
+    # NOTE (2026-08-01): the `default` arm used to read
+    #     "$($r.Verdict)$(if($r.Owed){" -- $($r.Owed) test(s) owed"})"
+    # i.e. NESTED DOUBLE QUOTES inside a $() subexpression inside a double-quoted string. PowerShell
+    # 7 parses that; **PowerShell 5.1 does NOT** -- it fails with a cascade of "Missing closing ')'"
+    # parse errors. pipeline.ps1 invokes tools via `powershell` (5.1), so this file was a hard parse
+    # failure there and only ever worked when run under pwsh. It broke pipeline step 8 for
+    # CA_VENTURA_COUNTY on 2026-08-01. Build the fragment in a separate statement instead -- never
+    # nest same-type quotes inside $().
+    # THIS LINE HAD TWO SEPARATE 5.1 DEFECTS, and the encoding one was the operative cause:
+    # an em-dash (U+2014 = E2 80 94) inside a double-quoted string. With no BOM, 5.1 decodes the
+    # file as cp1252 and byte 0x94 becomes a RIGHT CURLY QUOTE, which TERMINATES the string.
+    # So this file is now (a) pure ASCII in every string literal and (b) saved WITH a UTF-8 BOM --
+    # belt and braces, because the BOM fixes decoding while the ASCII means a later BOM-stripping
+    # edit cannot silently reintroduce the fault. It also stopped 5.1 writing mojibake ('Â·',
+    # 'â€”') into SESSION_STATE.md, which it did once before this was fixed.
+    # audit_ps51_parse.ps1 is the standing gate for both defects.
+    $owedTxt = ''
+    if ($r.Owed) { $owedTxt = " -- $($r.Owed) test(s) owed" }
     $s = switch -Regex ($r.Verdict) {
         'ALL-PASS' { "ALL-PASS ($($r.Logs) logs)" }
-        'PARTIAL'  { "PARTIAL — $($r.Owed) plan test(s) owed ($($r.Logs) captured)" }
-        default    { "$($r.Verdict)$(if($r.Owed){" — $($r.Owed) test(s) owed"})" }
+        'PARTIAL'  { "PARTIAL -- $($r.Owed) plan test(s) owed ($($r.Logs) captured)" }
+        default    { "$($r.Verdict)$owedTxt" }
     }
     [void]$sb.AppendLine("| $($r.Name) | $($r.Ver) | $s |")
 }
 if ($never.Count) {
-    [void]$sb.AppendLine("| _$($never.Count) others_ | — | never tenant-tested: $((($never | ForEach-Object { $_.Name }) -join ', ')) |")
+    # ASCII '--' not an em-dash: see the note above. U+2014 is E2 80 94, and 5.1 (no BOM) decodes
+    # byte 0x94 as a right curly quote, which terminates this interpolated string.
+    [void]$sb.AppendLine("| _$($never.Count) others_ | -- | never tenant-tested: $((($never | ForEach-Object { $_.Name }) -join ', ')) |")
 }
 [void]$sb.AppendLine('')
-[void]$sb.AppendLine('**Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 — `0 FAIL / 0 WARN`.')
+[void]$sb.AppendLine('**Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.')
 [void]$sb.AppendLine('No PASS count is recorded here on purpose: it moves every time a gate is added, so an')
 [void]$sb.AppendLine('absolute number is guaranteed to go stale and teach the next session to distrust this file.')
 [void]$sb.AppendLine($END)
 $generated = $sb.ToString().TrimEnd()
 
-# ── splice ────────────────────────────────────────────────────────────────────────────
+# -- splice ----------------------------------------------------------------------------
 $raw = [System.IO.File]::ReadAllText($statePath)
 if ($raw -match [regex]::Escape($BEGIN)) {
     $pattern = [regex]::Escape($BEGIN) + '.*?' + [regex]::Escape($END)

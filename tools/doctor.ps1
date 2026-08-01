@@ -112,6 +112,18 @@ try {
     Emit "  [WARN] audit_variant_sync.ps1 failed: $($_.Exception.Message)"
 }
 
+Emit ""
+Emit "--- PS 5.1 PARSE GATE (tools must parse on the engine that runs them; audit_ps51_parse.ps1) ---"
+try {
+    # MUST be invoked as `powershell` (5.1), never pwsh: PS7's grammar accepts constructs 5.1
+    # rejects, so running this under 7 would report clean while a tool is a hard parse failure.
+    # The script itself refuses to give a clean verdict off 5.1, but pin the engine here too.
+    $pp = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_ps51_parse.ps1" *>&1 | Out-String
+    ($pp.TrimEnd() -split "`n") | Where-Object { $_ -notmatch '^=+$' -and $_ -notmatch 'PS 5.1 PARSE GATE --' } | ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] audit_ps51_parse.ps1 failed: $($_.Exception.Message)"
+}
+
 # --- 5. Verdict ----------------------------------------------------------------
 Emit ""
 Emit "================================================================"

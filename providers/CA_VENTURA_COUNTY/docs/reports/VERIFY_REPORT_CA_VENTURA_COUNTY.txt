@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
-  Source: CA_VENTURA_COUNTY_v2.0.json
-  Generated: 2026-07-31 21:50
+  Source: CA_VENTURA_COUNTY_v2.1.json
+  Generated: 2026-08-01 09:44
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_VENTURA_COUNTY_v2.0
+ POST-BUILD VERIFICATION: CA_VENTURA_COUNTY_v2.1
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 22 [caRequestPurposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, attention, BirthDateDH, caRequestPurposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 23 [caRequestPurposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, attention, BirthDateDH, caRequestPurposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, age, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -41,7 +41,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (30) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (31) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -56,7 +56,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (33 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (34 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
