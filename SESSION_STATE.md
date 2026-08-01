@@ -76,12 +76,17 @@ prefill that took CA_VENTURA_COUNTY from 8 FAIL to 0 -- but confirm against CA_e
 
 ## NEXT PHYSICAL ACTION
 
-1. **FIX the devdoc parser**: it DROPS any combination item containing an `="Y"` literal and then
-   SILENTLY RENUMBERS the rest, so its item numbers do not match the devdoc's. Impact measured: 5
-   items portfolio-wide -- AZ 2 (INSIDE its Basic DL block, so genuinely invisible) and CA_CLETS 3
-   (in out-of-Basic blocks, so no coverage loss -- CA_CLETS's ALL-PASS is NOT overstated). Neither AZ
-   item is buildable (metadata defines no ImageIndicator/Requestor), so nothing is owed on the build
-   side -- but a silently skipped item is the wrong-authority class and must not stay implicit.
+1. **AZ_AZDPS DRIVER-LICENCE SCOPE INVERSION -- Rob's call, do not settle unilaterally.** AZ's devdoc
+   "Basic Queries Supported:" section (line 25) spans lines 27-244 and its DL entry is
+   `DriverLicenseQuery` (line 161). `AzAzdpsDriverLicenseQuery` (line 393) is OUTSIDE it. Metadata
+   defines BOTH as distinct transactions. **The build implements the out-of-Basic one and skips the
+   Basic one**, which is also the only DL transaction supporting image requests
+   (`ImageIndicator="Y"` + `Requestor`). Boat has the identical fork (BoatQuery 66 Basic vs
+   AzAzdpsBoatQuery 337) and correctly builds the Basic one -- so DL is the LONE inversion, which is
+   why it reads as an oversight rather than policy. Switching rewires the whole Person entity, and the
+   v3.3 scope correction was a direct Rob directive naming "DriverLicenseQuery", so his intent may
+   already be that the built query satisfies it. NOT a parser defect -- I claimed that first and it was
+   wrong; the two devdoc blocks simply belong to two different query headings.
 2. **CA_eSUN** -- 55 devdoc-optional FAILs. Confirm against CA_eSUN's OWN metadata whether every
    combination requires purposeCode; if so, the load-bearing prefill is the fix (it took Ventura from
    8 FAIL to 0). Do NOT infer it from a sibling.

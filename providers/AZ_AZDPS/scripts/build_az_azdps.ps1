@@ -30,12 +30,28 @@
 #     MANDATORY on every name variant -- ACWL{Name} and DQ{Name} both put SexCode in <Set>, and there
 #     is no looser one. Metadata is FIELD-authority. Building to the brackets would emit a request no
 #     variant accepts. The gate itself confirms the build is right: "#1 +[SexCode] -> ACWL" is OK.
-#   GATE DEFECT FOUND, NOT YET FIXED (recorded so it is not mistaken for coverage): the devdoc parser
-#     DROPS combination items containing an `="Y"` literal and SILENTLY RENUMBERS the rest, so AZ's
-#     devdoc items #2 and #5 (the ImageIndicator="Y" + Requestor image-request variants) are invisible
-#     to audit_devdoc_combinations, and its printed item numbers do NOT match the devdoc's. Neither is
-#     buildable anyway (metadata ACWL has no ImageIndicator/Requestor field), but a silently skipped
-#     item is the same class as a gate reading the wrong authority.
+#   CORRECTION (same day): I first recorded this as a PARSER DEFECT -- "the devdoc parser drops items
+#     containing an `="Y"` literal and silently renumbers". THAT WAS WRONG, and the parser is right.
+#     AZ's devdoc contains TWO separate driver-licence sections, and the two blocks belong to
+#     DIFFERENT query headings:
+#       line 161  DriverLicenseQuery         <- its block has the ImageIndicator="Y" + Requestor items
+#       line 393  AzAzdpsDriverLicenseQuery  <- its block is what the parser reported, correctly
+#     Nothing is dropped and nothing is renumbered; the items I thought were missing belong to another
+#     query. Verified by locating the nearest heading above each block.
+#
+#   REAL OPEN QUESTION THIS EXPOSED -- Rob's call, NOT settled here. The devdoc's
+#     "Basic Queries Supported:" section (line 25) spans lines 27-244 and its driver-licence entry is
+#     `DriverLicenseQuery` (line 161). Everything from line 298 on -- including
+#     `AzAzdpsDriverLicenseQuery` (393) -- is OUTSIDE that section. Metadata defines BOTH as distinct
+#     transactions. This build implements AzAzdpsDriverLicenseQuery and does NOT implement the Basic
+#     DriverLicenseQuery, so on the strict reading (devdoc Basic list is the sole scope authority) the
+#     DL scope is INVERTED: we build the out-of-Basic variant and skip the Basic one, which is also the
+#     only one supporting image requests (ImageIndicator="Y" + Requestor).
+#     Contrast Boat, where the same fork exists (BoatQuery line 66 Basic vs AzAzdpsBoatQuery line 337)
+#     and this build correctly implements the Basic BoatQuery -- so DL is the lone inversion.
+#     NOT changed unilaterally: switching transactions rewires the whole Person entity and the v3.3
+#     scope correction was itself a direct Rob directive naming "DriverLicenseQuery". Flagged in
+#     PENDING_UPDATES and SESSION_STATE.
 #   No re-sweep cost: AZ has never been USx-tenant-tested. ALL 5 ENTITIES RESET at v3.4.
 # v3.3 (2026-07-28, SCOPE CORRECTION -- direct Rob directive): build ONLY the devdoc "Basic Queries
 #   Supported" section. The AZ Basic list is exactly 6 queries (ArticleSingleQuery, BoatQuery,
