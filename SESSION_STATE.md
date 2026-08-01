@@ -52,11 +52,11 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## STATE
 
-**9 providers ENFORCED 0 FAIL / 0 WARN.** Six are also tenant-tested (433 logs, four log gates
-green): TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23. Three are ENFORCED but **NEVER tenant-tested** -- CA_VENTURA_COUNTY v2.2,
-CA_CLETS_OCATS v2.1 and AZ_AZDPS v3.4 -- each owes a full 5-entity sweep from T1. ENFORCED is not "done"; it means the build matches its sources.
-7 PHASE-1 audited and BLOCKED as expected (never tested): LA_LEMS, MD_METERS, TN_TIES, OH_LEADS,
-NM, OR_LEDS, IL. **2 unaudited**: CA_SAN_LUIS_OBISPO, TX_TLETS_CCH. Plus CA_CONTRA_COSTA (on hold).
+**10 providers ENFORCED 0 FAIL / 0 WARN.** Six are also tenant-tested (433 logs, four log gates
+green): TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23. Four are ENFORCED but **NEVER tenant-tested** -- CA_VENTURA_COUNTY v2.2,
+CA_CLETS_OCATS v2.1, AZ_AZDPS v3.4 and CA_eSUN v2.2 -- each owes a full 5-entity sweep from T1. ENFORCED is not "done"; it means the build matches its sources.
+6 PHASE-1 audited and BLOCKED as expected (never tested): LA_LEMS, MD_METERS, TN_TIES, OH_LEADS,
+NM, OR_LEDS, IL (minus CA_eSUN, now green). **2 unaudited**: CA_SAN_LUIS_OBISPO, TX_TLETS_CCH. Plus CA_CONTRA_COSTA (on hold).
 
 **Portfolio devdoc-UNBUILT: 2** (was 13) -- both are LA_LEMS's deferred DH-`Attention` items.
 **audit_defect_classes C1: 0 portfolio-wide.** Simulator-undriveable combos: 0 (was 36).
@@ -87,9 +87,9 @@ prefill that took CA_VENTURA_COUNTY from 8 FAIL to 0 -- but confirm against CA_e
    v3.3 scope correction was a direct Rob directive naming "DriverLicenseQuery", so his intent may
    already be that the built query satisfies it. NOT a parser defect -- I claimed that first and it was
    wrong; the two devdoc blocks simply belong to two different query headings.
-2. **CA_eSUN** -- 55 devdoc-optional FAILs. Confirm against CA_eSUN's OWN metadata whether every
-   combination requires purposeCode; if so, the load-bearing prefill is the fix (it took Ventura from
-   8 FAIL to 0). Do NOT infer it from a sibling.
+2. **CA_SAN_LUIS_OBISPO and TX_TLETS_CCH** are the last two never-audited providers. TX_TLETS_CCH is a
+   VARIANT -- check its `# BASE-SYNC:` marker against TX_TLETS first (audit_variant_sync), since a
+   variant must not drift from its base.
 3. Adjudicate remaining findings on the other audited providers (FIX-vs-REGISTER, `usx-build` Step 3).
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING

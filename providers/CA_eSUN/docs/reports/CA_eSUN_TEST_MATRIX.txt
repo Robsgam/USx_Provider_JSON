@@ -1,6 +1,6 @@
-CA_eSUN v2.1 -- TEST MATRIX
+CA_eSUN v2.2 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-31
+Generated: 2026-08-01
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -9,7 +9,7 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (4 cards, 13 fields):
   CARD_VEH_OPT (OPTIONS - Leave blank for CA queries):
-    RegistrationState [Sel STATE], caRequestPurposeCode [Inp 1]
+    RegistrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
   CARD_VEH_PLATE (PLATE SEARCH):
     LicensePlateNumber [Inp 10]
     LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
@@ -22,7 +22,7 @@ Vehicle (4 cards, 13 fields):
 
 Person (5 cards, 13 fields):
   CARD_PER_OPT (OPTIONS - Leave blank for CA queries):
-    RegistrationState [Sel STATE], caRequestPurposeCode [Inp 1]
+    RegistrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
   CARD_PER_OLN (DL - OLN SEARCH):
     OperatorLicenseNumber [Inp 20]
   CARD_PER_NAME (DL - NAME SEARCH):
@@ -37,7 +37,7 @@ Person (5 cards, 13 fields):
 
 Firearm (3 cards, 10 fields):
   CARD_GUN_OPT (OPTIONS):
-    caRequestPurposeCode [Inp 1]
+    caRequestPurposeCode [Inp C, 1]
   CARD_GUN_SERIAL (SERIAL SEARCH):
     ROW 1: serialNumber [Inp 14], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
@@ -48,12 +48,12 @@ Firearm (3 cards, 10 fields):
 
 Article (1 card, 5 fields):
   CARD_ART (ARTICLE SEARCH):
-    ROW 1: serialNumber [Inp 20], caRequestPurposeCode [Inp 1]
+    ROW 1: serialNumber [Inp 20], caRequestPurposeCode [Inp C, 1]
     ROW 2: articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], articleBrand [Inp 6], articleCategory [Inp 1]
 
 Boat (3 cards, 4 fields):
   CARD_BOA_OPT (OPTIONS - Leave blank for CA queries):
-    RegistrationState [Sel STATE], caRequestPurposeCode [Inp 1]
+    RegistrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
   CARD_BOA_HULL (HULL SEARCH):
     BoatHullIdNumber [Inp 20]
   CARD_BOA_REG (REGISTRATION SEARCH):
@@ -219,4 +219,4 @@ COMBO COVERAGE (20/20):
   GunQuery: 3/3 -- T45(B), T47(H.A), T48(H.B)
   VehicleRegistrationQuery: 6/6 -- T20(RQ+.V), T22(RQ+.P), T24(QV+.V), T26(QV+.P), T28(VP.D+VP.D), T30(VP.N+VP.N)
 
-IMPORT FILE: CA_eSUN_v2.1.json
+IMPORT FILE: CA_eSUN_v2.2.json

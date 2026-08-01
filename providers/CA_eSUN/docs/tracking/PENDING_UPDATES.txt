@@ -1,32 +1,57 @@
 # PENDING_UPDATES.txt -- CA_eSUN
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
-# Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:METADATA-DEMOTION-ADJUDICATE] audit_metadata CHECK 4e (new 2026-07-30) reports metadata-required fields built as any[]. Each must be promoted to set[] OR recorded in <PROVIDER>_ACCEPTED_DIVERGENCES.txt with a reason. Counts: AZ_AZDPS 9 (dexStateUserId handler-populated x4 + BirthDate/SexCode on DQSS/KQ -- AZ already carries 2 accepted NOTEs of the same shape), CA_eSUN 2, CA_SAN_LUIS_OBISPO 2, CA_VENTURA_COUNTY 2, OR_LEDS 1. Blocks enforce PHASE 2b until adjudicated. (flagged 2026-07-30)
-[FLAG:GUN-NAME-CHOICE-IN-SET] GUN-BY-NAME <Choice>-IN-<Set> DEFECT (family-wide, verified per provider against ITS OWN metadata). A gun-owner name search built with BOTH qualifiers in any[] satisfies NO metadata variant: the CA-family metadata puts Choice[Age|BirthDate] INSIDE <Set> on the QGH/IG.QGH/QGH-equivalent Name combination, which makes exactly ONE of them MANDATORY (the only variant that makes it optional additionally requires SexCode, which none of these carry). Result: a Name-only gun query is accepted by the form and SENT, and it is a request the provider metadata calls invalid. Gate 6d catches it; 6c and 2i do NOT, because content and attribution cannot see a MISSING REQUIREMENT -- CA_CLETS shipped a committed PASS log doing exactly this. FIX = split into one combination per branch, each carrying its own discriminator in set[] (set[] has no OR), ordered by the devdoc listing order since the branches are disjoint peers specificity cannot separate. Precedent: CA_CLETS v2.23 (IG.QGH -> IG.QGH.A age / IG.QGH.B BirthDate, wire-proven: .A carried Age=35 no DOB, .B carried DOB=19900115 no Age) and CA_CONTRA_COSTA v2.2. SCOPE CONFIRMED 2026-07-31: exactly the 4 providers that BUILD a gun-by-name combo. CA_CLETS_OCATS and CA_SAN_LUIS_OBISPO build only the serial-number query (QGB) so they are NOT affected. CA_eSUN QGH is the identical defect (set[purposeCode,GunNameLast,GunNameFirst] any[GunBirthDate,GunAge]). CA_VENTURA_COUNTY IG.QGH is WORSE -- set[purposeCode,NameLast,NameFirst] any[] carries NO discriminator at all, so it can neither satisfy the mandatory-Choice variant nor even transmit Age/BirthDate as optionals. Read QIDM_REFERENCE.txt SECTION 1b before touching either, and CHECK THE PROVIDER DEVDOC: brackets mark optionals, so an unbracketed "Name, Age" means Age is MANDATORY. (flagged 2026-07-31)
-
-# ═══ DECISION POINT FOR ROB -- verify_build CHECK 14 vs the devdoc order (2026-07-31) ═══
-# CA_eSUN v2.1 fixed the real defect (QGH split -- see the build script), and the two RIGOROUS gates
-# agree it is correct: audit_combo_reachability = 19/19 all reachable, audit_devdoc_order = PASS.
-# But verify_build CHECK 14 FAILs with:
-#   SHADOW: 'QGH.A' fires before 'QGH.B' on minimal set[] payload -- add EXISTS condition to
-#   'QGH.A' or reorder so 'QGH.B' comes first
-# NEITHER of its two suggestions is right:
-#   (a) "add EXISTS condition to QGH.A" -> GunAge is ALREADY in QGH.A's set[], so a GunAge EXISTS
-#       condition is a tautology. Adding conditions purely to satisfy a check is how gates get
-#       gamed; it is the opposite of what LAW 2 is for.
-#   (b) "reorder so QGH.B comes first" -> that puts devdoc #2 (BirthDate, Name) ahead of #1
-#       (Age, Name) and audit_devdoc_order would correctly report an INVERSION. It trades a true
-#       finding for a false one.
-# ROOT CAUSE (my read): CHECK 14 only examines combos that HAVE conditions, and it does not credit a
-# set[]-required field as a discriminator. CA_CLETS/CA_CONTRA_COSTA's identical IG.QGH.A/.B split
-# passes CHECK 14 only because those combos carry NO conditions at all, so the check never looks at
-# them. CA_eSUN's carry serialNumber NOT_EXISTS, so it does -- and then cannot see that GunAge (in
-# QGH.A's set[]) and GunBirthDate (in QGH.B's set[]) already make them mutually exclusive, further
-# reinforced by the GunAge NOT_EXISTS gate now on QGH.B.
-# PROPOSED FIX (needs Rob's call -- it is a SHARED-TOOL change touching all 20 providers and could
-# turn currently-green providers red): teach verify_build CHECK 14 to treat a field present in the
-# earlier combo's set[] but absent from the later combo's set[] as a discriminator, i.e. the same
-# subset/superset logic audit_combo_reachability already uses. Do NOT hand-patch this provider.
-# Until then CA_eSUN sits at 1 known verify_build FAIL, deliberately, with the reason recorded here
-# rather than silenced.
+# CLEARED 2026-08-01 at v2.2. Every item resolved against CA_eSUN's OWN devdoc + metadata.
+# Kept as a record of what closed and why -- a bare empty file loses the reasoning.
+#
+# [FLAG:GUN-NAME-CHOICE-IN-SET]  RESOLVED at v2.1 -- QGH split into QGH.A (GunAge) + QGH.B
+#   (GunBirthDate), one combination per <Choice> branch, because set[] has no OR. Verified against
+#   this provider's own metadata, which puts Choice[Age|BirthDate] INSIDE <Set> on the Name variant.
+#
+# [FLAG:METADATA-DEMOTION-ADJUDICATE]  RESOLVED at v2.2. audit_metadata is now 159 PASS / 0 FAIL /
+#   1 WARN, and the single WARN is a gate artefact, not a defect (see below).
+#
+# 55 devdoc-optional NO-FIRE FAILs -> 0, and the cause was NOT a per-query build error.
+#   CA_eSUN's OWN devdoc, "Transaction Requirements" (lines 19-31):
+#     "Beginning July 21, 2021 CLETS requires a Purpose Code field to be supplied with every CLETS
+#      transaction ... Any transaction which does not supply a valid Purpose Code value will be
+#      REJECTED BY CLETS. ConnectCIC does not default the value of field; it must be provided by the
+#      partner implementation as a user selectable field ... mandatory for all transactions."
+#     Values: C = Criminal Justice, I = Immigration Enforcement, U = Title 8 s1325 USC.
+#   caRequestPurposeCode is therefore a TRANSACTION-ENVELOPE requirement, not a per-query search
+#   field -- which is exactly why the devdoc's per-query "Possible Combinations" lists never mention
+#   it, why all 20 built combos carry it in set[], and why every devdoc-faithful fill omitted it and
+#   matched nothing. One missing envelope field, 55 reported FAILs.
+#   TWO FIXES, each independently justified rather than applied to satisfy a gate:
+#     1. COMBO DEFAULT on all 20 combos. CAD does not apply form initialValues (BUILD_RULES 12), so
+#        a CAD-dispatched query omitted the field entirely and CLETS would REJECT the transaction.
+#        0 of 20 had a default. That was a live defect on the CAD path, gate or no gate.
+#     2. FORM initialValue 'C'. Risk is asymmetric: blank = guaranteed CLETS rejection, whereas C
+#        (Criminal Justice) can never silently become an immigration-enforcement purpose. The control
+#        stays a VISIBLE, EDITABLE Inp on all five cards, so it remains "user selectable" exactly as
+#        the devdoc requires -- pre-selected, not locked.
+#   Prefilling it is LOAD-BEARING, not a BUILD_RULES 24 violation: it is mandatory in EVERY
+#   combination, so satisfying it equally for all of them cannot shadow one path over another.
+#   Applied as a build-time normalization loop (one rule, 20 sites) -- not a post-build JSON patch.
+#
+# [RESOLVED] verify_build CHECK 14 vs the devdoc order -- the decision point recorded here on
+#   2026-07-31 is CLOSED, and it was closed the way it should have been: by fixing the SHARED TOOL,
+#   not by hand-patching this provider. CHECK 14 had only tested combo A's primaryFieldReference and
+#   never asked whether A's set[] was even satisfiable by the payload; it now requires that too. All
+#   20 providers pass with zero regressions and CA_eSUN went 1 FAIL -> 0. Neither of the check's
+#   original suggestions was taken: a GunAge EXISTS condition would have been a tautology (GunAge is
+#   already in QGH.A's set[]), and reordering QGH.B first would have created a real devdoc-order
+#   INVERSION -- trading a true finding for a false one.
+#
+# KNOWN GATE ARTEFACT, build is CORRECT (1 audit_metadata WARN, does not block enforce):
+#   "serialNumber: QIF maxLength 20 > XML maxLength 14 (GunSerialNumber) -- server may reject"
+#   The form is already right: the FIREARM card's serialNumber is maxLength 14 and the ARTICLE card's
+#   is 20, each matching ITS OWN metadata field (GunSerialNumber 14, ArticleSerialNumber 20). The two
+#   controls live on different entity QIFs and legitimately share the fieldId 'serialNumber'.
+#   audit_metadata does not scope this check by QIF, so it compares the Article control against the
+#   Gun field. Not hand-patched: narrowing the control to 14 would TRUNCATE legitimate 20-character
+#   article serials to satisfy a check. Fixing the tool is a shared-tool change touching all 20
+#   providers and is not being done mid-provider.
+#
+# STILL OPEN (not blocking; recorded so it is not mistaken for finished):
+#   Never USx-tenant-tested. v2.2 owes a full 5-entity sweep from T1.

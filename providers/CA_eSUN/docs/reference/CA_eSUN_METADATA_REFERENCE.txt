@@ -1,7 +1,7 @@
 ﻿CA_eSUN METADATA REFERENCE
 ===========================
-Generated: 2026-07-24
-Source: CA_eSUN.xml (metadata) + CA_eSUN_v2.0.json
+Generated: 2026-08-01
+Source: CA_eSUN.xml (metadata) + CA_eSUN_v2.2.json
 Metadata: 63 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -137,8 +137,9 @@ METADATA COMBINATIONS (2 total):
   QGB           GunSerialNumber         CaRequestPurposeCode, GunSerialNumber                  GunCaliber, GunMake, GunTyp...
   QGH           Name                    CaRequestPurposeCode, Name                             --
 
-BUILD COVERAGE (2 of 2 built):
-  BUILT   QGH            set[caRequestPurposeCode, GunNameLast, GunNameFirst]
+BUILD COVERAGE (3 of 2 built):
+  BUILT   QGH.A          set[caRequestPurposeCode, GunNameLast, GunNameFirst, GunAge]
+  BUILT   QGH.B          set[caRequestPurposeCode, GunNameLast, GunNameFirst, GunBirthDate]
   BUILT   QGB            set[caRequestPurposeCode, serialNumber]
 
 ================================================================================
@@ -189,10 +190,10 @@ BUILD SUMMARY
   BoatQuery                                  6      2     4  33%
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
   DriverLicenseQuery                         6      4     2  67%
-  GunQuery                                   2      2     0  100% (COMPLETE)
+  GunQuery                                   2      3     0  150%
   VehicleRegistrationQuery                   7      6     1  86%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   26     19     7  73%
+  TOTAL                                   26     20     7  77%
 
 ================================================================================
 UNBUILT METADATA COMBOS (10 combos in metadata, not in JSON)

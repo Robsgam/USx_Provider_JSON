@@ -8,7 +8,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.1'
+$Version  = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_eSUN_v${Version}.json"
@@ -464,6 +464,43 @@ $vehRegQuery = [PSCustomObject]@{
     targetEntity       = 'Vehicle'
 }
 
+# ─── v2.2: caRequestPurposeCode COMBO DEFAULT on every combination ────────────────────────────
+# THIS PROVIDER'S OWN DEVDOC, "Transaction Requirements" (lines 19-31):
+#   "Beginning July 21, 2021 CLETS requires a Purpose Code field to be supplied with every CLETS
+#    transaction ... Any transaction which does not supply a valid Purpose Code value will be
+#    REJECTED BY CLETS. ConnectCIC does not default the value of field; it must be provided by the
+#    partner implementation as a user selectable field ... mandatory for all transactions."
+#   Allowed values: C = Criminal Justice, I = Immigration Enforcement,
+#                   U = Investigate Violations of Title 8 s1325 USC.
+# It is a TRANSACTION-ENVELOPE requirement, not a per-query search field -- which is exactly why the
+# devdoc's per-query "Possible Combinations" lists never mention it, and why all 20 built combos carry
+# it in set[] while no devdoc-faithful fill contains it.
+#
+# WHY A COMBO DEFAULT IS REQUIRED INDEPENDENTLY OF ANY GATE: CAD does not apply form initialValues
+# (BUILD_RULES 12), so a CAD-dispatched query would omit the field entirely and CLETS would REJECT the
+# whole transaction. 0 of 20 combos had a default before this. That is a live defect on the CAD path.
+#
+# 'C' (Criminal Justice) is the value, and the risk is asymmetric: blank = guaranteed CLETS rejection,
+# whereas C can never silently become an immigration-enforcement purpose. The field stays a visible,
+# editable Inp on every card, so it remains "user selectable" as the devdoc requires -- pre-selected,
+# not locked.
+# Prefilling it is LOAD-BEARING, not a BUILD_RULES 24 violation: it is mandatory in EVERY combination,
+# so satisfying it equally for all of them cannot shadow one path over another.
+foreach ($q in @($artQuery, $boatQuery, $dlQuery, $dhQuery, $gunQuery, $vehRegQuery)) {
+    foreach ($cm in @($q.combinations)) {
+        $needs = @($cm.requirements.set | Where-Object { "$_" -match 'urposeCode' })
+        if (-not $needs.Count) { continue }
+        $existing = @($cm.requirements.defaults | Where-Object { $_ -and "$($_.field)" -match 'urposeCode' })
+        if ($existing.Count) { continue }
+        $newDefault = [PSCustomObject]@{ field = [string]$needs[0]; value = 'C' }
+        if ($cm.requirements.PSObject.Properties.Name -contains 'defaults' -and $cm.requirements.defaults) {
+            $cm.requirements.defaults = @(@($cm.requirements.defaults) + $newDefault)
+        } else {
+            $cm.requirements | Add-Member -MemberType NoteProperty -Name 'defaults' -Value @($newDefault) -Force
+        }
+    }
+}
+
 $esunBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $artQuery, $boatQuery, $dlQuery, $dhQuery, $gunQuery, $vehRegQuery)
     description    = "Provider configuration for CA_eSUN v${Version} -- 6 QIDMs, cross-entity (VP, QGH), DH-suffix, OOS EXISTS/NOT_EXISTS gates + identifier-priority guardrails"
@@ -496,7 +533,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -564,7 +601,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -639,7 +676,7 @@ $faLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_GUN_OPT_1'; cols = @('4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -694,7 +731,7 @@ $artLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','4'); fields = @(
                 @{ id = 'SerialNumber_Input';          node = Inp 'serialNumber'          'Serial Number'  '20' 'ROW_ART_1' }
-                @{ id = 'CaRequestPurposeCode_Input';  node = Inp 'caRequestPurposeCode'  'Purpose Code'   '1'  'ROW_ART_1' }
+                @{ id = 'CaRequestPurposeCode_Input';  node = Inp 'caRequestPurposeCode'  'Purpose Code'   '1'  'ROW_ART_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'ArticleTypeCode_Input'; node = Sel 'articleTypeCode' 'Article Type (optional)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
@@ -726,7 +763,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
