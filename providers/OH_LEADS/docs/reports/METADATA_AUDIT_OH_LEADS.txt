@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.0.json
-  Generated: 2026-07-31 21:57
+  Source: OH_LEADS_v2.1.json
+  Generated: 2026-08-01 14:38
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-07-31 21:57
+ Generated: 2026-08-01 14:38
 ============================================================
 
 ============================================================
  METADATA AUDIT: OH_LEADS
 ============================================================
   XML: OH_LEADS.xml
-  JSON: OH_LEADS_v2.0.json
+  JSON: OH_LEADS_v2.1.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -32,6 +32,7 @@ METADATA AUDIT
   [PASS] RS: exists in XML VehicleRegistrationQuery
   [PASS] RN: exists in XML VehicleRegistrationQuery
   [PASS] DL: exists in XML DriverLicenseQuery
+  [PASS] QWA: exists in XML DriverLicenseQuery
   [PASS] DN: exists in XML DriverLicenseQuery
   [PASS] QG: exists in XML GunQuery
 
@@ -158,6 +159,8 @@ METADATA AUDIT
   [PASS]   keyRef DQ: set field 'BirthDate' covered by DQ.O,DQ.N
   [PASS]   keyRef DQ: set field 'Name' covered by DQ.O,DQ.N
   [PASS]   keyRef DQ: any field 'State' covered by DQ.O,DQ.N
+  [PASS]   keyRef QWA: set field 'BirthDate' present
+  [PASS]   keyRef QWA: set field 'Name' present
   GunQuery:
   [PASS]   keyRef QG: set field 'GunSerialNumber' present
   [PASS]   keyRef QG: any field 'GunMake' present
@@ -239,6 +242,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 147 PASS / 0 FAIL / 0 WARN
+Total: 150 PASS / 0 FAIL / 0 WARN
 ============================================================
 

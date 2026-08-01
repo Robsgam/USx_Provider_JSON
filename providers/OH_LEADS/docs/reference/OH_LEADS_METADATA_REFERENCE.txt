@@ -1,7 +1,7 @@
 ﻿OH_LEADS METADATA REFERENCE
 ============================
-Generated: 2026-07-24
-Source: OH_LEADS.xml (metadata) + OH_LEADS_v2.0.json
+Generated: 2026-08-01
+Source: OH_LEADS.xml (metadata) + OH_LEADS_v2.1.json
 Metadata: 188 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -103,12 +103,12 @@ METADATA COMBINATIONS (7 total):
   BMVIMS        OperatorLicenseNumber   OperatorLicenseNumber                                  ReasonCode, Requestor, User...
   BMVIMS        SocialSecurityNumber    SocialSecurityNumber                                   ReasonCode, Requestor, User...
 
-BUILD COVERAGE (4 of 7 built):
+BUILD COVERAGE (5 of 7 built):
   BUILT   DQ.O           set[OperatorLicenseNumber]
   BUILT   DL             set[OperatorLicenseNumber]
   BUILT   DQ.N           set[NameLast, NameFirst, BirthDate, SexCode]
+  BUILT   QWA            set[NameLast, NameFirst, BirthDate]
   BUILT   DN             set[NameLast, NameFirst]
-  UNBUILT QWA            Name
   UNBUILT BMVIMS         OperatorLicenseNumber
   UNBUILT BMVIMS         SocialSecurityNumber
 
@@ -180,18 +180,17 @@ BUILD SUMMARY
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
   BoatQuery                                  4      4     0  100% (COMPLETE)
   DriverHistoryQuery                         3      2     1  67%
-  DriverLicenseQuery                         7      4     3  57%
+  DriverLicenseQuery                         7      5     2  71%
   GunQuery                                   1      1     0  100% (COMPLETE)
   VehicleRegistrationQuery                   9      7     2  78%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   26     20     6  77%
+  TOTAL                                   26     21     5  81%
 
 ================================================================================
-UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (5 combos in metadata, not in JSON)
 ================================================================================
 
   BMVIMS         OperatorLicenseNumber    (DriverHistoryQuery)
-  QWA            Name                     (DriverLicenseQuery)
   BMVIMS         OperatorLicenseNumber    (DriverLicenseQuery)
   BMVIMS         SocialSecurityNumber     (DriverLicenseQuery)
   QV             LicensePlateNumber       (VehicleRegistrationQuery)

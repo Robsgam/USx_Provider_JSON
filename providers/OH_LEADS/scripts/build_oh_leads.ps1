@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.0'
+$Version     = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -260,6 +260,31 @@ $dlQuery = [PSCustomObject]@{
             primaryFieldReference = 'Name'
             keyReference          = 'DQ.N'
             state                 = 'Out'
+        }
+        # QWA -- in-state Name + BirthDate. ADDED v2.1.
+        # Devdoc DriverLicenseQuery #1 is "Name, [BirthDate]" -- BirthDate is a LEGAL OPTIONAL on a name
+        # search -- but metadata DN{Name} is Set[Name] with NO <Any> AT ALL, so DN cannot carry a date of
+        # birth. Metadata does define the variant that can, under the SAME DriverLicenseQuery transaction:
+        #     QWA{Name} = Set[BirthDate, Name]
+        # and it was NOT BUILT, so a Name+DOB search fell through to DN and the officer's DOB was
+        # SILENTLY NOT TRANSMITTED -- the query still ran, just broader than asked for. Caught by
+        # audit_devdoc_optionals: "#1 +[BirthDate] -> fires DN but optional(s) BirthDate are in NO
+        # matching combo's set[]/any[]".
+        # ORDER IS LOAD-BEARING: DN's set[] is a strict SUBSET of this one, so QWA must precede DN or DN
+        # keeps winning and this path is dead on arrival.
+        # Gated exactly like DN (in-state, OLN>Name guardrail). QWA{Name} defines no State, so a
+        # State-bearing name search still routes to DQ.N, the variant that does define it.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('NameLast','NameFirst','BirthDate'); any = @()
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'QWA'
+            state                 = 'In'
         }
         # DN -- in-state Name (no State). OLN>Name guardrail
         [PSCustomObject]@{

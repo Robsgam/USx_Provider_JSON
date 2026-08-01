@@ -1,6 +1,6 @@
-OH_LEADS v2.0 -- TEST MATRIX
+OH_LEADS v2.1 -- TEST MATRIX
 ==================================================
-Generated: 2026-07-31
+Generated: 2026-08-01
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -58,10 +58,10 @@ Boat (3 cards, 5 fields):
   CARD_BOA_REG (REGISTRATION SEARCH):
     RegistrationNumber [Inp 8]
 
-QIDM SUMMARY (6 QIDMs, 20 combos)
+QIDM SUMMARY (6 QIDMs, 21 combos)
 ----------------------------------------
   VehicleRegistrationQuery: 7 combos (RQ x2, RS x1, RN x1, RV x1, ATDP x1, RP x1), autoSelect=true
-  DriverLicenseQuery: 4 combos (DQ x2, DN x1, DL x1), autoSelect=true, deselects: [DH]
+  DriverLicenseQuery: 5 combos (DQ x2, QW x1, DN x1, DL x1), autoSelect=true, deselects: [DH]
   DriverHistoryQuery: 2 combos (KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (QG x1)
   ArticleSingleQuery: 2 combos (QA x2)
@@ -119,7 +119,7 @@ ENTITY 1: VEHICLE (19 tests -- 6 cards, 7 combos)
 19  Vehicle     Guardrail: RS>RN   OwnerSocialSecurityNumber=TEST, Owner... [    ]
               Expected: VehicleRegistrationQuery fires (RS). OwnerLastName+OwnerFirstName absent from XML.
 
-ENTITY 2: PERSON (14 tests -- 5 cards, 6 combos)
+ENTITY 2: PERSON (16 tests -- 5 cards, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -131,85 +131,89 @@ ENTITY 2: PERSON (14 tests -- 5 cards, 6 combos)
               Expected: DriverLicenseQuery fires (DQ.O)
 23  Person      DQ+.O              + ImageIndicator, RegistrationState [    ]
               Expected: any[] fields present in XML output.
-24  Person      DN+DN              NameLast=DOE, NameFirst=JOHN     [    ]
+24  Person      QW+A               NameLast=DOE, NameFirst=JOHN, BirthDa... [    ]
+              Expected: DriverLicenseQuery fires (QWA)
+25  Person      DN+DN              NameLast=DOE, NameFirst=JOHN     [    ]
               Expected: DriverLicenseQuery fires (DN)
-25  Person      DL+DL              OperatorLicenseNumber=D999888777 [    ]
+26  Person      DL+DL              OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (DL)
-26  Person      KQ+.O              OperatorLicenseNumberDH=D999888777 [    ]
+27  Person      KQ+.O              OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQ.O)
-27  Person      KQ+.O              + purposeCodeDH, RegistrationState, attention [    ]
+28  Person      KQ+.O              + purposeCodeDH, RegistrationState, attention [    ]
               Expected: any[] fields present in XML output.
-28  Person      KQ+.N              NameLastDH=DOE, NameFirstDH=JOHN, Bir... [    ]
+29  Person      KQ+.N              NameLastDH=DOE, NameFirstDH=JOHN, Bir... [    ]
               Expected: DriverHistoryQuery fires (KQ.N)
-29  Person      KQ+.N              + purposeCodeDH, RegistrationState, attention [    ]
+30  Person      KQ+.N              + purposeCodeDH, RegistrationState, attention [    ]
               Expected: any[] fields present in XML output.
-30  Person      Guardrail: DQ.O>DQ.N  OperatorLicenseNumber=D999888777, Nam... [    ]
+31  Person      Guardrail: DQ.O>DQ.N  OperatorLicenseNumber=D999888777, Nam... [    ]
               Expected: DriverLicenseQuery fires (DQ.O). LastName+FirstName+DOB+SexCode absent from XML.
-31  Person      Guardrail: DQ.O>DN  OperatorLicenseNumber=D999888777, Nam... [    ]
+32  Person      Guardrail: DQ.O>QWA  OperatorLicenseNumber=D999888777, Nam... [    ]
+              Expected: DriverLicenseQuery fires (DQ.O). LastName+FirstName+DOB absent from XML.
+33  Person      Guardrail: DQ.O>DN  OperatorLicenseNumber=D999888777, Nam... [    ]
               Expected: DriverLicenseQuery fires (DQ.O). LastName+FirstName absent from XML.
-32  Person      Guardrail: KQ.O>KQ.N  OperatorLicenseNumberDH=D999888777, N... [    ]
+34  Person      Guardrail: KQ.O>KQ.N  OperatorLicenseNumberDH=D999888777, N... [    ]
               Expected: DriverHistoryQuery fires (KQ.O). LastName+FirstName+DOB+SexCodeDH absent from XML.
-33  Person      Deselect: DL deselects DH.            [    ]
+35  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
 
 ENTITY 3: BOAT (10 tests -- 3 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-34  Boat        BQ+.R              RegistrationNumber=FL1234AB      [    ]
+36  Boat        BQ+.R              RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (BQ.R)
-35  Boat        BQ+.R              + RegistrationState             [    ]
+37  Boat        BQ+.R              + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-36  Boat        BQ+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
+38  Boat        BQ+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (BQ.H)
-37  Boat        BQ+.H              + RegistrationState             [    ]
+39  Boat        BQ+.H              + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
-38  Boat        QB+.R              RegistrationNumber=FL1234AB      [    ]
+40  Boat        QB+.R              RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QB.R)
-39  Boat        QB+.R              + ImageIndicator, relatedHitSearchIndicator [    ]
+41  Boat        QB+.R              + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-40  Boat        QB+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
+42  Boat        QB+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QB.H)
-41  Boat        QB+.H              + ImageIndicator, relatedHitSearchIndicator [    ]
+43  Boat        QB+.H              + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-42  Boat        Guardrail: BQ.H>BQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+44  Boat        Guardrail: BQ.H>BQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQ.H). Reg absent from XML.
-43  Boat        Guardrail: BQ.H>QB.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+45  Boat        Guardrail: BQ.H>QB.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQ.H). Reg absent from XML.
 
 ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-44  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
+46  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QG)
-45  Firearm     QG+serialNumber    + firearmMake, gunCaliber, relatedHitSearchIndicator [    ]
+47  Firearm     QG+serialNumber    + firearmMake, gunCaliber, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-46  Article     QA+.S              articleTypeCode=BBICYCL, serialNumber... [    ]
+48  Article     QA+.S              articleTypeCode=BBICYCL, serialNumber... [    ]
               Expected: ArticleSingleQuery fires (QA.S)
-47  Article     QA+.S              + ImageIndicator, relatedHitSearchIndicator [    ]
+49  Article     QA+.S              + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-48  Article     QA+.N              NCICNumber=X123456789            [    ]
+50  Article     QA+.N              NCICNumber=X123456789            [    ]
               Expected: ArticleSingleQuery fires (QA.N)
-49  Article     QA+.N              + ImageIndicator, relatedHitSearchIndicator [    ]
+51  Article     QA+.N              + ImageIndicator, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-50  Article     Guardrail: QA.S>QA.N  serialNumber=GUN12345, NCICNumber=X12... [    ]
+52  Article     Guardrail: QA.S>QA.N  serialNumber=GUN12345, NCICNumber=X12... [    ]
               Expected: ArticleSingleQuery fires (QA.S). NCIC absent from XML.
 
 ================================================================================
-TOTAL: 50 tests
+TOTAL: 52 tests
 
-COMBO COVERAGE (20/20):
+COMBO COVERAGE (21/21):
   VehicleRegistrationQuery: 7/7 -- T1(RQ+.P), T3(RQ+.V), T5(RS+RS), T6(RN+RN), T8(RV+RV), T9(RP+RP), T10(ATDP+ATDP)
-  DriverLicenseQuery: 4/4 -- T20(DQ+.N), T22(DQ+.O), T24(DN+DN), T25(DL+DL)
-  DriverHistoryQuery: 2/2 -- T26(KQ+.O), T28(KQ+.N)
-  GunQuery: 1/1 -- T44(serialNumber)
-  ArticleSingleQuery: 2/2 -- T46(.S), T48(.N)
-  BoatQuery: 4/4 -- T34(BQ+.R), T36(BQ+.H), T38(QB+.R), T40(QB+.H)
+  DriverLicenseQuery: 5/5 -- T20(DQ+.N), T22(DQ+.O), T24(QW+A), T25(DN+DN), T26(DL+DL)
+  DriverHistoryQuery: 2/2 -- T27(KQ+.O), T29(KQ+.N)
+  GunQuery: 1/1 -- T46(serialNumber)
+  ArticleSingleQuery: 2/2 -- T48(.S), T50(.N)
+  BoatQuery: 4/4 -- T36(BQ+.R), T38(BQ+.H), T40(QB+.R), T42(QB+.H)
 
-IMPORT FILE: OH_LEADS_v2.0.json
+IMPORT FILE: OH_LEADS_v2.1.json

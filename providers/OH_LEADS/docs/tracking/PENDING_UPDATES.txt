@@ -1,5 +1,55 @@
 # PENDING_UPDATES.txt -- OH_LEADS
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
-# Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:FORM-REACHABLE-COMBOS] Remove routing-affecting form defaults so every devdoc Basic combination is reachable FROM THE FORM. Found by enforce PHASE 2n / audit_query_trace across ALL providers: CA_CONTRA_COSTA = 12 combos (purposeCode=C, same as its CA_CLETS twin), OH_LEADS = 1 combo. Run tools\audit_query_trace.ps1 -Provider <name> for the exact prefill to remove. (flagged 2026-07-30)
+# CLEARED 2026-08-01 at v2.1. Adjudicated against THIS provider's OWN devdoc + metadata XML.
+# Kept as a record of what closed and why -- a bare empty file loses the reasoning.
+#
+# [FLAG:FORM-REACHABLE-COMBOS]  RESOLVED at v2.1 -- and the flag's OWN ADVICE WAS WRONG for OH_LEADS.
+#   It said "remove routing-affecting form defaults so every devdoc Basic combination is reachable",
+#   naming 1 combo. The combo was `[PREFILL-DEAD] QV set[LicensePlateNumber]`, hidden by the
+#   LicensePlateTypeCode='PC' default because built RP requires plate+type.
+#   BUT THERE IS NO PLATE-ONLY DEVDOC ITEM AT ALL. This provider's VehicleRegistrationQuery items are:
+#       #1 DealerPlateType+Plate+PlateTypeCode        -> built ATDP
+#       #2 Plate+PlateTypeCode                        -> built RP
+#       #3 VIN                                        -> built RV
+#       #4 Plate+State                                -> QV.P, ALREADY REGISTERED as an NCIC national
+#                                                        plate shadow (rule dropped-combo)
+#       #5 Plate+PlateTypeCode+PlateYear+State        -> built RQ.P
+#   So the metadata plate-only QV combination is the NCIC shadow that must never be built, and the
+#   prefill is hiding NOTHING OWED. Removing it, as the flag advised, would have stripped a correct
+#   default to chase a combination Rob has ruled out -- precisely the HI_HCJDC_OFML trap that
+#   audit_query_trace's own header warns about (it nearly cost 46 ALL-PASS logs there).
+#   WHY IT KEPT FIRING despite QV.P/QV.V already being registered: audit_query_trace keys its
+#   accepted-divergence map on the keyRef STRING, and the METADATA keyRef is bare `QV` while the
+#   registry entries use the built/synthetic names `QV.P` and `QV.V`, so the lookup never matched.
+#   Added a `QV`-keyed alias entry with the same reasoning -> 1 PREFILL-DEAD -> 0. This is the same
+#   keyRef-scoping class as BUILD_RULES 13 (key by (query, keyRef), never a bare name), showing up in
+#   a registry lookup rather than a combo lookup.
+#
+# ONE REAL WIRE DEFECT FIXED IN THE SAME PASS (v2.1) -- a name search was DROPPING the officer's DOB.
+#   Devdoc DriverLicenseQuery #1 is "Name, [BirthDate]", so BirthDate is a LEGAL OPTIONAL on a name
+#   search. But metadata DN{Name} is Set[Name] with NO <Any> AT ALL -- DN cannot carry a date of birth.
+#   Metadata DOES define the variant that can, under the same DriverLicenseQuery transaction:
+#       QWA{Name} = Set[BirthDate, Name]
+#   and it was NOT BUILT. So Name+DOB fell through to DN and the DOB was SILENTLY NOT TRANSMITTED --
+#   the query still ran, just broader than the officer asked for.
+#   FIX: BUILT QWA (set[NameLast, NameFirst, BirthDate]), ordered AHEAD of DN because DN's set[] is a
+#   strict SUBSET and would otherwise keep winning, leaving the new path dead on arrival. Gated exactly
+#   like DN (OLN NOT_EXISTS + RegistrationState NOT_EXISTS); QWA{Name} defines no State, so a
+#   State-bearing name search still routes to DQ.N, the variant that does define it.
+#   Verified: audit_devdoc_optionals 6 FAIL -> 0; combo reachability 20/20 ALL REACHABLE (so QWA is
+#   genuinely live, not shadowed); validator 77 PASS / 0 FAIL / 0 WARN.
+#
+# REGISTERED, build correct: BoatQuery BQ.H | ImageIndicator + RelatedHitSearchIndicator.
+#   Metadata splits BoatQuery across two transactions with DIFFERENT optional sets --
+#   BQ{hull} = Set[BoatHullIdNumber] Any[State] (Nlets/out-of-state) and QB{hull} = Set[BoatHullIdNumber]
+#   Any[ImageIndicator, RelatedHitSearchIndicator] (in-state NCIC) -- and the build routes on State
+#   exactly as they require (BQ.H gated State EXISTS, QB.H gated NOT_EXISTS; both REACHABLE). The image
+#   flags are not defined on the BQ transaction, so a hull+State+Image fill correctly does not carry
+#   them; adding them to BQ.H any[] would OVER-PERMIT. Same devdoc-flat-list-vs-metadata-scoping shape
+#   registered on NM_NMLETS_OFML (QV.V/VehicleYear) and TX_TLETS_CCH (QWI branches) the same day.
+#
+# STILL OPEN (not blocking; recorded so it is not mistaken for finished):
+#   Never USx-tenant-tested. v2.1 owes a full 5-entity sweep from T1.
+#   3 metadata combinations remain MISSING/advisory (audit_query_trace) -- adjudicate vs devdoc Basic
+#   scope on the next pass; the devdoc lists no counterpart for them.
