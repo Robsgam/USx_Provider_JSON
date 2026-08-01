@@ -121,6 +121,31 @@ THE TOOL FIX -- DONE 2026-08-01. Classes 1 and 2 largely collapsed.
   A whitelist must live in the same namespace as the comparison. Added the targetField spelling.
 
 --------------------------------------------------------------------------------
+NEGATIVE RESULT -- keyRef-SCOPED BRANCH MATCHING WAS TRIED AND REFUTED. DO NOT RETRY BLIND.
+--------------------------------------------------------------------------------
+  2026-08-01. The obvious next step looked airtight: CLASS 3 is caused by the scorer having NO
+  threshold -- `if ($best -ne $null)` assigns whatever scores highest, so a metadata alternative with
+  no built counterpart force-pairs onto an unrelated sibling. Built keyRefs follow
+  'metadata keyRef + identifier suffix' portfolio-wide, so restricting candidates to keyRef-compatible
+  combos (and skipping the alternative when none exist) should have collapsed CLASS 3 cleanly. The
+  tool's own header even states that policy: an unassigned alternative "belongs to audit_query_trace,
+  not here".
+  IT MADE THINGS WORSE, and the fixture caught it:
+      before   413 branches / 15 UNDER / 43 OVER   fixture INTACT
+      after    412 branches / 27 UNDER / 45 OVER   FIXTURE BROKEN
+      HI_HCJDC_OFML 0/0 -> 2 UNDER / 2 OVER,  NY_NYSPIN_EJUSTICE 0/0 -> 6 UNDER,
+      CA_SAN_LUIS_OBISPO 0/0 -> 3 UNDER,      CA_CLETS_OCATS 3 -> 5 UNDER
+  WHY (as far as it was taken before reverting): the keyRef convention is a STRONG TENDENCY, not a
+  law. Restricting the candidate pool to "compatible" combos removes the legitimate N:1 sharing this
+  tool deliberately supports (see the SHARED-COMBO UNION block) and starves alternatives whose built
+  counterpart uses an entirely invented keyRef -- NY and HI are exactly those providers. The scorer's
+  identifier-dominance already encodes the right preference; hard-gating on keyRef throws away the
+  evidence that was making it work.
+  REVERTED IN FULL. If this is attempted again it must be a SOFT preference (prefer keyRef-compatible
+  candidates, fall back to the full pool) rather than a hard filter, and it must be measured against
+  the six-provider fixture BEFORE being believed. A plausible mechanism is not evidence.
+
+--------------------------------------------------------------------------------
 REMAINING BACKLOG
 --------------------------------------------------------------------------------
   15 UNDER-REQUIRED / 43 OVER-PERMITTED, NONE on a tenant-verified provider:
