@@ -1,5 +1,43 @@
 # PENDING_UPDATES.txt -- OR_LEDS
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
-# Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:METADATA-DEMOTION-ADJUDICATE] audit_metadata CHECK 4e (new 2026-07-30) reports metadata-required fields built as any[]. Each must be promoted to set[] OR recorded in <PROVIDER>_ACCEPTED_DIVERGENCES.txt with a reason. Counts: AZ_AZDPS 9 (dexStateUserId handler-populated x4 + BirthDate/SexCode on DQSS/KQ -- AZ already carries 2 accepted NOTEs of the same shape), CA_eSUN 2, CA_SAN_LUIS_OBISPO 2, CA_VENTURA_COUNTY 2, OR_LEDS 1. Blocks enforce PHASE 2b until adjudicated. (flagged 2026-07-30)
+# CLEARED 2026-08-01 at v2.1. Adjudicated against THIS provider's OWN metadata XML.
+# Kept as a record of what closed and why -- a bare empty file loses the reasoning.
+#
+# [FLAG:METADATA-DEMOTION-ADJUDICATE]  RESOLVED at v2.1 -- and this one was a REAL WIRE DEFECT, FIXED,
+#   not a registration. It is the single most consequential shape in this whole flag: an
+#   UNDER-REQUIRED set[].
+#   Metadata DQ{Name} = Set[BirthDate, Name, SexCode] Any[ImageIndicator, State] -- SexCode is
+#   MANDATORY -- and DQ{Name} is the ONLY name variant (its lone sibling is
+#   DQ{OperatorLicenseNumber}), so there is NO looser alternative to fall back on.
+#   The build had SexCode in any[], so DQ.N could FIRE WITHOUT IT and emit a request the metadata
+#   calls invalid. audit_metadata said it exactly: "the query can fire without it".
+#   FIX at v2.1: SexCode PROMOTED from any[] to set[].
+#   WHY THIS CLASS MATTERS MORE THAN A DROPPED OPTIONAL: a dropped optional sends a narrower query
+#   than the officer asked for; an UNDER-REQUIRED set[] sends an INVALID one. Gate 6d catches it on a
+#   live log, but 6c (content) and 2i (attribution) CANNOT -- a MISSING REQUIREMENT is invisible to
+#   both, which is how CA_CLETS once shipped a committed PASS log doing exactly this.
+#   Consequence, stated plainly rather than buried: a name-based licence search on this provider now
+#   requires Sex. That is what this provider's metadata demands, not a build preference.
+#
+# REGISTERED, build correct: BoatQuery BQ.H | RegistrationNumber (adjudicated by
+#   tools/audit_optional_scope.ps1 and confirmed against the raw XML). Firing variant
+#   BQ{BoatHullIdNumber} = Set[BoatHullIdNumber] Any[State] does NOT define RegistrationNumber -- that
+#   field is the Set KEY of the SIBLING variant BQ{RegistrationNumber}, which the separate BQ.R combo
+#   implements. So a hull search carrying a registration number correctly does not transmit it; adding
+#   it to BQ.H any[] would OVER-PERMIT and would blur the Hull>Reg identifier priority.
+#   NOTE: the adjudicator FIRST said [FIX] here and was WRONG -- it had found RegistrationNumber on the
+#   sibling variant because it was not narrowing by primaryFieldReference. A KEYREF IS NOT A VARIANT.
+#   Fixed in the tool before acting on it; OR_LEDS is the case that exposed it.
+#
+# KNOWN GATE ARTEFACT, build is CORRECT (1 audit_metadata WARN, does not block enforce):
+#   "serialNumber: QIF maxLength 20 > XML maxLength 11 (GunSerialNumber)". The FIREARM and ARTICLE
+#   entity forms legitimately share the fieldId 'serialNumber' while their metadata fields differ
+#   (GunSerialNumber 11, ArticleSerialNumber 20). audit_metadata does not scope this check by QIF, so
+#   it compares the Article control against the Gun field. Narrowing the Article control to 11 would
+#   TRUNCATE legitimate article serials to satisfy a check. Identical artefact registered on CA_eSUN
+#   the same day; fixing the tool is a shared change across 20 providers and is not being done
+#   mid-provider.
+#
+# STILL OPEN (not blocking; recorded so it is not mistaken for finished):
+#   Never USx-tenant-tested. v2.1 owes a full 5-entity sweep from T1.

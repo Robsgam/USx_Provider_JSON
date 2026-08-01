@@ -1270,6 +1270,48 @@ AUTHORITATIVE SOURCE FILES (read-only)
     everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
     equivalent fallbacks.)
 
+  tools/audit_optional_scope.ps1
+    FIX-vs-REGISTER ADJUDICATOR for "silently not transmitted" findings. Answers
+    mechanically what was being re-derived by hand every time.
+    THE PROBLEM: audit_devdoc_optionals reports, in IDENTICAL wording,
+      "#N +[Field] -> fires KEYREF but optional(s) Field are in NO matching combo's
+       set[]/any[] -- silently not transmitted"
+    On 2026-08-01 that one sentence was a REAL DROPPED VALUE on AZ_AZDPS (boat
+    RegistrationNumber), CA_eSUN (purposeCode), CA_SAN_LUIS_OBISPO (DL State) and
+    OH_LEADS (DL BirthDate) -- and the CORRECT BEHAVIOUR on TX_TLETS_CCH (QWI
+    BirthDate/RaceCode/SexCode), NM_NMLETS_OFML (QV VehicleYear), OH_LEADS (Boat
+    ImageIndicator), OR_LEDS, MD_METERS and TN_TIES. Same words, opposite answers,
+    ELEVEN times in one day.
+    WHY: the devdoc gives ONE FLAT OPTIONAL LIST PER QUERY while the metadata
+    spreads those optionals across SEPARATE TRANSACTIONS (in-state NCIC keyRef vs
+    out-of-state Nlets keyRef) or across CHOICE BRANCHES (a nested <Set> scoping
+    fields to one alternative). A flat list cannot distinguish a GLOBAL optional
+    from one scoped to a single alternative.
+    THE ONLY QUESTION THAT MATTERS -- and it is never "is it in the devdoc bracket?",
+    it always is, that is why the finding fired:
+        DOES THE FIRING COMBO'S OWN METADATA VARIANT DEFINE THIS FIELD?
+          YES -> FIX      metadata permits it on this exact path; we are dropping
+                          the officer's value. Add it to that combo's any[].
+          NO  -> REGISTER adding it would OVER-PERMIT: transmit a field the
+                          transaction does not define. That is a NEW defect, and
+                          audit_requirement_fidelity will report it as OVER-PERMITTED.
+    It prints, for a REGISTER, which OTHER variants DO define the field -- that is
+    the evidence line the accepted-divergence reason needs.
+    MUST NARROW BY primaryFieldReference, and the tool was WRONG without it: a
+    metadata keyRef routinely carries several variants (OR_LEDS BQ has both
+    BQ{BoatHullIdNumber} and BQ{RegistrationNumber}). Unnarrowed, it found
+    RegistrationNumber on the SIBLING reg variant and advised [FIX] on the HULL
+    combo -- which would have over-permitted. Caught because its own evidence line
+    named BQ{RegistrationNumber} while the firing combo was BQ.H. A KEYREF IS NOT A
+    VARIANT: same restriction defect that put 5 false rows on audit_defect_classes
+    the same day. It now reads each built combo's declared PF from the JSON and
+    reports [CHECK] rather than guessing when no variant matches.
+    VERIFIED against three independent known answers (OR_LEDS BQ{BoatHullIdNumber},
+    MD_METERS ZWAR{Name}, TN_TIES DQ{Name}) by reading the raw XML.
+    RECOMMENDS ONLY -- never edits, not wired into any gate. The reason still has to
+    be written into the registry or build script, because the reason is the durable
+    part. Handles the dropped-optional class only; NO-COMBO-FIRES is still by hand.
+
   tools/audit_provider_linkage.ps1
     PROVIDER LINKAGE GATE (advisory). EVERY PROVIDER JSON IS STANDALONE. Its build
     is justified by ITS OWN devdoc (query authority) and ITS OWN metadata XML

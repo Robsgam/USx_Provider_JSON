@@ -20,6 +20,12 @@ All JSON versions produced for this provider.
 | phases/base/OR_LEDS_v1.0_2026-05-06.json | v1.0 | Snapshot | Initial build (first run). |
 
 
+
+## v2.1 (2026-08-01)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| OR_LEDS_v2.1.json | v2.1 | Current | 55P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |

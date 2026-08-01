@@ -34,7 +34,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.0'
+$Version     = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\TN_TIES_v${Version}.json"
@@ -316,14 +316,28 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State';                 size = 2;  sourceField = @('RegistrationState');        targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # KQ.N -- OOS Name+DOB+Sex+PurposeCode (Attention auto). OLN>Name
+        # KQ.N -- Name+DOB+Sex+PurposeCode, IN **and** OUT of state (Attention auto). OLN>Name
+        # v2.1: the `RegistrationState EXISTS` gate was REMOVED from this combination.
+        #   Metadata KQ{Name} = Set[Attention, Name, BirthDate, SexCode, PurposeCode] Any[State]
+        #   -- State is OPTIONAL there, so ONE combination serves both in-state and out-of-state with
+        #   State riding in any[]. Requiring State to EXIST made a documented IN-STATE driver-history
+        #   name search IMPOSSIBLE: devdoc DriverHistoryQuery #1's mandatory set is exactly
+        #   Attention+BirthDate+Name+PurposeCode+SexCode with State BRACKETED, and that fill matched
+        #   NOTHING -- audit_devdoc_optionals reported "#1 (mandatory only) -> NO COMBO FIRES. A
+        #   devdoc-legal fill sends no query" while "#1 +[State] -> KQ.N" was fine. There is no other
+        #   name-based DH combination to fall through to (KQ.O and DQ05 are both OLN-keyed), so an
+        #   officer could not run an in-state DH-by-name search at all.
+        #   THE IN/OUT SPLIT IS NOT ABANDONED -- it stays on the OLN pair (KQ.O gated State EXISTS,
+        #   DQ05 gated NOT_EXISTS), because the metadata genuinely FORKS there:
+        #   KQ{OperatorLicenseNumber} carries Attention+PurposeCode while DQ05 is bare
+        #   OperatorLicenseNumber. A State gate belongs where the metadata forks BY state, never on a
+        #   variant that merely permits State as an optional.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH','purposeCodeDH'); any = @('attention','RegistrationState')
                 defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('RegistrationState');       operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'

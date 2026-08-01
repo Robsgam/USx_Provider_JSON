@@ -50,8 +50,8 @@ Status table instead (this table's Notes column is intentionally terse).
 | 14 | MD_METERS | v2.0 |  | 69P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 15 | OH_LEADS | v2.1 |  | 77P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 16 | NM_NMLETS_OFML | v2.1 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 17 | OR_LEDS | v2.0 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 18 | TN_TIES | v2.0 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 17 | OR_LEDS | v2.1 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 18 | TN_TIES | v2.1 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 19 | TX_TLETS_CCH | v1.14 |  | 112P/0F/0W/0LIM | 0 | base-6 re-synced to TX_TLETS v4.7 (email handler + FRT=E, QWName removed); lockstep restored; CCH stub, NOT USx-tenant-tested |
 | 20 | CA_CONTRA_COSTA | v2.2 |  | 79P/0F/0W/0LIM | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT USx-tenant-tested |
 

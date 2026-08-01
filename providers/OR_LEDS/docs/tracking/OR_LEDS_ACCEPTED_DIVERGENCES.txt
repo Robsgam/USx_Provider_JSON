@@ -1,0 +1,7 @@
+﻿# OR_LEDS ACCEPTED METADATA DIVERGENCES
+# Read by tools/audit_metadata.ps1 (CHECK 4 / 4d). Each non-comment line records a
+# set/any divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].
+# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
+#
+
+BoatQuery | BQ.H | RegistrationNumber | devdoc-optional-unreachable | Firing variant BQ{BoatHullIdNumber} = Set[BoatHullIdNumber] Any[State] -- RegistrationNumber is NOT defined on it. It is the Set KEY of the SIBLING variant BQ{RegistrationNumber}, which the separate BQ.R combo implements. So a hull search that also carries a registration number correctly does not transmit it; adding it to BQ.H any[] would OVER-PERMIT a field this variant does not define, and would also blur the Hull>Reg identifier priority. | metadata-vs-devdoc | 2026-08-01

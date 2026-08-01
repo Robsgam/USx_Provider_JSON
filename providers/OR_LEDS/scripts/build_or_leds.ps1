@@ -1,4 +1,4 @@
-﻿# build_or_leds.ps1  -- OR_LEDS (galvanized v2.0, single-JSON native PascalCase)
+# build_or_leds.ps1  -- OR_LEDS (galvanized v2.0, single-JSON native PascalCase)
 # Single-JSON: PascalCase USx fieldIds, multi-card layout.
 # Phase 2 multi-card. No cross-entity combos. No DriverHistoryQuery.
 # CAD_DISPATCH + FIRST_RESPONDER context cards.
@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.0'
+$Version     = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OR_LEDS_v${Version}.json"
@@ -143,10 +143,20 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # Name+DOB (OLN>Name guardrail -- OperatorLicenseNumber NOT_EXISTS; State in any[] routes in/out)
+        # Name+DOB+Sex (OLN>Name guardrail -- OperatorLicenseNumber NOT_EXISTS; State in any[] routes in/out)
+        # v2.1: SexCode PROMOTED from any[] to set[]. Metadata DQ{Name} is
+        #     Set[BirthDate, Name, SexCode] Any[ImageIndicator, State]
+        # -- SexCode is MANDATORY there, and DQ{Name} is the ONLY name variant (its lone sibling is
+        # DQ{OperatorLicenseNumber}), so there is no looser alternative to fall back on. With SexCode
+        # in any[] this combination could FIRE WITHOUT IT and emit a request the metadata calls
+        # invalid -- an UNDER-REQUIRED wire defect. That is the class gate 6d catches on a live log
+        # while 6c and 2i cannot see it at all, because a MISSING REQUIREMENT is invisible to content
+        # and attribution checks.
+        # Consequence, stated plainly rather than buried: a name-based licence search on this provider
+        # now requires Sex. That is what this provider's metadata demands, not a build preference.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('BirthDate','NameLast','NameFirst'); any = @('SexCode','RegistrationState','ImageIndicator')
+                set = @('BirthDate','NameLast','NameFirst','SexCode'); any = @('RegistrationState','ImageIndicator')
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
