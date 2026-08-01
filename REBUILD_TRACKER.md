@@ -42,7 +42,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 6 | TX_TLETS | v4.18 |  | 79P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 8 | CA_CLETS | v2.23 |  | 79P/0F/0W/0LIM | 0 | in-scope, single-JSON |
-| 9 | CA_VENTURA_COUNTY | v2.2 |  | 79P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 9 | CA_VENTURA_COUNTY | v2.3 |  | 82P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 10 | CA_CLETS_OCATS | v2.1 |  | 64P/0F/0W/0LIM | 1 | out of scope |
 | 11 | CA_eSUN | v2.2 |  | 72P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 12 | CA_SAN_LUIS_OBISPO | v2.2 |  | 67P/0F/0W/0LIM | 0 | out of scope |

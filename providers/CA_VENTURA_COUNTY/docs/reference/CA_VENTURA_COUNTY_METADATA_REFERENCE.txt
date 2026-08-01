@@ -1,7 +1,7 @@
 ﻿CA_VENTURA_COUNTY METADATA REFERENCE
 =====================================
 Generated: 2026-08-01
-Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_v2.2.json
+Source: CA_VENTURA_COUNTY.xml (metadata) + CA_VENTURA_COUNTY_v2.3.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -121,13 +121,16 @@ METADATA COMBINATIONS (8 total):
   NLTS.DQ       Name                    CaRequestPurposeCode                                   --
   NLTS.DQ       OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber, State     --
 
-BUILD COVERAGE (7 of 8 built):
+BUILD COVERAGE (10 of 8 built):
+  BUILT   NLTS.DQ.N      set[caRequestPurposeCode, NameLast, NameFirst, SexCode, BirthDate, RegistrationState]
   BUILT   IR.QVC.NB      set[caRequestPurposeCode, NameLast, NameFirst, SexCode, BirthDate]
   BUILT   IR.QVC.NA      set[caRequestPurposeCode, NameLast, NameFirst, SexCode, age]
   BUILT   IN.L1          set[caRequestPurposeCode, NameLast, NameFirst]
   BUILT   NLTS.DQ        set[caRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
   BUILT   IR.QVC.C       set[caRequestPurposeCode, criminalIdNumber]
   BUILT   IR.QVC.S       set[caRequestPurposeCode, socialSecurityNumber]
+  BUILT   IR.QVC.O       set[caRequestPurposeCode, OperatorLicenseNumber]
+  BUILT   IR.QVC.OS      set[caRequestPurposeCode, OperatorLicenseNumber]
   BUILT   ID.L1          set[caRequestPurposeCode, OperatorLicenseNumber]
 
 ================================================================================
@@ -239,11 +242,11 @@ BUILD SUMMARY
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
   BoatQuery                                  7      6     1  86%
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
-  DriverLicenseQuery                         8      7     1  88%
+  DriverLicenseQuery                         8     10     0  125%
   GunQuery                                   2      3     0  150%
   VehicleRegistrationQuery                  20      5    15  25%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   43     27    17  63%
+  TOTAL                                   43     30    16  70%
 
 ================================================================================
 UNBUILT METADATA COMBOS (16 combos in metadata, not in JSON)

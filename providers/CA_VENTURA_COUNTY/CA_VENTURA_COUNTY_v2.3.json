@@ -9386,6 +9386,38 @@
                                                                                                              "NameLast",
                                                                                                              "NameFirst",
                                                                                                              "SexCode",
+                                                                                                             "BirthDate",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "NLTS.DQ.N",
+                                                                            "state":  "Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "SexCode",
                                                                                                              "BirthDate"
                                                                                                          ],
                                                                                                  "any":  [
@@ -9453,9 +9485,7 @@
                                                                                                              "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "BirthDate",
-                                                                                                             "SexCode",
-                                                                                                             "RegistrationState"
+                                                                                                             "BirthDate"
                                                                                                          ],
                                                                                                  "conditions":  [
                                                                                                                     {
@@ -9568,9 +9598,70 @@
                                                                                                              "OperatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState",
                                                                                                              "criminalIdNumber",
                                                                                                              "socialSecurityNumber"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "criminalIdNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "IR.QVC.O",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "OperatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "socialSecurityNumber"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "criminalIdNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "socialSecurityNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "IR.QVC.OS",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "OperatorLicenseNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "RegistrationState"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -10363,7 +10454,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_VENTURA_COUNTY v2.2 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for CA_VENTURA_COUNTY v2.3 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "CA_VENTURA_COUNTY",
                         "type":  "BUNDLE",
                         "provider":  "CA_VENTURA_COUNTY"

@@ -11,7 +11,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_ventura_county_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.2'
+$Version  = '2.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_VENTURA_COUNTY_v${Version}.json"
@@ -177,6 +177,30 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'RaceCode';             size = 1;  sourceField = @('raceCode');             targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
     )
     combinations = @(
+        # ── NLTS.DQ.N (v2.3) -- the OUT-OF-STATE NAME path, which had NO built combination at all.
+        # Metadata NLTS.DQ{Name} = Set[CaRequestPurposeCode, Set[Name, SexCode, BirthDate, State]]
+        # -- State is MANDATORY there -- and only the OLN variant (NLTS.DQ) was built. So devdoc
+        # DriverLicenseQuery #8 "(Out) Name, BirthDate, SexCode, [State]" fell through to IR.QVC.NB,
+        # whose metadata variant defines no State, and the officer's State was SILENTLY NOT
+        # TRANSMITTED. Two gates said so from opposite directions:
+        #   audit_devdoc_optionals     "#8 +[State] -> fires IR.QVC.NB but optional(s) State are in NO
+        #                               matching combo's set[]/any[] -- silently not transmitted"
+        #   audit_requirement_fidelity "NLTS.DQ -> built 'IR.QVC.NB' UNDER-REQUIRED: State (ABSENT)"
+        #                               i.e. IR.QVC.NB was standing in for a branch it does not implement
+        # Ordered FIRST: 6 set[] fields make it the most specific name combination, and IR.QVC.NB's
+        # set[] is a strict SUBSET of it -- leaving it later would hand every fill to IR.QVC.NB and the
+        # OOS path would be dead on arrival.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','NameLast','NameFirst','SexCode','BirthDate','RegistrationState')
+                any        = @()
+                defaults   = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'NLTS.DQ.N'
+            state                 = 'Out'
+        }
         # ── IR.QVC{Name} -- SPLIT into one combination per <Choice> branch (set[] has no OR).
         # BirthDate branch first, then Age: devdoc lists #3 (Age) before #4 (BirthDate), BUT neither
         # set[] is a subset of the other, so if an officer supplies both the FIRST listed here wins.
@@ -209,7 +233,12 @@ $dlQuery = [PSCustomObject]@{
         # Name combo first (3 set, Name before OLN at same count)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('caRequestPurposeCode','NameLast','NameFirst'); any = @('BirthDate','SexCode','RegistrationState')
+                # v2.3: SexCode + RegistrationState REMOVED from any[]. Metadata IN.L1{Name} is
+                # Set[CaRequestPurposeCode, Name] Any[BirthDate] -- BirthDate is its ONLY permitted
+                # optional, so carrying Sex or State here OVER-PERMITTED fields this transaction does
+                # not define. A Name+Sex(+DOB) search routes to IR.QVC.NB/.NA and a Name+Sex+DOB+State
+                # search to NLTS.DQ -- the variants that actually define them.
+                set = @('caRequestPurposeCode','NameLast','NameFirst'); any = @('BirthDate')
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
@@ -263,13 +292,58 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'IR.QVC.S'
             state                 = 'In/Out'
         }
-        # In-state OLN (2 set)
+        # ── IR.QVC.O / IR.QVC.OS (v2.3) -- devdoc DriverLicenseQuery #6
+        # "(In/Out) OperatorLicenseNumber, [CriminalIdNumber, SocialSecurityNumber]". These are the
+        # variants that ACTUALLY permit those optionals:
+        #     IR.QVC{OperatorLicenseNumber} = Set[CaRequestPurposeCode, OperatorLicenseNumber]
+        #                                     Any[CriminalIdNumber, SocialSecurityNumber]
+        # CORRECTING MY OWN v2.2 REGRESSION: at v2.2 I added criminalIdNumber/socialSecurityNumber to
+        # ID.L1's any[] and justified it by citing IR.QVC{OperatorLicenseNumber}'s <Any> -- but ID.L1 is
+        # a DIFFERENT TRANSACTION, and metadata ID.L1{OperatorLicenseNumber} is
+        # Set[CaRequestPurposeCode, OperatorLicenseNumber] with NO <Any> AT ALL. So that change
+        # OVER-PERMITTED two fields ID.L1 does not define -- exactly the defect class I spent the day
+        # registering on other providers. I cited the right metadata and applied it to the wrong keyRef.
+        # Found by audit_requirement_fidelity, which is ADVISORY in enforce -- so the provider read
+        # ENFORCED 0 FAIL / 0 WARN with this in place. An advisory gate is still a gate.
+        # Split on the identifier because both share ID.L1's set[]: identical set[] means a
+        # discriminating condition is REQUIRED, not optional, or the first one swallows the rest.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','OperatorLicenseNumber')
+                any        = @('criminalIdNumber','socialSecurityNumber')
+                defaults   = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+                conditions = @([PSCustomObject]@{ field = @('criminalIdNumber'); operator = 'EXISTS' })
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'IR.QVC.O'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','OperatorLicenseNumber')
+                # criminalIdNumber deliberately NOT in any[]: this combo is gated
+                # `criminalIdNumber NOT_EXISTS`, so listing it too would be dead config that can never
+                # serialize (verify_build gate-XOR-companion). SECOND time I made this exact mistake on
+                # this provider in one day -- the gate caught it both times. Gate XOR companion, never both.
+                any        = @('socialSecurityNumber')
+                defaults   = @([PSCustomObject]@{ field = 'caRequestPurposeCode'; value = 'C' })
+                conditions = @(
+                    [PSCustomObject]@{ field = @('criminalIdNumber');     operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('socialSecurityNumber'); operator = 'EXISTS' }
+                )
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'IR.QVC.OS'
+            state                 = 'In/Out'
+        }
+        # In-state OLN catchall (2 set). any[] is RegistrationState ONLY.
+        # v2.3: criminalIdNumber / socialSecurityNumber REMOVED -- metadata ID.L1{OperatorLicenseNumber}
+        # has NO <Any>, so nothing beyond the OLN belongs on this transaction. A CII- or SSN-bearing OLN
+        # search now routes to IR.QVC.O / IR.QVC.OS above, the variants that define those fields.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('caRequestPurposeCode','OperatorLicenseNumber')
-                # v2.2: CII/SSN ride along per metadata IR.QVC{OperatorLicenseNumber}'s <Any>, so an
-                # OLN search that also carries them TRANSMITS them instead of dropping them silently.
-                any = @('RegistrationState','criminalIdNumber','socialSecurityNumber')
+                any = @('RegistrationState')
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'ID.L1'
