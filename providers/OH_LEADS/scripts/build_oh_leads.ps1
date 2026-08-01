@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.1'
+$Version     = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -109,7 +109,16 @@ $vehRegQuery = [PSCustomObject]@{
         # RQ.P -- OOS plate (Nlets; State present, no dealer)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('RegistrationState')
+                # v2.2: RegistrationState PROMOTED from any[] to set[]. Metadata RQ{LicensePlateNumber}
+                # is Set[State, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear] with NO
+                # <Any> at all -- State is MANDATORY. Behaviour is unchanged, because the
+                # `RegistrationState EXISTS` condition below already made it impossible for this combo
+                # to fire without a state; the promotion just states the requirement where the platform
+                # reads it instead of relying on a condition to imply it, and it clears the
+                # audit_requirement_fidelity UNDER-REQUIRED finding ("State (built any[])").
+                # The EXISTS condition is KEPT: it is what routes an in-state plate to RP instead, and
+                # removing it would let this OOS combo win in-state fills.
+                set = @('RegistrationState','LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @()
                 defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
                 conditions = @(
                     [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'EXISTS' }

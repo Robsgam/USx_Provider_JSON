@@ -1,0 +1,102 @@
+================================================================================
+REQUIREMENT-FIDELITY TRIAGE -- the 413-branch sweep, classified
+Created 2026-08-01. Read this BEFORE acting on an audit_requirement_fidelity finding.
+================================================================================
+
+WHY THIS FILE EXISTS
+  `audit_requirement_fidelity` is ADVISORY in enforce (PHASE 2s). That means a provider can read
+  ENFORCED 0 FAIL / 0 WARN while carrying real findings here -- and on 2026-08-01 CA_VENTURA_COUNTY
+  did exactly that, with an OVER-PERMIT I had introduced myself an hour earlier.
+  AN ADVISORY GATE IS STILL A GATE. Nobody was reading this one.
+
+THE FIRST FULL SWEEP (2026-08-01), all 20 providers:
+  413 branches compared / 29 UNDER-REQUIRED / 49 OVER-PERMITTED
+
+  THE MOST IMPORTANT RESULT: the SIX tenant-verified providers are 0 / 0 --
+  CA_CLETS, FL_FCIC, HI_HCJDC_OFML, NJ_NJCJIS, NY_NYSPIN_EJUSTICE, TX_TLETS.
+  Every finding sits in the 14 providers that have never been tenant-tested. The galvanization
+  held; the debt is exactly where testing has not yet reached.
+
+SEVERITY -- do not treat these as one bucket
+  UNDER-REQUIRED : the combo can fire WITHOUT a metadata-mandatory field -> the request is INVALID.
+                   Gate 6d catches it on a live log; 6c (content) and 6d's siblings 2i (attribution)
+                   CANNOT -- a MISSING REQUIREMENT is invisible to content and attribution checks.
+                   This is how CA_CLETS once shipped a committed PASS log carrying one.
+  OVER-PERMITTED : we can send a field the branch does not define. Narrower consequence, but it is
+                   ALSO what you CREATE by "fixing" a dropped-optional finding wrongly.
+
+--------------------------------------------------------------------------------
+THE FOUR CLASSES. Classify before you touch anything.
+--------------------------------------------------------------------------------
+
+CLASS 1 -- HANDLER-POPULATED / HIDDEN-FEEDER FIELD reported ABSENT.   NOT A DEFECT.
+  The field is supplied by a rule handler or a hidden feeder, not typed by the officer, so it is
+  absent from set[] by design while still serializing on the wire.
+  Seen: AZ_AZDPS x5 `BadgeNumber (ABSENT)` -- AZ's BadgeNumber is a HIDDEN field auto-populated from
+        dexStateUserId via CommsysGetDexStateUserIdRuleHandler; the combos reference the sourceField
+        `dexStateUserId` while the metadata names `BadgeNumber`.
+        TN_TIES x2 `Attention (built any[])` -- the AP #27 Attention auto-handler feeder pattern
+        (hidden InpH + any[] + defaults[] so the handler output serializes).
+        NM_NMLETS_OFML x2 `PurposeCode / Attention (ABSENT)` -- same shape, verify per provider.
+  ACTION: REGISTER, citing the handler. Do NOT promote a handler-populated field into set[]: the
+  officer cannot type it, so the combo would become unreachable from the form.
+
+CLASS 2 -- COMPOSITE `Name` COMPONENTS reported ABSENT.   TOOL GRANULARITY, NOT A DEFECT.
+  Metadata defines ONE field `Name`; the build feeds it from TWO sourceFields (NameLast + NameFirst)
+  through FormatStringRuleHandler. The tool compares set[] entries -- which are sourceFields -- against
+  the metadata reference `Name`, and sees neither.
+  Seen: CA_eSUN `VP.N` and `QGH.A` `Name (ABSENT)`; OH_LEADS `RN` `Name (ABSENT)`
+        (there the sourceFields are OwnerLastName/OwnerFirstName).
+  ACTION: REGISTER. A tool fix would be to resolve set[] entries through the QIDM attribute map to
+  their targetField before comparing -- the targetField is the wire contract, the sourceField is a
+  form fieldId. Same root as the `firearmMake -> GunMake` OVER-PERMITTED artefact.
+
+CLASS 3 -- BUILT COMBO MAPPED TO A SIBLING BRANCH IT DOES NOT IMPLEMENT.   MIS-MAPPING.
+  The tool pairs a built combo with a metadata alternative that a DIFFERENT combo implements, then
+  reports the sibling's requirements as missing.
+  Seen: OH_LEADS `BMVIMS -> built DQ.O` (DQ.O implements DQ, not BMVIMS);
+        CA_CLETS_OCATS `4K -> built '4'` and `VC -> built 'VP'`;
+        CA_VENTURA_COUNTY `IV.4 -> built 'IA.QV'` (IV.4 is a registered-unbuilt plate-type variant).
+  ACTION: confirm which alternative the built combo actually implements (match on
+  primaryFieldReference), then REGISTER naming the correct branch. A KEYREF IS NOT A VARIANT.
+
+CLASS 4 -- REAL. Fix it.
+  The firing combo's own PF-matched metadata variant requires the field, and no looser variant exists.
+  Seen and FIXED 2026-08-01:
+    OR_LEDS v2.1  DQ.N | SexCode  -- metadata DQ{Name} = Set[BirthDate, Name, SexCode], only name
+                  variant, so the combo could fire WITHOUT Sex and send an invalid request. PROMOTED.
+    OH_LEADS v2.2 RQ.P | State    -- metadata RQ{LicensePlateNumber} = Set[State, Plate, Type, Year]
+                  with NO <Any>. Behaviour was already safe (a `RegistrationState EXISTS` condition
+                  made it unable to fire without one), but the requirement now lives where the
+                  platform reads it instead of being implied by a condition. PROMOTED, gate KEPT --
+                  the EXISTS condition is what routes in-state plates to RP.
+    CA_VENTURA_COUNTY v2.3 ID.L1 | CII+SSN over-permit -- MY OWN v2.2 regression: I added those to
+                  ID.L1's any[] citing IR.QVC{OperatorLicenseNumber}'s <Any>, but ID.L1 is a DIFFERENT
+                  transaction with NO <Any> at all. Built IR.QVC.O/.OS (the variants that do permit
+                  them) and stripped ID.L1 back. Cited the right metadata, applied it to the wrong keyRef.
+    CA_VENTURA_COUNTY v2.3 IN.L1 | SexCode + State over-permit -- metadata IN.L1{Name} =
+                  Set[purpose, Name] Any[BirthDate]; BirthDate is its ONLY permitted optional.
+    CA_VENTURA_COUNTY v2.3 NLTS.DQ.N MISSING -- the out-of-state NAME path had no built combination at
+                  all, so devdoc #8's [State] fell through to IR.QVC.NB, whose variant defines no
+                  State, and the officer's State was silently dropped.
+
+--------------------------------------------------------------------------------
+ALREADY ADJUDICATED -- do not re-raise
+--------------------------------------------------------------------------------
+  MD_METERS GunQuery | ZGUN | GunMake -- a deferred primary-combo gap, and the worked example in
+    accept_divergence.ps1's own header. Metadata ZGUN = Set[GunCaliber, GunMake, GunSerialNumber]:
+    honouring it would force caliber AND make on every gun search.
+  CA_CLETS_OCATS RQ.P | LicensePlateYear -- Year sits in any[] WITH a combo default, so it always
+    serializes. State/Year are swapped versus metadata but functionally satisfied.
+  CA_CONTRA_COSTA (4 UNDER / 7 OVER) -- ON HOLD. Do not touch.
+
+--------------------------------------------------------------------------------
+REMAINING BACKLOG after 2026-08-01
+--------------------------------------------------------------------------------
+  ~24 UNDER-REQUIRED and ~46 OVER-PERMITTED still unregistered, almost all Class 1-3 artefacts on
+  never-tenant-tested providers. NONE is on a tenant-verified provider.
+  THE LEVERAGE MOVE IS A TOOL FIX, NOT 70 REGISTRATIONS: resolve each set[]/any[] entry through the
+  QIDM attribute map to its targetField before comparing, and narrow the branch match by
+  primaryFieldReference. That would collapse Classes 2 and 3 and most of the OVER-PERMITTED noise.
+  It is a shared-tool change touching all 20 providers, so it needs its own pass with a known-answer
+  test (the six 0/0 providers are the fixture -- they must STAY 0/0).

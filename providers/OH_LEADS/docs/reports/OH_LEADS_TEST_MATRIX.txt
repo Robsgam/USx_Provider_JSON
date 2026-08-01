@@ -1,4 +1,4 @@
-OH_LEADS v2.1 -- TEST MATRIX
+OH_LEADS v2.2 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-01
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -80,34 +80,34 @@ ENTITY 1: VEHICLE (19 tests -- 6 cards, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Vehicle     RQ+.P              LicensePlateNumber=TEST123, LicensePl... [    ]
+ 1  Vehicle     RQ+.P+State        RegistrationState=GA, LicensePlateNum... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P)
- 2  Vehicle     RQ+.P              + RegistrationState             [    ]
-              Expected: any[] fields present in XML output.
- 3  Vehicle     RQ+.V              VehicleIdentificationNumber=1HGCM8263... [    ]
+ 2  Vehicle     RQ+.V              VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.V)
- 4  Vehicle     RQ+.V              + RegistrationState             [    ]
-              Expected: any[] fields present in XML output.
- 5  Vehicle     RS+RS              OwnerSocialSecurityNumber=TEST   [    ]
+ 3  Vehicle     RS+RS              OwnerSocialSecurityNumber=TEST   [    ]
               Expected: VehicleRegistrationQuery fires (RS)
- 6  Vehicle     RN+RN              OwnerLastName=TEST, OwnerFirstName=TEST [    ]
+ 4  Vehicle     RN+RN              OwnerLastName=TEST, OwnerFirstName=TEST [    ]
               Expected: VehicleRegistrationQuery fires (RN)
- 7  Vehicle     RN+RN              + AddressCounty                 [    ]
+ 5  Vehicle     RN+RN              + AddressCounty                 [    ]
               Expected: any[] fields present in XML output.
- 8  Vehicle     RV+RV              VehicleIdentificationNumber=1HGCM8263... [    ]
+ 6  Vehicle     RV+RV              VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RV)
- 9  Vehicle     RP+RP              LicensePlateNumber=TEST123, LicensePl... [    ]
+ 7  Vehicle     RP+RP              LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RP)
-10  Vehicle     ATDP+ATDP          LicensePlateNumber=TEST123, LicensePl... [    ]
+ 8  Vehicle     ATDP+ATDP          LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (ATDP)
-11  Vehicle     Guardrail: ATDP>RQ.P  DealerPlateType=TEST, LicensePlateNum... [    ]
-              Expected: VehicleRegistrationQuery fires (ATDP). Plate+LicensePlateTypeCode+LicensePlateYear absent from XML.
-12  Vehicle     Guardrail: ATDP>RP  DealerPlateType=TEST, LicensePlateNum... [    ]
+ 9  Vehicle     Guardrail: ATDP>RQ.P  DealerPlateType=TEST, LicensePlateNum... [    ]
+              Expected: VehicleRegistrationQuery fires (ATDP). RegistrationState+Plate+LicensePlateTypeCode+LicensePlateYear absent from XML.
+10  Vehicle     Guardrail: RQ.P>RP  RegistrationState=GA, LicensePlateNum... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.P). Plate+LicensePlateTypeCode absent from XML.
+11  Vehicle     Guardrail: ATDP>RP  DealerPlateType=TEST, LicensePlateNum... [    ]
               Expected: VehicleRegistrationQuery fires (ATDP). Plate+LicensePlateTypeCode absent from XML.
-13  Vehicle     Guardrail: ATDP>RQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+12  Vehicle     Guardrail: ATDP>RQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (ATDP). VIN+VehicleMakeCode+vehicleYear absent from XML.
-14  Vehicle     Guardrail: ATDP>RV  LicensePlateNumber=TEST123, VehicleId... [    ]
+13  Vehicle     Guardrail: ATDP>RV  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (ATDP). VIN absent from XML.
+14  Vehicle     Guardrail: RQ.P>RV  RegistrationState=GA, VehicleIdentifi... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ.P). VIN absent from XML.
 15  Vehicle     Guardrail: ATDP>RS  LicensePlateNumber=TEST123, OwnerSoci... [    ]
               Expected: VehicleRegistrationQuery fires (ATDP). OwnerSocialSecurityNumber absent from XML.
 16  Vehicle     Guardrail: RQ.V>RS  VehicleIdentificationNumber=1HGCM8263... [    ]
@@ -209,11 +209,11 @@ ENTITY 5: ARTICLE (5 tests -- 1 card, 2 combos)
 TOTAL: 52 tests
 
 COMBO COVERAGE (21/21):
-  VehicleRegistrationQuery: 7/7 -- T1(RQ+.P), T3(RQ+.V), T5(RS+RS), T6(RN+RN), T8(RV+RV), T9(RP+RP), T10(ATDP+ATDP)
+  VehicleRegistrationQuery: 7/7 -- T1(RQ+.P), T2(RQ+.V), T3(RS+RS), T4(RN+RN), T6(RV+RV), T7(RP+RP), T8(ATDP+ATDP)
   DriverLicenseQuery: 5/5 -- T20(DQ+.N), T22(DQ+.O), T24(QW+A), T25(DN+DN), T26(DL+DL)
   DriverHistoryQuery: 2/2 -- T27(KQ+.O), T29(KQ+.N)
   GunQuery: 1/1 -- T46(serialNumber)
   ArticleSingleQuery: 2/2 -- T48(.S), T50(.N)
   BoatQuery: 4/4 -- T36(BQ+.R), T38(BQ+.H), T40(QB+.R), T42(QB+.H)
 
-IMPORT FILE: OH_LEADS_v2.1.json
+IMPORT FILE: OH_LEADS_v2.2.json
