@@ -58,6 +58,20 @@ TX v4.18 (89), NY v4.19 (64), NJ v4.15 (36), FL v7.14 (109), HI v4.14 (46), CA_C
 OH_LEADS, NM, OR_LEDS, IL. **5 unaudited**: CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,
 TX_TLETS_CCH, and CA_CONTRA_COSTA (on hold).
 
+## ⚖️ OPEN PORTFOLIO QUESTION -- Rob's call, do not settle unilaterally
+
+**NCIC-number-keyed combos: built on TX/FL, registered-as-unbuilt on OH_LEADS.** All three devdocs
+list them as Basic-supported (TX 3 items, FL 2, OH_LEADS 3). TX_TLETS and FL_FCIC BUILD
+`QGNCICNumber` / `QANCICNumber` / `QBNCICNumber`; OH_LEADS does not, and on 2026-07-31 that was
+registered as acceptable citing its devdoc's "Data-Mined Transactions: NCIC (QA, QB, QG, QV, QW)"
+plus CLAUDE.md's existing "2 NCIC shadows dropped" note for that provider. Internally consistent for
+OH_LEADS, INCONSISTENT across the portfolio. Either:
+  (a) NCIC-keyed queries are worth building -> OH_LEADS has a real 2-combo gap, un-register it; or
+  (b) they are data-mined and should not be built -> TX and FL each carry 3 combos of redundant
+      surface, on TENANT-VERIFIED providers (removing them would bump both and archive 89 + 109 logs).
+BUILD_RULES already says the data-mined list is NOT build scope in either direction until the platform
+confirms semantics -- which is exactly why this needs deciding rather than inferring.
+
 ## NEXT PHYSICAL ACTION
 
 1. **Finish `tools/audit_defect_classes.ps1`** (EXPERIMENTAL -- read its header banner). It has failed
