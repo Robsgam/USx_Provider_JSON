@@ -1251,6 +1251,29 @@ See also:
       - CAD dispatch cannot supply a destination -> the family never auto-fires
         from CAD. This is correct, not a gap.
 
+  A PREFILL ON A UNIVERSALLY-REQUIRED FIELD IS LOAD-BEARING, NOT MERELY HARMLESS
+  (measured 2026-07-31). BUILD_RULES 24 forbids prefilling a ROUTING field -- one that
+  discriminates BETWEEN combos. The mirror case deserves equal weight: when a field is
+  metadata-mandatory in EVERY combination of a query, prefilling it cannot shadow anything
+  (there is no sibling to starve), and REMOVING it can break every path at once.
+    CA_CLETS prefills purposeCode='C'. It is in every CA combination's set[], and the CA
+    devdoc never lists it -- the devdoc treats it as a provider-wide precondition rather
+    than a per-combination field. Clearing that one initialValue on an otherwise untouched
+    CA_CLETS v2.23 moved audit_devdoc_optionals from 0 FAIL to 87 FAIL: without a default,
+    no devdoc-legal fill can satisfy any combination, because the fill the devdoc describes
+    does not include purposeCode.
+    Contrast CA_eSUN, which deliberately leaves caRequestPurposeCode officer-selectable with
+    no initialValue, and consequently reports NO-COMBO-FIRES on its devdoc fills by design
+    (registered, not fixed -- changing it is an officer-facing product decision).
+  WHY THIS MATTERS BEYOND CA: the reverse-propagation flag [FLAG:FORM-REACHABLE-COMBOS]
+  named purposeCode='C' as the cause of 12 dead combos on BOTH CA_CLETS and CA_CONTRA_COSTA.
+  It was wrong twice -- those 12 IV.4x/IL.A1 variants are structurally shadowed by IA.QV's
+  strict-subset set[], with or without the prefill. Acting on that flag would have recovered
+  NOTHING and broken 87 devdoc-legal officer fills on a tenant-verified provider.
+  RULE: before removing any prefill, check whether the field is in EVERY combo's set[] for
+  that query. If it is, the prefill is protecting reachability -- measure
+  audit_devdoc_optionals before and after, and do not remove it on the strength of a flag.
+
   DEVDOC "Data-Mined Transactions" SECTION (PROVISIONAL, pending platform
   confirmation 2026-06): the page-1 list (FL: "NCIC (QA, QB, QG, QV, QW) and DMV
   (Person and Vehicle)") is believed to enumerate CommSys auto-sent SECONDARY
