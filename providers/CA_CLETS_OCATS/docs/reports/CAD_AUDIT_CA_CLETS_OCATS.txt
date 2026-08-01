@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.0.json
-  Generated: 2026-07-31 21:47
+  Source: CA_CLETS_OCATS_v2.1.json
+  Generated: 2026-08-01 12:09
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_CLETS_OCATS_v2.0
+ CAD AUDIT: CA_CLETS_OCATS_v2.1
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -31,6 +31,10 @@ CAD AUDIT
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] userId: in QIF, not in CAD list (provider-specific)
+    [INFO] authorization: in QIF, not in CAD list (provider-specific)
+    [INFO] exactSearchIndicator: in QIF, not in CAD list (provider-specific)
+    [INFO] pageNumber: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
@@ -59,6 +63,7 @@ CAD AUDIT
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] caRequestPurposeCode: in QIF, not in CAD list (provider-specific)
+    [INFO] userId: in QIF, not in CAD list (provider-specific)
   Firearm:
     [PASS] serialNumber: in QIF and CAD list
     [PASS] firearmMake: in QIF and CAD list
@@ -136,11 +141,13 @@ CAD AUDIT
     [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery': all sourceFields match QIF fieldIds (case-sensitive)
 
 --- CHECK 5: CAD Defaults Coverage ---
+    [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo AWVEHQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo RQ.P -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo RQ.V -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo VP -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 4V -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 4 -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo OCNAMQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo DQ.N -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo DQ.O -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo L1.N -- defaults cover all initialValue any[] fields
@@ -160,6 +167,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 64 PASS / 0 FAIL / 0 WARN / 66 INFO
+Total: 66 PASS / 0 FAIL / 0 WARN / 71 INFO
 
 

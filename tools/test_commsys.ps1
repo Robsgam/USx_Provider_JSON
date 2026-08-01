@@ -121,6 +121,7 @@ $testData["Person"] = @{
     sexCodeCCH                      = "M"
     socialSecurityNumberCCH         = "123456789"
     stateIdNumberCCH                = "TX1234567"
+    userId                          = "01"          # CA_CLETS_OCATS OCNAMQ (devdoc DL #1)
 }
 $testData["Vehicle"] = @{
     caRequestPurposeCode        = "C"
@@ -169,6 +170,13 @@ $testData["Vehicle"] = @{
     VehNameLast                 = "Doe"        # CA_eSUN entity-prefixed fieldIds
     VehNameFirst                = "John"
     VehBirthDate                = "1990-01-15"
+    # CA_CLETS_OCATS AWVEHQ (devdoc VehicleRegistrationQuery #2). userId is a 2-char OCATS
+    # terminal/user code per that XML's <Field maxLength>, not a login name. Added with the combo --
+    # a set[] field with no test value here is a combo the simulator can never drive.
+    userId                      = "01"
+    authorization               = "AU"
+    exactSearchIndicator        = "Y"
+    pageNumber                  = "01"
 }
 $testData["Firearm"] = @{
     caRequestPurposeCode      = "C"

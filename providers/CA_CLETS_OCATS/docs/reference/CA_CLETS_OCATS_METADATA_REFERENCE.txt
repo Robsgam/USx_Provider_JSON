@@ -1,7 +1,7 @@
-CA_CLETS_OCATS METADATA REFERENCE
+﻿CA_CLETS_OCATS METADATA REFERENCE
 ==================================
-Generated: 2026-07-29
-Source: CA_CLETS_OCATS.xml (metadata) + CA_CLETS_OCATS_v2.0.json
+Generated: 2026-08-01
+Source: CA_CLETS_OCATS.xml (metadata) + CA_CLETS_OCATS_v2.1.json
 Metadata: 110 total transactions, 5 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -81,12 +81,12 @@ METADATA COMBINATIONS (5 total):
   DQ            Name                    CaRequestPurposeCode, Name, BirthDate, SexCode         State
   DQ            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            State
 
-BUILD COVERAGE (4 of 5 built):
+BUILD COVERAGE (5 of 5 built):
+  BUILT   OCNAMQ         set[caRequestPurposeCode, userId, SexCode, BirthDate, NameLast, NameFirst]
   BUILT   DQ.N           set[caRequestPurposeCode, NameLast, NameFirst, BirthDate, SexCode, RegistrationState]
   BUILT   DQ.O           set[caRequestPurposeCode, OperatorLicenseNumber, RegistrationState]
   BUILT   L1.N           set[caRequestPurposeCode, NameLast, NameFirst]
   BUILT   L1.O           set[caRequestPurposeCode, OperatorLicenseNumber]
-  UNBUILT OCNAMQ         Name
 
 ================================================================================
 4. GunQuery (version 18)
@@ -142,14 +142,14 @@ METADATA COMBINATIONS (10 total):
   VP            Name                    CaRequestPurposeCode, Name                             --
   VC            Name                    CaRequestPurposeCode, Name, BusinessIndicator          --
 
-BUILD COVERAGE (5 of 10 built):
+BUILD COVERAGE (6 of 10 built):
+  BUILT   AWVEHQ         set[caRequestPurposeCode, LicensePlateNumber, userId]
   BUILT   RQ.P           set[caRequestPurposeCode, LicensePlateNumber, RegistrationState]
   BUILT   RQ.V           set[caRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
   BUILT   VP             set[caRequestPurposeCode, NameLast, NameFirst]
   BUILT   4V             set[caRequestPurposeCode, VehicleIdentificationNumber]
   BUILT   4              set[caRequestPurposeCode, LicensePlateNumber]
   UNBUILT 4K             LicensePlateNumber
-  UNBUILT AWVEHQ         LicensePlateNumber
   UNBUILT QV             LicensePlateNumber
   UNBUILT QV             VehicleIdentificationNumber
   UNBUILT VC             Name
@@ -162,19 +162,17 @@ BUILD SUMMARY
   ----------------------------------  --------  -----  ----  --------
   ArticleSingleQuery                         2      2     0  100% (COMPLETE)
   BoatQuery                                  7      5     2  71%
-  DriverLicenseQuery                         5      4     1  80%
+  DriverLicenseQuery                         5      5     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                  10      5     5  50%
+  VehicleRegistrationQuery                  10      6     4  60%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   25     17     8  68%
+  TOTAL                                   25     19     6  76%
 
 ================================================================================
-UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (4 combos in metadata, not in JSON)
 ================================================================================
 
-  OCNAMQ         Name                     (DriverLicenseQuery)
   4K             LicensePlateNumber       (VehicleRegistrationQuery)
-  AWVEHQ         LicensePlateNumber       (VehicleRegistrationQuery)
   QV             LicensePlateNumber       (VehicleRegistrationQuery)
   QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
   VC             Name                     (VehicleRegistrationQuery)

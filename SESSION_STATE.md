@@ -52,15 +52,15 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## STATE
 
-**7 providers ENFORCED 0 FAIL / 0 WARN.** Six are also tenant-tested (433 logs, four log gates
-green): TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23. The 7th,
-**CA_VENTURA_COUNTY v2.2, is ENFORCED but NEVER tenant-tested** -- it owes a full 5-entity sweep
-from T1.
+**8 providers ENFORCED 0 FAIL / 0 WARN.** Six are also tenant-tested (433 logs, four log gates
+green): TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23. Two are ENFORCED but
+**NEVER tenant-tested** -- CA_VENTURA_COUNTY v2.2 and CA_CLETS_OCATS v2.1 -- each owes a full
+5-entity sweep from T1. ENFORCED is not "done"; it means the build matches its sources.
 8 PHASE-1 audited and BLOCKED as expected (never tested): AZ, LA_LEMS, MD_METERS, TN_TIES, OH_LEADS,
-NM, OR_LEDS, IL. **4 unaudited**: CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO, TX_TLETS_CCH, CA_CONTRA_COSTA
-(on hold).
+NM, OR_LEDS, IL. **2 unaudited**: CA_SAN_LUIS_OBISPO, TX_TLETS_CCH. Plus CA_CONTRA_COSTA (on hold).
 
-**Portfolio devdoc-UNBUILT: 4** (was 13). **audit_defect_classes C1: 0 portfolio-wide.**
+**Portfolio devdoc-UNBUILT: 2** (was 13) -- both are LA_LEMS's deferred DH-`Attention` items.
+**audit_defect_classes C1: 0 portfolio-wide.** Simulator-undriveable combos: 0 (was 36).
 
 ## OPEN PORTFOLIO QUESTION -- Rob's call, do not settle unilaterally
 
@@ -77,12 +77,7 @@ prefill that took CA_VENTURA_COUNTY from 8 FAIL to 0 -- but confirm against CA_e
 
 ## NEXT PHYSICAL ACTION
 
-1. **CA_CLETS_OCATS -- 2 devdoc-UNBUILT `UserId` items.** Its metadata DOES define `UserId` (39
-   defs, 22 combos), so unlike AZ these are buildable. BUT every UserId combo is an OCATS-specific
-   transaction (OCNAMQ/CHKINQ/AJNAMQ/AWNAMQ/AWVEHQ -- warrants, juvenile, LARS) already recorded as
-   "available-not-built". **Settle SCOPE first**: its devdoc has no locatable "Basic Queries
-   Supported" header and ~100 combination blocks in a different format. Out-of-Basic metadata combos
-   are NEVER a gap, so this may be a scope registration rather than a build.
+1. **AZ_AZDPS full provider pass** -- see item 2; it is now the largest single piece of owed work.
 2. **AZ_AZDPS full provider pass**: 4 metadata divergence FAILs + devdoc-optionals, including a REAL
    transmission defect -- `BoatQuery #1 +[RegistrationNumber]` fires ACQBH but RegistrationNumber is
    in no matching combo's `set[]`/`any[]`, so the value is SILENTLY NOT TRANSMITTED.

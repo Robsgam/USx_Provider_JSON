@@ -6,7 +6,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_ocats_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.0'
+$Version  = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -55,8 +55,41 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 30; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
         [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('VehicleMakeCode');             targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
+        # ── v2.1: AWVEHQ support (devdoc VehicleRegistrationQuery #2). Sizes from this XML's own
+        # <Field maxLength>: UserId 2, ExactSearchIndicator 1, Authorization 2, PageNumber 2,
+        # LicensePlateStateCode 2. All five are metadata-defined for this transaction, and the devdoc
+        # lists the latter four as optionals on #2 -- so they are carried rather than dropped, or a
+        # devdoc-legal fill would silently fail to transmit them.
+        [PSCustomObject]@{ name = 'UserId';                size = 2; sourceField = @('userId');                targetField = 'UserId' }
+        [PSCustomObject]@{ name = 'ExactSearchIndicator';  size = 1; sourceField = @('exactSearchIndicator');  targetField = 'ExactSearchIndicator' }
+        [PSCustomObject]@{ name = 'Authorization';         size = 2; sourceField = @('authorization');         targetField = 'Authorization' }
+        [PSCustomObject]@{ name = 'PageNumber';            size = 2; sourceField = @('pageNumber');            targetField = 'PageNumber' }
+        # LicensePlateStateCode is a DIFFERENT metadata field from State, but the officer input is the
+        # same one -- so it reuses the existing RegistrationState control rather than adding a second
+        # state dropdown. Two attributes may share a sourceField; only the targetField differs.
+        [PSCustomObject]@{ name = 'LicensePlateStateCode'; size = 2; sourceField = @('RegistrationState');     targetField = 'LicensePlateStateCode'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
+        # ── AWVEHQ (v2.1) -- devdoc "Basic Query Transactions" VehicleRegistrationQuery #2:
+        #      "2. (In) LicensePlateNumber, UserId, [Authorization, ExactSearchIndicator, ...]"
+        #    metadata (Transaction=VehicleRegistrationQuery, keyRef AWVEHQ):
+        #      Set[CaRequestPurposeCode, LicensePlateNumber, UserId]
+        #      Any[ExactSearchIndicator, Authorization, PageNumber, LicensePlateStateCode,
+        #          VehicleYear, VehicleMakeCode]
+        #    UserId was wired nowhere in this query, so this documented path could not run.
+        #    Same BUILD_RULES 13 trap as OCNAMQ: keyRef AWVEHQ ALSO exists under
+        #    Transaction=OcatsWarrantQueryAWVEHQ (not built). Scoped by (query, keyRef).
+        #    Ordered FIRST -- 3 set[] fields, and the plate-only combos below are strict subsets of
+        #    it, so an ungated subset ahead of it would steal every UserId fill.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('caRequestPurposeCode','LicensePlateNumber','userId')
+                any = @('exactSearchIndicator','authorization','pageNumber','RegistrationState','vehicleYear','VehicleMakeCode')
+            }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = 'AWVEHQ'
+            state                 = 'In/Out'
+        }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','RegistrationState'); any = @('LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
             primaryFieldReference = 'LicensePlateNumber'
@@ -117,8 +150,40 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        # v2.1: UserId, for the OCNAMQ combination below. maxLength 2 per this XML's own
+        # <Field maxLength> -- it is a short OCATS terminal/user code, NOT a person's name or login.
+        [PSCustomObject]@{ name = 'UserId'; size = 2; sourceField = @('userId'); targetField = 'UserId' }
     )
     combinations = @(
+        # ── OCNAMQ (v2.1) -- devdoc "Basic Query Transactions" DriverLicenseQuery #1:
+        #      "1. (In) BirthDate, Name, SexCode, UserId"   -- all four UNBRACKETED = MANDATORY
+        #    metadata (Transaction=DriverLicenseQuery, keyRef OCNAMQ):
+        #      Set[CaRequestPurposeCode, UserId, SexCode, BirthDate, Name]  -- no <Any> at all
+        #    Both authorities agree exactly, so this is a straight build. It was UNBUILT: UserId was
+        #    wired nowhere in this query, so a documented in-state OCATS name search could not run.
+        #
+        #    SCOPE NOTE, because this looked out-of-scope at first glance: this devdoc uses the
+        #    heading "Basic Query Transactions:" rather than "Basic Queries Supported", and UserId
+        #    ALSO appears on ~20 OCATS-specific transactions (warrants / juvenile / LARS) that are
+        #    deliberately not built. The deciding fact is that the SAME keyRef exists under TWO
+        #    different <Transaction> parents -- OCNAMQ under DriverLicenseQuery (Basic, this one) and
+        #    OCNAMQ under OcatsWarrantQueryOCNAMQ (not built). Resolving it by bare keyRef would have
+        #    mapped this to the warrant query and dismissed a real Basic gap: BUILD_RULES 13, key a
+        #    combo lookup by (query, keyRef), never by keyRef alone.
+        #
+        #    Ordered FIRST: 6 set[] fields make it the most specific combination in this QIDM, and it
+        #    is gated OLN NOT_EXISTS for identifier priority. DQ.N (also 6) requires State while this
+        #    requires UserId, so the two are disjoint rather than competing.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('caRequestPurposeCode','userId','SexCode','BirthDate','NameLast','NameFirst')
+                any        = @()
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'OCNAMQ'
+            state                 = 'In/Out'
+        }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst','BirthDate','SexCode','RegistrationState'); any = @(); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
             primaryFieldReference = 'Name'
@@ -309,6 +374,17 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
                 @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' }
             )}
+            # v2.1: AWVEHQ (devdoc VehicleRegistrationQuery #2) fields. UserId is MANDATORY for that
+            # combination -- entering it is what routes a plate search to AWVEHQ instead of the plain
+            # plate combos. NO initialValue: it is a set[] routing field, and a prefill would send
+            # EVERY plate search to AWVEHQ and permanently hide 4/RQ.P (BUILD_RULES 24).
+            # The other three are devdoc-listed optionals on #2 (OCATS paging/authorization controls).
+            @{ id = 'ROW_VEH_OPT_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'UserId_Input';               node = Inp 'userId'               'OCATS User ID' '2' 'ROW_VEH_OPT_2' }
+                @{ id = 'Authorization_Input';        node = Inp 'authorization'        'Authorization (optional)' '2' 'ROW_VEH_OPT_2' }
+                @{ id = 'ExactSearchIndicator_Input'; node = Inp 'exactSearchIndicator' 'Exact Search (optional)'  '1' 'ROW_VEH_OPT_2' }
+                @{ id = 'PageNumber_Input';           node = Inp 'pageNumber'           'Page (optional)'          '2' 'ROW_VEH_OPT_2' }
+            )}
         )
     }
     @{
@@ -372,6 +448,13 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
                 @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' }
+            )}
+            # v2.1: UserId for OCNAMQ (devdoc DriverLicenseQuery #1 "BirthDate, Name, SexCode,
+            # UserId" -- all mandatory). Entering it routes an in-state name search to OCNAMQ instead
+            # of the looser L1.N/DQ.N catchalls. NO initialValue -- set[] routing field, and a prefill
+            # would hide every other name path (BUILD_RULES 24).
+            @{ id = 'ROW_PER_OPT_2'; cols = @('4'); fields = @(
+                @{ id = 'UserId_Input'; node = Inp 'userId' 'OCATS User ID' '2' 'ROW_PER_OPT_2' }
             )}
         )
     }

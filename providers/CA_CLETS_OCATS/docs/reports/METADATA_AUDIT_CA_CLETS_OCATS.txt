@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.0.json
-  Generated: 2026-07-31 21:47
+  Source: CA_CLETS_OCATS_v2.1.json
+  Generated: 2026-08-01 12:09
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-07-31 21:47
+ Generated: 2026-08-01 12:09
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_CLETS_OCATS
 ============================================================
   XML: CA_CLETS_OCATS.xml
-  JSON: CA_CLETS_OCATS_v2.0.json
+  JSON: CA_CLETS_OCATS_v2.1.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -25,9 +25,11 @@ METADATA AUDIT
   [PASS] VehicleRegistrationQuery: in XML and JSON
 
 --- CHECK 2: KeyReference Validation ---
+  [PASS] AWVEHQ: exists in XML VehicleRegistrationQuery
   [PASS] VP: exists in XML VehicleRegistrationQuery
   [PASS] 4V: exists in XML VehicleRegistrationQuery
   [PASS] 4: exists in XML VehicleRegistrationQuery
+  [PASS] OCNAMQ: exists in XML DriverLicenseQuery
   [PASS] QGB: exists in XML GunQuery
   [PASS] 4B: exists in XML BoatQuery
 
@@ -56,6 +58,7 @@ METADATA AUDIT
   [PASS]   OperatorLicenseNumber: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
+  [PASS]   UserId: in XML and QIDM
   DriverNameAddressQuery: (not built in JSON -- see CHECK 1)
   GunFCNQuery: (not built in JSON -- see CHECK 1)
   GunNameQuery: (not built in JSON -- see CHECK 1)
@@ -71,12 +74,17 @@ METADATA AUDIT
   OcatsProbationSearchSeizureQuery: (not built in JSON -- see CHECK 1)
   VehicleFCNQuery: (not built in JSON -- see CHECK 1)
   VehicleRegistrationQuery:
+  [PASS]   Authorization: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
+  [PASS]   ExactSearchIndicator: in XML and QIDM
   [PASS]   LicensePlateNumber: in XML and QIDM
+  [PASS]   LicensePlateStateCode: in XML and QIDM
   [PASS]   LicensePlateTypeCode: in XML and QIDM
   [PASS]   LicensePlateYear: in XML and QIDM
   [PASS]   Name: in XML and QIDM
+  [PASS]   PageNumber: in XML and QIDM
   [PASS]   State: in XML and QIDM
+  [PASS]   UserId: in XML and QIDM
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
   [PASS]   VehicleMakeCode: in XML and QIDM
   [PASS]   VehicleYear: in XML and QIDM
@@ -119,6 +127,11 @@ METADATA AUDIT
   [PASS]   keyRef L1: any field 'BirthDate' covered by L1.N,L1.O
   [PASS]   keyRef L1: set field 'CaRequestPurposeCode' covered by L1.N,L1.O
   [PASS]   keyRef L1: set field 'OperatorLicenseNumber' covered by L1.N,L1.O
+  [PASS]   keyRef OCNAMQ: set field 'CaRequestPurposeCode' present
+  [PASS]   keyRef OCNAMQ: set field 'UserId' present
+  [PASS]   keyRef OCNAMQ: set field 'SexCode' present
+  [PASS]   keyRef OCNAMQ: set field 'BirthDate' present
+  [PASS]   keyRef OCNAMQ: set field 'Name' present
   [PASS]   keyRef DQ: set field 'CaRequestPurposeCode' covered by DQ.N,DQ.O
   [PASS]   keyRef DQ: set field 'Name' covered by DQ.N,DQ.O
   [PASS]   keyRef DQ: set field 'BirthDate' covered by DQ.N,DQ.O
@@ -138,14 +151,21 @@ METADATA AUDIT
   [PASS]   keyRef 4: set field 'LicensePlateNumber' present
   [PASS]   keyRef 4V: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef 4V: set field 'VehicleIdentificationNumber' present
+  [PASS]   keyRef AWVEHQ: set field 'CaRequestPurposeCode' present
+  [PASS]   keyRef AWVEHQ: set field 'LicensePlateNumber' present
+  [PASS]   keyRef AWVEHQ: set field 'UserId' present
+  [PASS]   keyRef AWVEHQ: any field 'ExactSearchIndicator' present
+  [PASS]   keyRef AWVEHQ: any field 'Authorization' present
+  [PASS]   keyRef AWVEHQ: any field 'PageNumber' present
+  [PASS]   keyRef AWVEHQ: any field 'LicensePlateStateCode' present
+  [PASS]   keyRef AWVEHQ: any field 'VehicleYear' present
+  [PASS]   keyRef AWVEHQ: any field 'VehicleMakeCode' present
   [PASS]   keyRef RQ: set field 'CaRequestPurposeCode' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: set field 'LicensePlateNumber' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: set field 'LicensePlateYear' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: any field 'State' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: any field 'LicensePlateTypeCode' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: set field 'CaRequestPurposeCode' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: set field 'VehicleIdentificationNumber' covered by RQ.P,RQ.V
-  [PASS]   keyRef RQ: any field 'State' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: any field 'VehicleMakeCode' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: any field 'VehicleYear' covered by RQ.P,RQ.V
   [PASS]   keyRef VP: set field 'CaRequestPurposeCode' present
@@ -196,10 +216,15 @@ METADATA AUDIT
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
+  [PASS] userId: maxLength 2 matches XML (UserId)
   [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] caRequestPurposeCode: maxLength 1 matches XML (CaRequestPurposeCode)
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] VehicleIdentificationNumber: maxLength 30 matches XML (VehicleIdentificationNumber)
+  [PASS] userId: maxLength 2 matches XML (UserId)
+  [PASS] exactSearchIndicator: maxLength 1 matches XML (ExactSearchIndicator)
+  [WARN] authorization: QIF maxLength 2 > XML maxLength 1 (Authorization) -- server may reject
+  [PASS] pageNumber: maxLength 2 matches XML (PageNumber)
   [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
   [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
 
@@ -207,6 +232,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 128 PASS / 0 FAIL / 0 WARN
+Total: 152 PASS / 0 FAIL / 1 WARN
 ============================================================
 

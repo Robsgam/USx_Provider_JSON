@@ -6,6 +6,12 @@
 | v1.0 MC | 2026-05-07 | CA_CLETS_OCATS_MC.json | Multi-card layout; 63P/0F/0W/2LIM |
 
 
+
+## v2.1 (2026-08-01)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_OCATS_v2.1.json | v2.1 | Current | 64P/0F/0W/0LIM. |
 ## v2.0 (2026-07-23)
 
 | File | Version | Status | Notes |
