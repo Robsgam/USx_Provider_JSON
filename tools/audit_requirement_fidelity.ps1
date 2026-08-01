@@ -110,7 +110,16 @@ function Test-Has([string[]]$pool, [string]$want) {
 # OVER-PERMITTED only; a form-only field can still be legitimately metadata-mandatory somewhere.
 $formOnly = @('imageindicator', 'registrationstate', 'attention', 'purposecode', 'requestor',
               'emailaddress', 'reasoncode', 'relatedhitsearchindicator', 'randomrequest',
-              'dexstateuserid', 'messagekey', 'messagecontinuekeycode')
+              'dexstateuserid', 'messagekey', 'messagecontinuekeycode',
+              # TARGETFIELD spellings. Since set[]/any[] are now resolved through the QIDM attribute
+              # map before comparison, this whitelist must be expressed in the SAME space or it stops
+              # matching. 'dexStateUserId' is a sourceField whose targetField is 'BadgeNumber', so
+              # after the resolution change AZ_AZDPS reported 5 NEW false OVER-PERMITTED rows
+              # (BadgeNumber on DQ/DQN/DQSS/BQ/BQH) purely because the whitelist was still written in
+              # sourceField terms. BadgeNumber is handler-populated (CommsysGetDexStateUserIdRuleHandler)
+              # and never officer-typed, which is exactly what this whitelist is for.
+              # Both spellings are kept: a provider may reference either name directly.
+              'badgenumber')
 # IDENTIFIER fields -- the thing the officer is actually searching BY. These must dominate the
 # metadata-alternative -> built-combo pairing: a plate alternative must never be matched to a VIN
 # combo just because both happen to share State and ImageIndicator. Getting this wrong is what
@@ -296,10 +305,41 @@ foreach ($d in $dirs) {
             if ("$($c.provider)" -eq 'RMS' -or "$($c.name)" -match '^RMS ') { continue }
             $q = "$($c.name)" -replace "^$([regex]::Escape($d.Name))_", ''
             if (-not $built.ContainsKey($q)) { $built[$q] = @() }
+
+            # ── sourceField -> targetField map for THIS QIDM ───────────────────────────────────
+            # A combination's set[]/any[] hold SOURCEFIELDS (form fieldIds). The metadata Requirements
+            # hold FIELD REFERENCES, which correspond to the QIDM attribute's TARGETFIELD -- that is
+            # the wire contract; the sourceField is just what the control is called on the form.
+            # Comparing sourceFields to metadata references directly is why this tool needed a
+            # hand-maintained $alias list and still produced false findings whenever a provider named
+            # a control anything unexpected:
+            #   CA_eSUN   VP.N  sourceFields VehNameLast/VehNameFirst -> targetField 'Name'
+            #   OH_LEADS  RN    sourceFields OwnerLastName/OwnerFirstName -> targetField 'Name'
+            #                   and OwnerSocialSecurityNumber -> 'SocialSecurityNumber'
+            #   several   QGB   sourceField  firearmMake -> targetField 'GunMake'
+            # all read as ABSENT/OVER-PERMITTED against metadata that plainly defines them. The
+            # $nameParts composite test only knew the literal nameLast/nameFirst spellings, so an
+            # entity-prefixed or word-reordered variant slipped past it.
+            # Translating through the attribute map first makes those disappear WITHOUT a whitelist,
+            # and it is strictly more faithful: it compares what actually goes on the wire.
+            $s2t = @{}
+            foreach ($at in @($c.attributes)) {
+                $tf = "$($at.targetField)"; if (-not $tf) { continue }
+                foreach ($sf in @($at.sourceField)) {
+                    if ("$sf") { $s2t[(Canon $sf)] = $tf }
+                }
+            }
+            function Resolve-ToTarget([string]$f) {
+                if (-not $f) { return $f }
+                $k = Canon $f
+                if ($s2t.ContainsKey($k)) { return $s2t[$k] }
+                return $f      # unmapped -> leave as-is; Canon/alias still apply downstream
+            }
+
             foreach ($cm in $c.combinations) {
                 $built[$q] += [pscustomobject]@{ KeyRef = "$($cm.keyReference)"
-                                                 Set = @($cm.requirements.set    | Where-Object { $_ })
-                                                 Any = @($cm.requirements.any    | Where-Object { $_ }) }
+                                                 Set = @($cm.requirements.set | Where-Object { $_ } | ForEach-Object { Resolve-ToTarget $_ })
+                                                 Any = @($cm.requirements.any | Where-Object { $_ } | ForEach-Object { Resolve-ToTarget $_ }) }
             }
         }
     }

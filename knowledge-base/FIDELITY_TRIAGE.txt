@@ -91,12 +91,44 @@ ALREADY ADJUDICATED -- do not re-raise
   CA_CONTRA_COSTA (4 UNDER / 7 OVER) -- ON HOLD. Do not touch.
 
 --------------------------------------------------------------------------------
-REMAINING BACKLOG after 2026-08-01
+THE TOOL FIX -- DONE 2026-08-01. Classes 1 and 2 largely collapsed.
 --------------------------------------------------------------------------------
-  ~24 UNDER-REQUIRED and ~46 OVER-PERMITTED still unregistered, almost all Class 1-3 artefacts on
-  never-tenant-tested providers. NONE is on a tenant-verified provider.
-  THE LEVERAGE MOVE IS A TOOL FIX, NOT 70 REGISTRATIONS: resolve each set[]/any[] entry through the
-  QIDM attribute map to its targetField before comparing, and narrow the branch match by
-  primaryFieldReference. That would collapse Classes 2 and 3 and most of the OVER-PERMITTED noise.
-  It is a shared-tool change touching all 20 providers, so it needs its own pass with a known-answer
-  test (the six 0/0 providers are the fixture -- they must STAY 0/0).
+  A combination's set[]/any[] hold SOURCEFIELDS (form fieldIds); the metadata Requirements hold field
+  references, which correspond to the QIDM attribute's TARGETFIELD. The targetField is the wire
+  contract; the sourceField is only what the control is called on the form. The tool compared
+  sourceFields to metadata references directly, which is why it needed a hand-maintained $alias list
+  and STILL produced false findings whenever a provider named a control unexpectedly:
+      CA_eSUN  VP.N   VehNameLast / VehNameFirst          -> targetField 'Name'
+      OH_LEADS RN     OwnerLastName / OwnerFirstName      -> targetField 'Name'
+               RS     OwnerSocialSecurityNumber           -> targetField 'SocialSecurityNumber'
+      several  QGB    firearmMake                         -> targetField 'GunMake'
+  All read as ABSENT or OVER-PERMITTED against metadata that plainly defines them. The $nameParts
+  composite test only knew the literal nameLast/nameFirst spellings, so entity-prefixed and
+  word-reordered variants slipped past it.
+  FIX: resolve every set[]/any[] entry through the QIDM attribute map before comparing. No whitelist,
+  and strictly more faithful -- it compares what actually goes on the wire.
+
+  MEASURED, with the six 0/0 providers as the fixture:
+      before   413 branches / 29 UNDER / 49 OVER
+      after    413 branches / 15 UNDER / 43 OVER      FIXTURE INTACT, branches UNCHANGED
+  Branch count unchanged is the load-bearing check: a "fix" that lowers coverage looks identical to a
+  clean run (usx-build Step 3, third registry trap). Fully cleared: AZ_AZDPS (5 UNDER -> 0), CA_eSUN
+  (3 -> 0), MD_METERS, IL_LEADS_OFML, LA_LEMS, CA_SAN_LUIS_OBISPO.
+
+  ONE SELF-INFLICTED REGRESSION, CAUGHT BY THE SAME SWEEP: the $formOnly whitelist was written in
+  SOURCEFIELD spellings ('dexstateuserid'), so once comparison moved to targetField space it stopped
+  matching and AZ_AZDPS gained 5 FALSE OVER-PERMITTED rows (BadgeNumber on DQ/DQN/DQSS/BQ/BQH).
+  A whitelist must live in the same namespace as the comparison. Added the targetField spelling.
+
+--------------------------------------------------------------------------------
+REMAINING BACKLOG
+--------------------------------------------------------------------------------
+  15 UNDER-REQUIRED / 43 OVER-PERMITTED, NONE on a tenant-verified provider:
+      CA_CLETS_OCATS 3U/9O   CA_CONTRA_COSTA 4U/7O (ON HOLD)   NM_NMLETS_OFML 4U
+      TN_TIES 2U             CA_VENTURA_COUNTY 1U/9O           OH_LEADS 1U
+      AZ_AZDPS 6O            CA_eSUN 4O   OR_LEDS 4O   TX_TLETS_CCH 4O
+  Expected composition from the classification above: TN's 2 and NM's 4 are CLASS 1 (Attention /
+  PurposeCode auto-handler feeders); Ventura's 1 and OCATS' 3 are CLASS 3 (mis-mapped sibling
+  branches). Those are registrations, not fixes. Anything that survives that triage is CLASS 4.
+  Next pass: narrow the branch match by primaryFieldReference to collapse CLASS 3, then register the
+  CLASS 1 remainder per provider at its own rebuild.
