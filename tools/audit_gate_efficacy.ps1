@@ -251,6 +251,18 @@ $MUTS = @(
      Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QB'
            $cm.requirements.conditions=@() } }
 
+  # DELIBERATELY NOT A MUTATION: the entity-prefix alias guard (2026-07-31).
+  # I added `nj-devdoc-prefix-blind` here -- rename BoatHullIdNumber to BoatBoatHullIdNumber
+  # everywhere so the field is still fully wired but prefixed, and audit_devdoc_combinations must
+  # still see it as wired. It reported SURVIVED, which was the CORRECT behaviour (the tool stayed
+  # silent because the field IS wired) but this harness's semantics are "inject a DEFECT, the gate
+  # must FAIL". An inverted assertion parked here shows up as a permanent SURVIVED row, i.e. a
+  # standing accusation that the gate is blind -- which would teach the next session to skim past
+  # survivors, the exact habit these tools exist to prevent. Removed same day.
+  # The prefix handling is instead protected by: (a) the $entityPrefixes list and its rationale in
+  # audit_devdoc_combinations, and (b) the recorded evidence that CA_eSUN went 4 devdoc FAILs -> 0.
+  # If someone wants a regression test for it, it belongs in a known-answer harness, not here.
+
   @{ Id='nj-guardrail-wire-leak'; OnlyProvider='NJ_NJCJIS'
      Desc='RegistrationNumber removed from QBN any[], making the reg number a genuine OUT-OF-POOL identifier on the hull-wins guardrail wire. Guards the 2026-07-31 widening of the guardrail-wire exemption: that check used to compare only against the winner BASE combo test fills, which are minimum-required-only, so a devdoc-sanctioned OPTIONAL identifier on the winner (devdoc BoatQuery #1 lists RegistrationNumber as opt on the hull query) read as a leak. The exemption now uses the winner combo set[] u any[] POOL -- and this mutation proves that widening did not make the check unfailable: an identifier NOT in the pool still FAILs. Without it the widening would be indistinguishable from deleting the check.'
      Gate='audit_log_content.ps1'; Args={ @('-Path',$workJson) }
