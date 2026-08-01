@@ -2,11 +2,11 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.1** | Generated: 2026-07-31
+Current: **v2.1** | Generated: 2026-08-01
 
 ---
 
-## v2.1 -- 2026-07-24 -- DH raceCodeDH form field -> attributeTypeId (AP #11 CommSys-direction fix)
+## v2.1 -- 2026-08-01 -- DH raceCodeDH form field -> attributeTypeId (AP #11 CommSys-direction fix)
 
 **CHANGED:** DriverHistory race form field 'raceCodeDH' switched from codeTypeCategory='NIBRS_RACE'
          (code-string dropdown) to attributeTypeId='RACE'+codeTypeProvider='NIBRS', matching the  
