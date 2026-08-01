@@ -1,7 +1,7 @@
 ﻿CA_SAN_LUIS_OBISPO METADATA REFERENCE
 ======================================
-Generated: 2026-07-29
-Source: CA_SAN_LUIS_OBISPO.xml (metadata) + CA_SAN_LUIS_OBISPO_v2.1.json
+Generated: 2026-08-01
+Source: CA_SAN_LUIS_OBISPO.xml (metadata) + CA_SAN_LUIS_OBISPO_v2.2.json
 Metadata: 6 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -89,12 +89,12 @@ METADATA COMBINATIONS (6 total):
   QVC           Name                    Name, BirthDate, SexCode                               --
   QVC           OperatorLicenseNumber   OperatorLicenseNumber                                  --
 
-BUILD COVERAGE (3 of 6 built):
+BUILD COVERAGE (5 of 6 built):
+  BUILT   DQ.N           set[NameLast, NameFirst, BirthDate, SexCode, RegistrationState]
+  BUILT   QVC.N          set[NameLast, NameFirst, BirthDate, SexCode]
   BUILT   L1.N           set[NameLast, NameFirst]
   BUILT   DQ.O           set[OperatorLicenseNumber, RegistrationState]
   BUILT   L1.O           set[OperatorLicenseNumber]
-  UNBUILT QVC            Name
-  UNBUILT QVC            OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 1)
@@ -154,18 +154,16 @@ BUILD SUMMARY
   ArticleSingleQuery                         1      1     0  100% (COMPLETE)
   BoatQuery                                  2      2     0  100% (COMPLETE)
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
-  DriverLicenseQuery                         6      3     3  50%
+  DriverLicenseQuery                         6      5     1  83%
   GunQuery                                   1      1     0  100% (COMPLETE)
   VehicleRegistrationQuery                   6      4     2  67%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   20     15     5  75%
+  TOTAL                                   20     17     3  85%
 
 ================================================================================
-UNBUILT METADATA COMBOS (4 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (2 combos in metadata, not in JSON)
 ================================================================================
 
-  QVC            Name                     (DriverLicenseQuery)
-  QVC            OperatorLicenseNumber    (DriverLicenseQuery)
   4#             LicensePlateNumber       (VehicleRegistrationQuery)
   4V             VehicleIdentificationNumber (VehicleRegistrationQuery)
 

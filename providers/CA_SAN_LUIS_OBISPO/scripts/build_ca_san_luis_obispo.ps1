@@ -16,7 +16,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '2.1'
+    [string]$Version = '2.2'
 )
 
 $ErrorActionPreference = "Stop"
@@ -132,9 +132,42 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # Name combo first (2 set, Name before OLN at same count)
+        # ── v2.2: DQ.N + QVC.N ADDED. Two metadata name-branches had NO built combination at all, so
+        # every name search fell through to L1.N -- whose set[] is just Name -- and anything more the
+        # officer typed was SILENTLY NOT TRANSMITTED. From this provider's own metadata:
+        #     DQ{Name}  = Set[BirthDate, Name, SexCode, State]   <- State MANDATORY here
+        #     QVC{Name} = Set[Name, BirthDate, SexCode]          <- no <Any> at all
+        #     L1{Name}  = Set[Name] Any[BirthDate]               <- SexCode NOT permitted
+        # audit_devdoc_optionals caught the symptom ("DriverLicenseQuery #3 +[State] -> fires L1.N but
+        # optional(s) State are in NO matching combo's set[]/any[]") and audit_requirement_fidelity
+        # caught the cause independently ("built 'L1.N' UNDER-REQUIRED vs DQ: SexCode (built any[]);
+        # State (ABSENT)"). Two gates, one defect, arrived at from different directions.
+        # ORDER IS LOAD-BEARING: L1.N's set[] is a strict SUBSET of both new combos, so if it stayed
+        # first it would keep stealing every fill and the new paths would be dead on arrival.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('BirthDate','SexCode'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{
+                set = @('NameLast','NameFirst','BirthDate','SexCode','RegistrationState'); any = @()
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'DQ.N'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('NameLast','NameFirst','BirthDate','SexCode'); any = @()
+                conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'QVC.N'
+            state                 = 'In/Out'
+        }
+        # Name catchall (2 set) -- devdoc DriverLicenseQuery #1 "Name, [BirthDate]".
+        # v2.2: SexCode REMOVED from any[]. Metadata L1{Name} is Set[Name] Any[BirthDate] and does not
+        # define SexCode at all, so carrying it here was OVER-PERMITTING. A name search that includes
+        # Sex now routes to QVC.N / DQ.N, which are the variants that actually define it.
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('NameLast','NameFirst'); any = @('BirthDate'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'L1.N'
             state                 = 'In/Out'

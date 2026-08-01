@@ -1,5 +1,40 @@
 # PENDING_UPDATES.txt -- CA_SAN_LUIS_OBISPO
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
-# Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:METADATA-DEMOTION-ADJUDICATE] audit_metadata CHECK 4e (new 2026-07-30) reports metadata-required fields built as any[]. Each must be promoted to set[] OR recorded in <PROVIDER>_ACCEPTED_DIVERGENCES.txt with a reason. Counts: AZ_AZDPS 9 (dexStateUserId handler-populated x4 + BirthDate/SexCode on DQSS/KQ -- AZ already carries 2 accepted NOTEs of the same shape), CA_eSUN 2, CA_SAN_LUIS_OBISPO 2, CA_VENTURA_COUNTY 2, OR_LEDS 1. Blocks enforce PHASE 2b until adjudicated. (flagged 2026-07-30)
+# CLEARED 2026-08-01 at v2.2. Adjudicated against THIS provider's OWN devdoc + metadata XML.
+# Kept as a record of what closed and why -- a bare empty file loses the reasoning.
+#
+# [FLAG:METADATA-DEMOTION-ADJUDICATE]  RESOLVED at v2.2 -- and the 2 demotions were the visible edge
+#   of a REAL WIRE DEFECT, not a paperwork item.
+#   TWO metadata name-branches had NO built combination at all:
+#       DQ{Name}  = Set[BirthDate, Name, SexCode, State]   <- State MANDATORY on this branch
+#       QVC{Name} = Set[Name, BirthDate, SexCode]          <- no <Any> whatsoever
+#   so every name search fell through to L1.N, whose set[] is only Name, and anything further the
+#   officer typed was SILENTLY NOT TRANSMITTED. Two independent gates found it from opposite ends:
+#       audit_devdoc_optionals    "DriverLicenseQuery #3 +[State] -> fires L1.N but optional(s) State
+#                                  are in NO matching combo's set[]/any[] -- silently not transmitted"
+#       audit_requirement_fidelity "built 'L1.N' UNDER-REQUIRED vs DQ: SexCode (built any[]);
+#                                   State (ABSENT)"  and the same vs QVC
+#   FIX at v2.2: BUILT DQ.N (Name+DOB+Sex+State) and QVC.N (Name+DOB+Sex), ordered AHEAD of L1.N --
+#   order is load-bearing here because L1.N's set[] is a strict SUBSET of both, so leaving it first
+#   would keep stealing every fill and the new paths would be dead on arrival.
+#   Also removed SexCode from L1.N's any[]: metadata L1{Name} is Set[Name] Any[BirthDate] and does not
+#   define SexCode at all, so carrying it there was OVER-PERMITTING. A name search that includes Sex
+#   now routes to QVC.N / DQ.N, the variants that actually define it.
+#   RESULT: audit_requirement_fidelity 3 UNDER-REQUIRED -> 0. Reachability 15/15 all reachable, so
+#   both new combos are genuinely live rather than shadowed.
+#
+# REGISTERED, build is correct:
+#   DriverHistoryQuery #1 | B2.N | Name -- devdoc reads "Name, [BirthDate]" (a Name-only driver-history
+#     search) but BOTH metadata name variants require BirthDate in <Set>: B2{Name} = Set[BirthDate,
+#     Name] and KQ{Name} = Set[Name, BirthDate, SexCode]. No looser variant exists. Built B2.N matches
+#     B2{Name} exactly. Building to the bracket would emit a request no variant accepts.
+#   GunQuery | QGB | firearmMake -- a TOOL ALIASING artefact. Metadata QGB is Set[GunSerialNumber]
+#     Any[GunCaliber, GunMake, GunTypeCode], so GunMake IS permitted; the build carries it as
+#     sourceField 'firearmMake' with targetField 'GunMake' (the wire contract is the targetField).
+#     audit_requirement_fidelity compares SOURCEFIELD names and has no firearmMake -> GunMake alias.
+#     Renaming the sourceField would break CAD alignment; dropping it would remove a permitted
+#     refinement. Nothing to fix in the build.
+#
+# STILL OPEN (not blocking; recorded so it is not mistaken for finished):
+#   Never USx-tenant-tested. v2.2 owes a full 5-entity sweep from T1.

@@ -6601,11 +6601,59 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "BirthDate",
+                                                                                                             "SexCode",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "DQ.N",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "BirthDate",
+                                                                                                             "SexCode"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "QVC.N",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "NameLast",
                                                                                                              "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "BirthDate",
-                                                                                                             "SexCode"
+                                                                                                             "BirthDate"
                                                                                                          ],
                                                                                                  "conditions":  [
                                                                                                                     {
@@ -7045,7 +7093,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_SAN_LUIS_OBISPO v2.1 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for CA_SAN_LUIS_OBISPO v2.2 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "CA_SAN_LUIS_OBISPO",
                         "type":  "BUNDLE",
                         "provider":  "CA_SAN_LUIS_OBISPO"
