@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
   Source: CA_VENTURA_COUNTY_v2.0.json
-  Generated: 2026-07-30 12:21
+  Generated: 2026-07-31 21:50
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -61,8 +61,16 @@ POST-BUILD VERIFICATION
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
 
+--- CHECK 15: Duplicate targetField within a configuration ---
+  [INFO] duplicate targetField 'EyeColorCode' in 'CA_VENTURA_COUNTY_Results' -- attrs 'EyeColor' and 'EyeColorCode' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
+  [INFO] duplicate targetField 'HairColorCode' in 'CA_VENTURA_COUNTY_Results' -- attrs 'HairColor' and 'HairColorCode' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
+  [INFO] duplicate targetField 'LicensePlateStateCode' in 'CA_VENTURA_COUNTY_Results' -- attrs 'ImpliedLicensePlateStateCode' and 'LicensePlateStateCode' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
+  [INFO] duplicate targetField 'Cautions' in 'RMS_Results' -- attrs 'Cautions' and 'Cautions' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
+  [INFO] duplicate targetField 'BodyStyle' in 'RMS_Results' -- attrs 'BodyStyle' and 'BodyStyle' both write it; which one lands is undefined (response mapping -- INFO per scope ruling)
+  [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
+
 ========================================
- VERIFICATION PASSED: 16 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED: 17 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

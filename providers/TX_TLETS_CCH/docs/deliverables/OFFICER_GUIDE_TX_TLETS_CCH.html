@@ -23,16 +23,16 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Plate Number</td><td class='req'>Plate Number, Plate Year, Plate Type</td><td class='opt'>Region ID, State</td></tr>
-<tr><td class='sb'>Plate Number</td><td class='req'>Plate Number, Plate Year, Fin. Resp. Type</td><td class='opt'>Region ID, State</td></tr>
-<tr><td class='sb'>VIN</td><td class='req'>VIN, Fin. Resp. Type</td><td class='opt'>Region ID, State, Vehicle Make, Vehicle Year</td></tr>
-<tr><td class='sb'>VIN</td><td class='req'>VIN</td><td class='opt'>Region ID, State, Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'>Plate Number (with Plate Type)</td><td class='req'>Plate Number, Plate Year, Plate Type</td><td class='opt'>Region ID, State</td></tr>
+<tr><td class='sb'>Plate Number (with Fin. Resp. Type)</td><td class='req'>Plate Number, Plate Year, Fin. Resp. Type</td><td class='opt'>Region ID, State</td></tr>
+<tr><td class='sb'>VIN (with Fin. Resp. Type)</td><td class='req'>VIN, Fin. Resp. Type</td><td class='opt'>Region ID, State, Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'>VIN (on its own)</td><td class='req'>VIN</td><td class='opt'>Region ID, State, Vehicle Make, Vehicle Year</td></tr>
 <tr><td class='sb'>Sticker Number</td><td class='req'>Sticker Number</td><td class='opt'>Fin. Resp. Type, State</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name</td><td class='req'>Sex, Date of Birth, Last Name, First Name</td><td class='opt'>Email Address <span class='pre'>(X)</span>, NCIC Image <span class='pre'>(Y)</span>, MI, Suffix, Reason Code <span class='pre'>(C)</span>, State <span class='pre'>(TX)</span></td></tr>
+<tr><td class='sb'>Name (with Sex + Date of Birth)</td><td class='req'>Sex, Date of Birth, Last Name, First Name</td><td class='opt'>Email Address <span class='pre'>(X)</span>, NCIC Image <span class='pre'>(Y)</span>, MI, Suffix, Reason Code <span class='pre'>(C)</span>, State <span class='pre'>(TX)</span></td></tr>
 <tr><td class='sb'>Name</td><td class='req'>Last Name, First Name</td><td class='opt'>Date of Birth, Email Address <span class='pre'>(X)</span>, NCIC Image <span class='pre'>(Y)</span>, CPL/DWI/RDL, MI, Suffix, Reason Code <span class='pre'>(C)</span>, State <span class='pre'>(TX)</span></td></tr>
 <tr><td class='sb'>OLN</td><td class='req'>OLN</td><td class='opt'>Email Address <span class='pre'>(X)</span>, NCIC Image <span class='pre'>(Y)</span>, Reason Code <span class='pre'>(C)</span>, State <span class='pre'>(TX)</span></td></tr>
 </tbody></table>
@@ -54,8 +54,8 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </tbody></table>
 <table class='qt'><caption>CCH Criminal History (QH)</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
 <tr><td class='sb'>Name</td><td class='req'>Requestor, Operator, DOB, Inquiry Reason, Last Name, First Name, Purpose Code, Sex, Race</td><td class='opt'>Misc Number, SSN, Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Requestor, Operator, Inquiry Reason, Last Name, First Name, Purpose Code, SSN</td><td class='opt'>Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Requestor, Operator, Inquiry Reason, Last Name, First Name, Purpose Code, Misc Number</td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'>Name (with SSN)</td><td class='req'>Requestor, Operator, Inquiry Reason, Last Name, First Name, Purpose Code, SSN</td><td class='opt'>Middle Name, Suffix</td></tr>
+<tr><td class='sb'>Name (with Misc Number)</td><td class='req'>Requestor, Operator, Inquiry Reason, Last Name, First Name, Purpose Code, Misc Number</td><td class='opt'>Middle Name, Suffix</td></tr>
 <tr><td class='sb'>State ID / SID</td><td class='req'>Inquiry Reason, Requestor, Operator, State ID / SID, Purpose Code</td><td class='opt'>Last Name, First Name, Middle Name, Suffix</td></tr>
 <tr><td class='sb'>FBI Number</td><td class='req'>Inquiry Reason, Requestor, Operator, FBI Number, Purpose Code</td><td class='opt'>Last Name, First Name, Middle Name, Suffix</td></tr>
 </tbody></table>
@@ -64,9 +64,9 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 <tr><td class='sb'>State ID / SID</td><td class='req'>Attention, Inquiry Reason, Purpose Code, State ID / SID</td><td class='opt'>City/State, Address Street, Zip, Building, Department, Last Name, First Name, Middle Name, Suffix</td></tr>
 </tbody></table>
 <table class='qt'><caption>CCH Wanted/III (QWI)</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name</td><td class='req'>Inquiry Reason, Last Name, First Name, Purpose Code, Attention, Operator, DOB, Race, Sex</td><td class='opt'>Expanded DOB, Expanded Name, Image, Related Hit Search, Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Inquiry Reason, Last Name, First Name, Purpose Code, Attention, Operator, Misc Number</td><td class='opt'>Expanded Name, Image, Related Hit Search, Middle Name, Suffix</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Inquiry Reason, Last Name, First Name, Purpose Code, Attention, Operator, SSN</td><td class='opt'>Expanded Name, Image, Related Hit Search, Middle Name, Suffix</td></tr>
+<tr><td class='sb'>Name (with DOB + Race + Sex)</td><td class='req'>Inquiry Reason, Last Name, First Name, Purpose Code, Attention, Operator, DOB, Race, Sex</td><td class='opt'>Expanded DOB, Expanded Name, Image, Related Hit Search, Middle Name, Suffix</td></tr>
+<tr><td class='sb'>Name (with Misc Number)</td><td class='req'>Inquiry Reason, Last Name, First Name, Purpose Code, Attention, Operator, Misc Number</td><td class='opt'>Expanded Name, Image, Related Hit Search, Middle Name, Suffix</td></tr>
+<tr><td class='sb'>Name (with SSN)</td><td class='req'>Inquiry Reason, Last Name, First Name, Purpose Code, Attention, Operator, SSN</td><td class='opt'>Expanded Name, Image, Related Hit Search, Middle Name, Suffix</td></tr>
 </tbody></table>
 <table class='qt'><caption>CCH Record Request (ZR)</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
 <tr><td class='sb'>FBI Number</td><td class='req'>FBI Number, Inquiry Reason</td><td class='opt'>Purpose Code</td></tr>
@@ -95,5 +95,5 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </tbody></table>
 </section>
 
-<footer>TX_TLETS_CCH build v1.14 &middot; Generated 2026-07-30 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
+<footer>TX_TLETS_CCH build v1.14 &middot; Generated 2026-07-31 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
 </body></html>

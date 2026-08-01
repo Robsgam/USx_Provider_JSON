@@ -125,9 +125,24 @@ function Get-DevdocCandidates([string]$t) {
     if ($fieldMap.ContainsKey($k)) { return ,@($fieldMap[$k]) }
     return ,@($k)
 }
+# ENTITY-PREFIXED fieldIds. A provider may scope a shared field name per entity/card so the two
+# cards do not collide: CA_eSUN wires GunAge/GunNameLast/GunNameFirst on Firearm and
+# VehBirthDate/VehNameLast/VehNameFirst on Vehicle. The devdoc calls those fields simply "Age",
+# "Name", "BirthDate". Exact-token matching therefore declared them wired NOWHERE and reported four
+# devdoc combinations as UNBUILT on a provider that builds all of them -- Rob spotted it as "a lot of
+# those json look unbuilt", 2026-07-31. Same failure family as the dh$/cch$ suffix stripping already
+# handled above, just on the front of the name.
+# An explicit prefix list rather than a length-bounded wildcard: it is self-documenting, it cannot
+# surprise on a future provider, and an unexpected prefix stays a visible FAIL instead of being
+# silently swallowed.
+$script:entityPrefixes = @('gun','veh','vehicle','boat','art','article','per','person','own','owner','subj','subject','dl','dr','oper')
 function Test-TokenWired([string]$devTok, $wiredSet) {
     foreach ($cand in (Get-DevdocCandidates $devTok)) {
-        foreach ($c1 in @($cand)) { if ($wiredSet.Contains([string]$c1)) { return $true } }
+        foreach ($c1 in @($cand)) {
+            $c = [string]$c1
+            if ($wiredSet.Contains($c)) { return $true }
+            foreach ($pfx in $script:entityPrefixes) { if ($wiredSet.Contains("$pfx$c")) { return $true } }
+        }
     }
     return $false
 }
@@ -192,6 +207,29 @@ function Get-DevdocCombinations([string]$txtPath) {
                 $opt += ($m.Groups[1].Value -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
             }
             $mandBody = ($body -replace '\[[^\]]*\]','')
+
+            # UNCLOSED OPTIONAL BRACKET. The two regexes above require a CLOSING ']', and the
+            # continuation-join a few lines up stops at a blank line or a page footer -- so when a
+            # devdoc wraps its optional list mid-bracket, the ']' never makes it into $body and every
+            # field inside the bracket was silently promoted to MANDATORY.
+            # Real data (LA_LEMS, printed by this tool's own -Explain):
+            #   "(In/Out) GunSerialNumber, Attention, [GunMake, GunModel, GunCaliber, ImageIndicator,"
+            #   parsed as mand=[GunSerialNumber,Attention,GunModel,GunCaliber,ImageIndicator] opt=[]
+            # which reported GunQuery #1 UNBUILT on a provider that builds it, and did the same to
+            # DriverLicenseQuery #2 via "[ImageIndicator, State2, State3, State4,". FOUR false
+            # UNBUILT FAILs on one provider. Rob flagged the symptom as "a lot of those json look
+            # unbuilt", 2026-07-31.
+            # Everything after an unmatched '[' is optional by construction -- a devdoc never REOPENS
+            # a mandatory list after a bracket -- so take the tail as optionals and drop it from the
+            # mandatory body. Truncation still loses the fields past the line break, which is honest:
+            # they are absent, not misclassified.
+            $openIdx = $mandBody.LastIndexOf('[')
+            if ($openIdx -ge 0) {
+                $tail = $mandBody.Substring($openIdx + 1)
+                $opt += ($tail -split ',' | ForEach-Object { $_.Trim() } |
+                         Where-Object { $_ -and $_ -match '^[A-Za-z][A-Za-z0-9 ]*$' })
+                $mandBody = $mandBody.Substring(0, $openIdx)
+            }
             $mandBody = $mandBody -replace '\((InState|OutofState|In/Out|In|Out)\)',''   # state qualifier, not a field
             $mand = @($mandBody -split ',' | ForEach-Object { $_.Trim() } |
                       Where-Object { $_ -and $_ -match '^[A-Za-z][A-Za-z0-9 ]*$' -and $_ -notmatch '^(and|or|at least one of|and/or)$' })
