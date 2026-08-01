@@ -67,6 +67,7 @@ $ErrorActionPreference = 'Stop'
 $toolDir  = $PSScriptRoot
 $repoRoot = (Resolve-Path "$toolDir\..").Path
 . (Join-Path $toolDir '_resolve_provider_json.ps1')
+. (Join-Path $toolDir '_resolve_provider_xml.ps1')
 
 $lines = @()
 function Out-Line([string]$s, [string]$c = 'Gray') { $script:lines += $s; Write-Host $s -ForegroundColor $c }
@@ -204,9 +205,10 @@ $totUnder = 0; $totOver = 0; $totMatched = 0; $totUnmatched = 0
 foreach ($d in $dirs) {
     $jp = if ($Path) { $Path } else { Get-ProviderRootJson -ProvDir $d.FullName -Provider $d.Name }
     if (-not $jp) { continue }
-    $xml = @(Get-ChildItem "$($d.FullName)\source" -Filter '*.xml' -File -ErrorAction SilentlyContinue |
-             Where-Object { $_.BaseName -eq $d.Name }) | Select-Object -First 1
-    if (-not $xml) { $xml = @(Get-ChildItem "$($d.FullName)\source" -Filter '*.xml' -File -ErrorAction SilentlyContinue) | Select-Object -First 1 }
+    # Shared resolver. Was two hand-rolled globs: exact-name first (correct), then a bare
+    # alphabetical fallback that WOULD have guessed on any provider carrying a second XML.
+    $xmlResolved = Get-ProviderMetadataXml -Provider $d.Name -ProvDir $d.FullName
+    $xml = if ($xmlResolved) { Get-Item $xmlResolved } else { $null }
     if (-not $xml) { Out-Line "`n=== $($d.Name) ===" 'Cyan'; Out-Line '  [FAIL] no metadata XML in source/ -- cannot verify fidelity' 'Red'; $totUnmatched++; continue }
 
     # ── ACCEPTED-DIVERGENCE REGISTRY ──────────────────────────────────────────────────

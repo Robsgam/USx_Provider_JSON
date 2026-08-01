@@ -1270,6 +1270,31 @@ AUTHORITATIVE SOURCE FILES (read-only)
     everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
     equivalent fallbacks.)
 
+  tools/_resolve_provider_xml.ps1
+    Shared metadata-XML resolver (Get-ProviderMetadataXml). The XML counterpart of
+    _resolve_provider_json.ps1, added 2026-08-01 because it did NOT exist: six tools
+    each hand-rolled XML resolution and four used `Get-ChildItem source -Filter
+    '*.xml' | Select-Object -First 1`, which is alphabetical, not authoritative.
+    Resolution order: exact <PROVIDER>.xml -> the BASE provider's XML for a variant
+    (<BASE>_<SUFFIX>, mirroring the devdoc base/variant sharing rule) -> the only
+    *.xml present -> $null WITH a warning. It deliberately REFUSES to choose between
+    multiple candidates: a caller can handle $null but cannot detect a plausible
+    wrong answer.
+    WHY IT EXISTS: on CA_CONTRA_COSTA (the one provider carrying two XMLs) the old
+    glob returned CA_CONTRA_COSTA_JAWS_ONLY.xml -- 6 <Combination> nodes instead of
+    466 -- so a gate ran green against 1.3% of the metadata and manufactured five
+    false defect findings that survived five reasoning passes. The pick was not even
+    stable: Get-ChildItem's native order and Sort-Object Name disagree on which of
+    the two comes first. The same glob sat in pipeline.ps1 feeding
+    extract_metadata_reference.ps1, so it could have regenerated
+    METADATA_REFERENCE.txt -- the repo's field authority -- from that excerpt.
+    THE CLASS, worth naming: A GATE THAT READS THE WRONG AUTHORITY CANNOT FAIL
+    HONESTLY. It reports PASS or FAIL with equal confidence and no denominator to
+    betray it. Same family as the vacuous fingerprint check and the registry
+    over-suppression.
+    Dot-sourced by audit_defect_classes.ps1, audit_log_metadata.ps1,
+    audit_requirement_fidelity.ps1, pipeline.ps1.
+
   tools/_json_canonical.ps1
     Shared canonical JSON serialization + hashing (ConvertTo-Canonical,
     Get-Sha256Hex, New-NormalizedClone, Get-CanonicalJsonString). Key-sorted,

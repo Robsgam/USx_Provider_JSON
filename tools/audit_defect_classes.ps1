@@ -2,120 +2,49 @@
   audit_defect_classes.ps1 -- scan EVERY provider for the defect classes we have PROVEN real.
 
   ############################################################################################
-  ##  EXPERIMENTAL -- DO NOT QUOTE ITS OUTPUT AS FINDINGS. NOT WIRED INTO ANY GATE.          ##
+  ##  C1 IS VERIFIED. C2 / C3 / C4 ARE STILL EXPERIMENTAL -- DO NOT QUOTE THEIR OUTPUT.       ##
+  ##  Nothing here is wired into a gate yet.                                                  ##
   ##                                                                                          ##
-  ##  KNOWN-ANSWER TEST: run it against the CA family, whose true state was established BY HAND ##
-  ##  on 2026-07-31. The correct answer is EXACTLY ONE row -- CA_VENTURA_COUNTY GunQuery/       ##
-  ##  IG.QGH, which carries no discriminator at all. Four runs so far:                          ##
-  ##    run 1 -> 19 candidates. No field aliasing (metadata 'Age' vs built 'GunAge', so it      ##
-  ##             flagged the very combos just FIXED) and no variant matching by                 ##
-  ##             primaryFieldReference (compared the built CII combo against the {Name} Choice).##
-  ##    run 2 -> 9.  Both of the above addressed.                                               ##
-  ##    run 3 -> 7.  Bidirectional anchored alias (CaRequestPurposeCode <-> purposeCode).       ##
-  ##                 CA_CLETS fully cleared.                                                    ##
-  ##    run 4 -> 6.  Removed a >=4 length floor I had added myself, which killed the 3-char     ##
-  ##                 'Age' and re-broke run 1's case. CA_eSUN cleared.                          ##
-  ##                                                                                            ##
-  ##  REMAINING BUG -- symptom isolated, CAUSE NOT FOUND. The 5 CA_CONTRA_COSTA IR.QVC.* rows   ##
-  ##  are ALL FALSE and they prove the primaryFieldReference restriction is not taking effect.  ##
-  ##  Verified straight from CC metadata: IR.QVC{Name} has 5 variants of which 2 are LOOSER     ##
-  ##  (Choice inside <Any>), so IR.QVC.N must be suppressed; and the {CriminalIdNumber},        ##
-  ##  {OperatorLicenseNumber} and {SocialSecurityNumber} families contain ONLY looser variants  ##
-  ##  with no Choice-in-Set at all, so IR.QVC.C/.O/.OS/.S should never have been compared       ##
-  ##  against the {Name} variant. Their PFs ARE correctly declared in the JSON. Next step:      ##
-  ##  instrument the $fam narrowing and the $looser predicate rather than guessing again.       ##
-  ##                                                                                            ##
-  ##  run 5 -> still 5 false CA_CONTRA_COSTA rows. NARROWED FURTHER but NOT CLOSED:             ##
-  ##    * The logic is CORRECT when replicated standalone. Feeding built IR.QVC.C / PF=          ##
-  ##      'CriminalIdNumber' through the same steps by hand gives: exact match 0, prefix         ##
-  ##      candidates [IR.QVC, IR.Q], family IR.QVC size 12, samePf = 2, variants-with-           ##
-  ##      Choice-in-Set after restriction = 0 -> NO FINDING. That is the right answer.           ##
-  ##    * So the tool is not executing what the code appears to say. $cm.PF is the suspect:      ##
-  ##      the restriction is guarded by `if ($cm.PF)`, and an empty PF silently skips it and     ##
-  ##      leaves $fam as the whole 12-variant family, which is exactly the observed symptom      ##
-  ##      (rows for IR.QVC.C/.O/.OS/.S all citing the {Name} variant they should never see).     ##
-  ##      NEXT STEP: dump $cm.PF for each built combo INSIDE the loop. Do not reason about it    ##
-  ##      again -- five reasoning passes have each been wrong.                                   ##
-  ##    * Ground truth for the suppression, printed from CC metadata, so the fix has a target:   ##
-  ##      IR.QVC{Name} has 5 variants --                                                        ##
-  ##        ChoiceInSet=[]                Mand=[CaRequestPurposeCode,Name,SexCode]   <- LOOSER   ##
-  ##        ChoiceInSet=[BirthDate|Age]   Mand=[CaRequestPurposeCode,Name,SexCode]               ##
-  ##        ChoiceInSet=[]                Mand=[...,SexCode,BirthDate]               <- LOOSER   ##
-  ##        ChoiceInSet=[Age|BirthDate]   Mand=[...,RegistrationOnlyIndicator,SexCode]           ##
-  ##        ChoiceInSet=[BirthDate|Age]   Mand=[...,RequestingAgencyId]                          ##
-  ##      Built IR.QVC.N is set[purposeCode,NameLast,NameFirst,SexCode], which SATISFIES the     ##
-  ##      first LOOSER variant's Mand -> it must be suppressed. All 5 CC rows are FALSE.         ##
-  ##                                                                                            ##
-  ##  run 6 -> CAUSE LOCATED, and it was NOT where five reasoning passes said. Added -Diag, which ##
-  ##  prints the real narrowing state, and ran it on CA_CONTRA_COSTA:                            ##
-  ##      [DIAG] IR.QVC.O  PF='OperatorLicenseNumber'  fam 1->1  samePf=0  choiceLeft=1          ##
-  ##                                                   PFsLeft=[Name]                            ##
-  ##  `fam 1->1` is the answer. The primaryFieldReference restriction was never broken -- it had ##
-  ##  nothing to restrict, because Get-MetaFamily returns a family of ONE whose PF is 'Name',    ##
-  ##  while a standalone call over the same XML with the same code returns TWELVE IR.QVC          ##
-  ##  variants. So the METADATA INVENTORY inside the provider loop is collapsing all 12 variants ##
-  ##  of a keyRef down to one, and every built combo then gets compared against whichever single ##
-  ##  variant survived (here the {Name} one) regardless of its own PF.                            ##
-  ##  That fully explains the symptom AND why samePf=0: there is no OperatorLicenseNumber variant ##
-  ##  left in $fam to match. It also explains why IR.QVC.N is flagged -- its looser sibling was   ##
-  ##  collapsed away too, so the $looser suppression has nothing to find.                        ##
-  ##  NEXT STEP, now narrow: print $meta.Count and the per-keyRef tally right after the metadata  ##
-  ##  parse (line ~196-222) and compare with the standalone count of 12. The parse code itself    ##
-  ##  reads correctly and matches the working standalone probe line for line, so suspect what     ##
-  ##  happens to $meta BETWEEN the parse and `$script:metaLocal = $meta` -- scoping of a function ##
-  ##  defined inside the foreach, or $meta being rebound. Do NOT reason further without printing. ##
-  ##                                                                                            ##
-  ##  Do not wire this anywhere until the CA-family run yields exactly CA_VENTURA_COUNTY.       ##
-  ##  A scanner that cries wolf on fixed providers is worse than no scanner -- it teaches the   ##
-  ##  next session to ignore it.                                                                ##
+  ##  KNOWN-ANSWER TEST (C1): the CA family, whose true state was established BY HAND on       ##
+  ##  2026-07-31. Correct answer = EXACTLY ONE row, CA_VENTURA_COUNTY GunQuery/IG.QGH, which   ##
+  ##  carries no Age/BirthDate discriminator at all. Trajectory: 19 -> 9 -> 7 -> 6 -> 5 -> 1.  ##
+  ##  It now returns 1, and it independently AGREES WITH 6d on the six tenant-verified         ##
+  ##  providers (0 C1 there), which is the corroboration that makes C1 quotable.               ##
+  ##                                                                                          ##
+  ##  THE TWO BUGS THAT TOOK SIX PASSES, BOTH THE SAME CLASS: THE TOOL WAS READING THE WRONG   ##
+  ##  AUTHORITY, AND NO AMOUNT OF REASONING ABOUT THE COMPARISON LOGIC COULD HAVE FOUND EITHER.##
+  ##                                                                                          ##
+  ##  BUG 1 -- WRONG FILE. Resolution was `Get-ChildItem source -Filter '*.xml' | Select -First ##
+  ##  1`. On CA_CONTRA_COSTA (the only provider with two XMLs) that returned                   ##
+  ##  CA_CONTRA_COSTA_JAWS_ONLY.xml: 6 <Combination> nodes instead of 466, and ONE IR.QVC       ##
+  ##  variant instead of twelve. So every built IR.QVC.* combo was compared against the single  ##
+  ##  surviving {Name} variant and five correct combos looked like collapsed-Choice defects.    ##
+  ##  Five reasoning passes blamed the primaryFieldReference restriction. -Diag settled it in   ##
+  ##  ONE run by printing `fam 1->1 ... PFsLeft=[Name]`: the restriction had nothing to         ##
+  ##  restrict. Fixed by the new shared resolver `_resolve_provider_xml.ps1`, which prefers     ##
+  ##  <PROVIDER>.xml and REFUSES to guess between candidates. Note the pick was not even        ##
+  ##  STABLE: Get-ChildItem's native order put JAWS_ONLY first, `Sort-Object Name` puts it      ##
+  ##  second. The same glob was in pipeline.ps1, feeding extract_metadata_reference.ps1 --      ##
+  ##  i.e. it could have regenerated METADATA_REFERENCE.txt, the repo's authority doc, from a   ##
+  ##  1.3% excerpt, silently and green. Latent only because CC had no full pipeline run since.  ##
+  ##                                                                                          ##
+  ##  BUG 2 -- FLATTENED THE AUTHORITY. A <Choice> BRANCH IS NOT ALWAYS A SINGLE <Field>; it    ##
+  ##  can be a nested <Set> = a GROUP carried together. TX_TLETS QA is the shape:               ##
+  ##      <Choice><Field NCICNumber/><Set><Field ArticleSerialNumber/><Field ArticleTypeCode/>  ##
+  ##      </Set></Choice>      = "NCIC number, OR serial+type together"                        ##
+  ##  Collecting only direct <Field> children saw the branch list as {NCICNumber} and declared  ##
+  ##  the entirely-valid serial+type build to satisfy nothing. That put 4 FALSE C1 rows on      ##
+  ##  TX_TLETS (TENANT-VERIFIED, 89 logs) and TX_TLETS_CCH. 6d audit_log_metadata validates the ##
+  ##  real wire against the real metadata and had passed TX all along.                          ##
+  ##  RULE: WHEN TWO GATES DISAGREE, SUSPECT THE ONE THAT FLATTENED ITS AUTHORITY. Satisfaction ##
+  ##  is now per-BRANCH -- any ONE branch fully required = correct. Same family as              ##
+  ##  METADATA_REFERENCE.txt flattening Choice branches (QIDM_REFERENCE Sec 1b).                ##
+  ##                                                                                          ##
+  ##  STILL OWED before C2/C3/C4 can be quoted: they report 359 / 313 / 28 candidates, which is ##
+  ##  not credible and is very likely the SAME naivety -- C2's "ever mandatory" test flattens   ##
+  ##  ChoiceBranches, so a field mandatory only WITHIN a group may read as never-mandatory.     ##
+  ##  Give each class its own known-answer case before believing any count.                     ##
   ############################################################################################
-
-  Rob 2026-07-31: "i want this process to be fruitful."
-
-  WHY THIS EXISTS. By the end of 2026-07-31 the session had found the same handful of defect classes
-  over and over, one provider at a time, each time re-deriving it from scratch: read the metadata,
-  notice a Choice inside <Set>, check the devdoc brackets, decide FIX vs REGISTER. That is fine for
-  the first provider and wasteful by the fourth. The classes are now KNOWN, so they should be
-  ENUMERATED across the portfolio in one pass and ranked -- turning 13 sequential investigations into
-  one triage list.
-
-  It reads each provider's OWN metadata and OWN devdoc. It never assumes one provider's answer
-  applies to a sibling: CA_CLETS_OCATS and CA_SAN_LUIS_OBISPO looked like certain suspects for the
-  gun-name class and were both CLEAN, because they build only the serial-number query.
-
-  THE CLASSES, each with the shipped defect that proved it:
-
-  C1  COLLAPSED CHOICE       metadata has a <Choice> as a DIRECT child of <Set> (= one of its fields
-      (wire-invalid)         is MANDATORY) but the built combo carries them all in any[], or carries
-                             none at all. The request satisfies NO metadata variant.
-                             Proven: CA_CLETS IG.QGH shipped a committed PASS log doing exactly this;
-                             CA_CONTRA_COSTA and CA_eSUN carried it identically; CA_VENTURA_COUNTY
-                             carries the worse form (no discriminator at all).
-                             Gate 6d catches it. 6c and 2i CANNOT -- content and attribution cannot
-                             see a MISSING REQUIREMENT.
-
-  C2  OVER-REQUIRED SET      a field is in the built set[] that NO metadata variant of that keyRef
-      (silent field drop)    makes mandatory. Effect is not just strictness: the fill falls through to
-                             a later, looser combo whose pool may not carry the extra field, so the
-                             officer's value is accepted by the form and never transmitted.
-                             Proven: CA_CLETS/CA_CONTRA_COSTA IR.QVC.O required criminalIdNumber, so
-                             OLN+SSN fell to ID.L1 (no optionals) and the SSN vanished.
-
-  C3  OPTIONAL CARRIED       a field some metadata variant of that keyRef permits as an optional is
-      NOWHERE                in NO built combo's set[] or any[] for that query. The officer can type
-                             it and it can never reach the wire.
-                             Proven: CA_CLETS NLTS.DQ.N could not carry SexCode at all.
-
-  C4  PREFILL ON A ROUTING   a form initialValue on a field that appears in some combo's set[].
-      FIELD                  Makes it always-present, permanently hiding every combo needing its
-                             absence. BUILD_RULES 24. Killed 35 combos across 6 providers.
-                             NOT flagged when the field is in EVERY combo's set[] for that query --
-                             then it cannot shadow one over another (CA's purposeCode='C' is
-                             harmless, and a reverse-propagation flag wrongly blamed it TWICE).
-
-  RANKING. C1 and C2 are WIRE defects -- a request that is invalid, or an officer value silently
-  discarded. C3 is a capability gap. C4 is a reachability defect. Sorted accordingly.
-
   EVERY finding is a CANDIDATE with evidence attached, not a verdict. The FIX-vs-REGISTER call needs
   the devdoc check and is Rob's (see usx-build Step 3). A looser metadata variant legitimately
   permitting what we built is the REGISTER case, and this tool says so when it sees one.
@@ -134,6 +63,7 @@ $ErrorActionPreference = 'Continue'
 $repo    = Split-Path $PSScriptRoot -Parent
 $toolDir = $PSScriptRoot
 . (Join-Path $toolDir '_resolve_provider_json.ps1')
+. (Join-Path $toolDir '_resolve_provider_xml.ps1')
 
 $lines = @()
 function E([string]$s, $c = 'Gray') { $script:lines += $s; if ($c) { Write-Host $s -ForegroundColor $c } else { Write-Host $s } }
@@ -179,10 +109,13 @@ foreach ($p in $Providers) {
     $jp = Get-ProviderRootJson -ProvDir $d -Provider $p
     if (-not $jp) { continue }
     $ver = [regex]::Match([IO.Path]::GetFileNameWithoutExtension($jp), '_v([\d.]+)$').Groups[1].Value
-    $xf  = @(Get-ChildItem (Join-Path $d 'source') -Filter '*.xml' -File -ErrorAction SilentlyContinue) | Select-Object -First 1
-    if (-not $xf) { continue }
+    # Shared resolver, NOT an alphabetical glob. `Select-Object -First 1` over *.xml is what made
+    # this tool read CA_CONTRA_COSTA's JAWS-only excerpt (6 Combination nodes, 1 IR.QVC) instead of
+    # the real 466-node metadata, manufacturing 5 false collapsed-Choice findings. See the banner.
+    $xfPath = Get-ProviderMetadataXml -Provider $p -ProvDir $d
+    if (-not $xfPath) { E "  [SKIP] $p -- no unambiguous metadata XML" 'DarkYellow'; continue }
 
-    try { [xml]$x = Get-Content $xf.FullName -Raw } catch { E "  [SKIP] $p -- metadata XML unparseable" 'DarkYellow'; continue }
+    try { [xml]$x = Get-Content $xfPath -Raw } catch { E "  [SKIP] $p -- metadata XML unparseable" 'DarkYellow'; continue }
     try { $j = Get-Content $jp -Raw | ConvertFrom-Json } catch { E "  [SKIP] $p -- JSON unparseable" 'DarkYellow'; continue }
 
     # ── built combos, per query ────────────────────────────────────────────────────────────────
@@ -218,12 +151,36 @@ foreach ($p in $Providers) {
         $req = $n.SelectSingleNode("*[local-name()='Requirements']"); if (-not $req) { continue }
         $setNode = $req.SelectSingleNode("*[local-name()='Set']");    if (-not $setNode) { continue }
 
-        # direct-child <Choice> inside <Set> => exactly one of its fields is MANDATORY
-        $choiceInSet = @()
+        # direct-child <Choice> inside <Set> => exactly one BRANCH of it is MANDATORY.
+        #
+        # A BRANCH IS NOT ALWAYS A SINGLE FIELD. It can be a nested <Set> = a GROUP that must be
+        # carried together. TX_TLETS QA is the canonical shape:
+        #     <Set><Choice>
+        #        <Field reference="NCICNumber"/>
+        #        <Set><Field reference="ArticleSerialNumber"/><Field reference="ArticleTypeCode"/></Set>
+        #     </Choice>...
+        # i.e. "NCIC number, OR serial+type together". Collecting only the direct <Field> children
+        # yields {NCICNumber} and makes the entirely-valid serial+type build look like it satisfies
+        # no branch -- which is precisely the false positive this produced on TX_TLETS (TENANT-VERIFIED,
+        # 89 logs) and TX_TLETS_CCH. 6d audit_log_metadata validates the real wire against the real
+        # metadata and passed TX all along; when two gates disagree, the one that flattened its
+        # authority is the one that is wrong.
+        $choiceBranches = @()          # array of string[]; satisfied if ANY branch is FULLY carried
         foreach ($ch in $setNode.ChildNodes) {
             if ($ch.LocalName -ne 'Choice') { continue }
-            foreach ($f in $ch.ChildNodes) { if ($f.LocalName -eq 'Field') { $choiceInSet += $f.GetAttribute('reference') } }
+            foreach ($br in $ch.ChildNodes) {
+                if ($br.LocalName -eq 'Field') {
+                    $r = $br.GetAttribute('reference'); if ($r) { $choiceBranches += ,@($r) }
+                } elseif ($br.LocalName -eq 'Set') {
+                    $g = @()
+                    foreach ($f in $br.ChildNodes) { if ($f.LocalName -eq 'Field') { $g += $f.GetAttribute('reference') } }
+                    $g = @($g | Where-Object { $_ })
+                    if ($g.Count) { $choiceBranches += ,@($g) }
+                }
+            }
         }
+        # flattened view, kept for C2's "is this field ever mandatory" test and for messaging
+        $choiceInSet = @($choiceBranches | ForEach-Object { $_ } | Where-Object { $_ })
         # mandatory scalar fields: direct <Field> children of <Set>, plus nested <Set> groups
         $mand = @()
         foreach ($ch in $setNode.ChildNodes) {
@@ -237,7 +194,8 @@ foreach ($p in $Providers) {
         }
         $meta += [pscustomobject]@{
             KeyRef = $kr; PF = $n.GetAttribute('primaryFieldReference')
-            Mand = @($mand | Where-Object { $_ }); ChoiceInSet = @($choiceInSet | Where-Object { $_ }); Opt = @($opt | Where-Object { $_ })
+            Mand = @($mand | Where-Object { $_ }); ChoiceInSet = @($choiceInSet | Where-Object { $_ })
+            ChoiceBranches = $choiceBranches; Opt = @($opt | Where-Object { $_ })
         }
     }
     if (-not $meta.Count) { continue }
@@ -296,8 +254,15 @@ foreach ($p in $Providers) {
             if ($Class -contains 'C1') {
                 foreach ($v in @($fam | Where-Object { $_.ChoiceInSet.Count })) {
                     $grp = @($v.ChoiceInSet)
-                    $inSet = @($grp | Where-Object { Test-InList $_ $cm.Set })
-                    if ($inSet.Count) { continue }   # we require one -- correct
+                    # A branch is satisfied only when EVERY field in it is required by us; the Choice
+                    # is satisfied when ANY ONE branch is. A branch may be a group (TX QA:
+                    # serial+type), so testing individual fields is not enough -- see the parse note.
+                    $branchOk = $false
+                    foreach ($br in @($v.ChoiceBranches)) {
+                        $missing = @(@($br) | Where-Object { -not (Test-InList $_ $cm.Set) })
+                        if (-not $missing.Count) { $branchOk = $true; break }
+                    }
+                    if ($branchOk) { continue }   # we require a full branch -- correct
                     # is there a SIBLING variant that legitimately makes them optional AND whose own
                     # mandatory fields we satisfy? then this is the REGISTER case, not a defect.
                     $looser = @($fam | Where-Object {
@@ -308,8 +273,10 @@ foreach ($p in $Providers) {
                     $where = @($grp | Where-Object { Test-InList $_ $cm.Any })
                     $findings += [pscustomobject]@{
                         Sev=1; Class='C1'; P=$p; V=$ver; Q=$q; K=$cm.KeyRef
-                        What = ("metadata {0}{{{1}}} puts Choice[{2}] INSIDE <Set> (one is MANDATORY) but built carries {3}" -f `
-                                $v.KeyRef, $v.PF, ($v.ChoiceInSet -join '|'), $(if ($where.Count) { "them in any[] -- can send NEITHER" } else { "NONE of them at all" }))
+                        What = ("metadata {0}{{{1}}} puts Choice[{2}] INSIDE <Set> (one BRANCH is MANDATORY) but built satisfies no branch -- carries {3}" -f `
+                                $v.KeyRef, $v.PF,
+                                (@($v.ChoiceBranches | ForEach-Object { if (@($_).Count -gt 1) { '(' + (@($_) -join '+') + ')' } else { "$_" } }) -join ' | '),
+                                $(if ($where.Count) { "some only in any[] -- can send NEITHER" } else { "NONE of them at all" }))
                     }
                 }
             }

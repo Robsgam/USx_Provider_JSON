@@ -376,11 +376,11 @@ Three layout variants per QIF: `default`, `CAD_DISPATCH`, `FIRST_RESPONDER`.
 
 ---
 
-## Tools (82 scripts + 16 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
+## Tools (82 scripts + 17 shared modules in `tools/`, + `tools/config/` (5 JSON reference tables) + 3 archived tools in `tools/_archive/`)
 
 All tools are provider-agnostic. `banned_patterns.txt` is the only non-script (consumed by verify_build.ps1).
 
-Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_layout_helpers.ps1`, `_build_provider_helpers.ps1`, `_json_canonical.ps1`, `_resolve_provider_json.ps1` (active-JSON resolver `Get-ProviderRootJson` — bare → versioned → `_MC` → `_BASE`).
+Shared modules (dot-sourced, `_`-prefixed): `_build_rms_bundle.ps1`, `_build_layout_helpers.ps1`, `_build_provider_helpers.ps1`, `_json_canonical.ps1`, `_resolve_provider_json.ps1` (active-JSON resolver `Get-ProviderRootJson` — bare → versioned → `_MC` → `_BASE`), `_resolve_provider_xml.ps1` (metadata-XML resolver `Get-ProviderMetadataXml` — exact `<PROVIDER>.xml` → base provider's XML for a variant → the only XML present → `$null` + warning; **refuses to guess between multiple candidates**, because an alphabetical glob made a gate read CA_CONTRA_COSTA's 6-node JAWS-only excerpt instead of the real 466-node metadata and report green — see `knowledge-base/README.txt`).
 
 ### Core Build Pipeline (run every build via build_report.ps1)
 

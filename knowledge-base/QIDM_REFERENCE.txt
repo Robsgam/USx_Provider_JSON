@@ -143,6 +143,43 @@ SECTION 1b -- <Choice> POSITION IS LOAD-BEARING (metadata grammar)
   prefix. Read the raw XML <Requirements> per <Combination>. See CLAUDE.md's Source
   Authority table, which now says so explicitly.
 
+  --------------------------------------------------------------------------------
+  A <Choice> BRANCH IS NOT ALWAYS A SINGLE <Field> -- IT CAN BE A GROUP
+  --------------------------------------------------------------------------------
+  Established 2026-08-01. A direct child of <Choice> is EITHER a <Field> or a nested
+  <Set>, and a nested <Set> is a GROUP whose fields must be carried TOGETHER to
+  satisfy that branch. TX_TLETS ArticleSingleQuery is the canonical shape:
+
+      <Set>
+        <Choice>
+          <Field reference="NCICNumber" />
+          <Set>
+            <Field reference="ArticleSerialNumber" />
+            <Field reference="ArticleTypeCode" />
+          </Set>
+        </Choice>
+        <Any><Field reference="ImageIndicator" />...</Any>
+      </Set>
+
+  Read it as: "NCICNumber, OR ArticleSerialNumber+ArticleTypeCode together." TX builds
+  the second branch -- set[] = {ArticleSerialNumber, ArticleTypeCode} -- which is
+  fully correct. TX_TLETS QG has the same shape.
+
+  HOW TO EVALUATE: a Choice is satisfied when ANY ONE branch is satisfied IN FULL.
+  Testing individual field membership is NOT sufficient and produces false defects.
+  Enumerating only the direct <Field> children of a <Choice> reads TX's branch list as
+  {NCICNumber} alone and reports the valid serial+type build as satisfying nothing --
+  which is exactly what audit_defect_classes did, putting 4 false C1 rows on
+  TX_TLETS (TENANT-VERIFIED, 89 logs) and TX_TLETS_CCH before the fix.
+
+  ⚠️ THE META-RULE THIS EARNED: **WHEN TWO GATES DISAGREE, SUSPECT THE ONE THAT
+  FLATTENED ITS AUTHORITY.** audit_log_metadata (enforce 6d) validates the real wire
+  XML against the real metadata and had passed TX all along. The new scanner
+  contradicted it -- and the new scanner was wrong, because it had collapsed a
+  two-branch Choice into a one-field list. This is the same failure mode as
+  METADATA_REFERENCE.txt flattening branches (above): the shape of the authority is
+  load-bearing, and any tool that simplifies it inherits a silent blind spot.
+
 ================================================================================
 SECTION 2 -- COMBINATION BASICS
 ================================================================================

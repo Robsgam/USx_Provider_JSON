@@ -20,6 +20,7 @@ param(
 
 . (Join-Path $PSScriptRoot '_metadata_parse.ps1')
 . (Join-Path $PSScriptRoot '_resolve_provider_json.ps1')
+. (Join-Path $PSScriptRoot '_resolve_provider_xml.ps1')
 
 function Out-Line($msg, $color = 'Gray') { if (-not $Quiet) { Write-Host $msg -ForegroundColor $color } }
 
@@ -34,15 +35,13 @@ if (-not $version) { Write-Host "[audit-log-meta] cannot derive version from $([
 
 # ── Metadata XML (audit_metadata.ps1:176-203 convention) ──────────────────────
 $srcDir = Join-Path $provDir 'source'
-$xml = $null
-if (Test-Path $srcDir) {
-    $xml = Get-ChildItem $srcDir -Filter '*.xml' -File -ErrorAction SilentlyContinue |
-           Where-Object { $_.BaseName -ieq $Provider } | Select-Object -First 1
-    if (-not $xml) {
-        $xml = Get-ChildItem $srcDir -Filter '*.xml' -File -ErrorAction SilentlyContinue |
-               Where-Object { $_.BaseName -notmatch '(?i)old' } | Select-Object -First 1
-    }
-}
+# Shared resolver (_resolve_provider_xml.ps1) -- exact <PROVIDER>.xml, then base-provider fallback
+# for variants, then the only XML present, and it REFUSES to guess between multiple candidates.
+# Replaces a 3-tier hand-rolled glob whose middle tier ('notmatch old' + First 1) guessed
+# alphabetically; that is the class that made audit_defect_classes read a JAWS-only excerpt.
+$xmlResolved = Get-ProviderMetadataXml -Provider $Provider -ProvDir $provDir
+$xml = if ($xmlResolved) { Get-Item $xmlResolved } else { $null }
+# legacy: a stray XML directly in the provider root rather than source/
 if (-not $xml) {
     $xml = Get-ChildItem $provDir -Filter '*.xml' -File -ErrorAction SilentlyContinue |
            Where-Object { $_.BaseName -ieq $Provider } | Select-Object -First 1

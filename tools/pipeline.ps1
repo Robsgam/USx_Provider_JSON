@@ -43,6 +43,7 @@ $provRoot = Join-Path $repoRoot "providers"
 
 # Shared active-JSON resolver (handles versioned <PROVIDER>_v<X.Y>.json names)
 . "$toolDir\_resolve_provider_json.ps1"
+. "$toolDir\_resolve_provider_xml.ps1"
 # docs/ reorg pilot (2026-07-01, NJ_NJCJIS first)
 . "$toolDir\_resolve_docs_path.ps1"
 
@@ -87,8 +88,14 @@ function Find-ProviderFiles($provName) {
     $provJson = Get-ProviderRootJson -ProvDir $provDir -Provider $provName
     if (-not $provJson) { $provJson = Join-Path $provDir "${provName}.json" }  # fall back to expected name for messaging
 
-    $xmlFile = Get-ChildItem (Join-Path $provDir "source") -Filter "*.xml" -File -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -notmatch 'HIDLE' } | Select-Object -First 1
+    # Shared resolver -- this feeds extract_metadata_reference.ps1, which WRITES
+    # docs/<P>_METADATA_REFERENCE.txt, the authority doc the whole repo reads (CLAUDE.md Source
+    # Authority table). The old glob filtered only 'HIDLE' and took whatever Get-ChildItem returned
+    # first, so on CA_CONTRA_COSTA (2 XMLs) it would have regenerated the authority doc from the
+    # 6-node JAWS-only excerpt instead of the real 466-node metadata -- silently, with a green run.
+    # Latent rather than realized only because CC has not had a full pipeline run since.
+    $xmlPathResolved = Get-ProviderMetadataXml -Provider $provName -ProvDir $provDir
+    $xmlFile = if ($xmlPathResolved) { Get-Item $xmlPathResolved } else { $null }
 
     return @{
         Dir = $provDir
@@ -220,7 +227,7 @@ if (-not $batchMode) {
 
     # Step 4: Sync CLAUDE.md
     Step "Sync CLAUDE.md provider table"
-    $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_provider_table.ps1" 2>&1 | Out-String
+    $output = & powershell -ExecutionPolicy Bypass -File "$toolDir\sync_provider_table.ps1" 2>&1 | Out-String
     # SESSION_STATE's derived block is GENERATED, never hand-typed -- it was hand-corrected 3x on
     # 2026-07-30 before this was automated. audit_session_state (enforce 2l) gates it; this keeps it true.
     & (Join-Path $PSScriptRoot 'sync_session_state.ps1') | Out-Null
