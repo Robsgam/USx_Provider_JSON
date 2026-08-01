@@ -1,5 +1,57 @@
 # PENDING_UPDATES.txt -- AZ_AZDPS
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
-# Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:METADATA-DEMOTION-ADJUDICATE] audit_metadata CHECK 4e (new 2026-07-30) reports metadata-required fields built as any[]. Each must be promoted to set[] OR recorded in <PROVIDER>_ACCEPTED_DIVERGENCES.txt with a reason. Counts: AZ_AZDPS 9 (dexStateUserId handler-populated x4 + BirthDate/SexCode on DQSS/KQ -- AZ already carries 2 accepted NOTEs of the same shape), CA_eSUN 2, CA_SAN_LUIS_OBISPO 2, CA_VENTURA_COUNTY 2, OR_LEDS 1. Blocks enforce PHASE 2b until adjudicated. (flagged 2026-07-30)
+# CLEARED 2026-08-01 at v3.4. Adjudicated against AZ's OWN devdoc + metadata XML.
+# Kept as a record of what closed and why -- a bare empty file loses the reasoning.
+#
+# [FLAG:METADATA-DEMOTION-ADJUDICATE]  RESOLVED at v3.4. audit_metadata is now 127 PASS / 0 FAIL /
+#   0 WARN. Every CHECK 4e item was a VARIANT-MATCHING ARTEFACT, not a real demotion -- each built
+#   combo implements its PF-matching metadata variant exactly, and the finding came from pairing it
+#   against a stricter SIBLING variant that a different combo already implements:
+#     KQ | BirthDateDH, SexCodeDH -- built KQ declares PF=OperatorLicenseNumber and matches metadata
+#       KQ{OperatorLicenseNumber} = Set[State, OperatorLicenseNumber] Any[PurposeCode, Attention]
+#       exactly. The stricter KQ{Name} = Set[State, Name, BirthDate, SexCode] is implemented by KQH.
+#       Promoting them into KQ would make the OLN-only driver-history search -- the commonest query an
+#       officer runs -- unreachable.
+#     DQSS | BirthDate, SexCode -- DQSS is a SYNTHETIC keyRef (LIMITATION #21), so the auditor resolves
+#       it by PREFIX to the DQ family and compares against DQ{Name}. Its actual variant is
+#       DQ{SocialSecurityNumber} = Set[SocialSecurityNumber], which requires nothing else at all.
+#       Promoting would make an SSN search impossible without also knowing DOB and sex.
+#     The dexStateUserId items are handler-populated (CommsysGetDexStateUserIdRuleHandler) and AZ
+#       already carried accepted NOTEs of that shape.
+#   All four registered in AZ_AZDPS_ACCEPTED_DIVERGENCES.txt with the raw-XML evidence.
+#
+# ONE REAL WIRE DEFECT FIXED IN THE SAME PASS (v3.4) -- boat hull searches were SILENTLY DROPPING a
+#   registration number the provider accepts. v3.1 hardened Hull>Reg two ways: it gated the Reg combos
+#   `BoatHullIdNumber NOT_EXISTS` (correct, kept) and ALSO stripped RegistrationNumber from the HULL
+#   combos' any[]. The second half conflated routing with payload:
+#     WHICH COMBO FIRES is the guardrail -- the NOT_EXISTS gate already enforces it, and enter-both
+#       still routes to the hull combo, unchanged.
+#     WHAT THE WINNER TRANSMITS is separate, and BOTH authorities say carry it: metadata
+#       ACQB{BoatHullIdNumber} = Set[BadgeNumber, BoatHullIdNumber]
+#       Any[RegistrationNumber, RelatedHitSearchIndicator], and devdoc BoatQuery #1 lists
+#       RegistrationNumber as a legal optional.
+#   RESTORED to ACQBH + BQH any[] (4 audit_devdoc_optionals FAILs -> 0). Deliberately NOT reversed on
+#   ACQB/BQ: those are gated hull-NOT_EXISTS, so hull can never be present when they fire and listing
+#   it would be dead config. IDENTIFIER PRIORITY IS ABOUT ROUTING, NEVER ABOUT DELETING A PERMITTED
+#   FIELD FROM THE WINNER'S PAYLOAD.
+#
+# ALSO REGISTERED (2 devdoc-optionals NO-FIRE): the devdoc brackets SexCode as OPTIONAL on its name
+#   searches (#1 "BadgeNumber, BirthDate, Name, [SexCode]", #3 "Name, [SexCode]") but metadata makes
+#   it MANDATORY on every name variant -- ACWL{Name} and DQ{Name} both put SexCode inside <Set>, and
+#   there is no looser one. Metadata is FIELD-authority, devdoc is QUERY-authority (KB rule B4).
+#   Building to the brackets would emit a request NO variant accepts. The gate itself confirms the
+#   build is correct: "#1 +[SexCode] -> ACWL" reports OK.
+#
+# STILL OPEN (not blocking; recorded so it is not mistaken for finished):
+#   1. Never USx-tenant-tested. v3.4 owes a full 5-entity sweep from T1.
+#   2. GATE DEFECT, not an AZ defect: the devdoc parser DROPS combination items containing an `="Y"`
+#      literal and SILENTLY RENUMBERS the rest. AZ devdoc items #2 and #5 (the ImageIndicator="Y" +
+#      Requestor image-request variants) are therefore INVISIBLE to audit_devdoc_combinations, and its
+#      printed item numbers do not match the devdoc's. Neither item is buildable anyway -- metadata
+#      ACWL defines no ImageIndicator or Requestor field -- but a silently skipped item is the same
+#      class as a gate reading the wrong authority, so it must not be left implicit.
+#   3. 4 devdoc combinations registered as NOT BUILDABLE because AZ's metadata defines ZERO instances
+#      of the required field: ArticleSingleQuery #2/#3 (OwnerAppliedNumber) and GunQuery #1/#2
+#      (gun-by-name BirthDate/Name, ConcealedWeaponPermitNumber). ACQG/ACQA each have exactly ONE
+#      metadata variant and the build matches it. Probe validated against known-present fields first.

@@ -52,11 +52,10 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## STATE
 
-**8 providers ENFORCED 0 FAIL / 0 WARN.** Six are also tenant-tested (433 logs, four log gates
-green): TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23. Two are ENFORCED but
-**NEVER tenant-tested** -- CA_VENTURA_COUNTY v2.2 and CA_CLETS_OCATS v2.1 -- each owes a full
-5-entity sweep from T1. ENFORCED is not "done"; it means the build matches its sources.
-8 PHASE-1 audited and BLOCKED as expected (never tested): AZ, LA_LEMS, MD_METERS, TN_TIES, OH_LEADS,
+**9 providers ENFORCED 0 FAIL / 0 WARN.** Six are also tenant-tested (433 logs, four log gates
+green): TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23. Three are ENFORCED but **NEVER tenant-tested** -- CA_VENTURA_COUNTY v2.2,
+CA_CLETS_OCATS v2.1 and AZ_AZDPS v3.4 -- each owes a full 5-entity sweep from T1. ENFORCED is not "done"; it means the build matches its sources.
+7 PHASE-1 audited and BLOCKED as expected (never tested): LA_LEMS, MD_METERS, TN_TIES, OH_LEADS,
 NM, OR_LEDS, IL. **2 unaudited**: CA_SAN_LUIS_OBISPO, TX_TLETS_CCH. Plus CA_CONTRA_COSTA (on hold).
 
 **Portfolio devdoc-UNBUILT: 2** (was 13) -- both are LA_LEMS's deferred DH-`Attention` items.
@@ -77,10 +76,15 @@ prefill that took CA_VENTURA_COUNTY from 8 FAIL to 0 -- but confirm against CA_e
 
 ## NEXT PHYSICAL ACTION
 
-1. **AZ_AZDPS full provider pass** -- see item 2; it is now the largest single piece of owed work.
-2. **AZ_AZDPS full provider pass**: 4 metadata divergence FAILs + devdoc-optionals, including a REAL
-   transmission defect -- `BoatQuery #1 +[RegistrationNumber]` fires ACQBH but RegistrationNumber is
-   in no matching combo's `set[]`/`any[]`, so the value is SILENTLY NOT TRANSMITTED.
+1. **FIX the devdoc parser**: it DROPS any combination item containing an `="Y"` literal and then
+   SILENTLY RENUMBERS the rest, so its item numbers do not match the devdoc's. Impact measured: 5
+   items portfolio-wide -- AZ 2 (INSIDE its Basic DL block, so genuinely invisible) and CA_CLETS 3
+   (in out-of-Basic blocks, so no coverage loss -- CA_CLETS's ALL-PASS is NOT overstated). Neither AZ
+   item is buildable (metadata defines no ImageIndicator/Requestor), so nothing is owed on the build
+   side -- but a silently skipped item is the wrong-authority class and must not stay implicit.
+2. **CA_eSUN** -- 55 devdoc-optional FAILs. Confirm against CA_eSUN's OWN metadata whether every
+   combination requires purposeCode; if so, the load-bearing prefill is the fix (it took Ventura from
+   8 FAIL to 0). Do NOT infer it from a sibling.
 3. Adjudicate remaining findings on the other audited providers (FIX-vs-REGISTER, `usx-build` Step 3).
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING

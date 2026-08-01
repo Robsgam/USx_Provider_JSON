@@ -4,6 +4,39 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_az_azdps.ps1
 #
+# v3.4 (2026-08-01, ONE WIRE FIX + FOUR REGISTRATIONS -- all decided from AZ's OWN devdoc + metadata):
+#   WIRE FIX -- Boat hull searches were SILENTLY DROPPING a registration number the provider accepts.
+#     v3.1 hardened Hull>Reg by gating the Reg combos `BoatHullIdNumber NOT_EXISTS` (correct, kept) AND
+#     by removing RegistrationNumber from the HULL combos' any[] "so the hull pool never carries the
+#     reg number". That second half conflated two different things. WHICH COMBO FIRES is the guardrail
+#     and the NOT_EXISTS gate already enforces it. WHAT THE WINNER TRANSMITS is separate, and both
+#     authorities say carry it: metadata ACQB{BoatHullIdNumber} = Set[BadgeNumber, BoatHullIdNumber]
+#     Any[RegistrationNumber, RelatedHitSearchIndicator], and devdoc BoatQuery #1 lists
+#     RegistrationNumber as a legal optional. audit_devdoc_optionals reported it on 4 fills ("fires
+#     ACQBH but optional(s) RegistrationNumber are in NO matching combo's set[]/any[]").
+#     RESTORED to ACQBH + BQH any[]. NOT reversed on ACQB/BQ -- those are gated hull-NOT_EXISTS, so
+#     hull can never be present when they fire and listing it would be dead config.
+#     Identifier priority is about ROUTING, never about deleting a permitted field from the payload.
+#   REGISTERED (4 audit_metadata CHECK 4e FAILs, all variant-matching artefacts, none a real defect):
+#     KQ | BirthDateDH + SexCodeDH -- built KQ declares PF=OperatorLicenseNumber and implements
+#       metadata KQ{OperatorLicenseNumber} = Set[State, OperatorLicenseNumber] EXACTLY; the finding
+#       pairs it against the sibling KQ{Name} variant, which KQH implements. Promoting them would make
+#       the OLN-only driver-history search -- the commonest one -- unreachable.
+#     DQSS | BirthDate + SexCode -- DQSS is a SYNTHETIC keyRef, so the auditor resolves it by PREFIX to
+#       the DQ family and compares against DQ{Name}. Its real variant is DQ{SocialSecurityNumber} =
+#       Set[SocialSecurityNumber], which requires nothing else at all.
+#   REGISTERED (2 devdoc-optionals NO-FIRE): devdoc brackets SexCode as optional on the name searches
+#     (#1 "BadgeNumber, BirthDate, Name, [SexCode]" and #3 "Name, [SexCode]") but metadata makes it
+#     MANDATORY on every name variant -- ACWL{Name} and DQ{Name} both put SexCode in <Set>, and there
+#     is no looser one. Metadata is FIELD-authority. Building to the brackets would emit a request no
+#     variant accepts. The gate itself confirms the build is right: "#1 +[SexCode] -> ACWL" is OK.
+#   GATE DEFECT FOUND, NOT YET FIXED (recorded so it is not mistaken for coverage): the devdoc parser
+#     DROPS combination items containing an `="Y"` literal and SILENTLY RENUMBERS the rest, so AZ's
+#     devdoc items #2 and #5 (the ImageIndicator="Y" + Requestor image-request variants) are invisible
+#     to audit_devdoc_combinations, and its printed item numbers do NOT match the devdoc's. Neither is
+#     buildable anyway (metadata ACWL has no ImageIndicator/Requestor field), but a silently skipped
+#     item is the same class as a gate reading the wrong authority.
+#   No re-sweep cost: AZ has never been USx-tenant-tested. ALL 5 ENTITIES RESET at v3.4.
 # v3.3 (2026-07-28, SCOPE CORRECTION -- direct Rob directive): build ONLY the devdoc "Basic Queries
 #   Supported" section. The AZ Basic list is exactly 6 queries (ArticleSingleQuery, BoatQuery,
 #   DriverHistoryQuery, DriverLicenseQuery, GunQuery, VehicleRegistrationQuery). WMPIWantedPersonInquiry
@@ -103,7 +136,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.3'
+$Version = '3.4'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -472,11 +505,28 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                # Hull is top of the Hull>Reg pair -- no Hull/Reg gate. RegistrationNumber removed
-                # from any[] so the hull pool never carries the reg number. Badge-present gate (see
-                # ACQB) keeps the badge/no-badge routing symmetric (ACQBH is badge, BQH is fallback).
+                # Hull is top of the Hull>Reg pair -- no Hull/Reg gate. Badge-present gate (see ACQB)
+                # keeps the badge/no-badge routing symmetric (ACQBH is badge, BQH is fallback).
+                #
+                # v3.4: RegistrationNumber RESTORED to any[]. It had been removed "so the hull pool
+                # never carries the reg number", but that conflated two different things:
+                #   * WHICH COMBO FIRES is the guardrail, and it is already enforced by the
+                #     `BoatHullIdNumber NOT_EXISTS` condition on the Reg combos (ACQB / BQ) -- enter
+                #     both and the hull combo still wins, unchanged.
+                #   * WHAT THE WINNER TRANSMITS is a separate question, and BOTH authorities say
+                #     carry it: metadata ACQB{BoatHullIdNumber} is
+                #     Set[BadgeNumber, BoatHullIdNumber] Any[RegistrationNumber, RelatedHitSearchIndicator],
+                #     and devdoc BoatQuery #1 lists RegistrationNumber as a legal optional.
+                # Scrubbing it meant an officer could type a registration number the provider accepts
+                # as a refinement and have it SILENTLY DROPPED -- audit_devdoc_optionals reported
+                # exactly that on 4 fills ("fires ACQBH but optional(s) RegistrationNumber are in NO
+                # matching combo's set[]/any[]"). Priority is about routing, never about deleting a
+                # permitted field from the winner's payload.
+                # NOT done in the reverse direction: BoatHullIdNumber must NOT go into the Reg combos'
+                # any[], because they are gated hull-NOT_EXISTS -- a field that can never be present
+                # when the combo fires is dead config (verify_build rejects gate-XOR-companion).
                 set = @('dexStateUserId','BoatHullIdNumber')
-                any = @('RegistrationState','relatedHitSearchIndicator')
+                any = @('RegistrationNumber','RegistrationState','relatedHitSearchIndicator')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('dexStateUserId'); operator = 'EXISTS' }
@@ -503,10 +553,12 @@ $boatQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                # Hull is top of the Hull>Reg pair (no-Badge path) -- no gate. RegistrationNumber
-                # removed from any[] so the hull pool never carries the reg number.
+                # Hull is top of the Hull>Reg pair (no-Badge path) -- no gate.
+                # v3.4: RegistrationNumber RESTORED to any[], same reasoning as ACQBH above -- the
+                # Hull>Reg guardrail is the `BoatHullIdNumber NOT_EXISTS` gate on BQ, not the removal
+                # of a metadata-permitted, devdoc-listed optional from the winner's payload.
                 set = @('BoatHullIdNumber')
-                any = @('dexStateUserId','RegistrationState','relatedHitSearchIndicator')
+                any = @('RegistrationNumber','dexStateUserId','RegistrationState','relatedHitSearchIndicator')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
             }
             primaryFieldReference = 'BoatHullIdNumber'

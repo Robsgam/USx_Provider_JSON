@@ -2,9 +2,14 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.3** | Generated: 2026-07-31
+Current: **v3.4** | Generated: 2026-08-01
 
 ---
+
+## v3.4 -- 2026-08-01 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v3.3 -- 2026-07-28 -- SCOPE CORRECTION -- build only devdoc "Basic Queries Supported" (direct Rob directive)
 
