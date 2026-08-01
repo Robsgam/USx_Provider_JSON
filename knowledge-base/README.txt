@@ -1270,6 +1270,36 @@ AUTHORITATIVE SOURCE FILES (read-only)
     everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
     equivalent fallbacks.)
 
+  tools/audit_tool_portability.ps1
+    TOOL PORTABILITY SWEEP -- does every shared gate actually RUN on every provider?
+    Rob, 2026-08-01: "shared tools need to work everywhere." Every gate here is
+    provider-agnostic BY INTENTION, and several were provider-specific BY ACCIDENT,
+    each found only when someone happened to run it somewhere new:
+      * _resolve_provider_xml.ps1 did not exist, so four tools hand-rolled an
+        alphabetical `*.xml` glob. On the ONE provider carrying two XMLs it read a
+        6-node excerpt as if it were the 466-node metadata and reported green.
+      * audit_requirement_fidelity compared SOURCEFIELDS against metadata field
+        references, so any provider naming a control unexpectedly (VehNameLast,
+        OwnerLastName, firearmMake) produced false findings.
+      * that tool's $formOnly whitelist was written in sourceField spellings, so when
+        comparison moved into targetField space it stopped matching -- on AZ only.
+      * sync_session_state.ps1 was a HARD PARSE FAILURE under PowerShell 5.1 while
+        working fine under pwsh 7, and silently broke a pipeline step.
+    Every one was invisible until a tool met a provider it had never met.
+    WHAT IT MEASURES, and what it deliberately does NOT: not whether a gate PASSES --
+    a FAIL is a real answer. It measures whether the gate can RUN AND REACH A VERDICT:
+      [OK] a recognisable verdict line;  [NO-VERDICT] finished without one -- which is
+      exactly how a tool "passes" a provider it cannot actually handle;  [CRASH] threw
+      or exited non-zero with nothing;  [RUNTIME-ERR] verdict present but a null-deref
+      or ParserError in the output.
+    A gate that cannot reach a verdict on a provider is UNPORTABLE THERE regardless of
+    what the green board says -- the same "a step that did not run is NOT a pass"
+    principle the rest of the gates are built on.
+    Covers the 12 -Path-taking gates x every provider. Provider-scoped and repo-wide
+    tools have different invocation contracts and are covered by enforce.
+    RE-RUN IT AFTER ANY PORTABILITY FIX: those routinely break a DIFFERENT provider --
+    the $formOnly namespace break did exactly that, and only a full re-sweep showed it.
+
   tools/audit_optional_scope.ps1
     FIX-vs-REGISTER ADJUDICATOR for "silently not transmitted" findings. Answers
     mechanically what was being re-derived by hand every time.
