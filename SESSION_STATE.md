@@ -74,18 +74,28 @@ confirms semantics -- which is exactly why this needs deciding rather than infer
 
 ## NEXT PHYSICAL ACTION
 
-1. **CA_VENTURA_COUNTY IG.QGH** -- the ONLY C1 candidate in the whole portfolio, now confirmed twice
-   (by hand, and by the verified scanner). Its GunQuery `set[]` satisfies NO branch of metadata's
-   mandatory `Choice[Age|BirthDate]`, so the request is wire-invalid. Flagged
-   `[FLAG:GUN-NAME-CHOICE-IN-SET]`. **Its devdoc GunQuery section did not parse -- get the query
-   authority before fixing.** Both fields exist in metadata, so this is tractable in one build pass.
-2. Adjudicate the ~25 documented findings on the 8 audited providers (FIX-vs-REGISTER per
+1. **CA_CLETS_OCATS -- 2 devdoc-UNBUILT `UserId` items** (DriverLicenseQuery #1,
+   VehicleRegistrationQuery #2). Its metadata DOES define `UserId` (39 defs, 22 combos require it),
+   so unlike AZ these are buildable. **BUT** every UserId combo is an OCATS-specific transaction
+   (OCNAMQ / CHKINQ / AJNAMQ / AWNAMQ / AWVEHQ -- warrants, juvenile, LARS), which CLAUDE.md already
+   records as "available-not-built". **Decide SCOPE first:** its devdoc has no locatable "Basic
+   Queries Supported" header and ~100 combination blocks in a different format, so establish whether
+   these are Basic-supported before building anything. If they are not, this is a scope registration,
+   not a build (see the BASIC-scoped rule -- out-of-Basic metadata combos are never a gap).
+2. **AZ_AZDPS** owes a full provider pass: 4 metadata divergence FAILs (its
+   `[FLAG:METADATA-DEMOTION-ADJUDICATE]` share) + several devdoc-optionals FAILs including a real
+   one -- `BoatQuery #1 +[RegistrationNumber]` fires ACQBH but RegistrationNumber is in no matching
+   combo's `set[]`/`any[]`, so it is SILENTLY NOT TRANSMITTED.
+3. Adjudicate the remaining documented findings on the other audited providers (FIX-vs-REGISTER per
    `usx-build` Step 3).
 
-`tools/audit_defect_classes.ps1` is **DONE for C1** (verified: known-answer = 1; agrees with 6d on
-the six). C2/C3/C4 are RETIRED as duplicates of `audit_requirement_fidelity` /
-`audit_devdoc_optionals` / `audit_query_trace` -- do not resurrect them; the evidence is in its
-param block. Not wired into any gate yet, deliberately.
+**Portfolio devdoc-UNBUILT: 13 -> 4** (CA_VENTURA_COUNTY 5 built, AZ_AZDPS 4 registered against its
+own metadata). The last 4 are OCATS 2 + LA_LEMS 2 (LA_LEMS is deferred -- see ON HOLD).
+
+`tools/audit_defect_classes.ps1` is **DONE for C1** (verified: known-answer = 1; agrees with 6d) and
+C1 is now **0 across the whole portfolio**. C2/C3/C4 are RETIRED as duplicates of
+`audit_requirement_fidelity` / `audit_devdoc_optionals` / `audit_query_trace` -- do not resurrect
+them; the evidence is in its param block. Not wired into any gate, deliberately.
 
 ## RULES I BROKE TWICE TODAY -- READ BEFORE BUILDING
 
@@ -105,6 +115,19 @@ param block. Not wired into any gate yet, deliberately.
 - **Before building a new check, ask which existing gate already owns the question.** 3 of 4 classes
   in `audit_defect_classes` turned out to duplicate `audit_requirement_fidelity` /
   `audit_devdoc_optionals` / `audit_query_trace`, each as the weaker copy.
+- **NEVER cite another provider as authority or precedent** -- Rob, 3rd time, 2026-08-01. The ONLY
+  directed links are `CA_CONTRA_COSTA`->`CA_CLETS` and `<BASE>_<VARIANT>`->`<BASE>` (`# BASE-SYNC:`).
+  Justify from THIS provider's own devdoc + metadata. Proof it matters: CA_CLETS and
+  CA_VENTURA_COUNTY have the same `IR.QVC{Name}` combo and require **opposite** things (4 variants
+  with the Choice in `<Any>` vs 1 with it in `<Set>`) -- copying the verified sibling ships a
+  wire-invalid request. Gated by `audit_provider_linkage.ps1` (advisory; 68 refs portfolio-wide,
+  cleaned at each provider's own rebuild). Reframe "should X match its siblings?" as "what does X's
+  own authority require?".
+- **Same devdoc wording, opposite answers, decided by each provider's own metadata.** Verify a field
+  even EXISTS before treating a devdoc combo as owed: AZ's devdoc lists `OwnerAppliedNumber` and
+  `ConcealedWeaponPermitNumber` combos and its metadata defines NEITHER field (0 of 1896) -- not
+  buildable, registered. OCATS's devdoc lists `UserId` and its metadata defines it 39 times --
+  buildable. Validate the probe against a known-present field first, or a zero is meaningless.
 - **`powershell -File` stringifies array args** (`-Providers a,b` becomes one provider named "a,b").
 - **Never grep a whole tool output for `FAIL`** -- headers explain what a failure IS. Anchor on the
   verdict line.
