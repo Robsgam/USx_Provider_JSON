@@ -42,77 +42,68 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## ON HOLD / DO NOT RE-RAISE
 
-- **CA_CONTRA_COSTA** -- "on hold until further notice" (2026-07-31). Parked CLEAN at v2.2. All owed
-  work is in its `PENDING_UPDATES.txt`, incl. **JAWS is unbuildable** (devdoc defers to a doc not in
-  `source/`; metadata has ZERO JAWS nodes).
-- **Jira: ALL updates HELD** until the process is trusted. `enforce` 2r `[GAP]` is EXPECTED.
+- **CA_CONTRA_COSTA** -- "on hold until further notice". Parked CLEAN, ENFORCED. All owed work is in its
+  `PENDING_UPDATES.txt`, incl. that **JAWS is unbuildable** (devdoc defers to a doc not in `source/`;
+  metadata has ZERO JAWS nodes).
+- **LA_LEMS** -- its 2 DH-`Attention` devdoc items are DEFERRED by Rob ("handled when we get to them").
+  They are the ONLY reason it is BLOCKED. Do not re-raise them as a gap.
+- **Jira: ALL updates HELD** until the process is trusted. `enforce` 2r's `[GAP]` is EXPECTED.
 - **Form review is Rob's MANUAL gate.** 2k `[INFO] not reviewed` is the steady state. Never prompt.
-- LA_LEMS `DQ` + its 2 DH-`Attention` devdoc items, TN_TIES prose divergence -- "handled when we get
-  to them."
+- TN_TIES prose divergence -- handled when we get to it.
 
 ## STATE
 
-**10 providers ENFORCED 0 FAIL / 0 WARN.** Six are also tenant-tested (433 logs, four log gates
-green): TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23. Four are ENFORCED but **NEVER tenant-tested** -- CA_VENTURA_COUNTY v2.2,
-CA_CLETS_OCATS v2.1, AZ_AZDPS v3.4 and CA_eSUN v2.2 -- each owes a full 5-entity sweep from T1. ENFORCED is not "done"; it means the build matches its sources.
-6 PHASE-1 audited and BLOCKED as expected (never tested): LA_LEMS, MD_METERS, TN_TIES, OH_LEADS,
-NM, OR_LEDS, IL (minus CA_eSUN, now green). **2 unaudited**: CA_SAN_LUIS_OBISPO, TX_TLETS_CCH. Plus CA_CONTRA_COSTA (on hold).
+**19 of 20 providers ENFORCED 0 FAIL / 0 WARN** (measured by a full sweep, not inferred).
+Only **LA_LEMS** is BLOCKED, on its 2 deferred items above.
 
-**Portfolio devdoc-UNBUILT: 2** (was 13) -- both are LA_LEMS's deferred DH-`Attention` items.
-**audit_defect_classes C1: 0 portfolio-wide.** Simulator-undriveable combos: 0 (was 36).
+**ENFORCED is not "done".** Only SIX are tenant-tested (433 logs, four log gates green):
+TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23.
+The other **13 are ENFORCED but NEVER USx-tenant-tested**, each owing a full 5-entity sweep from T1.
+**That sweep backlog is now the single largest piece of outstanding work.**
 
-## OPEN PORTFOLIO QUESTION -- Rob's call, do not settle unilaterally
+**Portfolio devdoc-UNBUILT: 2** (was 13; both LA_LEMS). **C1 defects: 0.** **Undriveable combos: 0.**
 
-**NCIC-number-keyed combos: BUILT on TX/FL, REGISTERED-as-unbuilt on OH_LEADS.** All three devdocs
-list them as Basic-supported. Either (a) they are worth building -> OH_LEADS has a real 2-combo gap,
-un-register it; or (b) they are data-mined and should not be built -> TX and FL each carry 3 combos
-of redundant surface on TENANT-VERIFIED providers (removing them bumps both and archives 89+109
-logs). BUILD_RULES says the data-mined list is NOT build scope in either direction until the
-platform confirms semantics -- which is why this needs deciding, not inferring.
+## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 
-Also owed: **CA_eSUN's 55 devdoc-optional FAILs.** Very likely the same load-bearing `purposeCode`
-prefill that took CA_VENTURA_COUNTY from 8 FAIL to 0 -- but confirm against CA_eSUN's OWN metadata
-(every combo must require it) before touching it.
+1. **AZ_AZDPS driver-licence SCOPE INVERSION.** AZ's devdoc "Basic Queries Supported" section spans
+   lines 27-244 and its DL entry is `DriverLicenseQuery` (line 161). `AzAzdpsDriverLicenseQuery`
+   (line 393) is OUTSIDE it. Metadata defines BOTH as distinct transactions. **The build implements the
+   out-of-Basic one and skips the Basic one**, which is also the only DL transaction supporting image
+   requests. Boat has the identical fork and builds the Basic one -- so DL is the LONE inversion.
+   Switching rewires the whole Person entity; the v3.3 scope correction was your directive naming
+   "DriverLicenseQuery", so your intent may already be that the built query satisfies it.
+2. **NCIC-number-keyed combos: BUILT on TX/FL, REGISTERED-as-unbuilt on OH_LEADS.** All three devdocs
+   list them Basic-supported. Either (a) worth building -> OH_LEADS has a real 2-combo gap, or (b)
+   data-mined and not build scope -> TX and FL carry 3 combos of redundant surface each, on
+   TENANT-VERIFIED providers (removing them bumps both and archives 89 + 109 logs).
 
 ## NEXT PHYSICAL ACTION
 
-1. **AZ_AZDPS DRIVER-LICENCE SCOPE INVERSION -- Rob's call, do not settle unilaterally.** AZ's devdoc
-   "Basic Queries Supported:" section (line 25) spans lines 27-244 and its DL entry is
-   `DriverLicenseQuery` (line 161). `AzAzdpsDriverLicenseQuery` (line 393) is OUTSIDE it. Metadata
-   defines BOTH as distinct transactions. **The build implements the out-of-Basic one and skips the
-   Basic one**, which is also the only DL transaction supporting image requests
-   (`ImageIndicator="Y"` + `Requestor`). Boat has the identical fork (BoatQuery 66 Basic vs
-   AzAzdpsBoatQuery 337) and correctly builds the Basic one -- so DL is the LONE inversion, which is
-   why it reads as an oversight rather than policy. Switching rewires the whole Person entity, and the
-   v3.3 scope correction was a direct Rob directive naming "DriverLicenseQuery", so his intent may
-   already be that the built query satisfies it. NOT a parser defect -- I claimed that first and it was
-   wrong; the two devdoc blocks simply belong to two different query headings.
-2. **CA_SAN_LUIS_OBISPO and TX_TLETS_CCH** are the last two never-audited providers. TX_TLETS_CCH is a
-   VARIANT -- check its `# BASE-SYNC:` marker against TX_TLETS first (audit_variant_sync), since a
-   variant must not drift from its base.
-3. Adjudicate remaining findings on the other audited providers (FIX-vs-REGISTER, `usx-build` Step 3).
+**Tenant testing.** 13 providers are ENFORCED and never swept; that is the whole remaining backlog and
+it needs the browser driver (`test_phase2.ps1 -Provider <NAME>`, then `-PostIngest`). Nothing else in
+PHASE 1 is owed except the two decisions above.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
-- **NEVER cite another provider as authority or precedent.** Only directed links:
-  `CA_CONTRA_COSTA`->`CA_CLETS`, `<BASE>_<VARIANT>`->`<BASE>` (`# BASE-SYNC:`). PROOF it matters:
-  CA_CLETS and CA_VENTURA_COUNTY share an `IR.QVC{Name}` combo and require OPPOSITE things (4
-  variants with the Choice in `<Any>` vs 1 with it in `<Set>`) -- copying the verified sibling ships
-  a wire-invalid request. Gate: `audit_provider_linkage.ps1`. Reframe "should X match its siblings?"
-  as "what does X's OWN authority require?".
-- **A gate that reads the WRONG AUTHORITY cannot fail honestly** -- no denominator betrays it. Seen
-  twice in one tool: an alphabetical `*.xml` glob (6-node excerpt read as 466-node metadata) and a
-  flattened `<Choice>` (a branch can be a nested `<Set>` GROUP). **When two gates disagree, suspect
-  the one that simplified its authority.**
-- **Verify a field EXISTS before treating a devdoc combo as owed** -- and validate the probe against
-  a known-present field, or a zero means nothing. AZ's devdoc lists two fields its metadata defines
-  0 of 1896 times (not buildable); OCATS's defines its 39 times (buildable).
-- **After a DIRECT build-script run, reset the test package AND sync docs.** `pipeline.ps1` does it;
-  the provider script does not. Now mechanised in `Write-ProviderJson`.
-- **Use the Edit tool for multi-line text, never `.Replace()`** -- CRLF no-ops silently. Broken 3x.
-- **Before building a new check, ask which existing gate already owns the question.** 3 of 4
-  `audit_defect_classes` classes duplicated existing gates as the weaker copy.
-- **`powershell -File` stringifies array args**; run the array call in-session instead.
-- **Never grep whole tool output for `FAIL`** -- anchor on the verdict line.
-- **A step that did not run is NOT a pass.** Always print the denominator.
-- **REPLACE this file's content, never append.** The 120-line gate caught me appending again.
+- **NEVER cite another provider as authority.** Only directed links: `CA_CONTRA_COSTA`->`CA_CLETS`,
+  `<BASE>_<VARIANT>`->`<BASE>` (`# BASE-SYNC:`). PROOF: CA_CLETS and CA_VENTURA_COUNTY share an
+  `IR.QVC{Name}` combo requiring OPPOSITE things -- copying the verified sibling ships a wire-invalid
+  request. Gate: `audit_provider_linkage.ps1`. Ask "what does X's OWN authority require?".
+- **"silently not transmitted" carries NO information -- run `audit_optional_scope.ps1`.** The same
+  sentence was a real dropped value on 4 providers and correct behaviour on 6 in one day. See
+  `usx-build` Step 3a for the one question and the severity order.
+- **A KEYREF IS NOT A VARIANT.** Scope by (query, keyRef, primaryFieldReference). This decided outcomes
+  four separate times: audit_defect_classes, CA_CLETS_OCATS OCNAMQ/AWVEHQ, OH_LEADS registry lookup,
+  and audit_optional_scope's own first wrong answer.
+- **A gate that reads the WRONG AUTHORITY cannot fail honestly** -- no denominator betrays it. An
+  alphabetical `*.xml` glob read a 6-node excerpt as 466-node metadata; a flattened `<Choice>` hid that
+  a branch can be a nested `<Set>` GROUP. **When two gates disagree, suspect the one that simplified.**
+- **Verify a field EXISTS before treating a devdoc combo as owed**, and validate the probe against a
+  known-present field first or a zero means nothing.
+- **VERIFY THE EMITTED FILENAME after a version bump.** Three scripts use different `$Version` spacing
+  (`[string]$Version`, extra spaces); literal-match bumps silently no-op and rebuild the old version.
+- **Document a new tool in the SAME action that creates it.** The undocumented-tool gate caught me FOUR
+  times in one session.
+- **REPLACE this file's content, never append.** The line gate has caught me twice.
+- **`powershell -File` stringifies array args.** **Never grep whole output for `FAIL`** -- anchor on the
+  verdict line. **A step that did not run is NOT a pass** -- print the denominator.
