@@ -137,7 +137,7 @@ The 22 USx CAD-integration field names (the ones CAD/OnScene auto-populate) are 
 |---|---|---|
 | NCIC_LICENSE_PLATE_TYPE | NCIC | Baseline |
 | NCIC_FIREARM_TYPE | NCIC | Baseline |
-| NCIC_FIREARM_MAKE | NCIC | FIREARM makes only. NOT vehicle makes (AP #24) |
+| NCIC_FIREARM_MAKE | NCIC **or NJ_NIBRS** | FIREARM makes only. NOT vehicle makes (AP #24). **NJ_NIBRS is also valid for this category -- LIVE-PROVEN, not assumed:** NJ_NJCJIS pairs it with NJ_NIBRS on its GunMake dropdown and the officer selected a value in tenant tests (`providers/NJ_NJCJIS/logs/Firearm/NJ_NJCJIS_v4.15_QG_af_GunMake.txt` and `_QG_any.txt`, form='03' -> wire='03'). An empty dropdown cannot be filled, so those logs prove the source resolves. Recorded 2026-08-02 after a code-type sweep flagged the pairing as suspect against this table; the table was incomplete, the build was right |
 | VehicleType | **VEHICLE** | QRDM response **vehicle make** lookup (VehicleMakeName). Vehicle codes live in the `VehicleType` table under the `VEHICLE` source (user-verified vs platform registry 2026-06-24). NOT NCIC_FIREARM_MAKE. |
 | NCIC_FIREARM_CALIBER | NCIC | FormInput also valid |
 | NCIC_ARTICLE_TYPE | **CA_CLETS** | NCIC gives empty dropdown |
@@ -145,7 +145,7 @@ The 22 USx CAD-integration field names (the ones CAD/OnScene auto-populate) are 
 | NIBRS_SEX | NIBRS | DO NOT use attributeTypeId=SEX (see Sex Code section) |
 | NIBRS_RACE | NIBRS | DO NOT use attributeTypeId=RACE. NCIC = empty dropdown |
 | NJ_NIBRS_STATE | NJ_NIBRS | For OOS state dropdowns |
-| VEHICLE_BODY_STYLE | Provider-specific | NJ=NJ_NIBRS, CA=VEHICLE. NCIC = empty |
+| VEHICLE_BODY_STYLE | Provider-specific | NJ=NJ_NIBRS, CA=VEHICLE. NCIC = empty. ⚠️ **OPEN, do not "fix" on this row alone:** a sweep on 2026-08-02 found the built state is uniformly `VEHICLE_BODY_STYLE\|NJ_NIBRS` in the `<PROVIDER>_Results` QRDM of **all 20 providers** (it comes from the shared `Build-CommsysQrdm`, hence identical everywhere), which contradicts the CA=VEHICLE note above. Whether an NJ_NIBRS source resolves off-NJ is **UNVERIFIABLE from the repo** -- QRDM lookups resolve platform-side into the RMS UI and never appear in the captured wire response, so no committed log can settle it. STATUS: HYPOTHESIS. Discriminating test: import one non-NJ provider and check whether a response body style renders or comes back blank. Changing 19 providers off a doc line would be exactly the unverified churn the hypothesis gate exists to stop |
 | -- | **attributeTypeId** | -- |
 | VEHICLE_MAKE | NCIC (via attributeTypeId) | **MUST be FormSelect (Sel) wherever the field is built.** Dropdown works. NEVER use FormInput. Confirmed USx-tenant-tested: FL, CA_CLETS, TX, NY. **NOT ALL PROVIDERS CARRY IT** -- NJ_NJCJIS and HI_HCJDC_OFML build NO VehicleMakeCode field at all (verified 2026-08-01: absent from form AND every QIDM; neither provider's devdoc COMBINATIONS require it, and the devdoc's other mentions are response/field-definition tables). The earlier "Confirmed: NJ" claim here was wrong -- NJ has no such field to have confirmed. Consequence: verify_build's VehicleMakeCode check is VACUOUS on those two, and audit_gate_efficacy's `vehiclemake-as-input` mutation reports N/A there by design. |
 
