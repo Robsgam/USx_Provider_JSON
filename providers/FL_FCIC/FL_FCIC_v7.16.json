@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.15 -- entity forms",
+                        "description":  "Provider configuration for FL_FCIC v7.16 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Person queries -- DL (FDQ/DQ) + DH (KQ, out-of-state only) on separate cards. DH-suffix fields. QW auto-sent by CommSys.",
@@ -2144,7 +2144,8 @@
                                                                                                                         "ROW_VEH_1",
                                                                                                                         "ROW_VEH_2",
                                                                                                                         "ROW_VEH_3",
-                                                                                                                        "ROW_VEH_REQ"
+                                                                                                                        "ROW_VEH_REQ",
+                                                                                                                        "ROW_VEH_VSN"
                                                                                                                     ],
                                                                                                           "linkedNodes":  {
 
@@ -2449,7 +2450,47 @@
 
                                                                                                                           },
                                                                                                           "parent":  "ROW_VEH_REQ"
-                                                                                                      }
+                                                                                                      },
+                                                                                  "ROW_VEH_VSN":  {
+                                                                                                      "type":  {
+                                                                                                                   "resolvedName":  "Row"
+                                                                                                               },
+                                                                                                      "displayName":  "Row",
+                                                                                                      "props":  {
+                                                                                                                    "templateColumns":  [
+                                                                                                                                            "6"
+                                                                                                                                        ]
+                                                                                                                },
+                                                                                                      "isCanvas":  true,
+                                                                                                      "hidden":  false,
+                                                                                                      "nodes":  [
+                                                                                                                    "VINSequenceNumber_Input"
+                                                                                                                ],
+                                                                                                      "linkedNodes":  {
+
+                                                                                                                      },
+                                                                                                      "parent":  "CARD_VEH_SEARCH"
+                                                                                                  },
+                                                                                  "VINSequenceNumber_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Input",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "vinSequenceNumber",
+                                                                                                                                "label":  "VIN Sequence Number (optional)",
+                                                                                                                                "maxLength":  "2"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_VEH_VSN"
+                                                                                                              }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -2521,7 +2562,8 @@
                                                                                                                              "ROW_VEH_1",
                                                                                                                              "ROW_VEH_2",
                                                                                                                              "ROW_VEH_3",
-                                                                                                                             "ROW_VEH_REQ"
+                                                                                                                             "ROW_VEH_REQ",
+                                                                                                                             "ROW_VEH_VSN"
                                                                                                                          ],
                                                                                                                "linkedNodes":  {
 
@@ -2827,6 +2869,46 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_VEH_REQ"
                                                                                                            },
+                                                                                       "ROW_VEH_VSN":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "Row"
+                                                                                                                    },
+                                                                                                           "displayName":  "Row",
+                                                                                                           "props":  {
+                                                                                                                         "templateColumns":  [
+                                                                                                                                                 "6"
+                                                                                                                                             ]
+                                                                                                                     },
+                                                                                                           "isCanvas":  true,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+                                                                                                                         "VINSequenceNumber_Input"
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "CARD_VEH_SEARCH"
+                                                                                                       },
+                                                                                       "VINSequenceNumber_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormInput"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Input",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "vinSequenceNumber",
+                                                                                                                                     "label":  "VIN Sequence Number (optional)",
+                                                                                                                                     "maxLength":  "2"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_VEH_VSN"
+                                                                                                                   },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -2979,7 +3061,8 @@
                                                                                                                                 "ROW_VEH_1",
                                                                                                                                 "ROW_VEH_2",
                                                                                                                                 "ROW_VEH_3",
-                                                                                                                                "ROW_VEH_REQ"
+                                                                                                                                "ROW_VEH_REQ",
+                                                                                                                                "ROW_VEH_VSN"
                                                                                                                             ],
                                                                                                                   "linkedNodes":  {
 
@@ -3285,6 +3368,46 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_VEH_REQ"
                                                                                                               },
+                                                                                          "ROW_VEH_VSN":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "Row"
+                                                                                                                       },
+                                                                                                              "displayName":  "Row",
+                                                                                                              "props":  {
+                                                                                                                            "templateColumns":  [
+                                                                                                                                                    "6"
+                                                                                                                                                ]
+                                                                                                                        },
+                                                                                                              "isCanvas":  true,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+                                                                                                                            "VINSequenceNumber_Input"
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "CARD_VEH_SEARCH"
+                                                                                                          },
+                                                                                          "VINSequenceNumber_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Input",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "vinSequenceNumber",
+                                                                                                                                        "label":  "VIN Sequence Number (optional)",
+                                                                                                                                        "maxLength":  "2"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_VEH_VSN"
+                                                                                                                      },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -3401,7 +3524,8 @@
                                                                                                    "nodes":  [
                                                                                                                  "ROW_GUN_1",
                                                                                                                  "ROW_GUN_2",
-                                                                                                                 "ROW_GUN_REQ"
+                                                                                                                 "ROW_GUN_REQ",
+                                                                                                                 "ROW_GUN_RHS"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -3597,7 +3721,48 @@
 
                                                                                                                           },
                                                                                                           "parent":  "ROW_GUN_REQ"
-                                                                                                      }
+                                                                                                      },
+                                                                                  "ROW_GUN_RHS":  {
+                                                                                                      "type":  {
+                                                                                                                   "resolvedName":  "Row"
+                                                                                                               },
+                                                                                                      "displayName":  "Row",
+                                                                                                      "props":  {
+                                                                                                                    "templateColumns":  [
+                                                                                                                                            "6"
+                                                                                                                                        ]
+                                                                                                                },
+                                                                                                      "isCanvas":  true,
+                                                                                                      "hidden":  false,
+                                                                                                      "nodes":  [
+                                                                                                                    "RelatedHitSearchIndicator_Input"
+                                                                                                                ],
+                                                                                                      "linkedNodes":  {
+
+                                                                                                                      },
+                                                                                                      "parent":  "CARD_GUN"
+                                                                                                  },
+                                                                                  "RelatedHitSearchIndicator_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Select",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                        "label":  "Stolen Check",
+                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                        "codeTypeSource":  "NCIC"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_GUN_RHS"
+                                                                                                                      }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -3668,7 +3833,8 @@
                                                                                                         "nodes":  [
                                                                                                                       "ROW_GUN_1",
                                                                                                                       "ROW_GUN_2",
-                                                                                                                      "ROW_GUN_REQ"
+                                                                                                                      "ROW_GUN_REQ",
+                                                                                                                      "ROW_GUN_RHS"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -3865,6 +4031,47 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_GUN_REQ"
                                                                                                            },
+                                                                                       "ROW_GUN_RHS":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "Row"
+                                                                                                                    },
+                                                                                                           "displayName":  "Row",
+                                                                                                           "props":  {
+                                                                                                                         "templateColumns":  [
+                                                                                                                                                 "6"
+                                                                                                                                             ]
+                                                                                                                     },
+                                                                                                           "isCanvas":  true,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+                                                                                                                         "RelatedHitSearchIndicator_Input"
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "CARD_GUN"
+                                                                                                       },
+                                                                                       "RelatedHitSearchIndicator_Input":  {
+                                                                                                                               "type":  {
+                                                                                                                                            "resolvedName":  "FormSelect"
+                                                                                                                                        },
+                                                                                                                               "displayName":  "Select",
+                                                                                                                               "props":  {
+                                                                                                                                             "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                             "label":  "Stolen Check",
+                                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                             "codeTypeSource":  "NCIC"
+                                                                                                                                         },
+                                                                                                                               "isCanvas":  false,
+                                                                                                                               "hidden":  false,
+                                                                                                                               "nodes":  [
+
+                                                                                                                                         ],
+                                                                                                                               "linkedNodes":  {
+
+                                                                                                                                               },
+                                                                                                                               "parent":  "ROW_GUN_RHS"
+                                                                                                                           },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -4016,7 +4223,8 @@
                                                                                                            "nodes":  [
                                                                                                                          "ROW_GUN_1",
                                                                                                                          "ROW_GUN_2",
-                                                                                                                         "ROW_GUN_REQ"
+                                                                                                                         "ROW_GUN_REQ",
+                                                                                                                         "ROW_GUN_RHS"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -4213,6 +4421,47 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_GUN_REQ"
                                                                                                               },
+                                                                                          "ROW_GUN_RHS":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "Row"
+                                                                                                                       },
+                                                                                                              "displayName":  "Row",
+                                                                                                              "props":  {
+                                                                                                                            "templateColumns":  [
+                                                                                                                                                    "6"
+                                                                                                                                                ]
+                                                                                                                        },
+                                                                                                              "isCanvas":  true,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+                                                                                                                            "RelatedHitSearchIndicator_Input"
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "CARD_GUN"
+                                                                                                          },
+                                                                                          "RelatedHitSearchIndicator_Input":  {
+                                                                                                                                  "type":  {
+                                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                                           },
+                                                                                                                                  "displayName":  "Select",
+                                                                                                                                  "props":  {
+                                                                                                                                                "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                                "label":  "Stolen Check",
+                                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                                "codeTypeSource":  "NCIC"
+                                                                                                                                            },
+                                                                                                                                  "isCanvas":  false,
+                                                                                                                                  "hidden":  false,
+                                                                                                                                  "nodes":  [
+
+                                                                                                                                            ],
+                                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                                  },
+                                                                                                                                  "parent":  "ROW_GUN_RHS"
+                                                                                                                              },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -4330,7 +4579,8 @@
                                                                                                                  "ROW_ART_1",
                                                                                                                  "ROW_ART_2",
                                                                                                                  "ROW_ART_3",
-                                                                                                                 "ROW_ART_REQ"
+                                                                                                                 "ROW_ART_REQ",
+                                                                                                                 "ROW_ART_RHS"
                                                                                                              ],
                                                                                                    "linkedNodes":  {
 
@@ -4566,7 +4816,48 @@
 
                                                                                                                           },
                                                                                                           "parent":  "ROW_ART_REQ"
-                                                                                                      }
+                                                                                                      },
+                                                                                  "ROW_ART_RHS":  {
+                                                                                                      "type":  {
+                                                                                                                   "resolvedName":  "Row"
+                                                                                                               },
+                                                                                                      "displayName":  "Row",
+                                                                                                      "props":  {
+                                                                                                                    "templateColumns":  [
+                                                                                                                                            "6"
+                                                                                                                                        ]
+                                                                                                                },
+                                                                                                      "isCanvas":  true,
+                                                                                                      "hidden":  false,
+                                                                                                      "nodes":  [
+                                                                                                                    "RelatedHitSearchIndicator_Input"
+                                                                                                                ],
+                                                                                                      "linkedNodes":  {
+
+                                                                                                                      },
+                                                                                                      "parent":  "CARD_ART"
+                                                                                                  },
+                                                                                  "RelatedHitSearchIndicator_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Select",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                        "label":  "Stolen Check",
+                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                        "codeTypeSource":  "NCIC"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_ART_RHS"
+                                                                                                                      }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -4638,7 +4929,8 @@
                                                                                                                       "ROW_ART_1",
                                                                                                                       "ROW_ART_2",
                                                                                                                       "ROW_ART_3",
-                                                                                                                      "ROW_ART_REQ"
+                                                                                                                      "ROW_ART_REQ",
+                                                                                                                      "ROW_ART_RHS"
                                                                                                                   ],
                                                                                                         "linkedNodes":  {
 
@@ -4875,6 +5167,47 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_ART_REQ"
                                                                                                            },
+                                                                                       "ROW_ART_RHS":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "Row"
+                                                                                                                    },
+                                                                                                           "displayName":  "Row",
+                                                                                                           "props":  {
+                                                                                                                         "templateColumns":  [
+                                                                                                                                                 "6"
+                                                                                                                                             ]
+                                                                                                                     },
+                                                                                                           "isCanvas":  true,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+                                                                                                                         "RelatedHitSearchIndicator_Input"
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "CARD_ART"
+                                                                                                       },
+                                                                                       "RelatedHitSearchIndicator_Input":  {
+                                                                                                                               "type":  {
+                                                                                                                                            "resolvedName":  "FormSelect"
+                                                                                                                                        },
+                                                                                                                               "displayName":  "Select",
+                                                                                                                               "props":  {
+                                                                                                                                             "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                             "label":  "Stolen Check",
+                                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                             "codeTypeSource":  "NCIC"
+                                                                                                                                         },
+                                                                                                                               "isCanvas":  false,
+                                                                                                                               "hidden":  false,
+                                                                                                                               "nodes":  [
+
+                                                                                                                                         ],
+                                                                                                                               "linkedNodes":  {
+
+                                                                                                                                               },
+                                                                                                                               "parent":  "ROW_ART_RHS"
+                                                                                                                           },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -5027,7 +5360,8 @@
                                                                                                                          "ROW_ART_1",
                                                                                                                          "ROW_ART_2",
                                                                                                                          "ROW_ART_3",
-                                                                                                                         "ROW_ART_REQ"
+                                                                                                                         "ROW_ART_REQ",
+                                                                                                                         "ROW_ART_RHS"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
 
@@ -5264,6 +5598,47 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_ART_REQ"
                                                                                                               },
+                                                                                          "ROW_ART_RHS":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "Row"
+                                                                                                                       },
+                                                                                                              "displayName":  "Row",
+                                                                                                              "props":  {
+                                                                                                                            "templateColumns":  [
+                                                                                                                                                    "6"
+                                                                                                                                                ]
+                                                                                                                        },
+                                                                                                              "isCanvas":  true,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+                                                                                                                            "RelatedHitSearchIndicator_Input"
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "CARD_ART"
+                                                                                                          },
+                                                                                          "RelatedHitSearchIndicator_Input":  {
+                                                                                                                                  "type":  {
+                                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                                           },
+                                                                                                                                  "displayName":  "Select",
+                                                                                                                                  "props":  {
+                                                                                                                                                "fieldId":  "relatedHitSearchIndicator",
+                                                                                                                                                "label":  "Stolen Check",
+                                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                                "codeTypeSource":  "NCIC"
+                                                                                                                                            },
+                                                                                                                                  "isCanvas":  false,
+                                                                                                                                  "hidden":  false,
+                                                                                                                                  "nodes":  [
+
+                                                                                                                                            ],
+                                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                                  },
+                                                                                                                                  "parent":  "ROW_ART_RHS"
+                                                                                                                              },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -8046,6 +8421,14 @@
                                                                           "rule":  {
                                                                                        "function":  "CommsysGetLastNameFirstNameInitialRuleHandler"
                                                                                    }
+                                                                      },
+                                                                      {
+                                                                          "name":  "VINSequenceNumber",
+                                                                          "size":  2,
+                                                                          "sourceField":  [
+                                                                                              "vinSequenceNumber"
+                                                                                          ],
+                                                                          "targetField":  "VINSequenceNumber"
                                                                       }
                                                                   ],
                                                    "combinations":  [
@@ -8130,7 +8513,8 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "vinSequenceNumber"
                                                                                                          ],
                                                                                                  "conditions":  [
                                                                                                                     {
@@ -8680,6 +9064,14 @@
                                                                           "rule":  {
                                                                                        "function":  "CommsysGetLastNameFirstNameInitialRuleHandler"
                                                                                    }
+                                                                      },
+                                                                      {
+                                                                          "name":  "RelatedHitSearchIndicator",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "relatedHitSearchIndicator"
+                                                                                          ],
+                                                                          "targetField":  "RelatedHitSearchIndicator"
                                                                       }
                                                                   ],
                                                    "combinations":  [
@@ -8691,7 +9083,8 @@
                                                                                                  "any":  [
                                                                                                              "GunMake",
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "relatedHitSearchIndicator"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -8716,7 +9109,8 @@
                                                                                                  "any":  [
                                                                                                              "GunMake",
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "relatedHitSearchIndicator"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -8741,7 +9135,8 @@
                                                                                                  "any":  [
                                                                                                              "GunMake",
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "relatedHitSearchIndicator"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -8829,6 +9224,14 @@
                                                                           "rule":  {
                                                                                        "function":  "CommsysGetLastNameFirstNameInitialRuleHandler"
                                                                                    }
+                                                                      },
+                                                                      {
+                                                                          "name":  "RelatedHitSearchIndicator",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "relatedHitSearchIndicator"
+                                                                                          ],
+                                                                          "targetField":  "RelatedHitSearchIndicator"
                                                                       }
                                                                   ],
                                                    "combinations":  [
@@ -8840,7 +9243,8 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "relatedHitSearchIndicator"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -8865,7 +9269,8 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "relatedHitSearchIndicator"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -8889,7 +9294,8 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "relatedHitSearchIndicator"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -8913,7 +9319,8 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "ImageIndicator",
-                                                                                                             "Requestor"
+                                                                                                             "Requestor",
+                                                                                                             "relatedHitSearchIndicator"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -9454,13 +9861,13 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for FL_FCIC v7.15",
+                        "description":  "Provider configuration for FL_FCIC v7.16",
                         "name":  "FL_FCIC",
                         "type":  "BUNDLE",
                         "provider":  "FL_FCIC"
                     },
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.15 -- RMS bundle",
+                        "description":  "Provider configuration for FL_FCIC v7.16 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

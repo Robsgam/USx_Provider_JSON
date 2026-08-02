@@ -241,7 +241,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.15"
+    [string]$Version = "7.16"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -923,6 +923,50 @@ foreach ($q in @($vehRegQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)) {
     }
 }
 
+# ─── v7.16: two more optionals FL's own authorities permit but nothing wired ──────────────────────
+# Found by the SPEC-derived plan (devdoc+metadata, no vote from the JSON), which reported them
+# UNREACHABLE -- a devdoc field with no form control at all. Both authorities agree on both.
+#
+# 1) RelatedHitSearchIndicator on Gun + Article. Devdoc lists it optional on GunQuery #1-3 and
+#    ArticleSingleQuery #1-4, and the metadata puts it in <Any> on exactly those keyRefs (QG x3,
+#    QA x4). The control was built on Boat only, so an officer could run a stolen check on a boat
+#    but not on a firearm or an article. Optional, so any[] -- it is NOT the routing discriminator
+#    it is on Boat's QB, where it sits in set[]. No initialValue: it is officer-chosen.
+#
+# 2) VINSequenceNumber on FRQ{VIN} ONLY. Metadata FRQ{VIN} <Any> is exactly
+#    [Requestor, VINSequenceNumber, ImageIndicator]; v7.14 wired ImageIndicator, v7.15 Requestor,
+#    this completes the branch. maxLength 2 read from this XML's own <Field>, not guessed.
+#
+# DELIBERATELY NOT DONE HERE -- RelatedHitSearchIndicator on Vehicle, and VehicleMake on
+# VehicleRegistrationQuery #6. The devdoc lists optionals FLAT per query while the metadata scopes
+# them PER VARIANT, and both of these belong to QV (the NCIC stolen path), which this build does not
+# carry -- devdoc #5/#6 map to the FRQ combos, whose <Any> defines NEITHER field. Adding them to FRQ
+# would OVER-PERMIT: a request carrying a field that branch does not define. VehicleMake is the same
+# case v7.14 already decided when it removed VehicleMakeCode/vehicleYear from FRQ{VIN} (see the note
+# on that combo above) -- this re-derivation from the raw <Requirements> confirms that call was right.
+foreach ($cm in @($gunQuery.combinations) + @($artQuery.combinations)) {
+    $cur = @($cm.requirements.any | Where-Object { $_ })
+    if ($cur -notcontains 'relatedHitSearchIndicator') { $cm.requirements.any = @($cur + 'relatedHitSearchIndicator') }
+}
+foreach ($q in @($gunQuery, $artQuery)) {
+    if (-not @($q.attributes | Where-Object { "$($_.name)" -eq 'RelatedHitSearchIndicator' }).Count) {
+        $q.attributes = @(@($q.attributes) + [PSCustomObject]@{
+            name = 'RelatedHitSearchIndicator'; size = 1
+            sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator'
+        })
+    }
+}
+if (-not @($vehRegQuery.attributes | Where-Object { "$($_.name)" -eq 'VINSequenceNumber' }).Count) {
+    $vehRegQuery.attributes = @(@($vehRegQuery.attributes) + [PSCustomObject]@{
+        name = 'VINSequenceNumber'; size = 2
+        sourceField = @('vinSequenceNumber'); targetField = 'VINSequenceNumber'
+    })
+}
+foreach ($cm in @($vehRegQuery.combinations | Where-Object { "$($_.keyReference)" -eq 'FRQVehicleIdentificationNumber' })) {
+    $cur = @($cm.requirements.any | Where-Object { $_ })
+    if ($cur -notcontains 'vinSequenceNumber') { $cm.requirements.any = @($cur + 'vinSequenceNumber') }
+}
+
 $providerBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for $provider v$Version"
@@ -965,6 +1009,9 @@ $vehLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_VEH_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_VEH_REQ' @{ initialValue = 'X' } }
+            )}
+            @{ id = 'ROW_VEH_VSN'; cols = @('6'); fields = @(
+        @{ id = 'VINSequenceNumber_Input'; node = Inp 'vinSequenceNumber' 'VIN Sequence Number (optional)' '2' 'ROW_VEH_VSN' }
             )}
         )
     }
@@ -1064,6 +1111,10 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_GUN_REQ' @{ initialValue = 'X' } }
             )}
+            @{ id = 'ROW_GUN_RHS'; cols = @('6'); fields = @(
+        # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default)
+        @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_GUN_RHS' }
+            )}
         )
     }
 )
@@ -1098,6 +1149,10 @@ $artLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_ART_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_ART_REQ' @{ initialValue = 'X' } }
+            )}
+            @{ id = 'ROW_ART_RHS'; cols = @('6'); fields = @(
+        # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default)
+        @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_RHS' }
             )}
         )
     }

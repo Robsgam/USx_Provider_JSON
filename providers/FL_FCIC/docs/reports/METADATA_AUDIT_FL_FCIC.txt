@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.15.json
-  Generated: 2026-08-02 09:56
+  Source: FL_FCIC_v7.16.json
+  Generated: 2026-08-02 10:10
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-02 09:56
+ Generated: 2026-08-02 10:10
 ============================================================
 
 ============================================================
  METADATA AUDIT: FL_FCIC
 ============================================================
   XML: FL_FCIC.xml
-  JSON: FL_FCIC_v7.15.json
+  JSON: FL_FCIC_v7.16.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -39,6 +39,7 @@ METADATA AUDIT
   [PASS]   NCICNumber: in XML and QIDM
   [PASS]   OwnerAppliedNumber: in XML and QIDM
   [PASS]   ProcessControlNumber: in XML and QIDM
+  [PASS]   RelatedHitSearchIndicator: in XML and QIDM
   [PASS]   Requestor: in XML and QIDM
   BoatQuery:
   [PASS]   BirthDate: in XML and QIDM
@@ -116,6 +117,7 @@ METADATA AUDIT
   [PASS]   ImageIndicator: in XML and QIDM
   [PASS]   NCICNumber: in XML and QIDM
   [PASS]   ProcessControlNumber: in XML and QIDM
+  [PASS]   RelatedHitSearchIndicator: in XML and QIDM
   [PASS]   Requestor: in XML and QIDM
   ImageQuery: (not built in JSON -- see CHECK 1)
   LojackSpeedUpQuery: (not built in JSON -- see CHECK 1)
@@ -135,6 +137,7 @@ METADATA AUDIT
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
   [PASS]   VehicleMakeCode: in XML and QIDM
   [PASS]   VehicleYear: in XML and QIDM
+  [PASS]   VINSequenceNumber: in XML and QIDM
   VehicleStolenQuery: (not built in JSON -- see CHECK 1)
   VehicleTitleLeinQuery: (not built in JSON -- see CHECK 1)
   WantedPersonQuery: (not built in JSON -- see CHECK 1)
@@ -149,16 +152,20 @@ METADATA AUDIT
   [PASS]   keyRef QA: set field 'ArticleSerialNumber' covered by QAArticleSerialNumber
   [PASS]   keyRef QA: set field 'ArticleTypeCode' covered by QAArticleSerialNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QAArticleSerialNumber
+  [PASS]   keyRef QA: any field 'RelatedHitSearchIndicator' covered by QAArticleSerialNumber
   [PASS]   keyRef QA: any field 'Requestor' covered by QAArticleSerialNumber
   [PASS]   keyRef QA: set field 'ArticleTypeCode' covered by QAOwnerAppliedNumber
   [PASS]   keyRef QA: set field 'OwnerAppliedNumber' covered by QAOwnerAppliedNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QAOwnerAppliedNumber
+  [PASS]   keyRef QA: any field 'RelatedHitSearchIndicator' covered by QAOwnerAppliedNumber
   [PASS]   keyRef QA: any field 'Requestor' covered by QAOwnerAppliedNumber
   [PASS]   keyRef QA: set field 'NCICNumber' covered by QANCICNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QANCICNumber
+  [PASS]   keyRef QA: any field 'RelatedHitSearchIndicator' covered by QANCICNumber
   [PASS]   keyRef QA: any field 'Requestor' covered by QANCICNumber
   [PASS]   keyRef QA: set field 'ProcessControlNumber' covered by QAProcessControlNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QAProcessControlNumber
+  [PASS]   keyRef QA: any field 'RelatedHitSearchIndicator' covered by QAProcessControlNumber
   [PASS]   keyRef QA: any field 'Requestor' covered by QAProcessControlNumber
   BoatQuery:
   [PASS]   keyRef FBQ: set field 'BoatHullIdNumber' covered by FBQBoatHullIdNumber
@@ -244,14 +251,17 @@ METADATA AUDIT
   [PASS]   keyRef QG: set field 'GunSerialNumber' covered by QGGunSerialNumber
   [PASS]   keyRef QG: any field 'GunMake' covered by QGGunSerialNumber
   [PASS]   keyRef QG: any field 'ImageIndicator' covered by QGGunSerialNumber
+  [PASS]   keyRef QG: any field 'RelatedHitSearchIndicator' covered by QGGunSerialNumber
   [PASS]   keyRef QG: any field 'Requestor' covered by QGGunSerialNumber
   [PASS]   keyRef QG: set field 'NCICNumber' covered by QGNCICNumber
   [PASS]   keyRef QG: any field 'GunMake' covered by QGNCICNumber
   [PASS]   keyRef QG: any field 'ImageIndicator' covered by QGNCICNumber
+  [PASS]   keyRef QG: any field 'RelatedHitSearchIndicator' covered by QGNCICNumber
   [PASS]   keyRef QG: any field 'Requestor' covered by QGNCICNumber
   [PASS]   keyRef QG: set field 'ProcessControlNumber' covered by QGProcessControlNumber
   [PASS]   keyRef QG: any field 'GunMake' covered by QGProcessControlNumber
   [PASS]   keyRef QG: any field 'ImageIndicator' covered by QGProcessControlNumber
+  [PASS]   keyRef QG: any field 'RelatedHitSearchIndicator' covered by QGProcessControlNumber
   [PASS]   keyRef QG: any field 'Requestor' covered by QGProcessControlNumber
   VehicleRegistrationQuery:
   [PASS]   keyRef FRQ: set field 'DecalNumber' covered by FRQDecalNumber
@@ -264,6 +274,7 @@ METADATA AUDIT
   [PASS]   keyRef FRQ: any field 'ImageIndicator' covered by FRQLicensePlateNumber
   [PASS]   keyRef FRQ: set field 'VehicleIdentificationNumber' covered by FRQVehicleIdentificationNumber
   [PASS]   keyRef FRQ: any field 'Requestor' covered by FRQVehicleIdentificationNumber
+  [PASS]   keyRef FRQ: any field 'VINSequenceNumber' covered by FRQVehicleIdentificationNumber
   [PASS]   keyRef FRQ: any field 'ImageIndicator' covered by FRQVehicleIdentificationNumber
   [NOTE]   keyRef QV: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
   [NOTE]   keyRef QV: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
@@ -349,11 +360,12 @@ METADATA AUDIT
   [PASS] Requestor: maxLength 30 matches XML (Requestor)
   [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
   [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
+  [PASS] vinSequenceNumber: maxLength 2 matches XML (VINSequenceNumber)
 
 ============================================================
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 232 PASS / 0 FAIL / 0 WARN
+Total: 244 PASS / 0 FAIL / 0 WARN
 ============================================================
 

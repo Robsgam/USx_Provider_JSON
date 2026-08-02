@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.15.json
-  Generated: 2026-08-02 09:56
+  Source: FL_FCIC_v7.16.json
+  Generated: 2026-08-02 10:10
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: FL_FCIC_v7.15
+ CAD AUDIT: FL_FCIC_v7.16
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -32,6 +32,7 @@ CAD AUDIT
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] decalNumber: in QIF, not in CAD list (provider-specific)
     [INFO] Requestor: in QIF, not in CAD list (provider-specific)
+    [INFO] vinSequenceNumber: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
@@ -81,7 +82,7 @@ CAD AUDIT
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] age: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -101,7 +102,7 @@ CAD AUDIT
     [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] relatedHitSearchIndicator: in QIF and CAD list
     [INFO] attention: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] ArticleSerialNumber: in QIF, not in CAD list (provider-specific)
     [INFO] ownerAppliedNumber: in QIF, not in CAD list (provider-specific)
@@ -193,6 +194,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 83 PASS / 0 FAIL / 0 WARN / 80 INFO
+Total: 85 PASS / 0 FAIL / 0 WARN / 79 INFO
 
 

@@ -1,4 +1,4 @@
-FL_FCIC v7.15 -- TEST MATRIX
+FL_FCIC v7.16 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-02
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -7,12 +7,13 @@ Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (1 card, 10 fields):
+Vehicle (1 card, 11 fields):
   CARD_VEH_SEARCH (VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN, "OR" DECAL):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: decalNumber [Inp 10], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
     ROW 4: Requestor [Inp X, 30]
+    ROW 5: vinSequenceNumber [Inp 2]
 
 Person (2 cards, 19 fields):
   CARD_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
@@ -25,18 +26,20 @@ Person (2 cards, 19 fields):
     ROW 3: Requestor [Inp X, 30]
     ROW 4: Attention [Inp X, 30]
 
-Firearm (1 card, 6 fields):
+Firearm (1 card, 7 fields):
   CARD_GUN (FIREARM QUERY BY SERIAL NUMBER, "OR" NCIC NUMBER, "OR" PCN):
     ROW 1: serialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: NCICNumber [Inp 10], processControlNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
     ROW 3: Requestor [Inp X, 30]
+    ROW 4: relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
-Article (1 card, 7 fields):
+Article (1 card, 8 fields):
   CARD_ART (ARTICLE QUERY BY SERIAL NUMBER, "OR" OWNER APPLIED NUMBER, "OR" NCIC NUMBER, "OR" PCN):
     ROW 1: ArticleSerialNumber [Inp 20], ownerAppliedNumber [Inp 20]
     ROW 2: ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
     ROW 3: NCICNumber [Inp 10], processControlNumber [Inp 10]
     ROW 4: Requestor [Inp X, 30]
+    ROW 5: relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Boat (1 card, 14 fields):
   CARD_BOA_SEARCH (BOAT SEARCH BY HULL ID, "OR" REGISTRATION NUMBER, "OR" COAST GUARD DOC #, "OR" NCIC NUMBER, "OR" PCN):
@@ -119,7 +122,7 @@ ENTITY 2: VEHICLE (15 tests -- 1 card, 5 combos)
               Expected: any[] fields present in XML output.
 23  Vehicle     FRQ+VIN            VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
-24  Vehicle     FRQ+VIN            + ImageIndicator, Requestor     [    ]
+24  Vehicle     FRQ+VIN            + ImageIndicator, Requestor, vinSequenceNumber [    ]
               Expected: any[] fields present in XML output.
 25  Vehicle     RQ+VIN+State       VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
@@ -217,15 +220,15 @@ ENTITY 4: FIREARM (6 tests -- 1 card, 3 combos)
 --  ----------  --------------------------------------------------  ------
 67  Firearm     QG+Serial          serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QGGunSerialNumber)
-68  Firearm     QG+Serial          + GunMake, ImageIndicator, Requestor [    ]
+68  Firearm     QG+Serial          + GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 69  Firearm     QG+NCIC            NCICNumber=X123456789            [    ]
               Expected: GunQuery fires (QGNCICNumber)
-70  Firearm     QG+NCIC            + GunMake, ImageIndicator, Requestor [    ]
+70  Firearm     QG+NCIC            + GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 71  Firearm     QG+PCN             processControlNumber=0000012345  [    ]
               Expected: GunQuery fires (QGProcessControlNumber)
-72  Firearm     QG+PCN             + GunMake, ImageIndicator, Requestor [    ]
+72  Firearm     QG+PCN             + GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (8 tests -- 1 card, 4 combos)
@@ -234,19 +237,19 @@ ENTITY 5: ARTICLE (8 tests -- 1 card, 4 combos)
 --  ----------  --------------------------------------------------  ------
 73  Article     QA+Serial          ArticleSerialNumber=ART99999, Article... [    ]
               Expected: ArticleSingleQuery fires (QAArticleSerialNumber)
-74  Article     QA+Serial          + ImageIndicator, Requestor     [    ]
+74  Article     QA+Serial          + ImageIndicator, Requestor, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 75  Article     QA+OAN             ArticleTypeCode=BBICYCL, ownerApplied... [    ]
               Expected: ArticleSingleQuery fires (QAOwnerAppliedNumber)
-76  Article     QA+OAN             + ImageIndicator, Requestor     [    ]
+76  Article     QA+OAN             + ImageIndicator, Requestor, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 77  Article     QA+NCIC            NCICNumber=X123456789            [    ]
               Expected: ArticleSingleQuery fires (QANCICNumber)
-78  Article     QA+NCIC            + ImageIndicator, Requestor     [    ]
+78  Article     QA+NCIC            + ImageIndicator, Requestor, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 79  Article     QA+PCN             processControlNumber=0000012345  [    ]
               Expected: ArticleSingleQuery fires (QAProcessControlNumber)
-80  Article     QA+PCN             + ImageIndicator, Requestor     [    ]
+80  Article     QA+PCN             + ImageIndicator, Requestor, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 
 ================================================================================
@@ -260,4 +263,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T73(Serial), T75(OAN), T77(NCIC), T79(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T38(QB+Hull), T40(FBQ+Reg), T42(BQ+Reg), T44(QB+Reg), T46(BQ+Name), T48(FBQ+Decal), T50(FBQ+TitleLien), T52(QB+CG), T54(QB+NCIC), T56(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.15.json
+IMPORT FILE: FL_FCIC_v7.16.json
