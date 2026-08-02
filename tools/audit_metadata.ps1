@@ -797,6 +797,35 @@ function Audit-Provider {
                 }
             }
 
+            # NARROW BY primaryFieldReference -- A KEYREF IS NOT A VARIANT.
+            # Matching on keyRef alone compares an XML variant against a JSON combo that implements a
+            # DIFFERENT variant of the same keyRef, and then reports the other variant's mandatory
+            # fields as "missing from JSON set[]". Every one of LA_LEMS's 6 WARNs was this: metadata
+            # has BQ{Hull} + BQ{Reg}, QB{Hull} + QB{Reg}, DQ{Name} + DQ{OLN}, QWDN{Name} + QWDN{OLN},
+            # the build implements one variant of each exactly, and the union comparison declared the
+            # sibling's key field missing. audit_requirement_fidelity -- which IS per-combination --
+            # reported 0 UNDER / 0 OVER on the same provider, which is what proved the build right.
+            # Prefer same-PF combos; if none matches AND this keyRef has several XML variants, this
+            # variant simply is not built, so fall through to the not-built resolver below. That path
+            # carries a HARD INVARIANT never to emit Out-Fail/Out-Warn and already takes $pfr into
+            # account, so this cannot manufacture a new failure -- it can only stop a false one.
+            if ($pfr -and $matchingJsonCombos.Count -gt 0) {
+                $canonPf = (("$pfr" -replace '[^A-Za-z0-9]','').ToLower() -replace 'dh$','') -replace 'cch$',''
+                $samePf = @($matchingJsonCombos | Where-Object {
+                    $p = "$($_.primaryFieldReference)"
+                    $p -and ((("$p" -replace '[^A-Za-z0-9]','').ToLower() -replace 'dh$','') -replace 'cch$','') -eq $canonPf
+                })
+                if ($samePf.Count) {
+                    $matchingJsonCombos = @($samePf)
+                } else {
+                    $xmlVariantsForKr = @($xmlCombos | Where-Object {
+                        $k2 = $_.keyReference; if (-not $k2) { try { $k2 = $_.GetAttribute('keyReference') } catch { $k2 = '' } }
+                        $k2 -ieq $kr
+                    })
+                    if ($xmlVariantsForKr.Count -gt 1) { $matchingJsonCombos = @() }
+                }
+            }
+
             if ($matchingJsonCombos.Count -eq 0) {
                 # Matching delegated to _metadata_keyref_match.ps1 (shared with
                 # extract_metadata_reference.ps1's BUILD COVERAGE) -- declaration-first
