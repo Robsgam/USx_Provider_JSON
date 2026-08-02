@@ -46,8 +46,33 @@
 #   combination, so it cannot shadow one path over another. Applied as a build-time normalization
 #   loop (one rule, 21 sites) rather than 21 hand edits -- not a post-build JSON patch.
 #
+# ADJUDICATED ADVISORY -- SHADOW x12, deliberately NOT registered. Recorded here instead.
+#   audit_query_trace reports 12 SHADOW combinations: this provider's metadata declares TWELVE
+#   VehicleRegistrationQuery combinations with the IDENTICAL requirement set
+#   [CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode] --
+#   IV.4I / 4C / 4M / 4L / 4T / 4F / 4S / 4E / 4H / 4P / 4K and IL.A1.
+#   They are INDISTINGUISHABLE FROM THE FORM: an officer supplies the same three fields for all
+#   twelve, so at most one could ever fire. The server routes by the LicensePlateTypeCode VALUE, not
+#   by keyRef. This provider's OWN DEVDOC collapses them into ONE combination --
+#   VehicleRegistrationQuery #2 "(In) LicensePlateNumber, LicensePlateTypeCode" -- which the built
+#   IA.QV implements (plate in set[], LicensePlateTypeCode in any[] with a PC default). Building them
+#   separately would add eleven permanently-unreachable paths that still count toward coverage and
+#   could carry a PASS log: the dead-combo class the reachability gate exists to prevent.
+#   WHY NOT IN THE ACCEPTED-DIVERGENCE REGISTRY: I registered all twelve as dropped-combo and then
+#   MEASURED the effect -- audit_requirement_fidelity went 45 branches -> 33 while UNDER stayed 1 and
+#   OVER stayed 9, and audit_query_trace still reported SHADOW x12 (it does not registry-suppress
+#   SHADOW, by design -- like MISSING it is a human-adjudication list). So the rows removed TWELVE
+#   CLEAN COMPARISONS, changed no finding, and silenced nothing. A registration that costs coverage
+#   and buys nothing is worse than no registration: it makes the branch count look like real
+#   coverage loss and adds twelve rows that read as adjudicated suppression. REVERTED; the reasoning
+#   lives here instead, where it is documentation rather than a silent -12 on the denominator.
+#
 # STILL OPEN (not blocking; recorded so it is not mistaken for finished):
-#   Never USx-tenant-tested. v2.2 owes a full 5-entity sweep from T1.
+#   Never USx-tenant-tested. v2.3 owes a full 5-entity sweep from T1.
+#   audit_requirement_fidelity: 45 branches / 1 UNDER (RQ-family MessageKeyModifier, CLASS 3
+#     mis-mapping) / 9 OVER (IA.QV year/make + IG.QGB sourceField alias -- see FIDELITY_TRIAGE).
+#   build_phase1 random fuzz: 2 unaimed survivors to triage (swap-order @ BoatQuery[3];
+#     over-permit @ DriverLicenseQuery[7] RegistrationState).
 #   ArticleSingleQuery: metadata IP.QA is Set[purpose, <identifier>, Any[Brand,Category,TypeCode]],
 #   so Brand/Category/TypeCode are OPTIONAL even though the devdoc prose reads Brand as mandatory.
 #   Nothing to build -- noted because the devdoc wording invites a wrong "gap" every time it is read.
