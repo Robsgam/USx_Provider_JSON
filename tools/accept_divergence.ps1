@@ -60,6 +60,17 @@ if (-not (Test-Path $registry)) {
         "# set/any divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].",
         "# Format (pipe-delimited): query | keyRef | field | rule | reason | source | date",
         "#",
+        # A NEW registry is born DIRECTION-AWARE. The opt-in marker exists because narrowing an
+        # EXISTING registry can un-silence a real finding and turn a green provider red -- a release
+        # decision. But a file being created right now has no legacy rows to protect, so there is
+        # nothing to un-silence and the cautious default is simply the wrong one. Without this, a
+        # brand-new registry silently inherited the BROAD behaviour: creating IL_LEADS_OFML's file
+        # with 4 rows immediately produced 12 over-broad suppressions (2026-08-02). Direction-aware
+        # is the norm on 17 of 20 providers; new files should not start out behind.
+        "# SUPPRESSION-SCOPE: direction-aware",
+        "#   Set at creation. A row only silences a check whose CLASS matches its rule",
+        "#   (tools/_divergence_rules.ps1); 'other'-class rows silence nothing by design.",
+        "#",
         ""
     )
     Set-Content -Path $registry -Value $headerLines -Encoding utf8
