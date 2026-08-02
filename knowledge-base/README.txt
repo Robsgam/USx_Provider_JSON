@@ -1490,3 +1490,11 @@ ARCHIVE
 
   Archive deleted 2026-05-08. All content was merged into the 9 active KB files above
   during the 2026-05-04 consolidation.
+
+emit_decision_trail.ps1 -- SessionStart hook #3, the REASONING pointer for a restarted session.
+  SESSION_STATE.md carries STATE and usx-resume carries ENVIRONMENT; neither carries JUDGEMENT.
+  The judgement earned in a long session lives in commit BODIES, which nothing read at startup --
+  so every restart re-learned the same lessons. This prints the recent commit subjects as an index
+  plus the self-correction lines from their bodies, and tells the reader to go read the bodies.
+  Derived from git on every run, so it can never go stale and duplicates nothing.
+  Added 2026-08-02 after Rob observed the resume path was not producing a continuous line of thought.
