@@ -1498,3 +1498,9 @@ emit_decision_trail.ps1 -- SessionStart hook #3, the REASONING pointer for a res
   plus the self-correction lines from their bodies, and tells the reader to go read the bodies.
   Derived from git on every run, so it can never go stale and duplicates nothing.
   Added 2026-08-02 after Rob observed the resume path was not producing a continuous line of thought.
+
+audit_wiring_closure.ps1 -- FORM <-> QIDM closure. Does every control reach the wire, and does
+  every wired field have a control? Five silent breaks (dead control / orphan attribute /
+  unfillable requirement / inert condition / inert default). Added 2026-08-02 after a VISIBLE
+  prefilled control on CA_SAN_LUIS_OBISPO turned out to be in no combination's any[] -- its value
+  discarded on every query -- while every existing gate reported that provider green.
