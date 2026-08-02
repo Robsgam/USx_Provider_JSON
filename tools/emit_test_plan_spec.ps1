@@ -134,7 +134,17 @@ foreach ($b in $j.bundles) {
                     $raw = "$($p.fieldId)"
                     $k = Canon $raw
                     if ($null -ne $p.initialValue -and "$($p.initialValue)".Length) { $prefills[$e][$raw] = "$($p.initialValue)" }
-                    if ($raw -cmatch 'DH$') {
+                    # CCH gets its own key space for the SAME reason DH does, and it is the same bug:
+                    # Canon() strips a trailing 'cch' too, so on a variant provider that CCH-suffixes
+                    # every field (full isolation, zero collision by design) the base 'Attention' and
+                    # the variant 'attentionCCH' both canonicalise to 'attention' and first-wins kept
+                    # the BASE control. Every CCH combo requiring attentionCCH then looked unsatisfied:
+                    # 52 of 143 TX_TLETS_CCH tests came back NO-FIRE, a generator artifact reported as
+                    # a provider defect. Only bites where a base field and its variant twin share a
+                    # canon key, which is why most CCH fields resolved fine and the failure looked random.
+                    if ($raw -cmatch 'CCH$') {
+                        if (-not $formFields[$e].ContainsKey("cch|$k")) { $formFields[$e]["cch|$k"] = $raw }
+                    } elseif ($raw -cmatch 'DH$') {
                         if (-not $formFields[$e].ContainsKey("dh|$k")) { $formFields[$e]["dh|$k"] = $raw }
                     } else {
                         if (-not $formFields[$e].ContainsKey($k)) { $formFields[$e][$k] = $raw }
@@ -186,7 +196,7 @@ function Get-Value([string]$devField, [string]$fieldId, [string]$ent) {
         }
     }
 }
-function Resolve-FieldIds([string]$devField, [string]$ent, [bool]$preferDH) {
+function Resolve-FieldIds([string]$devField, [string]$ent, [bool]$preferDH, [bool]$preferCCH) {
     $c = Canon $devField
     $want = if ($expand.ContainsKey($c)) { @($expand[$c]) } else { @($c) }
     $out = @()
@@ -194,13 +204,24 @@ function Resolve-FieldIds([string]$devField, [string]$ent, [bool]$preferDH) {
         if (-not $formFields[$ent]) { continue }
         # A DH-targeted query must drive the DH-suffixed controls; fall back to the plain family only
         # for fields that have no DH twin (e.g. Attention, which exists once).
-        if ($preferDH -and $formFields[$ent].ContainsKey("dh|$w")) { $out += $formFields[$ent]["dh|$w"] }
-        elseif ($formFields[$ent].ContainsKey($w))                 { $out += $formFields[$ent][$w] }
+        if ($preferCCH -and $formFields[$ent].ContainsKey("cch|$w"))  { $out += $formFields[$ent]["cch|$w"] }
+        elseif ($preferDH -and $formFields[$ent].ContainsKey("dh|$w")) { $out += $formFields[$ent]["dh|$w"] }
+        elseif ($formFields[$ent].ContainsKey($w))                     { $out += $formFields[$ent][$w] }
     }
     return ,@($out)
 }
 # Is this query DH-targeted? Derived from the QIDM's OWN combo fields, never from its name -- a
 # name test would miss a provider that suffixes differently.
+# Same derivation as Test-IsDhQuery, and for the same reason: read the QIDM's OWN combo fields,
+# never its name -- a name test would miss a provider that suffixes differently.
+function Test-IsCchQuery($qidm) {
+    foreach ($cm in @($qidm.combinations)) {
+        foreach ($fl in (@($cm.requirements.set) + @($cm.requirements.any))) {
+            if ("$fl" -cmatch 'CCH$') { return $true }
+        }
+    }
+    return $false
+}
 function Test-IsDhQuery($qidm) {
     foreach ($cm in @($qidm.combinations)) {
         foreach ($fl in (@($cm.requirements.set) + @($cm.requirements.any))) {
@@ -215,7 +236,8 @@ $tests = @(); $n = 0; $unreachable = 0; $nofire = 0
 foreach ($it in ($items | Sort-Object Query, Num)) {
     if (-not $qidms.ContainsKey($it.Query)) { continue }   # query not built at all -- 2p owns that
     $ent = "$($qidms[$it.Query].targetEntity)"
-    $isDh = Test-IsDhQuery $qidms[$it.Query]
+    $isDh  = Test-IsDhQuery  $qidms[$it.Query]
+    $isCch = Test-IsCchQuery $qidms[$it.Query]
 
     $subsets = @( ,@() )                                   # mandatory-only first
     foreach ($o in $it.Opt) { $subsets += ,@($o) }          # then each optional on its own
@@ -223,7 +245,7 @@ foreach ($it in ($items | Sort-Object Query, Num)) {
     foreach ($sub in $subsets) {
         $fills = @(); $miss = @()
         foreach ($fld in (@($it.Mand) + @($sub))) {
-            $ids = Resolve-FieldIds $fld $ent $isDh
+            $ids = Resolve-FieldIds $fld $ent $isDh $isCch
             if (-not $ids.Count) { $miss += $fld; continue }
             foreach ($id in $ids) { $fills += [pscustomobject]@{ fieldId = $id; value = (Get-Value $fld $id $ent) } }
         }
