@@ -851,6 +851,52 @@ if (-not (Test-Path $dcTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2t: Form <-> QIDM Wiring Closure (audit_wiring_closure.ps1)
+# ══════════════════════════════════════════════════════════════════════════════
+#  Every other phase validates the REQUEST against an AUTHORITY -- devdoc, metadata, reachability,
+#  log evidence -- and all of them work inward from "what should we send?". None asks whether the
+#  form and the QIDMs are wired to EACH OTHER: whether an officer-visible control actually reaches
+#  the wire, and whether a wired field has anywhere to type it.
+#
+#  Found 2026-08-02 on providers reporting 0 FAIL / 0 WARN: CA_SAN_LUIS_OBISPO shipped a VISIBLE
+#  "Purpose Code (DH)" control, prefilled 'C', that appeared in no combination's any[] -- discarded
+#  on every DriverHistory query. FL_FCIC discarded middle name and suffix on DL, DH and Boat, and
+#  OR_LEDS offered a gun-Type dropdown for a field its GunQuery does not define at all. Six controls
+#  across two providers, invisible to validator / verify_build / audit_metadata / audit_cad /
+#  reachability / requirement_fidelity / the spec plan, all of which were green.
+#
+#  BLOCKING, unlike most late phases. A control that silently discards officer input is not a
+#  documentation gap or a judgement call -- it is the form lying about what the query will do, and
+#  there is no product decision to make. Safe to block from day one because the whole portfolio was
+#  driven to 0 across all five break classes before this was wired in.
+SectionHeader "PHASE 2t: Form <-> QIDM Wiring Closure"
+if ($true) {
+    $wcTool = Join-Path $toolDir 'audit_wiring_closure.ps1'
+    if (-not (Test-Path $wcTool)) {
+        Info "audit_wiring_closure.ps1 not present -- skipped"
+    } else {
+        foreach ($pdw in $providers) {
+            $provName = $pdw.Name
+            $wcOut = & powershell -ExecutionPolicy Bypass -File $wcTool -Provider $provName -Quiet 2>&1 | Out-String
+            $wcM = [regex]::Match($wcOut, 'A dead control (\d+) / B orphan attribute (\d+) / C unfillable req (\d+) / D inert condition (\d+) / E inert default (\d+)')
+            if (-not $wcM.Success) {
+                Info "$provName -- wiring closure produced no parseable totals"
+                continue
+            }
+            $wcTotal = 0
+            for ($gi = 1; $gi -le 5; $gi++) { $wcTotal += [int]$wcM.Groups[$gi].Value }
+            if ($wcTotal -gt 0) {
+                Fail "$provName -- $wcTotal form/QIDM wiring break(s): a control that discards officer input, or a wired field with nowhere to type it (tools\audit_wiring_closure.ps1 -Provider $provName)"
+                $wcOut -split "`n" | Where-Object { $_ -match '^\s+[A-E] ' } | Select-Object -First 6 |
+                    ForEach-Object { Out "       $($_.Trim())" }
+            } else {
+                Pass "$provName -- form/QIDM wiring closed (no dead controls, orphan attributes, unfillable requirements, inert conditions or inert defaults)"
+            }
+        }
+    }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 2q: Devdoc Optionals x Routing (audit_devdoc_optionals.ps1) -- ADVISORY
 # ══════════════════════════════════════════════════════════════════════════════
 #  Every devdoc combination against EVERY SUBSET of its [bracketed] optionals. Every other gate
