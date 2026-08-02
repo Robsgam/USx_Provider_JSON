@@ -276,7 +276,14 @@ $hiddenFieldWhitelist = @(
     '(?i)dexStateUserId',                # AUTH user id from RMS profile
     '(?i)cadUnit|cadEvent|linkToEvent',  # CAD / First-Responder context
     '(?i)^Attention$',                   # auto-Attention gate-feeder (handler emits officer profile name; field hidden, value ignored)
-    '(?i)^requestorDH$',                 # NY_NYSPIN_EJUSTICE required-field exception (2026-07-06, user-approved):
+    # 2026-08-02: widened from '^requestorDH$' to cover the bare spelling. This was an internal
+    # CONTRADICTION, not a real finding: $autoPopAttrNames below is @('Attention','Requestor') and
+    # WARNs when a Requestor attribute has NO handler -- but the handler is inert unless its
+    # sourceField carries a value, which requires exactly the hidden gate-feeder CHECK 6 then WARNed
+    # about. One gate demanded what the other forbade. Measured before widening: across all 20
+    # provider JSONs only ONE carries a bare 'Requestor' fieldId, so this silences the intended case
+    # and nothing else. The 'DH' spelling stays valid; both are the same approved class.
+    '(?i)^requestor(DH)?$',              # required-field exception (2026-07-06, user-approved):
                                           # CommsysGetLastNameFirstNameInitialRuleHandler gate-feeder, same rationale as
                                           # Attention above, deliberately extended to a required (set[]) field because
                                           # the value is knowable/stable (officer's own RMS profile), not officer judgment.

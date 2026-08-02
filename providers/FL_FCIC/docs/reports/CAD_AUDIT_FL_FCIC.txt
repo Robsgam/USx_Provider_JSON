@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.14.json
-  Generated: 2026-07-31 19:29
+  Source: FL_FCIC_v7.15.json
+  Generated: 2026-08-02 09:56
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: FL_FCIC_v7.14
+ CAD AUDIT: FL_FCIC_v7.15
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -31,6 +31,7 @@ CAD AUDIT
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] decalNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] Requestor: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
@@ -66,6 +67,7 @@ CAD AUDIT
     [INFO] nameMiddleDH: in QIF, not in CAD list (provider-specific)
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] Requestor: in QIF, not in CAD list (provider-specific)
   Firearm:
     [PASS] serialNumber: in QIF and CAD list
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -86,6 +88,7 @@ CAD AUDIT
     [INFO] GunMake: in QIF, not in CAD list (provider-specific)
     [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
     [INFO] processControlNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] Requestor: in QIF, not in CAD list (provider-specific)
   Article:
     [INFO] serialNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] articleTypeCode: in QIF as 'ArticleTypeCode' (PascalCase USx fieldIds)
@@ -104,6 +107,7 @@ CAD AUDIT
     [INFO] ownerAppliedNumber: in QIF, not in CAD list (provider-specific)
     [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
     [INFO] processControlNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] Requestor: in QIF, not in CAD list (provider-specific)
   Boat:
     [PASS] boatHullIdNumber: in QIF as 'BoatHullIdNumber' (PascalCase USx fieldIds)
     [PASS] registrationNumber: in QIF as 'RegistrationNumber' (PascalCase USx fieldIds)
@@ -122,6 +126,7 @@ CAD AUDIT
     [INFO] titleLienInformation: in QIF, not in CAD list (provider-specific)
     [INFO] NCICNumber: in QIF, not in CAD list (provider-specific)
     [INFO] processControlNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] Requestor: in QIF, not in CAD list (provider-specific)
 
 --- CHECK 2: CAD_DISPATCH Layout Variant ---
     [PASS] Vehicle QIF 'ENTITY_Vehicle': CAD_DISPATCH layout exists
@@ -188,6 +193,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 83 PASS / 0 FAIL / 0 WARN / 75 INFO
+Total: 83 PASS / 0 FAIL / 0 WARN / 80 INFO
 
 

@@ -16,7 +16,7 @@
 
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-01 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-02 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -26,7 +26,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | Provider | Ver | State |
 |---|---|---|
 | CA_CLETS | v2.23 | ALL-PASS (89 logs) |
-| FL_FCIC | v7.14 | ALL-PASS (109 logs) |
+| FL_FCIC | v7.15 | NEVER-TESTED -- 109 test(s) owed |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.15 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.19 | ALL-PASS (64 logs) |

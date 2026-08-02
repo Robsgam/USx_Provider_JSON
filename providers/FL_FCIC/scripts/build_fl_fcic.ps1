@@ -241,7 +241,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.14"
+    [string]$Version = "7.15"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -877,6 +877,52 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
+# ─── v7.15: Requestor wired onto the five Basic queries that permit it ────────────────────────────
+# Rob's call 2026-08-02, accepting the re-sweep cost.
+# FL's OWN metadata defines Requestor (maxLength 30) and permits it as an OPTIONAL on every Basic
+# query except DriverLicense -- 29 combinations across ArticleSingleQuery (QA), BoatQuery (FBQ/QB/BQ),
+# DriverHistoryQuery (KQ), GunQuery (QG) and VehicleRegistrationQuery (FRQ/QV/RQ). Checked per query:
+# mandatory=0 / optional>0 in all five, so it belongs in any[], never set[].
+# It was wired NOWHERE, so an officer could not send a field the provider accepts -- and 20 of the
+# independent spec plan's tests referenced it and could never be covered by any sweep.
+# Standing rule: never DROP a devdoc-optional combination field.
+# AUTO-POPULATED, not officer-typed. Requestor is an identity field on the approved
+# automated-identity-field standard (Rob 2026-06-22, extended to Requestor 2026-07-06), so it takes
+# CommsysGetLastNameFirstNameInitialRuleHandler and a HIDDEN gate-feeder -- exactly how this build
+# already carries Attention (see $dhQuery). Building it as a visible FormInput asks the officer to
+# retype their own name and trips verify_build's inverse check. Three parts, all required:
+#   attr.rule       -- the handler that substitutes the officer's name
+#   hidden feeder   -- an attribute whose sourceField has no value is DROPPED from serialization,
+#                      so the handler never runs; the constant 'X' exists only to make it fire
+#   combo defaults  -- CAD ignores form initialValue entirely (audit_cad CHECK 6), so without this a
+#                      CAD-dispatched query silently drops Requestor
+# No DH suffix, deliberately: DH-suffixing exists to stop a VISIBLE control from sharing the DL field
+# pool, and DriverLicenseQuery defines no Requestor attribute at all -- so nothing on the DL path can
+# transmit it however the pool is shared. It is any[]-only, so it also cannot alter routing.
+foreach ($q in @($vehRegQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)) {
+    $has = @($q.attributes | Where-Object { "$($_.name)" -eq 'Requestor' })
+    if (-not $has.Count) {
+        $q.attributes = @(@($q.attributes) + [PSCustomObject]@{
+            name = 'Requestor'; size = 30; sourceField = @('Requestor'); targetField = 'Requestor'
+            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+        })
+    }
+    foreach ($cm in @($q.combinations)) {
+        $cur = @($cm.requirements.any | Where-Object { $_ })
+        if ($cur -notcontains 'Requestor') { $cm.requirements.any = @($cur + 'Requestor') }
+        # defaults live INSIDE requirements (see the KQ combos above), NOT on the combination.
+        # Putting them a level up emits a property no gate reads: audit_cad CHECK 6 still reported
+        # "missing default" on all 26 while the JSON visibly contained them.
+        $rq = $cm.requirements
+        $dcur = @($rq.PSObject.Properties['defaults'] | ForEach-Object { $_.Value } | Where-Object { $_ })
+        if (-not @($dcur | Where-Object { "$($_.field)" -eq 'Requestor' }).Count) {
+            $dnew = @($dcur + [PSCustomObject]@{ field = 'Requestor'; value = 'X' })
+            if ($rq.PSObject.Properties['defaults']) { $rq.defaults = $dnew }
+            else { $rq | Add-Member -NotePropertyName defaults -NotePropertyValue $dnew }
+        }
+    }
+}
+
 $providerBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for $provider v$Version"
@@ -916,6 +962,9 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'DecalNumber_Input';        node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
                 @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
                 @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
+            )}
+            @{ id = 'ROW_VEH_REQ'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_VEH_REQ' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -972,6 +1021,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth' 'ROW_DH2' }
                 @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH'    'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
+            @{ id = 'ROW_DH_REQ'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_DH_REQ' @{ initialValue = 'X' } }
+            )}
             # v6.0: hidden Attention gate-feeder (HI v2.9 live-proven pattern). The DH Attention
             # attribute (CommsysGetLastNameFirstNameInitialRuleHandler, sourceField=['Attention'])
             # is dropped from serialization unless (a) Attention is in the fired combo's any[]
@@ -1009,6 +1061,9 @@ $faLayout = MakeLayouts @(
                 @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_GUN_2' }
                 @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
+            @{ id = 'ROW_GUN_REQ'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_GUN_REQ' @{ initialValue = 'X' } }
+            )}
         )
     }
 )
@@ -1040,6 +1095,9 @@ $artLayout = MakeLayouts @(
             @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
                 @{ id = 'NCICNumber_Input';           node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_3' }
                 @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_3' }
+            )}
+            @{ id = 'ROW_ART_REQ'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_ART_REQ' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -1086,6 +1144,9 @@ $boaLayout = MakeLayouts @(
                 # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX portfolio convention)
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_4' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_4' }
+            )}
+            @{ id = 'ROW_BOA_REQ'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_BOA_REQ' @{ initialValue = 'X' } }
             )}
         )
     }

@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.14.json
-  Generated: 2026-07-31 19:29
+  Source: FL_FCIC_v7.15.json
+  Generated: 2026-08-02 09:56
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: FL_FCIC_v7.14
+ POST-BUILD VERIFICATION: FL_FCIC_v7.15
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 26 [decalNumber, ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, Attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, RegistrationStateDH, GunMake, serialNumber, NCICNumber, processControlNumber, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, coastGuardDocumentNumber, RegistrationNumber, titleLienInformation, relatedHitSearchIndicator]
+  [INFO] CommSys-only: 27 [decalNumber, ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, Requestor, Attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, RegistrationStateDH, GunMake, serialNumber, NCICNumber, processControlNumber, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, coastGuardDocumentNumber, RegistrationNumber, titleLienInformation, relatedHitSearchIndicator]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -33,15 +33,21 @@ POST-BUILD VERIFICATION
 
 --- CHECK 6: Visible-First Mandate ---
   [INFO] Hidden field 'Attention' (FormInput) -- documented exception, allowed
+  [INFO] Hidden field 'Requestor' (FormInput) -- documented exception, allowed
   [PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect (VEHICLE_MAKE dropdown)
+  [INFO] QIDM 'FL_FCIC_VehicleRegistrationQuery' attr 'Requestor' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
   [INFO] QIDM 'FL_FCIC_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
+  [INFO] QIDM 'FL_FCIC_DriverHistoryQuery' attr 'Requestor' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
+  [INFO] QIDM 'FL_FCIC_GunQuery' attr 'Requestor' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
+  [INFO] QIDM 'FL_FCIC_ArticleSingleQuery' attr 'Requestor' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
+  [INFO] QIDM 'FL_FCIC_BoatQuery' attr 'Requestor' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (34) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (35) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -67,7 +73,7 @@ POST-BUILD VERIFICATION
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare "Vehicle Make" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX))
   [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare "Vehicle Year" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX))
   [INFO] Field 'GunMake' (any[]-only) label='Gun Make' -- manual label override accepted (bare "Gun Make" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX))
-  [PASS] All form field labels have required routing hint qualifiers (40 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (41 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.14.json
-  Generated: 2026-07-31 19:29
+  Source: FL_FCIC_v7.15.json
+  Generated: 2026-08-02 09:56
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-07-31 19:29
+ Generated: 2026-08-02 09:56
 ============================================================
 
 ============================================================
  METADATA AUDIT: FL_FCIC
 ============================================================
   XML: FL_FCIC.xml
-  JSON: FL_FCIC_v7.14.json
+  JSON: FL_FCIC_v7.15.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -39,6 +39,7 @@ METADATA AUDIT
   [PASS]   NCICNumber: in XML and QIDM
   [PASS]   OwnerAppliedNumber: in XML and QIDM
   [PASS]   ProcessControlNumber: in XML and QIDM
+  [PASS]   Requestor: in XML and QIDM
   BoatQuery:
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   BoatHullIdNumber: in XML and QIDM
@@ -50,6 +51,7 @@ METADATA AUDIT
   [PASS]   ProcessControlNumber: in XML and QIDM
   [PASS]   RegistrationNumber: in XML and QIDM
   [PASS]   RelatedHitSearchIndicator: in XML and QIDM
+  [PASS]   Requestor: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [PASS]   TitleLienInformation: in XML and QIDM
   CAINicbQuery: (not built in JSON -- see CHECK 1)
@@ -86,6 +88,7 @@ METADATA AUDIT
   [PASS]   Name: in XML and QIDM
   [PASS]   OperatorLicenseNumber: in XML and QIDM
   [PASS]   PurposeCode: in XML and QIDM
+  [PASS]   Requestor: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
   DriverLicenseQuery:
@@ -113,6 +116,7 @@ METADATA AUDIT
   [PASS]   ImageIndicator: in XML and QIDM
   [PASS]   NCICNumber: in XML and QIDM
   [PASS]   ProcessControlNumber: in XML and QIDM
+  [PASS]   Requestor: in XML and QIDM
   ImageQuery: (not built in JSON -- see CHECK 1)
   LojackSpeedUpQuery: (not built in JSON -- see CHECK 1)
   LojackTurnOffQuery: (not built in JSON -- see CHECK 1)
@@ -126,6 +130,7 @@ METADATA AUDIT
   [PASS]   LicensePlateNumber: in XML and QIDM
   [PASS]   LicensePlateTypeCode: in XML and QIDM
   [PASS]   LicensePlateYear: in XML and QIDM
+  [PASS]   Requestor: in XML and QIDM
   [PASS]   State: in XML and QIDM
   [PASS]   VehicleIdentificationNumber: in XML and QIDM
   [PASS]   VehicleMakeCode: in XML and QIDM
@@ -144,51 +149,67 @@ METADATA AUDIT
   [PASS]   keyRef QA: set field 'ArticleSerialNumber' covered by QAArticleSerialNumber
   [PASS]   keyRef QA: set field 'ArticleTypeCode' covered by QAArticleSerialNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QAArticleSerialNumber
+  [PASS]   keyRef QA: any field 'Requestor' covered by QAArticleSerialNumber
   [PASS]   keyRef QA: set field 'ArticleTypeCode' covered by QAOwnerAppliedNumber
   [PASS]   keyRef QA: set field 'OwnerAppliedNumber' covered by QAOwnerAppliedNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QAOwnerAppliedNumber
+  [PASS]   keyRef QA: any field 'Requestor' covered by QAOwnerAppliedNumber
   [PASS]   keyRef QA: set field 'NCICNumber' covered by QANCICNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QANCICNumber
+  [PASS]   keyRef QA: any field 'Requestor' covered by QANCICNumber
   [PASS]   keyRef QA: set field 'ProcessControlNumber' covered by QAProcessControlNumber
   [PASS]   keyRef QA: any field 'ImageIndicator' covered by QAProcessControlNumber
+  [PASS]   keyRef QA: any field 'Requestor' covered by QAProcessControlNumber
   BoatQuery:
   [PASS]   keyRef FBQ: set field 'BoatHullIdNumber' covered by FBQBoatHullIdNumber
   [PASS]   keyRef FBQ: any field 'DecalNumber' covered by FBQBoatHullIdNumber
   [PASS]   keyRef FBQ: any field 'RegistrationNumber' covered by FBQBoatHullIdNumber
+  [PASS]   keyRef FBQ: any field 'Requestor' covered by FBQBoatHullIdNumber
   [PASS]   keyRef FBQ: any field 'TitleLienInformation' covered by FBQBoatHullIdNumber
   [PASS]   keyRef FBQ: set field 'DecalNumber' covered by FBQDecalNumber
   [PASS]   keyRef FBQ: any field 'BoatHullIdNumber' covered by FBQDecalNumber
+  [PASS]   keyRef FBQ: any field 'Requestor' covered by FBQDecalNumber
   [PASS]   keyRef FBQ: any field 'TitleLienInformation' covered by FBQDecalNumber
   [PASS]   keyRef FBQ: set field 'RegistrationNumber' covered by FBQRegistrationNumber
   [PASS]   keyRef FBQ: any field 'DecalNumber' covered by FBQRegistrationNumber
+  [PASS]   keyRef FBQ: any field 'Requestor' covered by FBQRegistrationNumber
   [PASS]   keyRef FBQ: any field 'TitleLienInformation' covered by FBQRegistrationNumber
   [PASS]   keyRef FBQ: set field 'TitleLienInformation' covered by FBQTitleLienInformation
   [PASS]   keyRef FBQ: any field 'BoatHullIdNumber' covered by FBQTitleLienInformation
   [PASS]   keyRef FBQ: any field 'DecalNumber' covered by FBQTitleLienInformation
+  [PASS]   keyRef FBQ: any field 'Requestor' covered by FBQTitleLienInformation
   [PASS]   keyRef QB: set field 'BoatHullIdNumber' covered by QBBoatHullIdNumber
   [PASS]   keyRef QB: any field 'ImageIndicator' covered by QBBoatHullIdNumber
   [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by QBBoatHullIdNumber
+  [PASS]   keyRef QB: any field 'Requestor' covered by QBBoatHullIdNumber
   [PASS]   keyRef QB: set field 'CoastGuardDocumentNumber' covered by QBCoastGuardDocumentNumber
   [PASS]   keyRef QB: any field 'ImageIndicator' covered by QBCoastGuardDocumentNumber
   [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by QBCoastGuardDocumentNumber
+  [PASS]   keyRef QB: any field 'Requestor' covered by QBCoastGuardDocumentNumber
   [PASS]   keyRef QB: set field 'NCICNumber' covered by QBNCICNumber
   [PASS]   keyRef QB: any field 'ImageIndicator' covered by QBNCICNumber
   [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by QBNCICNumber
+  [PASS]   keyRef QB: any field 'Requestor' covered by QBNCICNumber
   [PASS]   keyRef QB: set field 'ProcessControlNumber' covered by QBProcessControlNumber
   [PASS]   keyRef QB: any field 'ImageIndicator' covered by QBProcessControlNumber
   [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by QBProcessControlNumber
+  [PASS]   keyRef QB: any field 'Requestor' covered by QBProcessControlNumber
   [PASS]   keyRef QB: set field 'RegistrationNumber' covered by QBRegistrationNumber
   [PASS]   keyRef QB: any field 'ImageIndicator' covered by QBRegistrationNumber
   [PASS]   keyRef QB: any field 'RelatedHitSearchIndicator' covered by QBRegistrationNumber
+  [PASS]   keyRef QB: any field 'Requestor' covered by QBRegistrationNumber
   [PASS]   keyRef BQ: set field 'BirthDate' covered by BQName
   [PASS]   keyRef BQ: set field 'Name' covered by BQName
   [PASS]   keyRef BQ: set field 'State' covered by BQName
   [PASS]   keyRef BQ: any field 'BoatHullIdNumber' covered by BQName
   [PASS]   keyRef BQ: any field 'RegistrationNumber' covered by BQName
+  [PASS]   keyRef BQ: any field 'Requestor' covered by BQName
   [PASS]   keyRef BQ: set field 'BoatHullIdNumber' covered by BQBoatHullIdNumber
   [PASS]   keyRef BQ: set field 'State' covered by BQBoatHullIdNumber
+  [PASS]   keyRef BQ: any field 'Requestor' covered by BQBoatHullIdNumber
   [PASS]   keyRef BQ: set field 'RegistrationNumber' covered by BQRegistrationNumber
   [PASS]   keyRef BQ: set field 'State' covered by BQRegistrationNumber
+  [PASS]   keyRef BQ: any field 'Requestor' covered by BQRegistrationNumber
   DriverHistoryQuery:
   [PASS]   keyRef KQ: set field 'BirthDate' covered by KQName
   [PASS]   keyRef KQ: set field 'Name' covered by KQName
@@ -196,10 +217,12 @@ METADATA AUDIT
   [PASS]   keyRef KQ: set field 'State' covered by KQName
   [PASS]   keyRef KQ: any field 'Attention' covered by KQName
   [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQName
+  [PASS]   keyRef KQ: any field 'Requestor' covered by KQName
   [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' covered by KQOperatorLicenseNumber
   [PASS]   keyRef KQ: set field 'State' covered by KQOperatorLicenseNumber
   [PASS]   keyRef KQ: any field 'Attention' covered by KQOperatorLicenseNumber
   [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQOperatorLicenseNumber
+  [PASS]   keyRef KQ: any field 'Requestor' covered by KQOperatorLicenseNumber
   DriverLicenseQuery:
   [PASS]   keyRef FDQ: set field 'BirthDate' covered by FDQName
   [PASS]   keyRef FDQ: set field 'Name' covered by FDQName
@@ -221,20 +244,26 @@ METADATA AUDIT
   [PASS]   keyRef QG: set field 'GunSerialNumber' covered by QGGunSerialNumber
   [PASS]   keyRef QG: any field 'GunMake' covered by QGGunSerialNumber
   [PASS]   keyRef QG: any field 'ImageIndicator' covered by QGGunSerialNumber
+  [PASS]   keyRef QG: any field 'Requestor' covered by QGGunSerialNumber
   [PASS]   keyRef QG: set field 'NCICNumber' covered by QGNCICNumber
   [PASS]   keyRef QG: any field 'GunMake' covered by QGNCICNumber
   [PASS]   keyRef QG: any field 'ImageIndicator' covered by QGNCICNumber
+  [PASS]   keyRef QG: any field 'Requestor' covered by QGNCICNumber
   [PASS]   keyRef QG: set field 'ProcessControlNumber' covered by QGProcessControlNumber
   [PASS]   keyRef QG: any field 'GunMake' covered by QGProcessControlNumber
   [PASS]   keyRef QG: any field 'ImageIndicator' covered by QGProcessControlNumber
+  [PASS]   keyRef QG: any field 'Requestor' covered by QGProcessControlNumber
   VehicleRegistrationQuery:
   [PASS]   keyRef FRQ: set field 'DecalNumber' covered by FRQDecalNumber
   [PASS]   keyRef FRQ: set field 'LicensePlateYear' covered by FRQDecalNumber
+  [PASS]   keyRef FRQ: any field 'Requestor' covered by FRQDecalNumber
   [PASS]   keyRef FRQ: any field 'ImageIndicator' covered by FRQDecalNumber
   [PASS]   keyRef FRQ: set field 'LicensePlateNumber' covered by FRQLicensePlateNumber
   [PASS]   keyRef FRQ: any field 'LicensePlateYear' covered by FRQLicensePlateNumber
+  [PASS]   keyRef FRQ: any field 'Requestor' covered by FRQLicensePlateNumber
   [PASS]   keyRef FRQ: any field 'ImageIndicator' covered by FRQLicensePlateNumber
   [PASS]   keyRef FRQ: set field 'VehicleIdentificationNumber' covered by FRQVehicleIdentificationNumber
+  [PASS]   keyRef FRQ: any field 'Requestor' covered by FRQVehicleIdentificationNumber
   [PASS]   keyRef FRQ: any field 'ImageIndicator' covered by FRQVehicleIdentificationNumber
   [NOTE]   keyRef QV: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
   [NOTE]   keyRef QV: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
@@ -242,9 +271,11 @@ METADATA AUDIT
   [PASS]   keyRef RQ: set field 'LicensePlateTypeCode' covered by RQLicensePlateNumber
   [PASS]   keyRef RQ: set field 'LicensePlateYear' covered by RQLicensePlateNumber
   [PASS]   keyRef RQ: set field 'State' covered by RQLicensePlateNumber
+  [PASS]   keyRef RQ: any field 'Requestor' covered by RQLicensePlateNumber
   [PASS]   keyRef RQ: any field 'ImageIndicator' covered by RQLicensePlateNumber
   [PASS]   keyRef RQ: set field 'VehicleIdentificationNumber' covered by RQVehicleIdentificationNumber
   [PASS]   keyRef RQ: set field 'State' covered by RQVehicleIdentificationNumber
+  [PASS]   keyRef RQ: any field 'Requestor' covered by RQVehicleIdentificationNumber
   [PASS]   keyRef RQ: any field 'VehicleMakeCode' covered by RQVehicleIdentificationNumber
   [PASS]   keyRef RQ: any field 'VehicleYear' covered by RQVehicleIdentificationNumber
   [PASS]   keyRef RQ: any field 'ImageIndicator' covered by RQVehicleIdentificationNumber
@@ -294,23 +325,28 @@ METADATA AUDIT
   [PASS] NCICNumber: maxLength 10 matches XML (NCICNumber)
   [PASS] ownerAppliedNumber: maxLength 20 matches XML (OwnerAppliedNumber)
   [PASS] processControlNumber: maxLength 10 matches XML (ProcessControlNumber)
+  [PASS] Requestor: maxLength 30 matches XML (Requestor)
   [PASS] BoatHullIdNumber: maxLength 62 matches XML (BoatHullIdNumber)
   [PASS] coastGuardDocumentNumber: maxLength 8 matches XML (CoastGuardDocumentNumber)
   [PASS] NCICNumber: maxLength 10 matches XML (NCICNumber)
   [PASS] processControlNumber: maxLength 10 matches XML (ProcessControlNumber)
   [PASS] RegistrationNumber: maxLength 8 matches XML (RegistrationNumber)
+  [PASS] Requestor: maxLength 30 matches XML (Requestor)
   [PASS] Attention: maxLength 30 matches XML (Attention)
   [PASS] NameLastDH: maxLength 30 matches XML (Name)
   [PASS] NameFirstDH: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumberDH: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] purposeCodeDH: maxLength 1 matches XML (PurposeCode)
+  [PASS] Requestor: maxLength 30 matches XML (Requestor)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] serialNumber: maxLength 11 matches XML (GunSerialNumber)
   [PASS] NCICNumber: maxLength 10 matches XML (NCICNumber)
   [PASS] processControlNumber: maxLength 10 matches XML (ProcessControlNumber)
+  [PASS] Requestor: maxLength 30 matches XML (Requestor)
   [PASS] decalNumber: maxLength 10 matches XML (DecalNumber)
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
   [PASS] LicensePlateYear: maxLength 4 matches XML (LicensePlateYear)
+  [PASS] Requestor: maxLength 30 matches XML (Requestor)
   [PASS] VehicleIdentificationNumber: maxLength 20 matches XML (VehicleIdentificationNumber)
   [PASS] vehicleYear: maxLength 4 matches XML (VehicleYear)
 
@@ -318,6 +354,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 196 PASS / 0 FAIL / 0 WARN
+Total: 232 PASS / 0 FAIL / 0 WARN
 ============================================================
 
