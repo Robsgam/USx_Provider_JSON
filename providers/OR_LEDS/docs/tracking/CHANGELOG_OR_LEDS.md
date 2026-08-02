@@ -2,9 +2,14 @@
 
 Auto-generated from `OR_LEDS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.1** | Generated: 2026-08-02
+Current: **v2.2** | Generated: 2026-08-02
 
 ---
+
+## v2.2 -- 2026-08-02 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.1 -- 2026-08-02 -- Pipeline rebuild
 

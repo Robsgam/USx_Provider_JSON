@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OR_LEDS
-  Source: OR_LEDS_v2.1.json
-  Generated: 2026-08-02 17:29
+  Source: OR_LEDS_v2.2.json
+  Generated: 2026-08-02 18:04
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: OR_LEDS_v2.1
+ CAD AUDIT: OR_LEDS_v2.2
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -34,8 +34,8 @@ CAD AUDIT
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [PASS] nameMiddle: in QIF and CAD list
-    [PASS] nameSuffix: in QIF and CAD list
+    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [PASS] raceCode: in QIF and CAD list
@@ -62,7 +62,7 @@ CAD AUDIT
     [INFO] firearmMake: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] gunCaliber: in QIF and CAD list
     [INFO] gunModel: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [PASS] gunTypeCode: in QIF and CAD list
+    [INFO] gunTypeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameLast: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -146,6 +146,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 56 PASS / 0 FAIL / 0 WARN / 60 INFO
+Total: 53 PASS / 0 FAIL / 0 WARN / 63 INFO
 
 

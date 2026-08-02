@@ -21,6 +21,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.2 (2026-08-02)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| OR_LEDS_v2.2.json | v2.2 | Current | 55P/0F/0W/0LIM. |
 ## v2.1 (2026-08-01)
 
 | File | Version | Status | Notes |

@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.1'
+$Version     = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OR_LEDS_v${Version}.json"
@@ -396,10 +396,11 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
             )}
-            @{ id = 'ROW_PER_NAME_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name (optional)' '30' 'ROW_PER_NAME_2' }
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix (optional)'      '5'  'ROW_PER_NAME_2' }
-            )}
+            # v2.2: ROW_PER_NAME_2 REMOVED (Rob 2026-08-02) -- it held nameMiddle + nameSuffix, both
+            # visible controls wired to nothing. The Name attribute sources only [NameLast, NameFirst],
+            # so an officer's middle name or suffix was silently discarded on every DriverLicense
+            # query. Found by audit_wiring_closure. Removed rather than wired: no wire behaviour
+            # changes, and the form stops implying a precision it never delivered.
             @{ id = 'ROW_PER_NAME_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_NAME_3' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (optional)'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_3' }
@@ -429,9 +430,14 @@ $faLayout = MakeLayouts @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
                 @{ id = 'GunMake_Input';      node = Sel 'gunMake'      'Make (optional)'           @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
+            # v2.2: gunTypeCode REMOVED (Rob 2026-08-02). Not merely unwired -- UNWIREABLE. This XML
+            # defines GunTypeCode exactly ONCE, under CPICBIGunQuery, a transaction this build does not
+            # carry; the built GunQuery defines only GunCaliber, GunMake and GunSerialNumber (probe
+            # validated -- both siblings resolve inside GunQuery). The dropdown offered a filter the
+            # query cannot accept and discarded the officer's choice. If CPICBIGunQuery is ever brought
+            # into scope it comes back WITH its attribute and combination.
+            @{ id = 'ROW_GUN_2'; cols = @('12'); fields = @(
                 @{ id = 'GunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type (optional)'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
             )}
         )
     }

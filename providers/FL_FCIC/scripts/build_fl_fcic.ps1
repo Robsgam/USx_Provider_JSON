@@ -241,7 +241,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.16"
+    [string]$Version = "7.17"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -1037,15 +1037,18 @@ $perLayout = MakeLayouts @(
                 @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_DL1' }
                 @{ id = 'ImageIndicator_Input';         node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_DL1' }
             )}
-            @{ id = 'ROW_DL2'; cols = @('4','4','4'); fields = @(
+            # v7.17: nameMiddle / nameSuffix / nameMiddleDH REMOVED (Rob 2026-08-02). They were
+            # visible controls wired to nothing -- every Name attribute here sources only
+            # [NameLast, NameFirst] -- so an officer's middle name or suffix was silently discarded
+            # on DL, DH and Boat alike. Found by audit_wiring_closure. Removed rather than wired:
+            # no wire behaviour changes, and the form stops implying a precision it never delivered.
+            @{ id = 'ROW_DL2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL2' }
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_DL2' }
             )}
-            @{ id = 'ROW_DL3'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_DL3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL3' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DL3' }
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '10' 'ROW_DL3' }
             )}
         )
     }
@@ -1061,10 +1064,9 @@ $perLayout = MakeLayouts @(
             # v7.2 (DEX-1278): reordered First/Last/MI/DOB/Sex (was Last/First/DOB/Sex);
             # nameMiddleDH added visible-only, mirrors DL card's unwired nameMiddle/nameSuffix
             # (not in the KQName combo's set[]/any[] or the Name attribute's sourceField).
-            @{ id = 'ROW_DH2'; cols = @('3','3','2','2','2'); fields = @(
+            @{ id = 'ROW_DH2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_DH2' }
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'         '1'  'ROW_DH2' }
                 @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth' 'ROW_DH2' }
                 @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH'    'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}

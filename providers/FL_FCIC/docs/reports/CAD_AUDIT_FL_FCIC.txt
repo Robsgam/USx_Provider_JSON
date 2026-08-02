@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.16.json
-  Generated: 2026-08-02 17:20
+  Source: FL_FCIC_v7.17.json
+  Generated: 2026-08-02 18:06
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: FL_FCIC_v7.16
+ CAD AUDIT: FL_FCIC_v7.17
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -37,8 +37,8 @@ CAD AUDIT
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [PASS] nameMiddle: in QIF and CAD list
-    [PASS] nameSuffix: in QIF and CAD list
+    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -65,7 +65,6 @@ CAD AUDIT
     [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
-    [INFO] nameMiddleDH: in QIF, not in CAD list (provider-specific)
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] Requestor: in QIF, not in CAD list (provider-specific)
@@ -194,6 +193,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 85 PASS / 0 FAIL / 0 WARN / 79 INFO
+Total: 83 PASS / 0 FAIL / 0 WARN / 80 INFO
 
 
