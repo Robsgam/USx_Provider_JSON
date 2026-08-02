@@ -6,7 +6,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_ocats_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.1'
+$Version  = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -335,6 +335,38 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
+# ─── v2.2: caRequestPurposeCode COMBO DEFAULT on every combination ────────────────────────────
+# THIS PROVIDER'S OWN DEVDOC, "Transaction Requirements": CLETS requires a Purpose Code on EVERY
+# transaction, and "Any transaction which does not supply a valid Purpose Code value will be
+# REJECTED by CLETS. ConnectCIC does not default the value of field; it must be provided by the
+# partner implementation as a user selectable field."
+# It is a TRANSACTION-ENVELOPE requirement, not a per-query search field -- which is why the devdoc's
+# per-query "Possible Combinations" lists never mention it, why all 19 built combos carry it in set[],
+# and why a devdoc-faithful fill matched NOTHING (build_phase1 reported ArticleSingleQuery #1 as
+# "NO COMBO FIRES" on all four of its optional subsets -- one missing envelope field, four findings).
+# WHY THE COMBO DEFAULT IS REQUIRED INDEPENDENTLY OF ANY GATE: CAD does not apply form initialValues
+# (BUILD_RULES 12), so a CAD-dispatched query omitted the field entirely and CLETS would REJECT the
+# whole transaction. 0 of 19 combos had a default. That is a live defect on the CAD path.
+# 'C' = Criminal Justice. The risk is asymmetric: blank is a guaranteed CLETS rejection, whereas C can
+# never silently become an immigration-enforcement purpose. The control stays a VISIBLE, EDITABLE Inp
+# on all five cards, so it remains "user selectable" exactly as the devdoc requires -- pre-selected,
+# not locked. Prefilling is LOAD-BEARING, not a BUILD_RULES 24 violation: it is mandatory in EVERY
+# combination, so satisfying it equally for all of them cannot shadow one path over another.
+# Same shape fixed on CA_eSUN v2.2, but decided here from THIS provider's own devdoc.
+foreach ($q in @($vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)) {
+    foreach ($cm in @($q.combinations)) {
+        $needs = @($cm.requirements.set | Where-Object { "$_" -match 'urposeCode' })
+        if (-not $needs.Count) { continue }
+        $existing = @($cm.requirements.defaults | Where-Object { $_ -and "$($_.field)" -match 'urposeCode' })
+        if ($existing.Count) { continue }
+        $nd = [PSCustomObject]@{ field = [string]$needs[0]; value = 'C' }
+        if ($cm.requirements.PSObject.Properties.Name -contains 'defaults' -and $cm.requirements.defaults) {
+            $cm.requirements.defaults = @(@($cm.requirements.defaults) + $nd)
+        } else {
+            $cm.requirements | Add-Member -MemberType NoteProperty -Name 'defaults' -Value @($nd) -Force
+        }
+    }
+}
 $caBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for CA_CLETS_OCATS v${Version} MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat), no DH"
@@ -372,7 +404,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_VEH_OPT_1' @{ initialValue = 'C' } }
             )}
             # v2.1: AWVEHQ (devdoc VehicleRegistrationQuery #2) fields. UserId is MANDATORY for that
             # combination -- entering it is what routes a plate search to AWVEHQ instead of the plain
@@ -447,7 +479,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' @{ initialValue = 'C' } }
             )}
             # v2.1: UserId for OCNAMQ (devdoc DriverLicenseQuery #1 "BirthDate, Name, SexCode,
             # UserId" -- all mandatory). Entering it routes an in-state name search to OCNAMQ instead
@@ -503,7 +535,7 @@ $faLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_GUN_OPT_1'; cols = @('4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_GUN_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -543,7 +575,7 @@ $artLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_ART_OPT_1'; cols = @('4'); fields = @(
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -593,7 +625,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_OPT_1'; cols = @('6','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
-                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_OPT_1' }
+                @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_BOA_OPT_1' @{ initialValue = 'C' } }
             )}
         )
     }

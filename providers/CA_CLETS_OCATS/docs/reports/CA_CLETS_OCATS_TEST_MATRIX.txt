@@ -1,4 +1,4 @@
-CA_CLETS_OCATS v2.1 -- TEST MATRIX
+CA_CLETS_OCATS v2.2 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-01
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -9,7 +9,7 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (4 cards, 14 fields):
   CARD_VEH_OPT (OPTIONS - Leave blank for CA queries):
-    ROW 1: RegistrationState [Sel STATE], caRequestPurposeCode [Inp 1]
+    ROW 1: RegistrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
     ROW 2: userId [Inp 2], authorization [Inp 2], exactSearchIndicator [Inp 1], pageNumber [Inp 2]
   CARD_VEH_PLATE (PLATE SEARCH):
     LicensePlateNumber [Inp 10]
@@ -22,7 +22,7 @@ Vehicle (4 cards, 14 fields):
 
 Person (3 cards, 8 fields):
   CARD_PER_OPT (OPTIONS - Leave blank for CA queries):
-    RegistrationState [Sel STATE], caRequestPurposeCode [Inp 1]
+    RegistrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
     userId [Inp 2]
   CARD_PER_OLN (OLN SEARCH):
     OperatorLicenseNumber [Inp 20]
@@ -32,14 +32,14 @@ Person (3 cards, 8 fields):
 
 Firearm (2 cards, 5 fields):
   CARD_GUN_OPT (OPTIONS):
-    caRequestPurposeCode [Inp 1]
+    caRequestPurposeCode [Inp C, 1]
   CARD_GUN_SERIAL (SERIAL SEARCH):
     ROW 1: serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], gunTypeCode [Sel NCIC_FIREARM_TYPE/NCIC]
 
 Article (3 cards, 5 fields):
   CARD_ART_OPT (OPTIONS):
-    caRequestPurposeCode [Inp 1]
+    caRequestPurposeCode [Inp C, 1]
   CARD_ART_SERIAL (SERIAL SEARCH):
     serialNumber [Inp 11]
     ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS_OCATS], articleBrand [Inp 6]
@@ -48,7 +48,7 @@ Article (3 cards, 5 fields):
 
 Boat (4 cards, 5 fields):
   CARD_BOA_OPT (OPTIONS - Leave blank for CA queries):
-    RegistrationState [Sel STATE], caRequestPurposeCode [Inp 1]
+    RegistrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
   CARD_BOA_HULL (HULL SEARCH):
     BoatHullIdNumber [Inp 20]
   CARD_BOA_REG (REGISTRATION SEARCH):
@@ -182,4 +182,4 @@ COMBO COVERAGE (19/19):
   ArticleSingleQuery: 2/2 -- T32(.O), T34(.S)
   BoatQuery: 5/5 -- T15(BQ+.H), T16(BQ+.R), T17(QB+.O), T18(4V.B+4V.B), T19(4B+4B)
 
-IMPORT FILE: CA_CLETS_OCATS_v2.1.json
+IMPORT FILE: CA_CLETS_OCATS_v2.2.json

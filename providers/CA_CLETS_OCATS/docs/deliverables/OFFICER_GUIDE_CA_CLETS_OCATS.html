@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>CA_CLETS_OCATS — Officer Query Guide v2.1</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>CA_CLETS_OCATS — Officer Query Guide v2.2</title>
 <style>@page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
 body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
@@ -19,47 +19,47 @@ thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
 .pre { color:#666; font-style:italic; }
 footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }</style></head><body>
-<h1>CA_CLETS_OCATS — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.1)</span></h1>
+<h1>CA_CLETS_OCATS — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.2)</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Plate Number (with OCATS User ID)</td><td class='req'>Purpose Code, Plate Number, OCATS User ID</td><td class='opt'>Exact Search, Authorization, Page, State, Vehicle Year, Vehicle Make</td></tr>
-<tr><td class='sb'>Plate Number (with State)</td><td class='req'>Purpose Code, Plate Number, State</td><td class='opt'>Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Vehicle Make, Vehicle Year</td></tr>
-<tr><td class='sb'>VIN (with State)</td><td class='req'>Purpose Code, VIN, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Purpose Code, Last Name, First Name</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>VIN</td><td class='req'>Purpose Code, VIN</td><td class='opt'>Vehicle Make</td></tr>
-<tr><td class='sb'>Plate Number</td><td class='req'>Purpose Code, Plate Number</td><td class='opt'>State, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'>Plate Number (with OCATS User ID)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number, OCATS User ID</td><td class='opt'>Exact Search, Authorization, Page, State, Vehicle Year, Vehicle Make</td></tr>
+<tr><td class='sb'>Plate Number (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number, State</td><td class='opt'>Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'>VIN (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, VIN, State</td><td class='opt'>Vehicle Make, Vehicle Year</td></tr>
+<tr><td class='sb'>Name</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>VIN</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, VIN</td><td class='opt'>Vehicle Make</td></tr>
+<tr><td class='sb'>Plate Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Plate Number</td><td class='opt'>State, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Vehicle Make, Vehicle Year</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name (with OCATS User ID)</td><td class='req'>Purpose Code, OCATS User ID, Sex, Date of Birth, Last Name, First Name</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Name (with State)</td><td class='req'>Purpose Code, Last Name, First Name, Date of Birth, Sex, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>License Number (with State)</td><td class='req'>Purpose Code, License Number, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Purpose Code, Last Name, First Name</td><td class='opt'>Date of Birth</td></tr>
-<tr><td class='sb'>License Number</td><td class='req'>Purpose Code, License Number</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Name (with OCATS User ID)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, OCATS User ID, Sex, Date of Birth, Last Name, First Name</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Name (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name, Date of Birth, Sex, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>License Number (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, License Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Name</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Last Name, First Name</td><td class='opt'>Date of Birth</td></tr>
+<tr><td class='sb'>License Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, License Number</td><td class='opt'>State</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
 <table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Serial Number</td><td class='req'>Purpose Code, Serial Number</td><td class='opt'>Caliber, Make, Type</td></tr>
+<tr><td class='sb'>Serial Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Serial Number</td><td class='opt'>Caliber, Make, Type</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Article</h2>
 <table class='qt'><caption>Article</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Serial Number</td><td class='req'>Purpose Code, Serial Number</td><td class='opt'>Brand, Article Type</td></tr>
-<tr><td class='sb'>Owner Applied Number</td><td class='req'>Purpose Code, Owner Applied Number</td><td class='opt'>Brand, Article Type</td></tr>
+<tr><td class='sb'>Serial Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Serial Number</td><td class='opt'>Brand, Article Type</td></tr>
+<tr><td class='sb'>Owner Applied Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Owner Applied Number</td><td class='opt'>Brand, Article Type</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Boat</h2>
 <table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Hull ID Number (with State)</td><td class='req'>Purpose Code, Hull ID Number, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Registration Number (with State)</td><td class='req'>Purpose Code, Registration Number, State</td><td class='opt'>&mdash;</td></tr>
-<tr><td class='sb'>Hull ID Number</td><td class='req'>Purpose Code, Hull ID Number</td><td class='opt'>State</td></tr>
-<tr><td class='sb'>Owner Applied Number</td><td class='req'>Purpose Code, Owner Applied Number</td><td class='opt'>State</td></tr>
-<tr><td class='sb'>Registration Number</td><td class='req'>Purpose Code, Registration Number</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Hull ID Number (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Hull ID Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Registration Number (with State)</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Registration Number, State</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Hull ID Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Hull ID Number</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Owner Applied Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Owner Applied Number</td><td class='opt'>State</td></tr>
+<tr><td class='sb'>Registration Number</td><td class='req'>Purpose Code <span class='pre'>(C)</span>, Registration Number</td><td class='opt'>&mdash;</td></tr>
 </tbody></table>
 </section>
 
-<footer>CA_CLETS_OCATS build v2.1 &middot; Generated 2026-08-01 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
+<footer>CA_CLETS_OCATS build v2.2 &middot; Generated 2026-08-01 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
 </body></html>
