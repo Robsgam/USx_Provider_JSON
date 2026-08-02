@@ -17,7 +17,7 @@
     officer can see and set, whose value goes nowhere, is worse than no control at all: it actively
     lies about what the query will do.
 
-  THE FIVE CLOSURE BREAKS (each is silent by construction -- no gate, no error, no wire evidence):
+  THE NINE CLOSURE BREAKS (each is silent by construction -- no gate, no error, no wire evidence):
     A DEAD CONTROL        form field exists; no QIDM attribute sources it AND no combo references it
                           -> the officer types into a black hole
     B ORPHAN ATTRIBUTE    QIDM attribute's sourceField has no control on that entity's form
@@ -28,6 +28,20 @@
                           -> the routing gate silently never changes anything
     E INERT DEFAULT       defaults[].field names something absent from that combo's set[]/any[]
                           -> the CAD default is never applied
+    F VARIANT GAP         a control on `default` is MISSING from CAD_DISPATCH / FIRST_RESPONDER
+                          -> the CAD officer simply does not get that field, and A cannot see it
+                             because A unions the variants by design
+    G DUP FIELDID         the same fieldId bound twice in one layout variant
+                          -> undefined which control the officer's value comes from
+    H DUP TARGETFIELD     two attributes in one QIDM writing the same targetField
+                          -> undefined which value lands on the wire (verify_build checks this for
+                             Results bundles only, never for request QIDMs)
+    I DESELECT ORPHAN     queriesToDeselect naming a query that does not exist
+                          -> the mutual exclusion never fires and both queries co-fire, silently
+
+  F-I were probed across the portfolio on 2026-08-02 and found at ZERO, then folded in HERE rather
+  than given their own script: same concern (is the form/QIDM pair internally coherent?), and a
+  fifth standalone tool would just have become another orphan. Added at zero = regression guards.
 
   SCOPING / KNOWN-GOOD EXCLUSIONS (kept deliberately small -- a wide whitelist would hide the class):
     - CAD / First-Responder context controls (CadUnit, CadEvent, LinkToEvent) have no QIDM by design.
@@ -58,7 +72,7 @@ function Canon([string]$t) { ("$t" -replace '[^A-Za-z0-9]','').ToLower() }
 # 20 providers (100 of 110 findings), which is exactly how a real signal gets buried under a
 # known-good one. It is platform context like CadUnit/CadEvent: consumed by the host, never by a QIDM.
 $ctxRx  = '(?i)^(cadunit|cadevent|linktoevent|linkcurrentassignedevent|dexstateuserid)'
-$totals = @{ A = 0; B = 0; C = 0; D = 0; E = 0; Providers = 0 }
+$totals = @{ A = 0; B = 0; C = 0; D = 0; E = 0; F = 0; G = 0; H = 0; I = 0; Providers = 0 }
 
 $targets = @()
 if ($All -or -not $Provider) {
@@ -112,6 +126,9 @@ foreach ($dir in $targets) {
     }
 
     $findings = New-Object System.Collections.Generic.List[string]
+    $allQueryNames  = @(); $allConfigNames = @()
+    foreach ($bx in $j.bundles) { foreach ($cx in @($bx.configurations)) {
+        if ("$($cx.type)" -eq 'QUERYINPUTDATAMAPPING') { $allQueryNames += "$($cx.query)"; $allConfigNames += "$($cx.name)" } } }
 
     # ---- B / C / D / E : wired things with no control ---------------------------------------
     $referenced = @{}   # entity -> set(canon) of every fieldId the QIDMs reference
@@ -189,6 +206,65 @@ foreach ($dir in $targets) {
         }
     }
 
+    # ---- F / G / H / I : structural integrity of the form+QIDM pair --------------------------
+    # Four more silent classes, probed across the portfolio 2026-08-02 and found at ZERO. Folded in
+    # HERE rather than given their own tool: they are the same concern this gate already owns
+    # (is the form/QIDM pair internally coherent?), and a fifth standalone script would just become
+    # another orphan. Added at zero so they are regression guards, not a backlog.
+    foreach ($b in $j.bundles) {
+        foreach ($c in @($b.configurations)) {
+            if ($c.type -eq 'QUERYINPUTFORM' -and $c.layout) {
+                $e = "$($c.targetEntity)"
+                $vsets = @{}
+                foreach ($vp in $c.layout.PSObject.Properties) {
+                    $vids = @()
+                    foreach ($np in $vp.Value.PSObject.Properties) {
+                        $p = $np.Value.props
+                        if ($p -and $p.fieldId) { $vids += "$($p.fieldId)" }
+                    }
+                    $vsets[$vp.Name] = @($vids | Select-Object -Unique)
+                    # G: the SAME fieldId twice in one layout variant -- two controls bound to one
+                    # field, so which one the officer's value comes from is undefined.
+                    foreach ($g in @($vids | Group-Object | Where-Object { $_.Count -gt 1 })) {
+                        $findings.Add(("G DUP FIELDID       {0,-26} {1} variant '{2}' binds '{3}' {4}x -- undefined which control wins" -f '(form)', $e, $vp.Name, $g.Name, $g.Count)) | Out-Null
+                        $totals.G++
+                    }
+                }
+                # F: a control present on `default` but MISSING from CAD_DISPATCH / FIRST_RESPONDER.
+                # This gate's dead-control test unions all variants, so it cannot see this by design:
+                # a field the CAD officer simply does not get would look perfectly wired.
+                if ($vsets.ContainsKey('default')) {
+                    foreach ($k in $vsets.Keys) {
+                        if ($k -eq 'default') { continue }
+                        $miss = @($vsets['default'] | Where-Object { $vsets[$k] -notcontains $_ })
+                        if ($miss.Count) {
+                            $findings.Add(("F VARIANT GAP       {0,-26} {1} variant '{2}' lacks {3} control(s) present on default: {4}" -f '(form)', $e, $k, $miss.Count, (($miss | Select-Object -First 5) -join ', '))) | Out-Null
+                            $totals.F++
+                        }
+                    }
+                }
+            }
+            if ($c.type -eq 'QUERYINPUTDATAMAPPING') {
+                # H: two attributes writing the SAME targetField in one QIDM -- which value lands is
+                # undefined (verify_build checks this for Results bundles only, not request QIDMs).
+                $tfs = @($c.attributes | ForEach-Object { "$($_.targetField)" } | Where-Object { $_ })
+                foreach ($g in @($tfs | Group-Object | Where-Object { $_.Count -gt 1 })) {
+                    $findings.Add(("H DUP TARGETFIELD   {0,-26} two attributes both write '{1}' -- undefined which value lands on the wire" -f $c.query, $g.Name)) | Out-Null
+                    $totals.H++
+                }
+                # I: queriesToDeselect naming a query that does not exist -- the mutual-exclusion
+                # never fires, so both queries co-fire and nobody sees a config error.
+                foreach ($qd in @($c.queriesToDeselect)) {
+                    if (-not "$qd") { continue }
+                    if (($allQueryNames -notcontains "$qd") -and ($allConfigNames -notcontains "$qd")) {
+                        $findings.Add(("I DESELECT ORPHAN   {0,-26} queriesToDeselect names '{1}', which is not a configuration here -- the exclusion never fires" -f $c.query, $qd)) | Out-Null
+                        $totals.I++
+                    }
+                }
+            }
+        }
+    }
+
     # ---- A : controls that reach nothing -----------------------------------------------------
     foreach ($e in $controls.Keys) {
         $ref = if ($referenced.ContainsKey($e)) { $referenced[$e] } else { @{} }
@@ -214,5 +290,6 @@ Write-Host ""
 Write-Host "----------------------------------------------------------------------------"
 Write-Host ("  {0} provider(s) checked" -f $totals.Providers)
 Write-Host ("  A dead control {0} / B orphan attribute {1} / C unfillable req {2} / D inert condition {3} / E inert default {4}" -f $totals.A, $totals.B, $totals.C, $totals.D, $totals.E)
+Write-Host ("  F variant gap {0} / G dup fieldId {1} / H dup targetField {2} / I deselect orphan {3}" -f $totals.F, $totals.G, $totals.H, $totals.I)
 Write-Host "  A and C are officer-facing: a control that discards input, or a path no human can fill."
 Write-Host "----------------------------------------------------------------------------"

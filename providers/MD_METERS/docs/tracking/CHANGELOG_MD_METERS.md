@@ -6,7 +6,7 @@ Current: **v2.0** | Generated: 2026-08-02
 
 ---
 
-## v2.0 -- 2026-08-01 -- Pipeline rebuild
+## v2.0 -- 2026-08-02 -- Pipeline rebuild
 
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild

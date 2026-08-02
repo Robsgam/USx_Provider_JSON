@@ -878,13 +878,20 @@ if ($true) {
         foreach ($pdw in $providers) {
             $provName = $pdw.Name
             $wcOut = & powershell -ExecutionPolicy Bypass -File $wcTool -Provider $provName -Quiet 2>&1 | Out-String
+            # Parse BOTH summary lines. The gate grew from five classes to nine (F variant gap,
+            # G dup fieldId, H dup targetField, I deselect orphan) and a regex pinned to the A-E
+            # line would have let all four regress in silence -- the exact "gate that cannot fail"
+            # shape, introduced by extending the tool without extending its reader.
             $wcM = [regex]::Match($wcOut, 'A dead control (\d+) / B orphan attribute (\d+) / C unfillable req (\d+) / D inert condition (\d+) / E inert default (\d+)')
+            $wcM2 = [regex]::Match($wcOut, 'F variant gap (\d+) / G dup fieldId (\d+) / H dup targetField (\d+) / I deselect orphan (\d+)')
             if (-not $wcM.Success) {
                 Info "$provName -- wiring closure produced no parseable totals"
                 continue
             }
             $wcTotal = 0
             for ($gi = 1; $gi -le 5; $gi++) { $wcTotal += [int]$wcM.Groups[$gi].Value }
+            if ($wcM2.Success) { for ($gi = 1; $gi -le 4; $gi++) { $wcTotal += [int]$wcM2.Groups[$gi].Value } }
+            else { Info "$provName -- wiring closure did not report the F-I classes (older tool?); A-E only" }
             if ($wcTotal -gt 0) {
                 Fail "$provName -- $wcTotal form/QIDM wiring break(s): a control that discards officer input, or a wired field with nowhere to type it (tools\audit_wiring_closure.ps1 -Provider $provName)"
                 $wcOut -split "`n" | Where-Object { $_ -match '^\s+[A-E] ' } | Select-Object -First 6 |
