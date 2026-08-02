@@ -1,0 +1,128 @@
+---
+name: usx-tooling
+description: Use when writing a NEW shared tool under tools/, or changing an existing one — especially anything that parses metadata, compares fields, resolves paths, or suppresses findings. Trigger on "add a gate", "fix the audit", "why is this tool wrong", "make it work on all providers", or any edit to tools/*.ps1. Covers the regression fixture, the portability contract, PowerShell 5.1 traps, and the ways a tool change silently makes things worse. NOT for interpreting metadata content (use usx-metadata) or running the phases (usx-build / usx-test-iterate).
+---
+
+# Changing a shared tool without making things quietly worse
+
+Every gate here is provider-agnostic **by intention**. Several were provider-specific **by
+accident**, and each was found only when the tool met a provider it had never met. This skill is
+how to avoid adding the next one.
+
+**The governing fact: a tool change can lower coverage, break one provider, or silence a real
+finding — and all three look exactly like success.** Measure, don't assert.
+
+## Step 0 — Before writing anything, check it doesn't already exist
+
+`ENGINEERING_STANDARD` LAW 4. Three of four classes in `audit_defect_classes` turned out to
+duplicate `audit_requirement_fidelity` / `audit_devdoc_optionals` / `audit_query_trace` — each as
+the **weaker** copy, and one of them (C2) was measuring the wrong thing entirely (it assumed `set[]`
+must mirror metadata-mandatory, which is false for every synthetic keyRef split in the portfolio).
+Ask which existing gate owns the question before adding one.
+
+## Step 1 — THE REGRESSION FIXTURE. Use it or you are guessing.
+
+Six providers are tenant-verified and report **0 UNDER / 0 OVER** on
+`audit_requirement_fidelity`: `CA_CLETS`, `FL_FCIC`, `HI_HCJDC_OFML`, `NJ_NJCJIS`,
+`NY_NYSPIN_EJUSTICE`, `TX_TLETS`.
+
+> **They must stay 0/0, and BRANCHES-COMPARED must not fall.**
+
+Run the full 20-provider sweep **before committing**, not after. This fixture has already:
+- **refuted a plausible improvement** — keyRef-scoped branch matching looked airtight (the tool's own
+  header endorsed the policy) and drove UNDER from 15 to 27, breaking HI and NY. Reverted. See
+  `knowledge-base/FIDELITY_TRIAGE.txt`.
+- **caught a self-inflicted regression mid-improvement** — moving comparison to targetField space
+  broke a sourceField-keyed whitelist, and AZ's OVER went **up** 6→11 while everything else improved.
+  Only the full sweep showed it.
+
+**Watch the denominator, not the finding count.** A suppression that lowers coverage looks identical
+to a clean run. If branches-compared falls, name exactly which branches left and why — and if you
+cannot, revert.
+
+## Step 2 — Portability is a separate property from correctness
+
+`tools\audit_tool_portability.ps1` runs the `-Path` gates against every provider and asks only
+whether each **reaches a verdict**. 240 cells, currently 0 unportable.
+
+**A green portability sweep does NOT mean the tools are right.** Every real bug found on 2026-08-01
+reached a verdict happily — it was just wrong:
+
+| Bug | Symptom |
+|---|---|
+| alphabetical `*.xml` glob | read a 6-node excerpt as 466-node metadata, reported green |
+| compared sourceFields to metadata refs | false findings on any unexpectedly-named control |
+| whitelist in the wrong namespace | broke exactly one provider |
+| PS-5.1 parse failure | worked under pwsh 7, silently broke a pipeline step |
+
+Execution-portability is necessary; the fixture and the mutation harnesses cover correctness.
+
+## Step 3 — Resolution and namespace rules
+
+- **Never glob for a provider file.** Use `Get-ProviderRootJson` / `Get-ProviderMetadataXml`. The
+  latter *refuses to choose* between multiple candidates on purpose: a caller can handle `$null`, but
+  cannot detect a plausible wrong answer. Note the pick was not even stable — `Get-ChildItem`'s
+  native order and `Sort-Object Name` disagreed on which of two files came first.
+- **Scope every combo lookup by `(query, keyRef, primaryFieldReference)`.** A keyRef is not a
+  variant, and the same keyRef appears under different transactions. This decided five outcomes in
+  one day.
+- **A whitelist must live in the same namespace as the comparison.** If you change what is being
+  compared, re-express every lookup table in the new space.
+- **Compare targetFields, not sourceFields** — the targetField is the wire contract.
+
+## Step 4 — PowerShell 5.1 is the engine that runs your tool
+
+`pipeline.ps1` / `enforce.ps1` invoke tools as `powershell -File` = **5.1**. Interactive work is
+often pwsh 7. The grammars differ, so a tool can be written, run, and "verified" under 7 while being
+a hard parse failure under 5.1 — which surfaces as swallowed `ParserError` text, not a FAIL line.
+
+- **Non-ASCII inside a DOUBLE-QUOTED string in a BOM-less file breaks 5.1.** It decodes cp1252, and
+  both `—` (U+2014) and `─` (U+2500) contain byte `0x94` = a right curly quote = string delimiter.
+  Non-ASCII is fine in `'...'`, never in `"...$x..."`.
+- **Nested same-type quotes inside `$()`** — PS7 accepts, 5.1 rejects.
+- Run `tools\audit_ps51_parse.ps1` **as `powershell`**, not `pwsh`. It refuses to give a clean
+  verdict off 5.1 because the first version of that very check ran under 7 and reported 99/0 while
+  two files were broken.
+- Other traps: `powershell -File` stringifies array args; `.Replace()` on a multi-line block no-ops
+  silently on CRLF (**use the Edit tool**); `Set-Content -Encoding utf8` writes a BOM under 5.1.
+
+## Step 5 — LAW 2: a gate that cannot fail is not a gate
+
+Prove a new gate can FAIL before believing its PASS:
+1. Inject the defect it claims to catch; confirm it FAILs with a useful message.
+2. Confirm it PASSes on clean input.
+3. If it depends on an environment assumption (engine, file present), make it **refuse loudly**
+   rather than pass vacuously — *"a tool that cannot run has not PASSED."*
+
+Then run `audit_gate_efficacy` (catalogued) and `fuzz_gate_efficacy` (unaimed). **Fuzz survivors are
+candidates, not verdicts** — triage each; some are correct-survivor classes.
+
+## Step 6 — Suppression is dangerous. Re-measure it.
+
+Before adding a registry path or exemption:
+- Does it suppress **only** the intended case? An unbuilt-class rule naming a **built** combo skips
+  that combo's whole comparison — that is how coverage dropped 27→26 with the finding count at 0.
+- **Does it suppress anything at all?** Two registrations were written and reverted the same day:
+  one keyed the wrong namespace, one removed 12 clean comparisons while changing no finding and
+  silencing nothing. **A registration that costs coverage and buys nothing is worse than none.**
+- **Is the tool right to refuse you?** `demoted-to-any` grants *"it rides in `any[]`"*; when the
+  field is absent from `any[]` too, the tool still reports — a surviving mutation taught it that
+  guard. Read the guard before trying a third spelling.
+
+## Step 7 — Finish the job in the same action
+
+- **Document a new tool in `knowledge-base/README.txt` AND the CLAUDE.md tools table immediately.**
+  The undocumented-tool gate caught this **four times in one session**; the gate works, the habit was
+  the defect.
+- Update the tool count in the CLAUDE.md `## Tools (N scripts + M shared modules)` header.
+- Write **why** in the tool's own header, with the concrete case that motivated it. A tool whose
+  header explains the defect it prevents survives its author.
+
+## Verification
+
+```
+powershell -File tools\audit_ps51_parse.ps1            # 0 PARSE-FAIL, on 5.1
+powershell -File tools\audit_tool_portability.ps1      # 0 unportable
+<full 20-provider sweep of the tool you changed>       # fixture 0/0, branches not fallen
+tools\enforce.ps1 -Provider <a few>                    # 0 FAIL / 0 WARN
+```
