@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO
-  Source: CA_SAN_LUIS_OBISPO_v2.2.json
-  Generated: 2026-08-02 12:44
+  Source: CA_SAN_LUIS_OBISPO_v2.3.json
+  Generated: 2026-08-02 15:29
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_SAN_LUIS_OBISPO_v2.2
+ POST-BUILD VERIFICATION: CA_SAN_LUIS_OBISPO_v2.3
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 19 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, caRequestPurposeCodeDH, SexCodeDH, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 20 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, caRequestPurposeCodeDH, attentionDH, SexCodeDH, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -32,14 +32,16 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 6: Visible-First Mandate ---
+  [INFO] Hidden field 'attentionDH' (FormInput) -- documented exception, allowed
   [PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect (VEHICLE_MAKE dropdown)
+  [INFO] QIDM 'CA_SAN_LUIS_OBISPO_DriverHistoryQuery' attr 'Attention' uses CommsysGetLastNameFirstNameInitialRuleHandler (non-empty sourceField -- importable)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
   [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (26) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (28) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -54,7 +56,8 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (30 fields scanned)
+  [INFO] Field 'attentionDH' label='Attention (auto-populated from officer profile)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [PASS] All form field labels have required routing hint qualifiers (31 fields scanned) (1 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

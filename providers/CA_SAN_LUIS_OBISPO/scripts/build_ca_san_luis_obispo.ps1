@@ -16,7 +16,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '2.2'
+    [string]$Version = '2.3'
 )
 
 $ErrorActionPreference = "Stop"
@@ -220,6 +220,15 @@ $dhQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('caRequestPurposeCodeDH'); targetField = 'PurposeCode' }
+        # v2.3: Attention -- metadata defines it in <Any> on ALL FOUR DriverHistoryQuery variants
+        # (KQ{Name}, KQ{OLN}, B2{Name}, B2{OLN}) and the devdoc lists it on #3/#4. It was wired
+        # nowhere. On the approved automated-identity-field standard, so handler + hidden feeder
+        # rather than an officer-typed control. DH-suffixed sourceField to stay out of the DL pool.
+        # size 30 from this XML's own <Field maxLength>, read inside DriverHistoryQuery.
+        [PSCustomObject]@{
+            name = 'Attention'; size = 30; sourceField = @('attentionDH'); targetField = 'Attention'
+            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler'; arguments = @() }
+        }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
@@ -231,14 +240,14 @@ $dhQuery = [PSCustomObject]@{
             # BirthDate+Name+SexCode only, so the out-of-state DH-by-Name query went out
             # with NO destination State. Fixed 2026-07-29. Gate-XOR: the in-state twin
             # (B2.N) deliberately omits it.
-            requirements          = [PSCustomObject]@{ set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('RegistrationState','caRequestPurposeCodeDH','attentionDH'); defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ.N'
             state                 = 'In/Out'
         }
         # In-state Name (3 DH set)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH'); any = @('SexCodeDH'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('BirthDateDH','NameLastDH','NameFirstDH'); any = @('SexCodeDH','caRequestPurposeCodeDH','attentionDH'); defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'B2.N'
             state                 = 'In/Out'
@@ -251,14 +260,14 @@ $dhQuery = [PSCustomObject]@{
         # Existence-only, so poisoned-array-safe. Found 2026-07-29 by
         # audit_combo_reachability.ps1.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('RegistrationState','caRequestPurposeCodeDH','attentionDH'); defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
             state                 = 'In/Out'
         }
         # In-state OLN (1 DH set) -- gate-XOR: State is the discriminator, so it is NOT in any[]
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @(); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = @('caRequestPurposeCodeDH','attentionDH'); defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'B2.O'
             state                 = 'In/Out'
@@ -472,7 +481,15 @@ $perLayout = MakeLayouts @(
         title = 'DL - OLN SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
+                # maxLength 17, NOT 20 (fixed v2.3). This XML defines OperatorLicenseNumber TWICE:
+            # maxLength 17 under DriverLicenseQuery and 20 under DriverHistoryQuery. The DL QIDM
+            # attribute was already correct at 17, but the CONTROL let an officer type 20, so a
+            # server reject was reachable from the form. audit_metadata had been warning
+            # "QIF maxLength 20 > XML maxLength 17" since before v2.2. The DH control stays 20 --
+            # its own transaction really does allow 20; the two are not interchangeable.
+            # Label is "OLN" per the global canonical-field-label rule (DEX-1284, BUILD_RULES Sec 11),
+            # applied on this provider's revisit turn.
+            @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '17' 'ROW_PER_OLN_1' }
             )}
         )
     }
@@ -495,8 +512,16 @@ $perLayout = MakeLayouts @(
         title = 'DH - OLN SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_DH_OLN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number (DH)' '20' 'ROW_PER_DH_OLN_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN (DH)' '20' 'ROW_PER_DH_OLN_1' }
                 @{ id = 'CaRequestPurposeCodeDH_Input';  node = Inp 'caRequestPurposeCodeDH'  'Purpose Code (DH)'   '1'  'ROW_PER_DH_OLN_1' @{ initialValue = 'C' } }
+        )}
+        # v2.3: hidden Attention gate-feeder. The attribute's handler substitutes the officer's name,
+        # but an attribute whose sourceField carries no value is dropped from serialization before the
+        # handler runs -- the constant 'X' exists only to prevent that, and is never transmitted.
+        # Paired with a combo default on all four DH combinations because CAD ignores form
+        # initialValue entirely (audit_cad CHECK 6).
+        @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
+            @{ id = 'AttentionDH_Input'; node = InpH 'attentionDH' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
             )}
         )
     }

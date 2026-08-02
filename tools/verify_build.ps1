@@ -275,7 +275,11 @@ $hiddenFieldWhitelist = @(
     '(?i)state',                         # RMS dual-field State exception
     '(?i)dexStateUserId',                # AUTH user id from RMS profile
     '(?i)cadUnit|cadEvent|linkToEvent',  # CAD / First-Responder context
-    '(?i)^Attention$',                   # auto-Attention gate-feeder (handler emits officer profile name; field hidden, value ignored)
+    # 2026-08-02: widened to the DH-suffixed spelling. DH-suffixing is the standard mechanism for
+    # keeping a DriverHistory control out of the DriverLicense field pool, so a provider whose DH is
+    # isolated names this feeder attentionDH -- the same approved auto-populate field, same handler,
+    # same reason it may be hidden. Exactly parallel to the requestor(DH)? entry below.
+    '(?i)^Attention(DH)?$',              # auto-Attention gate-feeder (handler emits officer profile name; field hidden, value ignored)
     # 2026-08-02: widened from '^requestorDH$' to cover the bare spelling. This was an internal
     # CONTRADICTION, not a real finding: $autoPopAttrNames below is @('Attention','Requestor') and
     # WARNs when a Requestor attribute has NO handler -- but the handler is inert unless its
