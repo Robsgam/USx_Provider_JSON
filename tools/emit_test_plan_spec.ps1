@@ -168,7 +168,14 @@ if (Test-Path $ovPath) {
 # composite + alias expansion: a devdoc field name may map to several form fields
 $expand = @{ 'name' = @('namelast','namefirst'); 'state' = @('registrationstate')
              'gunserialnumber' = @('serialnumber'); 'articleserialnumber' = @('articleserialnumber','serialnumber')
-             'gunmake' = @('gunmake','firearmmake'); 'badgenumber' = @('dexstateuserid') }
+             'gunmake' = @('gunmake','firearmmake'); 'badgenumber' = @('dexstateuserid')
+             # The CLETS family names this control caRequestPurposeCode while every devdoc writes
+             # the bare CJIS name PurposeCode, so it canonicalises to 'carequestpurposecode' and
+             # never matched: 6 false UNREACHABLE across CA_eSUN, CA_SAN_LUIS_OBISPO and
+             # CA_VENTURA_COUNTY, all on DriverHistoryQuery #3/#4. This alias is already documented
+             # for audit_metadata (CaRequestPurposeCode <-> PurposeCode); the spec emitter just
+             # never got it. Both spellings kept so a provider using the bare name still resolves.
+             'purposecode' = @('purposecode','carequestpurposecode') }
 
 function Get-Value([string]$devField, [string]$fieldId, [string]$ent) {
     if ($ov.ContainsKey("$ent.$fieldId")) { return $ov["$ent.$fieldId"] }
@@ -207,6 +214,20 @@ function Resolve-FieldIds([string]$devField, [string]$ent, [bool]$preferDH, [boo
         if ($preferCCH -and $formFields[$ent].ContainsKey("cch|$w"))  { $out += $formFields[$ent]["cch|$w"] }
         elseif ($preferDH -and $formFields[$ent].ContainsKey("dh|$w")) { $out += $formFields[$ent]["dh|$w"] }
         elseif ($formFields[$ent].ContainsKey($w))                     { $out += $formFields[$ent][$w] }
+        else {
+            # ENTITY-PREFIXED CROSS-ENTITY FIELDS. A provider that offers owner-by-name on Vehicle or
+            # Firearm must give those cards their OWN name controls, or they would share the Person
+            # pool -- so they are built as VehNameLast / GunNameLast / VehBirthDate / GunAge. Canon()
+            # cannot see through a PREFIX (it only strips DH/CCH suffixes), so the devdoc's bare
+            # "Name" matched nothing and CA_eSUN's gun-by-name (QGH) and owner-by-name (VP) queries --
+            # both genuinely BUILT, with the controls present -- were reported as having no form
+            # field at all. Same artefact class as the DH and CCH key spaces.
+            # Guarded by UNIQUENESS: only accept when exactly one field in this entity ends with the
+            # wanted token, so an ambiguous case reports unwired rather than guessing wrong. Exact
+            # matches above always win, so this never overrides a real hit.
+            $suffix = @($formFields[$ent].Keys | Where-Object { $_ -notmatch '^(dh|cch)\|' -and $_ -ne $w -and $_.EndsWith($w) })
+            if ($suffix.Count -eq 1) { $out += $formFields[$ent][$suffix[0]] }
+        }
     }
     return ,@($out)
 }
