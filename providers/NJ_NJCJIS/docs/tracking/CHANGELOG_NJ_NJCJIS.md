@@ -367,7 +367,7 @@ LIVE TEST
 **REASON**
   - Standard MC variant per build methodology  
 
-## v4.15 -- 2026-07-31 -- Boat hull over-fill now carries RegistrationNumber (devdoc-order ruling)
+## v4.15 -- 2026-08-02 -- Boat hull over-fill now carries RegistrationNumber (devdoc-order ruling)
 
 **CHANGED:** QBN any[] += RegistrationNumber.
 **REASON:** devdoc BoatQuery #1 is 'BoatHullIdNumber [ImageIndicator, RegistrationNumber]'. Hull is

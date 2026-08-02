@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
   Source: AZ_AZDPS_v3.4.json
-  Generated: 2026-08-02 12:39
+  Generated: 2026-08-02 17:13
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-02 12:39
+ Generated: 2026-08-02 17:14
 ============================================================
 
 ============================================================
@@ -97,9 +97,9 @@ METADATA AUDIT
   AzAzdpsDriverLicenseQuery:
   [PASS]   keyRef DQ: set field 'OperatorLicenseNumber' present
   [PASS]   keyRef DQ: any field 'State' present
-  [NOTE]   keyRef DQ: XML set 'SexCode' in any[] -- ACCEPTED per registry
-  [NOTE]   keyRef DQ: XML set 'BirthDate' in any[] -- ACCEPTED per registry
-  [PASS]   keyRef DQ: any field 'State' present
+  [PASS]   keyRef DQ: set field 'SexCode' covered by DQ
+  [PASS]   keyRef DQ: set field 'BirthDate' covered by DQ
+  [PASS]   keyRef DQ: any field 'State' covered by DQ
   [PASS]   keyRef ACWL: set field 'BadgeNumber' present
   [PASS]   keyRef ACWL: set field 'BirthDate' present
   [PASS]   keyRef ACWL: set field 'Name' present
@@ -109,23 +109,23 @@ METADATA AUDIT
   [PASS]   keyRef ACQB: set field 'BadgeNumber' present
   [PASS]   keyRef ACQB: set field 'RegistrationNumber' present
   [PASS]   keyRef ACQB: any field 'RelatedHitSearchIndicator' present
-  [PASS]   keyRef ACQB: set field 'BadgeNumber' present
-  [PASS]   keyRef ACQB: any field 'RegistrationNumber' present
-  [PASS]   keyRef ACQB: any field 'RelatedHitSearchIndicator' present
+  [PASS]   keyRef ACQB: set field 'BadgeNumber' covered by ACQB
+  [PASS]   keyRef ACQB: any field 'RegistrationNumber' covered by ACQB
+  [PASS]   keyRef ACQB: any field 'RelatedHitSearchIndicator' covered by ACQB
   [PASS]   keyRef BQ: set field 'RegistrationNumber' present
   [PASS]   keyRef BQ: any field 'State' present
-  [PASS]   keyRef BQ: any field 'RegistrationNumber' present
-  [PASS]   keyRef BQ: any field 'State' present
+  [PASS]   keyRef BQ: any field 'RegistrationNumber' covered by BQ
+  [PASS]   keyRef BQ: any field 'State' covered by BQ
   DriverHistoryQuery:
   [PASS]   keyRef KQ: set field 'State' present
   [PASS]   keyRef KQ: set field 'OperatorLicenseNumber' present
   [PASS]   keyRef KQ: any field 'PurposeCode' present
   [PASS]   keyRef KQ: any field 'Attention' present
-  [PASS]   keyRef KQ: set field 'State' present
-  [NOTE]   keyRef KQ: XML set 'BirthDate' in any[] -- ACCEPTED per registry
-  [NOTE]   keyRef KQ: XML set 'SexCode' in any[] -- ACCEPTED per registry
-  [PASS]   keyRef KQ: any field 'PurposeCode' present
-  [PASS]   keyRef KQ: any field 'Attention' present
+  [PASS]   keyRef KQ: set field 'State' covered by KQ
+  [PASS]   keyRef KQ: set field 'BirthDate' covered by KQ
+  [PASS]   keyRef KQ: set field 'SexCode' covered by KQ
+  [PASS]   keyRef KQ: any field 'PurposeCode' covered by KQ
+  [PASS]   keyRef KQ: any field 'Attention' covered by KQ
   GunQuery:
   [PASS]   keyRef ACQG: set field 'BadgeNumber' present
   [PASS]   keyRef ACQG: set field 'GunSerialNumber' present
@@ -139,10 +139,10 @@ METADATA AUDIT
   [PASS]   keyRef ACVR: any field 'LicensePlateYear' present
   [PASS]   keyRef ACVR: any field 'LicensePlateTypeCode' present
   [PASS]   keyRef ACVR: any field 'State' present
-  [PASS]   keyRef ACVR: set field 'BadgeNumber' present
-  [PASS]   keyRef ACVR: any field 'VehicleMakeCode' present
-  [PASS]   keyRef ACVR: any field 'VehicleYear' present
-  [PASS]   keyRef ACVR: any field 'State' present
+  [PASS]   keyRef ACVR: set field 'BadgeNumber' covered by ACVR
+  [PASS]   keyRef ACVR: any field 'VehicleMakeCode' covered by ACVR
+  [PASS]   keyRef ACVR: any field 'VehicleYear' covered by ACVR
+  [PASS]   keyRef ACVR: any field 'State' covered by ACVR
 
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
   [PASS]   No fields over-promoted from metadata any[] to set[]
@@ -202,6 +202,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 127 PASS / 0 FAIL / 0 WARN
+Total: 131 PASS / 0 FAIL / 0 WARN
 ============================================================
 
