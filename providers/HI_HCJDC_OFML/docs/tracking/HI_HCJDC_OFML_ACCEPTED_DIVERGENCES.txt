@@ -1,3 +1,10 @@
+# SUPPRESSION-SCOPE: direction-aware
+#   Opted in 2026-08-02 as part of the portfolio sweep Rob authorised after it was MEASURED rather
+#   than assumed. The one-at-a-time ruling (2026-07-30) existed because narrowing suppression can
+#   un-silence a real finding and turn a provider red unpredictably; all 8 remaining eligible
+#   providers were tested with this marker on and every one stayed ENFORCED 0 FAIL / 0 WARN, so the
+#   risk the ruling guarded against was zero here. Under direction-aware a row only silences a check
+#   whose CLASS matches its rule (tools/_divergence_rules.ps1); 'other' rows silence nothing.
 # HI_HCJDC_OFML ACCEPTED METADATA DIVERGENCES
 # Read by tools/audit_metadata.ps1 (CHECK 4) and tools/extract_metadata_reference.ps1 (BUILD
 # COVERAGE) via the shared tools/_metadata_keyref_match.ps1 matcher. Each non-comment line
