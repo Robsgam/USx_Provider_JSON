@@ -76,6 +76,38 @@ without it a CAD query is rejected outright) and a **form prefill** (blank = gua
 Such a prefill is **load-bearing, not a BUILD_RULES 24 violation** — a field mandatory in *every*
 combination cannot shadow one path over another.
 
+### 6. TRANSACTION-level agreement is not VARIANT-level agreement
+
+The strongest false signal there is, because *both authorities appear to confirm each other*:
+
+> the metadata defines the field **on this transaction**, and the devdoc lists it **on this query**.
+
+That is not enough, and on 2026-08-02 it got a complete fix drafted for `OH_LEADS` —
+attributes, controls, an auto-populate handler, combo wiring — before the per-**combination**
+`<Requirements>` were read. They killed it:
+
+```
+DL{OperatorLicenseNumber}      MAND=[OperatorLicenseNumber]  OPT=[]                                 <-- BUILT
+BMVIMS{OperatorLicenseNumber}  MAND=[OperatorLicenseNumber]  OPT=[ReasonCode, Requestor, UserName]  <-- not built
+```
+
+The built variant's `<Any>` is **empty**. Wiring the three optionals into it would OVER-PERMIT, and
+`BMVIMS` is itself a duplicate-input twin of `DL` (both mandate only `OperatorLicenseNumber`), so
+building *that* would create a dead combo. The devdoc listed them because it gives ONE FLAT optional
+list per query: item #2 is the `BMVIMS` row, #3 is the `DL` row.
+
+**The only question that decides it: what does the FIRING combination's own `<Requirements>`
+define?** Nothing short of reading them answers it. A keyRef is not a variant — and neither is a
+transaction.
+
+**Same rule governs FIELD SIZES.** `CA_CLETS_OCATS` carried `Authorization` at size 2 because the
+size was read from `OcatsWarrantQueryAWVEHQ` instead of `VehicleRegistrationQuery` (which says 1) —
+and the comment directly above that line *already warned* that the keyRef `AWVEHQ` exists under both.
+The combo lookup was scoped correctly and the field size was then read from the wrong side of the
+very collision it documented. `CA_SAN_LUIS_OBISPO` defines `OperatorLicenseNumber` as 17 under
+`DriverLicenseQuery` and 20 under `DriverHistoryQuery`. **Read `maxLength` INSIDE the transaction
+you are building**, never by a global field-name lookup.
+
 ## Step 2 — A KEYREF IS NOT A VARIANT
 
 This decided **five** separate outcomes in one day. Always scope by

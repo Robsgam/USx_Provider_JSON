@@ -123,6 +123,31 @@ gated field, and `drop-any` of a form-only field, both showed up on four separat
 sweep. Both are the correct-survivor case — which is exactly why a raw survivor **count** is not a
 quality metric.
 
+## Step 5b — "The tool is wrong" is a HYPOTHESIS, not a finding
+
+The failure mode this skill creates in you: after you fix one genuine tool bug, the next warning
+looks like the same bug. On 2026-08-02, minutes after correcting a real transaction-scoping mistake,
+a `CA_SAN_LUIS_OBISPO` warning —
+
+```
+[WARN] OperatorLicenseNumber: QIF maxLength 20 > XML maxLength 17 -- server may reject
+```
+
+— was diagnosed as "`audit_metadata` isn't transaction-scoped" and a patch was started. **The tool
+was right and the build was wrong**: the DL control really did accept 20 characters where that
+transaction caps at 17. Had the gate been "fixed", the warning would have gone quiet with the defect
+still shipping — and the obvious alternative "fix" (shrinking the field to match) would have
+truncated a *valid* 20-character DH OLN, since that transaction genuinely allows 20.
+
+**Before editing a gate that flagged something, verify the flagged artifact itself.** Read the
+emitted JSON, not the build script's intent. A gate silenced by a tool change is the one defect no
+denominator can reveal. Cheapest discriminator: does the finding survive when you check the actual
+value by hand? If yes, the tool was right.
+
+Corollary, both directions seen in one session: a *correction* to an artefact-producing tool
+RESOLVES a finding to something concrete (`NO-FIRE` -> a named keyRef); a *suppression* makes it
+vanish. If your change makes findings disappear rather than resolve, you suppressed something.
+
 ## Step 6 — Suppression is dangerous. Re-measure it.
 
 Before adding a registry path or exemption:
