@@ -47,3 +47,16 @@
 #      obtain that documentation AND metadata defining the two transactions. Rob 2026-07-31: "that
 #      may possibly change but its something that will eventually be built."
 #   4. A full 5-entity tenant sweep (test package is reset; 0 logs at v2.2).
+# [2026-08-02] NOW BLOCKED BY audit_devdoc_combinations -- and nothing about this provider changed.
+#   The gate compares devdoc combinations against the build. Here it parses ZERO of them, so it had
+#   nothing to compare and could not fail -- yet it printed "[PASS] every devdoc combination is
+#   built or accepted / 0 FAIL / 0 NOTE", which reads exactly like a clean provider. Measured across
+#   all 20: every other provider compares 9-40 combinations; this one compares 0, so its green line
+#   here was never evidence of anything. Rob's call: a zero-comparison run is a FAIL (LAW 2 -- a gate
+#   that cannot fail is not a gate). Only this provider is affected.
+#   TWO honest ways to clear it, NEITHER to be done while the hold stands:
+#     (a) fix the devdoc parse so there is something to compare -- source/CA_CONTRA_COSTA_DEVDOC.txt
+#         is 3,921 bytes and yields no "Possible Combinations" items; or
+#     (b) record WHY there is no combination table, via accept_divergence.ps1.
+#   Do NOT clear it by loosening the gate.
+

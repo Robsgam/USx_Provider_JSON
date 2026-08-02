@@ -829,7 +829,18 @@ if (-not (Test-Path $dcTool)) {
         }
         $dcFail = [int]$dcM.Groups[1].Value; $dcNote = [int]$dcM.Groups[2].Value
         if ($dcFail -gt 0) {
-            Fail "$provName -- $dcFail devdoc-listed combination(s) UNBUILT with a mandatory field wired nowhere; build it or record it (tools\audit_devdoc_combinations.ps1 -Path $dcJson)"
+            # The summary must not assert a CAUSE it did not check. This gate now raises a FAIL for
+            # two different reasons -- an unbuilt devdoc combination, and a run that compared ZERO
+            # combinations (its verdict is then not evidence) -- and hard-coding the first wording
+            # described CA_CONTRA_COSTA as having "1 combination UNBUILT with a mandatory field
+            # wired nowhere" when nothing is unbuilt and nothing was compared. Read the reason off
+            # the tool's own [FAIL] lines, which are printed underneath either way.
+            $dcZero = $dcOut -match '0 devdoc combinations parsed'
+            if ($dcZero) {
+                Fail "$provName -- devdoc combination gate reached NO VERDICT (0 combinations compared), so its result is not evidence; fix the devdoc parse or record why there is no combination table (tools\audit_devdoc_combinations.ps1 -Path $dcJson)"
+            } else {
+                Fail "$provName -- $dcFail devdoc-listed combination(s) UNBUILT with a mandatory field wired nowhere; build it or record it (tools\audit_devdoc_combinations.ps1 -Path $dcJson)"
+            }
             $dcOut -split "`n" | Where-Object { $_ -match '\[FAIL\]' } | Select-Object -First 6 |
                 ForEach-Object { Out "       $($_.Trim())" }
         } else {

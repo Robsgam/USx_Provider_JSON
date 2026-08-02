@@ -42,9 +42,13 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## ON HOLD / DO NOT RE-RAISE
 
-- **CA_CONTRA_COSTA** -- "on hold until further notice". Parked CLEAN, ENFORCED. All owed work is in its
-  `PENDING_UPDATES.txt`, incl. that **JAWS is unbuildable** (devdoc defers to a doc not in `source/`;
-  metadata has ZERO JAWS nodes).
+- **CA_CONTRA_COSTA** -- "on hold until further notice". Still on hold, but **no longer parked clean:
+  it is now BLOCKED** (2026-08-02, your call) because `audit_devdoc_combinations` compares ZERO devdoc
+  combinations there and a zero-comparison run is now a FAIL rather than a PASS. Nothing about CC
+  changed -- the gate stopped crediting a comparison that never ran. Clears by fixing the devdoc parse
+  or recording why there is no combination table; **do neither without lifting the hold**. Its other
+  owed work is in `PENDING_UPDATES.txt`, incl. that **JAWS is unbuildable** (devdoc defers to a doc not
+  in `source/`; metadata has ZERO JAWS nodes).
 - **LA_LEMS** -- its 2 DH-`Attention` devdoc items are DEFERRED by Rob ("handled when we get to them").
   They are the ONLY reason it is BLOCKED. Do not re-raise them as a gap.
 - **Jira: ALL updates HELD** until the process is trusted. `enforce` 2r's `[GAP]` is EXPECTED.
@@ -53,8 +57,10 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## STATE
 
-**19 of 20 providers ENFORCED 0 FAIL / 0 WARN** (measured by a full sweep, not inferred).
-Only **LA_LEMS** is BLOCKED, on its 2 deferred items above.
+**18 of 20 providers ENFORCED 0 FAIL / 0 WARN** (measured by a full sweep, not inferred).
+**LA_LEMS** (2 deferred items) and **CA_CONTRA_COSTA** (zero-comparison devdoc gate, see above) are
+BLOCKED. The CC block is a GATE getting stricter, not a provider getting worse -- do not "fix" it by
+loosening the gate back.
 
 **ENFORCED is not "done".** Only FIVE are tenant-tested (324 logs, four log gates green):
 TX v4.18, NY v4.19, NJ v4.15, HI v4.14, CA_CLETS v2.23.

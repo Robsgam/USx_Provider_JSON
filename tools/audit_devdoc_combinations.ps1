@@ -378,8 +378,14 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
     # output, which is the known answer. Validate the probe or the denominator is just another guess.)
     $ddCount = $compared
     if ($ddCount -eq 0) {
-        Emit "  [NO-VERDICT] $provName -- 0 devdoc combinations parsed; this gate compared NOTHING. Not a pass: it means the devdoc yielded no combination table, so read this provider's coverage from another source." 'Red'
-        return @{ Fail = $fails; Note = $notes; Compared = 0 }
+        # BLOCKING, by Rob's call 2026-08-02: LAW 2 -- a gate that cannot fail is not a gate, so a
+        # comparison that never ran must not bank credit as if it had. Counted as a FAIL rather than
+        # printed-and-ignored, because an advisory line in a green run is read as green.
+        # Clears one of two honest ways: fix the devdoc parse so there is something to compare, or
+        # record WHY there is nothing in <P>_ACCEPTED_DIVERGENCES.txt. Both leave a written reason;
+        # silence does not. Today this blocks exactly CA_CONTRA_COSTA (the other 19 compare 9-40).
+        Emit "  [FAIL] $provName -- 0 devdoc combinations parsed; this gate compared NOTHING, so its verdict is not evidence. Fix the devdoc parse or record why there is no combination table." 'Red'
+        return @{ Fail = ($fails + 1); Note = $notes; Compared = 0 }
     }
     if (-not $fails -and -not $notes) { Emit "  [PASS] $provName -- every devdoc combination is built or accepted ($ddCount devdoc combination(s) compared)" 'Green' }
     elseif (-not $fails)              { Emit "  [PASS] $provName -- no unbuilt devdoc combination ($notes note(s); $ddCount compared)" 'Green' }
