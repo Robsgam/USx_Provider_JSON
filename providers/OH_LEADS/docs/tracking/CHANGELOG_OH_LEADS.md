@@ -2,7 +2,7 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.2** | Generated: 2026-08-01
+Current: **v2.2** | Generated: 2026-08-02
 
 ---
 
