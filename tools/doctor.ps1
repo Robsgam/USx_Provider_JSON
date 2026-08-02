@@ -124,6 +124,35 @@ try {
     Emit "  [WARN] audit_ps51_parse.ps1 failed: $($_.Exception.Message)"
 }
 
+# --- 6. Repo-scope advisories that nothing else ran ------------------------------
+# These three were ORPHANS: real gates, kept current, referenced by no orchestrator -- so their
+# findings only ever surfaced when someone ran them by hand. They are advisory or repo-scope
+# (not per-provider blocking), so doctor is the right home: visible on every health check,
+# blocking nothing. A gate that nothing runs is not a gate.
+Emit ""
+Emit "--- SUPPRESSION SCOPE (registry rows silencing more than they adjudicate; audit_suppression_scope.ps1) ---"
+try {
+    $ss = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_suppression_scope.ps1" *>&1 | Out-String
+    ($ss -split "`n" | Where-Object { $_ -match 'TOTAL:|OVER-BROAD|^\s+[A-Z][A-Z_]+\s+\d+\s+[1-9]' } | Select-Object -First 12) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_suppression_scope.ps1 failed: $($_.Exception.Message)" }
+
+Emit ""
+Emit "--- TOOL PORTABILITY (every shared gate must reach a verdict on every provider; audit_tool_portability.ps1) ---"
+try {
+    $tp = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_tool_portability.ps1" *>&1 | Out-String
+    ($tp -split "`n" | Where-Object { $_ -match 'RESULT:|NO-VERDICT' } | Select-Object -First 10) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_tool_portability.ps1 failed: $($_.Exception.Message)" }
+
+Emit ""
+Emit "--- PROVIDER LINKAGE (a build justified by another provider's authority; audit_provider_linkage.ps1) ---"
+try {
+    $pl = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_provider_linkage.ps1" *>&1 | Out-String
+    ($pl -split "`n" | Where-Object { $_ -match 'RESULT:|cross-provider reference' } | Select-Object -First 12) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_provider_linkage.ps1 failed: $($_.Exception.Message)" }
+
 # --- 5. Verdict ----------------------------------------------------------------
 Emit ""
 Emit "================================================================"

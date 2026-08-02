@@ -119,6 +119,33 @@ foreach ($pn in $targets) {
     Out-Line ("  [2] devdoc optional subsets    {0}" -f $(if ($f2.Count) { "$($f2.Count) FAIL" } else { 'all route and transmit' })) $(if ($f2.Count) { 'Red' } else { 'Green' })
     foreach ($l in ($f2 | Select-Object -First 4)) { Out-Line "        $($l.Trim())" 'Red'; $short += "OPTIONAL SUBSET: $($l.Trim())" }
 
+    # ── 2b. ADJUDICATE those dropped optionals -- FIX or REGISTER? ────────────────────
+    # Step 2's wording is identical for two OPPOSITE situations, and on 2026-08-01 the same
+    # sentence was a real dropped value on four providers and correct behaviour on six. The
+    # devdoc gives ONE FLAT optional list per query; metadata scopes optionals PER VARIANT. The
+    # only question is whether the FIRING combo's own metadata variant defines the field:
+    # YES -> FIX (add to its any[]), NO -> REGISTER (adding it would OVER-PERMIT, a new defect).
+    # audit_optional_scope answers exactly that and was an ORPHAN -- written, kept current, and
+    # referenced by no orchestrator, so its answer only appeared if someone thought to ask.
+    # Runs only when step 2 actually found something; a clean step 2 has nothing to adjudicate.
+    if ($f2.Count) {
+        $o2b = Run-Tool 'audit_optional_scope.ps1' @('-Provider', $Provider)
+        $fixL = @($o2b -split "`n" | Where-Object { $_ -match '\bFIX\b' -and $_ -notmatch 'YES -> FIX' })
+        $regL = @($o2b -split "`n" | Where-Object { $_ -match '\bREGISTER\b' -and $_ -notmatch 'NO -> REGISTER' })
+        # Say which of step 2's failures this adjudicator could actually SPEAK to. It handles the
+        # DROPPED-OPTIONAL class only; "NO COMBO FIRES" is a human-adjudication list it does not
+        # cover. Printing a bare "0 FIX / 0 REGISTER" beside a live FAIL reads as "adjudicated,
+        # nothing to do" when the truth is "none of those failures were in my class" -- the same
+        # vacuous-PASS shape this repo has been stamping out all week.
+        $inScope = @($f2 | Where-Object { $_ -notmatch 'NO COMBO FIRES' }).Count
+        if ($inScope -eq 0) {
+            Out-Line ("  [2b] optional-scope verdict    n/a -- none of step 2's {0} failure(s) are dropped-optionals (NO-COMBO-FIRES is adjudicated by hand)" -f $f2.Count) 'DarkGray'
+        } else {
+            Out-Line ("  [2b] optional-scope verdict    {0} FIX / {1} REGISTER (of {2} dropped-optional finding(s))" -f $fixL.Count, $regL.Count, $inScope) $(if ($fixL.Count) { 'Yellow' } else { 'Green' })
+        }
+        foreach ($l in ($fixL | Select-Object -First 4)) { Out-Line "        $($l.Trim())" 'Yellow'; $short += "OPTIONAL-SCOPE FIX: $($l.Trim())" }
+    }
+
     # ── 3. DEVDOC-ORDER + 4. SHADOW-RANK  (NEW -- neither existed before) ─────────────
     # Rob: "queries are prioritised the way they are listed in devdoc" and "shadow queries need to
     # be identified and not allowed to fire for higher order / more required fields".
