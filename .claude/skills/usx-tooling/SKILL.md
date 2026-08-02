@@ -94,8 +94,34 @@ Prove a new gate can FAIL before believing its PASS:
 3. If it depends on an environment assumption (engine, file present), make it **refuse loudly**
    rather than pass vacuously — *"a tool that cannot run has not PASSED."*
 
-Then run `audit_gate_efficacy` (catalogued) and `fuzz_gate_efficacy` (unaimed). **Fuzz survivors are
-candidates, not verdicts** — triage each; some are correct-survivor classes.
+Then run `audit_gate_efficacy` (catalogued) and `fuzz_gate_efficacy` (unaimed).
+
+### Triaging fuzz survivors — they are CANDIDATES, not verdicts
+
+A survivor means *no gate reacted*. That is only a blind spot if the mutated JSON would actually
+**behave differently on the wire**. Classify before believing:
+
+| Mutation | Usually a CORRECT survivor when… | Real blind spot when… |
+|---|---|---|
+| `drop-conditions` | the condition merely restated a `set[]` requirement (gating `X EXISTS` when X is already in `set[]` is inert) | the condition was the **only** discriminator between two combos with identical `set[]` — then dropping it creates a shadow |
+| `drop-any` of a form-only field (`RegistrationState`, `ImageIndicator`) | that field is on the `$formOnly` whitelist and metadata does not define it on that variant | metadata's `<Any>` **does** define it — then the officer's value is now silently dropped |
+| `drop-set` of a composite-`Name` component | `Test-Has` treats any component as satisfying `Name`, so removing one still "matches" | the wire would send a partial name — a real defect the current granularity cannot see |
+| `swap-order` | neither `set[]` is a subset of the other and they are not co-satisfiable | one is a subset of the other → first-match now steals every fill |
+| `over-permit` | the added field is whitelisted, or the branch is unmapped so nothing compares it | the branch is mapped and the field is genuinely undefined there |
+| `prefill-field` / `select-to-input` | the field is not in any `set[]`, so no routing changes | the field IS in a `set[]` → **BUILD_RULES 24**, the prefill hides every combo needing it |
+
+**Cheapest decisive test:** ask whether the mutation changes *which combo fires* or *what the wire
+carries*. If neither, it is a harmless edit and the gates are right to ignore it.
+
+**Promote a TRIAGED-REAL survivor into `audit_gate_efficacy.ps1 $MUTS`** so it becomes a permanent
+catalogued mutation. Do **not** promote one whose "defect" is an inverted assertion — a mutation that
+*should* survive becomes a permanent SURVIVED row and teaches the next reader to ignore the report.
+That mistake was made and reverted once already (`nj-devdoc-prefix-blind`).
+
+**Recurring survivors worth knowing:** `drop-conditions` on a combo whose `set[]` already carries the
+gated field, and `drop-any` of a form-only field, both showed up on four separate providers in one
+sweep. Both are the correct-survivor case — which is exactly why a raw survivor **count** is not a
+quality metric.
 
 ## Step 6 — Suppression is dangerous. Re-measure it.
 
