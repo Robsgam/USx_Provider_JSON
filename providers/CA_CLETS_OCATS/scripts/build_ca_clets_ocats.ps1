@@ -6,7 +6,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_ocats_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.2'
+$Version  = '2.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -56,13 +56,23 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('VehicleMakeCode');             targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
         # ── v2.1: AWVEHQ support (devdoc VehicleRegistrationQuery #2). Sizes from this XML's own
-        # <Field maxLength>: UserId 2, ExactSearchIndicator 1, Authorization 2, PageNumber 2,
+        # <Field maxLength>, READ INSIDE Transaction=VehicleRegistrationQuery (v2.3 correction -- the
+        # original read was transaction-blind and got Authorization wrong; see its note below):
+        # UserId 2, ExactSearchIndicator 1, Authorization 1, PageNumber 2,
         # LicensePlateStateCode 2. All five are metadata-defined for this transaction, and the devdoc
         # lists the latter four as optionals on #2 -- so they are carried rather than dropped, or a
         # devdoc-legal fill would silently fail to transmit them.
         [PSCustomObject]@{ name = 'UserId';                size = 2; sourceField = @('userId');                targetField = 'UserId' }
         [PSCustomObject]@{ name = 'ExactSearchIndicator';  size = 1; sourceField = @('exactSearchIndicator');  targetField = 'ExactSearchIndicator' }
-        [PSCustomObject]@{ name = 'Authorization';         size = 2; sourceField = @('authorization');         targetField = 'Authorization' }
+        # size 1, NOT 2 (fixed v2.3). Authorization is defined EIGHT times in this XML: maxLength 2
+        # under the seven OcatsWarrantQuery* transactions, and maxLength 1 under
+        # VehicleRegistrationQuery -- which is the transaction this AWVEHQ combination belongs to.
+        # v2.1 took the size from OcatsWarrantQueryAWVEHQ, a DIFFERENT transaction that merely shares
+        # the keyRef name, and audit_metadata had been warning "QIF maxLength 2 > XML maxLength 1 --
+        # server may reject" ever since. The comment right above even flags that keyRef collision for
+        # the COMBO lookup; the FIELD SIZE was then read from the wrong side of it. A keyRef is not a
+        # variant, and that applies to field definitions exactly as it does to requirements.
+        [PSCustomObject]@{ name = 'Authorization';         size = 1; sourceField = @('authorization');         targetField = 'Authorization' }
         [PSCustomObject]@{ name = 'PageNumber';            size = 2; sourceField = @('pageNumber');            targetField = 'PageNumber' }
         # LicensePlateStateCode is a DIFFERENT metadata field from State, but the officer input is the
         # same one -- so it reuses the existing RegistrationState control rather than adding a second
@@ -253,6 +263,7 @@ $gunQuery = [PSCustomObject]@{
 $artQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ArticleBrand';        size = 6;  sourceField = @('articleBrand');        targetField = 'ArticleBrand' }
+        [PSCustomObject]@{ name = 'ArticleCategory';     size = 1;  sourceField = @('articleCategory');     targetField = 'ArticleCategory' }
         [PSCustomObject]@{ name = 'ArticleSerialNumber'; size = 11; sourceField = @('serialNumber');        targetField = 'ArticleSerialNumber' }
         [PSCustomObject]@{ name = 'ArticleTypeCode';     size = 6;  sourceField = @('ArticleTypeCode');     targetField = 'ArticleTypeCode' }
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1; sourceField = @('caRequestPurposeCode'); targetField = 'CaRequestPurposeCode' }
@@ -260,13 +271,13 @@ $artQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','serialNumber'); any = @('articleBrand','ArticleTypeCode') }
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','serialNumber'); any = @('articleBrand','ArticleTypeCode','articleCategory') }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QA.S'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','ownerAppliedNumber'); any = @('articleBrand','ArticleTypeCode') }
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','ownerAppliedNumber'); any = @('articleBrand','ArticleTypeCode','articleCategory') }
             primaryFieldReference = 'OwnerAppliedNumber'
             keyReference          = 'QA.O'
             state                 = 'In/Out'
@@ -413,7 +424,7 @@ $vehLayout = MakeLayouts @(
             # The other three are devdoc-listed optionals on #2 (OCATS paging/authorization controls).
             @{ id = 'ROW_VEH_OPT_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'UserId_Input';               node = Inp 'userId'               'OCATS User ID' '2' 'ROW_VEH_OPT_2' }
-                @{ id = 'Authorization_Input';        node = Inp 'authorization'        'Authorization (optional)' '2' 'ROW_VEH_OPT_2' }
+                @{ id = 'Authorization_Input';        node = Inp 'authorization'        'Authorization (optional)' '1' 'ROW_VEH_OPT_2' }
                 @{ id = 'ExactSearchIndicator_Input'; node = Inp 'exactSearchIndicator' 'Exact Search (optional)'  '1' 'ROW_VEH_OPT_2' }
                 @{ id = 'PageNumber_Input';           node = Inp 'pageNumber'           'Page (optional)'          '2' 'ROW_VEH_OPT_2' }
             )}
@@ -574,8 +585,16 @@ $artLayout = MakeLayouts @(
         id    = 'CARD_ART_OPT'
         title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_ART_OPT_1'; cols = @('4'); fields = @(
+            # v2.3: ArticleCategory added. It sits on the OPTIONS card, not on one of the two search
+            # cards, because BOTH Article searches accept it -- metadata QA{ArticleSerialNumber} and
+            # QA{OwnerAppliedNumber} each carry OPT=[ArticleCategory, ArticleTypeCode, ArticleBrand].
+            # Its two siblings were wired and it was not: no control, no any[] entry, so an officer
+            # could not send a field both variants accept. Rob's standing rule -- never drop a
+            # devdoc-OPTIONAL combination field, ride it in the any[]. maxLength 1 read from this
+            # XML's own <Field>; it is a single-character CATEGORY code, not a name.
+            @{ id = 'ROW_ART_OPT_1'; cols = @('4','4'); fields = @(
                 @{ id = 'CaRequestPurposeCode_Input'; node = Inp 'caRequestPurposeCode' 'Purpose Code' '1' 'ROW_ART_OPT_1' @{ initialValue = 'C' } }
+                @{ id = 'ArticleCategory_Input';      node = Inp 'articleCategory'      'Article Category (optional)' '1' 'ROW_ART_OPT_1' }
             )}
         )
     }

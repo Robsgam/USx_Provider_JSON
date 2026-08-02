@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CA_CLETS_OCATS_v2.2 - Layout Report</title>
+<title>CA_CLETS_OCATS_v2.3 - Layout Report</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; line-height: 1.5; padding: 20px; }
@@ -68,8 +68,8 @@
 <body>
 <div class="container">
   <div class="header">
-    <h1>CA_CLETS_OCATS_v2.2</h1>
-    <div class="meta">Source: CA_CLETS_OCATS_v2.2.json | Generated: 2026-08-02 12:41</div>
+    <h1>CA_CLETS_OCATS_v2.3</h1>
+    <div class="meta">Source: CA_CLETS_OCATS_v2.3.json | Generated: 2026-08-02 15:20</div>
   </div>
   <div class="content">
     <div class='summary-grid'>
@@ -112,7 +112,7 @@
     <span class='field-id'>authorization</span>
     <span class='field-type'>Text Input</span>
   </div>
-  <div class='field-tags'><span class='tag tag-meta'>maxLength=2</span></div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
 </div><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>exactSearchIndicator</span>
@@ -251,12 +251,18 @@
     <span class='field-type'>Dropdown</span>
   </div>
   <div class='field-tags'><span class='tag tag-code'>codeTypeCategory=NCIC_FIREARM_TYPE</span> <span class='tag tag-code'>codeTypeSource=NCIC</span></div>
-</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_CLETS_OCATS_GunQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>caRequestPurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>GunCaliber</td><td class='mono'>GunCaliber</td><td>-</td></tr><tr><td class='mono'>firearmMake</td><td class='mono'>GunMake</td><td>-</td></tr><tr><td class='mono'>serialNumber</td><td class='mono'>GunSerialNumber</td><td>-</td></tr><tr><td class='mono'>gunTypeCode</td><td class='mono'>GunTypeCode</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>QGB</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>caRequestPurposeCode</span> <span class='combo-field combo-set'>serialNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>GunCaliber</span> <span class='combo-field combo-any'>firearmMake</span> <span class='combo-field combo-any'>gunTypeCode</span></div></div></div></div></div><div class='entity-section'><h2>Article <span class='entity-meta'>3 card(s), 5 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_ART_OPT</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4</span><div class='field field-text'>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_CLETS_OCATS_GunQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>caRequestPurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>GunCaliber</td><td class='mono'>GunCaliber</td><td>-</td></tr><tr><td class='mono'>firearmMake</td><td class='mono'>GunMake</td><td>-</td></tr><tr><td class='mono'>serialNumber</td><td class='mono'>GunSerialNumber</td><td>-</td></tr><tr><td class='mono'>gunTypeCode</td><td class='mono'>GunTypeCode</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>QGB</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>caRequestPurposeCode</span> <span class='combo-field combo-set'>serialNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>GunCaliber</span> <span class='combo-field combo-any'>firearmMake</span> <span class='combo-field combo-any'>gunTypeCode</span></div></div></div></div></div><div class='entity-section'><h2>Article <span class='entity-meta'>3 card(s), 6 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_ART_OPT</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 4, 4</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>caRequestPurposeCode</span>
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span> <span class='tag tag-default'>default=C</span></div>
+</div><div class='field field-text'>
+  <div class='field-header'>
+    <span class='field-id'>articleCategory</span>
+    <span class='field-type'>Text Input</span>
+  </div>
+  <div class='field-tags'><span class='tag tag-meta'>maxLength=1</span></div>
 </div></div></div></div><div class='card'><div class='card-header'>CARD_ART_SERIAL</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 12</span><div class='field field-text'>
   <div class='field-header'>
     <span class='field-id'>serialNumber</span>
@@ -281,7 +287,7 @@
     <span class='field-type'>Text Input</span>
   </div>
   <div class='field-tags'><span class='tag tag-meta'>maxLength=20</span></div>
-</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_CLETS_OCATS_ArticleSingleQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>articleBrand</td><td class='mono'>ArticleBrand</td><td>-</td></tr><tr><td class='mono'>serialNumber</td><td class='mono'>ArticleSerialNumber</td><td>-</td></tr><tr><td class='mono'>ArticleTypeCode</td><td class='mono'>ArticleTypeCode</td><td>-</td></tr><tr><td class='mono'>caRequestPurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>ownerAppliedNumber</td><td class='mono'>OwnerAppliedNumber</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>QA.S</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>caRequestPurposeCode</span> <span class='combo-field combo-set'>serialNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>articleBrand</span> <span class='combo-field combo-any'>ArticleTypeCode</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>QA.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>caRequestPurposeCode</span> <span class='combo-field combo-set'>ownerAppliedNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>articleBrand</span> <span class='combo-field combo-any'>ArticleTypeCode</span></div></div></div></div></div><div class='entity-section'><h2>Boat <span class='entity-meta'>4 card(s), 5 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_BOA_OPT</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 4</span><div class='field field-dropdown'>
+</div></div></div></div><div class='qidm'><div class='qidm-header'>QIDM: CA_CLETS_OCATS_ArticleSingleQuery</div><table class='qidm-table'><thead><tr><th>Source Field</th><th>Target Field</th><th>Properties</th></tr></thead><tbody><tr><td class='mono'>articleBrand</td><td class='mono'>ArticleBrand</td><td>-</td></tr><tr><td class='mono'>articleCategory</td><td class='mono'>ArticleCategory</td><td>-</td></tr><tr><td class='mono'>serialNumber</td><td class='mono'>ArticleSerialNumber</td><td>-</td></tr><tr><td class='mono'>ArticleTypeCode</td><td class='mono'>ArticleTypeCode</td><td>-</td></tr><tr><td class='mono'>caRequestPurposeCode</td><td class='mono'>CaRequestPurposeCode</td><td>-</td></tr><tr><td class='mono'>ownerAppliedNumber</td><td class='mono'>OwnerAppliedNumber</td><td>-</td></tr></tbody></table><div class='combo-header'>Combinations (priority order):</div><div class='combo-list'><div class='combo'><span class='combo-idx'>#1</span> <strong>QA.S</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>caRequestPurposeCode</span> <span class='combo-field combo-set'>serialNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>articleBrand</span> <span class='combo-field combo-any'>ArticleTypeCode</span> <span class='combo-field combo-any'>articleCategory</span></div></div><div class='combo'><span class='combo-idx'>#2</span> <strong>QA.O</strong><div class='combo-detail'>set (required): <span class='combo-field combo-set'>caRequestPurposeCode</span> <span class='combo-field combo-set'>ownerAppliedNumber</span></div><div class='combo-detail'>any (optional): <span class='combo-field combo-any'>articleBrand</span> <span class='combo-field combo-any'>ArticleTypeCode</span> <span class='combo-field combo-any'>articleCategory</span></div></div></div></div></div><div class='entity-section'><h2>Boat <span class='entity-meta'>4 card(s), 5 field(s)</span></h2><h3>Form Layout</h3><div class='card'><div class='card-header'>CARD_BOA_OPT</div><div class='card-body'><div class='row-container'><span class='row-cols'>columns: 6, 4</span><div class='field field-dropdown'>
   <div class='field-header'>
     <span class='field-id'>RegistrationState</span>
     <span class='field-type'>Dropdown</span>
