@@ -100,6 +100,17 @@ Write-Host "  metadata field definitions: $($fieldDef.Count)"
 # ── 3. JSON: fieldId + entity ONLY (no vote on coverage) ─────────────────────────────
 $j = Get-Content $jsonPath -Raw | ConvertFrom-Json
 $qidms = @{}; $formFields = @{}   # entity -> @{canon = fieldId}
+# entity -> @{fieldId = initialValue}. A PREFILLED control is ALWAYS present when the officer hits
+# submit -- it is not something they have to type. Evaluating the firing predicate against the
+# devdoc fills ALONE therefore simulates an empty prefilled control, which no officer can produce,
+# and every combo whose set[] needs that field reads NO-FIRE. That is not a hypothetical: the CLETS
+# family carries a transaction-envelope purposeCode prefilled 'C' on every entity and appearing in
+# NO devdoc combination list, so this blindness reported 74 of 79 CA_CLETS tests and 72 of 79
+# CA_VENTURA_COUNTY tests as "a devdoc-legal fill sends no query" when in fact every one of them
+# fires. 294 NO-FIRE across the portfolio, mostly noise -- which is worse than useless, because it
+# buried the handful of REAL ones (FL x1, OR_LEDS x3) in a number nobody could act on.
+# Same primitive audit_combo_reachability already uses: count form initialValue as always-present.
+$prefills = @{}
 function Canon([string]$t) { (($t -replace '[^A-Za-z0-9]','').ToLower() -replace 'dh$','') -replace 'cch$','' }
 foreach ($b in $j.bundles) {
     foreach ($c in $b.configurations) {
@@ -109,6 +120,7 @@ foreach ($b in $j.bundles) {
         }
         if ($c.type -eq 'QUERYINPUTFORM' -and $c.layout.'default') {
             $e = "$($c.targetEntity)"; if (-not $formFields.ContainsKey($e)) { $formFields[$e] = @{} }
+            if (-not $prefills.ContainsKey($e)) { $prefills[$e] = @{} }
             $lay = $c.layout.'default'
             foreach ($nid in $lay.PSObject.Properties.Name) {
                 $p = $lay.$nid.props
@@ -121,6 +133,7 @@ foreach ($b in $j.bundles) {
                     # SEPARATE key spaces and let the caller ask for the one it needs.
                     $raw = "$($p.fieldId)"
                     $k = Canon $raw
+                    if ($null -ne $p.initialValue -and "$($p.initialValue)".Length) { $prefills[$e][$raw] = "$($p.initialValue)" }
                     if ($raw -cmatch 'DH$') {
                         if (-not $formFields[$e].ContainsKey("dh|$k")) { $formFields[$e]["dh|$k"] = $raw }
                     } else {
@@ -215,7 +228,13 @@ foreach ($it in ($items | Sort-Object Query, Num)) {
             foreach ($id in $ids) { $fills += [pscustomobject]@{ fieldId = $id; value = (Get-Value $fld $id $ent) } }
         }
         # what SHOULD fire, per the canonical predicate
-        $fd = @{}; foreach ($f in $fills) { $fd[$f.fieldId] = $f.value }
+        # Seed with the entity's PREFILLED controls first, then let the devdoc fills win on any
+            # field the officer actually types. `fills` stays devdoc-derived -- it is what the driver
+            # types, and a prefilled control needs no typing -- but the PREDICTION has to be made
+            # against the form state that will really be submitted. See the $prefills note above.
+            $fd = @{}
+            if ($prefills.ContainsKey($ent)) { foreach ($pk in $prefills[$ent].Keys) { $fd[$pk] = $prefills[$ent][$pk] } }
+            foreach ($f in $fills) { $fd[$f.fieldId] = $f.value }
         $fired = $null
         try { $fired = Get-FiringKeyRef @($qidms[$it.Query]) $fd } catch { }
         $n++
