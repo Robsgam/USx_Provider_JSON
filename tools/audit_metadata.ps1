@@ -313,10 +313,19 @@ function Audit-Provider {
                 try { $fid = $node.props.fieldId } catch { }
                 try { $ml = $node.props.maxLength } catch { }
                 if ($fid -and $ml) {
-                    $qifFields[$fid.ToLower()] = @{
-                        fieldId   = $fid
-                        maxLength = $ml
-                    }
+                    # ENTITY-SCOPED KEY as well as the bare one. A fieldId is only unique WITHIN a
+                    # QIF: CA_eSUN and OR_LEDS both name the control 'serialNumber' on Firearm AND on
+                    # Article, with legitimately different sizes (Firearm 14/11 = GunSerialNumber,
+                    # Article 20 = ArticleSerialNumber). A bare-fieldId index kept whichever came
+                    # last, so checking GunQuery compared the ARTICLE control against GunQuery's XML
+                    # and reported "QIF maxLength 20 > XML maxLength 14 -- server may reject" on two
+                    # providers whose controls are both exactly right. Verified against the artifacts
+                    # before changing the tool (usx-tooling Step 5b) -- the mirror case on
+                    # CA_SAN_LUIS_OBISPO looked identical and there the BUILD was wrong.
+                    # Bare key retained so any lookup that cannot supply an entity still resolves.
+                    $qifFields[$fid.ToLower()] = @{ fieldId = $fid; maxLength = $ml }
+                    $ent = "$($cfg.targetEntity)"
+                    if ($ent) { $qifFields["$($ent.ToLower())|$($fid.ToLower())"] = @{ fieldId = $fid; maxLength = $ml } }
                 }
             }
         }
@@ -1420,7 +1429,16 @@ function Audit-Provider {
             }
 
             foreach ($sfId in $sourceFieldIds) {
+                # Prefer the control on THIS query's own entity; fall back to the bare fieldId only
+                # when that QIF has no such control. See the indexing note above -- without this, a
+                # fieldId reused across entities is compared against the wrong card's control.
                 $key = $sfId.ToLower()
+                $entKey = $null
+                foreach ($q in @($qidmByQuery[$qName])) {
+                    $te = "$($q.targetEntity)"
+                    if ($te -and $qifFields.ContainsKey("$($te.ToLower())|$key")) { $entKey = "$($te.ToLower())|$key"; break }
+                }
+                if ($entKey) { $key = $entKey }
                 if ($qifFields.ContainsKey($key)) {
                     $qifMaxLen = $qifFields[$key].maxLength
                     $maxLenChecked++
