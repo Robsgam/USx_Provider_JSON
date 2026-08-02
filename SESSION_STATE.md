@@ -56,10 +56,15 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 **19 of 20 providers ENFORCED 0 FAIL / 0 WARN** (measured by a full sweep, not inferred).
 Only **LA_LEMS** is BLOCKED, on its 2 deferred items above.
 
-**ENFORCED is not "done".** Only SIX are tenant-tested (433 logs, four log gates green):
-TX v4.18, NY v4.19, NJ v4.15, FL v7.14, HI v4.14, CA_CLETS v2.23.
-The other **13 are ENFORCED but NEVER USx-tenant-tested**, each owing a full 5-entity sweep from T1.
+**ENFORCED is not "done".** Only FIVE are tenant-tested (324 logs, four log gates green):
+TX v4.18, NY v4.19, NJ v4.15, HI v4.14, CA_CLETS v2.23.
+The other **15 are ENFORCED but NEVER USx-tenant-tested**, each owing a full 5-entity sweep from T1.
 **That sweep backlog is now the single largest piece of outstanding work.**
+
+**FL_FCIC left the tenant-verified set on purpose** at v7.15 (2026-08-02, your call): `Requestor`
+was permitted by FL's own metadata on 26 combinations and wired nowhere, so the fix was worth the
+cost. Its 109 ALL-PASS logs are archived under `logs/<Entity>/_archive_pre_v7.15/`; it owes a full
+5-entity sweep. Nothing is wrong with FL -- it is simply untested at the current version.
 
 **Portfolio devdoc-UNBUILT: 2** (was 13; both LA_LEMS). **C1 defects: 0.** **Undriveable combos: 0.**
 
@@ -75,13 +80,13 @@ The other **13 are ENFORCED but NEVER USx-tenant-tested**, each owing a full 5-e
 2. **NCIC-number-keyed combos: BUILT on TX/FL, REGISTERED-as-unbuilt on OH_LEADS.** All three devdocs
    list them Basic-supported. Either (a) worth building -> OH_LEADS has a real 2-combo gap, or (b)
    data-mined and not build scope -> TX and FL carry 3 combos of redundant surface each, on
-   TENANT-VERIFIED providers (removing them bumps both and archives 89 + 109 logs).
+   TENANT-VERIFIED (removing them bumps TX and archives its 89 logs; FL is already re-sweeping).
 
 ## NEXT PHYSICAL ACTION
 
-**Tenant testing.** 13 providers are ENFORCED and never swept; that is the whole remaining backlog and
-it needs the browser driver (`test_phase2.ps1 -Provider <NAME>`, then `-PostIngest`). Nothing else in
-PHASE 1 is owed except the two decisions above.
+**Tenant testing.** 15 providers are ENFORCED and never swept (FL_FCIC newly among them); that is the
+whole remaining backlog and it needs the browser driver (`test_phase2.ps1 -Provider <NAME>`, then
+`-PostIngest`). Nothing else in PHASE 1 is owed except the two decisions above.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
