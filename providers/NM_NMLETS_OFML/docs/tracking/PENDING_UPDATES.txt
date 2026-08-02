@@ -1,0 +1,51 @@
+# PENDING_UPDATES.txt -- NM_NMLETS_OFML
+# Lines without a leading '#' block enforce.ps1 and prevent testing.
+# Created 2026-08-01. Everything below is COMMENTED, so it does NOT block enforce -- these are open
+# decisions and a standing finding, not owed rebuild work.
+#
+# ═══ OPEN DECISION FOR ROB -- DriverLicenseQuery: metadata and devdoc DIRECTLY CONFLICT ═══
+#   METADATA (keyRef QUERY, DriverLicenseQuery):
+#       Set[ Choice[ OperatorLicenseNumber / Set[SexCode, BirthDate, Name] ],
+#            PurposeCode,          <- MANDATORY (outer Set, OUTSIDE the Choice)
+#            Attention,            <- MANDATORY (outer Set, OUTSIDE the Choice)
+#            Any[State, ImageIndicator] ]
+#   DEVDOC: does not list PurposeCode or Attention in this query AT ALL. Its field table is
+#       BirthDate / Name / OperatorLicenseNumber / SexCode / State / State2-5, and its two
+#       combinations are "1. (In/Out) BirthDate, Name, SexCode, [State..State5]" and
+#       "2. (In/Out) OperatorLicenseNumber, [State..State5]" -- which built DL.NAME and DL.OLN
+#       implement EXACTLY.
+#   CONTRAST THE DH QUERY, which is why this was missed: metadata KQ puts Attention and PurposeCode
+#       in <Any> there, so they ARE optional on DriverHistory, and the build correctly carries
+#       purposeCodeDH as an optional. The build script header generalised that DH observation
+#       ("No Attention handler in DH metadata") and never re-checked DL, where the shape differs.
+#
+#   THE TWO OPTIONS, both of which change officer-facing behaviour:
+#     (a) Honour metadata -- add PurposeCode + Attention to both DL combos' set[]. An officer must
+#         then supply two fields the documentation never mentions on EVERY licence search.
+#     (b) Add them hidden and auto-populated (the AP #27 feeder pattern used elsewhere). This is
+#         exactly what the never-automate-a-field-without-approval rule forbids doing unilaterally.
+#   NOT DECIDED HERE. There is no wire evidence either way -- NM has never been USx-tenant-tested.
+#   Same class as the AZ_AZDPS DriverLicenseQuery scope inversion.
+#
+# ═══ WHY THIS IS NOT IN THE ACCEPTED-DIVERGENCE REGISTRY ═══
+#   I tried to register it (rule demoted-to-any) under both the built keyRefs and the metadata keyRef.
+#   NEITHER SUPPRESSED IT, AND THE TOOL IS RIGHT TO REFUSE. audit_requirement_fidelity line ~479:
+#       if ($demoted.ContainsKey(...) -and (Test-Has $bAnyC $w)) { ...skip... }
+#       "the registered decision is 'it RIDES IN any[]' -- if the field is absent from any[] TOO it
+#        is not the situation that was granted, and must still report. Without this guard the entry
+#        also excused a strictly WORSE state (field transmittable nowhere), which is what let
+#        nj-drop-metadata-mandatory survive."
+#   'demoted-to-any' grants "we carry it in any[] on purpose". NM carries these fields NOWHERE, which
+#   is the strictly worse state, and a surviving mutation once taught the tool to refuse exactly that.
+#   So the 4 UNDER-REQUIRED findings SHOULD keep reporting until the decision above is made.
+#   The 6 ineffective rows I added were REMOVED rather than left: a registry row that looks like a
+#   registration but suppresses nothing is clutter that reads like coverage.
+#
+# ═══ STILL OPEN, not blocking ═══
+#   Never USx-tenant-tested. v2.1 owes a full 5-entity sweep from T1.
+#   audit_requirement_fidelity: 14 branches / 4 UNDER-REQUIRED / 0 OVER-PERMITTED -- all four are the
+#     PurposeCode/Attention conflict above, i.e. ONE decision, not four defects.
+#   audit_query_trace: 1 MISSING metadata combination to adjudicate against the devdoc Basic list.
+#   build_phase1 random fuzz: 2 unaimed survivors to triage (drop-conditions @
+#     VehicleRegistrationQuery[3]; select-to-input @ ENTITY_Person RaceCodeDH_Input).
+#   ENFORCED 36 PASS / 0 FAIL / 0 WARN as of 2026-08-01.
