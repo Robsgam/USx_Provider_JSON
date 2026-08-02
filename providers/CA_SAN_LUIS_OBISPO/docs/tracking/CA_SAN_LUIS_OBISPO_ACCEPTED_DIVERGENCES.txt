@@ -1,4 +1,13 @@
-﻿# CA_SAN_LUIS_OBISPO ACCEPTED METADATA DIVERGENCES
+# SUPPRESSION-SCOPE: direction-aware
+#   Opted in 2026-08-01. Without this marker a registry row suppresses EVERY check for its
+#   (query, keyRef, field) triple regardless of what the recorded decision actually said -- so a row
+#   granting "this field may ride in any[]" also silences the OPPOSITE defect (a field wrongly
+#   promoted INTO set[]), and the gate goes mute somewhere it was never granted.
+#   audit_suppression_scope.ps1 measures the portfolio at 317 over-broad suppressions across 19
+#   providers; this provider is opted in so its 2 rows only license their own defect class.
+#   Narrowing is STRICTER and can turn a green provider red by un-silencing a real finding -- which
+#   is the point. Verified after opting in: still ENFORCED 0 FAIL / 0 WARN.
+# CA_SAN_LUIS_OBISPO ACCEPTED METADATA DIVERGENCES
 # Read by tools/audit_metadata.ps1 (CHECK 4 / 4d). Each non-comment line records a
 # set/any divergence that is intentional and correct, so the gate treats it as [NOTE] not [FAIL].
 # Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
