@@ -254,7 +254,7 @@ function Get-DevdocCombinations([string]$txtPath) {
 
 # ── per-provider audit ────────────────────────────────────────────────────────────────
 function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
-    $fails = 0; $notes = 0
+    $fails = 0; $notes = 0; $compared = 0
 
     $txt = Join-Path $provDir "source\${provName}_DEVDOC.txt"
     if (-not (Test-Path $txt)) {
@@ -333,6 +333,7 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
         foreach ($item in $dd.Combos[$q]) {
             if (-not $item.Mandatory.Count) { continue }
             $unwired = @($item.Mandatory | Where-Object { -not (Test-TokenWired $_ $wired) })
+            $compared++
             if ($Explain) { Emit ("      devdoc {0} #{1}: mand=[{2}] opt=[{3}]" -f $q, $item.Num, ($item.Mandatory -join ','), ($item.Optional -join ',')) 'DarkGray' }
 
             if ($unwired.Count) {
@@ -364,8 +365,24 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
         }
     }
 
-    if (-not $fails -and -not $notes) { Emit "  [PASS] $provName -- every devdoc combination is built or accepted" 'Green' }
-    elseif (-not $fails)              { Emit "  [PASS] $provName -- no unbuilt devdoc combination ($notes note(s))" 'Green' }
+    # PRINT THE DENOMINATOR, ALWAYS. This gate compares devdoc combinations against the build, so
+    # with ZERO devdoc combinations parsed it has nothing to compare and CANNOT FAIL -- and it was
+    # announcing that state as "[PASS] every devdoc combination is built or accepted / 0 FAIL /
+    # 0 NOTE", which reads exactly like a clean provider. Measured 2026-08-02 across all 20:
+    # every provider parses 9-40 items except CA_CONTRA_COSTA, which parses 0, so its green line
+    # here has never been evidence of anything. A step that did not run is not a pass (LAW 2).
+    # Count what was actually COMPARED, not what was parsed: an item is only compared if its query
+    # is built AND it carries mandatory tokens, so a parsed-but-skipped item must not inflate this.
+    # (First version summed $dd.Combos and reported 190 for FL where the real answer is 22, and 6
+    # for CA_CONTRA_COSTA where it is 0 -- caught by checking the number against -Explain's own
+    # output, which is the known answer. Validate the probe or the denominator is just another guess.)
+    $ddCount = $compared
+    if ($ddCount -eq 0) {
+        Emit "  [NO-VERDICT] $provName -- 0 devdoc combinations parsed; this gate compared NOTHING. Not a pass: it means the devdoc yielded no combination table, so read this provider's coverage from another source." 'Red'
+        return @{ Fail = $fails; Note = $notes; Compared = 0 }
+    }
+    if (-not $fails -and -not $notes) { Emit "  [PASS] $provName -- every devdoc combination is built or accepted ($ddCount devdoc combination(s) compared)" 'Green' }
+    elseif (-not $fails)              { Emit "  [PASS] $provName -- no unbuilt devdoc combination ($notes note(s); $ddCount compared)" 'Green' }
     return @{ Fail = $fails; Note = $notes }
 }
 
