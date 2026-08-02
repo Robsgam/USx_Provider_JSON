@@ -1463,8 +1463,29 @@ if ($gateExit -eq 0) {
 # providers without a TEST_PLAN pass by absence.
 $logContentFailed = $false
 foreach ($pd in $providers) {
+    # DISTINGUISH "the logs are bad" FROM "the gate did not report". This branch keyed on the
+    # child exit code alone and then asserted a CAUSE, so ANY non-zero exit -- including a child
+    # that never produced a verdict -- was reported as "saved logs do not match their plan tests".
+    # On 2026-08-02 a 20-provider sweep did exactly that to CA_CLETS: enforce FAILed it while the
+    # same tool standalone reported 89/89 content-verified, ALL-PASS. The tell was that the detail
+    # lines printed NOTHING -- the output was empty. Second occurrence of this class in one session
+    # (audit_devdoc_optionals hit it on IL_LEADS_OFML and LA_LEMS under the same load), and twice
+    # means fix the mechanism rather than the instance.
+    # A FALSE FAIL on a tenant-verified provider is worse than a missing check: it invites someone
+    # to "repair" 89 logs that were already correct.
     $logAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
-    if ($LASTEXITCODE -ne 0) {
+    $logExit = $LASTEXITCODE
+    $hasVerdict = ($logAuditOut -match 'RESULT:\s*\d+ failing') -or ($logAuditOut -match '\[audit-log\]')
+    if (-not $hasVerdict) {
+        # Retry once: the failure mode is transient child-process startup under parallel load.
+        $logAuditOut = & powershell -ExecutionPolicy Bypass -File "$toolDir\audit_log_content.ps1" -Provider $pd.Name -Quiet 2>&1 | Out-String
+        $logExit = $LASTEXITCODE
+        $hasVerdict = ($logAuditOut -match 'RESULT:\s*\d+ failing') -or ($logAuditOut -match '\[audit-log\]')
+    }
+    if (-not $hasVerdict) {
+        $logContentFailed = $true
+        Fail "Log-content integrity ($($pd.Name)): the gate produced NO VERDICT even after a retry -- this is NOT a statement about the logs. Run it directly: tools\audit_log_content.ps1 -Provider $($pd.Name)"
+    } elseif ($logExit -ne 0) {
         $logContentFailed = $true
         Fail "Log-content integrity ($($pd.Name)): saved logs do not match their plan tests"
         $logAuditOut -split "`n" | Where-Object { $_ -match 'FAIL|STALE|MISMATCH|GUARDRAIL' } | Select-Object -First 8 | ForEach-Object { Out "       $($_.Trim())" }
