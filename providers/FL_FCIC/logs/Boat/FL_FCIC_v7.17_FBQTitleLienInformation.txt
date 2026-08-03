@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQTitleLienInformation (FBQTitleLienInformation (auto))
+Date: 2026-08-03 13:20:44
+Result: PASS
+JSON Version: 7.17
+Entity Fingerprint: 1dcdbbd8022011362fd668b2fe8524dc3f600559500ee4d1aa2e994c42fe5811
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","Requestor":"X","titleLienInformation":"ABCD1234"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZ4A37KT8YK46GS2B38ZZPD7">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KZ4A37KT8YK46GS2B38ZZPD7</Id>
+            <TitleLienInformation>ABCD1234</TitleLienInformation>
+            <ImageIndicator>N</ImageIndicator>
+            <Requestor>SGAMBELLONE R</Requestor>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZ4A37KT8YK46GS2B38ZZPD7
+  TitleLienInformation           ABCD1234
+  ImageIndicator                 N
+  Requestor                      SGAMBELLONE R
+
+NOTES
+-----
+Automated capture (txId 01KZ4A37KT8YK46GS2B38ZZPD7). kind=combo; anyField=; expectedKeyRef=FBQTitleLienInformation; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
