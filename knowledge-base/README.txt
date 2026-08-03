@@ -817,6 +817,24 @@ TOOLS
     listing it there and this tool under-reports. Re-derive with
     Select-String tools\*.ps1 -Pattern 'ACCEPTED_DIVERGENCES|Test-AllowListed'.
     Usage: .\audit_suppression_scope.ps1 [-Provider <NAME>] [-Detail] [-OutFile <path>]
+  tools/audit_buildnotes_fidelity.ps1
+    BUILD_NOTES FIDELITY -- is the CURRENT version's entry the generic stub pipeline.ps1 stamps
+    ("CHANGED: Rebuilt via pipeline.ps1 / REASON: Scheduled rebuild") while the JSON actually
+    changed? Built 2026-08-03 after NINE hand-corrections in one session (FL 4, TX 3, NY 2).
+    No judgement required: the stub is TRUE for a reproducibility rebuild and FALSE for a wire
+    change, and the JSON decides. Previous-version blob comes from git -- the commit that adds
+    <P>_v<cur>.json also removes its predecessor, USUALLY AS A RENAME (parsing only 'D' left 11 of
+    14 cases NOT COMPARABLE, i.e. the gate declining to judge most of what it was built for);
+    legacy <P>_MC/<P>_BASE/bare-<P> predecessors are accepted too, which closed the last 3.
+    Matches the STRUCTURAL stub, never the phrase -- a substring grep flagged NY, whose repaired
+    entry QUOTES the stub it replaced, so the naive version would have flagged exactly the
+    providers that were fixed.
+    BASELINE: 14 GENERIC / 14 compared / 14 FAIL / 0 not-comparable. NOT ONE was a true no-op.
+    Branch coverage: FAIL proven 14x, not-a-stub PASS proven 6x, and the generic+identical PASS
+    path is UNEXERCISED (no version pair here is a real no-op) -- do not claim it verified.
+    NOT in enforce yet by design: it would turn 14 of 20 providers red. Wire it after the entries
+    are repaired so it lands at zero, same sequencing as audit_registry_currency. In doctor.ps1.
+    Usage: .\audit_buildnotes_fidelity.ps1 [-Provider <NAME>] [-All] [-Quiet] [-OutFile <path>]
   tools/audit_registry_currency.ps1
     REGISTRY CURRENCY -- is each ACCEPTED_DIVERGENCES row's PREMISE still true? The companion
     question to audit_suppression_scope, which asks how WIDE a row's suppression is. A row can be

@@ -151,6 +151,17 @@ try {
         ForEach-Object { Emit ("  " + $_.TrimEnd()) }
 } catch { Emit "  [WARN] audit_registry_currency.ps1 failed: $($_.Exception.Message)" }
 
+# Same family as registry currency: a RECORD contradicting its ARTIFACT. Here the record is the
+# BUILD_NOTES entry and the artifact is the emitted JSON. Baseline 2026-08-03 is 14 FAIL of 14
+# comparable -- deliberately NOT in enforce until those are repaired, so watch it here.
+Emit ""
+Emit "--- BUILD_NOTES FIDELITY (a generic entry hiding a real change; audit_buildnotes_fidelity.ps1) ---"
+try {
+    $bf = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_buildnotes_fidelity.ps1" -All *>&1 | Out-String
+    ($bf -split "`n" | Where-Object { $_ -match 'TOTALS:|FAIL /|GENERIC entry but' } | Select-Object -First 14) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_buildnotes_fidelity.ps1 failed: $($_.Exception.Message)" }
+
 Emit ""
 Emit "--- TOOL PORTABILITY (every shared gate must reach a verdict on every provider; audit_tool_portability.ps1) ---"
 try {
