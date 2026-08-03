@@ -1,4 +1,4 @@
-TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-07-30
@@ -32,13 +32,13 @@ v3.4 CHANGES (from v3.3):
           VehicleIdentificationNumber, VehicleMakeCode, VehicleYear,
           RegistrationState, FinancialResponsibilityType, RegionId, StickerNumber
 
-  REG Plate -- TX Registration (Plate+Year+FRT) [CONFIRMED]
+  REG Plate -- TX Registration (Plate+Year+FRT) [PENDING]
     keyReference: REGLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  RQ Plate -- Nlets Vehicle Registration, devdoc (OutofState) plate path (Plate+Year+PlateType) [CONFIRMED]
+  RQ Plate -- Nlets Vehicle Registration, devdoc (OutofState) plate path (Plate+Year+PlateType) [PENDING]
     keyReference: RQLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
     any: RegistrationState
@@ -54,13 +54,13 @@ v3.4 CHANGES (from v3.3):
       per Rob's v4.9 subset-shadow ruling -- executes at TX's next version bump.
       Officer impact: NONE (REG returns registration + financial responsibility, a superset).
 
-  VIN+FRT -- VIN + Financial Responsibility [CONFIRMED]
+  VIN+FRT -- VIN + Financial Responsibility [PENDING]
     keyReference: VINVehicleIdentificationNumber
     set: VehicleIdentificationNumber, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  DPSI Sticker -- TX DPS Insurance (Sticker Number) [CONFIRMED]
+  DPSI Sticker -- TX DPS Insurance (Sticker Number) [PENDING]
     keyReference: DPSIStickerNumber
     set: StickerNumber
     any: RegistrationState
@@ -81,7 +81,7 @@ v3.4 CHANGES (from v3.3):
     [MISSING] -- that is EXPECTED and advisory; do NOT "fix" it. See ACCEPTED_DIVERGENCES,
     rule metadata-shadow-autofired.
 
-  RQ VIN -- Nlets Vehicle Registration, devdoc (OutofState) VIN path (VIN+Make+Year) [CONFIRMED]
+  RQ VIN -- Nlets Vehicle Registration, devdoc (OutofState) VIN path (VIN+Make+Year) [PENDING]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
@@ -119,21 +119,21 @@ v3.4 CHANGES (from v3.3):
   No conditions (v3.4 poisoned-array fix). image/email/reason carried in any[] on
   every combo; defaults supply CAD values.
 
-  DQ Name -- Nlets DL (Name+DOB+Sex) [CONFIRMED]
+  DQ Name -- Nlets DL (Name+DOB+Sex) [PENDING]
     keyReference: DQName  (MessageKey DQ)
     set: SexCode, BirthDate, NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  CPL Name -- Criminal History (Name) [CONFIRMED]
+  CPL Name -- Criminal History (Name) [PENDING]
     keyReference: CPLName  (MessageKey CPLName)
     set: NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  DQ OLN -- Nlets DL (OLN) [CONFIRMED]
+  DQ OLN -- Nlets DL (OLN) [PENDING]
     keyReference: DQOLN  (MessageKey DQ)
     set: OperatorLicenseNumber
     any: EmailAddress, ImageIndicator, ReasonCode, RegistrationState
@@ -164,7 +164,7 @@ v3.4 CHANGES (from v3.3):
   LIMITATION (CAD): DH does not fire from CAD dispatch (no CAD source for emailAddress).
   CAD DH requires the email-injection handler (future platform feature).
 
-  KQ Name -- Driver History (Name+DOB+Sex) [CONFIRMED]
+  KQ Name -- Driver History (Name+DOB+Sex) [PENDING]
     keyReference: KQName  (MessageKey KQ)
     set: SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH, EmailAddress
     any: AttentionDH, ImageIndicator, NameMiddleDH, NameSuffixDH,
@@ -172,7 +172,7 @@ v3.4 CHANGES (from v3.3):
     defaults: ImageIndicator=Y, PurposeCode=C, ReasonCode=C, State=TX
     state: In/Out
 
-  KQ OLN -- Driver History (OLN) [CONFIRMED]
+  KQ OLN -- Driver History (OLN) [PENDING]
     keyReference: KQOLN  (MessageKey KQ)
     set: OperatorLicenseNumberDH, EmailAddress
     any: AttentionDH, ImageIndicator, PurposeCodeDH, ReasonCode, RegistrationState
@@ -193,13 +193,13 @@ v3.4 CHANGES (from v3.3):
   Fields: GunSerialNumber, GunMake(23), GunCaliber, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QG Serial -- NCIC Gun (Serial Number) [CONFIRMED]
+  QG Serial -- NCIC Gun (Serial Number) [PENDING]
     keyReference: QGGunSerialNumber
     set: GunSerialNumber
     any: GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QG NCIC -- NCIC Gun (NCIC Number) [CONFIRMED]
+  QG NCIC -- NCIC Gun (NCIC Number) [PENDING]
     keyReference: QGNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -215,14 +215,14 @@ v3.4 CHANGES (from v3.3):
   Fields: ArticleSerialNumber, ArticleTypeCode, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QA Serial+Type -- NCIC Article (Serial + Type) [CONFIRMED]
+  QA Serial+Type -- NCIC Article (Serial + Type) [PENDING]
     keyReference: QAArticleSerialNumber
     set: ArticleSerialNumber, ArticleTypeCode
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
     CONFIRMED: T26 2026-06-17. Serial=ART99999 + Type=BBICYCL. XML: ArticleSerialNumber + ArticleTypeCode. No NCICNumber.
 
-  QA NCIC -- NCIC Article (NCIC Number) [CONFIRMED]
+  QA NCIC -- NCIC Article (NCIC Number) [PENDING]
     keyReference: QANCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -238,33 +238,33 @@ v3.4 CHANGES (from v3.3):
   Fields: RegistrationNumber, BoatHullIdNumber, NCICNumber,
           RegistrationState, ImageIndicator, RelatedHitSearchIndicator
 
-  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [CONFIRMED]
+  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [PENDING]
     keyReference: BQRegistrationNumber
     set: RegistrationNumber, RegistrationState
     CONFIRMED: T21 2026-06-17. RegNum=FL1234AB + State=Texas. XML: RegistrationNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y.
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
 
-  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [CONFIRMED]
+  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [PENDING]
     keyReference: BQBoatHullIdNumber
     set: BoatHullIdNumber, RegistrationState
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
     CONFIRMED: T19 2026-06-17. HullId=FL1234AB56H7 + State=Texas. XML: BoatHullIdNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y.
 
-  QB Reg -- NCIC Stolen Boat (Reg, any state) [CONFIRMED]
+  QB Reg -- NCIC Stolen Boat (Reg, any state) [PENDING]
     keyReference: QBRegistrationNumber
     set: RegistrationNumber
     any: BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB Hull -- NCIC Stolen Boat (Hull, any state) [CONFIRMED]
+  QB Hull -- NCIC Stolen Boat (Hull, any state) [PENDING]
     keyReference: QBBoatHullIdNumber
     set: BoatHullIdNumber
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB NCIC -- NCIC Stolen Boat (NCIC Number) [CONFIRMED]
+  QB NCIC -- NCIC Stolen Boat (NCIC Number) [PENDING]
     keyReference: QBNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
