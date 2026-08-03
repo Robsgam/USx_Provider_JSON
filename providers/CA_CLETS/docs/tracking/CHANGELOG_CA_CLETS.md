@@ -2,14 +2,45 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.23** | Generated: 2026-08-02
+Current: **v2.23** | Generated: 2026-08-03
 
 ---
 
-## v2.23 -- 2026-07-31 -- Pipeline rebuild
+## v2.23 -- 2026-07-31 -- Four real wire defects fixed; five conflicts registered (commit f8a98ed6)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:**
+  1. IG.QGH SPLIT -> IG.QGH.A (Age) + IG.QGH.B (BirthDate). It had been  
+     set[purposeCode,Name] any[BirthDate,age], which satisfied NO metadata variant: #4 requires  
+     SexCode, and #5/#6 put Choice[Age|BirthDate] INSIDE <Set>, making one MANDATORY.  
+  2. IR.QVC.O stopped requiring criminalIdNumber (metadata variant #3 has CII in <Any>, never  
+     mandatory). Added IR.QVC.OS for the SSN branch -- conditions are AND-only -- plus  
+     socialSecurityNumber NOT_EXISTS on ID.L1 to hand off. Closes devdoc DriverLicenseQuery #6.  
+  3. NLTS.DQ.N gained SexCode in any[] (metadata variant 2 is Set[purposeCode,Name,State]  
+     Any[BirthDate,SexCode]).  
+  4. IR.QVC.C dropped 'age' -- an over-send neither the metadata variant nor devdoc #5 defines.  
+**REASON:** v2.22 was ALL-PASS 90/90 on three of the four log gates WHILE SHIPPING A REQUEST THE
+  METADATA CALLS INVALID. Only the per-branch reading of the raw <Requirements> exposed it.  
+  Officer-visible consequences of the four: a Name-only gun query was accepted and sent  
+  (CA_CLETS_v2.22_IG.QGH.txt is exactly that, the single 6d FAIL); an OLN+SSN fill routed to  
+  ID.L1, which defines NO optionals, so the officer's SSN was accepted by the form and NEVER  
+  TRANSMITTED; an out-of-state Name+State+Sex lookup silently lost the Sex qualifier.  
+  REGISTERED rather than fixed (metadata is field authority; "fixing" these emits invalid  
+  requests): IR.QVC.N / NLTS.DQ.N discriminators (a LOOSER variant makes them legitimately  
+  optional -- promoting either into set[] kills the common Name+Sex / Name+State searches),  
+  BoatQuery #4 and DriverHistoryQuery #1 (devdoc brackets say optional, metadata says mandatory),  
+  VehicleRegistrationQuery #1 FileCode/InfoCode (buildable, deferred on a product call).  
+  A REVERSE-PROPAGATION FLAG WAS MISDIAGNOSED and is recorded so it is not re-raised:  
+  [FLAG:FORM-REACHABLE-COMBOS] blamed purposeCode=C for 12 dead combos. purposeCode is in EVERY  
+  CA combo's set[], so it cannot shadow one over another -- the 12 IV.4x/IL.A1 variants are  
+  structurally shadowed by IA.QV's strict-subset set[]. Removing the prefill would have recovered  
+  nothing and broken CAD injection portfolio-wide.  
+  Gates at build: validator 79P/0F/0W, reachability 27/27, fidelity 27 branches 0 under / 0 over,  
+  devdoc combinations 0 FAIL, devdoc optionals 0 FAIL (was 4), devdoc order PASS. 90 logs archived.  
+  NOTE (2026-08-03): this entry read "CHANGED: Rebuilt via pipeline.ps1 / REASON: Scheduled  
+  rebuild" -- four wire fixes and five adjudications recorded as a no-op. Recovered from commit  
+  f8a98ed6 BEFORE the v2.23 sweep, because the Jira changelog is written FROM this entry and on  
+  NY that same class was only caught mid-draft. It is also the case the new  
+  audit_buildnotes_fidelity gate was built on.  
 
 ## v2.22 -- 2026-07-28 -- Lean-label pass + stale combo-count doc fixes (direct Rob feedback + adversarial audit, NO functional change)
 
