@@ -862,10 +862,42 @@ LIMITATION #37: Value-comparison conditions are wholly inert (poisoned-array);
   Section 2a (POISONED-ARRAY RULE + SERVER-SIDE VALUE ROUTING). Flagged by
   validate.ps1 G-31 and test_commsys.ps1 ([!] POISONED ARRAY).
 
+LIMITATION #38: VEHICLE_MAKE attribute codes reach the CommSys wire with a CNST_
+                prefix (VehicleMakeCode = "CNST_FORD", not "FORD") -- PARKED
+  STATUS: LIVE-PROVEN providers/FL_FCIC/logs/Vehicle/FL_FCIC_v7.17_RQVehicleIdentificationNumber_af_VehicleMakeCode.txt
+  (+ CA_CLETS/logs/Vehicle/CA_CLETS_v2.23_IA.QVK_af_VehicleMakeCode.txt; 16 logs
+  across CA_CLETS 8 / TX_TLETS 4 / FL_FCIC 2 / NY_NYSPIN_EJUSTICE 2, all v-current.)
+  The officer selects "CNST_FORD - FORD"; dex-log's field map records the resolved
+  value ("VehicleMakeCode":"FORD") but the outgoing CommSys XML carries the RAW
+  ATTRIBUTE CODE: <VehicleMakeCode>CNST_FORD</VehicleMakeCode>. FL metadata defines
+  the field as "the first four characters shall be a valid code from part 1 of the
+  code manual" -- the first four of CNST_FORD are "CNST", so the state reads a make
+  that does not exist. maxLen (24) is NOT the problem.
+  NOT A MECHANISM FAULT, and that is why it is parked: the SAME resolution path
+  emits correct codes for every other dropdown in the same requests --
+  RegistrationState "Georgia"->GA, SexCode "M - Male"->M, LicensePlateTypeCode
+  "PC - REGULAR..."->PC, ImageIndicator "Y - Yes"->Y, GunMake (200-char display)->IMI,
+  ArticleTypeCode->BBICYCL (valid 7-char NCIC). VEHICLE_MAKE's attribute TABLE is the
+  lone outlier. Rob 2026-08-03: "park the veh make issue. the drop down is what it is
+  for now." Do NOT rebuild providers for this -- ALL 20 build the dropdown, so a fix
+  is a portfolio-wide bump that would archive 324+ tenant logs.
+  UNKNOWN (needs a live RESPONSE capture, which this repo has never held for CommSys):
+  whether the state ERRORS or silently searches "CNST". Discriminating test = capture
+  the dex-log response for one VehicleMakeCode query. Note the USx test tenants send
+  ORI/Mnemonic=CA1234567 regardless of provider, so a real state response may not be
+  obtainable there at all.
+  WHY NO GATE CAUGHT IT (the transferable lesson): no gate validates a wire VALUE
+  against its metadata VALUE constraint -- only field PRESENCE and combination
+  satisfaction. 6c compares the log to the plan fill-set (which says FORD -> matches),
+  6d confirms the field is metadata-defined and the set satisfies a real combination,
+  2i replays routing where the value is irrelevant. 324 green logs and four log gates
+  were blind to a malformed value. Any future value-format gate starts here.
+
 ================================================================================
 CROSS-REFERENCE INDEX
 ================================================================================
 
+  LIMITATION #38 -> Section 6 (Code Type/Dropdown) -- PARKED, portfolio-wide
   LIMITATION #1  -> Section 1 (Query Routing)
   LIMITATION #2  -> Section 1 (Query Routing) -- includes AP #12, AP #17
   LIMITATION #3  -> Section 1 (Query Routing)

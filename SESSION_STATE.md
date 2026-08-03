@@ -59,8 +59,8 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 **18 of 20 ENFORCED 0 FAIL / 0 WARN** (full sweep, measured). BLOCKED: LA_LEMS + CA_CONTRA_COSTA above.
 The CC block is a GATE getting stricter, not a provider getting worse -- do not loosen it back.
 
-**ENFORCED is not "done". Only FIVE are tenant-tested** (TX v4.18, NY v4.19, NJ v4.15, HI v4.14,
-CA_CLETS v2.23 -- 324 logs, four log gates green). **15 are ENFORCED but NEVER swept** = the backlog.
+**ENFORCED is not "done". SIX are tenant-tested** (FL v7.17, TX v4.18, NY v4.19, NJ v4.15,
+HI v4.14, CA_CLETS v2.23 -- 440 logs, four log gates green). **14 ENFORCED but NEVER swept** = backlog.
 
 Invariants held: devdoc-UNBUILT 2 (both LA_LEMS) | wiring closure 0/9 classes | audit_metadata 20/20 |
 gate efficacy 10/10 KILLED | portability 260 cells 0 unportable | fidelity fixture 116 branches 0/0 |
@@ -69,12 +69,13 @@ decision-trail hook + `git log -n 40` hold the reasoning.
 
 ## NEXT PHYSICAL ACTION
 
-**ROB: import FL_FCIC v7.17 to `usx.fl-fcic.mark43.com`.** Nothing blocks it. Then the sweep runs
-(driver + watcher, automated) -- 116 plan tests, PHASE 2 pre-flight CLEAR 2026-08-03.
+**FL_FCIC v7.17 is DONE -- tenant-complete 2026-08-03, ALL-PASS 116/116, four log gates green**
+(Vehicle 20 / Person 21 / Firearm 15 / Article 16 / Boat 44, every entity reconciled). That closes
+the FL->NY->TX priority Rob set: **NY v4.19 (64) and TX v4.18 (89) were already ALL-PASS at their
+current versions, so nothing is owed on either.** SIX providers now tenant-verified, 440 logs.
 
-**Order set by Rob 2026-08-03: FL, then NY, then TX.** Only FL has anything owed -- NY (64 logs) and
-TX (89 logs) are ALL-PASS at their CURRENT versions. TX last: it is the most wasteable to re-sweep.
-Then the other 13.
+**Next: the remaining 13 never-swept providers** via `test_phase2.ps1 -Provider <NAME>` then
+`-PostIngest`. Pick one and import it; the sweep itself is ~20 min of driver + watcher.
 
 ## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 

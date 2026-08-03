@@ -6,20 +6,37 @@ Current: **v7.17** | Generated: 2026-08-03
 
 ---
 
-## v7.17 -- 2026-08-03 -- Pipeline rebuild
+## v7.17 -- 2026-08-03 -- Remove 3 dead officer controls from Person (commit 56b8b7ca)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Deleted the visible-but-unwired nameMiddle, nameSuffix and nameMiddleDH controls
+  from the Person cards. No QIDM change, no wire change, no combo count change.  
+**REASON:** audit_wiring_closure class A (dead control). Every Name attribute on this provider
+  sources only [NameLast, NameFirst], so a middle name or suffix an officer typed was  
+  silently DISCARDED -- on DL, DH and Boat alike. Rob's call was remove, not wire: removing  
+  costs no match quality (nothing was ever transmitted) and stops the form implying a  
+  precision it never delivered. nameMiddleDH had been added at v7.11 during a label pass  
+  explicitly as "visible-only, NOT wired"; the later removal call is better-informed.  
+  TENANT-VERIFIED v7.17 2026-08-03: Person swept 21/21, no middle/suffix field on any wire.  
 
-## v7.16 -- 2026-08-02 -- Pipeline rebuild
+## v7.16 -- 2026-08-02 -- RelatedHitSearchIndicator on Gun+Article, VINSequenceNumber on FRQ{VIN}
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** RelatedHitSearchIndicator added to the GunQuery and ArticleSingleQuery combos'
+  any[]; VINSequenceNumber added to FRQVehicleIdentificationNumber any[] ONLY.  
+**REASON:** Dropped devdoc optionals -- the officer could set them and they were transmitted
+  nowhere. VINSequenceNumber is scoped to FRQ{VIN} because that is the only metadata  
+  variant whose <Any> defines it; adding it elsewhere would OVER-PERMIT.  
+  TENANT-VERIFIED v7.17 2026-08-03: RelatedHitSearchIndicator=Y confirmed on the wire in  
+  both Firearm (15/15) and Article (16/16) sweeps.  
 
-## v7.15 -- 2026-08-02 -- Pipeline rebuild
+## v7.15 -- 2026-08-02 -- Wire Requestor onto the 5 Basic queries that permit it
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Requestor added to the any[] of every combo whose metadata variant defines it,
+  across all 5 Basic queries, with an 'X' combo default so CAD-dispatched queries carry it.  
+**REASON:** emit_test_plan_spec UNREACHABLE -- Requestor was a devdoc optional on 26
+  combinations with NO form control at all, so it could never be sent. This is the fix  
+  that closed it.  
+  TENANT-VERIFIED v7.17 2026-08-03: Requestor=SGAMBELLONE R present on the wire in all  
+  116 logs across all 5 entities (auto-populated by the handler, not typed).  
 
 ## v7.14 -- 2026-07-31 -- FRQ over-permit removal: VehicleMakeCode/vehicleYear off both FRQ branches
 

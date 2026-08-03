@@ -22,7 +22,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | Provider | URL | DEX | Installed (logged) | Repo | Note |
 |---|---|---|---|---|---|
 | NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.15 (36 logs) | v4.15 | current (tenant-complete 2026-07-31, ALL-PASS 36/36, four log gates green) |
-| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | none (logs archived) | v7.17 | **NEXT UP — import owed.** v7.13 dropped-optional fix + v7.14 FRQ over-permit removal + v7.15–v7.17; package reset — re-import+capture owed (**116 plan tests**, PHASE 2 pre-flight CLEAR 2026-08-03: spec plan 92/5 entities, 0 tests that cannot fire) |
+| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.17 (116 logs) | v7.17 | current (tenant-complete 2026-08-03, ALL-PASS 116/116, four log gates green). Swept in one session: Vehicle 20 / Person 21 / Firearm 15 / Article 16 / Boat 44, every entity reconciling submitted-vs-captured. Proved v7.15 Requestor (all 116 wires), v7.16 RelatedHitSearchIndicator (Gun+Article) and the v7.14 FRQ over-permit removal (0 of 12 FRQ wires carry VehicleMakeCode/vehicleYear). Note: this tenant sends ORI/Mnemonic=CA1234567 regardless of provider |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.14 (46 logs) | v4.14 | current (tenant-complete, ALL-PASS 46/46) |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.19 (64 logs) | v4.19 | current (tenant-complete, ALL-PASS 64/64) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.18 (89 logs) | v4.18 | current (tenant-complete, ALL-PASS 89/89, 16/16 mutations killed) |
