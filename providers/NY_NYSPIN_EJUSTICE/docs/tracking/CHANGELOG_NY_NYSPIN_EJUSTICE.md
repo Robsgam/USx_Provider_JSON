@@ -19,10 +19,14 @@ Current: **v4.19** | Generated: 2026-08-03
   TENANT-VERIFIED at the v4.19 re-sweep: RVEHOUT fires with State + LicensePlateTypeCode and  
   carries State on the wire, while in-state RVEH carries none -- the path this version fixed.  
 
-## v4.17 -- 2026-07-30 -- Pipeline rebuild
+## v4.17 -- 2026-07-29 -- Split the compacted Driver History row -- DEX-1284, Leo CAD review (85a694cf)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** The compacted DH row was split across lines. Layout only -- no combo, QIDM, routing,
+  fieldId or wire change.  
+**REASON:** DEX-1284, Leo's CAD review. Recovered 2026-08-03 -- this entry read "Rebuilt via
+  pipeline.ps1 / Scheduled rebuild", the tenth instance of that class found today and the third on  
+  this provider (v4.17/v4.18/v4.19). Found while writing the Jira changelog FROM these entries,  
+  which is exactly the downstream cost the new audit_buildnotes_fidelity gate exists to stop.  
 
 ## v4.16 -- 2026-07-27 -- UPPERCASE card titles (Rob global decision, NO functional change)
 

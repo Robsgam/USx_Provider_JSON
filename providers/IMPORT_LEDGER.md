@@ -59,6 +59,7 @@ confirmation, never inferred from a version bump.
 |---|---|---|---|---|
 | FL_FCIC | v7.17 | DEX-971, 2026-08-03 | 2026-08-03 | after the 116/116 ALL-PASS sweep; same pass as the Miami Springs + North Miami imports |
 | TX_TLETS | v4.18 | DEX-967, 2026-08-03 | 2026-08-03 | after the 89/89 ALL-PASS re-sweep; same pass as the Balcones Heights import |
+| NY_NYSPIN_EJUSTICE | v4.19 | DEX-969, 2026-08-03 | 2026-08-03 | after the 64/64 ALL-PASS re-sweep. No Foundation tenant carries NY, so there is no section B row to match |
 
 > **TENANT INFO STAYS OFF THE TICKETS (Rob, 2026-08-03, restated).** Nothing in section B or C goes
 > into a Jira comment — not the attachment, not the catalog post, not a Foundation import. **This
