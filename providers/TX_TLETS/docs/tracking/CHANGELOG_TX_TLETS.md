@@ -2,14 +2,23 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.18** | Generated: 2026-08-02
+Current: **v4.18** | Generated: 2026-08-03
 
 ---
 
-## v4.18 -- 2026-07-30 -- Pipeline rebuild
+## v4.18 -- 2026-07-30 -- Devdoc optionals x routing: 17 dropped optionals wired (commit b95bc364)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** 17 devdoc-listed optionals that the officer could fill but that were transmitted
+  NOWHERE were added to the any[] of the combos whose metadata variant defines them, across the  
+  Vehicle/Person/Firearm/Article/Boat queries.  
+**REASON:** Found by the then-new audit_devdoc_optionals gate -- a devdoc-legal fill fired a query
+  but the optional rode in NO matching combo's set[]/any[], so it was silently dropped. Same  
+  defect class as FL v7.13/v7.16.  
+  NOTE (2026-08-03): this entry originally read "CHANGED: Rebuilt via pipeline.ps1 / REASON:  
+  Scheduled rebuild", which understated a 17-field wire change. Recovered from the commit body.  
+  Fifth instance of this class found today (FL had four) -- a pipeline rebuild stamps a generic  
+  entry and, if nobody replaces it, the change becomes invisible to anyone reading BUILD_NOTES as  
+  the source of truth.  
 
 ## v4.17 -- 2026-07-30 -- Pipeline rebuild
 

@@ -33,6 +33,29 @@ is what it orchestrates; read them for the *reasoning*, but do not hand-run the 
   (stranded captures, stray watchers). Ends `PRE-FLIGHT CLEAR` or names what blocks.
 - `-PostIngest`: the FOUR log gates — 6c content, 6d metadata, 2i attribution, plan completeness.
 
+**`N queries submitted` IS NOT A SEND COUNT — and a shortfall is usually TRANSIENT, so RE-RUN
+BEFORE DIAGNOSING.** The driver counts plan entries it walked, not successful sends. TX Boat
+2026-08-03 printed `22 queries submitted` while the same console showed two failures above it:
+
+```
+T80 QBBoatHullIdNumber: NOT submitted (Send present but still DISABLED after 6000ms
+    -- the form rejected this input (check field validation / maxLength / ...))
+T88 ... POST .../federated_queries net::ERR_CONNECTION_CLOSED     <- still logged "submitted"
+```
+
+20 captured, which matched the corrected expectation of 20-21 rather than the claimed 22. **Read the
+console for per-test failures before trusting its summary line.**
+
+Then the part that matters: I hypothesised a REAL defect — that hull-alone selects no query on TX's
+Boat card (State routes the OOS `BQ` path, `relatedHitSearchIndicator` the in-state `QB` path), and
+that `test_phase2`'s "0 tests that cannot fire" would miss it because that check tests combo
+matching, not form-level query selection. **A plain re-run refuted it: all 22 submitted with the
+identical fill, T80 included.** Both failures were environmental — form-state timing and one closed
+socket. Cost of the re-run: two minutes. Cost of "fixing" a form that was never broken: a version
+bump, an archived test package, and a defect introduced. **Re-run first; diagnose only what survives
+a second attempt.** Label it a HYPOTHESIS until then (GATE 4 discipline applies to your own
+findings, not just KB claims).
+
 **RECONCILE SUBMITTED vs CAPTURED PER ENTITY.** The driver prints `plan run complete: N queries
 submitted`; the watcher prints `Imported: M PASS`. **If M ≠ N for that entity, say so immediately.**
 Chrome reuses `usx_captured_batch_labeled.json`, so a batch that is never captured before the next

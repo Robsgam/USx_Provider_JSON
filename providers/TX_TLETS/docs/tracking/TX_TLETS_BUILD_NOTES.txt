@@ -4,9 +4,34 @@ Provider: TX_TLETS
 State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 --------------------------------------------------------------------------------
-v4.18  2026-07-30  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v4.18  2026-07-30  Devdoc optionals x routing: 17 dropped optionals wired (commit b95bc364)
+  CHANGED: 17 devdoc-listed optionals that the officer could fill but that were transmitted
+    NOWHERE were added to the any[] of the combos whose metadata variant defines them, across the
+    Vehicle/Person/Firearm/Article/Boat queries.
+  REASON: Found by the then-new audit_devdoc_optionals gate -- a devdoc-legal fill fired a query
+    but the optional rode in NO matching combo's set[]/any[], so it was silently dropped. Same
+    defect class as FL v7.13/v7.16.
+    NOTE (2026-08-03): this entry originally read "CHANGED: Rebuilt via pipeline.ps1 / REASON:
+    Scheduled rebuild", which understated a 17-field wire change. Recovered from the commit body.
+    Fifth instance of this class found today (FL had four) -- a pipeline rebuild stamps a generic
+    entry and, if nobody replaces it, the change becomes invisible to anyone reading BUILD_NOTES as
+    the source of truth.
+
+  RE-SWEPT 2026-08-03 at the SAME version (Rob's call, after FL v7.17): package reset with -Force so
+    89 fresh captures REPLACED the prior 89 rather than accumulating, then re-verified end to end.
+    89/89 ALL-PASS -- Vehicle 20, Person 29, Firearm 10, Article 8, Boat 22, every entity
+    reconciling submitted-vs-captured. Four log gates green (6c 89/89, 6d 89/89, 2i 89/89
+    attribution, plan completeness 5/5). enforce 41 PASS / 0 FAIL / 0 WARN.
+    audit_log_inflation 0 CLONE / 0 FINGERPRINT / 0 ORPHAN / 0 DEGENERATE -- the reset is what makes
+    that true; a re-capture at an unchanged version otherwise doubles the log count with every file
+    "passing" (attack A).
+    Wire evidence beyond the counts: DH pool isolation holds (KQOLN carries OperatorLicenseNumber
+    and none of Name/BirthDate/SexCode; the guardrail log is OLN-only) and the wire elements are
+    correctly UN-suffixed despite the DH-suffixed form fieldIds; the Image=Y trio is POPULATED not
+    merely present (ImageIndicator=Y, ReasonCode=C, EmailAddress=ROB.SGAMBELLONE@MARK43.COM), which
+    is the T6 devdoc constraint satisfied for real; Boat Hull>Reg sends hull ONLY.
+    MessageType=VehicleInsuranceRegistrationQuery on all 20 Vehicle wires is CORRECT -- TX metadata
+    defines RQ/REG/VIN/DPSI/QV under that query and has no separate VehicleRegistrationQuery.
 
 v4.17  2026-07-30  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
