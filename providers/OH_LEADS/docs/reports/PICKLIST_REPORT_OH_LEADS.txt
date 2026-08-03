@@ -1,0 +1,119 @@
+======================================================================
+  PICKLIST / DROPDOWN REPORT: OH_LEADS_v2.2
+  Source: OH_LEADS_v2.2.json
+  Generated: 2026-08-02 21:50
+======================================================================
+
+SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
+--------------------------------------------------
+
+  Entity: Article
+    articleTypeCode [Article Type]
+      Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+    ImageIndicator [Image (optional)] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    relatedHitSearchIndicator [Y for NCIC stolen-article check (optional)]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Boat
+    ImageIndicator [Image (in-state blank, optional)] (default=N)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    RegistrationState [State (leave blank for OH)]
+      Config: attributeTypeId=STATE
+    relatedHitSearchIndicator [Y for NCIC stolen-boat check (optional)]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Firearm
+    firearmMake [Make (optional)]
+      Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
+    gunCaliber [Caliber (optional)]
+      Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
+    relatedHitSearchIndicator [Y for NCIC stolen-gun check (optional)]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+
+  Entity: Person
+    ImageIndicator [Image (out-of-state OLN, optional)] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    RegistrationState [State (leave blank for OH)]
+      Config: attributeTypeId=STATE
+    SexCode [Sex (out-of-state)]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+    SexCodeDH [Sex]
+      Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
+
+  Entity: Vehicle
+    LicensePlateTypeCode [Plate Type] (default=PC)
+      Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
+    RegistrationState [State (leave blank for OH)]
+      Config: attributeTypeId=STATE
+    VehicleMakeCode [Vehicle Make (with State, optional)]
+      Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
+
+SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
+--------------------------------------------------
+
+  Config Type: QUERYINPUTDATAMAPPING
+    Config: OH_LEADS_VehicleRegistrationQuery
+      State -> State
+        codeTypeProvider=NCIC
+    Config: OH_LEADS_DriverLicenseQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: OH_LEADS_DriverHistoryQuery
+      SexCode -> SexCode
+        codeTypeProvider=NIBRS
+      State -> State
+        codeTypeProvider=NCIC
+    Config: OH_LEADS_BoatQuery
+      State -> State
+        codeTypeProvider=NCIC
+
+  Config Type: QUERYRESULTDATAMAPPING
+    Config: OH_LEADS_Results
+      AddressStateCode -> AddressStateCode
+        codeTypeCategory=NJ_NIBRS_STATE, codeTypeSource=NJ_NIBRS
+      EyeColorCode -> EyeColorCode
+        attributeType=EYE_COLOR | codeTypeSource=NCIC
+      HairColorCode -> HairColorCode
+        attributeType=HAIR_COLOR | codeTypeSource=NCIC
+      RaceCode -> RaceCode
+        codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+      SexCode -> SexCode
+        attributeType=SEX | codeTypeSource=NIBRS
+      VehicleColorCode -> VehicleColorCode
+        attributeType=ITEM_COLOR | codeTypeSource=NCIC
+      VehicleMakeName -> VehicleMakeName
+        attributeType=VEHICLE_MAKE | codeTypeSource=NCIC
+      VehicleStyleCode -> BodyStyle
+        codeTypeCategory=VEHICLE_BODY_STYLE, codeTypeSource=NJ_NIBRS
+      VehicleModelName -> VehicleModelName
+        attributeType=VEHICLE_MODEL | codeTypeSource=NCIC
+
+SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
+--------------------------------------------------
+
+  QIDM: OH_LEADS_VehicleRegistrationQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: OH_LEADS_DriverLicenseQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: OH_LEADS_DriverLicenseQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: OH_LEADS_DriverHistoryQuery
+    SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
+
+  QIDM: OH_LEADS_DriverHistoryQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+  QIDM: OH_LEADS_BoatQuery
+    State -> targetField=State, codeTypeProvider=NCIC
+
+======================================================================
+  SUMMARY
+======================================================================
+  Form dropdowns: 16
+  QRDM code type attrs: 15

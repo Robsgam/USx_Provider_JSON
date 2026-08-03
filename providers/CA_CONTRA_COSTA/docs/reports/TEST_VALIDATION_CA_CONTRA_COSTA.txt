@@ -1,0 +1,92 @@
+﻿================================================================
+  Build Report: CA_CONTRA_COSTA
+  Source: CA_CONTRA_COSTA_v2.2.json
+  Generated: 2026-08-02 21:46
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- CA_CONTRA_COSTA_v2.2
+============================================================
+Source: CA_CONTRA_COSTA_v2.2.json
+Matrix: CA_CONTRA_COSTA_TEST_MATRIX.txt
+Generated: 2026-08-02
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: PERSON (36 tests -- 3 cards, 11 combos)
+  T1  Person     [PASS] (structural check)
+  T2  Person     [PASS] any[] fields verified: age
+  T3  Person     [PASS] (structural check)
+  T4  Person     [PASS] any[] fields verified: age
+  T5  Person     [PASS] (structural check)
+  T6  Person     [PASS] any[] fields verified: BirthDate
+  T7  Person     [PASS] (structural check)
+  T8  Person     [PASS] (structural check)
+  T9  Person     [PASS] any[] fields verified: age
+  T10  Person     [PASS] (structural check)
+  T11  Person     [PASS] (structural check)
+  T12  Person     [PASS] any[] fields verified: BirthDate
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] any[] fields verified: age
+  T15  Person     [PASS] (structural check)
+  T16  Person     [PASS] any[] fields verified: BirthDate, age, addressCounty, height
+  T17  Person     [PASS] (structural check)
+  T18  Person     [PASS] any[] fields verified: Attention
+  T19  Person     [PASS] (structural check)
+  T20  Person     [PASS] any[] fields verified: Attention
+  T21  Person     [PASS] (structural check)
+  T22  Person     [PASS] (structural check)
+  T23  Person     [PASS] (structural check)
+  T24  Person     [PASS] (structural check)
+  T25  Person     [PASS] (structural check)
+  T26  Person     [PASS] (structural check)
+  T27  Person     [PASS] (structural check)
+  T28  Person     [PASS] (structural check)
+  T29  Person     [PASS] (structural check)
+  T30  Person     [PASS] (structural check)
+  T31  Person     [PASS] (structural check)
+  T32  Person     [PASS] (structural check)
+  T33  Person     [PASS] (structural check)
+  T34  Person     [PASS] (structural check)
+  T35  Person     [PASS] (structural check)
+  T36  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (12 tests -- 1 card, 5 combos)
+  T37  Vehicle    [PASS] (structural check)
+  T38  Vehicle    [PASS] any[] fields verified: addressCity, addressStreetNumber
+  T39  Vehicle    [PASS] (structural check)
+  T40  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T41  Vehicle    [PASS] (structural check)
+  T42  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T43  Vehicle    [PASS] (structural check)
+  T44  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T45  Vehicle    [PASS] (structural check)
+  T46  Vehicle    [PASS] any[] fields verified: VehicleMakeCode
+  T47  Vehicle    [PASS] (structural check)
+  T48  Vehicle    [PASS] (structural check)
+ENTITY: BOAT (8 tests -- 1 card, 6 combos)
+  T49  Boat       [PASS] (structural check)
+  T50  Boat       [PASS] (structural check)
+  T51  Boat       [PASS] (structural check)
+  T52  Boat       [PASS] (structural check)
+  T53  Boat       [PASS] (structural check)
+  T54  Boat       [PASS] (structural check)
+  T55  Boat       [PASS] (structural check)
+  T56  Boat       [PASS] (structural check)
+ENTITY: FIREARM (4 tests -- 1 card, 3 combos)
+  T57  Firearm    [PASS] (structural check)
+  T58  Firearm    [PASS] any[] fields verified: gunCaliber, GunMake, gunTypeCode
+  T59  Firearm    [PASS] (structural check)
+  T60  Firearm    [PASS] (structural check)
+ENTITY: ARTICLE (4 tests -- 1 card, 2 combos)
+  T61  Article    [PASS] (structural check)
+  T62  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T63  Article    [PASS] (structural check)
+  T64  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+
+SUMMARY: 64/64 PASS, 0 FAIL
+
+

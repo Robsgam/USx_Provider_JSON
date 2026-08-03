@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: NJ_NJCJIS_v4.8
-  Source: NJ_NJCJIS_v4.8.json
-  Generated: 2026-07-01 17:25
+  PICKLIST / DROPDOWN REPORT: NJ_NJCJIS_v4.15
+  Source: NJ_NJCJIS_v4.15.json
+  Generated: 2026-08-02 21:49
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -10,11 +10,11 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Article
     ArticleTypeCode [Article Type (required)]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
@@ -22,25 +22,25 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NJ_NIBRS
     GunMake [Make (optional)]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NJ_NIBRS
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    ImageIndicator [Image (optional)] (default=Y)
+    ImageIndicator [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    RegistrationState [State (default NJ - change for out-of-state)] (default=NJ)
+    RegistrationState [State] (default=NJ)
       Config: attributeTypeId=STATE
     SexCode [Sex (optional)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     LicensePlateTypeCode [Plate Type (optional)] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
     RandomRequest [Random Request (N = full record; Y = random)] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    RegistrationState [State (default NJ - change for out-of-state)] (default=NJ)
+    RegistrationState [State] (default=NJ)
       Config: attributeTypeId=STATE
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES

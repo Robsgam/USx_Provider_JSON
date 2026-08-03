@@ -1,14 +1,15 @@
-================================================================
+﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE_v4.0.json
-  Generated: 2026-07-02 19:25
+  Source: NY_NYSPIN_EJUSTICE_v4.19.json
+  Generated: 2026-08-02 21:49
 ================================================================
 QUERY SIMULATION
 ================
 
+  Seeded form defaults (2): Person.ImageIndicatorDH=Y, Person.nyNyspinTransactionNameDH=DALL
 
 ================================================================
-  CommSys Query Simulator -- NY_NYSPIN_EJUSTICE_v4.0.json
+  CommSys Query Simulator -- NY_NYSPIN_EJUSTICE_v4.19.json
 ================================================================
 
 --- QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery [Vehicle] ---
@@ -16,33 +17,20 @@ QUERY SIMULATION
     [SKIP] RVIN -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
     [FIRES first-match] RVEHOUT
-      set: [LicensePlateNumber, RegistrationState]
-      any: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear] -> matched: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear]
+      set: [LicensePlateNumber, RegistrationState, LicensePlateTypeCode, LicensePlateYear]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RVEHOUT</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>RVEHOUT</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
         <ImageIndicator>Y</ImageIndicator>
       </Transaction>
-
-    [FIRES shadowed -- first match above wins] RVEH
-      set: [LicensePlateNumber]
-      any: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RegistrationState] -> matched: [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RVEH</MessageKey>
-        <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
-        <State>NJ</State>
-        <ImageIndicator>Y</ImageIndicator>
-      </Transaction>
-    [SKIP] RCAR -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
+    [SKIP] RVEH -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
+    [SKIP] RCAR -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; RegistrationState NOT_EXISTS [value='NJ']
 
     >> PLATFORM FIRES: RVEHOUT (first matching combo)
     >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, ImageIndicator=Y
@@ -58,8 +46,8 @@ QUERY SIMULATION
       any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DLIC</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DLIC</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
@@ -70,70 +58,50 @@ QUERY SIMULATION
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
---- QIDM: NY_NYSPIN_EJUSTICE_NyNyspinDriverLicenseNameQuery [Person] ---
-    Query: NyNyspinDriverLicenseNameQuery  |  Attrs: 3  |  Combos: 1
-
-    [FIRES first-match] DGRP
-      set: [NameLast, NameFirst]
-      any: [nameMiddle, nameSuffix, BirthDate, SexCode] -> matched: [nameMiddle, BirthDate, SexCode]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DGRP</MessageKey>
-        <BirthDate>01151990</BirthDate>
-        <Name>Doe, John A</Name>
-        <SexCode>M</SexCode>
-      </Transaction>
-
-    >> PLATFORM FIRES: DGRP (first matching combo)
-    >> UNION POOL (platform serializes): BirthDate=01151990, Name=Doe, John A, SexCode=M
-       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
-        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
-
 --- QIDM: NY_NYSPIN_EJUSTICE_DriverHistoryQuery [Person] ---
     Query: DriverHistoryQuery  |  Attrs: 9  |  Combos: 4
     [SKIP] DALHOUT -- conditions failed: OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
-    [SKIP] DALH -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']; OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
+    [SKIP] DALH -- conditions failed: RegistrationStateDH NOT_EXISTS [value='FL']; OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] DALLOUT
-      set: [OperatorLicenseNumberDH, purposeCodeDH, requestorDH, RegistrationState]
-      any: [ImageIndicator, nyNyspinTransactionNameDH] -> matched: [ImageIndicator]
+      set: [OperatorLicenseNumberDH, purposeCodeDH, requestorDH, RegistrationStateDH]
+      any: [ImageIndicatorDH, nyNyspinTransactionNameDH] -> matched: [ImageIndicatorDH, nyNyspinTransactionNameDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DALLOUT</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DALLOUT</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <State>NJ</State>
+        <State>FL</State>
         <PurposeCode>C</PurposeCode>
-        <Requestor>DISPATCHER JONES</Requestor>
+        <Requestor>DOE J</Requestor>
+        <NyNyspinTransactionName>DALL</NyNyspinTransactionName>
       </Transaction>
-    [SKIP] DALL -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
+    [SKIP] DALL -- conditions failed: RegistrationStateDH NOT_EXISTS [value='FL']
 
     >> PLATFORM FIRES: DALLOUT (first matching combo)
-    >> UNION POOL (platform serializes): ImageIndicator=Y, OperatorLicenseNumber=D123456789, State=NJ, PurposeCode=C, Requestor=DISPATCHER JONES
+    >> UNION POOL (platform serializes): ImageIndicator=Y, OperatorLicenseNumber=D123456789, State=FL, PurposeCode=C, Requestor=DOE J, NyNyspinTransactionName=DALL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: NY_NYSPIN_EJUSTICE_GunQuery [Firearm] ---
-    Query: GunQuery  |  Attrs: 5  |  Combos: 1
+    Query: GunQuery  |  Attrs: 4  |  Combos: 1
 
     [FIRES first-match] GINQ
-      set: [GunSerialNumber]
-      any: [ImageIndicator, GunMake, GunCaliber, relatedHitSearchIndicator] -> matched: [ImageIndicator, GunMake, GunCaliber, relatedHitSearchIndicator]
+      set: [serialNumber]
+      any: [GunMake, GunCaliber, relatedHitSearchIndicator] -> matched: [GunMake, GunCaliber, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>GINQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>GINQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <GunCaliber>9MM</GunCaliber>
         <GunMake>SMTH</GunMake>
         <GunSerialNumber>ABC12345</GunSerialNumber>
-        <ImageIndicator>Y</ImageIndicator>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
       </Transaction>
 
     >> PLATFORM FIRES: GINQ (first matching combo)
-    >> UNION POOL (platform serializes): GunCaliber=9MM, GunMake=SMTH, GunSerialNumber=ABC12345, ImageIndicator=Y, RelatedHitSearchIndicator=Y
+    >> UNION POOL (platform serializes): GunCaliber=9MM, GunMake=SMTH, GunSerialNumber=ABC12345, RelatedHitSearchIndicator=Y
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -145,8 +113,8 @@ QUERY SIMULATION
       any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>AINQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>AINQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
         <ArticleTypeCode>COMP</ArticleTypeCode>
         <ImageIndicator>Y</ImageIndicator>
@@ -159,37 +127,25 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: NY_NYSPIN_EJUSTICE_BoatQuery [Boat] ---
-    Query: BoatQuery  |  Attrs: 5  |  Combos: 4
+    Query: BoatQuery  |  Attrs: 4  |  Combos: 4
     [SKIP] BVEH -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
     [FIRES first-match] BVIN
       set: [BoatHullIdNumber, RegistrationState]
-      any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
+      any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>BVIN</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>BVIN</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <ImageIndicator>Y</ImageIndicator>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
         <State>FL</State>
       </Transaction>
-    [SKIP] RVEH -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
-
-    [FIRES shadowed -- first match above wins] RCAR
-      set: [BoatHullIdNumber]
-      any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RCAR</MessageKey>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-      </Transaction>
+    [SKIP] RVEH -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']; RegistrationState NOT_EXISTS [value='FL']
+    [SKIP] RCAR -- conditions failed: RegistrationState NOT_EXISTS [value='FL']
 
     >> PLATFORM FIRES: BVIN (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y, RelatedHitSearchIndicator=Y, State=FL
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

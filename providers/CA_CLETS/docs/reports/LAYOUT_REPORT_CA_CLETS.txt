@@ -1,23 +1,23 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.12.json
-  Generated: 2026-07-01 19:30
+  Source: CA_CLETS_v2.23.json
+  Generated: 2026-08-02 21:45
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== CA_CLETS_v2.12.json ===
+=== CA_CLETS_v2.23.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=2 fields=9
-  Person | entity=Person | qidm= | cards=3 fields=14
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=9
+  Person | entity=Person | qidm= | cards=2 fields=14
   Firearm | entity=Firearm | qidm= | cards=1 fields=5
   Article | entity=Article | qidm= | cards=1 fields=5
   Boat | entity=Boat | qidm= | cards=1 fields=6
 QIDMs: 6
   CA_CLETS_VehicleRegistrationQuery | attrs=11 combos=5 autoSelect=True
-  CA_CLETS_DriverLicenseQuery | attrs=13 combos=8 autoSelect=True
+  CA_CLETS_DriverLicenseQuery | attrs=12 combos=9 autoSelect=True
   CA_CLETS_DriverHistoryQuery | attrs=8 combos=2 autoSelect=True
-  CA_CLETS_GunQuery | attrs=8 combos=2 autoSelect=
+  CA_CLETS_GunQuery | attrs=8 combos=3 autoSelect=
   CA_CLETS_ArticleSingleQuery | attrs=6 combos=2 autoSelect=
   CA_CLETS_BoatQuery | attrs=7 combos=6 autoSelect=
 
@@ -29,20 +29,19 @@ LAYOUT DETAIL
 === Vehicle ===
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
   [default]
-    CARD "CARD_VEH_OPT"
-      ROW ROW_VEH_OPT_1 [6 4]
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_VEH_SEARCH"
       ROW ROW_VEH_1 [4 4 4]
         LicensePlateNumber (Text | maxLen=10)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
-      ROW ROW_VEH_2 [4 4 4]
+      ROW ROW_VEH_2 [6 4]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        purposeCode (Text | maxLen=1 | default=C)
+      ROW ROW_VEH_3 [4 4 4]
         VehicleIdentificationNumber (Text | maxLen=30)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
-      ROW ROW_VEH_3 [3 3 3 3]
+      ROW ROW_VEH_4 [3 3 3 3]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
         addressCity (Text | maxLen=13)
@@ -51,10 +50,6 @@ LAYOUT DETAIL
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
-    CARD "CARD_PER_OPT"
-      ROW ROW_PER_OPT_1 [6 4]
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_PER_DL"
       ROW ROW_PER_DL_1 [4 4 4]
         OperatorLicenseNumber (Text | maxLen=20)
@@ -65,15 +60,18 @@ LAYOUT DETAIL
         NameLast (Text | maxLen=30)
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-      ROW ROW_PER_DL_3 [2 2 2 3 3]
+      ROW ROW_PER_DL_3 [3 3 3 3]
         age (Text | maxLen=2)
         height (Text | maxLen=3)
         addressCounty (Text | maxLen=3)
-        raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
-        appsRequestIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DL_OPT [6 4]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_PER_DH"
-      ROW ROW_PER_DH_1 [6 4]
+      ROW ROW_PER_DH_1 [4 4 4]
         OperatorLicenseNumberDH (Text | maxLen=20)
+        RegistrationStateDH (Dropdown | attributeTypeId=STATE)
         purposeCodeDH (Text | maxLen=1 | default=C)
       ROW ROW_PER_DH_2 [3 3 3 3]
         NameFirstDH (Text | maxLen=30)
@@ -90,14 +88,13 @@ LAYOUT DETAIL
       ROW ROW_GUN_1 [3 3 3 3]
         serialNumber (Text | maxLen=20)
         GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
-        gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
         gunTypeCode (Dropdown | codeTypeCategory=NCIC_FIREARM_TYPE | codeTypeSource=NCIC)
-      ROW ROW_GUN_2 [3 3 3 3]
+      ROW ROW_GUN_2 [3 3 2 2 2]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
         BirthDate (FormDate)
         age (Text | maxLen=2)
-      ROW ROW_GUN_3 [4]
         purposeCode (Text | maxLen=1 | default=C)
 
 === Article ===
@@ -135,6 +132,7 @@ LAYOUT DETAIL
     NameLast -> lastName
     OperatorLicenseNumber -> dlNumber
     BirthDate -> dateOfBirth
+    raceCode -> raceAttrIds (useAttrId | rule=AttributeArrayWrapperRuleHandler)
     SexCode -> sexAttrId (useAttrId)
     RegistrationState -> registrationStateAttrId (useAttrId)
   RMS Vehicle search query

@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH_v1.1.json
-  Generated: 2026-07-15 11:49
+  Source: TX_TLETS_CCH_v1.14.json
+  Generated: 2026-08-02 21:51
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== TX_TLETS_CCH_v1.1.json ===
+=== TX_TLETS_CCH_v1.14.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
-  Person | entity=Person | qidm= | cards=6 fields=43
+  Person | entity=Person | qidm= | cards=5 fields=42
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=1 fields=3
 QIDMs: 14
-  TX_TLETS_CCH_VehicleInsuranceRegistrationQuery | attrs=10 combos=7 autoSelect=True
-  TX_TLETS_CCH_DriverLicenseQuery | attrs=12 combos=4 autoSelect=True
+  TX_TLETS_CCH_VehicleInsuranceRegistrationQuery | attrs=10 combos=5 autoSelect=True
+  TX_TLETS_CCH_DriverLicenseQuery | attrs=9 combos=3 autoSelect=True
   TX_TLETS_CCH_DriverHistoryQuery | attrs=10 combos=2 autoSelect=True
   TX_TLETS_CCH_GunQuery | attrs=6 combos=2 autoSelect=
   TX_TLETS_CCH_ArticleSingleQuery | attrs=5 combos=2 autoSelect=
@@ -24,7 +24,7 @@ QIDMs: 14
   TX_TLETS_CCH_CCHCriminalHistoryARQuery | attrs=5 combos=1 autoSelect=False
   TX_TLETS_CCH_CCHCriminalHistoryFQQuery | attrs=11 combos=1 autoSelect=False
   TX_TLETS_CCH_CCHCriminalHistoryIQQuery | attrs=15 combos=1 autoSelect=False
-  TX_TLETS_CCH_CCHCriminalHistoryQHQuery | attrs=12 combos=4 autoSelect=False
+  TX_TLETS_CCH_CCHCriminalHistoryQHQuery | attrs=12 combos=5 autoSelect=False
   TX_TLETS_CCH_CCHCriminalHistoryQRQuery | attrs=11 combos=2 autoSelect=False
   TX_TLETS_CCH_CCHCriminalHistoryQWIQuery | attrs=14 combos=3 autoSelect=False
   TX_TLETS_CCH_CCHCriminalHistoryZRQuery | attrs=4 combos=2 autoSelect=False
@@ -38,12 +38,12 @@ LAYOUT DETAIL
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
   [default]
     CARD "CARD_VEH"
-      ROW ROW_VEH_1 [5 2 2 3]
+      ROW ROW_VEH_1 [3 3 3 3]
         LicensePlateNumber (Text | maxLen=10)
-        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
-        LicensePlateYear (Text | maxLen=4 | default=2026)
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=TX)
-      ROW ROW_VEH_2 [5 4 3]
+        LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC)
+        LicensePlateYear (Text | maxLen=4)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+      ROW ROW_VEH_2 [4 4 4]
         VehicleIdentificationNumber (Text | maxLen=20)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
@@ -55,41 +55,44 @@ LAYOUT DETAIL
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
-    CARD "CARD_PER_OPT"
-      ROW ROW_PER_O1 [3 2 2 5]
+    CARD "CARD_PER_DL"
+      ROW ROW_PER_L1 [6 6]
+        OperatorLicenseNumber (Text | maxLen=20)
+        messageKey (Text | maxLen=3)
+      ROW ROW_PER_N1 [6 6]
+        NameFirst (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
+      ROW ROW_PER_N1B [6 6]
+        nameMiddle (Text | maxLen=30)
+        nameSuffix (Text | maxLen=30)
+      ROW ROW_PER_N2 [6 6]
+        BirthDate (FormDate)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DL_OPT [4 4 4]
         RegistrationState (Dropdown | attributeTypeId=STATE | default=TX)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         reasonCode (Text | maxLen=1 | default=C)
-        emailAddress (Text | maxLen=80)
-    CARD "CARD_PER_DL"
-      ROW ROW_PER_L1 [6 3 3]
-        OperatorLicenseNumber (Text | maxLen=20)
-        BirthDate (FormDate)
-        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-      ROW ROW_PER_N1 [4 4 2 2]
-        NameLast (Text | maxLen=30)
-        NameFirst (Text | maxLen=30)
-        nameMiddle (Text | maxLen=30)
-        nameSuffix (Text | maxLen=30)
-      ROW ROW_PER_N2 [3 3 2 4]
-        raceCode (Dropdown | codeTypeCategory=NIBRS_RACE | codeTypeSource=NIBRS)
-        expandedBirthDateSearchCode (Text | maxLen=1)
-        regionId (Text | maxLen=4)
-        messageKey (Text | maxLen=3)
+      ROW ROW_PER_DL_OE [12]
+        emailAddress (Text | maxLen=80 | default=X)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DHA [12]
         Attention (Text | maxLen=30 | default=X)
-      ROW ROW_PER_DHL1 [8 4]
+      ROW ROW_PER_DHL1 [6 6]
         OperatorLicenseNumberDH (Text | maxLen=20)
         purposeCodeDH (Text | maxLen=1 | default=C)
-      ROW ROW_PER_DHN1 [3 3 3 3]
-        NameLastDH (Text | maxLen=30)
+      ROW ROW_PER_DHN1 [6 6]
         NameFirstDH (Text | maxLen=30)
+        NameLastDH (Text | maxLen=30)
+      ROW ROW_PER_DHN1B [6 6]
         nameMiddleDH (Text | maxLen=30)
         nameSuffixDH (Text | maxLen=30)
       ROW ROW_PER_DHN2 [6 6]
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DH_OPT [4 4 4]
+        RegistrationStateDH (Dropdown | attributeTypeId=STATE | default=TX)
+        ImageIndicatorDH (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        reasonCodeDH (Text | maxLen=1 | default=C)
     CARD "CARD_PER_CCH_OPT"
       ROW ROW_CCH_O1 [4 4 4]
         attentionCCH (Text | maxLen=30)
@@ -140,12 +143,12 @@ LAYOUT DETAIL
   name=ENTITY_Firearm | entity=Firearm | qidm=
   [default]
     CARD "CARD_GUN"
-      ROW ROW_GUN_1 [6 6]
-        GunSerialNumber (Text | maxLen=20)
-        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
-      ROW ROW_GUN_2 [3 3 3 3]
-        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
+      ROW ROW_GUN_1 [4 4 4]
+        serialNumber (Text | maxLen=20)
         NCICNumber (Text | maxLen=10)
+        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+      ROW ROW_GUN_2 [4 4 4]
+        GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 

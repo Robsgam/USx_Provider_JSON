@@ -1,0 +1,49 @@
+﻿================================================================
+  Build Report: IL_LEADS_OFML
+  Source: IL_LEADS_OFML_v2.0.json
+  Generated: 2026-08-02 21:48
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- IL_LEADS_OFML_v2.0
+============================================================
+Source: IL_LEADS_OFML_v2.0.json
+Matrix: IL_LEADS_OFML_TEST_MATRIX.txt
+Generated: 2026-08-02
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: BOAT (5 tests -- 3 cards, 2 combos)
+  T1  Boat       [PASS] (structural check)
+  T2  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator, RegistrationState
+  T3  Boat       [PASS] (structural check)
+  T4  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator, RegistrationState
+  T5  Boat       [PASS] (structural check)
+ENTITY: VEHICLE (7 tests -- 3 cards, 3 combos)
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (Z5)
+  T7  Vehicle    [PASS] any[] fields verified: ImageIndicator, LicensePlateTypeCode, LicensePlateYear, relatedHitSearchIndicator
+  T8  Vehicle    [PASS] (structural check)
+  T9  Vehicle    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator, VehicleMakeCode, vehicleYear
+  T10  Vehicle    [PASS] (structural check)
+  T11  Vehicle    [PASS] any[] fields verified: ImageIndicator, LicensePlateTypeCode, LicensePlateYear, relatedHitSearchIndicator
+  T12  Vehicle    [PASS] (structural check)
+ENTITY: PERSON (5 tests -- 3 cards, 2 combos)
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator, RegistrationState
+  T15  Person     [PASS] (structural check)
+  T16  Person     [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator, SexCode
+  T17  Person     [PASS] (structural check)
+ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
+  T18  Firearm    [PASS] GunQuery fires (QG)
+  T19  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, ImageIndicator, relatedHitSearchIndicator
+ENTITY: ARTICLE (2 tests -- 1 card, 1 combo)
+  T20  Article    [PASS] ArticleSingleQuery fires (QA)
+  T21  Article    [PASS] any[] fields verified: ownerAppliedNumber
+
+SUMMARY: 21/21 PASS, 0 FAIL
+
+

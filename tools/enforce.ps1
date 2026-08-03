@@ -328,6 +328,42 @@ foreach ($pd in $providers) {
         } else {
             Fail "$provName -- TEST_MATRIX missing (generate via build_report)"
         }
+
+        # ANCILLARY / RENDER ARTIFACT CURRENCY -- the documents a HUMAN reads.
+        # TEST_MATRIX above was the ONLY derived artifact whose freshness anything checked. The
+        # officer-facing and tester-facing outputs -- the rendered LAYOUT, the picklist report, the
+        # response simulation, the label review -- were demoted to build_report -IncludeExtended on
+        # 2026-07-06 for build speed, and audit_repo Category 10 stopped requiring them at the same
+        # time. Nothing has watched them since. Measured 2026-08-02: 18 of 20 providers carried at
+        # least one stale artifact, and on all SEVEN of the largest (CA_CLETS, FL_FCIC, HI, NJ, NY,
+        # TX_TLETS, TX_TLETS_CCH) the RENDERED LAYOUT described a JSON that no longer existed --
+        # up to 32 days behind.
+        #
+        # WARN, not FAIL: these do not affect the wire, so they must not block a release. But under
+        # the 0-FAIL/0-WARN standard a WARN is still actionable, which is the point -- a stale render
+        # file is what a reviewer or tester is looking at when they decide the form is correct.
+        # Regenerate with: build_report.ps1 -Path <json> -IncludeExtended
+        $ancillary = @(
+            @{ Cat = 'reports';      Name = "LAYOUT_${docPrefix}.html";            Label = 'rendered LAYOUT (render_html)' }
+            @{ Cat = 'reports';      Name = "PICKLIST_REPORT_${docPrefix}.txt";    Label = 'picklist report' }
+            @{ Cat = 'reports';      Name = "RESPONSE_SIM_${docPrefix}.txt";       Label = 'response simulation' }
+            @{ Cat = 'reports';      Name = "LABEL_REVIEW_${docPrefix}.txt";       Label = 'label review' }
+            @{ Cat = 'deliverables'; Name = "OFFICER_GUIDE_${docPrefix}.html";     Label = 'officer guide' }
+        )
+        $staleAnc = @()
+        foreach ($an in $ancillary) {
+            $ap = Find-DocsPath $pd.FullName $an.Cat $an.Name
+            if (-not (Test-Path $ap)) { continue }   # absent is a separate question; only currency here
+            $at = (Get-Item $ap).LastWriteTime
+            if (($provJson.LastWriteTime - $at).TotalSeconds -gt 300) {
+                $staleAnc += ("{0} ({1}m behind)" -f $an.Label, [int](($provJson.LastWriteTime - $at).TotalMinutes))
+            }
+        }
+        if ($staleAnc.Count) {
+            Warn "$provName -- $($staleAnc.Count) ancillary artifact(s) predate the JSON: $($staleAnc -join '; ') -- regenerate via build_report -IncludeExtended"
+        } else {
+            Pass "$provName -- ancillary/render artifacts current with the JSON"
+        }
     }
 }
 

@@ -1,66 +1,68 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: TX_TLETS_CCH_v1.1
-  Source: TX_TLETS_CCH_v1.1.json
-  Generated: 2026-07-15 11:50
+  PICKLIST / DROPDOWN REPORT: TX_TLETS_CCH_v1.14
+  Source: TX_TLETS_CCH_v1.14.json
+  Generated: 2026-08-02 21:51
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
 --------------------------------------------------
 
   Entity: Article
-    ArticleTypeCode [Article Type (required)]
+    ArticleTypeCode [Article Type]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
-    ImageIndicator [Image (opt)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Related Hit Search (opt)] (default=Y)
+    relatedHitSearchIndicator [Stolen Check] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    ImageIndicator [Image (opt)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    RegistrationState [State (leave blank for TX)]
+    RegistrationState [State]
       Config: attributeTypeId=STATE
-    relatedHitSearchIndicator [Related Hit Search (opt)] (default=Y)
+    relatedHitSearchIndicator [Stolen Check] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
-    GunCaliber [Caliber (opt)]
+    GunCaliber [Caliber]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    GunMake [Gun Make (opt)]
+    GunMake [Gun Make]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    ImageIndicator [Image (opt)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Related Hit Search (opt)] (default=Y)
+    relatedHitSearchIndicator [Stolen Check] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    ImageIndicator [Image (opt)] (default=Y)
+    ImageIndicator [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     imageIndicatorCCH [Image (CCH)]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    raceCode [Race (opt)]
-      Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
+    ImageIndicatorDH [NCIC Image] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCodeCCH [Race (CCH)]
       Config: codeTypeCategory=NIBRS_RACE, codeTypeSource=NIBRS
-    RegistrationState [State (default TX - change for out-of-state)] (default=TX)
+    RegistrationState [State] (default=TX)
+      Config: attributeTypeId=STATE
+    RegistrationStateDH [State] (default=TX)
       Config: attributeTypeId=STATE
     relatedHitSearchIndicatorCCH [Related Hit Search (CCH)]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    SexCode [Sex (required with Name)]
+    SexCode [Sex]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
     sexCodeCCH [Sex (CCH)]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
-    SexCodeDH [Sex (DH) - required with Name]
+    SexCodeDH [Sex]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
     stateCCH [State (CCH)]
       Config: attributeTypeId=STATE
 
   Entity: Vehicle
-    LicensePlateTypeCode [Plate Type (opt)] (default=PC)
+    LicensePlateTypeCode [Plate Type]
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    RegistrationState [State (default TX - change for out-of-state)] (default=TX)
+    RegistrationState [State]
       Config: attributeTypeId=STATE
-    VehicleMakeCode [Vehicle Make (opt)]
+    VehicleMakeCode [Vehicle Make]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
@@ -158,5 +160,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 23
+  Form dropdowns: 24
   QRDM code type attrs: 20

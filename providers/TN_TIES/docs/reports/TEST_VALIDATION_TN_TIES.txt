@@ -1,0 +1,84 @@
+﻿================================================================
+  Build Report: TN_TIES
+  Source: TN_TIES_v2.1.json
+  Generated: 2026-08-02 21:51
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- TN_TIES_v2.1
+============================================================
+Source: TN_TIES_v2.1.json
+Matrix: TN_TIES_TEST_MATRIX.txt
+Generated: 2026-08-02
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: PERSON (23 tests -- 5 cards, 8 combos)
+  T1  Person     [PASS] DriverLicenseQuery fires (DQ06)
+  T2  Person     [PASS] any[] fields verified: ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, relatedHitSearchIndicator
+  T3  Person     [PASS] DriverLicenseQuery fires (DQ01)
+  T4  Person     [PASS] any[] fields verified: ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, relatedHitSearchIndicator
+  T5  Person     [PASS] (structural check)
+  T6  Person     [PASS] any[] fields verified: InquiryTypeIndicator
+  T7  Person     [PASS] (structural check)
+  T8  Person     [PASS] DriverLicenseQuery fires (QWA)
+  T9  Person     [PASS] any[] fields verified: ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator, raceCode
+  T10  Person     [PASS] DriverHistoryQuery fires (DQ05)
+  T11  Person     [PASS] (structural check)
+  T12  Person     [PASS] any[] fields verified: attention
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] any[] fields verified: attention
+  T15  Person     [PASS] (structural check)
+  T16  Person     [PASS] (structural check)
+  T17  Person     [PASS] (structural check)
+  T18  Person     [PASS] (structural check)
+  T19  Person     [PASS] (structural check)
+  T20  Person     [PASS] (structural check)
+  T21  Person     [PASS] (structural check)
+  T22  Person     [PASS] (structural check)
+  T23  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (19 tests -- 4 cards, 8 combos)
+  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ06)
+  T25  Vehicle    [PASS] VehicleRegistrationQuery fires (RQ07)
+  T26  Vehicle    [FAIL] combo RQ05 does not fire with test data
+  T27  Vehicle    [PASS] any[] fields verified: InquiryTypeIndicator
+  T28  Vehicle    [PASS] (structural check)
+  T29  Vehicle    [PASS] any[] fields verified: InquiryTypeIndicator
+  T30  Vehicle    [PASS] (structural check)
+  T31  Vehicle    [PASS] any[] fields verified: InquiryTypeIndicator, VehicleMakeCode, vehicleYear
+  T32  Vehicle    [PASS] (structural check)
+  T33  Vehicle    [PASS] any[] fields verified: InquiryTypeIndicator
+  T34  Vehicle    [PASS] (structural check)
+  T35  Vehicle    [PASS] any[] fields verified: InquiryTypeIndicator, VehicleMakeCode, vehicleYear
+  T36  Vehicle    [PASS] (structural check)
+  T37  Vehicle    [PASS] any[] fields verified: InquiryTypeIndicator
+  T38  Vehicle    [PASS] (structural check)
+  T39  Vehicle    [PASS] (structural check)
+  T40  Vehicle    [PASS] (structural check)
+  T41  Vehicle    [PASS] (structural check)
+  T42  Vehicle    [PASS] (structural check)
+ENTITY: BOAT (10 tests -- 3 cards, 4 combos)
+  T43  Boat       [PASS] (structural check)
+  T44  Boat       [PASS] any[] fields verified: InquiryTypeIndicator
+  T45  Boat       [PASS] (structural check)
+  T46  Boat       [PASS] any[] fields verified: InquiryTypeIndicator
+  T47  Boat       [PASS] (structural check)
+  T48  Boat       [PASS] any[] fields verified: InquiryTypeIndicator, RegistrationState
+  T49  Boat       [PASS] (structural check)
+  T50  Boat       [PASS] any[] fields verified: InquiryTypeIndicator, RegistrationState
+  T51  Boat       [PASS] (structural check)
+  T52  Boat       [PASS] (structural check)
+ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
+  T53  Firearm    [PASS] GunQuery fires (QG)
+  T54  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake
+ENTITY: ARTICLE (1 tests -- 1 card, 1 combo)
+  T55  Article    [PASS] ArticleSingleQuery fires (QA)
+
+SUMMARY: 54/55 PASS, 1 FAIL
+  T26 [FAIL] RQ05: combo RQ05 does not fire with test data
+
+

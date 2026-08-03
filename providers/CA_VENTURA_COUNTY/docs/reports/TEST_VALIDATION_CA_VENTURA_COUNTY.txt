@@ -1,0 +1,87 @@
+﻿================================================================
+  Build Report: CA_VENTURA_COUNTY
+  Source: CA_VENTURA_COUNTY_v2.3.json
+  Generated: 2026-08-02 21:47
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- CA_VENTURA_COUNTY_v2.3
+============================================================
+Source: CA_VENTURA_COUNTY_v2.3.json
+Matrix: CA_VENTURA_COUNTY_TEST_MATRIX.txt
+Generated: 2026-08-02
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: BOAT (8 tests -- 5 cards, 6 combos)
+  T1  Boat       [PASS] (structural check)
+  T2  Boat       [PASS] (structural check)
+  T3  Boat       [PASS] (structural check)
+  T4  Boat       [PASS] (structural check)
+  T5  Boat       [PASS] (structural check)
+  T6  Boat       [PASS] (structural check)
+  T7  Boat       [PASS] (structural check)
+  T8  Boat       [PASS] (structural check)
+ENTITY: PERSON (32 tests -- 5 cards, 14 combos)
+  T9  Person     [PASS] (structural check)
+  T10  Person     [PASS] (structural check)
+  T11  Person     [PASS] (structural check)
+  T12  Person     [PASS] (structural check)
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] (structural check)
+  T15  Person     [PASS] (structural check)
+  T16  Person     [PASS] any[] fields verified: addressCounty, height, raceCode
+  T17  Person     [PASS] (structural check)
+  T18  Person     [PASS] any[] fields verified: addressCounty, height, raceCode
+  T19  Person     [PASS] (structural check)
+  T20  Person     [PASS] (structural check)
+  T21  Person     [PASS] (structural check)
+  T22  Person     [PASS] any[] fields verified: attention
+  T23  Person     [PASS] (structural check)
+  T24  Person     [PASS] any[] fields verified: attention
+  T25  Person     [PASS] (structural check)
+  T26  Person     [PASS] any[] fields verified: attention
+  T27  Person     [PASS] (structural check)
+  T28  Person     [PASS] any[] fields verified: attention
+  T29  Person     [PASS] (structural check)
+  T30  Person     [PASS] (structural check)
+  T31  Person     [PASS] (structural check)
+  T32  Person     [PASS] (structural check)
+  T33  Person     [PASS] (structural check)
+  T34  Person     [PASS] (structural check)
+  T35  Person     [PASS] (structural check)
+  T36  Person     [PASS] (structural check)
+  T37  Person     [PASS] (structural check)
+  T38  Person     [PASS] (structural check)
+  T39  Person     [PASS] (structural check)
+  T40  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (11 tests -- 4 cards, 5 combos)
+  T41  Vehicle    [PASS] (structural check)
+  T42  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T43  Vehicle    [PASS] (structural check)
+  T44  Vehicle    [PASS] (structural check)
+  T45  Vehicle    [PASS] any[] fields verified: VehicleMakeCode
+  T46  Vehicle    [PASS] (structural check)
+  T47  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T48  Vehicle    [PASS] (structural check)
+  T49  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T50  Vehicle    [PASS] (structural check)
+  T51  Vehicle    [PASS] (structural check)
+ENTITY: FIREARM (4 tests -- 3 cards, 3 combos)
+  T52  Firearm    [PASS] (structural check)
+  T53  Firearm    [PASS] any[] fields verified: GunCaliber, firearmMake, gunTypeCode
+  T54  Firearm    [PASS] (structural check)
+  T55  Firearm    [PASS] (structural check)
+ENTITY: ARTICLE (4 tests -- 3 cards, 2 combos)
+  T56  Article    [PASS] (structural check)
+  T57  Article    [PASS] any[] fields verified: articleBrand, articleCategory, ArticleTypeCode
+  T58  Article    [PASS] (structural check)
+  T59  Article    [PASS] any[] fields verified: articleBrand, articleCategory, ArticleTypeCode
+
+SUMMARY: 59/59 PASS, 0 FAIL
+
+

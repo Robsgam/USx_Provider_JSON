@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS_v4.8.json
-  Generated: 2026-07-01 17:25
+  Source: NJ_NJCJIS_v4.15.json
+  Generated: 2026-08-02 21:49
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- NJ_NJCJIS_v4.8.json
+  CommSys Query Simulator -- NJ_NJCJIS_v4.15.json
 ================================================================
 
 --- QIDM: NJ_NJCJIS_VehicleRegistrationQuery [Vehicle] ---
@@ -19,8 +19,8 @@ QUERY SIMULATION
       any: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear] -> matched: [RandomRequest, RegistrationState, LicensePlateTypeCode, ImageIndicator, LicensePlateYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RANDFULL</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>RANDFULL</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
@@ -44,8 +44,8 @@ QUERY SIMULATION
       any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>FULLN</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>FULLN</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
@@ -60,12 +60,12 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
 
     [FIRES first-match] QG
-      set: [GunSerialNumber]
+      set: [serialNumber]
       any: [GunCaliber, GunMake, GunModel, ImageIndicator] -> matched: [GunCaliber, GunMake, GunModel, ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QG</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QG</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <GunCaliber>9MM</GunCaliber>
         <GunMake>SMTH</GunMake>
         <GunModel>M&P</GunModel>
@@ -86,8 +86,8 @@ QUERY SIMULATION
       any: [ImageIndicator] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QA</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QA</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
         <ArticleTypeCode>COMP</ArticleTypeCode>
         <ImageIndicator>Y</ImageIndicator>
@@ -104,17 +104,18 @@ QUERY SIMULATION
 
     [FIRES first-match] QBN
       set: [BoatHullIdNumber]
-      any: [ImageIndicator] -> matched: [ImageIndicator]
+      any: [ImageIndicator, RegistrationNumber] -> matched: [ImageIndicator, RegistrationNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QB</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QB</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
       </Transaction>
 
     >> PLATFORM FIRES: QBN (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, ImageIndicator=Y, RegistrationNumber=FL1234AB
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

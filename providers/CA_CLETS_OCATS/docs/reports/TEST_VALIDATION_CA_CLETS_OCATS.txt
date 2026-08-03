@@ -1,0 +1,65 @@
+﻿================================================================
+  Build Report: CA_CLETS_OCATS
+  Source: CA_CLETS_OCATS_v2.3.json
+  Generated: 2026-08-02 21:45
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_OCATS_v2.3
+============================================================
+Source: CA_CLETS_OCATS_v2.3.json
+Matrix: CA_CLETS_OCATS_TEST_MATRIX.txt
+Generated: 2026-08-02
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: VEHICLE (14 tests -- 4 cards, 6 combos)
+  T1  Vehicle    [PASS] (structural check)
+  T2  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear
+  T3  Vehicle    [PASS] (structural check)
+  T4  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T5  Vehicle    [PASS] VehicleRegistrationQuery fires (4)
+  T6  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear
+  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (VP)
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
+  T9  Vehicle    [PASS] any[] fields verified: exactSearchIndicator, authorization, pageNumber, vehicleYear
+  T10  Vehicle    [PASS] VehicleRegistrationQuery fires (4V)
+  T11  Vehicle    [PASS] any[] fields verified: VehicleMakeCode
+  T12  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
+  T13  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
+  T14  Vehicle    [PASS] (structural check)
+ENTITY: BOAT (8 tests -- 4 cards, 5 combos)
+  T15  Boat       [PASS] (structural check)
+  T16  Boat       [PASS] (structural check)
+  T17  Boat       [PASS] (structural check)
+  T18  Boat       [PASS] (structural check)
+  T19  Boat       [PASS] BoatQuery fires (4B)
+  T20  Boat       [PASS] (structural check)
+  T21  Boat       [PASS] (structural check)
+  T22  Boat       [PASS] (structural check)
+ENTITY: PERSON (9 tests -- 3 cards, 5 combos)
+  T23  Person     [PASS] (structural check)
+  T24  Person     [PASS] (structural check)
+  T25  Person     [PASS] (structural check)
+  T26  Person     [PASS] DriverLicenseQuery fires (OCNAMQ)
+  T27  Person     [PASS] (structural check)
+  T28  Person     [PASS] (structural check)
+  T29  Person     [PASS] (structural check)
+  T30  Person     [PASS] (structural check)
+  T31  Person     [PASS] (structural check)
+ENTITY: ARTICLE (4 tests -- 3 cards, 2 combos)
+  T32  Article    [PASS] (structural check)
+  T33  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T34  Article    [PASS] (structural check)
+  T35  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+ENTITY: FIREARM (2 tests -- 2 cards, 1 combo)
+  T36  Firearm    [PASS] GunQuery fires (QGB)
+  T37  Firearm    [PASS] any[] fields verified: GunCaliber, firearmMake, gunTypeCode
+
+SUMMARY: 37/37 PASS, 0 FAIL
+
+

@@ -1,0 +1,48 @@
+﻿================================================================
+  Build Report: OR_LEDS
+  Source: OR_LEDS_v2.2.json
+  Generated: 2026-08-02 21:50
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- OR_LEDS_v2.2
+============================================================
+Source: OR_LEDS_v2.2.json
+Matrix: OR_LEDS_TEST_MATRIX.txt
+Generated: 2026-08-02
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: VEHICLE (7 tests -- 3 cards, 3 combos)
+  T1  Vehicle    [PASS] (structural check)
+  T2  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear
+  T3  Vehicle    [PASS] (structural check)
+  T4  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, RegistrationState
+  T5  Vehicle    [PASS] (structural check)
+  T6  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear
+  T7  Vehicle    [PASS] (structural check)
+ENTITY: BOAT (5 tests -- 3 cards, 2 combos)
+  T8  Boat       [PASS] (structural check)
+  T9  Boat       [PASS] any[] fields verified: RegistrationState
+  T10  Boat       [PASS] (structural check)
+  T11  Boat       [PASS] any[] fields verified: RegistrationState
+  T12  Boat       [PASS] (structural check)
+ENTITY: PERSON (5 tests -- 3 cards, 2 combos)
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
+  T15  Person     [PASS] (structural check)
+  T16  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
+  T17  Person     [PASS] (structural check)
+ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
+  T18  Firearm    [PASS] GunQuery fires (QG)
+  T19  Firearm    [PASS] any[] fields verified: gunCaliber, gunMake
+ENTITY: ARTICLE (1 tests -- 1 card, 1 combo)
+  T20  Article    [PASS] ArticleSingleQuery fires (QA)
+
+SUMMARY: 20/20 PASS, 0 FAIL
+
+

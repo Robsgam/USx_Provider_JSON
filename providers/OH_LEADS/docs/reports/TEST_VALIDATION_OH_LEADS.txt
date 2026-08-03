@@ -1,0 +1,80 @@
+﻿================================================================
+  Build Report: OH_LEADS
+  Source: OH_LEADS_v2.2.json
+  Generated: 2026-08-02 21:50
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- OH_LEADS_v2.2
+============================================================
+Source: OH_LEADS_v2.2.json
+Matrix: OH_LEADS_TEST_MATRIX.txt
+Generated: 2026-08-02
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: VEHICLE (19 tests -- 6 cards, 7 combos)
+  T1  Vehicle    [PASS] (structural check)
+  T2  Vehicle    [PASS] (structural check)
+  T3  Vehicle    [PASS] VehicleRegistrationQuery fires (RS)
+  T4  Vehicle    [PASS] VehicleRegistrationQuery fires (RN)
+  T5  Vehicle    [PASS] any[] fields verified: AddressCounty
+  T6  Vehicle    [PASS] VehicleRegistrationQuery fires (RV)
+  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (RP)
+  T8  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T10  Vehicle    [PASS] (structural check)
+  T11  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T12  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T13  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T14  Vehicle    [PASS] (structural check)
+  T15  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T16  Vehicle    [PASS] (structural check)
+  T17  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T18  Vehicle    [PASS] (structural check)
+  T19  Vehicle    [PASS] VehicleRegistrationQuery fires (RS)
+ENTITY: PERSON (16 tests -- 5 cards, 7 combos)
+  T20  Person     [PASS] (structural check)
+  T21  Person     [PASS] any[] fields verified: RegistrationState
+  T22  Person     [PASS] (structural check)
+  T23  Person     [PASS] any[] fields verified: ImageIndicator, RegistrationState
+  T24  Person     [PASS] DriverLicenseQuery fires (QWA)
+  T25  Person     [PASS] DriverLicenseQuery fires (DN)
+  T26  Person     [PASS] DriverLicenseQuery fires (DL)
+  T27  Person     [PASS] (structural check)
+  T28  Person     [PASS] any[] fields verified: purposeCodeDH, RegistrationState, attention
+  T29  Person     [PASS] (structural check)
+  T30  Person     [PASS] any[] fields verified: purposeCodeDH, RegistrationState, attention
+  T31  Person     [PASS] (structural check)
+  T32  Person     [PASS] (structural check)
+  T33  Person     [PASS] (structural check)
+  T34  Person     [PASS] (structural check)
+  T35  Person     [PASS] queriesToDeselect verified
+ENTITY: BOAT (10 tests -- 3 cards, 4 combos)
+  T36  Boat       [PASS] (structural check)
+  T37  Boat       [PASS] any[] fields verified: RegistrationState
+  T38  Boat       [PASS] (structural check)
+  T39  Boat       [PASS] any[] fields verified: RegistrationState
+  T40  Boat       [PASS] (structural check)
+  T41  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T42  Boat       [PASS] (structural check)
+  T43  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T44  Boat       [PASS] (structural check)
+  T45  Boat       [PASS] (structural check)
+ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
+  T46  Firearm    [PASS] GunQuery fires (QG)
+  T47  Firearm    [PASS] any[] fields verified: firearmMake, gunCaliber, relatedHitSearchIndicator
+ENTITY: ARTICLE (5 tests -- 1 card, 2 combos)
+  T48  Article    [PASS] (structural check)
+  T49  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T50  Article    [PASS] (structural check)
+  T51  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T52  Article    [PASS] (structural check)
+
+SUMMARY: 52/52 PASS, 0 FAIL
+
+

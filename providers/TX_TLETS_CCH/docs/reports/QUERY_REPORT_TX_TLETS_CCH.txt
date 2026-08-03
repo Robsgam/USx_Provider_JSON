@@ -1,73 +1,86 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH_v1.1.json
-  Generated: 2026-07-15 11:49
+  Source: TX_TLETS_CCH_v1.14.json
+  Generated: 2026-08-02 21:51
 ================================================================
 QUERY SIMULATION
 ================
 
+  Seeded form defaults (4): Person.emailAddress=X, Person.ImageIndicatorDH=Y, Person.reasonCode=C, Person.reasonCodeDH=C
 
 ================================================================
-  CommSys Query Simulator -- TX_TLETS_CCH_v1.1.json
+  CommSys Query Simulator -- TX_TLETS_CCH_v1.14.json
 ================================================================
 
 --- QIDM: TX_TLETS_CCH_VehicleInsuranceRegistrationQuery [Vehicle] ---
-    Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 7
-    [SKIP] REGLicensePlateNumber -- missing set: financialResponsibilityType
+    Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 5
 
     [FIRES first-match] RQLicensePlateNumber
       set: [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode]
-      any: [RegistrationState] -> matched: [RegistrationState]
+      any: [regionId, RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>RQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
       </Transaction>
-    [SKIP] VINVehicleIdentificationNumber -- missing set: financialResponsibilityType
-    [SKIP] DPSIStickerNumber -- missing set: stickerNumber
 
-    [FIRES shadowed -- first match above wins] QVLicensePlateNumber
-      set: [LicensePlateNumber]
+    [FIRES shadowed -- first match above wins] REGLicensePlateNumber
+      set: [LicensePlateNumber, LicensePlateYear, financialResponsibilityType]
       any: [regionId, RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QV</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>REGLicensePlateNumber</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <FinancialResponsibilityType>E</FinancialResponsibilityType>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
       </Transaction>
-    [SKIP] QVVehicleIdentificationNumber -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; regionId EXISTS [value=(blank)]
-    [SKIP] RQVehicleIdentificationNumber -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
+    [SKIP] VINVehicleIdentificationNumber -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
+    [SKIP] RQVehicleIdentificationNumber -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; financialResponsibilityType NOT_EXISTS [value='E']
+
+    [FIRES shadowed -- first match above wins] DPSIStickerNumber
+      set: [stickerNumber]
+      any: [financialResponsibilityType, RegistrationState] -> matched: [financialResponsibilityType, RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DPSIStickerNumber</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <FinancialResponsibilityType>E</FinancialResponsibilityType>
+        <State>NJ</State>
+        <StickerNumber>12345678</StickerNumber>
+      </Transaction>
 
     >> PLATFORM FIRES: RQLicensePlateNumber (first matching combo)
-    >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ
+    >> UNION POOL (platform serializes): FinancialResponsibilityType=E, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, StickerNumber=12345678
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 12  |  Combos: 4
+    Query: DriverLicenseQuery  |  Attrs: 9  |  Combos: 3
     [SKIP] DQName -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
-    [SKIP] QWName -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
     [SKIP] CPLName -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] DQOLN
       set: [OperatorLicenseNumber]
-      any: [emailAddress, ImageIndicator, reasonCode, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
+      any: [emailAddress, ImageIndicator, reasonCode, RegistrationState] -> matched: [emailAddress, ImageIndicator, reasonCode, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <EmailAddress>X</EmailAddress>
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <ReasonCode>C</ReasonCode>
         <State>NJ</State>
       </Transaction>
 
     >> PLATFORM FIRES: DQOLN (first matching combo)
-    >> UNION POOL (platform serializes): ImageIndicator=Y, OperatorLicenseNumber=D123456789, State=NJ
+    >> UNION POOL (platform serializes): EmailAddress=X, ImageIndicator=Y, OperatorLicenseNumber=D123456789, ReasonCode=C, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -77,20 +90,22 @@ QUERY SIMULATION
 
     [FIRES first-match] KQOLN
       set: [OperatorLicenseNumberDH]
-      any: [Attention, ImageIndicator, emailAddress, purposeCodeDH, reasonCode, RegistrationState] -> matched: [Attention, ImageIndicator, purposeCodeDH, RegistrationState]
+      any: [Attention, ImageIndicatorDH, emailAddress, purposeCodeDH, reasonCodeDH, RegistrationStateDH] -> matched: [Attention, ImageIndicatorDH, emailAddress, purposeCodeDH, reasonCodeDH, RegistrationStateDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>KQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <Attention>DOE J</Attention>
+        <EmailAddress>X</EmailAddress>
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <PurposeCode>C</PurposeCode>
-        <State>NJ</State>
+        <ReasonCode>C</ReasonCode>
+        <State>FL</State>
       </Transaction>
 
     >> PLATFORM FIRES: KQOLN (first matching combo)
-    >> UNION POOL (platform serializes): Attention=DOE J, ImageIndicator=Y, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
+    >> UNION POOL (platform serializes): Attention=DOE J, EmailAddress=X, ImageIndicator=Y, OperatorLicenseNumber=D123456789, PurposeCode=C, ReasonCode=C, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -98,12 +113,12 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 6  |  Combos: 2
 
     [FIRES first-match] QGGunSerialNumber
-      set: [GunSerialNumber]
+      set: [serialNumber]
       any: [GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator] -> matched: [GunCaliber, GunMake, ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QG</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QG</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <GunCaliber>9MM</GunCaliber>
         <GunMake>SMTH</GunMake>
         <GunSerialNumber>ABC12345</GunSerialNumber>
@@ -116,8 +131,8 @@ QUERY SIMULATION
       any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QG</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QG</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <NCICNumber>G123456789</NCICNumber>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
@@ -136,8 +151,8 @@ QUERY SIMULATION
       any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QA</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QA</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
         <ArticleTypeCode>COMP</ArticleTypeCode>
         <ImageIndicator>Y</ImageIndicator>
@@ -149,8 +164,8 @@ QUERY SIMULATION
       any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QA</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QA</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <NCICNumber>A123456789</NCICNumber>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
@@ -170,34 +185,23 @@ QUERY SIMULATION
       any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>BQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>BQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <ImageIndicator>Y</ImageIndicator>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
         <State>FL</State>
       </Transaction>
-    [SKIP] QBRegistrationNumber -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
-
-    [FIRES shadowed -- first match above wins] QBBoatHullIdNumber
-      set: [BoatHullIdNumber]
-      any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QB</MessageKey>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <ImageIndicator>Y</ImageIndicator>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-      </Transaction>
+    [SKIP] QBRegistrationNumber -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']; RegistrationState NOT_EXISTS [value='FL']
+    [SKIP] QBBoatHullIdNumber -- conditions failed: RegistrationState NOT_EXISTS [value='FL']
 
     [FIRES shadowed -- first match above wins] QBNCICNumber
       set: [NCICNumber]
       any: [ImageIndicator, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QB</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QB</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <NCICNumber>B123456789</NCICNumber>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
@@ -210,42 +214,305 @@ QUERY SIMULATION
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryAQQuery [Person] ---
     Query: CCHCriminalHistoryAQQuery  |  Attrs: 9  |  Combos: 1
-    [SKIP] AQ -- missing set: attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH
+
+    [FIRES first-match] AQ
+      set: [attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH]
+      any: [nletsDestination2CCH, nletsDestination3CCH, nletsDestination4CCH, nletsDestination5CCH] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>AQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <FreeText>TEST QUERY</FreeText>
+        <InquiryReason>C</InquiryReason>
+        <NletsDestination>TX</NletsDestination>
+        <PurposeCode>C</PurposeCode>
+      </Transaction>
+
+    >> PLATFORM FIRES: AQ (first matching combo)
+    >> UNION POOL (platform serializes): Attention=SGAMBELLONE R, FreeText=TEST QUERY, InquiryReason=C, NletsDestination=TX, PurposeCode=C
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryARQuery [Person] ---
     Query: CCHCriminalHistoryARQuery  |  Attrs: 5  |  Combos: 1
-    [SKIP] AR -- missing set: attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH
+
+    [FIRES first-match] AR
+      set: [attentionCCH, freeTextCCH, inquiryReasonCCH, nletsDestinationCCH, purposeCodeCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>AR</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <FreeText>TEST QUERY</FreeText>
+        <InquiryReason>C</InquiryReason>
+        <NletsDestination>TX</NletsDestination>
+        <PurposeCode>C</PurposeCode>
+      </Transaction>
+
+    >> PLATFORM FIRES: AR (first matching combo)
+    >> UNION POOL (platform serializes): Attention=SGAMBELLONE R, FreeText=TEST QUERY, InquiryReason=C, NletsDestination=TX, PurposeCode=C
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryFQQuery [Person] ---
     Query: CCHCriminalHistoryFQQuery  |  Attrs: 11  |  Combos: 1
-    [SKIP] FQ -- missing set: attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH
+
+    [FIRES first-match] FQ
+      set: [attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH]
+      any: [addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, nletsDestinationCCH, stateCCH] -> matched: [nletsDestinationCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>FQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <InquiryReason>C</InquiryReason>
+        <NletsDestination>TX</NletsDestination>
+        <PurposeCode>C</PurposeCode>
+        <StateIdNumber>TX1234567</StateIdNumber>
+      </Transaction>
+
+    >> PLATFORM FIRES: FQ (first matching combo)
+    >> UNION POOL (platform serializes): Attention=SGAMBELLONE R, InquiryReason=C, NletsDestination=TX, PurposeCode=C, StateIdNumber=TX1234567
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryIQQuery [Person] ---
     Query: CCHCriminalHistoryIQQuery  |  Attrs: 15  |  Combos: 1
-    [SKIP] IQ -- missing set: attentionCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH
+
+    [FIRES first-match] IQ
+      set: [attentionCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH]
+      any: [miscellaneousNumberCCH, nameMiddleCCH, nameSuffixCCH, nletsDestinationCCH, nletsDestination2CCH, nletsDestination3CCH, nletsDestination4CCH, nletsDestination5CCH, raceCodeCCH, socialSecurityNumberCCH, stateCCH] -> matched: [miscellaneousNumberCCH, nletsDestinationCCH, raceCodeCCH, socialSecurityNumberCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>IQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <BirthDate>01151990</BirthDate>
+        <InquiryReason>C</InquiryReason>
+        <MiscellaneousNumber>MISC12345</MiscellaneousNumber>
+        <Name>Doe,John</Name>
+        <NletsDestination>TX</NletsDestination>
+        <PurposeCode>C</PurposeCode>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+      </Transaction>
+
+    >> PLATFORM FIRES: IQ (first matching combo)
+    >> UNION POOL (platform serializes): Attention=SGAMBELLONE R, BirthDate=01151990, InquiryReason=C, MiscellaneousNumber=MISC12345, Name=Doe,John, NletsDestination=TX, PurposeCode=C, RaceCode=W, SexCode=M, SocialSecurityNumber=123456789
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryQHQuery [Person] ---
-    Query: CCHCriminalHistoryQHQuery  |  Attrs: 12  |  Combos: 4
-    [SKIP] QH.BDOB -- missing set: requestorCCH, operatorCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH, raceCodeCCH
-    [SKIP] QH.NAME -- missing set: requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH
-    [SKIP] QH.SID -- missing set: inquiryReasonCCH, requestorCCH, operatorCCH, stateIdNumberCCH, purposeCodeCCH
-    [SKIP] QH.FBI -- missing set: inquiryReasonCCH, requestorCCH, operatorCCH, fbiNumberCCH, purposeCodeCCH
+    Query: CCHCriminalHistoryQHQuery  |  Attrs: 12  |  Combos: 5
+
+    [FIRES first-match] QH.BDOB
+      set: [requestorCCH, operatorCCH, birthDateCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, sexCodeCCH, raceCodeCCH]
+      any: [miscellaneousNumberCCH, socialSecurityNumberCCH, nameMiddleCCH, nameSuffixCCH] -> matched: [miscellaneousNumberCCH, socialSecurityNumberCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QH.BDOB</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <BirthDate>01151990</BirthDate>
+        <InquiryReason>C</InquiryReason>
+        <MiscellaneousNumber>MISC12345</MiscellaneousNumber>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+        <RaceCode>W</RaceCode>
+        <Requestor>REQUESTOR</Requestor>
+        <SexCode>M</SexCode>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QH.NAME.SSN
+      set: [requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, socialSecurityNumberCCH]
+      any: [nameMiddleCCH, nameSuffixCCH] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QH.NAME.SSN</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <InquiryReason>C</InquiryReason>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+        <Requestor>REQUESTOR</Requestor>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QH.NAME.MISC
+      set: [requestorCCH, operatorCCH, inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, miscellaneousNumberCCH]
+      any: [nameMiddleCCH, nameSuffixCCH] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QH.NAME.MISC</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <InquiryReason>C</InquiryReason>
+        <MiscellaneousNumber>MISC12345</MiscellaneousNumber>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+        <Requestor>REQUESTOR</Requestor>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QH.SID
+      set: [inquiryReasonCCH, requestorCCH, operatorCCH, stateIdNumberCCH, purposeCodeCCH]
+      any: [nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH] -> matched: [nameLastCCH, nameFirstCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QH.SID</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <InquiryReason>C</InquiryReason>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+        <Requestor>REQUESTOR</Requestor>
+        <StateIdNumber>TX1234567</StateIdNumber>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QH.FBI
+      set: [inquiryReasonCCH, requestorCCH, operatorCCH, fbiNumberCCH, purposeCodeCCH]
+      any: [nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH] -> matched: [nameLastCCH, nameFirstCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QH.FBI</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <FBINumber>123456AB7</FBINumber>
+        <InquiryReason>C</InquiryReason>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+        <Requestor>REQUESTOR</Requestor>
+      </Transaction>
+
+    >> PLATFORM FIRES: QH.BDOB (first matching combo)
+    >> UNION POOL (platform serializes): BirthDate=01151990, FBINumber=123456AB7, InquiryReason=C, MiscellaneousNumber=MISC12345, Name=Doe,John, Operator=OP1, PurposeCode=C, RaceCode=W, Requestor=REQUESTOR, SexCode=M, SocialSecurityNumber=123456789, StateIdNumber=TX1234567
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryQRQuery [Person] ---
     Query: CCHCriminalHistoryQRQuery  |  Attrs: 11  |  Combos: 2
-    [SKIP] QR.FBI -- missing set: attentionCCH, fbiNumberCCH, inquiryReasonCCH, purposeCodeCCH
-    [SKIP] QR.SID -- missing set: attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH
+
+    [FIRES first-match] QR.FBI
+      set: [attentionCCH, fbiNumberCCH, inquiryReasonCCH, purposeCodeCCH]
+      any: [addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH] -> matched: [nameLastCCH, nameFirstCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QR.FBI</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <FBINumber>123456AB7</FBINumber>
+        <InquiryReason>C</InquiryReason>
+        <Name>Doe,John</Name>
+        <PurposeCode>C</PurposeCode>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QR.SID
+      set: [attentionCCH, inquiryReasonCCH, purposeCodeCCH, stateIdNumberCCH]
+      any: [addressCityStateCCH, addressStreetCCH, addressZipCodeCCH, buildingNameCCH, departmentNameCCH, nameLastCCH, nameFirstCCH, nameMiddleCCH, nameSuffixCCH] -> matched: [nameLastCCH, nameFirstCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QR.SID</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <InquiryReason>C</InquiryReason>
+        <Name>Doe,John</Name>
+        <PurposeCode>C</PurposeCode>
+        <StateIdNumber>TX1234567</StateIdNumber>
+      </Transaction>
+
+    >> PLATFORM FIRES: QR.FBI (first matching combo)
+    >> UNION POOL (platform serializes): Attention=SGAMBELLONE R, FBINumber=123456AB7, InquiryReason=C, Name=Doe,John, PurposeCode=C, StateIdNumber=TX1234567
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryQWIQuery [Person] ---
     Query: CCHCriminalHistoryQWIQuery  |  Attrs: 14  |  Combos: 3
-    [SKIP] QWI.DOB -- missing set: inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, birthDateCCH, raceCodeCCH, sexCodeCCH
-    [SKIP] QWI.MISC -- missing set: inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, miscellaneousNumberCCH
-    [SKIP] QWI.SSN -- missing set: inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, socialSecurityNumberCCH
+
+    [FIRES first-match] QWI.DOB
+      set: [inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, birthDateCCH, raceCodeCCH, sexCodeCCH]
+      any: [expandedBirthDateSearchCodeCCH, expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH, nameMiddleCCH, nameSuffixCCH] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <BirthDate>01151990</BirthDate>
+        <InquiryReason>C</InquiryReason>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+        <RaceCode>W</RaceCode>
+        <SexCode>M</SexCode>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QWI.MISC
+      set: [inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, miscellaneousNumberCCH]
+      any: [expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH, nameMiddleCCH, nameSuffixCCH] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <InquiryReason>C</InquiryReason>
+        <MiscellaneousNumber>MISC12345</MiscellaneousNumber>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QWI.SSN
+      set: [inquiryReasonCCH, nameLastCCH, nameFirstCCH, purposeCodeCCH, attentionCCH, operatorCCH, socialSecurityNumberCCH]
+      any: [expandedNameSearchIndicatorCCH, imageIndicatorCCH, relatedHitSearchIndicatorCCH, nameMiddleCCH, nameSuffixCCH] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QW</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>SGAMBELLONE R</Attention>
+        <InquiryReason>C</InquiryReason>
+        <Name>Doe,John</Name>
+        <Operator>OP1</Operator>
+        <PurposeCode>C</PurposeCode>
+        <SocialSecurityNumber>123456789</SocialSecurityNumber>
+      </Transaction>
+
+    >> PLATFORM FIRES: QWI.DOB (first matching combo)
+    >> UNION POOL (platform serializes): Attention=SGAMBELLONE R, BirthDate=01151990, InquiryReason=C, MiscellaneousNumber=MISC12345, Name=Doe,John, Operator=OP1, PurposeCode=C, RaceCode=W, SexCode=M, SocialSecurityNumber=123456789
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: TX_TLETS_CCH_CCHCriminalHistoryZRQuery [Person] ---
     Query: CCHCriminalHistoryZRQuery  |  Attrs: 4  |  Combos: 2
-    [SKIP] ZR.FBI -- missing set: fbiNumberCCH, inquiryReasonCCH
-    [SKIP] ZR.SID -- missing set: stateIdNumberCCH, inquiryReasonCCH
+
+    [FIRES first-match] ZR.FBI
+      set: [fbiNumberCCH, inquiryReasonCCH]
+      any: [purposeCodeCCH] -> matched: [purposeCodeCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>ZR.FBI</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <FBINumber>123456AB7</FBINumber>
+        <InquiryReason>C</InquiryReason>
+        <PurposeCode>C</PurposeCode>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] ZR.SID
+      set: [stateIdNumberCCH, inquiryReasonCCH]
+      any: [purposeCodeCCH] -> matched: [purposeCodeCCH]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>ZR.SID</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <InquiryReason>C</InquiryReason>
+        <PurposeCode>C</PurposeCode>
+        <StateIdNumber>TX1234567</StateIdNumber>
+      </Transaction>
+
+    >> PLATFORM FIRES: ZR.FBI (first matching combo)
+    >> UNION POOL (platform serializes): FBINumber=123456AB7, InquiryReason=C, PurposeCode=C, StateIdNumber=TX1234567
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: RMS Person Search query [Person] ---
     Query: Person  |  Attrs: 6  |  Combos: 4

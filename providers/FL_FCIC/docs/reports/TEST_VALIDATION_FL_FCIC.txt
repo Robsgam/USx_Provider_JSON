@@ -1,107 +1,107 @@
-================================================================
+﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.1.json
-  Generated: 2026-07-02 18:12
+  Source: FL_FCIC_v7.17.json
+  Generated: 2026-08-02 21:47
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC_v7.1
+TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC_v7.17
 ============================================================
-Source: FL_FCIC_v7.1.json
+Source: FL_FCIC_v7.17.json
 Matrix: FL_FCIC_TEST_MATRIX.txt
-Generated: 2026-07-02
+Generated: 2026-08-02
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: VEHICLE (18 tests -- 2 cards, 6 combos)
-  T1  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
-  T2  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, ImageIndicator
-  T3  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
-  T4  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, ImageIndicator
-  T5  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
-  T6  Vehicle    [PASS] any[] fields verified: ImageIndicator
-  T7  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQTitleLienInformation)
-  T8  Vehicle    [PASS] any[] fields verified: ImageIndicator
-  T9  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
-  T10  Vehicle    [PASS] any[] fields verified: ImageIndicator
-  T11  Vehicle    [PASS] VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
-  T12  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, ImageIndicator
-  T13  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
-  T14  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
-  T15  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
-  T16  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
-  T17  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
-  T18  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
-ENTITY: BOAT (30 tests -- 2 cards, 12 combos)
-  T19  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
-  T20  Boat       [PASS] any[] fields verified: ImageIndicator
-  T21  Boat       [PASS] BoatQuery fires (FBQRegistrationNumber)
-  T22  Boat       [PASS] any[] fields verified: ImageIndicator
-  T23  Boat       [PASS] BoatQuery fires (FBQDecalNumber)
-  T24  Boat       [PASS] any[] fields verified: ImageIndicator
-  T25  Boat       [PASS] BoatQuery fires (FBQTitleLienInformation)
-  T26  Boat       [PASS] any[] fields verified: ImageIndicator
-  T27  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
-  T28  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
-  T29  Boat       [PASS] BoatQuery fires (BQName)
-  T30  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
-  T31  Boat       [PASS] any[] fields verified: ImageIndicator
-  T32  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
-  T33  Boat       [PASS] any[] fields verified: ImageIndicator
-  T34  Boat       [PASS] BoatQuery fires (QBCoastGuardDocumentNumber)
-  T35  Boat       [PASS] any[] fields verified: ImageIndicator
-  T36  Boat       [PASS] BoatQuery fires (QBNCICNumber)
-  T37  Boat       [PASS] any[] fields verified: ImageIndicator
-  T38  Boat       [PASS] BoatQuery fires (QBProcessControlNumber)
-  T39  Boat       [PASS] any[] fields verified: ImageIndicator
-  T40  Boat       [PASS] BoatQuery fires (BQName)
-  T41  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
-  T42  Boat       [PASS] BoatQuery fires (BQName)
-  T43  Boat       [PASS] BoatQuery fires (BQName)
-  T44  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
-  T45  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
-  T46  Boat       [PASS] BoatQuery fires (BQName)
-  T47  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
-  T48  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
 ENTITY: PERSON (18 tests -- 2 cards, 6 combos)
-  T49  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
-  T50  Person     [PASS] any[] fields verified: ImageIndicator
-  T51  Person     [PASS] DriverLicenseQuery fires (DQOperatorLicenseNumber)
-  T52  Person     [PASS] any[] fields verified: ImageIndicator
-  T53  Person     [PASS] DriverLicenseQuery fires (FDQName)
-  T54  Person     [PASS] any[] fields verified: ImageIndicator
-  T55  Person     [PASS] DriverLicenseQuery fires (DQName)
-  T56  Person     [PASS] any[] fields verified: ImageIndicator
-  T57  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
-  T58  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
-  T59  Person     [PASS] DriverHistoryQuery fires (KQName)
-  T60  Person     [PASS] any[] fields verified: purposeCodeDH, Attention
-  T61  Person     [PASS] DriverLicenseQuery fires (DQName)
-  T62  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
-  T63  Person     [PASS] DriverLicenseQuery fires (DQName)
-  T64  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
-  T65  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
-  T66  Person     [PASS] queriesToDeselect verified
+  T1  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T2  Person     [PASS] any[] fields verified: ImageIndicator
+  T3  Person     [PASS] DriverLicenseQuery fires (DQOperatorLicenseNumber)
+  T4  Person     [PASS] any[] fields verified: ImageIndicator
+  T5  Person     [PASS] DriverLicenseQuery fires (FDQName)
+  T6  Person     [PASS] any[] fields verified: ImageIndicator
+  T7  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T8  Person     [PASS] any[] fields verified: ImageIndicator
+  T9  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
+  T10  Person     [PASS] any[] fields verified: purposeCodeDH, Attention, Requestor
+  T11  Person     [PASS] DriverHistoryQuery fires (KQName)
+  T12  Person     [PASS] any[] fields verified: purposeCodeDH, Attention, Requestor
+  T13  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T14  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T15  Person     [PASS] DriverLicenseQuery fires (DQName)
+  T16  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
+  T17  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
+  T18  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (15 tests -- 1 card, 5 combos)
+  T19  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
+  T20  Vehicle    [PASS] any[] fields verified: ImageIndicator, Requestor
+  T21  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T22  Vehicle    [PASS] any[] fields verified: ImageIndicator, Requestor
+  T23  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQVehicleIdentificationNumber)
+  T24  Vehicle    [PASS] any[] fields verified: ImageIndicator, Requestor, vinSequenceNumber
+  T25  Vehicle    [PASS] VehicleRegistrationQuery fires (RQVehicleIdentificationNumber)
+  T26  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear, ImageIndicator, Requestor
+  T27  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQDecalNumber)
+  T28  Vehicle    [PASS] any[] fields verified: ImageIndicator, Requestor
+  T29  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T30  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T31  Vehicle    [PASS] VehicleRegistrationQuery fires (RQLicensePlateNumber)
+  T32  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
+  T33  Vehicle    [PASS] VehicleRegistrationQuery fires (FRQLicensePlateNumber)
+ENTITY: BOAT (33 tests -- 1 card, 12 combos)
+  T34  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T35  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T36  Boat       [PASS] BoatQuery fires (BQBoatHullIdNumber)
+  T37  Boat       [PASS] any[] fields verified: Requestor
+  T38  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T39  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T40  Boat       [PASS] BoatQuery fires (FBQRegistrationNumber)
+  T41  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T42  Boat       [PASS] BoatQuery fires (BQRegistrationNumber)
+  T43  Boat       [PASS] any[] fields verified: Requestor
+  T44  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
+  T45  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T46  Boat       [PASS] BoatQuery fires (BQName)
+  T47  Boat       [PASS] any[] fields verified: Requestor
+  T48  Boat       [PASS] BoatQuery fires (FBQDecalNumber)
+  T49  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T50  Boat       [PASS] BoatQuery fires (FBQTitleLienInformation)
+  T51  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T52  Boat       [PASS] BoatQuery fires (QBCoastGuardDocumentNumber)
+  T53  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T54  Boat       [PASS] BoatQuery fires (QBNCICNumber)
+  T55  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T56  Boat       [PASS] BoatQuery fires (QBProcessControlNumber)
+  T57  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
+  T58  Boat       [PASS] BoatQuery fires (BQName)
+  T59  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T60  Boat       [PASS] BoatQuery fires (BQName)
+  T61  Boat       [PASS] BoatQuery fires (BQName)
+  T62  Boat       [PASS] BoatQuery fires (QBBoatHullIdNumber)
+  T63  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T64  Boat       [PASS] BoatQuery fires (BQName)
+  T65  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
+  T66  Boat       [PASS] BoatQuery fires (FBQBoatHullIdNumber)
 ENTITY: FIREARM (6 tests -- 1 card, 3 combos)
   T67  Firearm    [PASS] GunQuery fires (QGGunSerialNumber)
-  T68  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
+  T68  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator
   T69  Firearm    [PASS] GunQuery fires (QGNCICNumber)
-  T70  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
+  T70  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator
   T71  Firearm    [PASS] GunQuery fires (QGProcessControlNumber)
-  T72  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator
+  T72  Firearm    [PASS] any[] fields verified: GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator
 ENTITY: ARTICLE (8 tests -- 1 card, 4 combos)
   T73  Article    [PASS] ArticleSingleQuery fires (QAArticleSerialNumber)
-  T74  Article    [PASS] any[] fields verified: ImageIndicator
+  T74  Article    [PASS] any[] fields verified: ImageIndicator, Requestor, relatedHitSearchIndicator
   T75  Article    [PASS] ArticleSingleQuery fires (QAOwnerAppliedNumber)
-  T76  Article    [PASS] any[] fields verified: ImageIndicator
+  T76  Article    [PASS] any[] fields verified: ImageIndicator, Requestor, relatedHitSearchIndicator
   T77  Article    [PASS] ArticleSingleQuery fires (QANCICNumber)
-  T78  Article    [PASS] any[] fields verified: ImageIndicator
+  T78  Article    [PASS] any[] fields verified: ImageIndicator, Requestor, relatedHitSearchIndicator
   T79  Article    [PASS] ArticleSingleQuery fires (QAProcessControlNumber)
-  T80  Article    [PASS] any[] fields verified: ImageIndicator
+  T80  Article    [PASS] any[] fields verified: ImageIndicator, Requestor, relatedHitSearchIndicator
 
 SUMMARY: 80/80 PASS, 0 FAIL
 

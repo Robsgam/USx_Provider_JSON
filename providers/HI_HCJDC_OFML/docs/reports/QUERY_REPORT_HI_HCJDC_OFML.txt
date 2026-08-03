@@ -1,14 +1,15 @@
-================================================================
+﻿================================================================
   Build Report: HI_HCJDC_OFML
-  Source: HI_HCJDC_OFML_v4.7.json
-  Generated: 2026-07-02 08:05
+  Source: HI_HCJDC_OFML_v4.14.json
+  Generated: 2026-08-02 21:48
 ================================================================
 QUERY SIMULATION
 ================
 
+  Seeded form defaults (3): Article.relatedSearchHitIndicator=Y, Boat.relatedSearchHitIndicator=Y, Firearm.relatedSearchHitIndicator=Y
 
 ================================================================
-  CommSys Query Simulator -- HI_HCJDC_OFML_v4.7.json
+  CommSys Query Simulator -- HI_HCJDC_OFML_v4.14.json
 ================================================================
 
 --- QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery [Vehicle] ---
@@ -19,8 +20,8 @@ QUERY SIMULATION
       any: [ImageIndicator, RegistrationState] -> matched: [ImageIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>RQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>RQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
@@ -37,17 +38,16 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: HI_HCJDC_OFML_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 3
+    Query: DriverLicenseQuery  |  Attrs: 5  |  Combos: 2
     [SKIP] DQ -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
-    [SKIP] QW -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] DQN
       set: [OperatorLicenseNumber]
       any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>DQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
       </Transaction>
@@ -63,19 +63,19 @@ QUERY SIMULATION
 
     [FIRES first-match] KQN
       set: [OperatorLicenseNumberDH]
-      any: [RegistrationState, purposeCodeDH, Attention] -> matched: [RegistrationState, purposeCodeDH, Attention]
+      any: [RegistrationStateDH, purposeCodeDH, Attention] -> matched: [RegistrationStateDH, purposeCodeDH, Attention]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>KQ</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>KQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <Attention>DOE J</Attention>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <PurposeCode>C</PurposeCode>
-        <State>NJ</State>
+        <State>FL</State>
       </Transaction>
 
     >> PLATFORM FIRES: KQN (first matching combo)
-    >> UNION POOL (platform serializes): Attention=DOE J, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
+    >> UNION POOL (platform serializes): Attention=DOE J, OperatorLicenseNumber=D123456789, PurposeCode=C, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -83,20 +83,21 @@ QUERY SIMULATION
     Query: GunQuery  |  Attrs: 5  |  Combos: 1
 
     [FIRES first-match] QG
-      set: [GunSerialNumber]
-      any: [GunMake, GunCaliber, GunModel, relatedSearchHitIndicator] -> matched: [GunMake, GunCaliber, GunModel]
+      set: [serialNumber]
+      any: [GunMake, GunCaliber, GunModel, relatedSearchHitIndicator] -> matched: [GunMake, GunCaliber, GunModel, relatedSearchHitIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QG</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QG</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <GunCaliber>9MM</GunCaliber>
         <GunMake>SMTH</GunMake>
         <GunModel>M&P</GunModel>
         <GunSerialNumber>ABC12345</GunSerialNumber>
+        <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
       </Transaction>
 
     >> PLATFORM FIRES: QG (first matching combo)
-    >> UNION POOL (platform serializes): GunCaliber=9MM, GunMake=SMTH, GunModel=M&P, GunSerialNumber=ABC12345
+    >> UNION POOL (platform serializes): GunCaliber=9MM, GunMake=SMTH, GunModel=M&P, GunSerialNumber=ABC12345, RelatedSearchHitIndicator=Y
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -105,17 +106,18 @@ QUERY SIMULATION
 
     [FIRES first-match] QA
       set: [ArticleSerialNumber, ArticleTypeCode]
-      any: [relatedSearchHitIndicator] -> matched: []
+      any: [relatedSearchHitIndicator] -> matched: [relatedSearchHitIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QA</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QA</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
         <ArticleTypeCode>COMP</ArticleTypeCode>
+        <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
       </Transaction>
 
     >> PLATFORM FIRES: QA (first matching combo)
-    >> UNION POOL (platform serializes): ArticleSerialNumber=SN12345678, ArticleTypeCode=COMP
+    >> UNION POOL (platform serializes): ArticleSerialNumber=SN12345678, ArticleTypeCode=COMP, RelatedSearchHitIndicator=Y
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -125,17 +127,18 @@ QUERY SIMULATION
 
     [FIRES first-match] QB
       set: [BoatHullIdNumber]
-      any: [RegistrationState, relatedSearchHitIndicator] -> matched: [RegistrationState]
+      any: [RegistrationState, relatedSearchHitIndicator] -> matched: [RegistrationState, relatedSearchHitIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>
-        <MessageKey>QB</MessageKey>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QB</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
         <State>FL</State>
       </Transaction>
 
     >> PLATFORM FIRES: QB (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, State=FL
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, RelatedSearchHitIndicator=Y, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
