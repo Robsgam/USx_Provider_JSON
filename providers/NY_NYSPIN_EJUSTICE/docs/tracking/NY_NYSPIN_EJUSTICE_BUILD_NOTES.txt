@@ -3,13 +3,34 @@ NY_NYSPIN_EJUSTICE -- BUILD NOTES
 Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
 Clean restart from XML metadata as sole source of truth.
 See SQVR_main.txt for test results. See STATUS.txt for test matrix.
-v4.19  2026-07-30  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v4.19  2026-07-30  Label the orphaned Plate Year field; record the requestorDH gap (commit 22b1695b)
+  CHANGED: Labelled the orphaned Plate Year control and recorded the requestorDH verification gap.
+  REASON: See commit 22b1695b. Recovered 2026-08-03 -- this entry read "Rebuilt via pipeline.ps1 /
+    Scheduled rebuild", as did v4.18 below.
 
-v4.18  2026-07-30  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+  RE-SWEPT 2026-08-03 at the SAME version (Rob's call, third of FL -> TX -> NY): package reset with
+    -Force so 64 fresh captures REPLACED the prior 64, then re-verified end to end.
+    64/64 ALL-PASS -- Vehicle 17, Person 24, Firearm 5, Article 4, Boat 14, every entity matching its
+    plan target exactly. Four log gates green (6c 64/64, 6d 64/64, 2i 64/64 attribution, plan
+    completeness 5/5). enforce 41 PASS / 0 FAIL / 0 WARN. audit_log_inflation 0/0/0/0.
+    WIRE EVIDENCE beyond the counts:
+    * In/out routing -- State present on exactly the OOS combos (RVEHOUT, RVIN) and absent on every
+      in-state one (RVEH, RCAR). The RegistrationState EXISTS/NOT_EXISTS split proven end to end.
+    * Driver History OOS (LIMITATION #36 Choice-set pattern) -- State=NJ on DALHOUT/DALLOUT, absent on
+      DALH/DALL; PurposeCode=C present ONLY on the OOS combos, correctly scoped rather than global.
+    * NyNyspinTransactionName defaults to DALL and the _af_ toggle tests carry DLIC -- the toggle
+      genuinely differs from the default, which is the exact defect (hollow toggles) that invalidated
+      TX's v4.5 pass in July.
+    * CROSS-ENTITY KEYREF COLLISION RESOLVED CORRECTLY (BUILD_RULES 13): RVEH and RCAR exist on BOTH
+      Vehicle and Boat. The Vehicle-card logs sent VehicleRegistrationQuery and the Boat-card logs
+      sent BoatQuery -- query-scoped resolution, not bare-keyRef. This is the one place a false
+      attribution result was most likely, so it was checked explicitly.
+
+v4.18  2026-07-30  OOS plate path made spec-correct -- Rob ruling OPTION A (commit 226ec672)
+  CHANGED: The out-of-state plate path was made spec-correct per Rob's OPTION A ruling.
+  REASON: See commit 226ec672. Recovered 2026-08-03 from the same generic-stub class as v4.19.
+    TENANT-VERIFIED at the v4.19 re-sweep: RVEHOUT fires with State + LicensePlateTypeCode and
+    carries State on the wire, while in-state RVEH carries none -- the path this version fixed.
 
 v4.17  2026-07-30  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1

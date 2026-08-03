@@ -2,19 +2,22 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.19** | Generated: 2026-08-02
+Current: **v4.19** | Generated: 2026-08-03
 
 ---
 
-## v4.19 -- 2026-07-30 -- Pipeline rebuild
+## v4.19 -- 2026-07-30 -- Label the orphaned Plate Year field; record the requestorDH gap (commit 22b1695b)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Labelled the orphaned Plate Year control and recorded the requestorDH verification gap.
+**REASON:** See commit 22b1695b. Recovered 2026-08-03 -- this entry read "Rebuilt via pipeline.ps1 /
+  Scheduled rebuild", as did v4.18 below.  
 
-## v4.18 -- 2026-07-30 -- Pipeline rebuild
+## v4.18 -- 2026-07-30 -- OOS plate path made spec-correct -- Rob ruling OPTION A (commit 226ec672)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** The out-of-state plate path was made spec-correct per Rob's OPTION A ruling.
+**REASON:** See commit 226ec672. Recovered 2026-08-03 from the same generic-stub class as v4.19.
+  TENANT-VERIFIED at the v4.19 re-sweep: RVEHOUT fires with State + LicensePlateTypeCode and  
+  carries State on the wire, while in-state RVEH carries none -- the path this version fixed.  
 
 ## v4.17 -- 2026-07-30 -- Pipeline rebuild
 
