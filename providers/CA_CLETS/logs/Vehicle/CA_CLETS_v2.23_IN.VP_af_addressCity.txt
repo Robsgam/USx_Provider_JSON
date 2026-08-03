@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
-Combo: IA.QV_af_LicensePlateTypeCode (IA.QV_af_LicensePlateTypeCode (auto))
-Date: 2026-08-03 16:28:15
+Combo: IN.VP_af_addressCity (IN.VP_af_addressCity (auto))
+Date: 2026-08-03 16:28:18
 Result: PASS
 JSON Version: 2.23
 Entity Fingerprint: 5e22ef71ea7e7abe2d6cff2c4e00350325f9eb21387533a2a197da0f00905256
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"AM","LicensePlateYear":"2026","purposeCode":"C"}
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","NameFirst":"JOHN","NameLast":"DOE","addressCity":"RENO","purposeCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4MVYTP2SX3GJNQH295D3YY">
+    <api:Transaction id="01KZ4MV2A5DE9QDXNHBCK6Q04D">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KZ4MVYTP2SX3GJNQH295D3YY</Id>
-            <LicensePlateYear>2026</LicensePlateYear>
-            <LicensePlateTypeCode>AM</LicensePlateTypeCode>
-            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <Id>01KZ4MV2A5DE9QDXNHBCK6Q04D</Id>
+            <AddressCity>RENO</AddressCity>
+            <Name>DOE, JOHN</Name>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -54,19 +53,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-  "elasticQuery": {
-    "vehicle": {
-      "tag": "TEST123"
-    }
-  },
-  "from": 0,
-  "size": 50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -75,14 +62,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZ4MVYTP2SX3GJNQH295D3YY
-  LicensePlateYear               2026
-  LicensePlateTypeCode           AM
-  LicensePlateNumber             TEST123
+  Id                             01KZ4MV2A5DE9QDXNHBCK6Q04D
+  AddressCity                    RENO
+  Name                           DOE, JOHN
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01KZ4MVYTP2SX3GJNQH295D3YY). kind=any-field; anyField=LicensePlateTypeCode; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZ4MV2A5DE9QDXNHBCK6Q04D). kind=any-field; anyField=addressCity; expectedKeyRef=IN.VP; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
