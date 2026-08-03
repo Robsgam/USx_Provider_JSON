@@ -817,6 +817,28 @@ TOOLS
     listing it there and this tool under-reports. Re-derive with
     Select-String tools\*.ps1 -Pattern 'ACCEPTED_DIVERGENCES|Test-AllowListed'.
     Usage: .\audit_suppression_scope.ps1 [-Provider <NAME>] [-Detail] [-OutFile <path>]
+  tools/audit_registry_currency.ps1
+    REGISTRY CURRENCY -- is each ACCEPTED_DIVERGENCES row's PREMISE still true? The companion
+    question to audit_suppression_scope, which asks how WIDE a row's suppression is. A row can be
+    perfectly scoped, silence nothing, and still be WRONG because the condition it describes was
+    fixed away. Built 2026-08-03 after FL_FCIC's 'promoted-to-any-UNJUSTIFIED-NEEDS-RULING' row
+    read as a live open decision four days after commit 7b13a67c closed it -- it got a version bump
+    APPROVED before the emitted JSON refuted it in under a minute.
+    Checks the DIRECTION classes only: to-any (promoted/demoted/added-to-any) asserts the field
+    rides in that combo's any[]; to-set asserts it sits in set[]. Field absent from the
+    combination's own set[] AND any[] (both namespaces) -> [FAIL] STALE. Combo gone -> STALE.
+    Existence-class staleness is NOT re-implemented -- audit_requirement_fidelity already emits
+    [NOTE] REGISTRY OVER-SUPPRESSION RISK for an unbuilt-class row naming a built combo.
+    DELIBERATELY CONSERVATIVE and it UNDER-reports: presence matches in any namespace, including
+    canon-token containment either direction, so 'PurposeCode' is satisfied by
+    'CaRequestPurposeCode' with no alias table. A PASS means no row is PROVABLY stale, never that
+    every row was verified -- 'other'/existence rows are counted NOT-CHECKABLE and printed in the
+    denominator. Baseline 2026-08-03: 247 rows / 72 checkable (29%) / 3 STALE.
+    THE TRAP IT FELL INTO FIRST, recorded in its header: v1 pooled every attribute targetField in
+    the QIDM for namespace tolerance, which made it blind to its own motivating defect (the field
+    was defined on a SIBLING combo of the same query). Presence must be per-COMBINATION. Found only
+    by LAW 2 injection -- the clean 20-provider run before that was a false 0/0.
+    Usage: .\audit_registry_currency.ps1 [-Provider <NAME>] [-All] [-Path <replica>] [-Quiet] [-OutFile <path>]
   tools/audit_requirement_fidelity.ps1
     REQUIREMENT FIDELITY -- does each BUILT combination require EXACTLY what its metadata branch
     requires? The dimension no other gate measured. audit_metadata asks whether a field is

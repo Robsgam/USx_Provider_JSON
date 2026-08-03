@@ -137,6 +137,20 @@ try {
         ForEach-Object { Emit ("  " + $_.TrimEnd()) }
 } catch { Emit "  [WARN] audit_suppression_scope.ps1 failed: $($_.Exception.Message)" }
 
+# The companion question to suppression SCOPE: a row can be perfectly scoped, silence nothing, and
+# still describe a condition that was fixed away. That is how FL_FCIC's NEEDS-RULING row survived
+# four days past the commit that closed it and got a version bump approved. Denominator matters here:
+# only ~29% of registry rows are checkable this way, so read a 0 as "none PROVABLY stale".
+Emit ""
+Emit "--- REGISTRY CURRENCY (does each accepted-divergence row still describe the JSON; audit_registry_currency.ps1) ---"
+try {
+    # NOT -Quiet: that suppresses the console lines this grep reads, so the section rendered EMPTY --
+    # a MUTE gate, which reads exactly like a clean one. Caught on the first doctor run after wiring.
+    $rc = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_registry_currency.ps1" -All *>&1 | Out-String
+    ($rc -split "`n" | Where-Object { $_ -match 'TOTALS:|STALE\]|providers with stale' } | Select-Object -First 12) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_registry_currency.ps1 failed: $($_.Exception.Message)" }
+
 Emit ""
 Emit "--- TOOL PORTABILITY (every shared gate must reach a verdict on every provider; audit_tool_portability.ps1) ---"
 try {

@@ -225,6 +225,13 @@ $PROV_MUTS = @{
 # ── THE MUTATION TABLE ────────────────────────────────────────────────────────────────
 # Each entry: the defect class, the gate that owns it, and the exact injection.
 $MUTS = @(
+  # ── registry currency ──────────────────────────────────────────────────────────────────
+  @{ Id='nj-registry-row-stranded'; OnlyProvider='NJ_NJCJIS'
+     Desc='LicensePlateTypeCode removed from RANDFULL any[] while NJ''s registry still carries the live row "RANDFULLN|RANDFULL ... LicensePlateTypeCode | demoted-to-any". That row now describes a placement that does not exist -- the exact shape of the FL_FCIC defect of 2026-08-03, where a promoted-to-any row outlived by four days the commit that closed it and got a version bump APPROVED before the emitted JSON refuted it. Catalogued because the gate built for that defect was BLIND to it on first write: v1 pooled every attribute in the QIDM, so a field defined on a SIBLING combo counted as present. It passed a clean 20-provider run while unable to fail.'
+     Gate='audit_registry_currency.ps1'; Args={ @('-Provider','NJ_NJCJIS','-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RANDFULL'
+           $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'LicensePlateTypeCode' }) } }
+
   # ── FL_FCIC ────────────────────────────────────────────────────────────────────────────
   @{ Id='fl-drop-devdoc-optional'; OnlyProvider='FL_FCIC'
      Desc='RegistrationNumber removed from FBQBoatHullIdNumber any[] -- reverts the exact v7.13 dropped-optional fix (officer types hull + reg number, reg number silently not transmitted). This mutation exists so that fix can never regress unnoticed.'
