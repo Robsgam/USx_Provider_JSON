@@ -239,6 +239,12 @@ $MUTS = @(
            $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'LicensePlateYear' })
            $cm.requirements.any=@(@($cm.requirements.any)+'LicensePlateYear') } }
 
+  @{ Id='fl-drop-identifier-from-set'; OnlyProvider='FL_FCIC'
+     Desc='OperatorLicenseNumber deleted from FDQOperatorLicenseNumber set[] entirely -- the mutation the entry above had to ABANDON. That note records demoting the identifier being "defeated by re-pairing rather than by gate blindness": branch/combo pairing is a score-based best fit and legally many-to-one, so a sibling combo that still carried the identifier simply outscored the cripple and took the branch. Every branch stayed served, branches-compared did not move, and the report read 0 UNDER-REQUIRED. fuzz_gate_efficacy found it independently (seed 777, drop-set) and it was confirmed NOT a regression by running the pre-change tool from git against the same mutant. Closed 2026-08-03 by the UNSATISFIED-CLAIM check, which walks BUILT combinations instead of metadata branches and so cannot be routed around: a search combination whose set[] carries no identifier cannot identify a record. Measured across the portfolio at 411 branches / 0 UNSATISFIED-CLAIM before being catalogued.'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'FDQOperatorLicenseNumber'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'OperatorLicenseNumber' }) } }
+
   @{ Id='fl-prefill-routing-field'; OnlyProvider='FL_FCIC'
      Desc='LicensePlateNumber given a form initialValue while it is a set[] discriminator -- BUILD_RULES 24, the class that killed 35 combos across 6 providers'
      Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }

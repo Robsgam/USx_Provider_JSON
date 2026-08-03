@@ -209,7 +209,7 @@ if ($Path) {
     if (-not $dirs) { Out-Line "  [FAIL] provider '$Provider' not found" 'Red'; exit 1 }
 }
 
-$totUnder = 0; $totOver = 0; $totMatched = 0; $totUnmatched = 0
+$totUnder = 0; $totClaim = 0; $totOver = 0; $totMatched = 0; $totUnmatched = 0
 
 foreach ($d in $dirs) {
     $jp = if ($Path) { $Path } else { Get-ProviderRootJson -ProvDir $d.FullName -Provider $d.Name }
@@ -501,6 +501,80 @@ foreach ($d in $dirs) {
         }
     }
 
+    # ── UNSATISFIED CLAIM: a built combination with NO IDENTIFIER in its set[] ────────────────
+    # WHY THIS EXISTS, and why the checks above cannot see it. The UNDER-REQUIRED loop walks
+    # METADATA branches and asks "is this branch served by some built combo?" -- and the branch/combo
+    # pairing is a SCORE-BASED BEST FIT that is legally many-to-one. So when a built combination loses
+    # a mandatory identifier from its set[], a SIBLING combo that still has that identifier simply
+    # outscores it and takes the branch. Every branch still finds a server, branches-compared does not
+    # move, and the report reads 0 UNDER-REQUIRED.
+    #
+    # Demonstrated 2026-08-03: deleting OperatorLicenseNumber from FL_FCIC's
+    # FDQOperatorLicenseNumber set[] was caught by NOTHING -- audit_metadata 243 PASS / 0 FAIL,
+    # audit_combo_reachability 30/30 all reachable, this tool 30 branches / 0 UNDER / 0 OVER. Found by
+    # fuzz_gate_efficacy (seed 777, drop-set) and confirmed NOT a regression from that day's CHECK 4
+    # change by running the pre-change tool from git against the same mutant (identical result).
+    #
+    # The direction nothing asked: does each BUILT combination still constitute a searchable query?
+    # A search combination whose set[] carries no identifier cannot identify anything -- it is either
+    # broken or a qualifier-only fragment. Measured across the whole portfolio before being added:
+    # 375 built combinations, 0 violations. Added at zero, so it is a regression guard rather than a
+    # backlog, and it fails LOUDLY on exactly the mutation class that was invisible.
+    #
+    # Identifier matching deliberately mirrors this file's Canon() (DH/CCH suffixes stripped) AND
+    # accepts ENTITY-PREFIXED spellings (VehNameLast, GunNameLast, OwnerLastName). A first pass that
+    # skipped those reported 67 false violations across all 20 providers -- a finding repeated across
+    # the whole portfolio is almost always the probe, not the builds.
+    # Iterate EVERY built query explicitly. The first version reused $q, which by this point in the
+    # file holds only the LAST query the assignment loop touched -- that loop closes ~80 lines above.
+    # So the check ran once, against one arbitrary query, and reported 0 UNSATISFIED-CLAIM on a
+    # deliberately mutated combination. Silent scope bleed: no error, plausible output, no coverage.
+    # A SEPARATE, WIDER identifier list for this check only. $identifierFields also drives the
+    # assignment SCORING (+/-12 per identifier), so widening that list would re-pair metadata branches
+    # to built combos and could move the regression fixture -- a correctness change smuggled in behind
+    # a coverage change. Kept apart deliberately.
+    # These are all genuine record keys the narrower scoring list omits. TN_TIES searches by dealer,
+    # handicap and temporary plate; CCH searches by FBI number, state ID and miscellaneous number.
+    # FreeText is included because the CCH ADMIN messages (AQ/AR) are not record searches at all --
+    # their free-text body IS the payload, so demanding a record key of them would be a permanent
+    # false finding. Without this list the check reported 6 such findings (TN 1, CCH 5) on builds that
+    # are correct.
+    $claimIdentifiers = @($identifierFields) + @(
+        'dealerlicenseplatenumber', 'handicapplacardnumber', 'temporarylicenseplatenumber',
+        'fbinumber', 'stateidnumber', 'miscellaneousnumber', 'freetext', 'incidentnumber',
+        'bcinumber', 'leadsidnumber', 'ohiokeyidnumber', 'coastguarddocnumber'
+    )
+    $claimBad = @()
+    foreach ($bq in @($built.Keys | Sort-Object)) {
+    foreach ($cd in @($built[$bq])) {
+        # @($null) yields ONE null element in PowerShell, so a query present in $built with no
+        # combinations produced a phantom row and this check reported
+        # "built ' set=[]' UNSATISFIED CLAIM" on a query the provider does not build. Same
+        # array-unwrap trap this file's own header warns about, hit while adding a check to it.
+        if (-not $cd -or -not "$($cd.KeyRef)") { continue }
+        $cS = @($cd.Set | ForEach-Object { Canon $_ })
+        # DO NOT skip an empty set[]. The first version did, to suppress the phantom row above, and
+        # that single line re-created the blind spot this check exists to close: FL's
+        # FDQOperatorLicenseNumber has set[OperatorLicenseNumber] and nothing else, so the mutation
+        # under test leaves set[] EMPTY and the check skipped it -- reporting 0 UNSATISFIED-CLAIM on
+        # the exact defect it was written for. The KeyRef guard alone separates phantom rows from real
+        # combinations; an empty set[] on a REAL combination is the most severe form of this defect.
+        $hasId = $false
+        foreach ($w in $cS) {
+            if ($claimIdentifiers -contains $w) { $hasId = $true; break }
+            foreach ($idf in $claimIdentifiers) { if ($w.EndsWith($idf)) { $hasId = $true; break } }
+            if ($hasId) { break }
+            if ($w -match 'lastname|firstname') { $hasId = $true; break }
+        }
+        if (-not $hasId) { $claimBad += "$bq / $($cd.KeyRef) set=[$($cd.Set -join ',')]" }
+    }
+    }
+    foreach ($cb in $claimBad) {
+        Out-Line "  [WARN] built '$cb' UNSATISFIED CLAIM: set[] contains NO identifier field -- this combination cannot identify a record" 'Yellow'
+    }
+    $pClaim = $claimBad.Count
+    $totClaim += $pClaim
+
     $noteTxt = if ($pNote) { " [$pNote registered divergence(s) -> NOTE]" } else { '' }
     if (-not $pUnder -and -not $pOver) { Out-Line "  [PASS] $pMatched matched branch(es), 0 UNDER-REQUIRED / 0 OVER-PERMITTED$noteTxt" 'Green' }
     else { Out-Line "  ---- $pMatched matched branch(es): $pUnder UNDER-REQUIRED, $pOver OVER-PERMITTED$noteTxt" 'Yellow' }
@@ -509,7 +583,7 @@ foreach ($d in $dirs) {
 
 Out-Line ''
 Out-Line ('-' * 80)
-Out-Line "  TOTALS: $totMatched branch(es) compared / $totUnder UNDER-REQUIRED / $totOver OVER-PERMITTED"
+Out-Line "  TOTALS: $totMatched branch(es) compared / $totUnder UNDER-REQUIRED / $totOver OVER-PERMITTED / $totClaim UNSATISFIED-CLAIM"
 Out-Line '  UNDER-REQUIRED = we can send an INCOMPLETE request the metadata calls invalid.'
 Out-Line '  OVER-PERMITTED = we can send a field this branch does not define.'
 Out-Line '  Advisory: only Rob rules on combination semantics. Never auto-tighten a set[] --'
