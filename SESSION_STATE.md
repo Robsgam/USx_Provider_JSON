@@ -50,68 +50,63 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 - **Jira: ALL updates HELD.** `enforce` 2r `[GAP]` is EXPECTED.
 - **Form review is Rob's MANUAL gate.** 2k `[INFO] not reviewed` is steady state. Never prompt.
 - TN_TIES prose divergence -- when we get to it.
+- **NCIC-number-keyed combos: CLOSED 2026-08-03.** TX/FL each list it in their OWN devdoc Possible
+  Combinations, so both correctly BUILD it. The "Data-Mined ... NCIC (QA,QB,QG,QV,QW)" line names
+  standalone TRANSACTIONS, not a combination keyed on the NCICNumber FIELD. Residue is OH-only.
 
 ## STATE
 
 **18 of 20 ENFORCED 0 FAIL / 0 WARN** (full sweep, measured). BLOCKED: LA_LEMS + CA_CONTRA_COSTA above.
 The CC block is a GATE getting stricter, not a provider getting worse -- do not loosen it back.
 
-**ENFORCED is not "done". Only FIVE are tenant-tested:** TX v4.18, NY v4.19, NJ v4.15, HI v4.14,
-CA_CLETS v2.23 (324 logs, four log gates green). **15 are ENFORCED but NEVER swept** -- the whole
-remaining backlog. FL_FCIC left the verified set deliberately (now v7.17); its 109 logs are archived.
-Also bumped and un-swept: OR_LEDS v2.2, CA_CLETS_OCATS v2.3, CA_SAN_LUIS_OBISPO v2.3.
+**ENFORCED is not "done". Only FIVE are tenant-tested** (TX v4.18, NY v4.19, NJ v4.15, HI v4.14,
+CA_CLETS v2.23 -- 324 logs, four log gates green). **15 are ENFORCED but NEVER swept** = the backlog.
 
-Invariants currently held: devdoc-UNBUILT 2 (both LA_LEMS) | wiring closure 0/9 classes |
-audit_metadata 20/20 clean | gate efficacy 10/10 KILLED | portability 260 cells 0 unportable |
-fidelity fixture 116 branches 0 UNDER 0 OVER | spec-plan NO-FIRE 24.
+Invariants held: devdoc-UNBUILT 2 (both LA_LEMS) | wiring closure 0/9 classes | audit_metadata 20/20 |
+gate efficacy 10/10 KILLED | portability 260 cells 0 unportable | fidelity fixture 116 branches 0/0 |
+spec-plan NO-FIRE 24. Gate stack changed heavily 2026-08-02/03 -- do NOT re-derive it; the
+decision-trail hook + `git log -n 40` hold the reasoning.
 
-**The gate stack changed a lot on 2026-08-02/03.** Do NOT re-derive it: the SessionStart decision-trail
-hook prints the recent commit subjects and the self-correction lines from their bodies, and
-`git log -n 40` has the full reasoning. New: enforce **PHASE 2t** wiring closure (BLOCKING),
-PHASE 1 **ancillary/render currency** (WARN), zero-comparison devdoc FAIL, fidelity
-**UNSATISFIED-CLAIM**, `emit_decision_trail.ps1`, and skill **`usx-adjudicate`** (8 skills).
+## NEXT PHYSICAL ACTION
+
+**ROB: import FL_FCIC v7.17 to `usx.fl-fcic.mark43.com`.** Nothing blocks it. Then the sweep runs
+(driver + watcher, automated) -- 116 plan tests, PHASE 2 pre-flight CLEAR 2026-08-03.
+
+**Order set by Rob 2026-08-03: FL, then NY, then TX.** Only FL has anything owed -- NY (64 logs) and
+TX (89 logs) are ALL-PASS at their CURRENT versions. TX last: it is the most wasteable to re-sweep.
+Then the other 13.
 
 ## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 
 1. **AZ_AZDPS DL scope inversion.** Devdoc's Basic list names `DriverLicenseQuery`; the build implements
    the out-of-Basic `AzAzdpsDriverLicenseQuery` and skips the Basic one (which alone supports images).
-   Boat has the same fork and builds the Basic one, so DL is the lone inversion. Switching rewires
-   Person entirely.
-2. **NCIC-number-keyed combos:** BUILT on TX/FL, REGISTERED-unbuilt on OH_LEADS, all three devdocs list
-   them Basic. Either OH has a real 2-combo gap, or TX/FL carry redundant surface (removing bumps TX and
-   archives its 89 logs).
-
-## NEXT PHYSICAL ACTION
-
-**TENANT TESTING** -- 15 never-swept providers, via `test_phase2.ps1 -Provider <NAME>` then `-PostIngest`.
-Entry point **verified working 2026-08-03** on TX (89 plan tests), MD (42) and AZ (53): 0 tests that
-cannot fire, spec plan covering every entity. Nothing else in PHASE 1 is owed but the 2 decisions above.
+   Boat has the same fork and builds the Basic one, so DL is the lone inversion. Rewires Person.
 
 **Residual gaps -- recorded, NOT owed, do not "discover" again:** `VEHICLE_BODY_STYLE|NJ_NIBRS` uniform
-across all 20 QRDMs vs CLAUDE.md's "CA=VEHICLE" -- marked **HYPOTHESIS** there because QRDM lookups
-resolve platform-side and NO artifact in this repo can settle it | fidelity advisory 11 UNDER / 40 OVER
-(none on the fixture; adjudicate with `usx-adjudicate`) | CCH spec-plan name divergences |
-`audit_devdoc_optionals`/`audit_log_content` can FLAKE under parallel load -- re-run a lone odd FAIL
-alone before believing it.
+across all 20 QRDMs vs CLAUDE.md's "CA=VEHICLE" -- **HYPOTHESIS**, no repo artifact can settle it |
+fidelity advisory 11 UNDER / 40 OVER (none on the fixture; use `usx-adjudicate`) | CCH spec-plan name
+divergences | `audit_devdoc_optionals`/`audit_log_content` FLAKE under parallel load -- re-run alone.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
-Most now live in the skills, with the concrete case attached: `usx-adjudicate` (validate the probe;
-fix vs register), `usx-metadata` shape 6 (transaction-level agreement is not variant-level),
-`usx-tooling` 5b (verify the artifact before fixing the gate) and 5c (mutation footprints).
-What must be in front of you before you touch anything:
+Most live in the skills with the case attached: `usx-adjudicate` (validate the probe; fix vs register),
+`usx-metadata` 6 (transaction-level agreement is not variant-level), `usx-tooling` 5b/5c.
 
 - **NEVER cite another provider as authority.** Only `CA_CONTRA_COSTA`->`CA_CLETS` and
-  `<BASE>_<VARIANT>`->`<BASE>`. CA_CLETS and CA_VENTURA_COUNTY share an `IR.QVC{Name}` combo requiring
+  `<BASE>_<VARIANT>`->`<BASE>`. CA_CLETS and CA_VENTURA_COUNTY share an `IR.QVC{Name}` requiring
   OPPOSITE things. Ask "what does X's OWN authority require?"
-- **A step that did not run is NOT a pass.** Print the denominator. A gate can pass vacuously, go MUTE
-  (no verdict line), or FLAKE under load -- all three read as green, and all three happened this week.
+- **A RECORD IS A CLAIM, NOT EVIDENCE -- read the artifact first.** 2026-08-03: an
+  ACCEPTED_DIVERGENCES row reading "OPEN QUESTION ... Rob's call" had been fixed the next day and
+  never removed, and its BUILD_NOTES entry said only "scheduled rebuild"; I recommended a version
+  bump off the row. The emitted JSON refuted it in a minute. Same rule I apply to gate findings.
+- **A step that did not run is NOT a pass.** Print the denominator. Vacuous, MUTE, and FLAKE all
+  read green. Registry rows too: that row was in NO gate's output -- inert, not merely aggregated.
 - **A finding repeated across MANY providers is almost always YOUR PROBE** (100 / 67 / 25 / 6 false
   findings in two days, every one my own canonicalisation or name-space error).
-- **When you add a gate, add it to EVERY harness** -- fuzz panel, portability sweep, efficacy catalogue
-  -- not just `enforce`. Missed twice in one day.
-- **MUTATION ORDER: mutate -> restore -> RE-STAMP -> verify -> commit.** `git status` clean is necessary,
-  not sufficient.
+- **When you add a gate, add it to EVERY harness** -- fuzz, portability, efficacy -- not just `enforce`.
+- **MUTATION ORDER: mutate -> restore -> RE-STAMP -> verify.** `git status` clean is necessary, not
+  sufficient -- an mtime footprint fails a freshness gate (6th instance: LA_LEMS, 2026-08-03).
 - **Multi-line `.Replace()` no-ops on CRLF -- use the Edit tool.** **Verify the emitted filename after a
   version bump.** **Document a new tool in the SAME action** (CLAUDE.md + KB README + count).
-- **REPLACE this file's content, never append.** The line gate has now caught me THREE times.
+- **REPLACE this file's content, never append.** The line gate has caught me FOUR times, most recently
+  by appending a closed decision instead of deleting it.

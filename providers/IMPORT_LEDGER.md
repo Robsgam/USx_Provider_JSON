@@ -22,12 +22,12 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | Provider | URL | DEX | Installed (logged) | Repo | Note |
 |---|---|---|---|---|---|
 | NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.15 (36 logs) | v4.15 | current (tenant-complete 2026-07-31, ALL-PASS 36/36, four log gates green) |
-| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | none (logs archived) | v7.14 | v7.13 dropped-optional fix + v7.14 FRQ over-permit removal built; package reset — re-import+capture owed (109 plan tests) |
+| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | none (logs archived) | v7.17 | **NEXT UP — import owed.** v7.13 dropped-optional fix + v7.14 FRQ over-permit removal + v7.15–v7.17; package reset — re-import+capture owed (**116 plan tests**, PHASE 2 pre-flight CLEAR 2026-08-03: spec plan 92/5 entities, 0 tests that cannot fire) |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.14 (46 logs) | v4.14 | current (tenant-complete, ALL-PASS 46/46) |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.19 (64 logs) | v4.19 | current (tenant-complete, ALL-PASS 64/64) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.18 (89 logs) | v4.18 | current (tenant-complete, ALL-PASS 89/89, 16/16 mutations killed) |
-| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | v2.22 (90 logs) | v2.22 | logs current at v2.22, but the provider is BLOCKED on 4 enforce FAILs + 6 under-required findings — do not treat the log count as "done" |
-| AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.3 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22. Confirm `dexStateUserId` populates on the FIRST query or all 5 badge combos silently fall back |
+| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | v2.23 (89 logs) | v2.23 | current (tenant-complete, ALL-PASS 89/89). The prior note here read "BLOCKED on 4 enforce FAILs + 6 under-required findings" — resolved at v2.23; enforce is 0 FAIL / 0 WARN |
+| AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.4 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22. Confirm `dexStateUserId` populates on the FIRST query or all 5 badge combos silently fall back |
 
 All other providers (CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,
 CA_eSUN, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES,
@@ -66,12 +66,17 @@ done
 
 _Last reconciled: 2026-07-28._
 
-### TX_TLETS / TX_TLETS_CCH -- built, NOT YET IMPORTED (recorded 2026-07-30)
+### TX_TLETS_CCH -- built, NOT YET IMPORTED (recorded 2026-07-30, TX_TLETS half corrected 2026-08-03)
 
-- **TX_TLETS v4.18** -- built + gated (enforce 0 FAIL / 0 WARN), **not imported to any tenant.**
-  Tenant re-sweep owed from T1; the v4.16 logs were archived by the v4.17/v4.18 bumps. The USx
-  provider tenant still holds whatever was last installed there -- log-derived, not assumed.
+- **TX_TLETS v4.18 -- SUPERSEDED, this row was WRONG.** It read "**not imported to any tenant** /
+  tenant re-sweep owed from T1" as of 2026-07-30, and then the sweep happened: `usx-tx-tlets` now
+  carries **89 v4.18 logs, ALL-PASS 89/89**, which the table above records. Logs ARE the install
+  proof for a USx provider tenant, so v4.18 is installed and this section contradicted its own
+  table for four days. Left in place rather than deleted because the contradiction is the lesson:
+  a hand-written "not imported" note does not expire on its own, while the log-derived table does
+  update — **when the two disagree, the table wins.**
 - **TX_TLETS_CCH v1.14** -- built + gated, **never tenant-tested, not imported.** BASE-SYNC v4.18.
+  Still accurate: 0 logs at any version.
 
 Recorded because `audit_lifecycle.ps1` (enforce PHASE 2r) treats SILENCE as the defect: "built but
 not imported" is a perfectly good state and must be WRITTEN, so that "where is v4.18 installed" is
