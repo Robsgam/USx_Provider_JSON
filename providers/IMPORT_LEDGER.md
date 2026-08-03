@@ -44,7 +44,7 @@ in repo, awaiting first tenant import.
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
 | Miami Springs Foundation | FL_FCIC | v7.17 | 2026-08-03 | current — v7.12→v7.17, imported by Rob after the v7.17 tenant sweep (116/116 ALL-PASS). Picks up v7.13 FBQ hull RegistrationNumber, v7.14 FRQ over-permit removal, v7.15 Requestor, v7.16 RelatedHitSearchIndicator/VINSequenceNumber, v7.17 dead-control removal |
 | North Miami Foundation | FL_FCIC | v7.17 | 2026-08-03 | current — v7.12→v7.17, same import pass as Miami Springs |
-| Balcones Heights TX Foundation | TX_TLETS | v4.12 | 2026-07-27 | v4.2→v4.7→v4.10→v4.12 (Person 2-card fold); current |
+| Balcones Heights TX Foundation | TX_TLETS | v4.18 | 2026-08-03 | current — v4.12→v4.18, imported by Rob after the v4.18 re-sweep (89/89 ALL-PASS). Picks up v4.13 dead-RQ removal, v4.14 all-7-Vehicle-combos-reachable (prefills out), v4.15/v4.16 UI, v4.17 QV shadow removal, v4.18 17 dropped optionals |
 
 ## C. Published JSON — Jira ticket + Confluence catalog (MANUAL, from Rob's confirmation)
 
@@ -58,6 +58,14 @@ confirmation, never inferred from a version bump.
 | Provider | Version | Attached to ticket | Posted to catalog | Notes |
 |---|---|---|---|---|
 | FL_FCIC | v7.17 | DEX-971, 2026-08-03 | 2026-08-03 | after the 116/116 ALL-PASS sweep; same pass as the Miami Springs + North Miami imports |
+| TX_TLETS | v4.18 | DEX-967, 2026-08-03 | 2026-08-03 | after the 89/89 ALL-PASS re-sweep; same pass as the Balcones Heights import |
+
+> **TENANT INFO STAYS OFF THE TICKETS (Rob, 2026-08-03, restated).** Nothing in section B or C goes
+> into a Jira comment — not the attachment, not the catalog post, not a Foundation import. **This
+> overrides the ticket's own precedent:** DEX-967's v4.10 and v4.12 comments both end with an
+> explicit `IMPORT: ... Balcones Heights` line, and v4.11 warned that Balcones had fallen behind, so
+> the convention on that ticket was to publish it. It was raised and Rob confirmed: leave it off.
+> A future session reading those older comments will think an IMPORT line is expected — it is not.
 
 **Maintenance:** add/bump a row in A/B/C ONLY when an import or publish is actually reported (per
 `project_deployment_tracking` memory: never record from an "update X to latest" instruction alone).

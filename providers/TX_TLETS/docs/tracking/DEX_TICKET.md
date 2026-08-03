@@ -1,7 +1,7 @@
 # TX_TLETS — DEX Ticket
 
 **Active ticket:** [DEX-967 — \[TX - TLETS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-967)
-Project: DEX (CJIS/USx/DEx Implementation) · Status (2026-07-21): In Progress
+Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
 
 Post the changelog here on every version bump (dump first, then per-version diff, led by the
 🤖 auto-update attribution line; release line after that version's live testing passes).
@@ -10,11 +10,37 @@ Related tickets: DEX-968 (TX identified dropdown info), DEX-1282 (email handler 
 delivered as RND-57165 → TX v4.1). TX_TLETS_CCH has **no** ticket of its own — tracked here only
 by mention, not posted to (per Rob's call).
 
-**Posted so far (history predates this pointer file — 4 comments on the ticket v4.0→v4.5,
-2026-07-09 to 2026-07-17, not individually indexed here):**
-- 2026-07-21 — comment 783347: v4.6 (Firearm CAD `GunSerialNumber`→`serialNumber` fix +
-  reverse-propagation-ledger cleanup) + v4.7 (cosmetic: Vehicle Make/Year helper, Firearm NCIC-row
-  move) + the 2026-07-20 hollow-toggle reopen (never previously posted) + the capture-extension
-  multiple-download-gate fix (commit 9a5501e8) + RELEASE LINE — full re-test from Test 1, all 5
-  entities, 21/21 combos, 87 logs, both gates 87/87, enforce 27P/0F/0W CLOSED. Known shadow
-  limitation (QVVehicleIdentificationNumber) carried forward.
+> **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-967`
+> (fields: comment) before stating what is owed. Until 2026-08-03 this file indexed ONE comment and
+> said the rest "predates this pointer file", so it could not answer "what is owed" at all. The
+> equivalent file on FL was 4 versions stale and produced a confidently wrong answer — "nine
+> versions owed" when it was five. All 10 comment IDs are now listed below.
+>
+> **TENANT INFO STAYS OFF THIS TICKET (Rob, 2026-08-03).** No attachment note, no catalog post, no
+> Foundation import line. **This overrides the ticket's own precedent** — the v4.10 and v4.12
+> comments below both end with an `IMPORT: ... Balcones Heights` line, and v4.11 flagged Balcones as
+> having fallen behind, so the old convention *was* to publish it. Rob was asked directly and
+> confirmed: leave it off. Track it in `providers/IMPORT_LEDGER.md` sections B and C instead.
+
+**Posted so far:**
+- comment 776220 — v3.13→v4.0 rebuild under the current methodology (2026-07-09)
+- comment 777144 — v4.0 full automation test pass; block-out deferred pending the EmailAddress handler
+- comment 780118 — v4.1 EmailAddress auto-populate (RND-57165) + v4.2 QWName shadow removal
+- comment 781401 — v4.5 **RELEASE LINE** (21/21 combos, 87 logs)
+- comment 783347 — v4.6 Firearm CAD fix + v4.7 cosmetic + the 2026-07-20 hollow-toggle reopen + the
+  capture-extension multiple-download-gate fix (commit 9a5501e8) + **v4.7 RELEASE LINE** (87 logs)
+- comment 786271 — v4.8 DEX-1284 relabel pass; tenant testing complete (88 combinations)
+- comment 786419 — v4.10 Person DL top-row; **RELEASE LINE** (83 logs)
+- comment 786575 — v4.11 UPPERCASE card titles; warned the v4.10 tenant-complete state was reset
+- comment 786638 — v4.12 Person 2-card fold; **RELEASE LINE** (84 logs)
+- comment 790861 — **v4.13–v4.18 changelog + v4.18 RELEASE LINE** (2026-08-03): 89/89 ALL-PASS,
+  four log gates green, enforce 41P/0F/0W, inflation 0/0/0/0. Tenant info deliberately omitted.
+
+**Current: v4.18 — tenant-verified 2026-08-03, ALL-PASS 89/89** (Vehicle 20 / Person 29 /
+Firearm 10 / Article 8 / Boat 22), 33 combos, four log gates green, enforce 41 PASS / 0 FAIL / 0 WARN.
+
+**Nothing owed to this ticket.** The v4.13–v4.18 gap was closed by comment 790861. The
+per-version-comment format was collapsed to ONE consolidated comment at Rob's direction 2026-08-03
+("it has become quite verbose and becomes tldr") — do not revert to a comment per version.
+The parked `LIMITATION #38` VehicleMakeCode item is excluded from Jira by Rob's call and lives in
+`knowledge-base/PLATFORM_CONSTRAINTS.txt`.
