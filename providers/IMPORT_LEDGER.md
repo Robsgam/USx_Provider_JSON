@@ -42,11 +42,24 @@ in repo, awaiting first tenant import.
 |---|---|---|---|---|
 | Newark Foundation | NJ_NJCJIS | v4.14 | 2026-07-28 | **BEHIND repo v4.15** — v4.15 adds RegistrationNumber to Boat QBN any[] (hull search now transmits the reg number instead of dropping it, devdoc BoatQuery #1). Manual re-import owed |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
-| Miami Springs Foundation | FL_FCIC | v7.12 | 2026-07-28 | **BEHIND repo v7.14** — v7.13 adds RegistrationNumber to FBQBoatHullIdNumber any[] (dropped-optional fix); v7.14 removes VehicleMakeCode/vehicleYear over-permits from FRQ{Plate} and FRQ{VIN}. Manual re-import owed |
-| North Miami Foundation | FL_FCIC | v7.12 | 2026-07-28 | current — v7.8→v7.12 (v7.9 relabel + v7.10 UPPERCASE + v7.11 UI/label fixes + v7.12 Vehicle-first order) |
+| Miami Springs Foundation | FL_FCIC | v7.17 | 2026-08-03 | current — v7.12→v7.17, imported by Rob after the v7.17 tenant sweep (116/116 ALL-PASS). Picks up v7.13 FBQ hull RegistrationNumber, v7.14 FRQ over-permit removal, v7.15 Requestor, v7.16 RelatedHitSearchIndicator/VINSequenceNumber, v7.17 dead-control removal |
+| North Miami Foundation | FL_FCIC | v7.17 | 2026-08-03 | current — v7.12→v7.17, same import pass as Miami Springs |
 | Balcones Heights TX Foundation | TX_TLETS | v4.12 | 2026-07-27 | v4.2→v4.7→v4.10→v4.12 (Person 2-card fold); current |
 
-**Maintenance:** add/bump a row here ONLY when an import is actually reported (per
+## C. Published JSON — Jira ticket + Confluence catalog (MANUAL, from Rob's confirmation)
+
+The THIRD destination class, added 2026-08-03. A/B above cover tenants; nothing tracked where a JSON
+was *published* for other teams to pull, so "which version of FL is in the catalog" was not stale —
+it was **unanswerable**, which is worse. Rob attaches the JSON to the DEX ticket and posts it to the
+[USx CommSys Data Providers Catalog](https://mark43.atlassian.net/wiki/spaces/SEARCH/pages/6956810378/USx+CommSys+Data+Providers+Catalog);
+the MCP tooling cannot attach files, so this is manual in both directions — recorded here on his
+confirmation, never inferred from a version bump.
+
+| Provider | Version | Attached to ticket | Posted to catalog | Notes |
+|---|---|---|---|---|
+| FL_FCIC | v7.17 | DEX-971, 2026-08-03 | 2026-08-03 | after the 116/116 ALL-PASS sweep; same pass as the Miami Springs + North Miami imports |
+
+**Maintenance:** add/bump a row in A/B/C ONLY when an import or publish is actually reported (per
 `project_deployment_tracking` memory: never record from an "update X to latest" instruction alone).
 Deployment architecture (which provider goes to which foundation) → KB `TESTING_REQUIREMENTS.txt`
 Section 17.
