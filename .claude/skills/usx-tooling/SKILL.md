@@ -176,6 +176,12 @@ Rules that follow:
 - **After any in-place mutation, expect a re-stamp** and do it in the same action rather than
   discovering it in a later sweep. `git status` clean is necessary, not sufficient.
 - **Keep the mutation window short.** A 10-minute timeout killing the run pre-empts `finally`.
+- **RE-STAMP BEFORE YOU COMMIT, not after.** Fifth instance 2026-08-03: I mutated FL_FCIC, restored
+  it, committed the findings, and only then ran `enforce` -- which reported BOTH footprint classes at
+  once (`TEST_MATRIX predates JSON by 711m` AND `BUILD_NOTES date != JSON date`, the latter because
+  the date had rolled over mid-session). The repair is `pipeline -Provider <P>` (stamps docs) plus
+  `build_report -Path <json> -IncludeExtended` (regenerates the ancillary/render set the new PHASE 1
+  currency check now watches). Order matters: mutate -> restore -> RE-STAMP -> verify -> commit.
 
 ## Step 6 — Suppression is dangerous. Re-measure it.
 
