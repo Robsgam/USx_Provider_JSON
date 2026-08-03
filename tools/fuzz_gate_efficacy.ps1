@@ -105,6 +105,13 @@ $PANEL = @(
     'audit_cad.ps1'
     'audit_log_content.ps1'
     'audit_log_combo_attribution.ps1'
+    # Added 2026-08-02. Both are JSON-scoped and BLOCKING in enforce, and both were absent -- so
+    # every survivor count this harness has ever printed was measured against a panel NARROWER than
+    # the gate stack it is meant to characterise, i.e. survivors were OVERSTATED. audit_wiring_closure
+    # needed a -Path mode added to be aimable at a replica at all; a blocking gate that cannot be
+    # mutation-tested has an efficacy nobody has measured.
+    'audit_wiring_closure.ps1'
+    'audit_supported_queries.ps1'
 )
 
 function Run-Panel {

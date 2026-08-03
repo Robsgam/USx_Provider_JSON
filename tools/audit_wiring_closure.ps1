@@ -55,6 +55,12 @@
 
 param(
     [string]$Provider,
+    # -Path lets this gate be AIMED AT A REPLICA. Without it the tool resolved only from the real
+    # provider directory, which structurally excluded it from fuzz_gate_efficacy's mutation panel --
+    # the same limitation that keeps audit_query_trace out (see the note in that panel). A blocking
+    # gate that CANNOT be mutation-tested has an unmeasured efficacy: we would be trusting it on
+    # argument alone, which is the thing LAW 2 exists to forbid. Added 2026-08-02.
+    [string]$Path,
     [switch]$All,
     [switch]$Quiet
 )
@@ -75,7 +81,12 @@ $ctxRx  = '(?i)^(cadunit|cadevent|linktoevent|linkcurrentassignedevent|dexstateu
 $totals = @{ A = 0; B = 0; C = 0; D = 0; E = 0; F = 0; G = 0; H = 0; I = 0; Providers = 0 }
 
 $targets = @()
-if ($All -or -not $Provider) {
+$pathMode = $false
+if ($Path) {
+    # Replica mode: audit exactly this JSON, wherever it lives.
+    if (-not (Test-Path $Path)) { Write-Host "  [ERROR] -Path not found: $Path" -ForegroundColor Red; exit 1 }
+    $pathMode = $true
+} elseif ($All -or -not $Provider) {
     $targets = Get-ChildItem (Join-Path $repoRoot 'providers') -Directory | Sort-Object Name
 } else {
     $targets = @(Get-Item (Join-Path $repoRoot "providers\$Provider"))
@@ -87,10 +98,20 @@ Write-Host "  FORM <-> QIDM WIRING CLOSURE" -ForegroundColor Cyan
 Write-Host "  Does every control reach the wire, and every wired field have a control?" -ForegroundColor Cyan
 Write-Host "============================================================================" -ForegroundColor Cyan
 
-foreach ($dir in $targets) {
-    $prov = $dir.Name
-    $jsonPath = Get-ProviderRootJson -Provider $prov -ProvDir $dir.FullName
-    if (-not $jsonPath) { continue }
+$work = @()
+if ($pathMode) {
+    $pn = (Split-Path $Path -Leaf) -replace '_v[0-9]+\.[0-9]+\.json$','' -replace '\.json$',''
+    $work += [pscustomobject]@{ Name = $pn; Json = (Resolve-Path $Path).Path }
+} else {
+    foreach ($dir in $targets) {
+        $jp = Get-ProviderRootJson -Provider $dir.Name -ProvDir $dir.FullName
+        if ($jp) { $work += [pscustomobject]@{ Name = $dir.Name; Json = $jp } }
+    }
+}
+
+foreach ($wk in $work) {
+    $prov = $wk.Name
+    $jsonPath = $wk.Json
     $totals.Providers++
 
     $j = Get-Content $jsonPath -Raw | ConvertFrom-Json
