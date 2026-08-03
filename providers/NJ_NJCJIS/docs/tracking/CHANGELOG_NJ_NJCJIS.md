@@ -2,7 +2,7 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.14** | Generated: 2026-08-02
+Current: **v4.14** | Generated: 2026-08-03
 
 ---
 
@@ -375,10 +375,3 @@ listed FIRST, so it wins the over-fill -- devdoc listing order is the TIEBREAKER
 equally-specific single-identifier queries could both execute (Rob 2026-07-31). And the winning  
 combination is explicitly allowed to carry the reg number as an optional, so it must ride in  
 any[]. Before this, filling hull + reg number fired QBN and SILENTLY DROPPED the reg number.  
-NOT an over-permit: RegistrationNumber is a metadata QB field -- the set[] of the sibling  
-alternative under the SAME keyRef QB -- so this transmits a transaction-defined field.  
-I first mis-registered this as devdoc-optional-unreachable by checking only the per-branch  
-any[]; that entry is now marked SUPERSEDED-FIXED-v4.15.  
-FOUND ONLY after fixing the devdoc parser's query-heading regex: NJ puts the query name on the  
-same line as the field-table headers, so 9 of 11 'Possible Combinations' blocks had no owner and  
-were never parsed -- enforce 2p/2q reported PASS over them for months.  

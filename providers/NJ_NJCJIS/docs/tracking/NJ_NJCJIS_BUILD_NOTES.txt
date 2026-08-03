@@ -417,6 +417,28 @@ v4.15  2026-08-02  Boat hull over-fill now carries RegistrationNumber (devdoc-or
     equally-specific single-identifier queries could both execute (Rob 2026-07-31). And the winning
     combination is explicitly allowed to carry the reg number as an optional, so it must ride in
     any[]. Before this, filling hull + reg number fired QBN and SILENTLY DROPPED the reg number.
+
+    RE-SWEPT 2026-08-03 at the SAME version (4th of the original six, Rob's call after the build
+    process changed): package reset with -Force so 36 fresh captures REPLACED the prior 36.
+    36/36 ALL-PASS -- Vehicle 11, Person 8, Firearm 6, Article 3, Boat 8. Four log gates green
+    (6c 36/36, 6d 36/36, 2i 36/36 attribution, plan completeness 5/5). enforce 42P/0F/0W.
+    audit_log_inflation 0/0/0/0. audit_buildnotes_fidelity PASS (this entry is not a stub).
+    THE v4.15 FIX ITSELF IS NOW WIRE-PROVEN: QBN_guardrail_vs_QB transmits BOTH
+    BoatHullIdNumber AND RegistrationNumber -- hull wins the routing and the reg number rides along
+    instead of being dropped. NOTE FOR ANYONE COMPARING TO FL/TX, where a Hull>Reg guardrail STRIPS
+    the loser: NJ is deliberately different because NJ's OWN devdoc lists RegistrationNumber as an
+    optional on the hull combination. Both-fields-present is the CORRECT result here, not a
+    guardrail failure.
+    Also re-proven on fresh evidence rather than inherited:
+    * RANDFULLN is VIN-only on the wire (VehicleIdentificationNumber, ZERO plate fields) while
+      RANDFULL carries LicensePlateNumber/TypeCode/Year. This closes the loop on the two stale
+      registry rows retired 2026-08-03, which had claimed plate fields ride in RANDFULLN's any[] --
+      judged from the JSON then, confirmed on the wire now.
+    * GunMake=03 transmits from the NJ_NIBRS-sourced dropdown, re-establishing the
+      NCIC_FIREARM_MAKE + NJ_NIBRS pairing that CLAUDE.md records as live-proven (its original
+      evidence was archived by this very reset).
+    * RandomRequest is NOT form-prefilled; the combo default supplies N and the toggle test carries
+      Y -- a genuine toggle, not a hollow one.
     NOT an over-permit: RegistrationNumber is a metadata QB field -- the set[] of the sibling
     alternative under the SAME keyRef QB -- so this transmits a transaction-defined field.
     I first mis-registered this as devdoc-optional-unreachable by checking only the per-branch
