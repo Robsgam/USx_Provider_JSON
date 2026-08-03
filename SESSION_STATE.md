@@ -42,79 +42,76 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## ON HOLD / DO NOT RE-RAISE
 
-- **CA_CONTRA_COSTA** -- "on hold until further notice". Still on hold, but **no longer parked clean:
-  it is now BLOCKED** (2026-08-02, your call) because `audit_devdoc_combinations` compares ZERO devdoc
-  combinations there and a zero-comparison run is now a FAIL rather than a PASS. Nothing about CC
-  changed -- the gate stopped crediting a comparison that never ran. Clears by fixing the devdoc parse
-  or recording why there is no combination table; **do neither without lifting the hold**. Its other
-  owed work is in `PENDING_UPDATES.txt`, incl. that **JAWS is unbuildable** (devdoc defers to a doc not
-  in `source/`; metadata has ZERO JAWS nodes).
-- **LA_LEMS** -- its 2 DH-`Attention` devdoc items are DEFERRED by Rob ("handled when we get to them").
-  They are the ONLY reason it is BLOCKED. Do not re-raise them as a gap.
-- **Jira: ALL updates HELD** until the process is trusted. `enforce` 2r's `[GAP]` is EXPECTED.
-- **Form review is Rob's MANUAL gate.** 2k `[INFO] not reviewed` is the steady state. Never prompt.
-- TN_TIES prose divergence -- handled when we get to it.
+- **CA_CONTRA_COSTA** -- on hold. Now **BLOCKED** (your call 2026-08-02): `audit_devdoc_combinations`
+  compares ZERO devdoc combinations there, and a zero-comparison run is now a FAIL, not a PASS.
+  Nothing about CC changed -- the gate stopped crediting a comparison that never ran. Clears by fixing
+  the devdoc parse or recording why there is no combination table; **do neither while the hold stands.**
+- **LA_LEMS** -- its 2 DH-`Attention` devdoc items are DEFERRED. Only reason it is BLOCKED.
+- **Jira: ALL updates HELD.** `enforce` 2r `[GAP]` is EXPECTED.
+- **Form review is Rob's MANUAL gate.** 2k `[INFO] not reviewed` is steady state. Never prompt.
+- TN_TIES prose divergence -- when we get to it.
 
 ## STATE
 
-**18 of 20 providers ENFORCED 0 FAIL / 0 WARN** (measured by a full sweep, not inferred).
-**LA_LEMS** (2 deferred items) and **CA_CONTRA_COSTA** (zero-comparison devdoc gate, see above) are
-BLOCKED. The CC block is a GATE getting stricter, not a provider getting worse -- do not "fix" it by
-loosening the gate back.
+**18 of 20 ENFORCED 0 FAIL / 0 WARN** (full sweep, measured). BLOCKED: LA_LEMS + CA_CONTRA_COSTA above.
+The CC block is a GATE getting stricter, not a provider getting worse -- do not loosen it back.
 
-**ENFORCED is not "done".** Only FIVE are tenant-tested (324 logs, four log gates green):
-TX v4.18, NY v4.19, NJ v4.15, HI v4.14, CA_CLETS v2.23.
-The other **15 are ENFORCED but NEVER USx-tenant-tested**, each owing a full 5-entity sweep from T1.
-**That sweep backlog is now the single largest piece of outstanding work.**
+**ENFORCED is not "done". Only FIVE are tenant-tested:** TX v4.18, NY v4.19, NJ v4.15, HI v4.14,
+CA_CLETS v2.23 (324 logs, four log gates green). **15 are ENFORCED but NEVER swept** -- the whole
+remaining backlog. FL_FCIC left the verified set deliberately (now v7.17); its 109 logs are archived.
+Also bumped and un-swept: OR_LEDS v2.2, CA_CLETS_OCATS v2.3, CA_SAN_LUIS_OBISPO v2.3.
 
-**FL_FCIC left the tenant-verified set on purpose** at v7.15 (2026-08-02, your call): `Requestor`
-was permitted by FL's own metadata on 26 combinations and wired nowhere, so the fix was worth the
-cost. Its 109 ALL-PASS logs are archived under `logs/<Entity>/_archive_pre_v7.15/`; it owes a full
-5-entity sweep. Nothing is wrong with FL -- it is simply untested at the current version.
+Invariants currently held: devdoc-UNBUILT 2 (both LA_LEMS) | wiring closure 0/9 classes |
+audit_metadata 20/20 clean | gate efficacy 10/10 KILLED | portability 260 cells 0 unportable |
+fidelity fixture 116 branches 0 UNDER 0 OVER | spec-plan NO-FIRE 24.
 
-**Portfolio devdoc-UNBUILT: 2** (was 13; both LA_LEMS). **C1 defects: 0.** **Undriveable combos: 0.**
+**The gate stack changed a lot on 2026-08-02/03.** Do NOT re-derive it: the SessionStart decision-trail
+hook prints the recent commit subjects and the self-correction lines from their bodies, and
+`git log -n 40` has the full reasoning. New: enforce **PHASE 2t** wiring closure (BLOCKING),
+PHASE 1 **ancillary/render currency** (WARN), zero-comparison devdoc FAIL, fidelity
+**UNSATISFIED-CLAIM**, `emit_decision_trail.ps1`, and skill **`usx-adjudicate`** (8 skills).
 
 ## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 
-1. **AZ_AZDPS driver-licence SCOPE INVERSION.** AZ's devdoc "Basic Queries Supported" section spans
-   lines 27-244 and its DL entry is `DriverLicenseQuery` (line 161). `AzAzdpsDriverLicenseQuery`
-   (line 393) is OUTSIDE it. Metadata defines BOTH as distinct transactions. **The build implements the
-   out-of-Basic one and skips the Basic one**, which is also the only DL transaction supporting image
-   requests. Boat has the identical fork and builds the Basic one -- so DL is the LONE inversion.
-   Switching rewires the whole Person entity; the v3.3 scope correction was your directive naming
-   "DriverLicenseQuery", so your intent may already be that the built query satisfies it.
-2. **NCIC-number-keyed combos: BUILT on TX/FL, REGISTERED-as-unbuilt on OH_LEADS.** All three devdocs
-   list them Basic-supported. Either (a) worth building -> OH_LEADS has a real 2-combo gap, or (b)
-   data-mined and not build scope -> TX and FL carry 3 combos of redundant surface each, on
-   TENANT-VERIFIED (removing them bumps TX and archives its 89 logs; FL is already re-sweeping).
+1. **AZ_AZDPS DL scope inversion.** Devdoc's Basic list names `DriverLicenseQuery`; the build implements
+   the out-of-Basic `AzAzdpsDriverLicenseQuery` and skips the Basic one (which alone supports images).
+   Boat has the same fork and builds the Basic one, so DL is the lone inversion. Switching rewires
+   Person entirely.
+2. **NCIC-number-keyed combos:** BUILT on TX/FL, REGISTERED-unbuilt on OH_LEADS, all three devdocs list
+   them Basic. Either OH has a real 2-combo gap, or TX/FL carry redundant surface (removing bumps TX and
+   archives its 89 logs).
 
 ## NEXT PHYSICAL ACTION
 
-**Tenant testing.** 15 providers are ENFORCED and never swept (FL_FCIC newly among them); that is the
-whole remaining backlog and it needs the browser driver (`test_phase2.ps1 -Provider <NAME>`, then
-`-PostIngest`). Nothing else in PHASE 1 is owed except the two decisions above.
+**TENANT TESTING** -- 15 never-swept providers, via `test_phase2.ps1 -Provider <NAME>` then `-PostIngest`.
+Entry point **verified working 2026-08-03** on TX (89 plan tests), MD (42) and AZ (53): 0 tests that
+cannot fire, spec plan covering every entity. Nothing else in PHASE 1 is owed but the 2 decisions above.
+
+**Residual gaps -- recorded, NOT owed, do not "discover" again:** `VEHICLE_BODY_STYLE|NJ_NIBRS` uniform
+across all 20 QRDMs vs CLAUDE.md's "CA=VEHICLE" -- marked **HYPOTHESIS** there because QRDM lookups
+resolve platform-side and NO artifact in this repo can settle it | fidelity advisory 11 UNDER / 40 OVER
+(none on the fixture; adjudicate with `usx-adjudicate`) | CCH spec-plan name divergences |
+`audit_devdoc_optionals`/`audit_log_content` can FLAKE under parallel load -- re-run a lone odd FAIL
+alone before believing it.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
-- **NEVER cite another provider as authority.** Only directed links: `CA_CONTRA_COSTA`->`CA_CLETS`,
-  `<BASE>_<VARIANT>`->`<BASE>` (`# BASE-SYNC:`). PROOF: CA_CLETS and CA_VENTURA_COUNTY share an
-  `IR.QVC{Name}` combo requiring OPPOSITE things -- copying the verified sibling ships a wire-invalid
-  request. Gate: `audit_provider_linkage.ps1`. Ask "what does X's OWN authority require?".
-- **"silently not transmitted" carries NO information -- run `audit_optional_scope.ps1`.** The same
-  sentence was a real dropped value on 4 providers and correct behaviour on 6 in one day. See
-  `usx-build` Step 3a for the one question and the severity order.
-- **A KEYREF IS NOT A VARIANT.** Scope by (query, keyRef, primaryFieldReference). This decided outcomes
-  four separate times: audit_defect_classes, CA_CLETS_OCATS OCNAMQ/AWVEHQ, OH_LEADS registry lookup,
-  and audit_optional_scope's own first wrong answer.
-- **A gate that reads the WRONG AUTHORITY cannot fail honestly** -- no denominator betrays it. An
-  alphabetical `*.xml` glob read a 6-node excerpt as 466-node metadata; a flattened `<Choice>` hid that
-  a branch can be a nested `<Set>` GROUP. **When two gates disagree, suspect the one that simplified.**
-- **Verify a field EXISTS before treating a devdoc combo as owed**, and validate the probe against a
-  known-present field first or a zero means nothing.
-- **VERIFY THE EMITTED FILENAME after a version bump.** Three scripts use different `$Version` spacing
-  (`[string]$Version`, extra spaces); literal-match bumps silently no-op and rebuild the old version.
-- **Document a new tool in the SAME action that creates it.** The undocumented-tool gate caught me FOUR
-  times in one session.
-- **REPLACE this file's content, never append.** The line gate has caught me twice.
-- **`powershell -File` stringifies array args.** **Never grep whole output for `FAIL`** -- anchor on the
-  verdict line. **A step that did not run is NOT a pass** -- print the denominator.
+Most now live in the skills, with the concrete case attached: `usx-adjudicate` (validate the probe;
+fix vs register), `usx-metadata` shape 6 (transaction-level agreement is not variant-level),
+`usx-tooling` 5b (verify the artifact before fixing the gate) and 5c (mutation footprints).
+What must be in front of you before you touch anything:
+
+- **NEVER cite another provider as authority.** Only `CA_CONTRA_COSTA`->`CA_CLETS` and
+  `<BASE>_<VARIANT>`->`<BASE>`. CA_CLETS and CA_VENTURA_COUNTY share an `IR.QVC{Name}` combo requiring
+  OPPOSITE things. Ask "what does X's OWN authority require?"
+- **A step that did not run is NOT a pass.** Print the denominator. A gate can pass vacuously, go MUTE
+  (no verdict line), or FLAKE under load -- all three read as green, and all three happened this week.
+- **A finding repeated across MANY providers is almost always YOUR PROBE** (100 / 67 / 25 / 6 false
+  findings in two days, every one my own canonicalisation or name-space error).
+- **When you add a gate, add it to EVERY harness** -- fuzz panel, portability sweep, efficacy catalogue
+  -- not just `enforce`. Missed twice in one day.
+- **MUTATION ORDER: mutate -> restore -> RE-STAMP -> verify -> commit.** `git status` clean is necessary,
+  not sufficient.
+- **Multi-line `.Replace()` no-ops on CRLF -- use the Edit tool.** **Verify the emitted filename after a
+  version bump.** **Document a new tool in the SAME action** (CLAUDE.md + KB README + count).
+- **REPLACE this file's content, never append.** The line gate has now caught me THREE times.

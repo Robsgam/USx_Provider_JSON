@@ -70,6 +70,14 @@ for ($i = 0; $i -lt $lines.Count; $i++) {
     if (-not $t -or $t -eq '<<<END>>>') { continue }
     if ($t -notmatch $cueRx) { continue }
     if ($t -match '^Co-Authored-By|^Claude-Session') { continue }
+    # SELF-REFERENCE FILTER. The commit that introduced this tool LISTS the cue phrases, so the tool
+    # matched its own documentation and emitted a lesson reading "GOT ... WRONG, I NEARLY, was wrong,
+    # HONEST ABOUT, WHY I TRUST, DELIBERATELY NOT) -- and closes with ...". A line carrying three or
+    # more distinct cues is an enumeration OF the cues, not a lesson expressed with one.
+    if ($t -match 'emit_decision_trail') { continue }
+    $cueHits = 0
+    foreach ($cu in $cues) { if ($t -match $cu) { $cueHits++ } }
+    if ($cueHits -ge 3) { continue }
     # Skip CONTINUATION lines. A cue can land in the middle of a wrapped sentence, and starting the
     # quote there produces a fragment like "back to 9, over-broad still 0. The lesson is..." which
     # reads as a non sequitur. A real sentence start is capitalised or opens a clause.
