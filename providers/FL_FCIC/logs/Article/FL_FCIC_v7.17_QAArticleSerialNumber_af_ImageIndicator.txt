@@ -1,0 +1,76 @@
+================================================================
+TEST LOG: FL_FCIC Article ArticleSingleQuery
+Combo: QAArticleSerialNumber_af_ImageIndicator (QAArticleSerialNumber_af_ImageIndicator (auto))
+Date: 2026-08-03 13:16:42
+Result: PASS
+JSON Version: 7.17
+Entity Fingerprint: 55f7f08ef29e4a5016a884a22e3d0a7652b3050a798f754bd592beab686bbb3c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ArticleSerialNumber":"ART99999","ArticleTypeCode":"BBICYCL","ImageIndicator":"Y","Requestor":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZ49YZ6JSZY4KZQEARB7R7M2">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01KZ49YZ6JSZY4KZQEARB7R7M2</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <Requestor>SGAMBELLONE R</Requestor>
+            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZ49YZ6JSZY4KZQEARB7R7M2
+  ImageIndicator                 Y
+  ArticleTypeCode                BBICYCL
+  Requestor                      SGAMBELLONE R
+  ArticleSerialNumber            ART99999
+
+NOTES
+-----
+Automated capture (txId 01KZ49YZ6JSZY4KZQEARB7R7M2). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QAArticleSerialNumber; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
