@@ -1,0 +1,74 @@
+================================================================
+TEST LOG: CA_CLETS Boat BoatQuery
+Combo: IA.QB.O_any (IA.QB.O_any (auto))
+Date: 2026-08-03 16:56:14
+Result: PASS
+JSON Version: 2.23
+Entity Fingerprint: a80cc546170117c75a271f583c82a6aee46cbb5beb39ea4c15671116dee38ce6
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"RegistrationState":"Georgia","ownerAppliedNumber":"OAN999","purposeCode":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZ4NRK8GDB8ASJGKQBWF4TVA">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KZ4NRK8GDB8ASJGKQBWF4TVA</Id>
+            <State>GA</State>
+            <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZ4NRK8GDB8ASJGKQBWF4TVA
+  State                          GA
+  OwnerAppliedNumber             OAN999
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KZ4NRK8GDB8ASJGKQBWF4TVA). kind=any; anyField=; expectedKeyRef=IA.QB.O; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
