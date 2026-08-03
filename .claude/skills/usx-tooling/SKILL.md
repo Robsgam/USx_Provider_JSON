@@ -148,6 +148,28 @@ Corollary, both directions seen in one session: a *correction* to an artefact-pr
 RESOLVES a finding to something concrete (`NO-FIRE` -> a named keyRef); a *suppression* makes it
 vanish. If your change makes findings disappear rather than resolve, you suppressed something.
 
+## Step 5c — Mutation-testing leaves footprints. `git checkout` is NOT a complete undo.
+
+Mutating a real provider JSON in place is often the only way to aim a gate at a defect. Restoring it
+is where the damage happens, and this bit **three times in one day**:
+
+| Footprint | Symptom | Undone by |
+|---|---|---|
+| **mtime** — git writes a fresh timestamp | freshness gates FAIL: *"BUILD_NOTES date != JSON date"*, *"TEST_MATRIX predates JSON by 104m"* — on byte-identical files | `sync_version_docs -Provider <P>` (docs) or `build_report -Path <json>` (reports) |
+| **derived artifacts** — reports regenerated FROM the mutant | provider fails on *"STATUS.txt missing correct BASE score"* after the JSON is restored | full `pipeline -Provider <P>` |
+| **killed cleanup** — a timeout pre-empts `finally` | a marker/mutation left committed-adjacent | check `git status` immediately, every time |
+
+Rules that follow:
+- **Mutation-test with the STANDALONE tool, never `enforce`.** Standalone gates are read-only;
+  `enforce` regenerates VALIDATOR_REPORT / VERIFY_REPORT / METADATA_AUDIT / CAD_AUDIT / LAYOUT /
+  OFFICER_GUIDE / BUILD_MANIFEST / STATUS.txt. Those are written from a state that no longer exists
+  and `git checkout` of the JSON does not undo them.
+- **Prefer `-Path` against a replica** over in-place mutation. If a blocking gate lacks `-Path`, add
+  it — a blocking gate that cannot be aimed at a replica has an efficacy nobody has measured.
+- **After any in-place mutation, expect a re-stamp** and do it in the same action rather than
+  discovering it in a later sweep. `git status` clean is necessary, not sufficient.
+- **Keep the mutation window short.** A 10-minute timeout killing the run pre-empts `finally`.
+
 ## Step 6 — Suppression is dangerous. Re-measure it.
 
 Before adding a registry path or exemption:
