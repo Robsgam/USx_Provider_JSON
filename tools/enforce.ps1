@@ -940,6 +940,56 @@ if ($true) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2u: BUILD_NOTES fidelity (audit_buildnotes_fidelity.ps1) -- BLOCKING
+# ══════════════════════════════════════════════════════════════════════════════
+#  Is the CURRENT version's BUILD_NOTES entry the stub pipeline.ps1 stamps
+#  ("CHANGED: Rebuilt via pipeline.ps1 / REASON: Scheduled rebuild") while the JSON actually
+#  CHANGED? No judgement needed: the stub is TRUE for a reproducibility rebuild and FALSE for a
+#  wire change, and the previous version's JSON (from git) decides mechanically.
+#
+#  WHY BLOCKING. BUILD_NOTES is what generate_changelog renders and what the Jira changelog is
+#  written FROM. Understated entries produced a confidently wrong answer about what FL owed Jira
+#  ("nine versions" when it was five), and hid real work on 14 of 20 providers -- including
+#  CA_CLETS "four real wire defects fixed" and CA_eSUN "55 devdoc-optional FAILs traced to ONE
+#  envelope field". Hand-corrected NINE times on 2026-08-03 before this gate existed.
+#
+#  ADDED AT ZERO (2026-08-03), deliberately: all 14 stubs were recovered from their commit bodies
+#  first, so this lands as a REGRESSION GUARD rather than 14 red providers. Same sequencing as
+#  audit_registry_currency the same day.
+SectionHeader "PHASE 2u: BUILD_NOTES Fidelity"
+$bnTool = Join-Path $toolDir 'audit_buildnotes_fidelity.ps1'
+if (-not (Test-Path $bnTool)) {
+    Info "audit_buildnotes_fidelity.ps1 not present -- skipped"
+} else {
+    # $providers, NOT $providerDirs -- I wrote $providerDirs first and the loop silently iterated
+    # NOTHING: section header printed, zero verdict lines, and enforce still reported 42 PASS / 0 FAIL.
+    # A MUTE GATE, which is indistinguishable from a clean one. Second time in one day (the first was
+    # -Quiet in doctor.ps1). Both were caught only by grepping for the verdict line afterwards, which
+    # is now the rule: after wiring a gate, CONFIRM ITS OUTPUT APPEARS, never just that exit code 0.
+    $bnSeen = 0
+    foreach ($pdb in $providers) {
+        $provName = $pdb.Name
+        $bnSeen++
+        $bnOut = & powershell -NoProfile -ExecutionPolicy Bypass -File $bnTool -Provider $provName 2>&1 | Out-String
+        # Anchor on the verdict line, never a bare substring: this tool's own header contains the
+        # words FAIL and PASS while explaining what each means.
+        $verdict = ($bnOut -split "`n" | Where-Object { $_ -match '^\s+\[(PASS|FAIL|NOTE)\]\s' } | Select-Object -First 1)
+        if (-not $verdict) {
+            Fail "$provName -- BUILD_NOTES fidelity gate produced NO verdict line; its result is not evidence (tools\audit_buildnotes_fidelity.ps1 -Provider $provName)"
+        } elseif ($verdict -match '^\s+\[FAIL\]') {
+            Fail "$provName -- BUILD_NOTES entry for the current version is the generic stub while the JSON CHANGED: a real change is recorded as a no-op (tools\audit_buildnotes_fidelity.ps1 -Provider $provName)"
+            Out "       $($verdict.Trim())"
+        } elseif ($verdict -match '^\s+\[NOTE\]') {
+            Note "$provName -- BUILD_NOTES entry is generic but NOT COMPARABLE (no predecessor JSON reachable); not evidence either way"
+        } else {
+            Pass "$provName -- BUILD_NOTES entry describes its change (or is a TRUE no-op)"
+        }
+    }
+    # A phase that examined nothing is not a pass -- print the denominator and fail on zero.
+    if ($bnSeen -eq 0) { Fail "PHASE 2u examined ZERO providers -- this phase is not evidence (loop variable wrong?)" }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 2q: Devdoc Optionals x Routing (audit_devdoc_optionals.ps1) -- ADVISORY
 # ══════════════════════════════════════════════════════════════════════════════
 #  Every devdoc combination against EVERY SUBSET of its [bracketed] optionals. Every other gate

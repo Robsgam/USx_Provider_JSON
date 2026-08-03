@@ -2,14 +2,16 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.4** | Generated: 2026-08-02
+Current: **v3.4** | Generated: 2026-08-03
 
 ---
 
-## v3.4 -- 2026-08-01 -- Pipeline rebuild
+## v3.4 -- 2026-08-01 -- One real wire fix, six registrations, one gate defect (commit 50e4268c)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** One real wire fix plus six accepted-divergence registrations; a gate defect found in the
+  same pass was corrected. AZ reached ENFORCED (0 FAIL / 0 WARN) as the 9th green provider.  
+**REASON:** See commit 50e4268c for the per-finding adjudication. Recovered 2026-08-03 -- this entry
+  read "Rebuilt via pipeline.ps1 / Scheduled rebuild", hiding a wire change behind a no-op.  
 
 ## v3.3 -- 2026-07-28 -- SCOPE CORRECTION -- build only devdoc "Basic Queries Supported" (direct Rob directive)
 
