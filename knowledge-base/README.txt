@@ -1504,3 +1504,9 @@ audit_wiring_closure.ps1 -- FORM <-> QIDM closure. Does every control reach the 
   unfillable requirement / inert condition / inert default). Added 2026-08-02 after a VISIBLE
   prefilled control on CA_SAN_LUIS_OBISPO turned out to be in no combination's any[] -- its value
   discarded on every query -- while every existing gate reported that provider green.
+
+SKILL usx-adjudicate -- deciding what to DO about a finding (fix / register / dismiss / fix-the-gate).
+  Added 2026-08-02 after ten adjudications in one day, two of them wrong on the first attempt.
+  The wording of a finding carries almost no information: the same sentence was a real dropped value
+  on four providers and correct behaviour on six. Validate the probe, establish cause at COMBINATION
+  granularity, and measure branches-compared before AND after any registration.
