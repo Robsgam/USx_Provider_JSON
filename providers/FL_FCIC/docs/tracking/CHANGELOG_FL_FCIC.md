@@ -21,10 +21,24 @@ Current: **v7.17** | Generated: 2026-08-03
 **CHANGED:** Rebuilt via pipeline.ps1
 **REASON:** Scheduled rebuild
 
-## v7.14 -- 2026-07-31 -- Pipeline rebuild
+## v7.14 -- 2026-07-31 -- FRQ over-permit removal: VehicleMakeCode/vehicleYear off both FRQ branches
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** FRQLicensePlateNumber any[] and FRQVehicleIdentificationNumber any[] both had
+  VehicleMakeCode and vehicleYear removed. Resulting arrays match the metadata FRQ branches  
+  exactly -- plate: [LicensePlateYear, ImageIndicator, Requestor]; VIN: [ImageIndicator,  
+  Requestor, vinSequenceNumber]. No form change, no routing change, no combo count change.  
+  Both fields remain on the OOS RQ{VIN} combo, where the metadata DOES define them.  
+**REASON:** audit_requirement_fidelity OVER-PERMITTED. Metadata FRQ defines
+  any[LicensePlateYear, Requestor, ImageIndicator] on the plate branch and  
+  any[Requestor, VINSequenceNumber, ImageIndicator] on the VIN branch -- VehicleMakeCode and  
+  VehicleYear appear in NEITHER, and the FL devdoc 'Possible Combinations' lines do not list  
+  them either. So the never-drop-a-devdoc-OPTIONAL rule did not apply (no devdoc optional to  
+  preserve) and these were genuine out-of-spec over-sends. Fixed at source in commit 7b13a67c.  
+  NOTE (2026-08-03): this entry originally read 'Rebuilt via pipeline.ps1 / Scheduled rebuild',  
+  which understated a real requirement change. The FL_FCIC_ACCEPTED_DIVERGENCES.txt row that  
+  had parked this as 'promoted-to-any-UNJUSTIFIED-NEEDS-RULING -- Rob's call' (2026-07-30) was  
+  left in place after the fix landed, so for four days a CLOSED item read as an open decision  
+  blocking FL testing. Row removed 2026-08-03; this entry corrected in the same pass.  
 
 ## v7.13 -- 2026-07-30 -- Dropped-optional fix: RegistrationNumber on the FBQ hull path
 
