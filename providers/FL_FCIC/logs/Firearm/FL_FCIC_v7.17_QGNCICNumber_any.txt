@@ -1,0 +1,78 @@
+================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGNCICNumber_any (QGNCICNumber_any (auto))
+Date: 2026-08-03 13:15:16
+Result: PASS
+JSON Version: 7.17
+Entity Fingerprint: b477ae4eb151fbc851d0699527f436315ef918d00b9c12ee3665b314c18562b6
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunMake":"IMI","ImageIndicator":"Y","NCICNumber":"G123456789","Requestor":"X","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZ49X2YDSXNT2ZE0A3HXQM4F">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KZ49X2YDSXNT2ZE0A3HXQM4F</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <NCICNumber>G123456789</NCICNumber>
+            <GunMake>IMI</GunMake>
+            <Requestor>SGAMBELLONE R</Requestor>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZ49X2YDSXNT2ZE0A3HXQM4F
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 Y
+  NCICNumber                     G123456789
+  GunMake                        IMI
+  Requestor                      SGAMBELLONE R
+
+NOTES
+-----
+Automated capture (txId 01KZ49X2YDSXNT2ZE0A3HXQM4F). kind=any; anyField=; expectedKeyRef=QGNCICNumber; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
