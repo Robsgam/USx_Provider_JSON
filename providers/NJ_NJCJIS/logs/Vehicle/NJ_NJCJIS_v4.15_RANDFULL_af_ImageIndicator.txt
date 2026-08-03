@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
-Combo: RANDFULL (RANDFULL (auto))
-Date: 2026-08-03 15:59:41
+Combo: RANDFULL_af_ImageIndicator (RANDFULL_af_ImageIndicator (auto))
+Date: 2026-08-03 15:59:40
 Result: PASS
 JSON Version: 4.15
 Entity Fingerprint: 194bc54748f4a1d558059f3ef33a2deddc4fe5a875c047e806f33d25cb77cd31
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey"}
+{"ImageIndicator":"Y","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"New Jersey"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4K9Z0C38YB24GVQTV3CX6P">
+    <api:Transaction id="01KZ4KA9DDTJNSQHJR81WTMJ1F">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,8 +36,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KZ4K9Z0C38YB24GVQTV3CX6P</Id>
-            <ImageIndicator>N</ImageIndicator>
+            <Id>01KZ4KA9DDTJNSQHJR81WTMJ1F</Id>
+            <ImageIndicator>Y</ImageIndicator>
             <LicensePlateYear>2026</LicensePlateYear>
             <State>NJ</State>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
@@ -80,8 +80,8 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZ4K9Z0C38YB24GVQTV3CX6P
-  ImageIndicator                 N
+  Id                             01KZ4KA9DDTJNSQHJR81WTMJ1F
+  ImageIndicator                 Y
   LicensePlateYear               2026
   State                          NJ
   LicensePlateTypeCode           PC
@@ -90,6 +90,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KZ4K9Z0C38YB24GVQTV3CX6P). kind=combo; anyField=; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZ4KA9DDTJNSQHJR81WTMJ1F). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
