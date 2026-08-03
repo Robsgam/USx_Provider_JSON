@@ -42,7 +42,14 @@ $gates = @(
     'validate.ps1', 'verify_build.ps1', 'audit_metadata.ps1', 'audit_cad.ps1',
     'audit_combo_reachability.ps1', 'audit_requirement_fidelity.ps1',
     'audit_devdoc_combinations.ps1', 'audit_devdoc_optionals.ps1', 'audit_devdoc_order.ps1',
-    'audit_supported_queries.ps1', 'audit_sqvr_integrity.ps1', 'audit_log_combo_attribution.ps1'
+    'audit_supported_queries.ps1', 'audit_sqvr_integrity.ps1', 'audit_log_combo_attribution.ps1',
+    # Added 2026-08-02. audit_wiring_closure is BLOCKING in enforce PHASE 2t and was absent here, so
+    # nothing had ever confirmed it reaches a verdict on all 20 providers -- the exact property this
+    # sweep exists to measure. It was excluded only because it originally took -Provider and could not
+    # be pointed at a path; a -Path mode was added the same day for the mutation harness, which makes
+    # it auditable here too. Second time in one day a new gate turned out to be missing from a
+    # harness that characterises the stack: check EVERY harness when adding a gate, not just enforce.
+    'audit_wiring_closure.ps1'
 )
 # A verdict is any line a human would read as "this tool finished and reached a conclusion".
 $verdictRx = '(?m)^\s*(?:RESULT|RESULTS|TOTALS|Total|VERDICT|SUMMARY)\s*:|VERIFICATION (?:PASSED|FAILED)|^\s*\[(?:PASS|FAIL|NOTE|INFO)\]'

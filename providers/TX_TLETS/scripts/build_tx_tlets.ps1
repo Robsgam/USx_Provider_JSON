@@ -1,5 +1,10 @@
-# build_tx_tlets.ps1  -- TX_TLETS v4.7
-# Single build. 7 cards (Vehicle 1, Person 3 [Options+DL+DH], Firearm 1, Article 1, Boat 1).
+# build_tx_tlets.ps1  -- TX_TLETS   (current version comes from $Version below; do NOT restate it
+#   here -- this line read "v4.7" until 2026-08-02 while the build emitted v4.18, eleven adrift)
+# Single build. 6 cards (Vehicle 1, Person 2 [DL+DH], Firearm 1, Article 1, Boat 1).
+#   Corrected 2026-08-02: read "7 cards (Person 3 [Options+DL+DH])", which described the RETIRED
+#   3-card Person design. Counted from the emitted JSON, not from memory. A tester following the old
+#   line would have hunted for a Person Options card that does not exist. CLAUDE.md's provider table
+#   carried the same wrong claim and was corrected in the same pass.
 # DO NOT set combo `state` from the devdoc (InState)/(OutofState) labels. Tried 2026-07-30 so the
 # officer guide could tell the two plate paths apart; it built clean but raised 2 LIMITATION #30s,
 # because validate.ps1 reads `state` as a ROUTING signal ("separate In/Out combos + a prefilled

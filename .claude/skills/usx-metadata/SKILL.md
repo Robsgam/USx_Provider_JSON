@@ -177,9 +177,11 @@ They do, regularly, and the resolution is not always the same:
 
 ## Verification
 
-Any change to a metadata-parsing tool must be measured against the **regression fixture**: the six
-tenant-verified providers (`CA_CLETS`, `FL_FCIC`, `HI_HCJDC_OFML`, `NJ_NJCJIS`,
-`NY_NYSPIN_EJUSTICE`, `TX_TLETS`) report **0 UNDER / 0 OVER** on `audit_requirement_fidelity`.
+Any change to a metadata-parsing tool must be measured against the **regression fixture**:
+`CA_CLETS`, `FL_FCIC`, `HI_HCJDC_OFML`, `NJ_NJCJIS`, `NY_NYSPIN_EJUSTICE`, `TX_TLETS` report
+**0 UNDER / 0 OVER** on `audit_requirement_fidelity`, **116 branches** total (2026-08-02).
+Five are tenant-verified; **`FL_FCIC` is not — it went un-swept at v7.15–v7.17** and is a structural
+baseline only, so never cite it as evidence a parser matches the wire. See `usx-tooling` Step 1.
 **They must stay 0/0, and branches-compared must not fall.** That fixture has already refuted one
 plausible improvement (keyRef-scoped branch matching — see `knowledge-base/FIDELITY_TRIAGE.txt`).
 Validate any parser change against **both** TX (flat `Choice/Field`) and NY (nested `Choice/Set`).

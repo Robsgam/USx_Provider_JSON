@@ -1,4 +1,4 @@
-# build_tx_tlets_cch.ps1  -- TX_TLETS_CCH v1.10
+# build_tx_tlets_cch.ps1  -- TX_TLETS_CCH (version comes from $Version below -- said v1.10 while emitting v1.14, corrected 2026-08-02)
 # BASE-SYNC: TX_TLETS v4.18   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.5 (2026-07-27, DEX-1284 shadow correction, lockstep w/ TX_TLETS v4.9 + a CCH-only metadata fix):
 #   (base-6) removed QVLicensePlateNumber + QVVehicleIdentificationNumber (ungated subset-shadows,

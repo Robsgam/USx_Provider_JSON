@@ -22,9 +22,16 @@ Ask which existing gate owns the question before adding one.
 
 ## Step 1 — THE REGRESSION FIXTURE. Use it or you are guessing.
 
-Six providers are tenant-verified and report **0 UNDER / 0 OVER** on
-`audit_requirement_fidelity`: `CA_CLETS`, `FL_FCIC`, `HI_HCJDC_OFML`, `NJ_NJCJIS`,
-`NY_NYSPIN_EJUSTICE`, `TX_TLETS`.
+Six providers report **0 UNDER / 0 OVER** on `audit_requirement_fidelity`, totalling
+**116 branches compared** (re-measured 2026-08-02): `CA_CLETS` 27, `FL_FCIC` 30,
+`HI_HCJDC_OFML` 14, `NJ_NJCJIS` 10, `NY_NYSPIN_EJUSTICE` 16, `TX_TLETS` 19.
+
+**Five of the six are tenant-verified; `FL_FCIC` is NOT any more.** It left that set at v7.15–v7.17
+(Requestor wiring, then dead-control removal), so it currently reads NEVER-TESTED and owes a full
+sweep. Its 0/0 is still a valid **structural** baseline — the numbers must not move under a tool
+change — but it is no longer backed by wire evidence, so do not cite FL as proof that a parser
+agrees with reality. Check `report_test_status.ps1` before leaning on any fixture member's
+authority; membership is stable, tenant-verification is not.
 
 > **They must stay 0/0, and BRANCHES-COMPARED must not fall.**
 
@@ -43,7 +50,7 @@ cannot, revert.
 ## Step 2 — Portability is a separate property from correctness
 
 `tools\audit_tool_portability.ps1` runs the `-Path` gates against every provider and asks only
-whether each **reaches a verdict**. 240 cells, currently 0 unportable.
+whether each **reaches a verdict**. 260 cells (13 gates x 20 providers), currently 0 unportable. The 13th is `audit_wiring_closure`, added 2026-08-02 -- it was blocking in enforce for a day while absent from this sweep AND from the fuzz panel, so **when you add a gate, add it to every harness that characterises the stack, not just to enforce**.
 
 **A green portability sweep does NOT mean the tools are right.** Every real bug found on 2026-08-01
 reached a verdict happily — it was just wrong:

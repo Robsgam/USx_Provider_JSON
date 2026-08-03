@@ -313,4 +313,16 @@ Write-Host ("  {0} provider(s) checked" -f $totals.Providers)
 Write-Host ("  A dead control {0} / B orphan attribute {1} / C unfillable req {2} / D inert condition {3} / E inert default {4}" -f $totals.A, $totals.B, $totals.C, $totals.D, $totals.E)
 Write-Host ("  F variant gap {0} / G dup fieldId {1} / H dup targetField {2} / I deselect orphan {3}" -f $totals.F, $totals.G, $totals.H, $totals.I)
 Write-Host "  A and C are officer-facing: a control that discards input, or a path no human can fill."
+# EMIT A CONVENTIONAL VERDICT LINE. Without this the tool printed only its per-class counters, which
+# no consumer recognises: audit_tool_portability reported this gate as [NO-VERDICT] on all 20
+# providers the moment it was added to that sweep -- "a step that did not run is NOT a pass", and my
+# own new blocking gate was the thing failing it. Any gate must announce its verdict in the shape the
+# harnesses read (RESULT: / TOTALS: / [PASS] / [FAIL]), not just print numbers a human can interpret.
+$wcAll = $totals.A + $totals.B + $totals.C + $totals.D + $totals.E + $totals.F + $totals.G + $totals.H + $totals.I
+if ($wcAll -eq 0) {
+    Write-Host ("  [PASS] wiring closed on {0} provider(s) -- no break in any of the nine classes" -f $totals.Providers) -ForegroundColor Green
+} else {
+    Write-Host ("  [FAIL] {0} wiring break(s) across {1} provider(s)" -f $wcAll, $totals.Providers) -ForegroundColor Red
+}
+Write-Host ("  RESULT: {0} wiring break(s) / {1} provider(s) checked" -f $wcAll, $totals.Providers)
 Write-Host "----------------------------------------------------------------------------"
