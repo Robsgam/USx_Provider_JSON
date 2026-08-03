@@ -1,0 +1,84 @@
+================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: RQVehicleIdentificationNumber_af_vehicleYear (RQVehicleIdentificationNumber_af_vehicleYear (auto))
+Date: 2026-08-03 14:32:03
+Result: PASS
+JSON Version: 4.18
+Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"VehicleIdentificationNumber":"1HGCM82633A123456","vehicleYear":"2023"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZ4E9QKGAC3478JXG906M49G">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
+            <Id>01KZ4E9QKGAC3478JXG906M49G</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <VehicleYear>2023</VehicleYear>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KZ4E9QKGAC3478JXG906M49G
+  VehicleIdentificationNumber    1HGCM82633A123456
+  VehicleYear                    2023
+
+NOTES
+-----
+Automated capture (txId 01KZ4E9QKGAC3478JXG906M49G). kind=any-field; anyField=vehicleYear; expectedKeyRef=RQVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
