@@ -1,0 +1,91 @@
+================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: RQVehicleIdentificationNumber_af_ImageIndicator (RQVehicleIdentificationNumber_af_ImageIndicator (auto))
+Date: 2026-08-03 13:10:11
+Result: PASS
+JSON Version: 7.17
+Entity Fingerprint: c1714659ee34eb2e178ace968e29efac16fd5e954a07e1594d7b719c7b10f6ad
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","Requestor":"X","VehicleIdentificationNumber":"1HGCM82633A123456"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZ49M65ABPVEJ39D2KVMDK9E">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KZ49M65ABPVEJ39D2KVMDK9E</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>GA</State>
+            <Requestor>SGAMBELLONE R</Requestor>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69510834680
+      ],
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZ49M65ABPVEJ39D2KVMDK9E
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 Y
+  State                          GA
+  Requestor                      SGAMBELLONE R
+
+NOTES
+-----
+Automated capture (txId 01KZ49M65ABPVEJ39D2KVMDK9E). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RQVehicleIdentificationNumber; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
