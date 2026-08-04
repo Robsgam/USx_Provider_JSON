@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
   Source: AZ_AZDPS_v3.5.json
-  Generated: 2026-08-04 15:59
+  Generated: 2026-08-04 19:22
 ================================================================
 QUERY SIMULATION
 ================
@@ -38,6 +38,7 @@ QUERY SIMULATION
 
 --- QIDM: AZ_AZDPS_DriverLicenseQuery [Person] ---
     Query: DriverLicenseQuery  |  Attrs: 8  |  Combos: 5
+    [SKIP] ACWL -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
     [SKIP] DQPN -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] DQP
@@ -49,9 +50,8 @@ QUERY SIMULATION
         <BadgeNumber>BADG</BadgeNumber>
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <Requestor>DISPA</Requestor>
+        <Requestor>DOE J</Requestor>
       </Transaction>
-    [SKIP] ACWL -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
     [SKIP] DQN -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES shadowed -- first match above wins] DQ
@@ -62,11 +62,12 @@ QUERY SIMULATION
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <Requestor>DOE J</Requestor>
         <State>NJ</State>
       </Transaction>
 
     >> PLATFORM FIRES: DQP (first matching combo)
-    >> UNION POOL (platform serializes): BadgeNumber=BADG, ImageIndicator=Y, OperatorLicenseNumber=D123456789, Requestor=DISPA, State=NJ
+    >> UNION POOL (platform serializes): BadgeNumber=BADG, ImageIndicator=Y, OperatorLicenseNumber=D123456789, Requestor=DOE J, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

@@ -20,8 +20,9 @@ Person (2 cards, 23 fields):
     ROW 2: NameLast [Inp 30], NameFirst [Inp 20]
     ROW 3: nameMiddle [Inp 20], nameSuffix [Inp 4], BirthDate [FormDate], SexCode [Sel SEX]
     ROW 4: RegistrationState [Sel STATE, AZ], raceCode [Sel RACE]
-    ROW 5: Requestor [Inp 5], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-    ROW 6: dexStateUserId [Inp]
+    ROW 5: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 6: Requestor [Inp X, 5]
+    ROW 7: dexStateUserId [Inp]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp 1]
     ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 20]
@@ -34,18 +35,18 @@ Firearm (1 card, 6 fields):
     serialNumber [Inp 11]
     dexStateUserId [Inp]
     GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunModel [Inp 11], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
-    relatedHitSearchIndicator [Inp 1]
+    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Article (1 card, 4 fields):
   CARD_ART (ARTICLE SEARCH BY TYPE + SERIAL NUMBER):
     ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleSerialNumber [Inp 11]
     dexStateUserId [Inp]
-    relatedHitSearchIndicator [Inp 1]
+    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Boat (1 card, 5 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID):
     ROW 1: RegistrationNumber [Inp 8], BoatHullIdNumber [Inp 20]
-    ROW 2: RegistrationState [Sel STATE, AZ], relatedHitSearchIndicator [Inp 1]
+    ROW 2: RegistrationState [Sel STATE, AZ], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
     ROW 3: dexStateUserId [Inp]
 
 QIDM SUMMARY (6 QIDMs, 15 combos)
@@ -70,12 +71,12 @@ ENTITY 1: PERSON (18 tests -- 2 cards, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Person      DQ+P               dexStateUserId=BADGE, ImageIndicator=... [    ]
-              Expected: DriverLicenseQuery fires (DQP)
- 2  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
+ 1  Person      DQ+OLN             OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (DQ)
- 3  Person      DQ+OLN             + RegistrationState             [    ]
+ 2  Person      DQ+OLN             + RegistrationState             [    ]
               Expected: any[] fields present in XML output.
+ 3  Person      DQ+P               dexStateUserId=BADGE, ImageIndicator=... [    ]
+              Expected: DriverLicenseQuery fires (DQP)
  4  Person      DQ+N               NameLast=DOE, NameFirst=JOHN     [    ]
               Expected: DriverLicenseQuery fires (DQN)
  5  Person      DQ+N               + nameMiddle, nameSuffix, RegistrationState [    ]
@@ -101,10 +102,10 @@ ENTITY 1: PERSON (18 tests -- 2 cards, 7 combos)
               Expected: DriverHistoryQuery fires (KQH)
 13  Person      KQ+H               + attention, NameMiddleDH, NameSuffixDH, purposeCodeDH [    ]
               Expected: any[] fields present in XML output.
-14  Person      Guardrail: DQP>DQPN  OperatorLicenseNumber=D999888777, dex... [    ]
-              Expected: DriverLicenseQuery fires (DQP). dexStateUserId+ImageIndicator+LastName+FirstName+Requestor absent from XML.
-15  Person      Guardrail: DQP>ACWL  OperatorLicenseNumber=D999888777, dex... [    ]
+14  Person      Guardrail: DQP>ACWL  OperatorLicenseNumber=D999888777, dex... [    ]
               Expected: DriverLicenseQuery fires (DQP). dexStateUserId+DOB+LastName+FirstName+SexCode absent from XML.
+15  Person      Guardrail: DQP>DQPN  OperatorLicenseNumber=D999888777, dex... [    ]
+              Expected: DriverLicenseQuery fires (DQP). dexStateUserId+ImageIndicator+LastName+FirstName+Requestor absent from XML.
 16  Person      Guardrail: DQP>DQN  OperatorLicenseNumber=D999888777, Nam... [    ]
               Expected: DriverLicenseQuery fires (DQP). LastName+FirstName absent from XML.
 17  Person      Guardrail: KQ>KQH  OperatorLicenseNumberDH=D999888777, R... [    ]
@@ -175,7 +176,7 @@ TOTAL: 37 tests
 
 COMBO COVERAGE (15/15):
   VehicleRegistrationQuery: 2/2 -- T19(ACVR+ACVR), T21(ACVRV+ACVRV)
-  DriverLicenseQuery: 5/5 -- T1(DQ+P), T2(DQ+OLN), T4(DQ+N), T6(DQ+PN), T8(ACWL+ACWL)
+  DriverLicenseQuery: 5/5 -- T1(DQ+OLN), T3(DQ+P), T4(DQ+N), T6(DQ+PN), T8(ACWL+ACWL)
   DriverHistoryQuery: 2/2 -- T10(KQ+RegistrationStateDH), T12(KQ+H)
   GunQuery: 1/1 -- T34(ACQG)
   ArticleSingleQuery: 1/1 -- T36(ACQA)

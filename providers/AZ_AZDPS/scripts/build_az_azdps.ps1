@@ -316,12 +316,36 @@ $dlQuery = [PSCustomObject]@{
             size        = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-        # Requestor: metadata Alphanumeric maxLength 5. Mandatory on both DQP variants.
-        [PSCustomObject]@{ name = 'Requestor';             size = 5;  sourceField = @('Requestor');             targetField = 'Requestor' }
+        # Requestor: metadata Alphanumeric maxLength 5, mandatory on both DQP variants. AUTOMATED --
+        # Rob 2026-08-04, non-negotiable. Attention feeder pattern: hidden InpH makes the field present,
+        # the handler supplies officer identity, size=5 caps it.
+        [PSCustomObject]@{
+            name        = 'Requestor'
+            rule        = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+            size        = 5; sourceField = @('Requestor'); targetField = 'Requestor'
+        }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCode');               targetField = 'SexCode';  codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State';                 size = 2;  sourceField = @('RegistrationState');     targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                # devdoc #1 (In) and #6 (Out) -- badge + full descriptors. Badge-present gate keeps
+                # ACWL from shadowing DQN's badge-absent path (metadata DQ{Name} has no BadgeNumber).
+                # metadata Any also lists OperatorLicenseNumber, deliberately NOT carried: OLN is the
+                # NOT_EXISTS gate here, and gate-xor-companion (CHECK 14) forbids both roles.
+                set = @('dexStateUserId','BirthDate','NameLast','NameFirst','SexCode')
+                any = @('nameMiddle','nameSuffix','RegistrationState')
+                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('dexStateUserId');        operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'ACWL'
+            state                 = 'In/Out'
+        }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 # devdoc #2 -- photo request by NAME. Implements DQP{Name} EXACTLY: metadata Any is
@@ -334,7 +358,7 @@ $dlQuery = [PSCustomObject]@{
                 # default and participating in this combo needs an explicit combo default or a
                 # CAD-injected query goes out without it -- and ImageIndicator is in set[] here, so
                 # without this the CAD path could not satisfy the combo at all.
-                defaults = @( [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' } )
+                defaults = @( [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'Requestor'; value = 'X' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                 )
@@ -353,29 +377,11 @@ $dlQuery = [PSCustomObject]@{
                 # CAD default for the same reason as DQPN. Note this is a DEFAULT on a set[] field,
                 # which is legitimate -- it is not an any[] addition, so it cannot over-permit a field
                 # this variant does not define.
-                defaults = @( [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' } )
+                defaults = @( [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'Requestor'; value = 'X' } )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQP'
             state                 = 'In'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                # devdoc #1 (In) and #6 (Out) -- badge + full descriptors. Badge-present gate keeps
-                # ACWL from shadowing DQN's badge-absent path (metadata DQ{Name} has no BadgeNumber).
-                # metadata Any also lists OperatorLicenseNumber, deliberately NOT carried: OLN is the
-                # NOT_EXISTS gate here, and gate-xor-companion (CHECK 14) forbids both roles.
-                set = @('dexStateUserId','BirthDate','NameLast','NameFirst','SexCode')
-                any = @('nameMiddle','nameSuffix','RegistrationState')
-                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
-                conditions = @(
-                    [PSCustomObject]@{ field = @('dexStateUserId');        operator = 'EXISTS' }
-                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
-                )
-            }
-            primaryFieldReference = 'Name'
-            keyReference          = 'ACWL'
-            state                 = 'In/Out'
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
@@ -784,9 +790,16 @@ $perLayout = MakeLayouts @(
             # rule: LA_LEMS gates DP on ImageIndicator EXISTS and DQ on NOT_EXISTS, and its DQ is a
             # registered dead combo precisely because the prefill makes the field always-present.
             # Left visible and un-automated: exposing a field before automating it is the standing rule.
-            @{ id = 'ROW_PER_DL_5'; cols = @('6','6'); fields = @(
-                @{ id = 'Requestor_Per_Input'; node = Inp 'Requestor' 'Requestor' '5' 'ROW_PER_DL_5' }
-                @{ id = 'ImageInd_Per_Sel';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_5' }
+            @{ id = 'ROW_PER_DL_5'; cols = @('12'); fields = @(
+                @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_5' }
+            )}
+            # Requestor HIDDEN + handler-fed. ORDERING IS WHAT KEEPS THIS SAFE: because Requestor and
+            # ImageIndicator are BOTH always-present, DQPN's variable requirement is only badge+Name --
+            # a strict subset of ACWL's badge+Name+DOB+Sex. ACWL is therefore ordered FIRST (Option A):
+            # most-specific-first, and the devdoc agrees since item #1 precedes the #2 photo variant.
+            # Ordered the other way, ACWL is a dead combo -- measured, not theorised.
+            @{ id = 'ROW_PER_DL_REQ'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Requestor_Per'; node = InpH 'Requestor' 'Requestor (auto)' '5' 'ROW_PER_DL_REQ' @{ initialValue = 'X' } }
             )}
             @{ id = 'ROW_PER_DL_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_Per'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_PER_DL_BADGE' }
@@ -854,7 +867,7 @@ $faLayout = MakeLayouts @(
             )}
             # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
             @{ id = 'ROW_GUN_3'; cols = @('4'); fields = @(
-                @{ id = 'RelHit_FA_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_GUN_3' }
+                @{ id = 'RelHit_FA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_GUN_3' }
             )}
         )
     }
@@ -883,7 +896,7 @@ $artLayout = MakeLayouts @(
             )}
             # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
             @{ id = 'ROW_ART_2'; cols = @('4'); fields = @(
-                @{ id = 'RelHit_ART_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_ART_2' }
+                @{ id = 'RelHit_ART_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_2' }
             )}
         )
     }
@@ -914,7 +927,7 @@ $boaLayout = MakeLayouts @(
                 # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
                 @{ id = 'State_BOA_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_BOA_2' }
                 # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
-                @{ id = 'RelHit_BOA_Input'; node = Inp 'relatedHitSearchIndicator' 'Stolen Check' '1' 'ROW_BOA_2' }
+                @{ id = 'RelHit_BOA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_BOA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_BOA_BADGE' }

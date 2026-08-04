@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: AZ_AZDPS_v3.5
   Source: AZ_AZDPS_v3.5.json
-  Generated: 2026-08-04 15:59
+  Generated: 2026-08-04 19:22
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -10,16 +10,22 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Article
     ArticleTypeCode [Article Type]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
+    relatedHitSearchIndicator [Stolen Check]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
     RegistrationState [State] (default=AZ)
       Config: attributeTypeId=STATE
+    relatedHitSearchIndicator [Stolen Check]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
     GunCaliber [Caliber]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
     GunMake [Make]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
+    relatedHitSearchIndicator [Stolen Check]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
     ImageIndicator [NCIC Image] (default=Y)
@@ -109,5 +115,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 13
+  Form dropdowns: 16
   QRDM code type attrs: 15

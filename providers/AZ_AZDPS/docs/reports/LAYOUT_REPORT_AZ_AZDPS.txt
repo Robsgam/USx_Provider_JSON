@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
   Source: AZ_AZDPS_v3.5.json
-  Generated: 2026-08-04 15:59
+  Generated: 2026-08-04 19:22
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -10,9 +10,9 @@ LAYOUT SUMMARY
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=5
   Person | entity=Person | qidm= | cards=2 fields=15
-  Firearm | entity=Firearm | qidm= | cards=1 fields=4
-  Article | entity=Article | qidm= | cards=1 fields=3
-  Boat | entity=Boat | qidm= | cards=1 fields=4
+  Firearm | entity=Firearm | qidm= | cards=1 fields=3
+  Article | entity=Article | qidm= | cards=1 fields=2
+  Boat | entity=Boat | qidm= | cards=1 fields=3
 QIDMs: 6
   AZ_AZDPS_VehicleRegistrationQuery | attrs=8 combos=2 autoSelect=
   AZ_AZDPS_DriverLicenseQuery | attrs=8 combos=5 autoSelect=True
@@ -61,9 +61,10 @@ LAYOUT DETAIL
       ROW ROW_PER_DL_4 [6 6]
         RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-      ROW ROW_PER_DL_5 [6 6]
-        Requestor (Text | maxLen=5)
+      ROW ROW_PER_DL_5 [12]
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+      ROW ROW_PER_DL_REQ [12]
+        Requestor (Text | maxLen=5 | default=X)
       ROW ROW_PER_DL_BADGE [12]
         dexStateUserId (Text)
     CARD "CARD_PER_DH"
@@ -96,7 +97,7 @@ LAYOUT DETAIL
         GunModel (Text | maxLen=11)
         GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
       ROW ROW_GUN_3 [4]
-        relatedHitSearchIndicator (Text | maxLen=1)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
@@ -108,7 +109,7 @@ LAYOUT DETAIL
       ROW ROW_ART_BADGE [12]
         dexStateUserId (Text)
       ROW ROW_ART_2 [4]
-        relatedHitSearchIndicator (Text | maxLen=1)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
 
 === Boat ===
   name=ENTITY_Boat | entity=Boat | qidm=
@@ -119,7 +120,7 @@ LAYOUT DETAIL
         BoatHullIdNumber (Text | maxLen=20)
       ROW ROW_BOA_2 [4 4]
         RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
-        relatedHitSearchIndicator (Text | maxLen=1)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
       ROW ROW_BOA_BADGE [12]
         dexStateUserId (Text)
 

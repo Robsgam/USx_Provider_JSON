@@ -47,6 +47,44 @@ ImageIndicator and Requestor carry NO initialValue: both are in DQP set[], i.e. 
 The SSN control STAYS: consumed by the RMS person QIDM (firstNameLastNameSocialSecurityNumber,  
   -KeepSsn), which audit_wiring_closure counts as reaching the wire. Dropped from the card TITLE  
   though -- it is no longer a CommSys DL path, and advertising it as one would be a lie on the form.  
+FINAL DESIGN (Rob's calls, 2026-08-04, after the first cut was wrong twice):  
+  * REQUESTOR IS AUTOMATED -- NON-NEGOTIABLE (Rob). Hidden InpH feeder (initialValue='X') +  
+    CommsysGetLastNameFirstNameInitialRuleHandler on the QIDM attribute, size=5 cap: the Attention  
+    pattern this build already uses. I twice reverted this instead of solving it, which was me  
+    overriding a decision that was not mine to make.  
+  * ORDER IS WHAT MAKES IT SAFE -- "OPTION A", Rob's choice. Requestor and ImageIndicator are BOTH  
+    always-present (handler + mandatory prefill), so DQPN's VARIABLE requirement is only badge+Name  
+    -- a strict subset of ACWL's badge+Name+DOB+Sex. With DQPN first, ACWL is a DEAD combo (measured:  
+    `[FAIL] DEAD COMBO: DriverLicenseQuery/ACWL`). ACWL is therefore ordered FIRST. That is what both  
+    ordering rules already prescribed and I had simply got wrong: most-specific-first (4 variable  
+    fields vs 2), and the devdoc tiebreaker (item #1 precedes the #2 photo variant).  
+    FINAL ORDER: ACWL, DQPN, DQP, DQN, DQ -- 13 combinations, ALL REACHABLE.  
+    Consequence to know: a full-descriptor badge+Name+DOB+Sex search fires ACWL and gets NO photo;  
+    badge+Name alone fires DQPN and does. The rejected alternatives were deleting ACWL (always-photo,  
+    TX's ruling) and a gate-only "Request Photo" control (no precedent, unverified).  
+  * STOLEN CHECK IS NOW Y/N (Rob). All three controls (Firearm/Article/Boat) were FormInput  
+    maxLength 1 -- free text, so an officer could type any character into a Y/N field. Now FormSelect  
+    YES_NO_UNKNOWN/NCIC. NO initialValue added: the field is any[]-only and adding a default would  
+    start transmitting Y on every query, a wire change nobody asked for.  
+    NAME PROVENANCE (Rob asked): `RelatedHitSearchIndicator` is AZ's OWN -- 50 occurrences in  
+    source/AZ_AZDPS.xml and the devdoc field table lists it verbatim. Note AZ orders it Hit-then-  
+    Search while HI/NJ use `relatedSearchHitIndicator` (Search-then-Hit); each matches its own  
+    metadata. Nothing invented. Form fieldId stays camelCase (not one of the 22 CAD tokens).  
+  * CAD defaults added for ImageIndicator=Y and Requestor=X on DQPN/DQP -- CAD ignores form  
+    initialValues, and both are set[] members, so without them a CAD-injected query cannot satisfy  
+    the combo at all.  
+REJECTED, WITH EVIDENCE: removing RegistrationNumber from the Boat HULL combos' any[] to make "reg or  
+  hull fire not both". The queries are ALREADY exclusive -- ACQB/BQ are gated BoatHullIdNumber  
+  NOT_EXISTS, so only the hull combo fires. audit_devdoc_optionals raised 4 dropped-optional FAILs and  
+  audit_optional_scope adjudicated FIX (put it back): AZ's devdoc brackets [RegistrationNumber] on the  
+  hull item and metadata ACQB{Hull} carries it in <Any>. This is the NJ/HI split -- HI strips the  
+  loser, NJ and AZ carry it, each per its OWN devdoc. v3.4's notes record making this exact mistake  
+  at v3.1 and reversing it; I repeated it. Identifier priority is about ROUTING, never about deleting  
+  a permitted field from the payload.  
+KNOWN GATE GAPS (not AZ defects -- AZ's build is correct in both cases): fuzz survivors  
+  `over-permit SexCode @ DQP` (that variant defines no <Any> at all, yet no gate reacts) and  
+  `drop-any RegistrationNumber @ Boat hull`. Both are missing gate coverage, deliberately not chased  
+  inside an AZ-only pass. `select-to-input @ raceCode` is a CORRECT survivor (RMS-only, no set[]).  
 ALL 5 ENTITIES RESET at v3.5 (block by version). No re-sweep cost: AZ has never been tenant-tested.  
 
 ## v3.4 -- 2026-08-01 -- One real wire fix, six registrations, one gate defect (commit 50e4268c)

@@ -1196,6 +1196,7 @@
                                                                                                                     "ROW_PER_DL_3",
                                                                                                                     "ROW_PER_DL_4",
                                                                                                                     "ROW_PER_DL_5",
+                                                                                                                    "ROW_PER_DL_REQ",
                                                                                                                     "ROW_PER_DL_BADGE"
                                                                                                                 ],
                                                                                                       "linkedNodes":  {
@@ -1504,14 +1505,12 @@
                                                                                                        "displayName":  "Row",
                                                                                                        "props":  {
                                                                                                                      "templateColumns":  [
-                                                                                                                                             "6",
-                                                                                                                                             "6"
+                                                                                                                                             "12"
                                                                                                                                          ]
                                                                                                                  },
                                                                                                        "isCanvas":  true,
                                                                                                        "hidden":  false,
                                                                                                        "nodes":  [
-                                                                                                                     "Requestor_Per_Input",
                                                                                                                      "ImageInd_Per_Sel"
                                                                                                                  ],
                                                                                                        "linkedNodes":  {
@@ -1519,26 +1518,6 @@
                                                                                                                        },
                                                                                                        "parent":  "CARD_PER_DL"
                                                                                                    },
-                                                                                  "Requestor_Per_Input":  {
-                                                                                                              "type":  {
-                                                                                                                           "resolvedName":  "FormInput"
-                                                                                                                       },
-                                                                                                              "displayName":  "Input",
-                                                                                                              "props":  {
-                                                                                                                            "fieldId":  "Requestor",
-                                                                                                                            "label":  "Requestor",
-                                                                                                                            "maxLength":  "5"
-                                                                                                                        },
-                                                                                                              "isCanvas":  false,
-                                                                                                              "hidden":  false,
-                                                                                                              "nodes":  [
-
-                                                                                                                        ],
-                                                                                                              "linkedNodes":  {
-
-                                                                                                                              },
-                                                                                                              "parent":  "ROW_PER_DL_5"
-                                                                                                          },
                                                                                   "ImageInd_Per_Sel":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "FormSelect"
@@ -1561,6 +1540,47 @@
                                                                                                                            },
                                                                                                            "parent":  "ROW_PER_DL_5"
                                                                                                        },
+                                                                                  "ROW_PER_DL_REQ":  {
+                                                                                                         "type":  {
+                                                                                                                      "resolvedName":  "Row"
+                                                                                                                  },
+                                                                                                         "displayName":  "Row",
+                                                                                                         "props":  {
+                                                                                                                       "templateColumns":  [
+                                                                                                                                               "12"
+                                                                                                                                           ]
+                                                                                                                   },
+                                                                                                         "isCanvas":  true,
+                                                                                                         "hidden":  true,
+                                                                                                         "nodes":  [
+                                                                                                                       "Requestor_Per"
+                                                                                                                   ],
+                                                                                                         "linkedNodes":  {
+
+                                                                                                                         },
+                                                                                                         "parent":  "CARD_PER_DL"
+                                                                                                     },
+                                                                                  "Requestor_Per":  {
+                                                                                                        "type":  {
+                                                                                                                     "resolvedName":  "FormInput"
+                                                                                                                 },
+                                                                                                        "displayName":  "Input",
+                                                                                                        "props":  {
+                                                                                                                      "fieldId":  "Requestor",
+                                                                                                                      "label":  "Requestor (auto)",
+                                                                                                                      "maxLength":  "5",
+                                                                                                                      "initialValue":  "X"
+                                                                                                                  },
+                                                                                                        "isCanvas":  false,
+                                                                                                        "hidden":  true,
+                                                                                                        "nodes":  [
+
+                                                                                                                  ],
+                                                                                                        "linkedNodes":  {
+
+                                                                                                                        },
+                                                                                                        "parent":  "ROW_PER_DL_REQ"
+                                                                                                    },
                                                                                   "ROW_PER_DL_BADGE":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "Row"
@@ -2008,6 +2028,7 @@
                                                                                                                          "ROW_PER_DL_3",
                                                                                                                          "ROW_PER_DL_4",
                                                                                                                          "ROW_PER_DL_5",
+                                                                                                                         "ROW_PER_DL_REQ",
                                                                                                                          "ROW_PER_DL_BADGE"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
@@ -2316,14 +2337,12 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "6",
-                                                                                                                                                  "6"
+                                                                                                                                                  "12"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
-                                                                                                                          "Requestor_Per_Input",
                                                                                                                           "ImageInd_Per_Sel"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
@@ -2331,26 +2350,6 @@
                                                                                                                             },
                                                                                                             "parent":  "CARD_PER_DL"
                                                                                                         },
-                                                                                       "Requestor_Per_Input":  {
-                                                                                                                   "type":  {
-                                                                                                                                "resolvedName":  "FormInput"
-                                                                                                                            },
-                                                                                                                   "displayName":  "Input",
-                                                                                                                   "props":  {
-                                                                                                                                 "fieldId":  "Requestor",
-                                                                                                                                 "label":  "Requestor",
-                                                                                                                                 "maxLength":  "5"
-                                                                                                                             },
-                                                                                                                   "isCanvas":  false,
-                                                                                                                   "hidden":  false,
-                                                                                                                   "nodes":  [
-
-                                                                                                                             ],
-                                                                                                                   "linkedNodes":  {
-
-                                                                                                                                   },
-                                                                                                                   "parent":  "ROW_PER_DL_5"
-                                                                                                               },
                                                                                        "ImageInd_Per_Sel":  {
                                                                                                                 "type":  {
                                                                                                                              "resolvedName":  "FormSelect"
@@ -2373,6 +2372,47 @@
                                                                                                                                 },
                                                                                                                 "parent":  "ROW_PER_DL_5"
                                                                                                             },
+                                                                                       "ROW_PER_DL_REQ":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "Row"
+                                                                                                                       },
+                                                                                                              "displayName":  "Row",
+                                                                                                              "props":  {
+                                                                                                                            "templateColumns":  [
+                                                                                                                                                    "12"
+                                                                                                                                                ]
+                                                                                                                        },
+                                                                                                              "isCanvas":  true,
+                                                                                                              "hidden":  true,
+                                                                                                              "nodes":  [
+                                                                                                                            "Requestor_Per"
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "CARD_PER_DL"
+                                                                                                          },
+                                                                                       "Requestor_Per":  {
+                                                                                                             "type":  {
+                                                                                                                          "resolvedName":  "FormInput"
+                                                                                                                      },
+                                                                                                             "displayName":  "Input",
+                                                                                                             "props":  {
+                                                                                                                           "fieldId":  "Requestor",
+                                                                                                                           "label":  "Requestor (auto)",
+                                                                                                                           "maxLength":  "5",
+                                                                                                                           "initialValue":  "X"
+                                                                                                                       },
+                                                                                                             "isCanvas":  false,
+                                                                                                             "hidden":  true,
+                                                                                                             "nodes":  [
+
+                                                                                                                       ],
+                                                                                                             "linkedNodes":  {
+
+                                                                                                                             },
+                                                                                                             "parent":  "ROW_PER_DL_REQ"
+                                                                                                         },
                                                                                        "ROW_PER_DL_BADGE":  {
                                                                                                                 "type":  {
                                                                                                                              "resolvedName":  "Row"
@@ -2901,6 +2941,7 @@
                                                                                                                             "ROW_PER_DL_3",
                                                                                                                             "ROW_PER_DL_4",
                                                                                                                             "ROW_PER_DL_5",
+                                                                                                                            "ROW_PER_DL_REQ",
                                                                                                                             "ROW_PER_DL_BADGE"
                                                                                                                         ],
                                                                                                               "linkedNodes":  {
@@ -3209,14 +3250,12 @@
                                                                                                                "displayName":  "Row",
                                                                                                                "props":  {
                                                                                                                              "templateColumns":  [
-                                                                                                                                                     "6",
-                                                                                                                                                     "6"
+                                                                                                                                                     "12"
                                                                                                                                                  ]
                                                                                                                          },
                                                                                                                "isCanvas":  true,
                                                                                                                "hidden":  false,
                                                                                                                "nodes":  [
-                                                                                                                             "Requestor_Per_Input",
                                                                                                                              "ImageInd_Per_Sel"
                                                                                                                          ],
                                                                                                                "linkedNodes":  {
@@ -3224,26 +3263,6 @@
                                                                                                                                },
                                                                                                                "parent":  "CARD_PER_DL"
                                                                                                            },
-                                                                                          "Requestor_Per_Input":  {
-                                                                                                                      "type":  {
-                                                                                                                                   "resolvedName":  "FormInput"
-                                                                                                                               },
-                                                                                                                      "displayName":  "Input",
-                                                                                                                      "props":  {
-                                                                                                                                    "fieldId":  "Requestor",
-                                                                                                                                    "label":  "Requestor",
-                                                                                                                                    "maxLength":  "5"
-                                                                                                                                },
-                                                                                                                      "isCanvas":  false,
-                                                                                                                      "hidden":  false,
-                                                                                                                      "nodes":  [
-
-                                                                                                                                ],
-                                                                                                                      "linkedNodes":  {
-
-                                                                                                                                      },
-                                                                                                                      "parent":  "ROW_PER_DL_5"
-                                                                                                                  },
                                                                                           "ImageInd_Per_Sel":  {
                                                                                                                    "type":  {
                                                                                                                                 "resolvedName":  "FormSelect"
@@ -3266,6 +3285,47 @@
                                                                                                                                    },
                                                                                                                    "parent":  "ROW_PER_DL_5"
                                                                                                                },
+                                                                                          "ROW_PER_DL_REQ":  {
+                                                                                                                 "type":  {
+                                                                                                                              "resolvedName":  "Row"
+                                                                                                                          },
+                                                                                                                 "displayName":  "Row",
+                                                                                                                 "props":  {
+                                                                                                                               "templateColumns":  [
+                                                                                                                                                       "12"
+                                                                                                                                                   ]
+                                                                                                                           },
+                                                                                                                 "isCanvas":  true,
+                                                                                                                 "hidden":  true,
+                                                                                                                 "nodes":  [
+                                                                                                                               "Requestor_Per"
+                                                                                                                           ],
+                                                                                                                 "linkedNodes":  {
+
+                                                                                                                                 },
+                                                                                                                 "parent":  "CARD_PER_DL"
+                                                                                                             },
+                                                                                          "Requestor_Per":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "Requestor",
+                                                                                                                              "label":  "Requestor (auto)",
+                                                                                                                              "maxLength":  "5",
+                                                                                                                              "initialValue":  "X"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  true,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_PER_DL_REQ"
+                                                                                                            },
                                                                                           "ROW_PER_DL_BADGE":  {
                                                                                                                    "type":  {
                                                                                                                                 "resolvedName":  "Row"
@@ -3950,13 +4010,14 @@
                                                                                                 },
                                                                                   "RelHit_FA_Input":  {
                                                                                                           "type":  {
-                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                       "resolvedName":  "FormSelect"
                                                                                                                    },
-                                                                                                          "displayName":  "Input",
+                                                                                                          "displayName":  "Select",
                                                                                                           "props":  {
                                                                                                                         "fieldId":  "relatedHitSearchIndicator",
                                                                                                                         "label":  "Stolen Check",
-                                                                                                                        "maxLength":  "1"
+                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                        "codeTypeSource":  "NCIC"
                                                                                                                     },
                                                                                                           "isCanvas":  false,
                                                                                                           "hidden":  false,
@@ -4233,13 +4294,14 @@
                                                                                                      },
                                                                                        "RelHit_FA_Input":  {
                                                                                                                "type":  {
-                                                                                                                            "resolvedName":  "FormInput"
+                                                                                                                            "resolvedName":  "FormSelect"
                                                                                                                         },
-                                                                                                               "displayName":  "Input",
+                                                                                                               "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "relatedHitSearchIndicator",
                                                                                                                              "label":  "Stolen Check",
-                                                                                                                             "maxLength":  "1"
+                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                             "codeTypeSource":  "NCIC"
                                                                                                                          },
                                                                                                                "isCanvas":  false,
                                                                                                                "hidden":  false,
@@ -4597,13 +4659,14 @@
                                                                                                         },
                                                                                           "RelHit_FA_Input":  {
                                                                                                                   "type":  {
-                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                               "resolvedName":  "FormSelect"
                                                                                                                            },
-                                                                                                                  "displayName":  "Input",
+                                                                                                                  "displayName":  "Select",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "relatedHitSearchIndicator",
                                                                                                                                 "label":  "Stolen Check",
-                                                                                                                                "maxLength":  "1"
+                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                "codeTypeSource":  "NCIC"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
                                                                                                                   "hidden":  false,
@@ -4862,13 +4925,14 @@
                                                                                                 },
                                                                                   "RelHit_ART_Input":  {
                                                                                                            "type":  {
-                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                        "resolvedName":  "FormSelect"
                                                                                                                     },
-                                                                                                           "displayName":  "Input",
+                                                                                                           "displayName":  "Select",
                                                                                                            "props":  {
                                                                                                                          "fieldId":  "relatedHitSearchIndicator",
                                                                                                                          "label":  "Stolen Check",
-                                                                                                                         "maxLength":  "1"
+                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                         "codeTypeSource":  "NCIC"
                                                                                                                      },
                                                                                                            "isCanvas":  false,
                                                                                                            "hidden":  false,
@@ -5081,13 +5145,14 @@
                                                                                                      },
                                                                                        "RelHit_ART_Input":  {
                                                                                                                 "type":  {
-                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                             "resolvedName":  "FormSelect"
                                                                                                                          },
-                                                                                                                "displayName":  "Input",
+                                                                                                                "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "relatedHitSearchIndicator",
                                                                                                                               "label":  "Stolen Check",
-                                                                                                                              "maxLength":  "1"
+                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                              "codeTypeSource":  "NCIC"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
                                                                                                                 "hidden":  false,
@@ -5381,13 +5446,14 @@
                                                                                                         },
                                                                                           "RelHit_ART_Input":  {
                                                                                                                    "type":  {
-                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                                "resolvedName":  "FormSelect"
                                                                                                                             },
-                                                                                                                   "displayName":  "Input",
+                                                                                                                   "displayName":  "Select",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "relatedHitSearchIndicator",
                                                                                                                                  "label":  "Stolen Check",
-                                                                                                                                 "maxLength":  "1"
+                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                 "codeTypeSource":  "NCIC"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
                                                                                                                    "hidden":  false,
@@ -5629,13 +5695,14 @@
                                                                                                       },
                                                                                   "RelHit_BOA_Input":  {
                                                                                                            "type":  {
-                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                        "resolvedName":  "FormSelect"
                                                                                                                     },
-                                                                                                           "displayName":  "Input",
+                                                                                                           "displayName":  "Select",
                                                                                                            "props":  {
                                                                                                                          "fieldId":  "relatedHitSearchIndicator",
                                                                                                                          "label":  "Stolen Check",
-                                                                                                                         "maxLength":  "1"
+                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                         "codeTypeSource":  "NCIC"
                                                                                                                      },
                                                                                                            "isCanvas":  false,
                                                                                                            "hidden":  false,
@@ -5870,13 +5937,14 @@
                                                                                                            },
                                                                                        "RelHit_BOA_Input":  {
                                                                                                                 "type":  {
-                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                             "resolvedName":  "FormSelect"
                                                                                                                          },
-                                                                                                                "displayName":  "Input",
+                                                                                                                "displayName":  "Select",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "relatedHitSearchIndicator",
                                                                                                                               "label":  "Stolen Check",
-                                                                                                                              "maxLength":  "1"
+                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                              "codeTypeSource":  "NCIC"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
                                                                                                                 "hidden":  false,
@@ -6192,13 +6260,14 @@
                                                                                                               },
                                                                                           "RelHit_BOA_Input":  {
                                                                                                                    "type":  {
-                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                                "resolvedName":  "FormSelect"
                                                                                                                             },
-                                                                                                                   "displayName":  "Input",
+                                                                                                                   "displayName":  "Select",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "relatedHitSearchIndicator",
                                                                                                                                  "label":  "Stolen Check",
-                                                                                                                                 "maxLength":  "1"
+                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                 "codeTypeSource":  "NCIC"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
                                                                                                                    "hidden":  false,
@@ -7596,6 +7665,9 @@
                                                                       },
                                                                       {
                                                                           "name":  "Requestor",
+                                                                          "rule":  {
+                                                                                       "function":  "CommsysGetLastNameFirstNameInitialRuleHandler"
+                                                                                   },
                                                                           "size":  5,
                                                                           "sourceField":  [
                                                                                               "Requestor"
@@ -7622,62 +7694,6 @@
                                                                       }
                                                                   ],
                                                    "combinations":  [
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "dexStateUserId",
-                                                                                                             "ImageIndicator",
-                                                                                                             "NameLast",
-                                                                                                             "NameFirst",
-                                                                                                             "Requestor"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "BirthDate",
-                                                                                                             "SexCode",
-                                                                                                             "nameMiddle",
-                                                                                                             "nameSuffix"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "Y"
-                                                                                                                  }
-                                                                                                              ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "OperatorLicenseNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "Name",
-                                                                            "keyReference":  "DQPN",
-                                                                            "state":  "In"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "dexStateUserId",
-                                                                                                             "ImageIndicator",
-                                                                                                             "OperatorLicenseNumber",
-                                                                                                             "Requestor"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "Y"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "DQP",
-                                                                            "state":  "In"
-                                                                        },
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
@@ -7716,6 +7732,70 @@
                                                                             "primaryFieldReference":  "Name",
                                                                             "keyReference":  "ACWL",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "dexStateUserId",
+                                                                                                             "ImageIndicator",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "BirthDate",
+                                                                                                             "SexCode",
+                                                                                                             "nameMiddle",
+                                                                                                             "nameSuffix"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "Requestor",
+                                                                                                                      "value":  "X"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "DQPN",
+                                                                            "state":  "In"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "dexStateUserId",
+                                                                                                             "ImageIndicator",
+                                                                                                             "OperatorLicenseNumber",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "Requestor",
+                                                                                                                      "value":  "X"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQP",
+                                                                            "state":  "In"
                                                                         },
                                                                         {
                                                                             "requirements":  {
