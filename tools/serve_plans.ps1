@@ -48,8 +48,25 @@ while ($true) {
             $file = $null
             if (Test-Path $logsDir) {
                 if ($kind -eq 'plan') {
-                    $file = Get-ChildItem $logsDir -Filter "${prov}_TEST_PLAN_v*.json" -ErrorAction SilentlyContinue |
-                            Sort-Object Name | Select-Object -Last 1
+                    # VERSION-AWARE sort, not a STRING sort (fixed 2026-08-04). `Sort-Object Name`
+                    # compares text, so v3.4 sorts AFTER v3.10 ('4' > '1') and the server would hand
+                    # the driver a SUPERSEDED plan -- every resulting log then filed against a package
+                    # that no longer exists, which is unrecoverable evidence-wise because the wire XML
+                    # carries no version. Latent rather than live only because reset_test_package
+                    # archives the previous plan, so exactly one file normally sits here; the window is
+                    # real between a bump and that archive, and the portfolio is already at v4.18 /
+                    # v4.19 / v7.17, where two-digit minors are one bump away.
+                    # Proof of the old behaviour: v3.0, v3.4, v3.10 -> string sort picked v3.4.
+                    $cands = @(Get-ChildItem $logsDir -Filter "${prov}_TEST_PLAN_v*.json" -ErrorAction SilentlyContinue)
+                    $file = $cands |
+                            Sort-Object -Property @{ Expression = {
+                                if ($_.Name -match '_TEST_PLAN_v([0-9]+)\.([0-9]+)\.json$') {
+                                    [int]$Matches[1] * 100000 + [int]$Matches[2]
+                                } else { -1 }
+                            } } | Select-Object -Last 1
+                    if ($cands.Count -gt 1) {
+                        Write-Host "[SERVE] WARNING: $($cands.Count) plan files for ${prov}; serving $($file.Name) (highest VERSION). Stale siblings should be archived by reset_test_package." -ForegroundColor Yellow
+                    }
                 } else {
                     $file = Get-ChildItem $logsDir -Filter "${prov}_PICKLIST_SCOPE.json" -ErrorAction SilentlyContinue |
                             Select-Object -First 1

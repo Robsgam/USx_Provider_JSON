@@ -88,22 +88,47 @@
   // button" sent us looking for a config defect when it was a race:
   //   present-but-disabled -> the FORM rejected the input (validation/maxLength/required)
   //   absent entirely      -> wrong page, or the button markup changed
+  // BUDGET RAISED 6000 -> 20000 AND THE DIAGNOSIS CORRECTED (2026-08-04).
+  // The 6000ms budget produced 13 "still DISABLED" reports across NJ/TX/CA/HI/AZ on 2026-08-03/04.
+  // EVERY ONE cleared on a plain re-run with no build change, and the tenant logged
+  // "[Intervention] Slow network" during the failing runs -- so the button was still settling, not
+  // refusing. Not one was ever reproducible.
+  //
+  // The old message was actively harmful: "the form rejected this input (check field validation /
+  // maxLength / a required field that did not fill)" states a CAUSE it has not established, and it
+  // sent us hunting a config defect every time. A disabled Send is ambiguous between "the form
+  // rejects this" and "the form has not caught up yet", and after 13-for-13 recoveries latency is
+  // the FIRST hypothesis, not the second. A tool must not assert the cause it happens to have
+  // been written to suspect.
+  //
+  // Also re-checks ONE more time after the deadline with a longer settle, so the common case
+  // (button enables at ~20.2s under load) costs a retry instead of a whole re-run of the entity.
   async function clickSendClear(waitMs) {
-    const budget = waitMs || 6000;
+    const budget = waitMs || 20000;
     const deadline = Date.now() + budget;
-    for (;;) {
+    const findEnabled = () => {
       const sc = [...document.querySelectorAll('button')].find((b) => /send\s*&\s*clear/i.test(b.textContent || '') && !b.disabled);
-      if (sc) { sc.click(); return { ok: true, mode: 'send+clear' }; }
+      if (sc) return { btn: sc, mode: 'send+clear' };
       const s = [...document.querySelectorAll('button')].find((b) => (b.textContent || '').trim() === 'Send' && !b.disabled);
-      if (s) { s.click(); return { ok: true, mode: 'send (no clear)' }; }
+      if (s) return { btn: s, mode: 'send (no clear)' };
+      return null;
+    };
+    for (;;) {
+      const hit = findEnabled();
+      if (hit) { hit.btn.click(); return { ok: true, mode: hit.mode }; }
       if (Date.now() >= deadline) break;
       await L.sleep(250);
     }
+    // Grace retry -- one longer settle before calling it a failure.
+    await L.sleep(3000);
+    const late = findEnabled();
+    if (late) { late.btn.click(); return { ok: true, mode: late.mode + ' (late, after grace retry)' }; }
+
     const disabledSend = [...document.querySelectorAll('button')].some((b) => /send/i.test(b.textContent || '') && b.disabled);
     return {
       ok: false,
       err: disabledSend
-        ? `Send present but still DISABLED after ${budget}ms -- the form rejected this input (check field validation / maxLength / a required field that did not fill)`
+        ? `Send still DISABLED after ${budget}ms + 3000ms grace. MOST LIKELY LATENCY -- 13 of 13 such reports on 2026-08-03/04 cleared on a plain re-run with no build change (tenant logged "[Intervention] Slow network"). RE-RUN THIS TEST BEFORE INVESTIGATING THE BUILD. If it fails a second time, THEN suspect the form rejecting the input (field validation / maxLength / a required field that did not fill).`
         : `no Send button found in the DOM after ${budget}ms -- wrong page, or the button markup changed`
     };
   }
