@@ -2,14 +2,19 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.14** | Generated: 2026-08-02
+Current: **v1.14** | Generated: 2026-08-04
 
 ---
 
-## v1.14 -- 2026-07-30 -- Pipeline rebuild
+## v1.14 -- 2026-07-30 -- Devdoc optionals x routing: dropped optionals wired (commit b95bc364)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Devdoc-listed optionals the officer could fill but that were transmitted nowhere were
+  added to the any[] of the combos whose metadata variant defines them. Rebuilt in lockstep with  
+  TX_TLETS v4.18 (BASE-SYNC).  
+**REASON:** Found by the then-new audit_devdoc_optionals gate, which enumerates all 2^k subsets of
+  each devdoc item's bracketed optionals -- 252 fills on the TX base, of which 20 were defective  
+  at v4.17 while enforce read 36 PASS / 0 FAIL. A green board is not coverage. Recovered  
+  2026-08-03 from commit b95bc364; this entry read "Rebuilt via pipeline.ps1 / Scheduled rebuild".  
 
 ## v1.13 -- 2026-07-30 -- Pipeline rebuild
 

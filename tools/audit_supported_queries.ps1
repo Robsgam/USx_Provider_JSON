@@ -45,6 +45,9 @@ $extractFile = Find-DocsPath $jsonDir 'reference' "${provider}_SUPPORTED_QUERIES
 
 $lines = [System.Collections.Generic.List[string]]::new()
 $fail = 0; $pass = 0; $warn = 0; $info = 0
+# CHECK 0 (devdoc transaction-name scope) failures. Tracked apart from $fail because $fail is gated
+# behind the extract's STATUS, and the devdoc's authority does not depend on a human's sign-off flag.
+$scopeFail = 0
 function Emit($s) { $lines.Add($s); Write-Host $s }
 function Rec($tag,$msg) {
     switch ($tag) {
@@ -87,13 +90,62 @@ function Get-DevdocBasic($srcDir) {
     $names = [System.Collections.Generic.List[string]]::new()
     for ($i=$start+1; $i -lt $boundary; $i++) {
         $t = $lines[$i].Trim()
-        if ($t -match '^[A-Za-z][A-Za-z0-9]*(Query|Inquiry)$') { [void]$names.Add($t) }
+        # Match the query name as the FIRST TOKEN, not the whole line. pdftotext routinely merges the
+        # query heading onto the following field-table header, e.g. HI's
+        #   "BoatQuery            XML Tag Name         M/C/O Size Possible Values"
+        # A '$'-anchored pattern silently under-reads the ground truth in exactly that case, and an
+        # under-read Basic list makes this gate weaker while looking identical to a clean run:
+        # it read HI as 5 of 6 (no BoatQuery) and NJ_NJCJIS as 1 of 6, then PASSed the queries it had
+        # never heard of. Relaxing the anchor was measured across all 20 providers before landing --
+        # it adds exactly 6 names (HI BoatQuery; NJ ArticleSingleQuery/BoatQuery/DriverLicenseQuery/
+        # GunQuery/VehicleStolenQuery) and admits no non-query text. Fixed 2026-08-04.
+        if ($t -match '^([A-Za-z][A-Za-z0-9]*(?:Query|Inquiry))\b') { [void]$names.Add($Matches[1]) }
     }
     $res.found = $true
     $res.startLine = $start + 1      # 1-based, for human cross-reference
     $res.boundaryLine = $boundary + 1
     $res.queries = @($names | Sort-Object -Unique)
     return $res
+}
+
+# A VARIANT provider (<BASE>_CCH today, other "supported-stuff" variants later) is chartered to build
+# BEYOND the Basic list -- that is the entire point of the variant -- so for a variant the authorized
+# set is devdoc Basic UNION devdoc "Transactions Supported". Detection is MARKER-DRIVEN (`# BASE-SYNC:`
+# in the build script), the same mechanism audit_variant_sync uses, so an independent provider that
+# merely shares a name prefix (CA_CLETS_OCATS) is never mistaken for a variant. Do NOT widen this to
+# base providers: on a base, "it's somewhere in the devdoc" is precisely the reasoning that put an
+# out-of-Basic transaction into AZ_AZDPS.
+# Found by the 20-provider sweep of CHECK 0 -- TX_TLETS_CCH's 8 CCH transactions are all in the
+# devdoc's "Transactions Supported" section, so flagging them was MY scope model being wrong, not a
+# build defect. Added 2026-08-04.
+function Get-DevdocVariantSection($srcDir) {
+    $out = @()
+    if (-not $srcDir -or -not (Test-Path $srcDir)) { return $out }
+    $txt = @(Get-ChildItem -Path $srcDir -Filter '*_DEVDOC.txt' -File -ErrorAction SilentlyContinue)
+    if (-not $txt) { return $out }
+    $L = @(Get-Content $txt[0].FullName)
+    $s = -1
+    for ($i=0; $i -lt $L.Count; $i++) {
+        if ($L[$i] -match '(?i)^\s*Transactions Supported\s*:') { $s = $i; break }
+    }
+    if ($s -lt 0) { return $out }
+    $e = $L.Count
+    for ($i=$s+1; $i -lt $L.Count; $i++) {
+        if ($L[$i] -match '(?i)^\s*(Expanded Transactions Supported|Expanded Quer(y|ies) Supported|Data-Mined Transactions|Additional Transactions)\s*:') { $e = $i; break }
+    }
+    for ($i=$s+1; $i -lt $e; $i++) {
+        $t = $L[$i].Trim()
+        if ($t -match '^([A-Za-z][A-Za-z0-9]*(?:Query|Inquiry))\b') { $out += $Matches[1] }
+    }
+    return @($out | Sort-Object -Unique)
+}
+
+function Test-IsVariantProvider($provDir) {
+    $scripts = @(Get-ChildItem -Path (Join-Path $provDir 'scripts') -Filter 'build_*.ps1' -File -ErrorAction SilentlyContinue)
+    foreach ($s in $scripts) {
+        if ((Get-Content $s.FullName -Raw) -match '(?m)^\s*#\s*BASE-SYNC\s*:') { return $true }
+    }
+    return $false
 }
 
 Emit "================================================================"
@@ -120,6 +172,72 @@ foreach ($q in $qidms) {
 #    AGAINST (not the JSON it was seeded from). Advisory/reference only. ──
 $srcDir = Join-Path $jsonDir 'source'
 $devdoc = Get-DevdocBasic $srcDir
+
+# -- CHECK 0 -- TRANSACTION-NAME SCOPE (added 2026-08-04) -------------------------------------
+#   The check this file's own template text has DESCRIBED since 2026-07-27 -- "a built query whose
+#   transaction name is NOT in the list above is a SHADOW / scope violation" -- and never performed.
+#   Everything below CHECK 0 compares each built combo's queryLabel against the HAND-MAINTAINED
+#   extract. A LABEL IS NOT A TRANSACTION. AZ_AZDPS builds the out-of-Basic
+#   `AzAzdpsDriverLicenseQuery` under the approved label 'Driver License', and every combo scored
+#   [PASS] -- including "[PASS] combo DQSS: 'Driver License | SocialSecurityNumber' is
+#   devdoc-supported", which is flatly false: AZ's Basic DriverLicenseQuery entry defines no SSN
+#   field at all. The metadata defines DUPLICATE TRANSACTION PAIRS -- a plain devdoc name and an
+#   <Provider>-prefixed sibling with DIFFERENT <Requirements> -- so the prefixed one is a different
+#   query wearing the same label. On AZ that cost the two ImageIndicator="Y" photo paths (devdoc #2
+#   and #5, metadata DQP) and the name-only search (devdoc #3), while adding an unauthorized SSN path.
+#
+#   GATES ON THE DEVDOC, NOT ON THE EXTRACT'S STATUS. AZ's extract is PROVISIONAL, and that was the
+#   third layer hiding this: even a detected mismatch would have printed INFO. The devdoc is the
+#   QUERY authority -- a human's sign-off state on a derived file cannot make an out-of-scope
+#   transaction in-scope, so this check deliberately ignores $gated.
+#
+#   REFUSES TO GATE ON AN UNREADABLE LIST. If the Basic section yields zero names (CA_CONTRA_COSTA,
+#   PDF-only devdocs) the check reports INFO and says plainly that nothing was verified -- gating on
+#   an EMPTY ground truth would invert into failing every built query, which is the same vacuity
+#   defect in the opposite direction.
+$builtTx = @($qidms | ForEach-Object {
+    if ($_.query) { $_.query } elseif ($_.name) { $_.name -replace "^$([regex]::Escape($provider))_", '' }
+} | Where-Object { $_ } | Sort-Object -Unique)
+
+$isVariant   = Test-IsVariantProvider $jsonDir
+$variantTx   = if ($isVariant) { Get-DevdocVariantSection $srcDir } else { @() }
+$authorized  = @(@($devdoc.queries) + @($variantTx) | Where-Object { $_ } | Sort-Object -Unique)
+$basisLabel  = if ($isVariant) { "$($devdoc.queries.Count) Basic + $($variantTx.Count) variant-section name(s) (VARIANT: declares # BASE-SYNC)" } else { "$($devdoc.queries.Count) Basic name(s)" }
+
+if (-not $devdoc.found -or $devdoc.queries.Count -eq 0) {
+    $why = if ($devdoc.note) { $devdoc.note } else { 'Basic section parsed to 0 query names' }
+    Rec 'INFO' "CHECK 0 transaction-name scope NOT VERIFIED -- $why. $($builtTx.Count) built transaction(s) unchecked; this is NOT a pass."
+} elseif ($builtTx.Count -eq 0) {
+    Rec 'FAIL' "CHECK 0 examined ZERO built transactions -- this check is not evidence"
+} else {
+    $offScope = @($builtTx | Where-Object { $authorized -notcontains $_ })
+    foreach ($t in $offScope) {
+        $near = @($devdoc.queries | Where-Object { $t -like "*$_" -or $_ -like "*$t" })
+        $hint = ''
+        if ($near.Count) {
+            $nearList = $near -join ', '
+            $hint = " -- the devdoc authorizes $nearList, not this prefixed sibling (different <Requirements>)"
+        }
+        # Counted SEPARATELY from $fail on purpose: the final exit gates $fail behind $gated (the
+        # extract's CONFIRMED/PROVISIONAL flag), and CHECK 0 must not be silenceable that way. First
+        # run of this check on AZ printed the [FAIL] line and still exited 0 for exactly that reason.
+        $script:scopeFail++
+        Rec 'FAIL' "CHECK 0 SCOPE VIOLATION: built transaction '$t' is NOT in the devdoc 'Basic Queries Supported' list$hint"
+    }
+    if ($offScope.Count -eq 0) {
+        Rec 'PASS' "CHECK 0 transaction-name scope: all $($builtTx.Count) built transaction(s) are devdoc-authorized (compared against $basisLabel)"
+    }
+    # Other direction, INFO ONLY. Every current instance is an adjudicated skip (FL ImageQuery;
+    # TX VehicleRegistrationQuery, merged into VehicleInsuranceRegistrationQuery; NJ VehicleStolenQuery,
+    # user-approved), so raising WARNs here would manufacture noise on settled decisions. But a Basic
+    # query silently DROPPED is a real class that nothing else watches, so it must still be visible.
+    $notBuilt = @($devdoc.queries | Where-Object { $builtTx -notcontains $_ })
+    if ($notBuilt.Count) {
+        $nbList = $notBuilt -join ', '
+        Rec 'INFO' "CHECK 0 devdoc-Basic but NOT BUILT: $nbList -- each must be a documented skip (ACCEPTED_DIVERGENCES / BUILD_NOTES)"
+    }
+}
+Emit ""
 
 # ── Auto-write a PROVISIONAL template if the extract is absent ──
 if (-not (Test-Path $extractFile)) {
@@ -157,7 +275,9 @@ if (-not (Test-Path $extractFile)) {
     Emit ""
     Emit "RESULTS: $pass PASS / $fail FAIL / $warn WARN ($info INFO)"
     if ($OutFile) { [System.IO.File]::WriteAllText($OutFile, ($lines -join "`r`n"), [System.Text.UTF8Encoding]::new($false)) }
-    exit 0
+    # A bare `exit 0` here would swallow a CHECK 0 scope violation on any provider that has no
+    # extract yet -- CHECK 0 runs BEFORE this early return and does not depend on the extract.
+    if ($fail -gt 0) { exit 1 } else { exit 0 }
 }
 
 # ── Parse the extract ──
@@ -209,4 +329,7 @@ if ($OutFile) {
     if ($dir -and -not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
     [System.IO.File]::WriteAllText($OutFile, ($lines -join "`r`n"), [System.Text.UTF8Encoding]::new($false))
 }
-if ($gated -and $fail -gt 0) { exit 1 } else { exit 0 }
+if ($scopeFail -gt 0) {
+    Emit "BLOCKING: $scopeFail devdoc transaction-name scope violation(s) -- gates regardless of extract STATUS."
+}
+if (($gated -and $fail -gt 0) -or $scopeFail -gt 0) { exit 1 } else { exit 0 }

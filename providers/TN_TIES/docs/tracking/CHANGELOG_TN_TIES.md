@@ -2,7 +2,7 @@
 
 Auto-generated from `TN_TIES_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.1** | Generated: 2026-08-03
+Current: **v2.1** | Generated: 2026-08-04
 
 ---
 

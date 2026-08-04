@@ -364,6 +364,69 @@ TOOLS
     report INFO; CONFIRMED extracts FAIL on unsupported combos. Auto-writes a
     provisional template from the JSON when absent. Step 15 of build_report;
     gated by enforce Phase 2e.
+
+    CHECK 0 -- TRANSACTION-NAME SCOPE (added 2026-08-04, BLOCKING). The check this
+    file's own auto-written template text had DESCRIBED since 2026-07-27 -- "a built
+    query whose transaction name is NOT in the list above is a SHADOW / scope
+    violation" -- and never performed. Everything else in the tool compares each
+    combo's queryLabel against the HAND-MAINTAINED extract, and A LABEL IS NOT A
+    TRANSACTION: the metadata defines DUPLICATE TRANSACTION PAIRS -- a plain devdoc
+    name and an <Provider>-prefixed sibling carrying DIFFERENT <Requirements> -- so
+    the prefixed one is a different query wearing the same approved label.
+      AZ_AZDPS built the out-of-Basic AzAzdpsDriverLicenseQuery under the approved
+      label 'Driver License'. Every combo scored [PASS], including
+        [PASS] combo DQSS: 'Driver License | SocialSecurityNumber' is devdoc-supported
+      which is flatly false -- AZ's Basic DriverLicenseQuery entry defines no SSN
+      field anywhere. Choosing the prefixed sibling cost the two ImageIndicator="Y"
+      driver-photo paths (devdoc #2 and #5, metadata DQP -- which exists ONLY under
+      the Basic transaction) and the name-only search (devdoc #3, Set[Name]), while
+      adding an SSN path the devdoc never authorizes.
+
+    Three deliberate properties, each paid for:
+      * GATES ON THE DEVDOC, NOT THE EXTRACT'S STATUS. AZ's extract is PROVISIONAL,
+        and that was the THIRD layer hiding this -- even a detected mismatch would
+        have printed INFO. The devdoc is QUERY authority; a human's sign-off flag on
+        a JSON-seeded file cannot make an out-of-scope transaction in-scope. CHECK 0
+        failures are therefore counted in $scopeFail, SEPARATE from $fail: the first
+        build of this check printed its [FAIL] line and still exited 0, because the
+        final exit gated $fail behind the extract STATUS. A gate that speaks and is
+        not listened to is still a mute gate.
+      * REFUSES TO GATE ON AN UNREADABLE LIST. If the Basic section yields zero names
+        (CA_CONTRA_COSTA, PDF-only devdocs) it reports INFO and states that nothing
+        was verified. Gating on an EMPTY ground truth would invert into failing every
+        built query -- the same vacuity defect in the other direction.
+      * VARIANT EXEMPTION, MARKER-DRIVEN. A provider whose build script declares
+        "# BASE-SYNC:" is a variant and is authorized for Basic UNION the devdoc's
+        "Transactions Supported" section, because building the variant transactions
+        is the entire point of a variant. Same marker audit_variant_sync uses, so an
+        independent provider sharing a name prefix (CA_CLETS_OCATS) is never mistaken
+        for one. Found by the 20-provider sweep, which flagged TX_TLETS_CCH's 8 CCH
+        transactions -- all of them in that section, i.e. MY scope model was wrong,
+        not the build. Do NOT widen this to base providers: on a base, "it's somewhere
+        in the devdoc" is exactly the reasoning that put the wrong transaction in AZ.
+
+    Same pass fixed the devdoc extractor's '$'-anchored query-name pattern. pdftotext
+    routinely merges the query heading onto the following field-table header, e.g. HI's
+      "BoatQuery            XML Tag Name         M/C/O Size Possible Values"
+    so the anchored pattern silently UNDER-READ the ground truth: HI as 5 of 6 (no
+    BoatQuery) and NJ_NJCJIS as 1 of 6 -- and then PASSed every query it had never
+    heard of. An under-read Basic list makes this gate weaker while looking identical
+    to a clean run, so the relaxed pattern was measured across all 20 BEFORE landing:
+    it adds exactly 6 names (HI BoatQuery; NJ ArticleSingleQuery, BoatQuery,
+    DriverLicenseQuery, GunQuery, VehicleStolenQuery) and admits no non-query text.
+
+    Baseline 2026-08-04: 1 violation of 20 -- AZ_AZDPS only. The other direction
+    (devdoc-Basic but NOT BUILT) is INFO, never WARN: every current instance is an
+    adjudicated skip (FL/LA/OH/OR ImageQuery, TX VehicleRegistrationQuery merged into
+    VehicleInsuranceRegistrationQuery, NJ VehicleStolenQuery), so raising warnings
+    would manufacture noise on settled decisions -- but a Basic query silently DROPPED
+    is a real class nothing else watches, so it must stay visible.
+
+    NOTE: enforce Phase 2e reads the COMMITTED SUPPORTED_QUERY_AUDIT report, SHA-gated
+    against BUILD_MANIFEST. A tool change therefore does NOT take effect until each
+    provider's report is regenerated -- hand-writing one fails Test-ReportTrusted.
+    Re-run build_report.ps1 -Path <json> for every provider after changing this tool,
+    or the new check is silently inactive everywhere the report is stale.
     Usage: .\audit_supported_queries.ps1 -Path <json> [-OutFile <path>]
 
   tools/audit_cross_provider.ps1

@@ -2,6 +2,9 @@
   SUPPORTED-QUERY (DEVDOC) AUDIT -- TX_TLETS_CCH
 ================================================================
 
+[PASS] CHECK 0 transaction-name scope: all 14 built transaction(s) are devdoc-authorized (compared against 7 Basic + 22 variant-section name(s) (VARIANT: declares # BASE-SYNC))
+[INFO] CHECK 0 devdoc-Basic but NOT BUILT: VehicleRegistrationQuery -- each must be a documented skip (ACCEPTED_DIVERGENCES / BUILD_NOTES)
+
 Extract STATUS: CONFIRMED  (GATING -- mismatches FAIL)
 Devdoc 'Basic Queries Supported' (TX_TLETS_CCH_DEVDOC.txt, lines 29-297): ArticleSingleQuery, BoatQuery, DriverHistoryQuery, DriverLicenseQuery, GunQuery, VehicleInsuranceRegistrationQuery, VehicleRegistrationQuery
 
@@ -41,4 +44,4 @@ Devdoc 'Basic Queries Supported' (TX_TLETS_CCH_DEVDOC.txt, lines 29-297): Articl
 [PASS] combo ZR.FBI: 'CCH Record Request (ZR) | FBINumber' is devdoc-supported
 [PASS] combo ZR.SID: 'CCH Record Request (ZR) | StateIdNumber' is devdoc-supported
 
-RESULTS: 35 PASS / 0 FAIL / 0 WARN (0 INFO)
+RESULTS: 36 PASS / 0 FAIL / 0 WARN (1 INFO)

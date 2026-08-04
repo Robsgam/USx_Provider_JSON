@@ -2,8 +2,10 @@
   SUPPORTED-QUERY (DEVDOC) AUDIT -- HI_HCJDC_OFML
 ================================================================
 
+[PASS] CHECK 0 transaction-name scope: all 6 built transaction(s) are devdoc-authorized (compared against 6 Basic name(s))
+
 Extract STATUS: CONFIRMED  (GATING -- mismatches FAIL)
-Devdoc 'Basic Queries Supported' (HI_HCJDC_OFML_DEVDOC.txt, lines 31-163): ArticleSingleQuery, DriverHistoryQuery, DriverLicenseQuery, GunQuery, VehicleRegistrationQuery
+Devdoc 'Basic Queries Supported' (HI_HCJDC_OFML_DEVDOC.txt, lines 31-163): ArticleSingleQuery, BoatQuery, DriverHistoryQuery, DriverLicenseQuery, GunQuery, VehicleRegistrationQuery
 
 [PASS] combo RQ: 'Vehicle Registration | LicensePlateNumber' is devdoc-supported
 [PASS] combo RQV: 'Vehicle Registration | VehicleIdentificationNumber' is devdoc-supported
@@ -19,4 +21,4 @@ Devdoc 'Basic Queries Supported' (HI_HCJDC_OFML_DEVDOC.txt, lines 31-163): Artic
 [PASS] combo QB: 'Boat | BoatHullIdNumber' is devdoc-supported
 [WARN] supported 'Driver License | Name' has NO combo in JSON (intentional skip? document it)
 
-RESULTS: 12 PASS / 0 FAIL / 1 WARN (0 INFO)
+RESULTS: 13 PASS / 0 FAIL / 1 WARN (0 INFO)

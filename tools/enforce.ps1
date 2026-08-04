@@ -549,7 +549,18 @@ foreach ($pd in $providers) {
     $sqFails = ([regex]::Matches($sqText, '\[FAIL\]')).Count
     $isProvisional = ($sqText -match '(?m)^Extract STATUS:\s*PROVISIONAL')
     if ($sqFails -gt 0) {
-        Fail "$provName -- $sqFails unsupported combo(s) vs devdoc (see SUPPORTED_QUERY_AUDIT)"
+        # Distinguish the two failure kinds. CHECK 0 (added 2026-08-04) reports a TRANSACTION-name
+        # scope violation, not a combo -- calling it "1 unsupported combo" sent the first reader
+        # looking for a bad combination when the defect was the whole query being the wrong
+        # transaction. The message is what someone reads before they open the report.
+        $sqScope = ([regex]::Matches($sqText, 'CHECK 0 SCOPE VIOLATION')).Count
+        if ($sqScope -gt 0) {
+            $sqCombo = $sqFails - $sqScope
+            $extra = if ($sqCombo -gt 0) { " + $sqCombo unsupported combo(s)" } else { '' }
+            Fail "$provName -- $sqScope built transaction(s) NOT in the devdoc 'Basic Queries Supported' list$extra (see SUPPORTED_QUERY_AUDIT)"
+        } else {
+            Fail "$provName -- $sqFails unsupported combo(s) vs devdoc (see SUPPORTED_QUERY_AUDIT)"
+        }
     } elseif ($isProvisional) {
         Info "$provName -- supported-query extract PROVISIONAL (confirm vs devdoc, then set STATUS: CONFIRMED to gate)"
     } else {

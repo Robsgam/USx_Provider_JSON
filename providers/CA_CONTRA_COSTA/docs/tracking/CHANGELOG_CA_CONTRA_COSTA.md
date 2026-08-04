@@ -2,14 +2,17 @@
 
 Auto-generated from `CA_CONTRA_COSTA_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.2** | Generated: 2026-08-02
+Current: **v2.2** | Generated: 2026-08-04
 
 ---
 
-## v2.2 -- 2026-07-31 -- Pipeline rebuild
+## v2.2 -- 2026-07-31 -- Carried BOTH CA_CLETS v2.22 wire defects -- fixes propagated (commit 22801419)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** Propagated both CA_CLETS v2.22 wire fixes, which this provider also carried.
+**REASON:** CA_CONTRA_COSTA is built as a CA_CLETS copy plus Contra Costa's JAWS queries (the one
+  explicitly sanctioned cross-provider link), so a CA_CLETS wire defect is inherited BY  
+  CONSTRUCTION. Propagation is required, not optional. Recovered 2026-08-03 from commit 22801419;  
+  this entry read "Rebuilt via pipeline.ps1 / Scheduled rebuild".  
 
 ## v2.1 -- 2026-07-24 -- Race re-added to RMS person search (mirrors CA_CLETS v2.16)
 

@@ -232,6 +232,13 @@ $MUTS = @(
      Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RANDFULL'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'LicensePlateTypeCode' }) } }
 
+  # ── devdoc transaction-name scope ──────────────────────────────────────────────────────
+  @{ Id='hi-out-of-basic-transaction'; OnlyProvider='HI_HCJDC_OFML'
+     Desc='DriverLicenseQuery''s QIDM `query` renamed to the provider-prefixed HiHcjdcOfmlDriverLicenseQuery while queryLabel STAYS ''Driver License'' -- AZ_AZDPS''s exact live shape. The metadata defines DUPLICATE TRANSACTION PAIRS (a plain devdoc name and an <Provider>-prefixed sibling with DIFFERENT <Requirements>), so the prefixed one is a different query wearing an approved label. Catalogued because audit_supported_queries scored AZ [PASS] on EVERY combo for months -- it compared queryLabel against a hand-maintained extract and never looked at the transaction name, emitting "[PASS] combo DQSS: ''Driver License | SocialSecurityNumber'' is devdoc-supported" when AZ''s Basic DL entry defines no SSN field at all. On AZ the wrong sibling cost the two ImageIndicator="Y" photo paths (devdoc #2/#5, metadata DQP, which exists ONLY under the Basic transaction) and the name-only search (#3). The label is deliberately left UNCHANGED: mutating it too would be caught by the pre-existing label check and would prove nothing about CHECK 0. HI is the subject on purpose -- its Basic list was itself being under-read as 5 of 6 (pdftotext merges "BoatQuery" onto the field-table header), so this mutation guards the anchor fix as well as the scope check.'
+     Gate='audit_supported_queries.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'
+           $c.query = 'HiHcjdcOfmlDriverLicenseQuery' } }
+
   # ── FL_FCIC ────────────────────────────────────────────────────────────────────────────
   @{ Id='fl-drop-devdoc-optional'; OnlyProvider='FL_FCIC'
      Desc='RegistrationNumber removed from FBQBoatHullIdNumber any[] -- reverts the exact v7.13 dropped-optional fix (officer types hull + reg number, reg number silently not transmitted). This mutation exists so that fix can never regress unnoticed.'

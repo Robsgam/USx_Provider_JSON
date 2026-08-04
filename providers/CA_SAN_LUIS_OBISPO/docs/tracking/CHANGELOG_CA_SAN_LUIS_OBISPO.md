@@ -2,14 +2,19 @@
 
 Auto-generated from `CA_SAN_LUIS_OBISPO_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-02
+Current: **v2.3** | Generated: 2026-08-04
 
 ---
 
-## v2.3 -- 2026-08-02 -- Pipeline rebuild
+## v2.3 -- 2026-08-02 -- Carry PurposeCode + Attention on DH; cap the DL OLN control at 17 (commit a4e28101)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** PurposeCode and Attention now transmit on the Driver History query, and the Driver
+  License OLN control was capped at maxLength 17.  
+**REASON:** The OLN cap is the one to remember: the control accepted 20 characters where THAT
+  transaction caps at 17, and the naive "fix" (shrinking the field everywhere) would have  
+  truncated a VALID 20-character DH OLN, because that transaction genuinely allows 20. Same field,  
+  two transactions, two limits. Recovered 2026-08-03 from commit a4e28101; this entry read  
+  "Rebuilt via pipeline.ps1 / Scheduled rebuild".  
 
 ## v2.2 -- 2026-08-01 -- Pipeline rebuild
 
