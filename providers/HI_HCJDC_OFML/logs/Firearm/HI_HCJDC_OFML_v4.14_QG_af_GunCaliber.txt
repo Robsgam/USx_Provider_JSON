@@ -1,7 +1,7 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Firearm GunQuery
-Combo: QG (QG (auto))
-Date: 2026-08-04 12:41:34
+Combo: QG_af_GunCaliber (QG_af_GunCaliber (auto))
+Date: 2026-08-04 12:41:33
 Result: PASS
 JSON Version: 4.14
 Entity Fingerprint: a9cdf13fa17579d59b064450919fe65078868f894015424ff2cd04789e327e9b
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"relatedSearchHitIndicator":"Y","serialNumber":"GUN12345"}
+{"GunCaliber":"11","relatedSearchHitIndicator":"Y","serialNumber":"GUN12345"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ6TABV7Q8RX34V8T747BSTG">
+    <api:Transaction id="01KZ6TAJWH03MCJGPPQWV7XH5Q">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MARK43ID</Id>
@@ -36,9 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01KZ6TABV7Q8RX34V8T747BSTG</Id>
+            <Id>01KZ6TAJWH03MCJGPPQWV7XH5Q</Id>
             <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
             <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunCaliber>11</GunCaliber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -61,12 +62,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KZ6TABV7Q8RX34V8T747BSTG
+  Id                             01KZ6TAJWH03MCJGPPQWV7XH5Q
   RelatedSearchHitIndicator      Y
   GunSerialNumber                GUN12345
+  GunCaliber                     11
 
 NOTES
 -----
-Automated capture (txId 01KZ6TABV7Q8RX34V8T747BSTG). kind=combo; anyField=; expectedKeyRef=QG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZ6TAJWH03MCJGPPQWV7XH5Q). kind=any-field; anyField=GunCaliber; expectedKeyRef=QG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

@@ -1,6 +1,6 @@
 ================================================================
 TEST LOG: HI_HCJDC_OFML Firearm GunQuery
-Combo: QG (QG (auto))
+Combo: QG_af_GunMake (QG_af_GunMake (auto))
 Date: 2026-08-04 12:41:34
 Result: PASS
 JSON Version: 4.14
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"relatedSearchHitIndicator":"Y","serialNumber":"GUN12345"}
+{"GunMake":"IMI","relatedSearchHitIndicator":"Y","serialNumber":"GUN12345"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ6TABV7Q8RX34V8T747BSTG">
+    <api:Transaction id="01KZ6TAFDCPJ1YFT2JJHZAAG41">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MARK43ID</Id>
@@ -36,9 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01KZ6TABV7Q8RX34V8T747BSTG</Id>
+            <Id>01KZ6TAFDCPJ1YFT2JJHZAAG41</Id>
             <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
             <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunMake>IMI</GunMake>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -61,12 +62,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KZ6TABV7Q8RX34V8T747BSTG
+  Id                             01KZ6TAFDCPJ1YFT2JJHZAAG41
   RelatedSearchHitIndicator      Y
   GunSerialNumber                GUN12345
+  GunMake                        IMI
 
 NOTES
 -----
-Automated capture (txId 01KZ6TABV7Q8RX34V8T747BSTG). kind=combo; anyField=; expectedKeyRef=QG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZ6TAFDCPJ1YFT2JJHZAAG41). kind=any-field; anyField=GunMake; expectedKeyRef=QG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
