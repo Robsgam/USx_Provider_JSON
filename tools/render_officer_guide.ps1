@@ -261,7 +261,17 @@ $($sb.ToString())
 </body></html>
 "@
 
-$html | Out-File -FilePath $OutFile -Encoding utf8NoBOM
+# PS 5.1 COMPATIBILITY (fixed 2026-08-04). `-Encoding utf8NoBOM` is PowerShell 7 ONLY: under 5.1 the
+# ValidateSet for -Encoding is unknown/string/unicode/bigendianunicode/utf8/utf7/utf32/ascii/default/oem,
+# so this line died with "Cannot validate argument on parameter 'Encoding'" -- a hard PARAMETER-BINDING
+# failure, not a parse error, which is why audit_ps51_parse could not see it (it only checks parsing).
+# pipeline.ps1 / enforce.ps1 / build_report.ps1 all invoke tools as `powershell -File` = 5.1, so this
+# step has been failing there while working fine in interactive pwsh 7. It surfaced only because
+# enforce's PHASE 1 report regeneration propagated the NativeCommandError and killed the whole run --
+# every other caller pipes this to Out-Null, so the failure was invisible. Likely also why enforce's
+# ancillary-artifact currency check found stale render artifacts on 18 of 20 providers.
+# `-Encoding utf8` would ALSO be wrong under 5.1: it writes a BOM, and validate.ps1 rightly FAILs on one.
+[System.IO.File]::WriteAllText($OutFile, ($html -join "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "Officer guide HTML: $OutFile" -ForegroundColor Green
 
 if ($PdfFile) {

@@ -1186,7 +1186,7 @@
                                                                                                                },
                                                                                                       "displayName":  "Card",
                                                                                                       "props":  {
-                                                                                                                    "title":  "DRIVER LICENSE SEARCH BY OLN, SSN, \"OR\" NAME"
+                                                                                                                    "title":  "DRIVER LICENSE SEARCH BY OLN \"OR\" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO"
                                                                                                                 },
                                                                                                       "isCanvas":  true,
                                                                                                       "hidden":  false,
@@ -1195,6 +1195,7 @@
                                                                                                                     "ROW_PER_DL_2",
                                                                                                                     "ROW_PER_DL_3",
                                                                                                                     "ROW_PER_DL_4",
+                                                                                                                    "ROW_PER_DL_5",
                                                                                                                     "ROW_PER_DL_BADGE"
                                                                                                                 ],
                                                                                                       "linkedNodes":  {
@@ -1496,6 +1497,70 @@
                                                                                                                          },
                                                                                                          "parent":  "ROW_PER_DL_4"
                                                                                                      },
+                                                                                  "ROW_PER_DL_5":  {
+                                                                                                       "type":  {
+                                                                                                                    "resolvedName":  "Row"
+                                                                                                                },
+                                                                                                       "displayName":  "Row",
+                                                                                                       "props":  {
+                                                                                                                     "templateColumns":  [
+                                                                                                                                             "6",
+                                                                                                                                             "6"
+                                                                                                                                         ]
+                                                                                                                 },
+                                                                                                       "isCanvas":  true,
+                                                                                                       "hidden":  false,
+                                                                                                       "nodes":  [
+                                                                                                                     "Requestor_Per_Input",
+                                                                                                                     "ImageInd_Per_Sel"
+                                                                                                                 ],
+                                                                                                       "linkedNodes":  {
+
+                                                                                                                       },
+                                                                                                       "parent":  "CARD_PER_DL"
+                                                                                                   },
+                                                                                  "Requestor_Per_Input":  {
+                                                                                                              "type":  {
+                                                                                                                           "resolvedName":  "FormInput"
+                                                                                                                       },
+                                                                                                              "displayName":  "Input",
+                                                                                                              "props":  {
+                                                                                                                            "fieldId":  "Requestor",
+                                                                                                                            "label":  "Requestor",
+                                                                                                                            "maxLength":  "5"
+                                                                                                                        },
+                                                                                                              "isCanvas":  false,
+                                                                                                              "hidden":  false,
+                                                                                                              "nodes":  [
+
+                                                                                                                        ],
+                                                                                                              "linkedNodes":  {
+
+                                                                                                                              },
+                                                                                                              "parent":  "ROW_PER_DL_5"
+                                                                                                          },
+                                                                                  "ImageInd_Per_Sel":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormSelect"
+                                                                                                                    },
+                                                                                                           "displayName":  "Select",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "ImageIndicator",
+                                                                                                                         "label":  "NCIC Image",
+                                                                                                                         "initialValue":  "Y",
+                                                                                                                         "codeTypeSource":  "NCIC",
+                                                                                                                         "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_PER_DL_5"
+                                                                                                       },
                                                                                   "ROW_PER_DL_BADGE":  {
                                                                                                            "type":  {
                                                                                                                         "resolvedName":  "Row"
@@ -1605,7 +1670,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Input",
                                                                                                            "props":  {
-                                                                                                                         "fieldId":  "purposeCode",
+                                                                                                                         "fieldId":  "purposeCodeDH",
                                                                                                                          "label":  "Purpose Code",
                                                                                                                          "maxLength":  "1"
                                                                                                                      },
@@ -1933,7 +1998,7 @@
                                                                                                                     },
                                                                                                            "displayName":  "Card",
                                                                                                            "props":  {
-                                                                                                                         "title":  "DRIVER LICENSE SEARCH BY OLN, SSN, \"OR\" NAME"
+                                                                                                                         "title":  "DRIVER LICENSE SEARCH BY OLN \"OR\" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO"
                                                                                                                      },
                                                                                                            "isCanvas":  true,
                                                                                                            "hidden":  false,
@@ -1942,6 +2007,7 @@
                                                                                                                          "ROW_PER_DL_2",
                                                                                                                          "ROW_PER_DL_3",
                                                                                                                          "ROW_PER_DL_4",
+                                                                                                                         "ROW_PER_DL_5",
                                                                                                                          "ROW_PER_DL_BADGE"
                                                                                                                      ],
                                                                                                            "linkedNodes":  {
@@ -2243,6 +2309,70 @@
                                                                                                                               },
                                                                                                               "parent":  "ROW_PER_DL_4"
                                                                                                           },
+                                                                                       "ROW_PER_DL_5":  {
+                                                                                                            "type":  {
+                                                                                                                         "resolvedName":  "Row"
+                                                                                                                     },
+                                                                                                            "displayName":  "Row",
+                                                                                                            "props":  {
+                                                                                                                          "templateColumns":  [
+                                                                                                                                                  "6",
+                                                                                                                                                  "6"
+                                                                                                                                              ]
+                                                                                                                      },
+                                                                                                            "isCanvas":  true,
+                                                                                                            "hidden":  false,
+                                                                                                            "nodes":  [
+                                                                                                                          "Requestor_Per_Input",
+                                                                                                                          "ImageInd_Per_Sel"
+                                                                                                                      ],
+                                                                                                            "linkedNodes":  {
+
+                                                                                                                            },
+                                                                                                            "parent":  "CARD_PER_DL"
+                                                                                                        },
+                                                                                       "Requestor_Per_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "Requestor",
+                                                                                                                                 "label":  "Requestor",
+                                                                                                                                 "maxLength":  "5"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_PER_DL_5"
+                                                                                                               },
+                                                                                       "ImageInd_Per_Sel":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormSelect"
+                                                                                                                         },
+                                                                                                                "displayName":  "Select",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "ImageIndicator",
+                                                                                                                              "label":  "NCIC Image",
+                                                                                                                              "initialValue":  "Y",
+                                                                                                                              "codeTypeSource":  "NCIC",
+                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_PER_DL_5"
+                                                                                                            },
                                                                                        "ROW_PER_DL_BADGE":  {
                                                                                                                 "type":  {
                                                                                                                              "resolvedName":  "Row"
@@ -2352,7 +2482,7 @@
                                                                                                                          },
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
-                                                                                                                              "fieldId":  "purposeCode",
+                                                                                                                              "fieldId":  "purposeCodeDH",
                                                                                                                               "label":  "Purpose Code",
                                                                                                                               "maxLength":  "1"
                                                                                                                           },
@@ -2761,7 +2891,7 @@
                                                                                                                        },
                                                                                                               "displayName":  "Card",
                                                                                                               "props":  {
-                                                                                                                            "title":  "DRIVER LICENSE SEARCH BY OLN, SSN, \"OR\" NAME"
+                                                                                                                            "title":  "DRIVER LICENSE SEARCH BY OLN \"OR\" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO"
                                                                                                                         },
                                                                                                               "isCanvas":  true,
                                                                                                               "hidden":  false,
@@ -2770,6 +2900,7 @@
                                                                                                                             "ROW_PER_DL_2",
                                                                                                                             "ROW_PER_DL_3",
                                                                                                                             "ROW_PER_DL_4",
+                                                                                                                            "ROW_PER_DL_5",
                                                                                                                             "ROW_PER_DL_BADGE"
                                                                                                                         ],
                                                                                                               "linkedNodes":  {
@@ -3071,6 +3202,70 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_PER_DL_4"
                                                                                                              },
+                                                                                          "ROW_PER_DL_5":  {
+                                                                                                               "type":  {
+                                                                                                                            "resolvedName":  "Row"
+                                                                                                                        },
+                                                                                                               "displayName":  "Row",
+                                                                                                               "props":  {
+                                                                                                                             "templateColumns":  [
+                                                                                                                                                     "6",
+                                                                                                                                                     "6"
+                                                                                                                                                 ]
+                                                                                                                         },
+                                                                                                               "isCanvas":  true,
+                                                                                                               "hidden":  false,
+                                                                                                               "nodes":  [
+                                                                                                                             "Requestor_Per_Input",
+                                                                                                                             "ImageInd_Per_Sel"
+                                                                                                                         ],
+                                                                                                               "linkedNodes":  {
+
+                                                                                                                               },
+                                                                                                               "parent":  "CARD_PER_DL"
+                                                                                                           },
+                                                                                          "Requestor_Per_Input":  {
+                                                                                                                      "type":  {
+                                                                                                                                   "resolvedName":  "FormInput"
+                                                                                                                               },
+                                                                                                                      "displayName":  "Input",
+                                                                                                                      "props":  {
+                                                                                                                                    "fieldId":  "Requestor",
+                                                                                                                                    "label":  "Requestor",
+                                                                                                                                    "maxLength":  "5"
+                                                                                                                                },
+                                                                                                                      "isCanvas":  false,
+                                                                                                                      "hidden":  false,
+                                                                                                                      "nodes":  [
+
+                                                                                                                                ],
+                                                                                                                      "linkedNodes":  {
+
+                                                                                                                                      },
+                                                                                                                      "parent":  "ROW_PER_DL_5"
+                                                                                                                  },
+                                                                                          "ImageInd_Per_Sel":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormSelect"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Select",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "ImageIndicator",
+                                                                                                                                 "label":  "NCIC Image",
+                                                                                                                                 "initialValue":  "Y",
+                                                                                                                                 "codeTypeSource":  "NCIC",
+                                                                                                                                 "codeTypeCategory":  "YES_NO_UNKNOWN"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_PER_DL_5"
+                                                                                                               },
                                                                                           "ROW_PER_DL_BADGE":  {
                                                                                                                    "type":  {
                                                                                                                                 "resolvedName":  "Row"
@@ -3180,7 +3375,7 @@
                                                                                                                             },
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
-                                                                                                                                 "fieldId":  "purposeCode",
+                                                                                                                                 "fieldId":  "purposeCodeDH",
                                                                                                                                  "label":  "Purpose Code",
                                                                                                                                  "maxLength":  "1"
                                                                                                                              },
@@ -6129,7 +6324,7 @@
                     {
                         "name":  "AZ_AZDPS",
                         "type":  "BUNDLE",
-                        "description":  "Provider configuration for AZ_AZDPS v3.4",
+                        "description":  "Provider configuration for AZ_AZDPS v3.5",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -7365,6 +7560,14 @@
                                                                           "targetField":  "BirthDate"
                                                                       },
                                                                       {
+                                                                          "name":  "ImageIndicator",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "ImageIndicator"
+                                                                                          ],
+                                                                          "targetField":  "ImageIndicator"
+                                                                      },
+                                                                      {
                                                                           "name":  "Name",
                                                                           "rule":  {
                                                                                        "function":  "FormatStringRuleHandler",
@@ -7392,6 +7595,14 @@
                                                                           "targetField":  "OperatorLicenseNumber"
                                                                       },
                                                                       {
+                                                                          "name":  "Requestor",
+                                                                          "size":  5,
+                                                                          "sourceField":  [
+                                                                                              "Requestor"
+                                                                                          ],
+                                                                          "targetField":  "Requestor"
+                                                                      },
+                                                                      {
                                                                           "name":  "SexCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
@@ -7399,14 +7610,6 @@
                                                                                           ],
                                                                           "targetField":  "SexCode",
                                                                           "codeTypeProvider":  "NIBRS"
-                                                                      },
-                                                                      {
-                                                                          "name":  "SocialSecurityNumber",
-                                                                          "size":  9,
-                                                                          "sourceField":  [
-                                                                                              "SocialSecurityNumber"
-                                                                                          ],
-                                                                          "targetField":  "SocialSecurityNumber"
                                                                       },
                                                                       {
                                                                           "name":  "State",
@@ -7419,6 +7622,62 @@
                                                                       }
                                                                   ],
                                                    "combinations":  [
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "dexStateUserId",
+                                                                                                             "ImageIndicator",
+                                                                                                             "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "BirthDate",
+                                                                                                             "SexCode",
+                                                                                                             "nameMiddle",
+                                                                                                             "nameSuffix"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "OperatorLicenseNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    }
+                                                                                                                ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "DQPN",
+                                                                            "state":  "In"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "dexStateUserId",
+                                                                                                             "ImageIndicator",
+                                                                                                             "OperatorLicenseNumber",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
+                                                                            "keyReference":  "DQP",
+                                                                            "state":  "In"
+                                                                        },
                                                                         {
                                                                             "requirements":  {
                                                                                                  "set":  [
@@ -7451,12 +7710,6 @@
                                                                                                                                       "OperatorLicenseNumber"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "SocialSecurityNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
@@ -7468,11 +7721,11 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "NameLast",
-                                                                                                             "NameFirst",
-                                                                                                             "SexCode",
-                                                                                                             "BirthDate"
+                                                                                                             "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "BirthDate",
+                                                                                                             "SexCode",
                                                                                                              "dexStateUserId",
                                                                                                              "nameMiddle",
                                                                                                              "nameSuffix",
@@ -7490,12 +7743,6 @@
                                                                                                                                       "OperatorLicenseNumber"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "SocialSecurityNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
@@ -7509,10 +7756,7 @@
                                                                                                              "OperatorLicenseNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "dexStateUserId",
-                                                                                                             "BirthDate",
-                                                                                                             "RegistrationState",
-                                                                                                             "SexCode"
+                                                                                                             "RegistrationState"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -7524,41 +7768,11 @@
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "DQ",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "SocialSecurityNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "dexStateUserId",
-                                                                                                             "BirthDate",
-                                                                                                             "RegistrationState",
-                                                                                                             "SexCode"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "State",
-                                                                                                                      "value":  "AZ"
-                                                                                                                  }
-                                                                                                              ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "OperatorLicenseNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "SocialSecurityNumber",
-                                                                            "keyReference":  "DQSS",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "Mapping for AzAzdpsDriverLicenseQuery (DQ OLN + DQN Name + DQSS SSN + ACWL Badge)",
+                                                   "description":  "Mapping for DriverLicenseQuery (devdoc-Basic): DQPN/DQP photo paths + ACWL badge+Name + DQN Name-only + DQ OLN",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "AZ_AZDPS_AzAzdpsDriverLicenseQuery",
+                                                   "name":  "AZ_AZDPS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
                                                    "queriesToDeselect":  [
@@ -7566,7 +7780,7 @@
                                                                          ],
                                                    "provider":  "AZ_AZDPS",
                                                    "providerType":  "Commsys",
-                                                   "query":  "AzAzdpsDriverLicenseQuery",
+                                                   "query":  "DriverLicenseQuery",
                                                    "queryLabel":  "Driver License",
                                                    "targetEntity":  "Person"
                                                },
@@ -7629,7 +7843,7 @@
                                                                           "name":  "PurposeCode",
                                                                           "size":  1,
                                                                           "sourceField":  [
-                                                                                              "purposeCode"
+                                                                                              "purposeCodeDH"
                                                                                           ],
                                                                           "targetField":  "PurposeCode"
                                                                       },
@@ -7666,7 +7880,7 @@
                                                                                                              "attention",
                                                                                                              "NameMiddleDH",
                                                                                                              "NameSuffixDH",
-                                                                                                             "purposeCode"
+                                                                                                             "purposeCodeDH"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -7699,9 +7913,7 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "attention",
-                                                                                                             "BirthDateDH",
-                                                                                                             "purposeCode",
-                                                                                                             "SexCodeDH"
+                                                                                                             "purposeCodeDH"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -7725,7 +7937,7 @@
                                                    "type":  "QUERYINPUTDATAMAPPING",
                                                    "autoSelect":  true,
                                                    "queriesToDeselect":  [
-                                                                             "AzAzdpsDriverLicenseQuery"
+                                                                             "DriverLicenseQuery"
                                                                          ],
                                                    "provider":  "AZ_AZDPS",
                                                    "providerType":  "Commsys",
@@ -8051,7 +8263,7 @@
                         "provider":  "AZ_AZDPS"
                     },
                     {
-                        "description":  "Provider configuration for AZ_AZDPS v3.4 -- RMS bundle",
+                        "description":  "Provider configuration for AZ_AZDPS v3.5 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

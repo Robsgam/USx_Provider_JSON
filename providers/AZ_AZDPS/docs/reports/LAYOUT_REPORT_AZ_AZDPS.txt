@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.4.json
-  Generated: 2026-08-04 12:57
+  Source: AZ_AZDPS_v3.5.json
+  Generated: 2026-08-04 15:59
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== AZ_AZDPS_v3.4.json ===
+=== AZ_AZDPS_v3.5.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=5
-  Person | entity=Person | qidm= | cards=2 fields=14
+  Person | entity=Person | qidm= | cards=2 fields=15
   Firearm | entity=Firearm | qidm= | cards=1 fields=4
   Article | entity=Article | qidm= | cards=1 fields=3
   Boat | entity=Boat | qidm= | cards=1 fields=4
 QIDMs: 6
   AZ_AZDPS_VehicleRegistrationQuery | attrs=8 combos=2 autoSelect=
-  AZ_AZDPS_AzAzdpsDriverLicenseQuery | attrs=7 combos=4 autoSelect=True
+  AZ_AZDPS_DriverLicenseQuery | attrs=8 combos=5 autoSelect=True
   AZ_AZDPS_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
   AZ_AZDPS_GunQuery | attrs=6 combos=1 autoSelect=
   AZ_AZDPS_ArticleSingleQuery | attrs=4 combos=1 autoSelect=
@@ -61,12 +61,15 @@ LAYOUT DETAIL
       ROW ROW_PER_DL_4 [6 6]
         RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DL_5 [6 6]
+        Requestor (Text | maxLen=5)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_PER_DL_BADGE [12]
         dexStateUserId (Text)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DH_1 [8 4]
         OperatorLicenseNumberDH (Text | maxLen=20)
-        purposeCode (Text | maxLen=1)
+        purposeCodeDH (Text | maxLen=1)
       ROW ROW_PER_DH_2 [6 6]
         NameLastDH (Text | maxLen=30)
         NameFirstDH (Text | maxLen=20)

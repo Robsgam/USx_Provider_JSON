@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.4.json
-  Generated: 2026-08-04 12:57
+  Source: AZ_AZDPS_v3.5.json
+  Generated: 2026-08-04 15:59
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- AZ_AZDPS_v3.4.json
+  CommSys Query Simulator -- AZ_AZDPS_v3.5.json
 ================================================================
 
 --- QIDM: AZ_AZDPS_VehicleRegistrationQuery [Vehicle] ---
@@ -36,28 +36,37 @@ QUERY SIMULATION
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
---- QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery [Person] ---
-    Query: AzAzdpsDriverLicenseQuery  |  Attrs: 7  |  Combos: 4
-    [SKIP] ACWL -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']; SocialSecurityNumber NOT_EXISTS [value='123456789']
-    [SKIP] DQN -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']; SocialSecurityNumber NOT_EXISTS [value='123456789']
+--- QIDM: AZ_AZDPS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 8  |  Combos: 5
+    [SKIP] DQPN -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
-    [FIRES first-match] DQ
-      set: [OperatorLicenseNumber]
-      any: [dexStateUserId, BirthDate, RegistrationState, SexCode] -> matched: [dexStateUserId, BirthDate, RegistrationState, SexCode]
+    [FIRES first-match] DQP
+      set: [dexStateUserId, ImageIndicator, OperatorLicenseNumber, Requestor]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <BadgeNumber>BADG</BadgeNumber>
-        <BirthDate>19900115</BirthDate>
+        <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <SexCode>M</SexCode>
+        <Requestor>DISPA</Requestor>
+      </Transaction>
+    [SKIP] ACWL -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] DQN -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+
+    [FIRES shadowed -- first match above wins] DQ
+      set: [OperatorLicenseNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <State>NJ</State>
       </Transaction>
-    [SKIP] DQSS -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
-    >> PLATFORM FIRES: DQ (first matching combo)
-    >> UNION POOL (platform serializes): BadgeNumber=BADG, BirthDate=19900115, OperatorLicenseNumber=D123456789, SexCode=M, State=NJ
+    >> PLATFORM FIRES: DQP (first matching combo)
+    >> UNION POOL (platform serializes): BadgeNumber=BADG, ImageIndicator=Y, OperatorLicenseNumber=D123456789, Requestor=DISPA, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -67,21 +76,19 @@ QUERY SIMULATION
 
     [FIRES first-match] KQ
       set: [RegistrationStateDH, OperatorLicenseNumberDH]
-      any: [attention, BirthDateDH, purposeCode, SexCodeDH] -> matched: [attention, BirthDateDH, purposeCode, SexCodeDH]
+      any: [attention, purposeCodeDH] -> matched: [attention, purposeCodeDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>KQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <Attention>DOE J</Attention>
-        <BirthDate>19900115</BirthDate>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
-        <PurposeCode>D</PurposeCode>
-        <SexCode>M</SexCode>
+        <PurposeCode>C</PurposeCode>
         <State>FL</State>
       </Transaction>
 
     >> PLATFORM FIRES: KQ (first matching combo)
-    >> UNION POOL (platform serializes): Attention=DOE J, BirthDate=19900115, OperatorLicenseNumber=D123456789, PurposeCode=D, SexCode=M, State=FL
+    >> UNION POOL (platform serializes): Attention=DOE J, OperatorLicenseNumber=D123456789, PurposeCode=C, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

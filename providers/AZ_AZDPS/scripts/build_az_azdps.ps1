@@ -152,7 +152,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.4'
+$Version = '3.5'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -240,8 +240,65 @@ $vehQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# 1e. AzAzdpsDriverLicenseQuery -- DQ (OLN), DQN (Name), DQSS (SSN), ACWL (Badge+Name)
+# 1e. DriverLicenseQuery -- the devdoc-BASIC transaction (v3.5 SCOPE CORRECTION)
 # =====================================================================
+# v3.5 SWITCHED TRANSACTIONS: AzAzdpsDriverLicenseQuery -> DriverLicenseQuery.
+#
+# The devdoc "Basic Queries Supported" section names `DriverLicenseQuery`. AZ's metadata defines BOTH
+# it and an `AzAzdps`-prefixed sibling as SEPARATE transactions with DIFFERENT <Requirements>, and
+# v3.3/v3.4 built the prefixed one -- out of Basic scope. It passed audit_supported_queries for months
+# because that gate compared each combo's queryLabel ('Driver License', legitimately on the approved
+# list) and never the transaction name; it even printed
+#     [PASS] combo DQSS: 'Driver License | SocialSecurityNumber' is devdoc-supported
+# which is flatly false. Closed by that tool's CHECK 0 (2026-08-04), which now blocks it.
+#
+# WHAT THE WRONG SIBLING COST -- concrete, not stylistic. Devdoc DriverLicenseQuery has 8 Possible
+# Combinations; the prefixed transaction cannot express three of them:
+#   #2 (In) BadgeNumber, BirthDate, ImageIndicator="Y", Name, Requestor, SexCode  -> metadata DQP{Name}
+#   #5 (In) BadgeNumber, ImageIndicator="Y", OperatorLicenseNumber, Requestor     -> metadata DQP{OLN}
+#        DQP EXISTS ONLY UNDER THE BASIC TRANSACTION. So AZ had NO driver-licence PHOTO request at all
+#        -- `Requestor` appeared 0 times in the emitted JSON and the only `ImageIndicator` hit was a
+#        QRDM *response* mapping. The devdoc documents the field explicitly ("Y - Request Driver
+#        License Photo").
+#   #3 (In) Name, [SexCode]  -> Basic DQ{Name} = Set[Name] Any[BirthDate, SexCode, State]
+#        The prefixed sibling's DQ{Name} = Set[Name, SexCode, BirthDate] makes DOB **and** sex
+#        MANDATORY, so an officer holding only a name could not run a DL query. THIS ALSO RETIRES the
+#        v3.4 registry row asserting "metadata makes SexCode MANDATORY on every name variant ... there
+#        is no looser one" -- true of the prefixed sibling, FALSE of the Basic transaction. A
+#        registration whose premise is scoped to the wrong transaction is not a divergence, it is a bug.
+# And what it ADDED: DQ{SocialSecurityNumber}, an SSN search the Basic devdoc does not list anywhere.
+# DQSS is DELETED. The SSN form control stays -- it is consumed by the RMS person QIDM
+# (firstNameLastNameSocialSecurityNumber, -KeepSsn), which audit_wiring_closure counts as reaching
+# the wire, so it is not a dead control.
+#
+# BASIC METADATA VARIANTS, and the combo implementing each:
+#   DQP {Name}                  Set[BadgeNumber, ImageIndicator, Name, Requestor] Any[BirthDate, SexCode]  -> DQPN (invented)
+#   DQP {OperatorLicenseNumber} Set[BadgeNumber, ImageIndicator, OperatorLicenseNumber, Requestor]  (NO Any) -> DQP
+#   ACWL{Name}                  Set[BadgeNumber, Name, SexCode, BirthDate] Any[OperatorLicenseNumber, State] -> ACWL
+#   DQ  {Name}                  Set[Name] Any[BirthDate, SexCode, State]                                     -> DQN (invented)
+#   DQ  {OperatorLicenseNumber} Set[OperatorLicenseNumber] Any[State]                                        -> DQ
+# DQPN/DQN are invented keyRefs (LIMITATION #21) because each metadata keyRef carries two variants and
+# tools resolve combos by (query, keyRef); duplicates would collide. Provider routes by field content.
+#
+# ORDER (first match wins): DQPN, DQP, ACWL, DQN, DQ.
+#   DQ{OLN} set[] is a STRICT SUBSET of DQP{OLN} set[], so DQP must precede DQ or the photo path is
+#   dead on arrival. Likewise DQN set[] is a subset of both ACWL and DQPN. Within the name/OLN pairs
+#   the devdoc order (#2 before #5, #3 before #4) is honoured; they are mutually exclusive anyway via
+#   the OLN>Name guardrail below, so nothing depends on that tiebreak.
+#
+# OLN>Name guardrail retained, SSN dropped from the cascade (OLN>SSN>Name -> OLN>Name): every Name
+# combo carries OperatorLicenseNumber NOT_EXISTS so an OLN+Name over-fill sends the OLN query alone.
+# Gate-xor-companion (CHECK 14) still holds -- a field that is a NOT_EXISTS gate is never also an
+# any[] companion, which is why ACWL does NOT carry metadata's Any[OperatorLicenseNumber].
+#
+# ImageIndicator CARRIES initialValue='Y' (MANDATORY -- FIELD_REFERENCE.txt Section 9 / BUILD_RULES
+# 20b: without it the field does not serialize at all, which would make DQPN/DQP permanently
+# unsatisfiable since their set[] requires it). REQUESTOR is the actual discriminator: officer-entered,
+# no default, so Requestor-filled routes to the photo paths and Requestor-empty falls through to
+# ACWL/DQN/DQ, none of which define ImageIndicator. BUILD_RULES 24 is satisfied because NO combo
+# needs ImageIndicator ABSENT -- there is no ImageIndicator NOT_EXISTS gate here, which is exactly
+# what makes LA_LEMS's DP/DQ toggle a registered dead combo and this build reachable.
+# (RegistrationState keeps initialValue='AZ' -- any[]-ONLY in every combo here, so it routes nothing.)
 $dlQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'BadgeNumber';           size = 4;  sourceField = @('dexStateUserId');        targetField = 'BadgeNumber' }
@@ -250,34 +307,70 @@ $dlQuery = [PSCustomObject]@{
             rule        = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
             size        = 8; sourceField = @('BirthDate'); targetField = 'BirthDate'
         }
+        # ImageIndicator: metadata Alphabetic maxLength 1, valueListName=ImageIndicatorList
+        # (Y = Request Image / N = Do not Request Image). size=1 per the ImageIndicator rule.
+        [PSCustomObject]@{ name = 'ImageIndicator';        size = 1;  sourceField = @('ImageIndicator');        targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name        = 'Name'
             rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
             size        = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        # Requestor: metadata Alphanumeric maxLength 5. Mandatory on both DQP variants.
+        [PSCustomObject]@{ name = 'Requestor';             size = 5;  sourceField = @('Requestor');             targetField = 'Requestor' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCode');               targetField = 'SexCode';  codeTypeProvider = 'NIBRS' }
-        [PSCustomObject]@{ name = 'SocialSecurityNumber';  size = 9;  sourceField = @('SocialSecurityNumber');  targetField = 'SocialSecurityNumber' }
         [PSCustomObject]@{ name = 'State';                 size = 2;  sourceField = @('RegistrationState');     targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                # OLN>SSN>Name cascade: this Name combo is gated OUT when OLN or SSN is present, so
-                # the higher-priority identifier's combo (DQ/DQSS) fires alone. OLN+SSN removed from
-                # any[] per gate-xor-companion (CHECK 14).
+                # devdoc #2 -- photo request by NAME. Implements DQP{Name} EXACTLY: metadata Any is
+                # [BirthDate, SexCode] and contains NO State, so RegistrationState is deliberately
+                # absent from any[] and gets no default -- adding it would OVER-PERMIT a field this
+                # variant does not define.
+                set = @('dexStateUserId','ImageIndicator','NameLast','NameFirst','Requestor')
+                any = @('BirthDate','SexCode','nameMiddle','nameSuffix')
+                # CAD IGNORES FORM initialValues (audit_cad CHECK 5), so a field carrying a form
+                # default and participating in this combo needs an explicit combo default or a
+                # CAD-injected query goes out without it -- and ImageIndicator is in set[] here, so
+                # without this the CAD path could not satisfy the combo at all.
+                defaults = @( [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' } )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
+                )
+            }
+            primaryFieldReference = 'Name'
+            keyReference          = 'DQPN'
+            state                 = 'In'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                # devdoc #5 -- photo request by OLN. Implements DQP{OperatorLicenseNumber} EXACTLY:
+                # metadata defines NO <Any> at all for this variant, so any[] is EMPTY and there is no
+                # State default. OLN is top of the cascade, so no NOT_EXISTS gate.
+                set = @('dexStateUserId','ImageIndicator','OperatorLicenseNumber','Requestor')
+                any = @()
+                # CAD default for the same reason as DQPN. Note this is a DEFAULT on a set[] field,
+                # which is legitimate -- it is not an any[] addition, so it cannot over-permit a field
+                # this variant does not define.
+                defaults = @( [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' } )
+            }
+            primaryFieldReference = 'OperatorLicenseNumber'
+            keyReference          = 'DQP'
+            state                 = 'In'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                # devdoc #1 (In) and #6 (Out) -- badge + full descriptors. Badge-present gate keeps
+                # ACWL from shadowing DQN's badge-absent path (metadata DQ{Name} has no BadgeNumber).
+                # metadata Any also lists OperatorLicenseNumber, deliberately NOT carried: OLN is the
+                # NOT_EXISTS gate here, and gate-xor-companion (CHECK 14) forbids both roles.
                 set = @('dexStateUserId','BirthDate','NameLast','NameFirst','SexCode')
                 any = @('nameMiddle','nameSuffix','RegistrationState')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
                 conditions = @(
-                    # Badge-present gate: ACWL is the metadata badge+Name transaction; DQN is the
-                    # no-badge Name fallback (metadata DQ-Name has no BadgeNumber). dexStateUserId
-                    # EXISTS makes ACWL fire only when the badge is present, so it no longer shadows
-                    # DQN's badge-absent path (CHECK 16). Badge is auto-populated, so in practice
-                    # ACWL is the live name-search combo; DQN is the metadata-faithful fallback.
                     [PSCustomObject]@{ field = @('dexStateUserId');        operator = 'EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('SocialSecurityNumber');  operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -286,14 +379,14 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                # OLN>SSN>Name cascade: gated OUT when OLN or SSN is present (higher-priority combo
-                # fires alone). OLN+SSN removed from any[] per gate-xor-companion (CHECK 14).
-                set = @('NameLast','NameFirst','SexCode','BirthDate')
-                any = @('dexStateUserId','nameMiddle','nameSuffix','RegistrationState')
+                # devdoc #3 (In) "Name, [SexCode]" and #7 (Out). Implements Basic DQ{Name} =
+                # Set[Name] Any[BirthDate, SexCode, State] -- NAME ALONE IS SUFFICIENT. This is the
+                # search v3.4 could not perform: the prefixed sibling's DQ{Name} demanded Name+Sex+DOB.
+                set = @('NameLast','NameFirst')
+                any = @('BirthDate','SexCode','dexStateUserId','nameMiddle','nameSuffix','RegistrationState')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('SocialSecurityNumber');  operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'Name'
@@ -302,44 +395,30 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                # OLN is the top of the OLN>SSN>Name cascade -- no NOT_EXISTS gate needed (it always
-                # wins). Lower-priority identifiers (Name-composite + SSN) removed from any[] so the
-                # OLN combo's serialized pool never carries Name or SSN. SexCode/BirthDate kept as
-                # demoted-to-any companions (metadata DQ-Name descriptors; see ACCEPTED_DIVERGENCES).
+                # devdoc #4 (In) "OperatorLicenseNumber" and #8 (Out) "+State". Implements DQ{OLN} =
+                # Set[OperatorLicenseNumber] Any[State] EXACTLY.
+                # v3.5 STRIPPED THE OVER-PERMITS: BirthDate and SexCode were in any[] though this
+                # variant defines neither, so an OLN+DOB+sex fill transmitted two fields the
+                # transaction does not define. dexStateUserId (BadgeNumber) is out for the same
+                # reason -- devdoc #4 is OLN ALONE, and the badge rides only on the DQP/ACWL paths.
                 set = @('OperatorLicenseNumber')
-                any = @('dexStateUserId','BirthDate','RegistrationState','SexCode')
+                any = @('RegistrationState')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQ'
             state                 = 'In/Out'
         }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                # OLN>SSN>Name cascade: SSN sits below OLN, above Name. OperatorLicenseNumber
-                # NOT_EXISTS gates this combo OUT when OLN is present (DQ fires alone). Name-composite
-                # removed from any[] so the SSN pool never carries Name; OLN removed per CHECK 14.
-                set = @('SocialSecurityNumber')
-                any = @('dexStateUserId','BirthDate','RegistrationState','SexCode')
-                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
-                conditions = @(
-                    [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
-                )
-            }
-            primaryFieldReference = 'SocialSecurityNumber'
-            keyReference          = 'DQSS'
-            state                 = 'In/Out'
-        }
     )
-    description     = 'Mapping for AzAzdpsDriverLicenseQuery (DQ OLN + DQN Name + DQSS SSN + ACWL Badge)'
+    description     = 'Mapping for DriverLicenseQuery (devdoc-Basic): DQPN/DQP photo paths + ACWL badge+Name + DQN Name-only + DQ OLN'
     handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'AZ_AZDPS_AzAzdpsDriverLicenseQuery'
+    name            = 'AZ_AZDPS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
     autoSelect         = $true
     queriesToDeselect  = @('DriverHistoryQuery')
     provider        = 'AZ_AZDPS'
     providerType    = 'Commsys'
-    query           = 'AzAzdpsDriverLicenseQuery'
+    query           = 'DriverLicenseQuery'
     queryLabel      = 'Driver License'
     targetEntity    = 'Person'
 }
@@ -366,7 +445,14 @@ $dhistQuery = [PSCustomObject]@{
             size        = 30; sourceField = @('NameLastDH','NameFirstDH','NameMiddleDH','NameSuffixDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCode');             targetField = 'PurposeCode' }
+        # v3.5 DH-SUFFIXED: was sourceField 'purposeCode'. This is a DH-ONLY control, so AP #14 /
+        # LIMITATION #25 requires the DH suffix. It went unflagged for four versions because
+        # validate.ps1's DL+DH suffix check locates the DL QIDM with `query -eq 'DriverLicenseQuery'`
+        # (EXACT match) -- and v3.3/v3.4 named it 'AzAzdpsDriverLicenseQuery', so $dlQidm was $null and
+        # the ENTIRE check never ran on AZ. Same root cause as the CHECK 0 scope violation: the wrong
+        # transaction name silently switched a gate off. Fixing the name turned the gate on, and it
+        # immediately found this.
+        [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');           targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCodeDH');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State';                 size = 2;  sourceField = @('RegistrationStateDH');     targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
@@ -377,7 +463,7 @@ $dhistQuery = [PSCustomObject]@{
                 # DH Name combo OUT when a DH OLN is present, so KQ (OLN) fires alone. OLN-DH removed
                 # from any[] per gate-xor-companion (CHECK 14).
                 set = @('RegistrationStateDH','NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH')
-                any = @('attention','NameMiddleDH','NameSuffixDH','purposeCode')
+                any = @('attention','NameMiddleDH','NameSuffixDH','purposeCodeDH')
                 defaults = @(
                     [PSCustomObject]@{ field = 'Attention'; value = 'X' }
                     [PSCustomObject]@{ field = 'State';     value = 'AZ' }
@@ -393,10 +479,17 @@ $dhistQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 # OLN is top of the DH OLN>Name pair -- no gate needed. Name-composite (DH-suffix)
-                # removed from any[] so the OLN pool never carries the DH Name. BirthDateDH/SexCodeDH
-                # kept as demoted-to-any companions (metadata KQ-Name descriptors; see DIVERGENCES).
+                # removed from any[] so the OLN pool never carries the DH Name.
+                # v3.5 OVER-PERMIT STRIPPED: BirthDateDH and SexCodeDH were carried here as
+                # "demoted-to-any companions", but metadata KQ{OperatorLicenseNumber} =
+                # Set[State, OLN] Any[PurposeCode, Attention] defines NEITHER, and devdoc
+                # DriverHistoryQuery #1 brackets ONLY [Attention, PurposeCode]. Both authorities
+                # agree, so an OLN+DOB+sex fill was transmitting two fields this transaction does
+                # not define. The four registry rows defending it argued the UNDER-REQUIRED
+                # direction (do not promote into set[]) -- correct, and not the question asked;
+                # removal was never considered. They are retired.
                 set = @('RegistrationStateDH','OperatorLicenseNumberDH')
-                any = @('attention','BirthDateDH','purposeCode','SexCodeDH')
+                any = @('attention','purposeCodeDH')
                 defaults = @(
                     [PSCustomObject]@{ field = 'Attention'; value = 'X' }
                     [PSCustomObject]@{ field = 'State';     value = 'AZ' }
@@ -412,7 +505,9 @@ $dhistQuery = [PSCustomObject]@{
     name            = 'AZ_AZDPS_DriverHistoryQuery'
     type            = 'QUERYINPUTDATAMAPPING'
     autoSelect         = $true
-    queriesToDeselect  = @('AzAzdpsDriverLicenseQuery')
+    # v3.5: follows the DL transaction rename. A queriesToDeselect entry naming a query that no longer
+    # exists is silently INERT -- the DH card would stop deselecting DL and both would co-fire.
+    queriesToDeselect  = @('DriverLicenseQuery')
     provider        = 'AZ_AZDPS'
     providerType    = 'Commsys'
     query           = 'DriverHistoryQuery'
@@ -644,7 +739,10 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
-        title = 'DRIVER LICENSE SEARCH BY OLN, SSN, "OR" NAME'
+        # v3.5: SSN dropped from the title -- it is no longer a CommSys DL search path (DQSS deleted
+        # as out-of-Basic-scope); the control remains for the RMS person search only, so advertising it
+        # as a DL path would be a lie on the form.
+        title = 'DRIVER LICENSE SEARCH BY OLN "OR" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO'
         rows  = @(
             @{ id = 'ROW_PER_DL_1'; cols = @('6','6'); fields = @(
                 @{ id = 'OLN_Per_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
@@ -663,10 +761,32 @@ $perLayout = MakeLayouts @(
                 @{ id = 'SexCode_Input';    node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
             @{ id = 'ROW_PER_DL_4'; cols = @('6','6'); fields = @(
-                # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
+                # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept.
+                # Safe under BUILD_RULES 24: State is any[]-ONLY in every DL combo, so it routes nothing.
                 @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DL_4' }
                 # LABEL-OVERRIDE: raceCode -- bare "Race" (any[]/RMS-only person-search field; relocated from the removed WMPI card, v3.3)
                 @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
+            )}
+            # v3.5 -- the DRIVER LICENCE PHOTO path (devdoc #2 / #5, metadata DQP).
+            # ImageIndicator CARRIES initialValue='Y' AND THAT IS MANDATORY, not a style choice:
+            # FIELD_REFERENCE.txt Section 9 / BUILD_RULES 20b -- without a FormSelect initialValue it
+            # DOES NOT SERIALIZE AT ALL. My first cut left it blank, reasoning that a set[] member is a
+            # routing field and BUILD_RULES 24 forbids prefilling one. That would have shipped DQPN and
+            # DQP permanently unsatisfiable: their set[] requires ImageIndicator, and an unserialized
+            # field is never present, so neither photo combo could EVER fire. Two paths that look built
+            # and cannot run is strictly worse than the v3.4 state of not having them.
+            # REQUESTOR IS THE REAL DISCRIMINATOR. It is officer-entered with NO default, so:
+            #   Requestor filled -> DQPN/DQP match -> photo request (ImageIndicator rides as Y)
+            #   Requestor empty  -> ACWL/DQN/DQ match -> ordinary DL search; none of those variants
+            #                       defines ImageIndicator, so the Y never reaches the wire
+            # BUILD_RULES 24 is satisfied because NO combo needs ImageIndicator ABSENT -- there is no
+            # ImageIndicator NOT_EXISTS gate anywhere in this build. That distinction is the whole
+            # rule: LA_LEMS gates DP on ImageIndicator EXISTS and DQ on NOT_EXISTS, and its DQ is a
+            # registered dead combo precisely because the prefill makes the field always-present.
+            # Left visible and un-automated: exposing a field before automating it is the standing rule.
+            @{ id = 'ROW_PER_DL_5'; cols = @('6','6'); fields = @(
+                @{ id = 'Requestor_Per_Input'; node = Inp 'Requestor' 'Requestor' '5' 'ROW_PER_DL_5' }
+                @{ id = 'ImageInd_Per_Sel';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_5' }
             )}
             @{ id = 'ROW_PER_DL_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_Per'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_PER_DL_BADGE' }
@@ -679,7 +799,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_DH_1'; cols = @('8','4'); fields = @(
                 @{ id = 'OLN_DH_Input';     node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
-                @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_DH_1' }
+                @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_2' }

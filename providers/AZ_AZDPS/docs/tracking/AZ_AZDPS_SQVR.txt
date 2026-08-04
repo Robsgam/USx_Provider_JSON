@@ -1,12 +1,12 @@
 AZ_AZDPS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-01
-JSON version: v3.4
+Last updated: 2026-08-04
+JSON version: v3.5
 Validator: see docs/reports/VALIDATOR_REPORT_AZ_AZDPS.txt (authoritative) -- v3.3 = 0 FAIL / 0 WARN. Hardcoded counts removed 2026-07-29: they were stale (quoted a pre-v3.3 70/4LIM/18FIRE run) and duplicated a generated report.
 Live test: PENDING (import not yet performed)
 
-Architecture: 6 CommSys QIDMs + 2 RMS QIDMs + AUTH, 5 QIFs, 14 combos
+Architecture: 6 CommSys QIDMs + 2 RMS QIDMs + AUTH, 5 QIFs, 15 combos
   (was "8 QIDMs / 18 combos" -- stale since v3.3 removed both WMPI QIDMs and their 4 combos as out-of-devdoc-Basic-scope. Corrected 2026-07-29.)
 Badge: dexStateUserId -- VISIBLE FormInput with NO initialValue in v3.3 (verified 2026-07-29); the AUTH UserName attr uses CommsysGetDexStateUserIdRuleHandler. NOTE: prior text called this a "hidden InpH", which does not match the built JSON. It is a set[] field on ACVR/ACVRV/ACWL/ACQB/ACQBH, so if the platform does NOT populate it those badge combos cannot fire and the no-badge fallbacks (DQN/BQ/BQH) win -- CONFIRM ON THE FIRST QUERY of AZ's first tenant sweep.
 State: NCIC pattern (RegistrationState, attributeTypeId=STATE, codeTypeProvider=NCIC, initialValue=AZ)
@@ -61,40 +61,64 @@ KNOWN LIMITATIONS (4):
   RMS co-fire: RMS Vehicle combo fires alongside CommSys [PENDING]
 
 ================================================================================
-2. AzAzdpsDriverLicenseQuery -- Person Entity (DL)
+2. DriverLicenseQuery -- Person Entity (DL)
 ================================================================================
+  v3.5 SCOPE CORRECTION: was AzAzdpsDriverLicenseQuery, an out-of-Basic transaction. AZ's metadata
+  defines BOTH it and the unprefixed DriverLicenseQuery as SEPARATE transactions with DIFFERENT
+  <Requirements>; only the unprefixed one is in the devdoc "Basic Queries Supported" list. Switching
+  ADDED the two driver-photo paths (DQPN/DQP, metadata DQP, devdoc #2/#5 -- DQP exists ONLY under the
+  Basic transaction, so AZ previously had NO photo request at all), LOOSENED the name search to
+  Set[Name] (devdoc #3 -- previously DOB and sex were both mandatory), and DELETED DQSS, an SSN
+  search the Basic devdoc does not list. 5 combos, 8 devdoc combinations covered.
 
-  QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+  QIDM: AZ_AZDPS_DriverLicenseQuery
   QIF:  ENTITY_Person
   queryLabel: Driver License
-  Combos: DQ (OLN), DQN (Name+DOB+Sex), DQSS (SSN), ACWL (Badge+Name)
+  Combos: DQPN (Photo+Name), DQP (Photo+OLN), ACWL (Badge+Name), DQN (Name), DQ (OLN)
   autoSelect: true (co-fires with DH)
+  ORDER IS LOAD-BEARING: DQ{OLN} set[] is a STRICT SUBSET of DQP{OLN} set[], so DQP must precede DQ
+  or the photo path is dead on arrival; DQN set[] is a subset of both ACWL and DQPN.
 
-  DQ -- OLN [PENDING]
-    set: OperatorLicenseNumber
-    any: dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix,
-         SexCode, SocialSecurityNumber, RegistrationState
-    keyReference: DQ
+  DQPN -- Photo request by Name (devdoc #2) [PENDING]
+    set: dexStateUserId, ImageIndicator, NameLast, NameFirst, Requestor
+    any: BirthDate, SexCode, nameMiddle, nameSuffix
+    conditions: OperatorLicenseNumber NOT_EXISTS   (OLN>Name guardrail)
+    keyReference: DQPN (invented -- metadata keyRef DQP carries two variants)
+    metadata: DQP{Name} = Set[BadgeNumber, ImageIndicator, Name, Requestor] Any[BirthDate, SexCode]
+    NOTE: NO State -- that variant defines none, so RegistrationState is deliberately absent from any[]
 
-  DQN -- Name + DOB + Sex [PENDING]
-    set: NameLast, NameFirst, SexCode, BirthDate
-    any: dexStateUserId, NameMiddle, NameSuffix, OperatorLicenseNumber,
-         SocialSecurityNumber, RegistrationState
-    keyReference: DQN (invented)
+  DQP -- Photo request by OLN (devdoc #5) [PENDING]
+    set: dexStateUserId, ImageIndicator, OperatorLicenseNumber, Requestor
+    any: (none -- metadata defines NO <Any> for this variant)
+    keyReference: DQP
+    metadata: DQP{OperatorLicenseNumber} = Set[BadgeNumber, ImageIndicator, OperatorLicenseNumber, Requestor]
+
+  ACWL -- Badge + Name + DOB + Sex (devdoc #1 In / #6 Out) [PENDING]
+    set: dexStateUserId, BirthDate, NameLast, NameFirst, SexCode
+    any: nameMiddle, nameSuffix, RegistrationState
+    conditions: dexStateUserId EXISTS; OperatorLicenseNumber NOT_EXISTS
+    keyReference: ACWL
+    metadata: ACWL{Name} = Set[BadgeNumber, Name, SexCode, BirthDate] Any[OperatorLicenseNumber, State]
+    NOTE: metadata's Any[OperatorLicenseNumber] deliberately NOT carried -- OLN is this combo's
+          NOT_EXISTS gate, and gate-xor-companion (verify_build CHECK 14) forbids both roles.
+
+  DQN -- Name (devdoc #3 In / #7 Out) [PENDING]
+    set: NameLast, NameFirst
+    any: BirthDate, SexCode, dexStateUserId, nameMiddle, nameSuffix, RegistrationState
+    conditions: OperatorLicenseNumber NOT_EXISTS
+    keyReference: DQN (invented -- metadata keyRef DQ carries two variants)
+    metadata: DQ{Name} = Set[Name] Any[BirthDate, SexCode, State]  -- NAME ALONE IS SUFFICIENT
     Name: FormatStringRuleHandler "Last, First Middle Suffix"
     BirthDate: CommsysParseDateRuleHandler yyyy-MM-dd -> yyyyMMdd
     Sex: NIBRS reverse-lookup -> M/F/U
 
-  DQSS -- SSN [PENDING]
-    set: SocialSecurityNumber
-    any: dexStateUserId, BirthDate, NameFirst, NameLast, NameMiddle, NameSuffix,
-         OperatorLicenseNumber, SexCode, RegistrationState
-    keyReference: DQSS (invented)
-
-  ACWL -- Badge + Name + DOB + Sex [PENDING]
-    set: dexStateUserId, BirthDate, NameLast, NameFirst, SexCode
-    any: NameMiddle, NameSuffix, OperatorLicenseNumber, SocialSecurityNumber,
-         RegistrationState
+  DQ -- OLN (devdoc #4 In / #8 Out) [PENDING]
+    set: OperatorLicenseNumber
+    any: RegistrationState
+    keyReference: DQ
+    metadata: DQ{OperatorLicenseNumber} = Set[OperatorLicenseNumber] Any[State]
+    NOTE: v3.5 stripped BirthDate, SexCode and dexStateUserId from any[] -- this variant defines
+          none of them, so carrying them OVER-PERMITTED on every OLN query.
     keyReference: ACWL
     Notes: MVD/ACIC badge-required path.
 
@@ -294,7 +318,8 @@ TEST MATRIX SUMMARY
     PER-2: OLN + state                   DQ       [PENDING]
     PER-3: Name + DOB + Sex              DQN      [PENDING]
     PER-4: Name + DOB + Sex + Badge      ACWL     [PENDING]
-    PER-5: SSN only                      DQSS     [PENDING]
+    PER-5: Photo by OLN (Image+Requestor) DQP     [PENDING]
+  PER-5b: Photo by Name (Image+Requestor) DQPN  [PENDING]
     PER-6: DH OLN                        KQ       [PENDING]
     PER-7: DH OLN + Attention + Purpose  KQ       [PENDING]
     PER-8: DH Name + DOB + Sex           KQH      [PENDING]

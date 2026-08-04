@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>AZ_AZDPS — Officer Query Guide v3.4</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>AZ_AZDPS â€” Officer Query Guide v3.5</title>
 <style>@page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
 body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
@@ -19,8 +19,8 @@ thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
 .pre { color:#666; font-style:italic; }
 footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }</style></head><body>
-<h1>AZ_AZDPS — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v3.4)</span></h1>
-<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
+<h1>AZ_AZDPS â€” Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v3.5)</span></h1>
+<p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled â€” change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
 <tr><td class='sb'>Plate Number</td><td class='req'>Badge, Plate Number</td><td class='opt'>Plate Year <span class='pre'>(2026)</span>, Plate Type <span class='pre'>(PC)</span>, State <span class='pre'>(AZ)</span>, Make, Year</td></tr>
@@ -29,14 +29,15 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name (with Badge)</td><td class='req'>Badge, Date of Birth, Last Name, First Name, Sex</td><td class='opt'>MI, Suffix, State <span class='pre'>(AZ)</span></td></tr>
-<tr><td class='sb'>Name</td><td class='req'>Last Name, First Name, Sex, Date of Birth</td><td class='opt'>Badge, MI, Suffix, State <span class='pre'>(AZ)</span></td></tr>
-<tr><td class='sb'>OLN</td><td class='req'>OLN</td><td class='opt'>Badge, Date of Birth, State <span class='pre'>(AZ)</span>, Sex</td></tr>
-<tr><td class='sb'>SSN</td><td class='req'>SSN</td><td class='opt'>Badge, Date of Birth, State <span class='pre'>(AZ)</span>, Sex</td></tr>
+<tr><td class='sb'>Name (in-state)</td><td class='req'>Badge, NCIC Image <span class='pre'>(Y)</span>, Last Name, First Name, Requestor</td><td class='opt'>Date of Birth, Sex, MI, Suffix</td></tr>
+<tr><td class='sb'>OLN (in-state)</td><td class='req'>Badge, NCIC Image <span class='pre'>(Y)</span>, OLN, Requestor</td><td class='opt'>&mdash;</td></tr>
+<tr><td class='sb'>Name (with Date of Birth + Sex)</td><td class='req'>Badge, Date of Birth, Last Name, First Name, Sex</td><td class='opt'>MI, Suffix, State <span class='pre'>(AZ)</span></td></tr>
+<tr><td class='sb'>Name</td><td class='req'>Last Name, First Name</td><td class='opt'>Date of Birth, Sex, Badge, MI, Suffix, State <span class='pre'>(AZ)</span></td></tr>
+<tr><td class='sb'>OLN (on its own)</td><td class='req'>OLN</td><td class='opt'>State <span class='pre'>(AZ)</span></td></tr>
 </tbody></table>
 <table class='qt'><caption>Driver History</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
 <tr><td class='sb'>Name</td><td class='req'>State <span class='pre'>(AZ)</span>, Last Name, First Name, Date of Birth, Sex</td><td class='opt'>Attention <span class='pre'>(X)</span>, MI, Suffix, Purpose Code</td></tr>
-<tr><td class='sb'>OLN</td><td class='req'>State <span class='pre'>(AZ)</span>, OLN</td><td class='opt'>Attention <span class='pre'>(X)</span>, Date of Birth, Purpose Code, Sex</td></tr>
+<tr><td class='sb'>OLN</td><td class='req'>State <span class='pre'>(AZ)</span>, OLN</td><td class='opt'>Attention <span class='pre'>(X)</span>, Purpose Code</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
@@ -58,5 +59,5 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </tbody></table>
 </section>
 
-<footer>AZ_AZDPS build v3.4 &middot; Generated 2026-08-04 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
+<footer>AZ_AZDPS build v3.5 &middot; Generated 2026-08-04 &middot; Reference only â€” supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date â€” ask for the current one.</footer>
 </body></html>

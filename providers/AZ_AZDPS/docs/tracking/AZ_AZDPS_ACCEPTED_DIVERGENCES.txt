@@ -11,47 +11,58 @@
 # Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
 # Matching is on the first three columns (query | keyRef | field), case-insensitive.
 #
-# CONTEXT (v3.1 guardrail hardening, 2026-07-24): identifier priority is now enforced by
-# existence-only EXISTS/NOT_EXISTS conditions on the CommSys combos -- NOT by set->any demotion
-# alone. This corrects the v3.0 doc, which FALSELY claimed the demotion by itself made the platform
-# "serialize ONLY the intended identifier." It does not: the platform unions the set[]+any[] of
-# EVERY combo whose set[] is satisfied (LIMITATION #1), so a lower-priority identifier left in a
-# sibling combo's any[] still bleeds into the serialized pool. v3.0 had ZERO conditions and therefore
-# over-sent on every multi-identifier input (plate query also serialized VIN, DL name query also
-# serialized OLN+SSN, DH name also OLN, boat reg also Hull, WMPI name also NCIC). v3.1 adds the
-# proven CA_VENTURA/CA_eSUN existence-gate pattern:
-#   Vehicle Plate>VIN   : ACVRV -> LicensePlateNumber NOT_EXISTS
-#   DL      OLN>SSN>Name: DQSS -> OLN NOT_EXISTS; ACWL/DQN -> OLN + SSN NOT_EXISTS
-#   DH      OLN>Name     : KQH -> OperatorLicenseNumberDH NOT_EXISTS
-#   Boat    Hull>Reg     : ACQB/BQ -> BoatHullIdNumber NOT_EXISTS
-#   WMPI    NCIC>Name    : ACQW/ACQM -> NCICNumber NOT_EXISTS
-# The higher-priority identifier is ALSO dropped from every sibling combo's any[] (gate-xor-companion,
-# verify_build CHECK 14), so the fired combo's serialized pool excludes it -- confirmed with
-# test_commsys (e.g. plate+VIN -> ACVR fires, VIN not in pool). The badge combos (ACWL/ACQB/ACQBH)
-# additionally carry dexStateUserId EXISTS so they do not shadow the no-badge fallback combos
-# (DQN/BQ/BQH) whose payloads have no badge (verify_build CHECK 16); this is metadata-faithful --
-# only ACWL/ACQB(H) require BadgeNumber in metadata, the DQ-Name/BQ/BQH transactions do not.
+# ============================================================================================
+# v3.5 (2026-08-04) -- SEVEN ROWS DELETED. This file shrank from 15 rows to 3, and not one of the
+# twelve was suppressing something that still needed suppressing:
 #
-# The four remaining demote entries below are LEGITIMATE companions, NOT identifiers: SexCode and
-# BirthDate are name-search descriptors that metadata carries in the DQ-Name / KQ-Name set[]. They
-# ride along in the OLN combo's any[] (a query for an OLN may still usefully carry an entered DOB/Sex)
-# without being forced into its set[]. They are not priority identifiers, so no existence gate applies.
-# All confirmed against docs/reference/AZ_AZDPS_METADATA_REFERENCE.txt.
-
-# --- AzAzdpsDriverLicenseQuery: DQ is the OLN combo. Name (DQN) and SSN (DQSS) are now gated OUT of
-#     DQ's pool by existence conditions (not listed here). SexCode/BirthDate stay as any[] companions. ---
-AzAzdpsDriverLicenseQuery | DQ | SexCode   | demoted-to-any | Sex is part of the DQN name-search set; harmless companion in DQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24
-AzAzdpsDriverLicenseQuery | DQ | BirthDate | demoted-to-any | DOB is part of the DQN name-search set; harmless companion in DQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24
-
-# --- DriverHistoryQuery: KQ is the OLN combo. Name (KQH) is gated OUT by OperatorLicenseNumberDH
-#     NOT_EXISTS (not listed here). SexCode/BirthDate stay as DH-suffix any[] companions. ---
-DriverHistoryQuery | KQ | BirthDate | demoted-to-any | DOB is part of the KQH name-search set; harmless companion in KQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24
-DriverHistoryQuery | KQ | SexCode   | demoted-to-any | Sex is part of the KQH name-search set; harmless companion in KQ (OLN) any[], not a priority identifier | design-decision | 2026-07-24
-ArticleSingleQuery | ACQA | OwnerAppliedNumber | devdoc-combo-unbuilt | Devdoc ArticleSingleQuery #2/#3 require OwnerAppliedNumber, but AZ metadata contains ZERO OwnerAppliedNumber field definitions and ACQA has exactly ONE variant: Set[BadgeNumber, ArticleTypeCode, ArticleSerialNumber] Any[RelatedHitSearchIndicator]. The built ACQA matches that variant exactly. | metadata-vs-devdoc | 2026-08-01
-GunQuery | ACQG | BirthDate | devdoc-combo-unbuilt | Devdoc GunQuery #1 is "(In/Out) BadgeNumber, BirthDate, Name" (gun by owner name), but AZ metadata ACQG has exactly ONE variant: Set[BadgeNumber, GunSerialNumber] Any[GunMake, GunModel, GunCaliber, RelatedHitSearchIndicator] -- there is NO name-based gun variant to implement. The built ACQG matches the only variant exactly. | metadata-vs-devdoc | 2026-08-01
-GunQuery | ACQG | ConcealedWeaponPermitNumber | devdoc-combo-unbuilt | Devdoc GunQuery #2 is "(In/Out) BadgeNumber, ConcealedWeaponPermitNumber", but AZ metadata contains ZERO ConcealedWeaponPermitNumber field definitions and ACQG has only the GunSerialNumber variant. | metadata-vs-devdoc | 2026-08-01
-DriverHistoryQuery | KQ | BirthDateDH | demoted-to-any | Built KQ declares primaryFieldReference=OperatorLicenseNumber and implements metadata KQ{OperatorLicenseNumber} = Set[State, OperatorLicenseNumber] Any[PurposeCode, Attention] EXACTLY -- that variant does NOT require BirthDate or SexCode. The finding comes from pairing this combo against the SIBLING variant KQ{Name} = Set[State, Name, BirthDate, SexCode], which is implemented separately and correctly by KQH (set[RegistrationStateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]). Promoting BirthDate/SexCode into KQ set[] would make the OLN-only driver-history search -- the most common one an officer runs -- unreachable. Keeping them in any[] lets an OLN search that happens to carry them TRANSMIT them instead of dropping them. Verified against the raw XML Requirements per Combination 2026-08-01. | metadata-vs-devdoc | 2026-08-01
-DriverHistoryQuery | KQ | SexCodeDH | demoted-to-any | Built KQ declares primaryFieldReference=OperatorLicenseNumber and implements metadata KQ{OperatorLicenseNumber} = Set[State, OperatorLicenseNumber] Any[PurposeCode, Attention] EXACTLY -- that variant does NOT require BirthDate or SexCode. The finding comes from pairing this combo against the SIBLING variant KQ{Name} = Set[State, Name, BirthDate, SexCode], which is implemented separately and correctly by KQH (set[RegistrationStateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH]). Promoting BirthDate/SexCode into KQ set[] would make the OLN-only driver-history search -- the most common one an officer runs -- unreachable. Keeping them in any[] lets an OLN search that happens to carry them TRANSMIT them instead of dropping them. Verified against the raw XML Requirements per Combination 2026-08-01. | metadata-vs-devdoc | 2026-08-01
-AzAzdpsDriverLicenseQuery | DQSS | BirthDate | demoted-to-any | Built DQSS declares primaryFieldReference=SocialSecurityNumber and implements metadata DQ{SocialSecurityNumber} = Set[SocialSecurityNumber] EXACTLY -- that variant requires NOTHING else, not even State. DQSS is a SYNTHETIC keyRef (LIMITATION #21) so audit_metadata resolves it by prefix to the DQ family and then compares against the DQ{Name} variant = Set[Name, SexCode, BirthDate], which is implemented separately by DQN. Promoting BirthDate/SexCode into DQSS set[] would make an SSN search impossible without also knowing the DOB and sex, which the metadata explicitly does not require. Verified against the raw XML Requirements per Combination 2026-08-01. | metadata-vs-devdoc | 2026-08-01
-AzAzdpsDriverLicenseQuery | DQSS | SexCode | demoted-to-any | Built DQSS declares primaryFieldReference=SocialSecurityNumber and implements metadata DQ{SocialSecurityNumber} = Set[SocialSecurityNumber] EXACTLY -- that variant requires NOTHING else, not even State. DQSS is a SYNTHETIC keyRef (LIMITATION #21) so audit_metadata resolves it by prefix to the DQ family and then compares against the DQ{Name} variant = Set[Name, SexCode, BirthDate], which is implemented separately by DQN. Promoting BirthDate/SexCode into DQSS set[] would make an SSN search impossible without also knowing the DOB and sex, which the metadata explicitly does not require. Verified against the raw XML Requirements per Combination 2026-08-01. | metadata-vs-devdoc | 2026-08-01
-AzAzdpsDriverLicenseQuery | ACWL | Name | devdoc-optional-unreachable | Devdoc AzAzdpsDriverLicenseQuery brackets SexCode as OPTIONAL on its name searches -- item #1 "(In) BadgeNumber, BirthDate, Name, [SexCode]" and item #3 "(In) Name, [SexCode]" -- but THIS providers metadata makes it MANDATORY on every name variant: ACWL{Name} = Set[BadgeNumber, BirthDate, Name, SexCode] Any[OperatorLicenseNumber, State], and DQ{Name} = Set[Name, SexCode, BirthDate] Any[State]. There is NO looser name variant, and metadata additionally requires BirthDate, which devdoc #3 omits entirely. METADATA IS FIELD-AUTHORITY, devdoc is QUERY-authority (KB rule B4), so SexCode and BirthDate stay in set[] and the built ACWL/DQN match metadata exactly -- confirmed by the gate itself, which reports "#1 +[SexCode] -> ACWL" as OK. Building to the devdoc brackets would require a Name-only or Name+DOB-without-Sex combination that NO metadata variant accepts, i.e. it would MANUFACTURE a wire-invalid request. NOTE ON SCOPE: this entry keys on field Name, which covers BOTH failing items because both list Name as mandatory; that is intended, since both share the identical root cause. Verified against the raw XML Requirements per Combination 2026-08-01. | metadata-vs-devdoc | 2026-08-01
+#   * 'AzAzdpsDriverLicenseQuery | ACWL | Name | devdoc-optional-unreachable' WAS NOT A DIVERGENCE,
+#     IT WAS A BUG. It argued "metadata makes SexCode MANDATORY on every name variant ... there is NO
+#     looser name variant". That is true of the AzAzdps-prefixed transaction and FALSE of the
+#     devdoc-Basic one, whose DQ{Name} = Set[Name] Any[BirthDate, SexCode, State] is exactly the
+#     looser variant it said did not exist. The row was scoped to the wrong transaction, so it
+#     silenced a real defect -- an officer holding only a name could not run a DL query at all.
+#     v3.5 switched to the Basic transaction and the finding it suppressed no longer arises.
+#     THE LESSON: a registration inherits the scope of whatever the build happened to implement. When
+#     the build is wrong about scope, the registry inherits the error and then defends it.
+#
+#   * The four 'DQ | SexCode/BirthDate' + 'DQSS | SexCode/BirthDate' rows and the four DH
+#     'KQ | BirthDate/SexCode(+DH)' rows argued the UNDER-REQUIRED direction ("do not promote these
+#     into set[], it would make an OLN-only search unreachable"). That argument was CORRECT and was
+#     answering a question nobody had asked: the gate's finding was OVER-PERMITTED, i.e. the field is
+#     transmitted on a variant that does not define it. The third option -- remove it from any[]
+#     entirely -- appears nowhere in those reasons. One of them even stated the over-permit as a
+#     benefit: "lets an OLN search that happens to carry them TRANSMIT them instead of dropping them."
+#     Both authorities disagree: metadata DQ{OLN} = Set[OLN] Any[State] and KQ{OLN} = Set[State, OLN]
+#     Any[PurposeCode, Attention], and devdoc DriverHistoryQuery #1 brackets ONLY [Attention,
+#     PurposeCode]. v3.5 strips the fields; the rows are stale and gone. DQSS is deleted outright.
+#
+#   * The ACQA / ACQG rows are RIGHT ON SUBSTANCE and were only MIS-KEYED -- see below.
+#
+# STILL TRUE, AND STILL ENFORCED BY CONDITIONS RATHER THAN BY THIS FILE: identifier priority is
+# enforced by existence-only EXISTS/NOT_EXISTS conditions on the CommSys combos, NOT by set->any
+# demotion. The v3.0 doc falsely claimed demotion alone made the platform "serialize ONLY the intended
+# identifier". It does not: the platform unions the set[]+any[] of EVERY combo whose set[] is satisfied
+# (LIMITATION #1), so a lower-priority identifier left in a sibling's any[] still bleeds into the pool.
+# Current gates (v3.5, SSN dropped from the DL cascade with DQSS):
+#   Vehicle Plate>VIN : ACVRV -> LicensePlateNumber NOT_EXISTS
+#   DL      OLN>Name  : DQPN / ACWL / DQN -> OperatorLicenseNumber NOT_EXISTS
+#   DH      OLN>Name  : KQH -> OperatorLicenseNumberDH NOT_EXISTS
+#   Boat    Hull>Reg  : ACQB / BQ -> BoatHullIdNumber NOT_EXISTS
+# The higher-priority identifier is ALSO dropped from every sibling combo's any[] (gate-xor-companion,
+# verify_build CHECK 14). The badge combos (ACWL/ACQB/ACQBH) additionally carry dexStateUserId EXISTS
+# so they do not shadow the no-badge fallbacks (DQN/BQ/BQH), which is metadata-faithful: only
+# ACWL/ACQB(H) require BadgeNumber, the DQ{Name}/BQ/BQH variants do not.
+# ============================================================================================
+#
+# --- UNBUILT devdoc combinations. Both are genuinely unimplementable: AZ's metadata defines NO field
+#     at all for the identifier the devdoc item requires, and each transaction has exactly ONE variant.
+#     KEYREF RE-POINTED v3.5 (was 'ACQA' / 'ACQG', i.e. the BUILT combo). An existence-class rule
+#     (not-built|unbuilt|shadow|dead-combo|dropped-combo|missing-primary-combo) makes
+#     audit_requirement_fidelity skip that keyRef's ENTIRE comparison, so naming a live combo silently
+#     dropped coverage while the finding count stayed 0 -- the tool warned about exactly this with
+#     "[NOTE] REGISTRY OVER-SUPPRESSION RISK ... names a combo that IS BUILT". Pointing at the devdoc
+#     item instead keeps the acceptance and restores the comparison: audit_devdoc_combinations matches
+#     on (query, field) and never reads this column, so its [NOTE] is unaffected. ---
+ArticleSingleQuery | (devdoc #2/#3) | OwnerAppliedNumber | devdoc-combo-unbuilt | Devdoc ArticleSingleQuery #2/#3 require OwnerAppliedNumber, but AZ metadata contains ZERO OwnerAppliedNumber field definitions and ACQA has exactly ONE variant: Set[BadgeNumber, ArticleTypeCode, ArticleSerialNumber] Any[RelatedHitSearchIndicator]. The built ACQA matches that variant exactly. There is nothing to build against. | metadata-vs-devdoc | 2026-08-01
+GunQuery | (devdoc #1) | BirthDate | devdoc-combo-unbuilt | Devdoc GunQuery #1 is "(In/Out) BadgeNumber, BirthDate, Name" (gun by owner name), but AZ metadata ACQG has exactly ONE variant: Set[BadgeNumber, GunSerialNumber] Any[GunMake, GunModel, GunCaliber, RelatedHitSearchIndicator] -- there is NO name-based gun variant to implement. The built ACQG matches the only variant exactly. | metadata-vs-devdoc | 2026-08-01
+GunQuery | (devdoc #2) | ConcealedWeaponPermitNumber | devdoc-combo-unbuilt | Devdoc GunQuery #2 is "(In/Out) BadgeNumber, ConcealedWeaponPermitNumber", but AZ metadata contains ZERO ConcealedWeaponPermitNumber field definitions and ACQG has only the GunSerialNumber variant. | metadata-vs-devdoc | 2026-08-01

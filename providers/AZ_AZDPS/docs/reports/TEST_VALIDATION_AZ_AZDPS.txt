@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.4.json
-  Generated: 2026-08-04 12:57
+  Source: AZ_AZDPS_v3.5.json
+  Generated: 2026-08-04 15:59
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- AZ_AZDPS_v3.4
+TEST MATRIX <-> JSON CONSISTENCY -- AZ_AZDPS_v3.5
 ============================================================
-Source: AZ_AZDPS_v3.4.json
+Source: AZ_AZDPS_v3.5.json
 Matrix: AZ_AZDPS_TEST_MATRIX.txt
 Generated: 2026-08-04
 
@@ -17,50 +17,49 @@ data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (19 tests -- 2 cards, 6 combos)
-  T1  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQ)
-  T2  Person     [PASS] any[] fields verified: RegistrationState
-  T3  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQSS)
-  T4  Person     [PASS] any[] fields verified: RegistrationState
-  T5  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQN)
-  T6  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, RegistrationState
-  T7  Person     [PASS] AzAzdpsDriverLicenseQuery fires (ACWL)
-  T8  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, RegistrationState
-  T9  Person     [PASS] DriverHistoryQuery fires (KQ)
-  T10  Person     [PASS] any[] fields verified: attention, purposeCode
-  T11  Person     [PASS] DriverHistoryQuery fires (KQH)
-  T12  Person     [PASS] any[] fields verified: attention, NameMiddleDH, NameSuffixDH, purposeCode
-  T13  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQ)
-  T14  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQSS)
-  T15  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQ)
-  T16  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQSS)
-  T17  Person     [PASS] AzAzdpsDriverLicenseQuery fires (DQ)
-  T18  Person     [PASS] DriverHistoryQuery fires (KQ)
-  T19  Person     [PASS] queriesToDeselect verified
+ENTITY: PERSON (18 tests -- 2 cards, 7 combos)
+  T1  Person     [PASS] DriverLicenseQuery fires (DQP)
+  T2  Person     [PASS] DriverLicenseQuery fires (DQ)
+  T3  Person     [PASS] any[] fields verified: RegistrationState
+  T4  Person     [PASS] DriverLicenseQuery fires (DQN)
+  T5  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, RegistrationState
+  T6  Person     [PASS] DriverLicenseQuery fires (DQPN)
+  T7  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix
+  T8  Person     [PASS] DriverLicenseQuery fires (ACWL)
+  T9  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix, RegistrationState
+  T10  Person     [PASS] DriverHistoryQuery fires (KQ)
+  T11  Person     [PASS] any[] fields verified: attention, purposeCodeDH
+  T12  Person     [PASS] DriverHistoryQuery fires (KQH)
+  T13  Person     [PASS] any[] fields verified: attention, NameMiddleDH, NameSuffixDH, purposeCodeDH
+  T14  Person     [PASS] DriverLicenseQuery fires (DQP)
+  T15  Person     [PASS] DriverLicenseQuery fires (DQP)
+  T16  Person     [PASS] DriverLicenseQuery fires (DQP)
+  T17  Person     [PASS] DriverHistoryQuery fires (KQ)
+  T18  Person     [PASS] queriesToDeselect verified
 ENTITY: VEHICLE (5 tests -- 1 card, 2 combos)
-  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
-  T21  Vehicle    [PASS] any[] fields verified: LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleMakeCode
-  T22  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVRV)
-  T23  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode
-  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
+  T19  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
+  T20  Vehicle    [PASS] any[] fields verified: LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleMakeCode
+  T21  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVRV)
+  T22  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode
+  T23  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
 ENTITY: BOAT (10 tests -- 1 card, 4 combos)
-  T25  Boat       [PASS] BoatQuery fires (BQH)
-  T26  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
-  T27  Boat       [PASS] BoatQuery fires (BQ)
-  T28  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
-  T29  Boat       [PASS] BoatQuery fires (ACQB)
-  T30  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
-  T31  Boat       [PASS] BoatQuery fires (ACQBH)
-  T32  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
+  T24  Boat       [PASS] BoatQuery fires (BQH)
+  T25  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
+  T26  Boat       [PASS] BoatQuery fires (BQ)
+  T27  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
+  T28  Boat       [PASS] BoatQuery fires (ACQB)
+  T29  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
+  T30  Boat       [PASS] BoatQuery fires (ACQBH)
+  T31  Boat       [PASS] any[] fields verified: RegistrationState, relatedHitSearchIndicator
+  T32  Boat       [PASS] BoatQuery fires (ACQBH)
   T33  Boat       [PASS] BoatQuery fires (ACQBH)
-  T34  Boat       [PASS] BoatQuery fires (ACQBH)
 ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
-  T35  Firearm    [PASS] GunQuery fires (ACQG)
-  T36  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, GunModel, relatedHitSearchIndicator
+  T34  Firearm    [PASS] GunQuery fires (ACQG)
+  T35  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, GunModel, relatedHitSearchIndicator
 ENTITY: ARTICLE (2 tests -- 1 card, 1 combo)
-  T37  Article    [PASS] ArticleSingleQuery fires (ACQA)
-  T38  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
+  T36  Article    [PASS] ArticleSingleQuery fires (ACQA)
+  T37  Article    [PASS] any[] fields verified: relatedHitSearchIndicator
 
-SUMMARY: 38/38 PASS, 0 FAIL
+SUMMARY: 37/37 PASS, 0 FAIL
 
 

@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: AZ_AZDPS_v3.4
-  Source: AZ_AZDPS_v3.4.json
-  Generated: 2026-08-04 12:57
+  PICKLIST / DROPDOWN REPORT: AZ_AZDPS_v3.5
+  Source: AZ_AZDPS_v3.5.json
+  Generated: 2026-08-04 15:59
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -22,6 +22,8 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
 
   Entity: Person
+    ImageIndicator [NCIC Image] (default=Y)
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCode [Race]
       Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
     RegistrationState [State] (default=AZ)
@@ -48,7 +50,7 @@ SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
     Config: AZ_AZDPS_VehicleRegistrationQuery
       State -> State
         codeTypeProvider=NCIC
-    Config: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+    Config: AZ_AZDPS_DriverLicenseQuery
       SexCode -> SexCode
         codeTypeProvider=NIBRS
       State -> State
@@ -89,10 +91,10 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
   QIDM: AZ_AZDPS_VehicleRegistrationQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
-  QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+  QIDM: AZ_AZDPS_DriverLicenseQuery
     SexCode -> targetField=SexCode, codeTypeProvider=NIBRS
 
-  QIDM: AZ_AZDPS_AzAzdpsDriverLicenseQuery
+  QIDM: AZ_AZDPS_DriverLicenseQuery
     State -> targetField=State, codeTypeProvider=NCIC
 
   QIDM: AZ_AZDPS_DriverHistoryQuery
@@ -107,5 +109,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 12
+  Form dropdowns: 13
   QRDM code type attrs: 15

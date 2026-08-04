@@ -311,12 +311,38 @@ foreach ($prov in $validProviders) {
         }
     }
 
-    # Person ImageIndicator: initialValue must be 'Y'
+    # Person ImageIndicator: initialValue must be 'Y'. The prefill is REQUIRED, not optional --
+    # ImageIndicator does not serialize at all without one (FIELD_REFERENCE.txt Section 9), so the
+    # original expectation stands. What is ALSO worth flagging (BUILD_RULES 20b, added 2026-08-04) is
+    # the consequence: because it always exists, a combo gated ImageIndicator NOT_EXISTS is
+    # permanently dead. LA_LEMS DriverLicenseQuery is the portfolio's only instance (DP gated EXISTS,
+    # DQ gated NOT_EXISTS). Sitting in a set[] is NOT itself a problem -- AZ_AZDPS v3.5's DQP/DQPN
+    # require Set[BadgeNumber, ImageIndicator, ..., Requestor] for the driver-licence photo and
+    # discriminate on Requestor, which has no default.
+    # $prov.Json, NOT $json -- the per-provider parse lives on the loop object. Written as $json
+    # first, which is UNDEFINED at this scope, so the loop never ran and the flag stayed $false with
+    # no error to show why. Silent-wrong, not broken.
     $personImg = @($fields | Where-Object { $_.Entity -eq 'Person' -and $_.FieldId -match '^[Ii]mageIndicator$' })
     if ($personImg.Count -gt 0) {
         $iv = $null
         try { $iv = $personImg[0].Props.initialValue } catch { }
-        if ($iv -eq 'Y') {
+        $imgNotExistsGate = $false
+        foreach ($b in $prov.Json.bundles) {
+            foreach ($c in $b.configurations) {
+                if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+                foreach ($cm in @($c.combinations)) {
+                    foreach ($cd in @($cm.requirements.conditions)) {
+                        if ("$($cd.operator)" -ne 'NOT_EXISTS') { continue }
+                        foreach ($f in @($cd.field)) {
+                            if ("$f" -match '^[Ii]mageIndicator') { $imgNotExistsGate = $true }
+                        }
+                    }
+                }
+            }
+        }
+        if ($iv -and $imgNotExistsGate) {
+            Warn "Person ImageIndicator initialValue='$iv' AND a combo gates on ImageIndicator NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b)"
+        } elseif ($iv -eq 'Y') {
             Pass "Person ImageIndicator initialValue='Y'"
         } else {
             Warn "Person ImageIndicator initialValue='$iv' (expected 'Y')"

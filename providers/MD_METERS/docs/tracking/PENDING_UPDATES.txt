@@ -1,0 +1,5 @@
+﻿# PENDING_UPDATES.txt -- MD_METERS
+# Lines without a leading '#' block enforce.ps1 and prevent testing.
+# Clear by running the build script (it removes this file on successful build).
+#
+[FLAG:validate-imgind-20b-l30] validate.ps1 + audit_cross_provider.ps1: LIMITATION #30 now requires State in a set[]; ImageIndicator check moved to BUILD_RULES 20b (prefill REQUIRED for serialization -- the defect is a combo gated ImageIndicator NOT_EXISTS). render_officer_guide + suggest_field_labels: -Encoding utf8NoBOM is PS7-only, a hard parameter-binding failure under the 5.1 engine enforce/pipeline use. Rebuild to re-record scores; LA_LEMS also gains a real 20b WARN. (flagged 2026-08-04)

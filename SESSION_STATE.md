@@ -39,7 +39,12 @@ absolute number is guaranteed to go stale and teach the next session to distrust
   compares ZERO devdoc combinations there, and a zero-comparison run is now a FAIL, not a PASS.
   Nothing about CC changed -- the gate stopped crediting a comparison that never ran. Clears by fixing
   the devdoc parse or recording why there is no combination table; **do neither while the hold stands.**
-- **LA_LEMS** -- its 2 DH-`Attention` devdoc items are DEFERRED. Only reason it is BLOCKED.
+- **LA_LEMS -- PARKED (Rob 2026-08-04).** 2 DH-`Attention` items DEFERRED, plus a real BUILD_RULES 20b
+  WARN (`ImageIndicator` prefilled `Y` while `DriverLicenseQuery/DQ` gates `ImageIndicator NOT_EXISTS`)
+  -- same root cause as its registered 2026-07-29 dead combo, newly visible to two more gates. Nothing
+  to diagnose; do NOT silence it with a divergence. **Expect `[WARN] Cross-provider: 207P/0F/1W` on
+  EVERY provider's enforce -- that check is portfolio-wide, so the WARN is LA's, not the one under
+  test.** Carries `[FLAG:validate-imgind-20b-l30]`.
 - **Jira: ALL updates HELD.** `enforce` 2r `[GAP]` is EXPECTED.
 - **Form review is Rob's MANUAL gate.** 2k `[INFO] not reviewed` is steady state. Never prompt.
 - TN_TIES prose divergence -- when we get to it.
@@ -49,42 +54,39 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## STATE
 
-**18 of 20 ENFORCED 0 FAIL / 0 WARN** (full sweep, measured). BLOCKED: LA_LEMS + CA_CONTRA_COSTA above.
-The CC block is a GATE getting stricter, not a provider getting worse -- do not loosen it back.
+**ENFORCED 0F/0W except:** LA_LEMS + CA_CONTRA_COSTA (parked/blocked, above), and MD_METERS +
+OH_LEADS which carry `[FLAG:validate-imgind-20b-l30]` -- they clear at their OWN next rebuild; do NOT
+rebuild them to chase a score. CC's block is a GATE getting stricter, not a provider getting worse.
 
-**ENFORCED is not "done". SIX are tenant-tested and ALL SIX WERE RE-SWEPT 2026-08-03/04** on Rob's
-call after the build process changed -- FL 116, CA_CLETS 90, TX 89, NY 64, HI 46, NJ 36 = **441 logs**,
-every one captured fresh against a reset package, four log gates green on each.
-**14 ENFORCED but NEVER swept** = the whole remaining backlog.
+**ENFORCED is not "done". SIX are tenant-tested, all re-swept 2026-08-03/04** -- FL 116, CA 90, TX 89,
+NY 64, HI 46, NJ 36 = **441 logs**, each fresh against a reset package, four log gates green.
+**AZ v3.5 is enforce-clean and NEVER swept; 13 others never swept** = the backlog.
 
-Invariants held: devdoc-UNBUILT 2 (both LA_LEMS) | wiring closure 0/9 classes | audit_metadata 20/20 |
-gate efficacy 11/11 KILLED | portability 260 cells 0 unportable | fidelity fixture 116 branches 0/0 |
-spec-plan NO-FIRE 24 | **registry currency 0 stale / 69 checkable** | **BUILD_NOTES fidelity 0 generic
-of 20**. Gate stack changed heavily 2026-08-02/04 -- do NOT re-derive it; the decision-trail hook +
-`git log -n 40` hold the reasoning. NEW since 2026-08-03: `audit_registry_currency`,
-`audit_buildnotes_fidelity` (enforce **PHASE 2u**, BLOCKING, added at zero).
+Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 0/9 | audit_metadata 20/20 | portability 260 cells
+0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic |
+AZ gate efficacy 7/7. Gate stack changed heavily 2026-08-02/04 -- do NOT re-derive it; the
+decision-trail hook + `git log -n 40` hold the reasoning. NEW: `audit_registry_currency`,
+`audit_buildnotes_fidelity` (2u), and `audit_supported_queries` **CHECK 0** (transaction-name scope --
+it compared queryLabel, never the wire transaction, for months).
 
 ## NEXT PHYSICAL ACTION
 
-**The 14 never-swept providers**, via `test_phase2.ps1 -Provider <NAME>` then `-PostIngest`. Each needs
-an import first (Rob's hands), then ~20 min of driver + watcher. Nothing else is owed on the six.
+**AZ_AZDPS v3.5**: Rob's cosmetic review -> import -> `test_phase2.ps1 -Provider AZ_AZDPS`, then
+`-PostIngest`. After that, the 13 other never-swept providers (each needs an import first).
 
-**Jira is CURRENT on all six** (FL 790815, TX 790861, NY 790896, NJ 790914, CA_CLETS 791400) -- the
-HELD-updates rule was lifted for these by Rob 2026-08-03. **HI v4.14 is the one release line still
-owed**, and its `DEX_TICKET.md` has not been checked against DEX-1257 yet.
-
-**TENANT INFO STAYS OFF THE TICKETS** (Rob 2026-08-03, restated): no attachment note, no catalog post,
-no Foundation import line -- even though older comments on DEX-967/988 carry `IMPORT:` lines. Track it
-in `IMPORT_LEDGER.md` sections B (Foundation) and **C (published JSON: ticket + catalog)**.
+**Jira CURRENT on all six** (FL 790815, TX 790861, NY 790896, NJ 790914, CA 791400, HI 791589).
+**TENANT INFO STAYS OFF THE TICKETS** (Rob, restated): no attachment, catalog or Foundation line --
+track those in `IMPORT_LEDGER.md` B (Foundation) + C (published JSON).
 
 ## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 
-1. **AZ_AZDPS DL scope inversion.** Devdoc's Basic list names `DriverLicenseQuery`; the build implements
-   the out-of-Basic `AzAzdpsDriverLicenseQuery` and skips the Basic one (which alone supports images).
-   Boat has the same fork and builds the Basic one, so DL is the lone inversion. Rewires Person.
+1. **AZ Boat fuzz survivor is a GATE gap, NOT a build defect.** Dropping `RegistrationNumber` from the
+   hull combo's `any[]` goes unnoticed by every gate; AZ's build has it correct. Widening the gate is
+   tooling work, deliberately not done in an AZ-only pass.
+2. **LA_LEMS DP/DQ** -- PARKED, see ON HOLD. (AZ DL scope inversion: CLOSED at v3.5.)
 
 **Residual gaps -- recorded, NOT owed, do not "discover" again:** `VEHICLE_BODY_STYLE|NJ_NIBRS` uniform
-across all 20 QRDMs vs CLAUDE.md's "CA=VEHICLE" -- **HYPOTHESIS**, no repo artifact can settle it |
+across all 20 QRDMs vs CLAUDE.md's "CA=VEHICLE" -- **HYPOTHESIS**, unsettleable from the repo |
 fidelity advisory 11 UNDER / 40 OVER (none on the fixture; use `usx-adjudicate`) | CCH spec-plan name
 divergences | `audit_devdoc_optionals`/`audit_log_content` FLAKE under parallel load -- re-run alone.
 

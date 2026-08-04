@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.4.json
-  Generated: 2026-08-04 14:43
+  Source: AZ_AZDPS_v3.5.json
+  Generated: 2026-08-04 15:59
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,7 +25,8 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
-  [PASS] QIF 'ENTITY_Person' -> Person : 24 fieldIds
+  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
+  [PASS] QIF 'ENTITY_Person' -> Person : 26 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
@@ -33,10 +34,11 @@ VALIDATOR RESULTS
 === PHASE 3: QIDM Validation ===
   [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' -> Vehicle : 8 attrs, 2 combos
   [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' -> Person : 7 attrs, 4 combos
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' -> Person : 8 attrs, 5 combos
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' ImageIndicator size=1
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' -> Person : 7 attrs, 2 combos
   [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' SexCode has codeTypeProvider='NIBRS' (AP #2)
@@ -47,12 +49,14 @@ VALIDATOR RESULTS
   [PASS] QIDM 'AZ_AZDPS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' has In/Out combos but State is any[]-only -- a State prefill routes nothing (LIMITATION #30 N/A)
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
   [PASS] Person: 2 QIDMs co-fire with autoSelect=true + queriesToDeselect on SINGLE QIF
-         AZ_AZDPS_AzAzdpsDriverLicenseQuery (query=AzAzdpsDriverLicenseQuery, deselect=DriverHistoryQuery)
-         AZ_AZDPS_DriverHistoryQuery (query=DriverHistoryQuery, deselect=AzAzdpsDriverLicenseQuery)
+         AZ_AZDPS_DriverLicenseQuery (query=DriverLicenseQuery, deselect=DriverHistoryQuery)
+         AZ_AZDPS_DriverHistoryQuery (query=DriverHistoryQuery, deselect=DriverLicenseQuery)
+  [PASS] Person : DH QIDM uses DH-suffix fieldIds (AP #14)
   [PASS] Person : 2 QIDMs, 1 QIF(s)
   [PASS] Vehicle : 1 QIDMs, 1 QIF(s)
   [PASS] Boat : 1 QIDMs, 1 QIF(s)
@@ -73,10 +77,11 @@ VALIDATOR RESULTS
 === PHASE 6: Query Simulation ===
   [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo 'ACVR': all set[]/any[] fields resolvable
   [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo 'ACVRV': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'ACWL': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQN': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
-  [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo 'DQSS': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo 'DQPN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo 'DQP': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo 'ACWL': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo 'DQN': all set[]/any[] fields resolvable
+  [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo 'DQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo 'KQH': all set[]/any[] fields resolvable
   [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo 'KQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'AZ_AZDPS_GunQuery' combo 'ACQG': all set[]/any[] fields resolvable
@@ -87,7 +92,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'AZ_AZDPS_BoatQuery' combo 'BQH': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 63 PASS / 0 FAIL / 0 WARN
+  RESULTS: 68 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.

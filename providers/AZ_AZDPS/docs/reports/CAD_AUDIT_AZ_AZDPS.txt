@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.4.json
-  Generated: 2026-08-04 14:43
+  Source: AZ_AZDPS_v3.5.json
+  Generated: 2026-08-04 15:59
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: AZ_AZDPS_v3.4
+ CAD AUDIT: AZ_AZDPS_v3.5
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -40,10 +40,10 @@ CAD AUDIT
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [PASS] raceCode: in QIF and CAD list
-    [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] imageIndicator: in QIF as 'ImageIndicator' (PascalCase USx fieldIds)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [PASS] attention: in QIF and CAD list
-    [PASS] purposeCode: in QIF and CAD list
+    [INFO] purposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] socialSecurityNumber: in QIF as 'SocialSecurityNumber' (PascalCase USx fieldIds)
     [INFO] address: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -58,8 +58,10 @@ CAD AUDIT
     [INFO] driverHistoryPurposeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] hairColor: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] Requestor: in QIF, not in CAD list (provider-specific)
     [INFO] dexStateUserId: in QIF, not in CAD list (provider-specific)
     [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
+    [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameMiddleDH: in QIF, not in CAD list (provider-specific)
@@ -138,7 +140,7 @@ CAD AUDIT
 
 --- CHECK 4: QIDM sourceField Case Alignment ---
     [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery': all sourceFields match QIF fieldIds (case-sensitive)
-    [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery': all sourceFields match QIF fieldIds (case-sensitive)
+    [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_GunQuery': all sourceFields match QIF fieldIds (case-sensitive)
     [PASS] QIDM 'AZ_AZDPS_ArticleSingleQuery': all sourceFields match QIF fieldIds (case-sensitive)
@@ -147,10 +149,11 @@ CAD AUDIT
 --- CHECK 5: CAD Defaults Coverage ---
     [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVR -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'AZ_AZDPS_VehicleRegistrationQuery' combo ACVRV -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo ACWL -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQN -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQ -- defaults cover all initialValue any[] fields
-    [PASS] QIDM 'AZ_AZDPS_AzAzdpsDriverLicenseQuery' combo DQSS -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo DQPN -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo DQP -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo ACWL -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo DQN -- defaults cover all initialValue any[] fields
+    [PASS] QIDM 'AZ_AZDPS_DriverLicenseQuery' combo DQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQH -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'AZ_AZDPS_DriverHistoryQuery' combo KQ -- defaults cover all initialValue any[] fields
     [PASS] QIDM 'AZ_AZDPS_GunQuery' combo ACQG -- defaults cover all initialValue any[] fields
@@ -166,6 +169,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 66 PASS / 0 FAIL / 0 WARN / 70 INFO
+Total: 67 PASS / 0 FAIL / 0 WARN / 72 INFO
 
 

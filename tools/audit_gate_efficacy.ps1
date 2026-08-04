@@ -102,13 +102,21 @@ function Run-Gate([string]$tool, [string[]]$argsList) {
     # deliberately warn-level (verify_build CHECK 9 "flags survivors for review"), and a
     # harness that only looked for [FAIL] would libel them as blind. Learned the hard way
     # 2026-07-30 -- the first run of this harness falsely accused CHECK 9 for exactly that.
-    $nFail = @([regex]::Matches($out,'\[FAIL\]')).Count
+    # ...AND [LIMITATION], added 2026-08-04 -- the SAME hole, one verdict class further along.
+    # validate.ps1 emits THREE classes (FAIL / WARN / LIMITATION) and its RESULTS line counts them
+    # separately, but this harness only looked for the first two. So the `az-state-prefill-routes`
+    # mutation -- put RegistrationState back into a set[] while the form prefills it, the real
+    # LIMITATION #30 mechanism -- reported SURVIVED while validate.ps1 was in fact reacting
+    # correctly, which an ad-hoc replica run had already shown. A harness that cannot see a whole
+    # verdict class will libel every check that speaks in it, exactly as the WARN omission above
+    # libelled verify_build CHECK 9 on 2026-07-30. Same lesson, so keep them together.
+    $nFail = @([regex]::Matches($out,'\[FAIL\]|\[LIMITATION\]')).Count
     # FULL finding TEXT, not just a count. Count-only detection is blind to a mutation that WORSENS
     # an existing finding line instead of adding one -- measured 2026-07-30, when two NJ mutations
     # reported SURVIVED purely because RANDFULL already carried an UNDER-REQUIRED line and the
     # mutation added a field to it rather than a new line. A gate that cannot see a defect get worse
     # is exactly the class this harness exists to expose, so it must not have that hole itself.
-    $fLines = @([regex]::Matches($out,'(?m)^.*\[(?:FAIL|WARN)\].*$') | ForEach-Object { $_.Value.Trim() })
+    $fLines = @([regex]::Matches($out,'(?m)^.*\[(?:FAIL|WARN|LIMITATION)\].*$') | ForEach-Object { $_.Value.Trim() })
     $nWarn = @([regex]::Matches($out,'\[WARN\]')).Count
     # VACUOUS-RUN DETECTOR. "no findings" and "ran no checks" are different things, and a gate that
     # skipped its subject entirely looks identical to a clean pass. audit_metadata emits
@@ -231,6 +239,13 @@ $MUTS = @(
      Gate='audit_registry_currency.ps1'; Args={ @('-Provider','NJ_NJCJIS','-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'RANDFULL'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'LicensePlateTypeCode' }) } }
+
+  # ── State-prefill routing (LIMITATION #30) ─────────────────────────────────────────────
+  @{ Id='az-state-prefill-routes'; OnlyProvider='AZ_AZDPS'
+     Desc='RegistrationState ADDED to DriverLicenseQuery/DQ set[], making it a routing field while the Person form still prefills it with initialValue=AZ -- the real LIMITATION #30 mechanism (an always-present field permanently hides every combo needing its ABSENCE). Catalogued 2026-08-04 alongside NARROWING that check: validate.ps1 G-3 used to fire on ANY QIDM that had a state=In or state=Out combo plus a State prefill, without asking whether State was in a set[] at all. That flagged AZ v3.5 twice purely because its DQP photo combos are honestly labelled state=In (metadata DQP defines NO State field, so they cannot serve out-of-state) while ACWL/DQ/DQN are In/Out -- a LABEL, not a routing risk, and the alternative was to MISLABEL DQP as In/Out to satisfy the gate. Measured at zero LIMITATION #30 lines across all 20 providers before narrowing, so no coverage was lost. This mutation is what makes the narrowed check''s PASS mean something: it puts State back into a set[] and the check must fail again.'
+     Gate='validate.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'DQ'
+           $cm.requirements.set=@(@($cm.requirements.set)+'RegistrationState') } }
 
   # ── devdoc transaction-name scope ──────────────────────────────────────────────────────
   @{ Id='hi-out-of-basic-transaction'; OnlyProvider='HI_HCJDC_OFML'

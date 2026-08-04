@@ -2,9 +2,52 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.4** | Generated: 2026-08-04
+Current: **v3.5** | Generated: 2026-08-04
 
 ---
+
+## v3.5 -- 2026-08-04 -- DL built on the WRONG TRANSACTION since v3.3 -- switched to devdoc-Basic DriverLicenseQuery
+
+**CHANGED:** (1) DL transaction AzAzdpsDriverLicenseQuery -> DriverLicenseQuery. AZ's metadata defines
+  BOTH as separate transactions with DIFFERENT <Requirements>; only the unprefixed one is in the  
+  devdoc "Basic Queries Supported" list. (2) ADDED the two photo paths that transaction alone  
+  supports -- DQPN (devdoc #2, by Name) and DQP (devdoc #5, by OLN), both implementing metadata  
+  DQP, with new ImageIndicator + Requestor controls. (3) LOOSENED the name search to DQN =  
+  Set[Name] per Basic DQ{Name}: name alone is now sufficient. (4) DELETED DQSS -- an SSN search the  
+  Basic devdoc does not list. (5) STRIPPED the over-permits from DQ{OLN} any[] (BirthDate, SexCode,  
+  BadgeNumber -- metadata defines only Any[State]). (6) DH queriesToDeselect re-pointed at the new  
+  query name; an entry naming a query that no longer exists is silently INERT.  
+**REASON:** THREE OFFICER-VISIBLE CAPABILITIES WERE MISSING, not a naming nicety.
+  * NO DRIVER-LICENCE PHOTO EXISTED AT ALL. Metadata DQP is defined ONLY under the Basic  
+    transaction, so devdoc #2 and #5 were unreachable: `Requestor` appeared ZERO times in the  
+    emitted JSON and the single `ImageIndicator` hit was a QRDM *response* mapping, not a control.  
+    The devdoc documents the field explicitly ("Y - Request Driver License Photo").  
+  * A NAME-ONLY DL SEARCH WAS IMPOSSIBLE. Devdoc #3 is "Name, [SexCode]" and Basic DQ{Name} is  
+    Set[Name] Any[BirthDate, SexCode, State]; the prefixed sibling's DQ{Name} = Set[Name, SexCode,  
+    BirthDate] made DOB *and* sex mandatory. An officer holding just a name got nothing.  
+  * AN UNAUTHORIZED SSN SEARCH WAS BEING OFFERED (DQSS).  
+HOW IT SURVIVED: audit_supported_queries compared each combo's queryLabel against a hand-maintained  
+  extract and never the transaction name. 'Driver License' is legitimately on that list, so every  
+  combo scored [PASS] -- including "[PASS] combo DQSS: 'Driver License | SocialSecurityNumber' is  
+  devdoc-supported", a flatly false statement. Three layers had to align: the label comparison, the  
+  extract's PROVISIONAL status (which downgraded mismatches to INFO), and a '$'-anchored devdoc  
+  parser. Closed by that tool's CHECK 0 (2026-08-04), which gates on the devdoc itself and blocked  
+  this build until fixed. The v3.4 build script had FLAGGED the inversion in its own header comment  
+  as an open question for Rob -- so it was known and recorded, just never gated.  
+ONE REGISTRY ROW WAS NOT A DIVERGENCE BUT A BUG: 'ACWL | Name | devdoc-optional-unreachable' argued  
+  "metadata makes SexCode MANDATORY on every name variant ... there is NO looser one". True of the  
+  prefixed sibling, FALSE of the Basic transaction, whose DQ{Name} is exactly that looser variant.  
+  Retired. A registration whose premise is scoped to the wrong transaction silences a real defect.  
+ORDERING: DQPN, DQP, ACWL, DQN, DQ. DQ{OLN} set[] is a STRICT SUBSET of DQP{OLN} set[], so DQP must  
+  precede DQ or the photo path is dead on arrival; DQN set[] is a subset of both ACWL and DQPN.  
+  OLN>Name guardrail kept (SSN dropped from the cascade), gate-xor-companion (CHECK 14) preserved.  
+ImageIndicator and Requestor carry NO initialValue: both are in DQP set[], i.e. ROUTING fields, and  
+  a prefill would make DQP always-match and shadow every plainer DL search (BUILD_RULES 24).  
+  RegistrationState keeps initialValue='AZ' -- it is any[]-only here, so it routes nothing.  
+The SSN control STAYS: consumed by the RMS person QIDM (firstNameLastNameSocialSecurityNumber,  
+  -KeepSsn), which audit_wiring_closure counts as reaching the wire. Dropped from the card TITLE  
+  though -- it is no longer a CommSys DL path, and advertising it as one would be a lie on the form.  
+ALL 5 ENTITIES RESET at v3.5 (block by version). No re-sweep cost: AZ has never been tenant-tested.  
 
 ## v3.4 -- 2026-08-01 -- One real wire fix, six registrations, one gate defect (commit 50e4268c)
 

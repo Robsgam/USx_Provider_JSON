@@ -124,4 +124,9 @@ foreach ($fid in $allFids) {
 
 $text = ($out -join "`r`n")
 Write-Host $text
-if ($OutFile) { $text | Out-File -FilePath $OutFile -Encoding utf8NoBOM; Write-Host "`n-> $OutFile" }
+# PS 5.1: -Encoding utf8NoBOM is PowerShell 7 only (see render_officer_guide.ps1 for the full note);
+# under 5.1 it is a hard parameter-binding failure, and -Encoding utf8 would write a BOM instead.
+if ($OutFile) {
+    [System.IO.File]::WriteAllText($OutFile, ($text -join "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
+    Write-Host "`n-> $OutFile"
+}

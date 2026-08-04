@@ -359,7 +359,41 @@ if ($entitiesBundle) {
                         }
                     }
                     if ($node.props.fieldId -eq 'ImageIndicator') {
-                        if (-not $node.props.initialValue) {
+                        # BUILD_RULES 20b, added as a CHECK 2026-08-04: the real defect is not
+                        # "ImageIndicator sits in a set[]" -- it is "some combo needs ImageIndicator
+                        # ABSENT". ImageIndicator MUST carry an initialValue or it does not serialize
+                        # at all (FIELD_REFERENCE.txt Section 9), so it ALWAYS exists, so any
+                        # NOT_EXISTS gate on it is permanently dead. LA_LEMS DriverLicenseQuery is the
+                        # portfolio's only instance: DP is gated ImageIndicator EXISTS and DQ
+                        # ImageIndicator NOT_EXISTS, making DQ unreachable (registered dead-combo,
+                        # decision pending). Being in a set[] is FINE on its own -- AZ_AZDPS v3.5's
+                        # DQP/DQPN require Set[BadgeNumber, ImageIndicator, ..., Requestor] for the
+                        # driver-licence photo (devdoc #2/#5) and discriminate on REQUESTOR, an
+                        # officer-entered field with no default, so the prefill routes nothing there.
+                        # I first wrote this exemption the other way round -- pass when ImageIndicator
+                        # is in a set[], warn when it is prefilled -- which both blessed LA_LEMS's real
+                        # violation and would have kept AZ's photo combos unserializable. Measure what
+                        # an exemption actually covers, and gate on the MECHANISM, not on a proxy.
+                        if (-not $script:imgIndGateComputed) {
+                            $script:imgIndNotExistsGate = $false
+                            foreach ($b in $json.bundles) {
+                                foreach ($c in $b.configurations) {
+                                    if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+                                    foreach ($cm in @($c.combinations)) {
+                                        foreach ($cd in @($cm.requirements.conditions)) {
+                                            if ("$($cd.operator)" -ne 'NOT_EXISTS') { continue }
+                                            foreach ($f in @($cd.field)) {
+                                                if ("$f" -match '^[Ii]mageIndicator') { $script:imgIndNotExistsGate = $true }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            $script:imgIndGateComputed = $true
+                        }
+                        if ($node.props.initialValue -and $script:imgIndNotExistsGate) {
+                            Write-Warn "QIF '$($cfg.name)' ImageIndicator initialValue='$($node.props.initialValue)' AND a combo gates on ImageIndicator NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b: never existence-gate a mandatorily-defaulted field)"
+                        } elseif (-not $node.props.initialValue) {
                             Write-Warn "QIF '$($cfg.name)' ImageIndicator has no initialValue -- expected 'Y' or 'N'"
                             Write-Host "    [FIX] In build script: set ImageIndicator initialValue='Y' or 'N' per provider requirement" -ForegroundColor Cyan
                         } else {
@@ -1737,7 +1771,31 @@ foreach ($q in $qidms) {
     foreach ($combo in $q.combinations) {
         if ($combo.state -eq 'In' -or $combo.state -eq 'Out') { $hasSeparateInOut = $true; break }
     }
-    if ($hasSeparateInOut -and $allFieldProps.ContainsKey($entity)) {
+    # LIMITATION #30's MECHANISM requires the State field to be in some combo's set[] (added 2026-08-04).
+    # The constraint is: a form initialValue makes the field ALWAYS-PRESENT, which permanently hides
+    # every combo needing its ABSENCE. That can only happen if State is a ROUTING field, i.e. it sits
+    # in a set[]. When State is any[]-ONLY, a prefill changes which combo fires exactly nowhere, and
+    # CLAUDE.md's own decision tree sanctions defaulting it ("default State to home only when
+    # any[]-only"). Without this guard the check fired on AZ_AZDPS v3.5 purely because its DQP photo
+    # combos are honestly labelled state='In' (metadata DQP defines no State field at all, so they
+    # cannot serve out-of-state) while ACWL/DQ/DQN are 'In/Out' -- a LABEL, not a routing risk. The
+    # alternative was to mislabel DQP as 'In/Out' to satisfy the gate, which is backwards.
+    # Measured before landing: ZERO LIMITATION #30 lines across all 20 providers, so this narrowing
+    # costs no existing coverage. Paired with the `az-state-prefill-routes` mutation in
+    # audit_gate_efficacy, which puts State into a set[] and confirms the check still fires.
+    $stateInSomeSet = $false
+    foreach ($combo in $q.combinations) {
+        if ($combo.requirements -and $combo.requirements.set) {
+            foreach ($f in $combo.requirements.set) {
+                if ("$f" -match '(?i)^(RegistrationState|State|RegistrationStateDH|StateDH)$') { $stateInSomeSet = $true; break }
+            }
+        }
+        if ($stateInSomeSet) { break }
+    }
+    if ($hasSeparateInOut -and -not $stateInSomeSet) {
+        Write-Pass "QIDM '$($q.name)' has In/Out combos but State is any[]-only -- a State prefill routes nothing (LIMITATION #30 N/A)"; Inc-Pass
+    }
+    if ($hasSeparateInOut -and $stateInSomeSet -and $allFieldProps.ContainsKey($entity)) {
         foreach ($fid in $allFieldProps[$entity].Keys) {
             $fp = $allFieldProps[$entity][$fid]
             if ($fp.attributeTypeId -eq 'STATE') {
