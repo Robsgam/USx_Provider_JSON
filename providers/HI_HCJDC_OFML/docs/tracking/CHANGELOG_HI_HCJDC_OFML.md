@@ -2,12 +2,38 @@
 
 Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.14** | Generated: 2026-08-02
+Current: **v4.14** | Generated: 2026-08-04
 
 ---
 
 ## v4.14 -- 2026-07-30 -- Layout review -- Vehicle 1-card collapse + Boat order tidy (direct Rob feedback, NO functional change)
 
+RE-SWEPT 2026-08-04 at the SAME version -- 6th and LAST of the original six (Rob's call after the  
+  build process changed). Package reset with -Force so 46 fresh captures REPLACED the prior 46.  
+  46/46 ALL-PASS -- Vehicle 16, Person 14, Firearm 6, Article 3, Boat 7. Four log gates green  
+  (6c 46/46, 6d 46/46, 2i 46/46 attribution, plan completeness 5/5). enforce 44P/0F/0W.  
+  audit_log_inflation 0/0/0/0.  
+  WIRE EVIDENCE -- this provider makes the STRONGEST layout claims of the six, and both hold:  
+  * DL and DH are GENUINELY independent, not two views of one pool: the DL card carried State=GA  
+    while the DH card carried State=NJ IN THE SAME OFFICER SESSION. Both resolve to the canonical  
+    un-suffixed <State> element on the wire, so the DH-suffix is purely form-side isolation with  
+    NO wire footprint. DQ/DQN send DriverLicenseQuery, KQ/KQN send DriverHistoryQuery.  
+  * OLN>Name holds SEPARATELY on each card -- DQN_guardrail_vs_DQ and KQN_guardrail_vs_KQ each  
+    send OperatorLicenseNumber ONLY, with no Name/BirthDate/SexCode leaking. This is the only  
+    provider claiming that guardrail twice, and the case most likely to leak if the pools were  
+    shared. It does not.  
+  * Boat Hull>Reg: QB_guardrail_vs_BQ sends BoatHullIdNumber ONLY. NOTE this is the OPPOSITE  
+    correct answer from NJ v4.15, where the reg number deliberately RIDES ALONG on the hull query  
+    -- because NJ's devdoc lists it as an optional on the hull combination and HI's does not.  
+    Same-looking guardrail, two right answers, each decided by the provider's OWN authority.  
+  * ImageIndicator=N combo default confirmed on every VehReg combo, with the toggle tests carrying  
+    Y -- default applied AND genuinely exercised.  
+  * GunMake=IMI (letter code) where NJ_NJCJIS sends GunMake=03 (numeric NIBRS) from the SAME  
+    NCIC_FIREARM_MAKE category/source pair. The per-tenant code-table difference was documented  
+    from one provider's evidence; it is now confirmed from both, same session.  
+  Two shortfalls, both recovered by re-running: one disabled-Send timeout on the GunMake toggle  
+  (12th such today, 12th to clear on retry, never once reproducible) and one capture-side loss of  
+  QG_af_GunCaliber.  
 **CHANGED:** From the HI v4.13 rendered-form review (mirrors FL v7.11/v7.12 + NJ v4.14):
   (1) Vehicle collapsed from 3 cards (SEARCH OPTIONS + PLATE SEARCH + VIN SEARCH) to ONE  
     "VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, \"OR\" VIN" card -- Plate row, Type/Year row,  

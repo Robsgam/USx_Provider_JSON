@@ -1,22 +1,15 @@
 # SESSION STATE — where we are RIGHT NOW
 
-> **This file is the pick-up point.** It is injected into every new session by the SessionStart
-> hook, and it is committed to git so it can never drift from the code it describes.
->
-> **Rules for whoever edits this (including future me):**
-> 1. **CURRENT STATE ONLY.** No history, no changelog, no "prior — v4.12 did X". History lives in
->    git and in `providers/<P>/docs/tracking/CHANGELOG_<P>.md`. If you find yourself appending a
->    dated section, you are doing it wrong — *replace* the content instead.
-> 2. Keep it under ~80 lines. If it grows past that it stops being read, which defeats the point.
-> 3. Update it **in the same commit** as the work it describes. A stale state file is worse than none.
-> 4. Numbers here must be derived, not remembered — run `tools\portfolio_status.ps1` and
->    `tools\enforce.ps1`.
+> **The pick-up point** — injected into every new session by the SessionStart hook, committed so it
+> cannot drift from the code. **CURRENT STATE ONLY** (history lives in git + `CHANGELOG_<P>.md`);
+> **REPLACE, never append**; keep under ~80 lines or it stops being read; update in the SAME commit as
+> the work; derive every number from `portfolio_status.ps1` / `enforce.ps1` rather than remembering it.
 
 
 
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-03 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-04 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -25,8 +18,8 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 
 | Provider | Ver | State |
 |---|---|---|
-| CA_CLETS | v2.23 | ALL-PASS (89 logs) |
-| FL_FCIC | v7.17 | NEVER-TESTED -- 116 test(s) owed |
+| CA_CLETS | v2.23 | ALL-PASS (90 logs) |
+| FL_FCIC | v7.17 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.15 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.19 | ALL-PASS (64 logs) |
@@ -59,23 +52,30 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 **18 of 20 ENFORCED 0 FAIL / 0 WARN** (full sweep, measured). BLOCKED: LA_LEMS + CA_CONTRA_COSTA above.
 The CC block is a GATE getting stricter, not a provider getting worse -- do not loosen it back.
 
-**ENFORCED is not "done". SIX are tenant-tested** (FL v7.17, TX v4.18, NY v4.19, NJ v4.15,
-HI v4.14, CA_CLETS v2.23 -- 440 logs, four log gates green). **14 ENFORCED but NEVER swept** = backlog.
+**ENFORCED is not "done". SIX are tenant-tested and ALL SIX WERE RE-SWEPT 2026-08-03/04** on Rob's
+call after the build process changed -- FL 116, CA_CLETS 90, TX 89, NY 64, HI 46, NJ 36 = **441 logs**,
+every one captured fresh against a reset package, four log gates green on each.
+**14 ENFORCED but NEVER swept** = the whole remaining backlog.
 
 Invariants held: devdoc-UNBUILT 2 (both LA_LEMS) | wiring closure 0/9 classes | audit_metadata 20/20 |
-gate efficacy 10/10 KILLED | portability 260 cells 0 unportable | fidelity fixture 116 branches 0/0 |
-spec-plan NO-FIRE 24. Gate stack changed heavily 2026-08-02/03 -- do NOT re-derive it; the
-decision-trail hook + `git log -n 40` hold the reasoning.
+gate efficacy 11/11 KILLED | portability 260 cells 0 unportable | fidelity fixture 116 branches 0/0 |
+spec-plan NO-FIRE 24 | **registry currency 0 stale / 69 checkable** | **BUILD_NOTES fidelity 0 generic
+of 20**. Gate stack changed heavily 2026-08-02/04 -- do NOT re-derive it; the decision-trail hook +
+`git log -n 40` hold the reasoning. NEW since 2026-08-03: `audit_registry_currency`,
+`audit_buildnotes_fidelity` (enforce **PHASE 2u**, BLOCKING, added at zero).
 
 ## NEXT PHYSICAL ACTION
 
-**FL_FCIC v7.17 is DONE -- tenant-complete 2026-08-03, ALL-PASS 116/116, four log gates green**
-(Vehicle 20 / Person 21 / Firearm 15 / Article 16 / Boat 44, every entity reconciled). That closes
-the FL->NY->TX priority Rob set: **NY v4.19 (64) and TX v4.18 (89) were already ALL-PASS at their
-current versions, so nothing is owed on either.** SIX providers now tenant-verified, 440 logs.
+**The 14 never-swept providers**, via `test_phase2.ps1 -Provider <NAME>` then `-PostIngest`. Each needs
+an import first (Rob's hands), then ~20 min of driver + watcher. Nothing else is owed on the six.
 
-**Next: the remaining 13 never-swept providers** via `test_phase2.ps1 -Provider <NAME>` then
-`-PostIngest`. Pick one and import it; the sweep itself is ~20 min of driver + watcher.
+**Jira is CURRENT on all six** (FL 790815, TX 790861, NY 790896, NJ 790914, CA_CLETS 791400) -- the
+HELD-updates rule was lifted for these by Rob 2026-08-03. **HI v4.14 is the one release line still
+owed**, and its `DEX_TICKET.md` has not been checked against DEX-1257 yet.
+
+**TENANT INFO STAYS OFF THE TICKETS** (Rob 2026-08-03, restated): no attachment note, no catalog post,
+no Foundation import line -- even though older comments on DEX-967/988 carry `IMPORT:` lines. Track it
+in `IMPORT_LEDGER.md` sections B (Foundation) and **C (published JSON: ticket + catalog)**.
 
 ## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 
@@ -90,24 +90,29 @@ divergences | `audit_devdoc_optionals`/`audit_log_content` FLAKE under parallel 
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
-Most live in the skills with the case attached: `usx-adjudicate` (validate the probe; fix vs register),
-`usx-metadata` 6 (transaction-level agreement is not variant-level), `usx-tooling` 5b/5c.
+Cases live in the skills: `usx-adjudicate` (validate the probe; fix vs register), `usx-metadata` 6
+(transaction-level agreement is not variant-level), `usx-tooling` 5b/5c, `usx-test-iterate` (re-run
+before diagnosing).
 
 - **NEVER cite another provider as authority.** Only `CA_CONTRA_COSTA`->`CA_CLETS` and
   `<BASE>_<VARIANT>`->`<BASE>`. CA_CLETS and CA_VENTURA_COUNTY share an `IR.QVC{Name}` requiring
-  OPPOSITE things. Ask "what does X's OWN authority require?"
-- **A RECORD IS A CLAIM, NOT EVIDENCE -- read the artifact first.** 2026-08-03: an
-  ACCEPTED_DIVERGENCES row reading "OPEN QUESTION ... Rob's call" had been fixed the next day and
-  never removed, and its BUILD_NOTES entry said only "scheduled rebuild"; I recommended a version
-  bump off the row. The emitted JSON refuted it in a minute. Same rule I apply to gate findings.
-- **A step that did not run is NOT a pass.** Print the denominator. Vacuous, MUTE, and FLAKE all
-  read green. Registry rows too: that row was in NO gate's output -- inert, not merely aggregated.
+  OPPOSITE things. HI strips the loser on Hull>Reg; NJ deliberately carries it. Ask what X's OWN
+  authority requires.
+- **A RECORD IS A CLAIM, NOT EVIDENCE -- read the artifact first.** Cost most of 2026-08-03: a stale
+  registry row + an understated BUILD_NOTES nearly drove a needless version bump; a stale
+  `DEX_TICKET.md` produced "nine versions owed" when it was five. Both gated now (2u, registry
+  currency) -- but `audit_lifecycle` still reads the FILE, not the ticket.
+- **A step that did not run is NOT a pass; print the denominator.** Vacuous, MUTE and FLAKE all read
+  green. **After wiring a gate, GREP FOR ITS VERDICT LINE** -- built a mute gate twice on 08-03/04
+  (`-Quiet` in doctor; `$providerDirs` vs `$providers` in 2u, which printed a header, iterated
+  nothing, and still reported 42 PASS / 0 FAIL). Exit 0 is not evidence a gate spoke.
 - **A finding repeated across MANY providers is almost always YOUR PROBE** (100 / 67 / 25 / 6 false
-  findings in two days, every one my own canonicalisation or name-space error).
+  findings; plus a grep that asked only for 4 fields and "proved" 3 others missing).
+- **The driver's "N queries submitted" is NOT a send count.** 12 timeouts / 4 providers on 08-03/04,
+  all cleared by re-running. Re-run before diagnosing, and let a count SETTLE before theorising.
 - **When you add a gate, add it to EVERY harness** -- fuzz, portability, efficacy -- not just `enforce`.
 - **MUTATION ORDER: mutate -> restore -> RE-STAMP -> verify.** `git status` clean is necessary, not
-  sufficient -- an mtime footprint fails a freshness gate (6th instance: LA_LEMS, 2026-08-03).
-- **Multi-line `.Replace()` no-ops on CRLF -- use the Edit tool.** **Verify the emitted filename after a
-  version bump.** **Document a new tool in the SAME action** (CLAUDE.md + KB README + count).
-- **REPLACE this file's content, never append.** The line gate has caught me FOUR times, most recently
-  by appending a closed decision instead of deleting it.
+  sufficient (6th instance: LA_LEMS mtime, 08-03).
+- **Multi-line `.Replace()` no-ops on CRLF -- use the Edit tool.** **Document a new tool in the SAME
+  action** (CLAUDE.md + KB README + count).
+- **REPLACE this file's content, never append.** The line gate has caught me FIVE times.
