@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.6.json
-  Generated: 2026-08-04 22:05
+  Source: AZ_AZDPS_v3.7.json
+  Generated: 2026-08-05 12:23
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,7 +25,7 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 11 fieldIds
-  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
+  [PASS] QIF 'ENTITY_Person' ImageIndicator has no initialValue -- CORRECT: it is a set[] DISCRIMINATOR; a prefill would collapse its combo onto a plainer sibling
   [PASS] QIF 'ENTITY_Person' -> Person : 26 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 9 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 7 fieldIds

@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.6.json
-  Generated: 2026-08-04 22:05
+  Source: AZ_AZDPS_v3.7.json
+  Generated: 2026-08-05 12:23
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== AZ_AZDPS_v3.6.json ===
+=== AZ_AZDPS_v3.7.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=5
   Person | entity=Person | qidm= | cards=2 fields=15
@@ -41,7 +41,7 @@ LAYOUT DETAIL
       ROW ROW_VEH_3 [6]
         RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
       ROW ROW_VEH_BADGE [12]
-        dexStateUserId (Text)
+        dexStateUserId (Text | default=X)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
@@ -62,11 +62,11 @@ LAYOUT DETAIL
         RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
       ROW ROW_PER_DL_5 [12]
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
       ROW ROW_PER_DL_REQ [12]
         Requestor (Text | maxLen=5 | default=X)
       ROW ROW_PER_DL_BADGE [12]
-        dexStateUserId (Text)
+        dexStateUserId (Text | default=X)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DH_1 [8 4]
         OperatorLicenseNumberDH (Text | maxLen=20)
@@ -91,7 +91,7 @@ LAYOUT DETAIL
       ROW ROW_GUN_1 [12]
         serialNumber (Text | maxLen=11)
       ROW ROW_GUN_BADGE [12]
-        dexStateUserId (Text)
+        dexStateUserId (Text | default=X)
       ROW ROW_GUN_2 [4 4 4]
         GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
         GunModel (Text | maxLen=11)
@@ -107,7 +107,7 @@ LAYOUT DETAIL
         ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
         ArticleSerialNumber (Text | maxLen=11)
       ROW ROW_ART_BADGE [12]
-        dexStateUserId (Text)
+        dexStateUserId (Text | default=X)
       ROW ROW_ART_2 [4]
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
 
@@ -119,10 +119,10 @@ LAYOUT DETAIL
         RegistrationNumber (Text | maxLen=8)
         BoatHullIdNumber (Text | maxLen=20)
       ROW ROW_BOA_2 [4 4]
-        RegistrationState (Dropdown | attributeTypeId=STATE | default=AZ)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
       ROW ROW_BOA_BADGE [12]
-        dexStateUserId (Text)
+        dexStateUserId (Text | default=X)
 
 === RMS QIDMs ===
   RMS Person Search query

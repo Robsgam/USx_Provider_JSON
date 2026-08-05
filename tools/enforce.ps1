@@ -659,6 +659,47 @@ if (-not (Test-Path $reachTool)) {
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  PHASE 2v: Prefill-caused shadow (audit_prefill_shadow.ps1) -- BLOCKING
+#  2h above reports a combo is DEAD. This says WHICH PREFILL KILLED IT, and that
+#  distinction is not cosmetic: a bare "DEAD COMBO" reads like a design trade-off
+#  you may accept, and on AZ_AZDPS v3.7 it was read exactly that way -- three set[]
+#  fields prefilled in one version collapsed four pairs onto identical variable
+#  requirements (DQPN==DQN, DQP==DQ, ACQB==BQ, ACQBH==BQH) and the responses put up
+#  were to delete or register the losers. Rob: "we do not leave out queries because
+#  it is hard ... use ordering and recognize the shadows." BUILD_RULES 24 has
+#  forbidden prefilling a routing field since the 35-combos-across-6-providers
+#  incident and until now NOTHING enforced it.
+#  Not a duplicate of 2h: it fires only when the shadow does NOT exist on the raw
+#  set[]s, i.e. only when OUR prefill created it. Run live against the JSON.
+# ══════════════════════════════════════════════════════════════════════════════
+SectionHeader "PHASE 2v: Prefill-caused shadow (BUILD_RULES 24)"
+$pfsTool = Join-Path $toolDir "audit_prefill_shadow.ps1"
+$pfsSeen = 0
+if (-not (Test-Path $pfsTool)) {
+    Info "audit_prefill_shadow.ps1 not found -- prefill-shadow check skipped"
+} else {
+    foreach ($pd in $providers) {
+        $provName = $pd.Name
+        $pfsJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $provName
+        if (-not $pfsJson) { continue }
+        $pfsSeen++
+        $pfsOut = & powershell -ExecutionPolicy Bypass -File $pfsTool -Path $pfsJson 2>&1 | Out-String
+        # Anchor on the verdict line, never a substring of the explanatory header.
+        $pm = [regex]::Match($pfsOut, '(?m)^\s+RESULTS:\s*(\d+) PASS / (\d+) FAIL\s+\((\d+) pair')
+        if (-not $pm.Success) {
+            Fail "$provName -- prefill-shadow gate produced NO verdict line (treat as failed, not passed)"
+        } elseif ([int]$pm.Groups[2].Value -gt 0) {
+            Fail "$provName -- $($pm.Groups[2].Value) combo(s) unreachable ONLY because of a form prefill (BUILD_RULES 24)"
+            $pfsOut -split "`n" | Where-Object { $_ -match 'SHADOWS' } |
+                Select-Object -First 6 | ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            Pass "$provName -- no prefill-caused shadow ($($pm.Groups[3].Value) ordered pairs compared)"
+        }
+    }
+    if ($pfsSeen -eq 0) { Fail "PHASE 2v examined ZERO providers -- this phase is not evidence" }
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  PHASE 2i: Log Combo Attribution (audit_log_combo_attribution.ps1)
 #  Does each saved log's NAMED combo match what actually fired? The wire XML carries no
 #  keyRef, so this was previously unverifiable and a green test package could overstate

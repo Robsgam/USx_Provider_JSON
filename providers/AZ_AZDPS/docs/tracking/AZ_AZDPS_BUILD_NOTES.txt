@@ -1,7 +1,59 @@
 AZ_AZDPS -- Build Notes
 ========================
-Last updated: 2026-08-04
-Current version: v3.6 (automated Requestor + ACWL ordered first + Y/N Stolen Check)
+Last updated: 2026-08-05
+Current version: v3.7 (BadgeNumber actually wired + discriminators un-prefilled -- ALL 13 combos reachable)
+v3.7  2026-08-05  BadgeNumber WIRED (it never was) + the four prefill shadows removed
+  CHANGED:
+    (1) BadgeNumber now carries rule=CommsysGetDexStateUserIdRuleHandler arguments=['true'] at ALL FIVE
+        attribute sites, plus a hidden feeder initialValue='X' per entity and a combo defaults[] entry
+        on every badge-carrying combo (12 of them, applied by a loop -- see (5)). size stays 4 per AZ
+        metadata, so a 6-char DEX id truncates BY DESIGN (Rob's call).
+    (2) ImageIndicator prefill REMOVED -- it is the DL photo discriminator.
+    (3) Boat RegistrationState prefill REMOVED + in/out gates added: ACQB/ACQBH get State NOT_EXISTS
+        (badge/NCIC in-state), BQ/BQH get State EXISTS (Nlets out-of-state). State also removed from
+        ACQB/ACQBH any[] -- gate-XOR-companion, verify_build CHECK 14: a NOT_EXISTS-gated field in the
+        same combo's any[] is dead config.
+    (4) purposeCode -> purposeCodeDH carried over from v3.6; Stolen Check remains Y/N FormSelect.
+    (5) The badge defaults are applied by a LOOP over combos carrying dexStateUserId, not by hand.
+  WHY (1) -- THE DEFECT WAS A COMMENT THAT LIED FOR FOUR VERSIONS. The build script header has asserted
+    since v3.x that "BadgeNumber: hidden field auto-populated via dexStateUserId
+    (CommsysGetDexStateUserIdRuleHandler)" while the attribute carried NO rule in any of the five
+    places. So dexStateUserId was EMPTY at submit and the NINE combos requiring it in set[] could never
+    match. AZ is the ONLY provider in the portfolio that puts the badge in a set[]. Proven by the v3.6
+    wire: the DQP log carried only <State>AZ</State><OperatorLicenseNumber>D999888777</...> -- no
+    <BadgeNumber>, no <ImageIndicator>, no <Requestor> -- so DQ fired, not DQP, and 7 of 16 Person logs
+    FAILED. The platform DID know the id: <UserName>MK43RS</UserName> in the same log, resolved by the
+    same handler in the AUTH config. BadgeNumber was simply reading a form field nothing filled.
+  WHY (2) AND (3) -- MY OWN FIX CREATED FOUR DEAD COMBOS AND I ALMOST SHIPPED THAT AS A TRADE-OFF.
+    Prefilling ImageIndicator, Requestor and dexStateUserId (three set[] fields in ONE version) is a
+    straight BUILD_RULES 24 violation -- and 24 is the rule I had CITED myself earlier the same day
+    before reversing under 20b and never re-applying it to the two new prefills. Consequence, exactly
+    as 24 documents: the VARIABLE requirement (set[] minus prefilled) collapsed --
+        DQPN  -> [NameLast, NameFirst]        IDENTICAL to DQN's
+        DQP   -> [OperatorLicenseNumber]      IDENTICAL to DQ's
+        ACQB  -> [RegistrationNumber]         IDENTICAL to BQ's
+        ACQBH -> [BoatHullIdNumber]           IDENTICAL to BQH's
+    Four EXACT collisions, and no ordering can separate identical sets, so DQN/DQ/BQ/BQH went DEAD.
+    audit_combo_reachability caught it immediately and correctly; I read a DEAD verdict as a cost to
+    accept and put up three options that ALL sacrificed queries. Rob: "we do not leave out queries
+    because it is hard. we had these combos worked out before so keep thinking. these options are not
+    acceptable. use ordering and recognize the shadows." The answer was to un-prefill the discriminators
+    that metadata already supplied -- ImageIndicator for the DL pairs, RegistrationState for the Boat
+    in/out pairs. RESULT: 13 of 13 combinations reachable, nothing deleted, nothing registered.
+  NEW GATE, so this cannot recur silently: tools/audit_prefill_shadow.ps1 (enforce PHASE 2v, BLOCKING).
+    2h says a combo is DEAD; 2v says WHICH PREFILL KILLED IT. It fires only when the shadow does NOT
+    exist on the raw set[]s -- i.e. only when our prefill created it -- which is what spares a prefill
+    sitting in EVERY combo's set[] (CA_CLETS purposeCode; AZ's own dexStateUserId, which is REQUIRED).
+    Baseline 20/20 clean, 645 ordered pairs; proven to FAIL by re-injecting the ImageIndicator prefill.
+  ALL 5 ENTITIES RESET at v3.7. Requires a tenant RE-IMPORT: v3.6 is installed and its Person logs are
+    archived as evidence of a mispredicting plan.
+  STILL A HYPOTHESIS until a wire shows it: the registry documents
+    CommsysGetDexStateUserIdRuleHandler only for an AUTHENTICATION attribute. On a QUERY attribute it is
+    undocumented. If it is ignored, the feeder still fires the combo but sends 'X' instead of the
+    officer id -- which looks identical on a green board. READ <BadgeNumber> ON A VEHICLE LOG: ACVR
+    requires badge+plate and has no non-badge sibling, so it is the discriminating test.
+
+v3.6  2026-08-04  automated Requestor + ACWL ordered first + Y/N Stolen Check
 v3.6  2026-08-04  Requestor AUTOMATED, ACWL ordered FIRST, Stolen Check -> Y/N dropdown
   WHY A BUMP AND NOT A v3.5 EDIT: v3.5 had ALREADY BEEN IMPORTED to the USx AZ tenant when these three
   changes landed, so the tenant's form and the repo's JSON had silently diverged under one version

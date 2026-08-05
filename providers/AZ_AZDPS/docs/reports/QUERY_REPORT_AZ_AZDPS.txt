@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.6.json
-  Generated: 2026-08-04 22:05
+  Source: AZ_AZDPS_v3.7.json
+  Generated: 2026-08-05 12:23
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- AZ_AZDPS_v3.6.json
+  CommSys Query Simulator -- AZ_AZDPS_v3.7.json
 ================================================================
 
 --- QIDM: AZ_AZDPS_VehicleRegistrationQuery [Vehicle] ---
@@ -139,24 +139,11 @@ QUERY SIMULATION
 
 --- QIDM: AZ_AZDPS_BoatQuery [Boat] ---
     Query: BoatQuery  |  Attrs: 5  |  Combos: 4
-    [SKIP] ACQB -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
-
-    [FIRES first-match] ACQBH
-      set: [dexStateUserId, BoatHullIdNumber]
-      any: [RegistrationNumber, RegistrationState, relatedHitSearchIndicator] -> matched: [RegistrationNumber, RegistrationState, relatedHitSearchIndicator]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
-        <MessageKey>ACQBH</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <BadgeNumber>BADG</BadgeNumber>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-        <State>FL</State>
-      </Transaction>
+    [SKIP] ACQB -- conditions failed: RegistrationState NOT_EXISTS [value='FL']; BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
+    [SKIP] ACQBH -- conditions failed: RegistrationState NOT_EXISTS [value='FL']
     [SKIP] BQ -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
-    [FIRES shadowed -- first match above wins] BQH
+    [FIRES first-match] BQH
       set: [BoatHullIdNumber]
       any: [RegistrationNumber, dexStateUserId, RegistrationState, relatedHitSearchIndicator] -> matched: [RegistrationNumber, dexStateUserId, RegistrationState, relatedHitSearchIndicator]
       -- CommSys XML --
@@ -170,7 +157,7 @@ QUERY SIMULATION
         <State>FL</State>
       </Transaction>
 
-    >> PLATFORM FIRES: ACQBH (first matching combo)
+    >> PLATFORM FIRES: BQH (first matching combo)
     >> UNION POOL (platform serializes): BadgeNumber=BADG, BoatHullIdNumber=FL1234AB56H7, RegistrationNumber=FL1234AB, RelatedHitSearchIndicator=Y, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)

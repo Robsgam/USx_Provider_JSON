@@ -340,7 +340,26 @@ foreach ($prov in $validProviders) {
                 }
             }
         }
-        if ($iv -and $imgNotExistsGate) {
+        # THE SAME RULE LIVES IN validate.ps1 AND HERE, and fixing one is not fixing it -- that has now
+        # cost two round trips in one session. Three cases, mirroring validate.ps1 exactly:
+        #   in a set[] and NOT prefilled  -> PASS (it is a DISCRIMINATOR; a prefill collapses its combo
+        #     onto a plainer sibling -- AZ_AZDPS v3.7 killed DQN/DQ/BQ/BQH that way)
+        #   prefilled AND gated NOT_EXISTS -> WARN (BUILD_RULES 20b, permanently dead branch)
+        #   neither in a set[] nor prefilled -> WARN (original rule: a toggle that never serializes)
+        $imgInSet = $false
+        foreach ($b in $prov.Json.bundles) {
+            foreach ($c in $b.configurations) {
+                if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+                foreach ($cm in @($c.combinations)) {
+                    foreach ($f in @($cm.requirements.set)) {
+                        if ("$f" -match '^[Ii]mageIndicator') { $imgInSet = $true }
+                    }
+                }
+            }
+        }
+        if ($imgInSet -and -not $iv) {
+            Pass "Person ImageIndicator has no prefill -- CORRECT: it is a set[] DISCRIMINATOR; a prefill would collapse its combo onto a plainer sibling"
+        } elseif ($iv -and $imgNotExistsGate) {
             Warn "Person ImageIndicator initialValue='$iv' AND a combo gates on ImageIndicator NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b)"
         } elseif ($iv -eq 'Y') {
             Pass "Person ImageIndicator initialValue='Y'"

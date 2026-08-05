@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: AZ_AZDPS_v3.6
-  Source: AZ_AZDPS_v3.6.json
-  Generated: 2026-08-04 22:05
+  PICKLIST / DROPDOWN REPORT: AZ_AZDPS_v3.7
+  Source: AZ_AZDPS_v3.7.json
+  Generated: 2026-08-05 12:23
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -14,7 +14,7 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    RegistrationState [State] (default=AZ)
+    RegistrationState [State (leave blank for AZ)]
       Config: attributeTypeId=STATE
     relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
@@ -28,7 +28,7 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    ImageIndicator [NCIC Image] (default=Y)
+    ImageIndicator [NCIC Image (select Y to request a licence photo)]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCode [Race]
       Config: attributeTypeId=RACE, codeTypeProvider=NIBRS

@@ -50,6 +50,7 @@ $gates = @(
     # it auditable here too. Second time in one day a new gate turned out to be missing from a
     # harness that characterises the stack: check EVERY harness when adding a gate, not just enforce.
     'audit_wiring_closure.ps1'
+    'audit_prefill_shadow.ps1'
 )
 # A verdict is any line a human would read as "this tool finished and reached a conclusion".
 $verdictRx = '(?m)^\s*(?:RESULT|RESULTS|TOTALS|Total|VERDICT|SUMMARY)\s*:|VERIFICATION (?:PASSED|FAILED)|^\s*\[(?:PASS|FAIL|NOTE|INFO)\]'

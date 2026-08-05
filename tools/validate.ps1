@@ -376,6 +376,23 @@ if ($entitiesBundle) {
                         # an exemption actually covers, and gate on the MECHANISM, not on a proxy.
                         if (-not $script:imgIndGateComputed) {
                             $script:imgIndNotExistsGate = $false
+                            # $imgIndRoutes = is ImageIndicator a set[] DISCRIMINATOR? Computed HERE with
+                            # the gate flag so the two can never drift apart. Written as a bare
+                            # $script:imgIndRoutes reference first, with its computation deleted in an
+                            # earlier rewrite of this block -- an UNDEFINED variable is falsy, so the
+                            # PASS branch silently never fired and the WARN persisted with no error to
+                            # show why. Second time today: same shape as $json vs $prov.Json.
+                            $script:imgIndRoutes = $false
+                            foreach ($b2 in $json.bundles) {
+                                foreach ($c2 in $b2.configurations) {
+                                    if ($c2.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+                                    foreach ($cm2 in @($c2.combinations)) {
+                                        foreach ($f2 in @($cm2.requirements.set)) {
+                                            if ("$f2" -match '^[Ii]mageIndicator') { $script:imgIndRoutes = $true }
+                                        }
+                                    }
+                                }
+                            }
                             foreach ($b in $json.bundles) {
                                 foreach ($c in $b.configurations) {
                                     if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
@@ -391,7 +408,21 @@ if ($entitiesBundle) {
                             }
                             $script:imgIndGateComputed = $true
                         }
-                        if ($node.props.initialValue -and $script:imgIndNotExistsGate) {
+                        # THREE cases, because a prefill is required in one and FORBIDDEN in another:
+                        #   in a set[] and NOT prefilled  -> PASS. It is a DISCRIMINATOR. Prefilling it
+                        #     collapses its combo's variable requirement onto a plainer sibling's and
+                        #     kills that sibling. AZ_AZDPS v3.7: prefilled ImageIndicator made DQPN's
+                        #     variable set [NameLast,NameFirst] -- IDENTICAL to DQN's -- and DQP's
+                        #     [OperatorLicenseNumber], identical to DQ's. Four exact collisions, and no
+                        #     ordering can separate identical sets, so DQN/DQ went DEAD. Un-prefilled,
+                        #     ImageIndicator is what keeps the photo paths distinct from the plain ones.
+                        #   prefilled AND gated NOT_EXISTS -> WARN. BUILD_RULES 20b: always-present, so
+                        #     that branch is permanently dead (LA_LEMS DP/DQ).
+                        #   neither in a set[] nor prefilled -> WARN. The original rule: a toggle that
+                        #     never serializes.
+                        if ($script:imgIndRoutes -and -not $node.props.initialValue) {
+                            Write-Pass "QIF '$($cfg.name)' ImageIndicator has no initialValue -- CORRECT: it is a set[] DISCRIMINATOR; a prefill would collapse its combo onto a plainer sibling"; Inc-Pass
+                        } elseif ($node.props.initialValue -and $script:imgIndNotExistsGate) {
                             Write-Warn "QIF '$($cfg.name)' ImageIndicator initialValue='$($node.props.initialValue)' AND a combo gates on ImageIndicator NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b: never existence-gate a mandatorily-defaulted field)"
                         } elseif (-not $node.props.initialValue) {
                             Write-Warn "QIF '$($cfg.name)' ImageIndicator has no initialValue -- expected 'Y' or 'N'"

@@ -478,10 +478,26 @@ foreach ($ent in $entities) {
             # expectedKeyRef = what ACTUALLY fires for this fill (simulated), not the structural
             # winner heuristic (which mis-picks the OOS combo when an in-state sibling shares the
             # identifier). Combo defaults count as present on the form.
-            $fd = @{}
-            foreach ($f in $gFills) { $fd[$f.fieldId] = $f.value }
-            foreach ($k in $entDefaults.Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $entDefaults[$k] } }
-            $simKr = Get-SimFiringKeyRef $entQidms $fd
+            # USE THE SHARED RESOLVER, not a private copy of the union (fixed 2026-08-05). This block
+            # built its own $fd inline while the structural path went through Resolve-ExpectedKeyRef,
+            # so the two could -- and did -- disagree: AZ_AZDPS v3.7 plan test n=36 expected 'DQ' while
+            # the canonical walk fired 'DQP', which audit_simulator_parity caught as
+            # "1 of 1249 plan test(s) disagree". Two code paths answering "which combo fires" is the
+            # same class as one rule living in two tools: fixing one is not fixing it. Anything that
+            # answers that question must call the one function (ENGINEERING_STANDARD 4.4 -- never
+            # re-implement an existing parser).
+            # $formDefaultsByEntity[$ent], NOT $entDefaults -- A NAMESPACE MISMATCH, fixed 2026-08-05.
+            # Get-EntityDefaultFields returns COMBO defaults keyed by ATTRIBUTE name (BadgeNumber, State,
+            # ImageIndicator); Get-FiringKeyRef matches FORM fieldIds (dexStateUserId, RegistrationState,
+            # Requestor). So 'BadgeNumber=X' never registered the badge as present and this union was a
+            # silent NO-OP, while the three structural call sites above correctly pass the form defaults.
+            # Result: plan test n=36 expected 'DQ' where the canonical walk fires 'DQP', caught by
+            # audit_simulator_parity as "1 of 1249 plan test(s) disagree". Proven by calling
+            # Get-FiringKeyRef directly on the same fill: fills-only -> DQ, fills+FORM defaults -> DQP.
+            # I first assumed a SECOND firing implementation; there is none -- Get-SimFiringKeyRef already
+            # delegates to Get-FiringKeyRef. Same walk, wrong input. usx-tooling Step 3: a lookup table
+            # must live in the same namespace as the comparison.
+            $simKr = Resolve-ExpectedKeyRef $entQidms $gFills $formDefaultsByEntity[$ent] $null
             if (-not $simKr) { continue }   # nothing fires for this fill -> not a valid guardrail
             $gCandidates.Add([PSCustomObject]@{ query = $gr.loserQidm.query; simKr = $simKr; fills = $gFills; loserKr = $gr.loserKr })
         }

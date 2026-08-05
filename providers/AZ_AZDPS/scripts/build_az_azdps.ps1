@@ -131,7 +131,15 @@
 # STATE: NCIC pattern confirmed (attributeTypeId=STATE, codeTypeProvider=NCIC)
 # SEX: NIBRS confirmed (attributeTypeId=SEX, codeTypeProvider=NIBRS)
 # DH-SUFFIX: OperatorLicenseNumberDH, NameLastDH, etc. -- isolates DH from DL field pool
-# BadgeNumber: hidden field auto-populated via dexStateUserId (CommsysGetDexStateUserIdRuleHandler)
+# BadgeNumber: v3.7 -- NOW ACTUALLY WIRED. This comment asserted the handler since v3.x while the
+#   attribute carried NO rule in all 5 places, so dexStateUserId was EMPTY at submit and the 9 combos
+#   requiring it in set[] could never match (AZ v3.6 wire: DQP log had no <BadgeNumber>, DQ fired, 7 of
+#   16 Person logs FAILED). Now: attribute rule=CommsysGetDexStateUserIdRuleHandler args=['true'] +
+#   hidden feeder initialValue='X' + combo defaults[] (CAD ignores form initialValue). size stays 4 per
+#   AZ metadata -- a 6-char DEX id (UserName resolved MK43RS) TRUNCATES by design (Rob 2026-08-05).
+#   HYPOTHESIS until a wire proves it: the registry documents this handler only for an AUTHENTICATION
+#   attribute; on a QUERY attribute it is undocumented. If ignored, the feeder still fires the combo but
+#   sends 'X' instead of the officer id -- read <BadgeNumber> on a Vehicle log to tell those apart.
 # KeepSsn: AZ includes socialSecurityNumber in the RMS Person bundle.
 # Date format: yyyyMMdd (AZ)
 #
@@ -152,7 +160,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.6'
+$Version = '3.7'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -181,7 +189,7 @@ $qmf = Build-Qmf -ProviderName 'AZ_AZDPS'
 # =====================================================================
 $vehQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'BadgeNumber';                 size = 4;  sourceField = @('dexStateUserId');              targetField = 'BadgeNumber' }
+        [PSCustomObject]@{ name = 'BadgeNumber'; rule = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }; size = 4; sourceField = @('dexStateUserId'); targetField = 'BadgeNumber' }
         [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumber');          targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');            targetField = 'LicensePlateYear' }
@@ -301,7 +309,7 @@ $vehQuery = [PSCustomObject]@{
 # (RegistrationState keeps initialValue='AZ' -- any[]-ONLY in every combo here, so it routes nothing.)
 $dlQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'BadgeNumber';           size = 4;  sourceField = @('dexStateUserId');        targetField = 'BadgeNumber' }
+        [PSCustomObject]@{ name = 'BadgeNumber'; rule = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }; size = 4; sourceField = @('dexStateUserId'); targetField = 'BadgeNumber' }
         [PSCustomObject]@{
             name        = 'BirthDate'
             rule        = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
@@ -528,7 +536,7 @@ $dhistQuery = [PSCustomObject]@{
 # =====================================================================
 $gunQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'BadgeNumber';              size = 4;  sourceField = @('dexStateUserId');           targetField = 'BadgeNumber' }
+        [PSCustomObject]@{ name = 'BadgeNumber'; rule = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }; size = 4; sourceField = @('dexStateUserId'); targetField = 'BadgeNumber' }
         [PSCustomObject]@{ name = 'GunCaliber';               size = 4;  sourceField = @('GunCaliber');               targetField = 'GunCaliber' }
         [PSCustomObject]@{ name = 'GunMake';                  size = 4;  sourceField = @('GunMake');                  targetField = 'GunMake' }
         [PSCustomObject]@{ name = 'GunModel';                 size = 11; sourceField = @('GunModel');                 targetField = 'GunModel' }
@@ -564,7 +572,7 @@ $artQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'ArticleSerialNumber';      size = 11; sourceField = @('ArticleSerialNumber');      targetField = 'ArticleSerialNumber' }
         [PSCustomObject]@{ name = 'ArticleTypeCode';          size = 7;  sourceField = @('ArticleTypeCode');          targetField = 'ArticleTypeCode' }
-        [PSCustomObject]@{ name = 'BadgeNumber';              size = 4;  sourceField = @('dexStateUserId');           targetField = 'BadgeNumber' }
+        [PSCustomObject]@{ name = 'BadgeNumber'; rule = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }; size = 4; sourceField = @('dexStateUserId'); targetField = 'BadgeNumber' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator';size = 1;  sourceField = @('relatedHitSearchIndicator');targetField = 'RelatedHitSearchIndicator' }
     )
     combinations = @(
@@ -594,7 +602,7 @@ $artQuery = [PSCustomObject]@{
 # =====================================================================
 $boatQuery = [PSCustomObject]@{
     attributes = @(
-        [PSCustomObject]@{ name = 'BadgeNumber';              size = 4;  sourceField = @('dexStateUserId');           targetField = 'BadgeNumber' }
+        [PSCustomObject]@{ name = 'BadgeNumber'; rule = [PSCustomObject]@{ function = 'CommsysGetDexStateUserIdRuleHandler'; arguments = @('true') }; size = 4; sourceField = @('dexStateUserId'); targetField = 'BadgeNumber' }
         [PSCustomObject]@{ name = 'BoatHullIdNumber';         size = 20; sourceField = @('BoatHullIdNumber');         targetField = 'BoatHullIdNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';       size = 8;  sourceField = @('RegistrationNumber');       targetField = 'RegistrationNumber' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator';size = 1;  sourceField = @('relatedHitSearchIndicator');targetField = 'RelatedHitSearchIndicator' }
@@ -606,13 +614,16 @@ $boatQuery = [PSCustomObject]@{
                 # Hull>Reg guardrail: BoatHullIdNumber NOT_EXISTS gates this Reg combo OUT when a
                 # hull is present (ACQBH fires alone). Hull removed from any[] per CHECK 14.
                 set = @('dexStateUserId','RegistrationNumber')
-                any = @('RegistrationState','relatedHitSearchIndicator')
-                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                any = @('relatedHitSearchIndicator')
+                # v3.7: State default REMOVED. This combo is gated RegistrationState NOT_EXISTS and State is
+                # no longer in its any[], so the default could never be applied -- audit_wiring_closure
+                # class E (inert default). A default on a field the combo gates ABSENT is self-defeating.
                 conditions = @(
                     # Badge-present gate (see ACWL): ACQB/ACQBH are the badge boat transactions;
                     # BQ/BQH are the no-badge fallbacks. dexStateUserId EXISTS stops the badge combo
                     # shadowing the no-badge combo's payload (CHECK 16).
                     [PSCustomObject]@{ field = @('dexStateUserId');    operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
                 )
             }
@@ -643,10 +654,10 @@ $boatQuery = [PSCustomObject]@{
                 # any[], because they are gated hull-NOT_EXISTS -- a field that can never be present
                 # when the combo fires is dead config (verify_build rejects gate-XOR-companion).
                 set = @('dexStateUserId','BoatHullIdNumber')
-                any = @('RegistrationNumber','RegistrationState','relatedHitSearchIndicator')
-                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                any = @('RegistrationNumber','relatedHitSearchIndicator')
                 conditions = @(
                     [PSCustomObject]@{ field = @('dexStateUserId'); operator = 'EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
                 )
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -662,6 +673,7 @@ $boatQuery = [PSCustomObject]@{
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
                 )
             }
             primaryFieldReference = 'RegistrationNumber'
@@ -676,7 +688,9 @@ $boatQuery = [PSCustomObject]@{
                 # of a metadata-permitted, devdoc-listed optional from the winner's payload.
                 set = @('BoatHullIdNumber')
                 any = @('RegistrationNumber','dexStateUserId','RegistrationState','relatedHitSearchIndicator')
-                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                conditions = @(
+                    [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
+                )
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQH'
@@ -724,7 +738,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_Veh'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_VEH_BADGE' }
+                @{ id = 'dexStateUserId_Veh'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_VEH_BADGE' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -791,7 +805,7 @@ $perLayout = MakeLayouts @(
             # registered dead combo precisely because the prefill makes the field always-present.
             # Left visible and un-automated: exposing a field before automating it is the standing rule.
             @{ id = 'ROW_PER_DL_5'; cols = @('12'); fields = @(
-                @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_5' }
+                @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image (select Y to request a licence photo)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_PER_DL_5' }
             )}
             # Requestor HIDDEN + handler-fed. ORDERING IS WHAT KEEPS THIS SAFE: because Requestor and
             # ImageIndicator are BOTH always-present, DQPN's variable requirement is only badge+Name --
@@ -802,7 +816,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'Requestor_Per'; node = InpH 'Requestor' 'Requestor (auto)' '5' 'ROW_PER_DL_REQ' @{ initialValue = 'X' } }
             )}
             @{ id = 'ROW_PER_DL_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_Per'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_PER_DL_BADGE' }
+                @{ id = 'dexStateUserId_Per'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_PER_DL_BADGE' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -855,7 +869,7 @@ $faLayout = MakeLayouts @(
                 @{ id = 'Serial_FA_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_FA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_GUN_BADGE' }
+                @{ id = 'dexStateUserId_FA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_GUN_BADGE' @{ initialValue = 'X' } }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 # LABEL-OVERRIDE: GunMake -- bare per DEX-1284 lean pass (any[] optional)
@@ -892,7 +906,7 @@ $artLayout = MakeLayouts @(
                 @{ id = 'Serial_ART_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '11' 'ROW_ART_1' }
             )}
             @{ id = 'ROW_ART_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_ART'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_ART_BADGE' }
+                @{ id = 'dexStateUserId_ART'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_ART_BADGE' @{ initialValue = 'X' } }
             )}
             # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
             @{ id = 'ROW_ART_2'; cols = @('4'); fields = @(
@@ -925,12 +939,18 @@ $boaLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4'); fields = @(
                 # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
-                @{ id = 'State_BOA_Input';  node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_BOA_2' }
+                # v3.7: initialValue='AZ' REMOVED -- LIMITATION #30. State is now the Boat in/out ROUTING
+                # discriminator. Prefilled, ACQB's variable requirement collapsed to [RegistrationNumber],
+                # IDENTICAL to BQ's, and ACQBH's to [BoatHullIdNumber], identical to BQH's -- four exact
+                # collisions no ordering can separate, which is what made BQ/BQH dead combos. Metadata
+                # supplies the discriminator: ACQB/ACQBH are the badge/NCIC in-state variants, BQ/BQH
+                # carry State in <Any> (the Nlets out-of-state path). Blank => in-state, filled => OOS.
+                @{ id = 'State_BOA_Input';  node = Sel 'RegistrationState' 'State (leave blank for AZ)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
                 # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
                 @{ id = 'RelHit_BOA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_BOA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_BOA_BADGE' }
+                @{ id = 'dexStateUserId_BOA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_BOA_BADGE' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -961,6 +981,35 @@ $provBundle = [PSCustomObject]@{
     description    = "Provider configuration for AZ_AZDPS v${Version}"
     configurations = @($auth, $results, $qmf, $vehQuery, $dlQuery, $dhistQuery, $gunQuery, $artQuery, $boatQuery)
     provider       = 'AZ_AZDPS'
+}
+
+# =====================================================================
+# v3.7 -- CAD DEFAULT FOR THE BADGE, applied to EVERY combo that carries it
+# =====================================================================
+# CAD ignores form initialValue entirely (audit_cad CHECK 5), so a combo that lists dexStateUserId --
+# and on AZ NINE of them require it in set[] -- cannot be satisfied by a CAD-injected query unless the
+# combo itself defaults it. AZ is the only provider in the portfolio that puts the badge in a set[].
+#
+# WHY A LOOP AND NOT NINE HAND-EDITS: audit_cad named nine combos across five QIDMs, two of which had
+# no defaults array at all. Nine separate edits is nine chances to miss one, and a PARTIAL fix here is
+# worse than none -- it leaves some entities unreachable under CAD while the board reads green. This is
+# also exactly how the original defect survived: the BadgeNumber attribute needed the same change in
+# FIVE places and got it in none. Deriving the list from the combos themselves cannot miss one, and it
+# keeps working if a badge-carrying combo is added later.
+foreach ($cfg in $provBundle.configurations) {
+    if ($cfg.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+    foreach ($cm in @($cfg.combinations)) {
+        $pool = @(@($cm.requirements.set) + @($cm.requirements.any)) | Where-Object { $_ }
+        if ($pool -notcontains 'dexStateUserId') { continue }
+        $existing = @($cm.requirements.defaults | Where-Object { $_ } | ForEach-Object { "$($_.field)" })
+        if ($existing -contains 'BadgeNumber') { continue }
+        $badgeDef = [PSCustomObject]@{ field = 'BadgeNumber'; value = 'X' }
+        if ($cm.requirements.PSObject.Properties.Name -contains 'defaults' -and $cm.requirements.defaults) {
+            $cm.requirements.defaults = @(@($cm.requirements.defaults) + $badgeDef)
+        } else {
+            $cm.requirements | Add-Member -NotePropertyName defaults -NotePropertyValue @($badgeDef) -Force
+        }
+    }
 }
 
 $final = [PSCustomObject]@{

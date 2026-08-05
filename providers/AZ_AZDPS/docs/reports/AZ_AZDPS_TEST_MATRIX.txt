@@ -1,4 +1,4 @@
-AZ_AZDPS v3.6 -- TEST MATRIX
+AZ_AZDPS v3.7 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-05
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -12,7 +12,7 @@ Vehicle (1 card, 8 fields):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: RegistrationState [Sel STATE, AZ]
-    ROW 4: dexStateUserId [Inp]
+    ROW 4: dexStateUserId [Inp X]
 
 Person (2 cards, 23 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN "OR" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO):
@@ -20,9 +20,9 @@ Person (2 cards, 23 fields):
     ROW 2: NameLast [Inp 30], NameFirst [Inp 20]
     ROW 3: nameMiddle [Inp 20], nameSuffix [Inp 4], BirthDate [FormDate], SexCode [Sel SEX]
     ROW 4: RegistrationState [Sel STATE, AZ], raceCode [Sel RACE]
-    ROW 5: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 5: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC]
     ROW 6: Requestor [Inp X, 5]
-    ROW 7: dexStateUserId [Inp]
+    ROW 7: dexStateUserId [Inp X]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp 1]
     ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 20]
@@ -33,21 +33,21 @@ Person (2 cards, 23 fields):
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
     serialNumber [Inp 11]
-    dexStateUserId [Inp]
+    dexStateUserId [Inp X]
     GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunModel [Inp 11], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
     relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Article (1 card, 4 fields):
   CARD_ART (ARTICLE SEARCH BY TYPE + SERIAL NUMBER):
     ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleSerialNumber [Inp 11]
-    dexStateUserId [Inp]
+    dexStateUserId [Inp X]
     relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Boat (1 card, 5 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID):
     ROW 1: RegistrationNumber [Inp 8], BoatHullIdNumber [Inp 20]
-    ROW 2: RegistrationState [Sel STATE, AZ], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
-    ROW 3: dexStateUserId [Inp]
+    ROW 2: RegistrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    ROW 3: dexStateUserId [Inp X]
 
 QIDM SUMMARY (6 QIDMs, 15 combos)
 ----------------------------------------
@@ -132,21 +132,21 @@ ENTITY 3: BOAT (10 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-24  Boat        BQ+H               BoatHullIdNumber=FL1234AB56H7    [    ]
-              Expected: BoatQuery fires (BQH)
-25  Boat        BQ+H               + RegistrationState, relatedHitSearchIndicator [    ]
-              Expected: any[] fields present in XML output.
-26  Boat        BQ+Reg             RegistrationNumber=FL1234AB      [    ]
+24  Boat        BQ+Reg             RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (BQ)
-27  Boat        BQ+Reg             + RegistrationState, relatedHitSearchIndicator [    ]
+25  Boat        BQ+Reg             + RegistrationState, relatedHitSearchIndicator [    ]
+              Expected: any[] fields present in XML output.
+26  Boat        BQ+H               BoatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (BQH)
+27  Boat        BQ+H               + RegistrationState, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
 28  Boat        ACQB+ACQB          dexStateUserId=BADGE, RegistrationNum... [    ]
               Expected: BoatQuery fires (ACQB)
-29  Boat        ACQB+ACQB          + RegistrationState, relatedHitSearchIndicator [    ]
+29  Boat        ACQB+ACQB          + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.
 30  Boat        ACQBH+ACQBH        dexStateUserId=BADGE, BoatHullIdNumbe... [    ]
               Expected: BoatQuery fires (ACQBH)
-31  Boat        ACQBH+ACQBH        + RegistrationState, relatedHitSearchIndicator [    ]
+31  Boat        ACQBH+ACQBH        + relatedHitSearchIndicator     [    ]
               Expected: any[] fields present in XML output.
 32  Boat        Guardrail: ACQBH>ACQB  BoatHullIdNumber=FL1234AB56H7, dexSta... [    ]
               Expected: BoatQuery fires (ACQBH). dexStateUserId+Reg absent from XML.
@@ -180,6 +180,6 @@ COMBO COVERAGE (15/15):
   DriverHistoryQuery: 2/2 -- T10(KQ+RegistrationStateDH), T12(KQ+H)
   GunQuery: 1/1 -- T34(ACQG)
   ArticleSingleQuery: 1/1 -- T36(ACQA)
-  BoatQuery: 4/4 -- T24(BQ+H), T26(BQ+Reg), T28(ACQB+ACQB), T30(ACQBH+ACQBH)
+  BoatQuery: 4/4 -- T24(BQ+Reg), T26(BQ+H), T28(ACQB+ACQB), T30(ACQBH+ACQBH)
 
-IMPORT FILE: AZ_AZDPS_v3.6.json
+IMPORT FILE: AZ_AZDPS_v3.7.json

@@ -1613,3 +1613,38 @@ SKILL usx-adjudicate -- deciding what to DO about a finding (fix / register / di
   The wording of a finding carries almost no information: the same sentence was a real dropped value
   on four providers and correct behaviour on six. Validate the probe, establish cause at COMBINATION
   granularity, and measure branches-compared before AND after any registration.
+
+  tools/audit_prefill_shadow.ps1
+    WHICH PREFILL KILLED THE COMBO -- BUILD_RULES 24 enforced at the CAUSE.
+    Added 2026-08-05. BUILD_RULES 24 has said since the 35-combos-across-6-providers
+    incident that a form initialValue on any set[] field makes it always-present and
+    permanently hides every combo needing its absence. NOTHING ENFORCED IT.
+    audit_combo_reachability owns the CONSEQUENCE (it reports "DEAD COMBO" once a combo
+    is already unreachable) and never says WHY -- which makes a dead-combo verdict read
+    like a design trade-off you can accept rather than a defect you caused.
+    THE CASE: AZ_AZDPS v3.7 prefilled ImageIndicator, Requestor AND dexStateUserId --
+    three set[] fields in one version -- which collapsed the variable requirement of
+        DQPN  -> [NameLast, NameFirst]        == DQN's
+        DQP   -> [OperatorLicenseNumber]      == DQ's
+        ACQB  -> [RegistrationNumber]         == BQ's
+        ACQBH -> [BoatHullIdNumber]           == BQH's
+    into four EXACT collisions that no ordering can separate, killing DQN/DQ/BQ/BQH. The
+    options put to Rob all involved deleting or registering the losers; his answer was
+    "we do not leave out queries because it is hard ... use ordering and recognize the
+    shadows." The real fix was to UN-prefill the discriminators metadata already supplied
+    (ImageIndicator for the DL pairs, RegistrationState for the Boat in/out pairs).
+    THE RULE IS NOT "no prefill on a set[] field" -- that would condemn legitimate cases:
+      For an ordered pair (A before B) in one QIDM, FAIL only when
+        (a) A shadows B on the VARIABLE sets  (set[] minus prefilled fields), AND
+        (b) that subset relation does NOT already hold on the RAW set[]s.
+      (a) alone is a structural shadow and belongs to audit_combo_reachability. Requiring
+      (b) is what spares a prefill that sits in EVERY combo's set[]: it cancels out of both
+      sides and creates no new relation -- CA_CLETS purposeCode, and AZ's own
+      dexStateUserId, which is REQUIRED (without it the badge combos cannot match at all).
+    Honours mutually exclusive existence gates (one EXISTS / other NOT_EXISTS on the same
+    field can never co-fire). Prints the pair count and FAILS a zero-pair run -- a gate that
+    compared nothing is not a pass.
+    Baseline 2026-08-05: 20/20 providers clean, 645 ordered pairs compared, zero false
+    positives. Proven able to FAIL by re-injecting the ImageIndicator prefill on a replica
+    inside the provider dir: 2 FAIL, naming both pairs and all three culprit prefills.
+    Usage: .\audit_prefill_shadow.ps1 -Path <json> [-OutFile <path>]
