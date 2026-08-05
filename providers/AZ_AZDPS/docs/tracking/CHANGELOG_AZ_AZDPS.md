@@ -2,9 +2,44 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.5** | Generated: 2026-08-04
+Current: **v3.6** | Generated: 2026-08-04
 
 ---
+
+## v3.6 -- 2026-08-04 -- Requestor AUTOMATED, ACWL ordered FIRST, Stolen Check -> Y/N dropdown
+
+WHY A BUMP AND NOT A v3.5 EDIT: v3.5 had ALREADY BEEN IMPORTED to the USx AZ tenant when these three  
+changes landed, so the tenant's form and the repo's JSON had silently diverged under one version  
+number -- the tenant still showed a VISIBLE Requestor and FREE-TEXT Stolen Check. Rob caught it  
+("its still at 3.5"). A version number that describes two different forms is worse than no version:  
+every log captured against it is unattributable. Bumped so the re-import is unambiguous.  
+**CHANGED:**
+  (1) REQUESTOR IS AUTOMATED (Rob, non-negotiable). Hidden InpH feeder (initialValue='X') +  
+      CommsysGetLastNameFirstNameInitialRuleHandler on the QIDM attribute, size=5 cap -- the Attention  
+      pattern this build already used. Officers must not type an identifier they can get wrong.  
+  (2) ACWL ORDERED FIRST ("Option A", Rob's choice of three). Requestor and ImageIndicator are BOTH  
+      always-present (handler + a prefill that is mandatory or the field does not serialize at all),  
+      so DQPN's VARIABLE requirement is only badge+Name -- a strict subset of ACWL's  
+      badge+Name+DOB+Sex. With DQPN first, ACWL is a DEAD combo (measured twice). ACWL first is what  
+      BOTH ordering rules already prescribed: most-specific-first (4 variable fields vs 2) and the  
+      devdoc tiebreaker (#1 precedes the #2 photo variant). ORDER: ACWL, DQPN, DQP, DQN, DQ.  
+      Behaviour to know: badge+Name+DOB+Sex fires ACWL (no photo); badge+Name fires DQPN (photo).  
+  (3) STOLEN CHECK IS NOW Y/N. All three controls (Firearm/Article/Boat) were FormInput maxLength 1 --  
+      FREE TEXT on a Y/N field, so any character could be typed. Now FormSelect YES_NO_UNKNOWN/NCIC.  
+      NO initialValue added: the field is any[]-only and a default would start transmitting Y on every  
+      query, a wire change nobody asked for. verify_build hard-gates VehicleMakeCode-must-be-Sel but  
+      nothing covers Y/N indicators, which is how three shipped as free text.  
+  (4) CAD defaults ImageIndicator=Y + Requestor=X on DQPN/DQP -- CAD ignores form initialValues and  
+      both are set[] members, so without them a CAD-injected query cannot satisfy the combo.  
+NOT CHANGED, and deliberately so: RelatedHitSearchIndicator keeps its name (AZ's OWN -- 50 hits in  
+  source/AZ_AZDPS.xml, listed verbatim in the devdoc; AZ orders it Hit-then-Search where HI/NJ use  
+  Search-then-Hit, each per its own metadata). Boat hull combos keep RegistrationNumber in any[] --  
+  the queries are already exclusive via the hull NOT_EXISTS gate, and both authorities permit the  
+  field on the hull path (audit_optional_scope adjudicated FIX when I removed it).  
+ALL 5 ENTITIES RESET at v3.6. Requires a tenant RE-IMPORT before Person or stolen-check testing.  
+
+## v3.5 -- 2026-08-04 -- DL SCOPE CORRECTION -- the devdoc-Basic DriverLicenseQuery, photo paths restored
+
 
 ## v3.5 -- 2026-08-04 -- DL built on the WRONG TRANSACTION since v3.3 -- switched to devdoc-Basic DriverLicenseQuery
 

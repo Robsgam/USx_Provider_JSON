@@ -152,7 +152,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.5'
+$Version = '3.6'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"

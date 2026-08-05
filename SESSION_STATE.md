@@ -60,7 +60,7 @@ rebuild them to chase a score. CC's block is a GATE getting stricter, not a prov
 
 **ENFORCED is not "done". SIX are tenant-tested, all re-swept 2026-08-03/04** -- FL 116, CA 90, TX 89,
 NY 64, HI 46, NJ 36 = **441 logs**, each fresh against a reset package, four log gates green.
-**AZ v3.5 is enforce-clean and NEVER swept; 13 others never swept** = the backlog.
+**AZ v3.6 is enforce-clean and NEVER swept; 13 others never swept** = the backlog.
 
 Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 0/9 | audit_metadata 20/20 | portability 260 cells
 0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic |
@@ -71,7 +71,7 @@ it compared queryLabel, never the wire transaction, for months).
 
 ## NEXT PHYSICAL ACTION
 
-**AZ_AZDPS v3.5**: Rob's cosmetic review -> import -> `test_phase2.ps1 -Provider AZ_AZDPS`, then
+**AZ_AZDPS v3.6**: Rob's cosmetic review -> import -> `test_phase2.ps1 -Provider AZ_AZDPS`, then
 `-PostIngest`. After that, the 13 other never-swept providers (each needs an import first).
 
 **Jira CURRENT on all six** (FL 790815, TX 790861, NY 790896, NJ 790914, CA 791400, HI 791589).
