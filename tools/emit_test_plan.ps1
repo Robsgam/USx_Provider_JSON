@@ -138,15 +138,21 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
         if ($k -ieq $fid) { return "$($script:CurFormDefaults[$k])" }
     }
 
-    # 2. PLATFORM-POPULATED fields: hidden, no initialValue, filled by the platform/CAD at submit
-    #    time (never by the officer). The simulator must model them as PRESENT or it predicts a
-    #    different combo than the tenant fires. Deliberately a SHORT EXPLICIT allowlist, not
-    #    "anything hidden" -- a hidden field that is genuinely empty must keep failing loudly.
-    #    Values match each field's metadata maxLength (BadgeNumber = 4).
-    if ($fid -imatch '^dexStateUserId$') { return '1234' }
+    # 2. PLATFORM-POPULATED fields -- see $script:PlatformFed below.
+    foreach ($k in $script:PlatformFed.Keys) {
+        if ($fid -ieq $k) { return $script:PlatformFed[$k] }
+    }
 
     return $v
 }
+
+# PLATFORM-POPULATED fields: hidden, NO form initialValue, filled by the platform/CAD at submit time
+# and never by the officer. ONE definition, consumed by BOTH Get-TestValue (above) and
+# Resolve-ExpectedKeyRef (below) -- if those two disagree about what is present, the plan predicts one
+# combo and the driver produces another, which is the exact class this whole fix exists to remove.
+# Deliberately a SHORT EXPLICIT allowlist, NOT "anything hidden": a hidden field that is genuinely
+# empty must keep failing loudly. Values match each field's metadata maxLength (BadgeNumber = 4).
+$script:PlatformFed = @{ 'dexStateUserId' = '1234' }
 
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
 # (leave blank = home), optional name parts, and auto-populated hidden Attention. Everything
@@ -335,6 +341,13 @@ function Resolve-ExpectedKeyRef($entQidms, $fills, $entDefaults, $structuralKr) 
     if ($entDefaults) {
         foreach ($k in $entDefaults.Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $entDefaults[$k] } }
     }
+    # PLATFORM-FED fields must be modelled PRESENT here even though they are absent from $fills
+    # (Build-Fills skips hidden fields -- the driver cannot type into them, correctly). Without this
+    # the simulation thinks the badge is missing, so a badge-gated combo cannot win, the test is
+    # dropped as "cannot fire for its own fill", and the plan predicts the looser sibling that the
+    # TENANT will not actually fire. On AZ_AZDPS v3.6 that removed every test for ACWL/DQPN/DQP --
+    # the whole driver-licence photo feature -- and mispredicted the name searches it kept.
+    foreach ($k in $script:PlatformFed.Keys) { if (-not $fd.ContainsKey($k)) { $fd[$k] = $script:PlatformFed[$k] } }
     $sim = Get-SimFiringKeyRef $entQidms $fd
     if ($sim) { return $sim }
     return $structuralKr
