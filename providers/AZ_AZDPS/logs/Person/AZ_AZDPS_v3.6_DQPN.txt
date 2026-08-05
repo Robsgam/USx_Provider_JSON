@@ -1,0 +1,84 @@
+﻿================================================================
+TEST LOG: AZ_AZDPS Person DriverLicenseQuery
+Combo: DQPN (DQPN (auto))
+Date: 2026-08-05 11:33:07
+Result: FAIL
+JSON Version: 3.6
+Entity Fingerprint: 393c3beda3ff4664fa2d852c485a95cf62312995e1f89b41de5a7c7ec1714a1a
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Arizona","RegistrationStateDH":"Arizona","Requestor":"X","attention":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZ98STWWK9S1G340Z85DB5JF">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KZ98STWWK9S1G340Z85DB5JF</Id>
+            <State>AZ</State>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "registrationStateAttrId":  "69585921152"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZ98STWWK9S1G340Z85DB5JF
+  State                          AZ
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KZ98STWWK9S1G340Z85DB5JF). kind=combo; anyField=; expectedKeyRef=DQPN; firedMessageType=DriverLicenseQuery. routing=MISMATCH (wire missing an identifier of expected combo DQPN)
+
+RESULT: FAIL

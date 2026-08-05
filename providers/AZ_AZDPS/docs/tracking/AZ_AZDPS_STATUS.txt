@@ -1,7 +1,7 @@
-AZ_AZDPS -- Build Status
+﻿AZ_AZDPS -- Build Status
 =========================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated    : 2026-08-04
+Last updated    : 2026-08-05
 Current: v3.6 | 68P/0F/0W/0LIM | Updated 2026-08-04
 Current version : v3.6
 Provider: AZ_AZDPS
@@ -156,3 +156,24 @@ BUILD LOG (newest first)
   v2.2  2026-04-20  FAILED: forms did not render (type='BUNDLE' missing)
   v2.0  2026-04-20  FAILED: forms did not render (QIF provider='AZ_AZDPS')
   v1.0  2026-04-15  original basic build
+
+LIVE TEST RESULTS -- MC (post_test.ps1)
+--------------------------------------------------
+  #     Date        Entity      Combo                Result    Notes
+  ---   ----------  ----------  -------------------  --------  -----
+  ---   2026-08-05 Person     DL:DQ_guardrail_vs_DQN PASS     DQ_guardrail_vs_DQN (auto)
+  ---   2026-08-05 Person     DL:DQ_guardrail_vs_DQPN PASS     DQ_guardrail_vs_DQPN (auto)
+  ---   2026-08-05 Person     DL:DQ_guardrail_vs_ACWL PASS     DQ_guardrail_vs_ACWL (auto)
+  ---   2026-08-05 Person     DH:KQ_any            PASS     KQ_any (auto)
+  ---   2026-08-05 Person     DH:KQ_af_purposeCodeDH PASS     KQ_af_purposeCodeDH (auto)
+  ---   2026-08-05 Person     DH:KQ                PASS     KQ (auto)
+  ---   2026-08-05 Person     DH:KQH_any           PASS     KQH_any (auto)
+  ---   2026-08-05 Person     DH:KQH_af_purposeCodeDH PASS     KQH_af_purposeCodeDH (auto)
+  ---   2026-08-05 Person     DH:KQH               PASS     KQH (auto)
+  ---   2026-08-05 Person     DL:DQP               FAIL     DQP (auto)
+  ---   2026-08-05 Person     DL:DQPN_af_SexCode   FAIL     DQPN_af_SexCode (auto)
+  ---   2026-08-05 Person     DL:DQPN_af_BirthDate FAIL     DQPN_af_BirthDate (auto)
+  ---   2026-08-05 Person     DL:DQPN              FAIL     DQPN (auto)
+  ---   2026-08-05 Person     DL:ACWL_any          FAIL     ACWL_any (auto)
+  ---   2026-08-05 Person     DL:ACWL_af_RegistrationState FAIL     ACWL_af_RegistrationState (auto)
+  ---   2026-08-05 Person     DL:ACWL              FAIL     ACWL (auto)
