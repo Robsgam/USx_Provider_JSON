@@ -293,7 +293,20 @@ foreach ($s in $pick) {
         Emit ($label + "[CAUGHT]  by $g") 'Green'
         Emit ("       " + ($newLines[0] -replace '\s+', ' ')) 'DarkGray'
     } else {
-        Emit ($label + '[SURVIVED] no gate reacted') 'Red'
+        # A SURVIVOR IS ONLY EVIDENCE IF EVERY GATE ACTUALLY LOOKED (added 2026-08-04).
+        # Vacuity was checked at baseline and never again, so a gate that RAN but examined nothing on
+        # THIS mutation contributes no new lines and the mutation reads SURVIVED -- indistinguishable
+        # from a genuine blind spot. That is not hypothetical: audit_devdoc_optionals is in this panel
+        # and is KNOWN to flake under parallel load (SESSION_STATE records it), and it demonstrably
+        # DOES fire on the Boat drop-any RegistrationNumber mutation when run alone -- yet that
+        # mutation was reported SURVIVED. A false SURVIVED is worse than a missed one: it sends you
+        # to widen a gate that already works.
+        $blind = @($now | Where-Object { -not $_.Ran } | ForEach-Object { $_.Gate })
+        if ($blind.Count) {
+            Emit ($label + "[SURVIVED?] no gate reacted, BUT " + $blind.Count + " gate(s) never looked on this mutation: " + ($blind -join ', ') + " -- RE-RUN THOSE ALONE before treating this as a blind spot") 'DarkYellow'
+        } else {
+            Emit ($label + '[SURVIVED] no gate reacted (every panel gate looked)') 'Red'
+        }
         $survivors += $s
     }
 }
