@@ -152,7 +152,18 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
 # combo and the driver produces another, which is the exact class this whole fix exists to remove.
 # Deliberately a SHORT EXPLICIT allowlist, NOT "anything hidden": a hidden field that is genuinely
 # empty must keep failing loudly. Values match each field's metadata maxLength (BadgeNumber = 4).
-$script:PlatformFed = @{ 'dexStateUserId' = '1234' }
+#
+# REVERTED TO EMPTY 2026-08-05 -- THE WIRE REFUTED IT. I had put `dexStateUserId = '1234'` here on the
+# reasoning that the hidden badge is platform-populated at submit time. It is NOT. AZ_AZDPS v3.6's
+# captured DQP log carries only:
+#     <State>AZ</State><OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+# -- no <BadgeNumber>, no <ImageIndicator>, no <Requestor>. So DQP never fired; DQ (OLN-only) did, and
+# 7 of 16 Person logs FAILED because the plan named a combo the tenant cannot reach.
+# CONSEQUENCE: the generator DROPPING those combos as "cannot fire for its own fill" was CORRECT, and
+# I overrode a true finding with an assumption. A field is only present if something DEMONSTRABLY fills
+# it -- a form initialValue (below) is evidence; "the platform probably does it" is not. If a
+# platform-fed field is ever added here it needs a captured wire showing the value, not a rationale.
+$script:PlatformFed = @{}
 
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
 # (leave blank = home), optional name parts, and auto-populated hidden Attention. Everything
