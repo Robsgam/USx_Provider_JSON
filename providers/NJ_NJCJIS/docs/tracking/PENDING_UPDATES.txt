@@ -5,4 +5,3 @@
 # [CLEARED 2026-07-02] EMIT-GUARDRAIL-SIM -- TEST_PLAN v4.8 regenerated with simulated guardrail
 # expectedKeyRefs (RANDFULL / FULLN / QBN); all 3 match the live-confirmed v4.8 guardrail logs
 # (RANDFULL_guardrail, FULLN_guardrail, QBN_guardrail -- all PASS with XML). No config change.
-[FLAG:testplan-platformfed-presence] emit_test_plan.ps1: platform-fed hidden fields (dexStateUserId) and form-shipped initialValues now count as ALREADY-PRESENT when simulating which combo fires. Previously badge-gated combos were dropped as unrunnable and the plan predicted the looser sibling the tenant would not fire. Re-emitting this provider's plan changes its test set, so it is deferred to the provider's OWN next rebuild + re-sweep. (flagged 2026-08-05)

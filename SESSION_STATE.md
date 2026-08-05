@@ -9,7 +9,7 @@
 
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-04 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-05 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -21,9 +21,9 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | CA_CLETS | v2.23 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.17 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
-| NJ_NJCJIS | v4.15 | ALL-PASS (36 logs) |
+| NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
 | NY_NYSPIN_EJUSTICE | v4.19 | ALL-PASS (64 logs) |
-| TX_TLETS | v4.18 | ALL-PASS (89 logs) |
+| TX_TLETS | v4.18 | PARTIAL -- 3 plan test(s) owed (89 captured) |
 | _14 others_ | -- | never tenant-tested: AZ_AZDPS, CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
@@ -58,9 +58,13 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 OH_LEADS which carry `[FLAG:validate-imgind-20b-l30]` -- they clear at their OWN next rebuild; do NOT
 rebuild them to chase a score. CC's block is a GATE getting stricter, not a provider getting worse.
 
-**ENFORCED is not "done". SIX are tenant-tested, all re-swept 2026-08-03/04** -- FL 116, CA 90, TX 89,
-NY 64, HI 46, NJ 36 = **441 logs**, each fresh against a reset package, four log gates green.
-**AZ v3.6 is enforce-clean and NEVER swept; 13 others never swept** = the backlog.
+**ENFORCED is not "done".** Six were re-swept 2026-08-03/04 (441 logs, fresh against reset packages).
+**NJ + TX are now PARTIAL, and it is a real coverage gain, not a regression:** the plan generator was
+blind to platform-fed/hidden presence, so `RegistrationState` out-of-state TOGGLE tests were never
+generated. Owed: NJ 4 (RANDFULL, RANDFULLN, FULL, FULLN) + TX 3 (DQName, CPLName, DQOLN), all
+`any-field RegistrationState` filling **AK** against an NJ/TX default -- verified NOT hollow. No combo
+was ever untested on either. Capture those 7 and they return to ALL-PASS; no version bump, no
+re-sweep. **AZ v3.6 enforce-clean, never swept; 13 others never swept.**
 
 Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 0/9 | audit_metadata 20/20 | portability 260 cells
 0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic |

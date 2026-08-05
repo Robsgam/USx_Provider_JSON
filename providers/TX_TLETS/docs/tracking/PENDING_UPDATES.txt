@@ -2,4 +2,3 @@
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
 # Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:testplan-platformfed-presence] emit_test_plan.ps1: platform-fed hidden fields (dexStateUserId) and form-shipped initialValues now count as ALREADY-PRESENT when simulating which combo fires. Previously badge-gated combos were dropped as unrunnable and the plan predicted the looser sibling the tenant would not fire. Re-emitting this provider's plan changes its test set, so it is deferred to the provider's OWN next rebuild + re-sweep. (flagged 2026-08-05)
