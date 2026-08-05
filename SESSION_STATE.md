@@ -80,12 +80,9 @@ track those in `IMPORT_LEDGER.md` B (Foundation) + C (published JSON).
 
 ## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 
-1. **CLOSED 2026-08-04: the two AZ fuzz survivors were HARNESS ARTIFACTS, not gate gaps.**
-   `audit_devdoc_optionals` is in the fuzz panel and demonstrably FIRES on the Boat drop-any mutation
-   when run alone -- it flakes under parallel load, and the harness only checked vacuity at BASELINE,
-   so a gate that looked at nothing read as SURVIVED. Fixed: survivors now name the gates that never
-   looked. Do NOT widen either gate. AZ needed no fix.
-2. **LA_LEMS DP/DQ** -- PARKED, see ON HOLD. (AZ DL scope inversion: CLOSED at v3.5.)
+1. **LA_LEMS DP/DQ** -- PARKED, see ON HOLD. (AZ DL scope inversion CLOSED at v3.5; the two AZ fuzz
+   survivors CLOSED 2026-08-04 as HARNESS artifacts -- `audit_devdoc_optionals` flakes under parallel
+   load and the harness only checked vacuity at baseline. Do NOT widen those gates.)
 
 **Residual gaps -- recorded, NOT owed, do not "discover" again:** `VEHICLE_BODY_STYLE|NJ_NIBRS` uniform
 across all 20 QRDMs vs CLAUDE.md's "CA=VEHICLE" -- **HYPOTHESIS**, unsettleable from the repo |
