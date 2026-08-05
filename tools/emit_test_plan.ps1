@@ -112,7 +112,40 @@ function Get-ScopedOptions([string]$entity, [string]$fid) {
 # ('<Entity>.<fieldId>=value') can resolve -- needed where one fieldId is reused across entities
 # but requires a different valid value each time (NCICNumber: A/G/B-prefixed per NCIC file).
 function Get-TestValue([string]$fid, [bool]$isOOS) {
-    return Get-ComboTestValue -FieldId $fid -IsOOS $isOOS -Caller 'EmitTestPlan' -Overrides $script:ValueOverrides -Entity $script:CurEntity
+    $v = Get-ComboTestValue -FieldId $fid -IsOOS $isOOS -Caller 'EmitTestPlan' -Overrides $script:ValueOverrides -Entity $script:CurEntity
+    if ($null -ne $v -and "$v" -ne '') { return $v }
+
+    # ── ALREADY-PRESENT FALLBACKS (added 2026-08-05) ────────────────────────────────────────────
+    # A set[] field the resolver cannot value made this generator UNABLE TO SATISFY the combo, so
+    # the fill rerouted to a looser sibling and the test was DROPPED as unrunnable -- silently
+    # deleting the only proof the combo works. On AZ_AZDPS v3.6 that dropped 14 tests and removed
+    # EVERY test for ACWL, DQPN and DQP, i.e. the entire driver-licence photo feature (devdoc #2/#5)
+    # would have gone to the tenant, passed an ALL-PASS sweep, and never once fired. "No combo -> no
+    # test -> no failure", reached through the value resolver instead of through the JSON.
+    #
+    # Worse than the omission: the tests it KEPT predicted the wrong combo. In the tenant these
+    # fields ARE present, so a name search really fires ACWL/DQPN, while the plan predicted DQN --
+    # and gate 2i replays through this same simulator, so it would have agreed with the plan and
+    # both would have been wrong about the wire.
+    #
+    # 1. FORM initialValue (hidden ones included). If the form ships a value, the field IS present
+    #    when the officer submits -- nothing to type. Same rule audit_combo_reachability already
+    #    uses for always-present fields, so the two tools now agree instead of disagreeing.
+    if ($script:CurFormDefaults -and $script:CurFormDefaults.Contains($fid)) {
+        return "$($script:CurFormDefaults[$fid])"
+    }
+    foreach ($k in @($script:CurFormDefaults.Keys)) {
+        if ($k -ieq $fid) { return "$($script:CurFormDefaults[$k])" }
+    }
+
+    # 2. PLATFORM-POPULATED fields: hidden, no initialValue, filled by the platform/CAD at submit
+    #    time (never by the officer). The simulator must model them as PRESENT or it predicts a
+    #    different combo than the tenant fires. Deliberately a SHORT EXPLICIT allowlist, not
+    #    "anything hidden" -- a hidden field that is genuinely empty must keep failing loudly.
+    #    Values match each field's metadata maxLength (BadgeNumber = 4).
+    if ($fid -imatch '^dexStateUserId$') { return '1234' }
+
+    return $v
 }
 
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
@@ -312,6 +345,9 @@ foreach ($ent in $entities) {
     $fieldIds = Get-QifFieldIds $qifByEntity[$ent]
     $hiddenIds = @(Get-QifHiddenFieldIds $qifByEntity[$ent])
     $formDefaultsByEntity[$ent] = Get-QifFormDefaults $qifByEntity[$ent]
+    # Exposed to Get-TestValue so a form-shipped value counts as ALREADY-PRESENT rather than as an
+    # unresolved field that reroutes the fill and gets the test dropped (see Get-TestValue).
+    $script:CurFormDefaults = $formDefaultsByEntity[$ent]
     $entQidms = @($qidms | Where-Object { $_.targetEntity -eq $ent })
 
     # render/negative are manual one-time checks done at initial provider build, not part
