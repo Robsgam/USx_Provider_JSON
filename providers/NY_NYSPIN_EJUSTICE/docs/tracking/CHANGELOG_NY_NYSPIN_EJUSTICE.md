@@ -2,7 +2,7 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.19** | Generated: 2026-08-04
+Current: **v4.19** | Generated: 2026-08-05
 
 ---
 

@@ -212,3 +212,56 @@ powershell -File tools\audit_tool_portability.ps1      # 0 unportable
 <full 20-provider sweep of the tool you changed>       # fixture 0/0, branches not fallen
 tools\enforce.ps1 -Provider <a few>                    # 0 FAIL / 0 WARN
 ```
+
+## Step 8 — PROBE HYGIENE AND HONEST VERIFICATION (added 2026-08-05)
+
+### 8a. A PROBE REPORTING A SYSTEMIC FINDING IS GUILTY UNTIL ITS DENOMINATOR IS SHOWN.
+
+Three self-inflicted "findings" in one day on AZ_AZDPS, each of which I started acting on:
+
+| What I "found" | The actual cause |
+|---|---|
+| `audit_requirement_fidelity` is blind to an over-permit on a no-`<Any>` variant | I wrote the mutated replica into the **scratchpad**, so no `source/` sat beside it, `Get-ProviderMetadataXml` found nothing, and the tool reported **0 branches compared**. A replica must live INSIDE the provider dir — which is why `audit_gate_efficacy` uses `$workJson` there. |
+| "driver submitted 12 but the plan holds 23" | My glob matched BOTH `<P>_TEST_PLAN_v*.json` and `<P>_TEST_PLAN_SPEC_v*.json`; I read counts off the wrong one. 12 planned, 12 submitted. |
+| "a stale v3.0 TEST_PLAN is sitting in `logs/`" | `-Recurse` pulled it out of `logs/_archive_pre_v3.1/`. `reset_test_package` had done its job; I reported archived history as live clutter. |
+
+Before reporting: print what the probe compared, and scope the glob. **A listing is not a finding.**
+Pairs with the existing rule that a finding repeated across many providers is almost always your probe
+— this is the single-provider version of the same error.
+
+### 8b. YOUR VERIFICATION MUST BE ABLE TO FAIL, AND YOU MUST READ ITS VERDICT.
+
+- `node --check driver.js` printed **"driver.js SYNTAX OK"** with node **not installed** — `$LASTEXITCODE`
+  was still 0 from the previous command. Replaced with headless Chrome as a real V8 parser, and proved
+  that probe could fail (injected `function broken( {` → `ERR`) before trusting its clean verdict.
+- `audit_tool_portability -Only <gate>.ps1` reported **"0 cells exercised"** twice — `-Only` filters
+  **providers**, not gates. Zero cells is not a pass. The real run was 260 cells.
+- I committed a `SESSION_STATE` change while its own gate read **`[FAIL] 122 lines`**. Read the verdict
+  BEFORE pushing, not after.
+
+If a check cannot distinguish "clean" from "never ran", it is not a check yet.
+
+### 8c. A SHARED-TOOL CHANGE THAT MOVES ANOTHER PROVIDER'S SCORE GETS A FLAG, NEVER A REBUILD.
+
+My `validate.ps1` narrowing added a PASS line, which moved MD_METERS 69→70 and OH_LEADS 77→78 and
+surfaced a real WARN on LA_LEMS. I regenerated all three providers' reports and synced their docs — a
+mass rebuild by the back door, against one-provider-at-a-time. Rob: *"why are you straying… stick to
+az only."*
+
+Correct move: revert the other providers, sync ONLY the provider you are working on, and
+`flag_pending_fix.ps1 -FixId <id> -Providers <P>` so each picks the change up at its OWN next rebuild.
+Note `powershell -File` **stringifies array args**, so `-Providers 'A','B'` fails — call it once per
+provider or in-session.
+
+### 8d. A FUZZ SURVIVOR IS ONLY EVIDENCE IF EVERY PANEL GATE ACTUALLY LOOKED.
+
+`audit_devdoc_optionals` is in the fuzz panel, flakes under parallel load, and **demonstrably fires**
+on the Boat `drop-any RegistrationNumber` mutation when run alone — yet the harness reported that
+mutation SURVIVED, and I recorded two "gate coverage gaps" that did not exist. The harness checked
+vacuity once, at BASELINE, and never per mutation.
+
+Fixed 2026-08-05: a survivor now names the gates that never looked and says to re-run them alone,
+versus `[SURVIVED] no gate reacted (every panel gate looked)` when the verdict is trustworthy.
+**A false SURVIVED is worse than a missed one — it sends you to widen a gate that already works.**
+Also: `audit_gate_efficacy` counts `[FAIL]`, `[WARN]` **and `[LIMITATION]`** (validate's third verdict
+class); omitting it made a correctly-reacting gate read SURVIVED.
