@@ -80,9 +80,11 @@ track those in `IMPORT_LEDGER.md` B (Foundation) + C (published JSON).
 
 ## OPEN DECISIONS -- Rob's call, do not settle unilaterally
 
-1. **AZ Boat fuzz survivor is a GATE gap, NOT a build defect.** Dropping `RegistrationNumber` from the
-   hull combo's `any[]` goes unnoticed by every gate; AZ's build has it correct. Widening the gate is
-   tooling work, deliberately not done in an AZ-only pass.
+1. **CLOSED 2026-08-04: the two AZ fuzz survivors were HARNESS ARTIFACTS, not gate gaps.**
+   `audit_devdoc_optionals` is in the fuzz panel and demonstrably FIRES on the Boat drop-any mutation
+   when run alone -- it flakes under parallel load, and the harness only checked vacuity at BASELINE,
+   so a gate that looked at nothing read as SURVIVED. Fixed: survivors now name the gates that never
+   looked. Do NOT widen either gate. AZ needed no fix.
 2. **LA_LEMS DP/DQ** -- PARKED, see ON HOLD. (AZ DL scope inversion: CLOSED at v3.5.)
 
 **Residual gaps -- recorded, NOT owed, do not "discover" again:** `VEHICLE_BODY_STYLE|NJ_NIBRS` uniform
