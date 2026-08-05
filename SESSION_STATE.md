@@ -39,12 +39,10 @@ absolute number is guaranteed to go stale and teach the next session to distrust
   compares ZERO devdoc combinations there, and a zero-comparison run is now a FAIL, not a PASS.
   Nothing about CC changed -- the gate stopped crediting a comparison that never ran. Clears by fixing
   the devdoc parse or recording why there is no combination table; **do neither while the hold stands.**
-- **LA_LEMS -- PARKED (Rob 2026-08-04).** 2 DH-`Attention` items DEFERRED, plus a real BUILD_RULES 20b
-  WARN (`ImageIndicator` prefilled `Y` while `DriverLicenseQuery/DQ` gates `ImageIndicator NOT_EXISTS`)
-  -- same root cause as its registered 2026-07-29 dead combo, newly visible to two more gates. Nothing
-  to diagnose; do NOT silence it with a divergence. **Expect `[WARN] Cross-provider: 207P/0F/1W` on
-  EVERY provider's enforce -- that check is portfolio-wide, so the WARN is LA's, not the one under
-  test.** Carries `[FLAG:validate-imgind-20b-l30]`.
+- **LA_LEMS -- PARKED (Rob 2026-08-04).** 2 DH-`Attention` items DEFERRED + a real BUILD_RULES 20b WARN
+  (`ImageIndicator` prefilled `Y` while `DriverLicenseQuery/DQ` gates it NOT_EXISTS) -- same cause as
+  its registered 2026-07-29 dead combo. Do NOT silence it. **Expect `[WARN] Cross-provider: 207P/0F/1W`
+  on EVERY provider's enforce; it is LA's, not the provider under test.** `[FLAG:validate-imgind-20b-l30]`.
 - **Jira: ALL updates HELD.** `enforce` 2r `[GAP]` is EXPECTED.
 - **Form review is Rob's MANUAL gate.** 2k `[INFO] not reviewed` is steady state. Never prompt.
 - TN_TIES prose divergence -- when we get to it.
@@ -58,13 +56,11 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 OH_LEADS which carry `[FLAG:validate-imgind-20b-l30]` -- they clear at their OWN next rebuild; do NOT
 rebuild them to chase a score. CC's block is a GATE getting stricter, not a provider getting worse.
 
-**ENFORCED is not "done".** Six were re-swept 2026-08-03/04 (441 logs, fresh against reset packages).
-**NJ + TX are now PARTIAL, and it is a real coverage gain, not a regression:** the plan generator was
-blind to platform-fed/hidden presence, so `RegistrationState` out-of-state TOGGLE tests were never
-generated. Owed: NJ 4 (RANDFULL, RANDFULLN, FULL, FULLN) + TX 3 (DQName, CPLName, DQOLN), all
-`any-field RegistrationState` filling **AK** against an NJ/TX default -- verified NOT hollow. No combo
-was ever untested on either. Capture those 7 and they return to ALL-PASS; no version bump, no
-re-sweep. **AZ v3.6 enforce-clean, never swept; 13 others never swept.**
+**NJ + TX are PARTIAL -- a real coverage GAIN, not a regression.** The plan generator was blind to
+platform-fed/hidden presence, so out-of-state `RegistrationState` TOGGLE tests were never generated.
+OWED: NJ 4 (RANDFULL/RANDFULLN/FULL/FULLN) + TX 3 (DQName/CPLName/DQOLN), each filling **AK** vs an
+NJ/TX default -- verified NOT hollow. No combo was ever untested. Capture the 7 -> back to ALL-PASS;
+no bump, no re-sweep. **AZ v3.6 enforce-clean, never swept; 13 others never swept.**
 
 Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 0/9 | audit_metadata 20/20 | portability 260 cells
 0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic |
