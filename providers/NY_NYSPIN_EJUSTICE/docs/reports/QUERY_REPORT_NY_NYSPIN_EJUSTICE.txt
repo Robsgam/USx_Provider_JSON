@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE_v4.20.json
-  Generated: 2026-08-06 16:28
+  Source: NY_NYSPIN_EJUSTICE_v4.21.json
+  Generated: 2026-08-06 16:53
 ================================================================
 QUERY SIMULATION
 ================
@@ -9,7 +9,7 @@ QUERY SIMULATION
   Seeded form defaults (2): Person.ImageIndicatorDH=Y, Person.nyNyspinTransactionNameDH=DALL
 
 ================================================================
-  CommSys Query Simulator -- NY_NYSPIN_EJUSTICE_v4.20.json
+  CommSys Query Simulator -- NY_NYSPIN_EJUSTICE_v4.21.json
 ================================================================
 
 --- QIDM: NY_NYSPIN_EJUSTICE_VehicleRegistrationQuery [Vehicle] ---
@@ -64,8 +64,8 @@ QUERY SIMULATION
     [SKIP] DALH -- conditions failed: RegistrationStateDH NOT_EXISTS [value='FL']; OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] DALLOUT
-      set: [OperatorLicenseNumberDH, purposeCodeDH, requestorDH, RegistrationStateDH]
-      any: [ImageIndicatorDH, nyNyspinTransactionNameDH] -> matched: [ImageIndicatorDH, nyNyspinTransactionNameDH]
+      set: [OperatorLicenseNumberDH, purposeCodeDH, RegistrationStateDH]
+      any: [ImageIndicatorDH, nyNyspinTransactionNameDH, requestorDH] -> matched: [ImageIndicatorDH, nyNyspinTransactionNameDH, requestorDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->

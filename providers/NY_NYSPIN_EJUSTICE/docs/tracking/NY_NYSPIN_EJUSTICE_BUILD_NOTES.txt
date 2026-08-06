@@ -3,7 +3,45 @@ NY_NYSPIN_EJUSTICE -- BUILD NOTES
 Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
 Clean restart from XML metadata as sole source of truth.
 See SQVR_main.txt for test results. See STATUS.txt for test matrix.
-v4.20  2026-08-06  DEX-1283: removed X default on Requestor -- UNPROVEN, live-verify DALHOUT/DALLOUT first
+v4.21  2026-08-06  DEX-1283 follow-up: demoted requestorDH set[]->any[] (v4.20's fix was wrong)
+  CHANGED: v4.20's fix (below) was LIVE-TESTED and broke DALHOUT: Send stayed permanently
+    disabled, twice, on re-run. Root cause confirmed: this is a CLIENT-SIDE gate, not a
+    server-side one -- the browser checks every set[] field for a value before enabling Send,
+    with no knowledge that a rule handler would fill it server-side. A hidden field with no
+    initialValue has no value for that check to find. Fix: demoted requestorDH from set[] to
+    any[] on both DALHOUT and DALLOUT (left initialValue removed -- did NOT restore 'X').
+    REGISTERED as a divergence (NY_NYSPIN_EJUSTICE_ACCEPTED_DIVERGENCES.txt): the raw metadata
+    XML's DALH/DALHOUT and DALL/DALLOUT Choice branches genuinely place Requestor in the
+    mandatory Set. any[] is still correct because the platform builds an attribute from set[]
+    OR any[] equally, and only set[] imposes the client Send-gate; the rule handler
+    (CommsysGetLastNameFirstNameInitialRuleHandler) populates Requestor unconditionally either
+    way (proven server-side on TX_TLETS v4.19/FL_FCIC v7.18/CA_CLETS v2.24). Routing unaffected:
+    DALHOUT vs DALH is decided by RegistrationStateDH EXISTS/NOT_EXISTS, not by Requestor.
+  REASON: Rob caught it live during the v4.20 tenant sweep ("problems standby" / "it looks like
+    the dh queries") before it went further. Cost: 17 v4.20 logs archived (Vehicle + partial
+    Person only -- the sweep hadn't reached DH yet when the failure surfaced). Full re-sweep
+    from T1 owed at v4.21; DALHOUT/DALLOUT remain THE discriminating test to run first.
+
+v4.20  2026-08-06  SUPERSEDED same-day by v4.21 -- DEX-1283 fix broke DALHOUT, see above
+  CHANGED: Removed initialValue='X' from the requestorDH hidden gate-feeder, and the matching
+    combo defaults[] entries on DALHOUT/DALLOUT. requestorDH stayed UNCHANGED in set[] on both
+    combos (metadata-mandatory for OOS DH per the devdoc/metadata OOS Set).
+  REASON: Same finding as TX_TLETS v4.19/FL_FCIC v7.18/CA_CLETS v2.24, BUT NY is structurally
+    different: on those three providers the equivalent field is any[]-only, so removing the
+    default never affected combo MATCHING, only attribute VALUE resolution (which the rule
+    handler overrides unconditionally regardless). Here requestorDH is in set[], so its
+    PRESENCE gates whether DALHOUT/DALLOUT match at all -- and a hidden field with no
+    initialValue submits no key whatsoever (confirmed empirically on all three prior providers:
+    the captured form snapshot omits the field entirely). If the platform's set[] check requires
+    a submitted key (not just a non-empty value) to be satisfied, these two combos could stop
+    firing entirely, with no sibling OOS DH combo to fall back to. Rob's call (2026-08-06): apply
+    it and verify live rather than leave it unproven. THE DISCRIMINATING TEST, before anything
+    else in this sweep: does DALHOUT (Name+State) and DALLOUT (OLN+State) still fire, and does
+    <Requestor> carry the real officer name on the wire? If either fails, revert this diff on
+    requestorDH specifically (restore initialValue='X' + the two combo defaults[] entries) --
+    do not touch the TX/FL/CA_CLETS fix, which is unrelated and already wire-proven.
+    OUTCOME: it failed live (see v4.21) -- reverting to 'X' was NOT the chosen fix; demoting to
+    any[] was, since it fixes the client-side gate without reintroducing the placeholder.
   CHANGED: Removed initialValue='X' from the requestorDH hidden gate-feeder, and the matching
     combo defaults[] entries on DALHOUT/DALLOUT. requestorDH stays UNCHANGED in set[] on both
     combos (metadata-mandatory for OOS DH per the devdoc/metadata OOS Set -- this is not being

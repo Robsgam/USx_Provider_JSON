@@ -1,8 +1,8 @@
-﻿NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ===============================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-08-06
-JSON version: v4.20
+JSON version: v4.21
 Validator: 75 PASS / 0 FAIL / 0 WARN / 0 LIM
 Simulation: 16/16 combos FIRE
 Prior live test: All 13 original combos CONFIRMED (2026-04-24, v1.0)
@@ -37,14 +37,14 @@ v2.1 changes from v2.0:
   Choice-set: metadata RVEH has Choice(in-state plate / OOS plate+type+year+state).
     OOS option built as RVEHOUT with State in set[] (LIMITATION #36). See QIDM_REFERENCE.
 
-  RVIN -- VIN + State (OOS / NCIC/Nlets) [CONFIRMED]
+  RVIN -- VIN + State (OOS / NCIC/Nlets) [PENDING]
     set: vehicleIdentificationNumber, registrationState
     any: imageIndicator, vehicleMakeCode, vehicleYear
     defaults: ImageIndicator=N
     keyReference: RVIN
     Fires when: VIN + State both filled
 
-  RVEHOUT -- Plate + State (OOS / Nlets) [CONFIRMED]
+  RVEHOUT -- Plate + State (OOS / Nlets) [PENDING]
     set: licensePlateNumber, registrationState
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
     conditions: RegistrationState EXISTS  (v4.15 -- OOS gate; distinct from in-state RVEH)
@@ -52,7 +52,7 @@ v2.1 changes from v2.0:
     keyReference: RVEHOUT (invented; provider routes by content per NY v1.19)
     Fires when: Plate + State both filled.
 
-  RVEH -- Plate, in-state (NY DMV) [CONFIRMED]
+  RVEH -- Plate, in-state (NY DMV) [PENDING]
     set: licensePlateNumber
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
     conditions: RegistrationState NOT_EXISTS  (v4.15 -- NY in-state gate; State removed from any[]
@@ -61,7 +61,7 @@ v2.1 changes from v2.0:
     keyReference: RVEH
     Fires when: Plate filled, State blank
 
-  RCAR -- VIN only (NY DMV, no state) [CONFIRMED]
+  RCAR -- VIN only (NY DMV, no state) [PENDING]
     set: vehicleIdentificationNumber
     any: imageIndicator
     conditions: LicensePlateNumber NOT_EXISTS (Plate>VIN), RegistrationState NOT_EXISTS (v4.15 NY gate)

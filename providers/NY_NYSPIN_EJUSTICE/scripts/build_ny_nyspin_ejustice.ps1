@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.20"
+    [string]$Version = "4.21"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -343,8 +343,20 @@ $dhQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set        = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','purposeCodeDH','requestorDH','RegistrationStateDH')
-                any        = @('ImageIndicatorDH','nameMiddleDH','nameSuffixDH','nyNyspinTransactionNameDH')
+                # v4.21 (DEX-1283 follow-up): requestorDH demoted set[]->any[]. Metadata's DALH/
+                # DALHOUT Choice puts Requestor in the mandatory Set branch -- REGISTERED
+                # divergence, not a metadata-fidelity miss (see accept_divergence entry + KB). The
+                # platform builds an attribute if it's in the fired combo's set[] OR any[]; set[]
+                # additionally makes the CLIENT gate Send on the field having a value, which a
+                # hidden auto-populated field with no initialValue can never satisfy (live-caught
+                # 2026-08-06: DALHOUT's Send button stayed permanently disabled). any[] avoids that
+                # client-side gate while the wire outcome is unchanged -- the rule handler
+                # (CommsysGetLastNameFirstNameInitialRuleHandler) populates Requestor
+                # unconditionally regardless of set[]/any[] placement (proven on TX_TLETS v4.19 /
+                # FL_FCIC v7.18 / CA_CLETS v2.24). Routing is also unaffected: DALHOUT vs DALH is
+                # already fully decided by RegistrationStateDH EXISTS/NOT_EXISTS, not by Requestor.
+                set        = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','purposeCodeDH','RegistrationStateDH')
+                any        = @('ImageIndicatorDH','nameMiddleDH','nameSuffixDH','nyNyspinTransactionNameDH','requestorDH')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationStateDH');      operator = 'EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
@@ -370,7 +382,8 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','purposeCodeDH','requestorDH','RegistrationStateDH'); any = @('ImageIndicatorDH','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('RegistrationStateDH'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            # v4.21: requestorDH demoted set[]->any[], same reasoning as DALHOUT above.
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','purposeCodeDH','RegistrationStateDH'); any = @('ImageIndicatorDH','nyNyspinTransactionNameDH','requestorDH'); conditions = @([PSCustomObject]@{ field = @('RegistrationStateDH'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALLOUT'
             state                 = 'Out'
@@ -709,29 +722,28 @@ $perLayout = MakeLayouts @(
                 # wanted -- do not "fix" this to "(auto)"/"(default X)" in a future labeling pass.
                 @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_4' @{ initialValue = 'DALL' } }
             )}
-            # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): required
-            # field (set[] on DALHOUT/DALLOUT), so BUILD_RULES Section 14's default rule would
-            # keep it visible/officer-filled. Exception granted here because the value is knowable
-            # and stable (officer's own RMS-profile name), not officer judgment -- same rationale
-            # as the optional-Attention standard elsewhere, deliberately extended to a required
-            # field. Hidden gate-feeder + CommsysGetLastNameFirstNameInitialRuleHandler on the
-            # 'Requestor' QIDM attribute (see below); sourceField=['requestorDH'] already pointed
-            # at this fieldId.
+            # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): the value
+            # is knowable and stable (officer's own RMS-profile name), not officer judgment --
+            # same rationale as the optional-Attention standard elsewhere. Hidden gate-feeder +
+            # CommsysGetLastNameFirstNameInitialRuleHandler on the 'Requestor' QIDM attribute (see
+            # below); sourceField=['requestorDH'] already pointed at this fieldId.
             # v4.20 (DEX-1283): removed the hidden feeder's initialValue='X' + the matching combo
-            # defaults[] entries (same fix as TX_TLETS v4.19 / FL_FCIC v7.18 / CA_CLETS v2.24) --
-            # BUT requestorDH stays in set[] UNCHANGED, unlike those three providers where the
-            # equivalent field is any[]-only. This is the ONE provider in the DEX-1283 revisit
-            # where that matters: a hidden field with no initialValue submits no key at all
-            # (confirmed on all three prior providers -- the captured form snapshot omits it
-            # entirely), and set[] membership means the platform's combo matcher checks for its
-            # presence. If a submitted key is required (not just a non-empty VALUE) to satisfy
-            # set[], DALHOUT/DALLOUT could stop firing entirely -- there is no sibling OOS DH
-            # combo without requestorDH to fall back to. Rob's call (2026-08-06): remove it and
-            # verify live rather than leave it unproven. THE DISCRIMINATING TEST is DALHOUT/DALLOUT
-            # actually firing on the wire with the real officer name in <Requestor> -- verify this
-            # FIRST, before the rest of the entity sweep. If it fails, revert this file's diff on
-            # requestorDH only (leave TX/FL/CA_CLETS untouched) and restore initialValue='X' +
-            # the combo defaults[].
+            # defaults[] entries (same fix as TX_TLETS v4.19 / FL_FCIC v7.18 / CA_CLETS v2.24),
+            # WHILE LEAVING requestorDH in set[] unchanged. Live-caught 2026-08-06: DALHOUT's Send
+            # button stayed permanently disabled -- a hidden field with no initialValue submits no
+            # key at all (confirmed on all three prior providers), and set[] membership means the
+            # CLIENT gates Send on the field having a value, which it now never could.
+            # v4.21 (same-day fix): demoted requestorDH set[]->any[] on both DALHOUT/DALLOUT
+            # instead of restoring the default. REGISTERED metadata divergence -- NY's own
+            # DALH/DALHOUT Choice puts Requestor in the mandatory Set branch (verified against the
+            # raw XML, not the build-script comment alone) -- but the platform builds an attribute
+            # from set[] OR any[] equally; set[] ADDITIONALLY imposes the client-side Send gate
+            # that any[] does not. The rule handler still populates Requestor unconditionally
+            # either way (proven server-side on TX/FL/CA_CLETS), so any[] keeps the wire outcome
+            # identical while removing the one thing a hidden auto-populated field can never
+            # satisfy without reintroducing the "X" placeholder this whole fix exists to remove.
+            # Routing is unaffected: DALHOUT vs DALH is already fully decided by
+            # RegistrationStateDH EXISTS/NOT_EXISTS, not by Requestor's presence.
             @{ id = 'ROW_PER_DH_5B'; cols = @('12'); fields = @(
                 @{ id = 'RequestorDH_Input'; node = InpH 'requestorDH' 'Requestor (auto-populated from officer profile)' '35' 'ROW_PER_DH_5B' }
             )}

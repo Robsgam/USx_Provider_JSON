@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE v4.20 -- TEST MATRIX
+NY_NYSPIN_EJUSTICE v4.21 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-06
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -72,7 +72,7 @@ ENTITY 1: PERSON (18 tests -- 2 cards, 6 combos)
               Expected: any[] fields present in XML output.
  5  Person      DALL+OUT           OperatorLicenseNumberDH=D999888777, p... [    ]
               Expected: DriverHistoryQuery fires (DALLOUT)
- 6  Person      DALL+OUT           + ImageIndicatorDH, nyNyspinTransactionNameDH [    ]
+ 6  Person      DALL+OUT           + ImageIndicatorDH, nyNyspinTransactionNameDH, requestorDH [    ]
               Expected: any[] fields present in XML output.
  7  Person      DALL+OLN           OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (DALL)
@@ -89,7 +89,7 @@ ENTITY 1: PERSON (18 tests -- 2 cards, 6 combos)
 13  Person      Guardrail: DLIC>DLICN  OperatorLicenseNumber=D999888777, Bir... [    ]
               Expected: DriverLicenseQuery fires (DLIC). DOB+LastName+FirstName+SexCode absent from XML.
 14  Person      Guardrail: DALLOUT>DALHOUT  OperatorLicenseNumberDH=D999888777, B... [    ]
-              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH+purposeCodeDH+requestorDH+RegistrationStateDH absent from XML.
+              Expected: DriverHistoryQuery fires (DALLOUT). DOB+LastName+FirstName+SexCodeDH+purposeCodeDH+RegistrationStateDH absent from XML.
 15  Person      Guardrail: DALHOUT>DALH  BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (DALHOUT). DOB+LastName+FirstName+SexCodeDH absent from XML.
 16  Person      Guardrail: DALLOUT>DALH  OperatorLicenseNumberDH=D999888777, B... [    ]
@@ -186,4 +186,4 @@ COMBO COVERAGE (16/16):
   ArticleSingleQuery: 1/1 -- T45(AINQ)
   BoatQuery: 4/4 -- T31(RVEH+RVEH), T33(RCAR+Hull), T35(BVEH+BVEH), T37(BVIN+BVIN)
 
-IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.20.json
+IMPORT FILE: NY_NYSPIN_EJUSTICE_v4.21.json
