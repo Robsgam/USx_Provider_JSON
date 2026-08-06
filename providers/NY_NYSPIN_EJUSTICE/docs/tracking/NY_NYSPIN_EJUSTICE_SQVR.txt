@@ -196,28 +196,28 @@ v2.1 changes from v2.0:
   CAD defaults: ImageIndicator=N on all 4 combos
   LIMITATION #30 applies (no State default)
 
-  BVEH -- Registration Number + State OOS [PENDING]
+  BVEH -- Registration Number + State OOS [CONFIRMED]
     set: registrationNumber, registrationState
     any: imageIndicator
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg), RegistrationState EXISTS (OOS gate)
     defaults: ImageIndicator=N
     keyReference: BVEH
 
-  BVIN -- Hull ID + State OOS [PENDING]
+  BVIN -- Hull ID + State OOS [CONFIRMED]
     set: boatHullIdNumber, registrationState
     any: imageIndicator
     conditions: RegistrationState EXISTS  (v4.15 -- OOS gate)
     defaults: ImageIndicator=N
     keyReference: BVIN
 
-  RVEH -- Registration Number, NY (no state) [PENDING]
+  RVEH -- Registration Number, NY (no state) [CONFIRMED]
     set: registrationNumber
     any: imageIndicator
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg), RegistrationState NOT_EXISTS (v4.15 NY gate)
     defaults: ImageIndicator=N
     keyReference: RVEH  (shared keyRef name with Vehicle RVEH -- platform routes by targetEntity)
 
-  RCAR -- Hull ID, NY (no state) [PENDING]
+  RCAR -- Hull ID, NY (no state) [CONFIRMED]
     set: boatHullIdNumber
     any: imageIndicator
     conditions: RegistrationState NOT_EXISTS  (v4.15 -- NY gate)
