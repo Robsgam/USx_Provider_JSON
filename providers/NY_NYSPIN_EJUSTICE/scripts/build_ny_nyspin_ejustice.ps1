@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.21"
+    [string]$Version = "4.22"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -152,7 +152,20 @@ $vehQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'LicensePlateNumber';        size = 10; sourceField = @('LicensePlateNumber');        targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');            targetField = 'LicensePlateYear' }
-        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        # DEX-1284 EXPERIMENT (v4.22): CAD auto-fills RegistrationState with the officer's home
+        # state (NY) on every Vehicle entry, which forces RVEHOUT (OOS) to fire for a plate that
+        # is actually NY-registered. IgnoreUserValueRuleHandler(["NY"]) strips "NY" from the
+        # OUTBOUND wire value only -- it does NOT change combo selection (conditions read raw
+        # FORM state before this handler runs; confirmed via scratch simulator test 2026-08-06,
+        # see knowledge-base/UNIVERSAL_SEARCH_HANDLERS.txt Sec 4). RVEHOUT still fires and its
+        # own unconditional defaults (LicensePlateTypeCode/Year) still ride along; only <State>
+        # is now omitted from the wire when the value is exactly "NY". Whether the live CommSys
+        # server treats that as a correct in-state lookup or a malformed OOS request is NOT
+        # determinable from a simulator (LIMITATION #37: the server picks the real message key
+        # from field VALUES, not our internal keyReference) -- this version exists to observe the
+        # real wire/result live. STATUS: HYPOTHESIS pending live capture. Revert this rule alone
+        # (leave everything else) if the live test shows a regression.
+        [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC'; rule = [PSCustomObject]@{ function = 'IgnoreUserValueRuleHandler'; arguments = @('NY') } }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
         [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('VehicleMakeCode');             targetField = 'VehicleMakeCode' }
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
@@ -715,7 +728,13 @@ $perLayout = MakeLayouts @(
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
             )}
             @{ id = 'ROW_PER_DH_4'; cols = @('6','6'); fields = @(
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1'  'ROW_PER_DH_4' @{ initialValue = 'C' } }
+                # DEX-1284 (v4.22): dropdown, not free text -- confirmed live pattern in the CA_eSUN
+                # department export (2026-08-06): FormSelect + attributeTypeId='DEX_INQUIRY_PURPOSE_CODE'
+                # (a platform attributeTypeId code table, same mechanism as STATE/SEX/VEHICLE_MAKE --
+                # NOT a codeTypeCategory/codeTypeSource pairing). Devdoc's valid codes are C,F,E,D,J,S;
+                # whether the platform's code table matches is confirmed at Rob's own render/import
+                # review, same discipline as LIMITATION #38 (dropdown renders != wire-valid code).
+                @{ id = 'PurposeCodeDH_Input'; node = Sel 'purposeCodeDH' 'Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE'; initialValue = 'C' } 'ROW_PER_DH_4' }
                 # LABEL-OVERRIDE: nyNyspinTransactionNameDH -- Rob's explicit exception; bare
                 # "Transaction Type" is the intended wording (prefilled initialValue=DALL,
                 # officer-editable, any[] optional). CHECK 15 Rule 3's "(optional)" qualifier is not

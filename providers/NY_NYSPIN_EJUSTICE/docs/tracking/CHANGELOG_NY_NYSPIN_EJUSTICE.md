@@ -2,9 +2,30 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.21** | Generated: 2026-08-06
+Current: **v4.22** | Generated: 2026-08-06
 
 ---
+
+## v4.22 -- 2026-08-06 -- DEX-1284 items 1+3: PurposeCode dropdown + Vehicle home-state strip (experiment)
+
+**CHANGED:** (1) purposeCodeDH converted from FormInput to FormSelect with
+  attributeTypeId='DEX_INQUIRY_PURPOSE_CODE' -- confirmed live pattern from the CA_eSUN  
+  department export (2026-08-06), same attributeTypeId mechanism as STATE/SEX/VEHICLE_MAKE.  
+  Registered accepted_field_divergences.json entry for 'purposeCodeDH' (other DH-suffix  
+  providers still use free-text). (2) Added IgnoreUserValueRuleHandler(["NY"]) to the  
+  VehicleRegistrationQuery 'State' attribute (sourceField RegistrationState) -- CAD auto-fills  
+  the officer's home state on every Vehicle entry, forcing the OOS combo (RVEHOUT) to fire for  
+  plates that are actually NY-registered. This handler strips "NY" from the OUTBOUND wire value  
+  only; it does NOT change combo selection (confirmed via scratch simulator test, 2026-08-06:  
+  RVEHOUT still fires, <State> is omitted from the wire). Whether the live CommSys server treats  
+  a State-absent OOS-shaped request as a correct in-state lookup is UNSETTLED and can only be  
+  determined by a live capture -- this version exists to observe that. Also fixed validate.ps1's  
+  stale AP #4 "IgnoreUserValueRuleHandler is a DEAD END" WARN (corrected 2026-07-29 in the KB for  
+  the stripping use case; the validator check had never been updated to match).  
+**REASON:** Leo Hisoire, DEX-1284 (2026-07-24) -- Rob approved building both items together
+  (2026-08-06) after a scratch-simulator test confirmed the mechanics of item 2 but could not  
+  settle the live server behavior. STATUS: HYPOTHESIS pending live capture on item 2; item 1 is  
+  a confirmed-buildable, lower-risk change (dropdown values are what remain to verify at import).  
 
 ## v4.21 -- 2026-08-06 -- DEX-1283 follow-up: demoted requestorDH set[]->any[] (v4.20's fix was wrong)
 

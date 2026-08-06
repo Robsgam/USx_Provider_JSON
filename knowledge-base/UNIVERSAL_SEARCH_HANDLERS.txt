@@ -104,19 +104,38 @@ concluding a capability does not exist.
   hardcoding". That is correct ONLY for hardcoding (it cannot inject a value). It is NOT a dead end
   for STRIPPING a home state -- that is exactly what production uses it for. Corrected 2026-07-29.
 
-  *** OPEN QUESTION -- DO NOT ASSUME EITHER WAY ***
-  STATUS: HYPOTHESIS (discriminating test: add IgnoreUserValueRuleHandler(["NY"]) to a
-  condition-gated provider in a test tenant, submit a CAD-style query WITH the home state, and
-  observe which keyRef the wire shows.)
-  Our combo conditions are evaluated against FORM STATE (_sim_helpers.ps1: "FORM-STATE KEY lookup
-  ONLY"), while attribute rules produce the OUTBOUND value. If that ordering holds, adding this
-  handler to a provider that gates on `RegistrationState EXISTS/NOT_EXISTS` (NY, FL, TX, CA_CLETS,
-  HI, OH, MD, NM, OR, TN...) would strip the state from the WIRE but still select the
-  out-of-state combo -- producing an OOS transaction with NO destination state, which is worse
-  than today. Deployed eSUN does not settle this: its combos carry NO conditions at all and route
-  purely by set[] membership, so the handler never has to influence routing there.
-  IMPLICATION: adopting the eSUN pattern is a ROUTING-MODEL change (defaulted home state +
-  set[]-membership routing + strip on the wire), not a one-line handler addition.
+  *** OPEN QUESTION -- PARTIALLY NARROWED, STILL NOT SETTLED (DEX-1284, 2026-08-06) ***
+  STATUS: HYPOTHESIS (discriminating test now needs a LIVE tenant, not just a simulator --
+  see below for exactly why the simulator cannot finish this one).
+
+  MECHANICAL PART -- CONFIRMED (scratch-copy simulator test, NY_NYSPIN_EJUSTICE v4.21, throwaway
+  mutation, not committed): added `IgnoreUserValueRuleHandler(["NY"])` to the `State` attribute of
+  VehicleRegistrationQuery, filled RegistrationState="NY" (CAD-style home-state autofill on a plate
+  query). Result: combo selection is UNCHANGED -- `RVEHOUT` (the OOS combo) still fires, because its
+  `RegistrationState EXISTS` condition reads the raw FORM value before the handler runs. The wire's
+  `<State>` element is fully OMITTED (not blank -- absent), and RVEHOUT's own combo defaults
+  (LicensePlateTypeCode=PC, LicensePlateYear=<current>) still ride along since they are unconditional
+  defaults, not value-gated. This confirms _sim_helpers' documented ordering (conditions read FORM
+  STATE; rule handlers only transform the OUTBOUND value) -- that part is settled.
+
+  WHAT IS *NOT* SETTLED -- and a simulator structurally cannot settle it: whether the real CommSys
+  server treats "OOS-shaped request, State absent, PlateType+Year present" as a CORRECT in-state
+  NCIC lookup or a MALFORMED OOS request. LIMITATION #37 (PLATFORM_CONSTRAINTS.txt) established that
+  for value-comparison conditions, the SERVER -- not our combo keyReference -- picks the real message
+  key from field VALUES it receives (CA_CLETS IA.QV: "no State -> IA.QV fires" server-side, regardless
+  of which combo our own config record says fired). If that same server-side value-driven selection
+  applies here, a State-absent wire could resolve correctly to an in-state lookup DESPITE our internal
+  combo saying "RVEHOUT" -- the internal keyReference is proven elsewhere to be informational only,
+  never transmitted. Our simulator has no knowledge of the live server's actual selection logic, so it
+  cannot distinguish "this works" from "this is worse than today." Only a real tenant capture can.
+  Same applies to FL, TX, CA_CLETS, HI, OH, MD, NM, OR, TN (all condition-gated on
+  RegistrationState EXISTS/NOT_EXISTS) -- do not generalize this to any of them without their own test.
+
+  Deployed eSUN does not settle this either: its combos carry NO conditions at all and route purely
+  by set[] membership, so the handler never has to influence routing there -- its case is simpler
+  than any condition-gated provider's.
+  IMPLICATION: adopting the eSUN pattern on a condition-gated provider is a ROUTING-MODEL question
+  whose outcome is unknown until tested live, not a one-line handler addition to copy blind.
 
 ================================================================================
   5. behaviors BLOCK -- top-level, we never emit it

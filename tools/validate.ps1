@@ -1556,11 +1556,15 @@ foreach ($bundle in $providerBundles) {
             }
         }
 
-        # Check AP #4: IgnoreUserValueRuleHandler (dead end)
+        # AP #4: IgnoreUserValueRuleHandler -- CORRECTED 2026-07-29 (see UNIVERSAL_SEARCH_HANDLERS.txt
+        # Sec 4 / RULE_HANDLERS.txt entry 14). It cannot SUBSTITUTE a value (AP #4 is still true for
+        # that misuse -- do not use it for hardcoding), but it is NOT a dead end for STRIPPING a known
+        # value from the outbound wire -- that is its live production use on CA_eSUN and the deliberate
+        # v4.22 use on NY_NYSPIN_EJUSTICE (DEX-1284). This is informational, not a defect signal --
+        # a blanket WARN here would tell a future build to "fix" a working, intentional pattern.
         foreach ($attr in $cfg.attributes) {
             if ($attr.rule -and $attr.rule.function -eq 'IgnoreUserValueRuleHandler') {
-                Write-Warn "QIDM '$($cfg.name)' attr '$($attr.name)' uses IgnoreUserValueRuleHandler -- DEAD END, does not substitute argument (AP #4)"
-                Write-Host "    [FIX] In build script: replace IgnoreUserValueRuleHandler with a hidden FormInput (InpH) with initialValue set to the desired value" -ForegroundColor Cyan
+                Write-Host "    [INFO] QIDM '$($cfg.name)' attr '$($attr.name)' uses IgnoreUserValueRuleHandler(args=$($attr.rule.arguments -join ',')) -- filters/strips matching values from the outbound wire; NOT a substitute for hardcoding (AP #4 still applies to that misuse)" -ForegroundColor Gray
             }
         }
     }

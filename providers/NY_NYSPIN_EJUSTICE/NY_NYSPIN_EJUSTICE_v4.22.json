@@ -1697,13 +1697,13 @@
                                                                                                    },
                                                                                   "PurposeCodeDH_Input":  {
                                                                                                               "type":  {
-                                                                                                                           "resolvedName":  "FormInput"
+                                                                                                                           "resolvedName":  "FormSelect"
                                                                                                                        },
-                                                                                                              "displayName":  "Input",
+                                                                                                              "displayName":  "Select",
                                                                                                               "props":  {
                                                                                                                             "fieldId":  "purposeCodeDH",
                                                                                                                             "label":  "Purpose Code",
-                                                                                                                            "maxLength":  "1",
+                                                                                                                            "attributeTypeId":  "DEX_INQUIRY_PURPOSE_CODE",
                                                                                                                             "initialValue":  "C"
                                                                                                                         },
                                                                                                               "isCanvas":  false,
@@ -2409,13 +2409,13 @@
                                                                                                         },
                                                                                        "PurposeCodeDH_Input":  {
                                                                                                                    "type":  {
-                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                                "resolvedName":  "FormSelect"
                                                                                                                             },
-                                                                                                                   "displayName":  "Input",
+                                                                                                                   "displayName":  "Select",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "purposeCodeDH",
                                                                                                                                  "label":  "Purpose Code",
-                                                                                                                                 "maxLength":  "1",
+                                                                                                                                 "attributeTypeId":  "DEX_INQUIRY_PURPOSE_CODE",
                                                                                                                                  "initialValue":  "C"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
@@ -3202,13 +3202,13 @@
                                                                                                            },
                                                                                           "PurposeCodeDH_Input":  {
                                                                                                                       "type":  {
-                                                                                                                                   "resolvedName":  "FormInput"
+                                                                                                                                   "resolvedName":  "FormSelect"
                                                                                                                                },
-                                                                                                                      "displayName":  "Input",
+                                                                                                                      "displayName":  "Select",
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "purposeCodeDH",
                                                                                                                                     "label":  "Purpose Code",
-                                                                                                                                    "maxLength":  "1",
+                                                                                                                                    "attributeTypeId":  "DEX_INQUIRY_PURPOSE_CODE",
                                                                                                                                     "initialValue":  "C"
                                                                                                                                 },
                                                                                                                       "isCanvas":  false,
@@ -6659,7 +6659,13 @@
                                                                                               "RegistrationState"
                                                                                           ],
                                                                           "targetField":  "State",
-                                                                          "codeTypeProvider":  "NCIC"
+                                                                          "codeTypeProvider":  "NCIC",
+                                                                          "rule":  {
+                                                                                       "function":  "IgnoreUserValueRuleHandler",
+                                                                                       "arguments":  [
+                                                                                                         "NY"
+                                                                                                     ]
+                                                                                   }
                                                                       },
                                                                       {
                                                                           "name":  "VehicleIdentificationNumber",
@@ -7571,13 +7577,13 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.21",
+                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.22",
                         "name":  "NY_NYSPIN_EJUSTICE",
                         "type":  "BUNDLE",
                         "provider":  "NY_NYSPIN_EJUSTICE"
                     },
                     {
-                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.21 -- RMS bundle",
+                        "description":  "Provider configuration for NY_NYSPIN_EJUSTICE v4.22 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",
