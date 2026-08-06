@@ -893,11 +893,38 @@ LIMITATION #38: VEHICLE_MAKE attribute codes reach the CommSys wire with a CNST_
   2i replays routing where the value is irrelevant. 324 green logs and four log gates
   were blind to a malformed value. Any future value-format gate starts here.
 
+LIMITATION #39: attributeTypeId='DEX_INQUIRY_PURPOSE_CODE' does NOT resolve on every
+                tenant -- it is NOT a universal platform code table like STATE/SEX/
+                VEHICLE_MAKE, despite matching their exact same config shape
+  STATUS: DISPROVEN LIVE (NY_NYSPIN_EJUSTICE tenant, 2026-08-06, DEX-1284): built
+  purposeCodeDH as FormSelect + attributeTypeId='DEX_INQUIRY_PURPOSE_CODE' at v4.22,
+  copying the exact config shape found in a live CA_eSUN department export
+  (`{"attributeTypeId":"DEX_INQUIRY_PURPOSE_CODE","fieldId":"PurposeCode","label":"CA
+  Purpose Code"}`). On the actual NY tenant the dropdown opened with ZERO options on
+  every single attempt (driver console: "purposeCodeDH no options rendered after
+  ~2550ms ... FAIL", repeated across every DALHOUT/DALLOUT test) -- not slow, not
+  intermittent, consistently empty. Since purposeCodeDH is mandatory in those combos'
+  set[], the field failing to fill under-filled every OOS DriverHistoryQuery request.
+  Reverted to FormInput at v4.23 (see BUILD_NOTES). Removed the accepted_field_
+  divergences.json entry for purposeCodeDH -- no longer applicable.
+  WHY THIS MATTERS BEYOND NY: the label captured from the eSUN export was literally
+  "CA Purpose Code" -- a naming signal this was CA/CLETS-tenant-scoped that was
+  under-weighted at build time in favor of the config SHAPE looking identical to
+  STATE/SEX/VEHICLE_MAKE (which genuinely are universal). An attributeTypeId can be
+  provisioned per-tenant, not just per-platform; matching another provider's exact
+  JSON shape is not proof a value resolves elsewhere. Do NOT adopt
+  DEX_INQUIRY_PURPOSE_CODE on any other provider without confirming its own tenant's
+  code table first (a live picklist scope, not a copied config).
+  NOT the same class as LIMITATION #38 (there, the dropdown renders correctly and
+  the WRONG VALUE reaches the wire; here, the dropdown renders NOTHING at all --
+  the underlying code table most likely was never provisioned for this tenant).
+
 ================================================================================
 CROSS-REFERENCE INDEX
 ================================================================================
 
   LIMITATION #38 -> Section 6 (Code Type/Dropdown) -- PARKED, portfolio-wide
+  LIMITATION #39 -> Section 6 (Code Type/Dropdown) -- DEX_INQUIRY_PURPOSE_CODE tenant-scoped, NOT universal
   LIMITATION #1  -> Section 1 (Query Routing)
   LIMITATION #2  -> Section 1 (Query Routing) -- includes AP #12, AP #17
   LIMITATION #3  -> Section 1 (Query Routing)

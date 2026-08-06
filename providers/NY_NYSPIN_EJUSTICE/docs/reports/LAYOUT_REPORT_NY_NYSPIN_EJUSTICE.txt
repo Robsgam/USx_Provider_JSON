@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: NY_NYSPIN_EJUSTICE
-  Source: NY_NYSPIN_EJUSTICE_v4.22.json
-  Generated: 2026-08-06 18:10
+  Source: NY_NYSPIN_EJUSTICE_v4.23.json
+  Generated: 2026-08-06 19:16
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== NY_NYSPIN_EJUSTICE_v4.22.json ===
+=== NY_NYSPIN_EJUSTICE_v4.23.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
-  Person | entity=Person | qidm= | cards=2 fields=12
+  Person | entity=Person | qidm= | cards=2 fields=13
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -72,7 +72,7 @@ LAYOUT DETAIL
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
       ROW ROW_PER_DH_4 [6 6]
-        purposeCodeDH (Dropdown | attributeTypeId=DEX_INQUIRY_PURPOSE_CODE | default=C)
+        purposeCodeDH (Text | maxLen=1 | default=C)
         nyNyspinTransactionNameDH (Text | maxLen=4 | default=DALL)
       ROW ROW_PER_DH_5B [12]
         requestorDH (Text | maxLen=35)

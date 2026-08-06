@@ -2,9 +2,25 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.22** | Generated: 2026-08-06
+Current: **v4.23** | Generated: 2026-08-06
 
 ---
+
+## v4.23 -- 2026-08-06 -- DEX-1284 item 1: reverted PurposeCode dropdown -- DISPROVEN LIVE
+
+**CHANGED:** purposeCodeDH reverted from FormSelect (attributeTypeId='DEX_INQUIRY_PURPOSE_CODE',
+  added at v4.22) back to FormInput with initialValue='C'. Removed the accepted_field_  
+  divergences.json entry for purposeCodeDH (no longer applicable). Recorded  
+  LIMITATION #39 in PLATFORM_CONSTRAINTS.txt.  
+**REASON:** Live-tested on the NY_NYSPIN_EJUSTICE tenant and disproven immediately: the dropdown
+  opened with ZERO options on every DALHOUT/DALLOUT attempt (driver console: "purposeCodeDH  
+  no options rendered ... FAIL", consistent across every test, not intermittent). Since  
+  purposeCodeDH is mandatory in those combos' set[], this under-filled and broke every OOS  
+  DriverHistoryQuery request -- a real regression, not cosmetic. DEX_INQUIRY_PURPOSE_CODE is  
+  CA_eSUN/CLETS-tenant-scoped (its captured label was literally "CA Purpose Code"), NOT a  
+  universal platform code table like STATE/SEX/VEHICLE_MAKE, despite an identical config  
+  shape. Item 3 (Vehicle home-state strip, IgnoreUserValueRuleHandler) is untouched by this  
+  revert and remains under live test.  
 
 ## v4.22 -- 2026-08-06 -- DEX-1284 items 1+3: PurposeCode dropdown + Vehicle home-state strip (experiment)
 

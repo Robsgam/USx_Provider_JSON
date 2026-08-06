@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.22"
+    [string]$Version = "4.23"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -728,13 +728,16 @@ $perLayout = MakeLayouts @(
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
             )}
             @{ id = 'ROW_PER_DH_4'; cols = @('6','6'); fields = @(
-                # DEX-1284 (v4.22): dropdown, not free text -- confirmed live pattern in the CA_eSUN
-                # department export (2026-08-06): FormSelect + attributeTypeId='DEX_INQUIRY_PURPOSE_CODE'
-                # (a platform attributeTypeId code table, same mechanism as STATE/SEX/VEHICLE_MAKE --
-                # NOT a codeTypeCategory/codeTypeSource pairing). Devdoc's valid codes are C,F,E,D,J,S;
-                # whether the platform's code table matches is confirmed at Rob's own render/import
-                # review, same discipline as LIMITATION #38 (dropdown renders != wire-valid code).
-                @{ id = 'PurposeCodeDH_Input'; node = Sel 'purposeCodeDH' 'Purpose Code' @{ attributeTypeId = 'DEX_INQUIRY_PURPOSE_CODE'; initialValue = 'C' } 'ROW_PER_DH_4' }
+                # DEX-1284 v4.22 tried FormSelect + attributeTypeId='DEX_INQUIRY_PURPOSE_CODE' (the
+                # pattern in the CA_eSUN department export). REVERTED v4.23 -- DISPROVEN LIVE
+                # (NY_NYSPIN_EJUSTICE tenant, 2026-08-06): the dropdown opened with ZERO options on
+                # every DALHOUT/DALLOUT test ("purposeCodeDH no options rendered ... FAIL"), which
+                # under-filled the field and broke every OOS DH combo (purposeCodeDH is mandatory in
+                # their set[]). This attributeTypeId is CA_eSUN/CLETS-tenant-scoped, NOT a universal
+                # platform code table like STATE/SEX/VEHICLE_MAKE -- the underlying code table was
+                # most likely never provisioned for the NY tenant at all, so no attributeTypeId or
+                # codeTypeCategory/codeTypeSource pairing fixes this from our JSON. Back to FormInput.
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_4' @{ initialValue = 'C' } }
                 # LABEL-OVERRIDE: nyNyspinTransactionNameDH -- Rob's explicit exception; bare
                 # "Transaction Type" is the intended wording (prefilled initialValue=DALL,
                 # officer-editable, any[] optional). CHECK 15 Rule 3's "(optional)" qualifier is not
