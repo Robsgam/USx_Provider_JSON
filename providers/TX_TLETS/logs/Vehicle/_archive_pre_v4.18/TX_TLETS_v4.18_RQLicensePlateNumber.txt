@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: RQLicensePlateNumber (RQLicensePlateNumber (auto))
-Date: 2026-07-30 15:56:20
+Date: 2026-08-03 14:32:08
 Result: PASS
 JSON Version: 4.18
 Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KYT99RC6WHTV2YKREZ6GDSZB">
+    <api:Transaction id="01KZ4E7Y34AD7NEEAJ42T1RA49">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KYT99RC6WHTV2YKREZ6GDSZB</Id>
+            <Id>01KZ4E7Y34AD7NEEAJ42T1RA49</Id>
             <LicensePlateYear>2026</LicensePlateYear>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
@@ -55,13 +55,13 @@ RMS QUERY
 ---------
 Request:
 {
-    "elasticQuery":  {
-                         "vehicle":  {
-                                         "tag":  "TEST123"
-                                     }
-                     },
-    "from":  0,
-    "size":  50
+  "elasticQuery": {
+    "vehicle": {
+      "tag": "TEST123"
+    }
+  },
+  "from": 0,
+  "size": 50
 }
 
 Response:
@@ -74,13 +74,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KYT99RC6WHTV2YKREZ6GDSZB
+  Id                             01KZ4E7Y34AD7NEEAJ42T1RA49
   LicensePlateYear               2026
   LicensePlateTypeCode           PC
   LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01KYT99RC6WHTV2YKREZ6GDSZB). kind=combo; anyField=; expectedKeyRef=RQLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZ4E7Y34AD7NEEAJ42T1RA49). kind=combo; anyField=; expectedKeyRef=RQLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

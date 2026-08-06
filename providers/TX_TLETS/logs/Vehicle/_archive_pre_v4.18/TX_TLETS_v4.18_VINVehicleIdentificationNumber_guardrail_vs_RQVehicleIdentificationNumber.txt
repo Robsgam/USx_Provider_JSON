@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: VINVehicleIdentificationNumber_guardrail_vs_RQVehicleIdentificationNumber (VINVehicleIdentificationNumber_guardrail_vs_RQVehicleIdentificationNumber (auto))
-Date: 2026-07-30 15:56:05
+Date: 2026-08-03 14:32:01
 Result: PASS
 JSON Version: 4.18
 Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KYT9C4VJS5RY9HY4HC8TS0JQ">
+    <api:Transaction id="01KZ4EAA9NSNW740SNJMHTQMAB">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KYT9C4VJS5RY9HY4HC8TS0JQ</Id>
+            <Id>01KZ4EAA9NSNW740SNJMHTQMAB</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <FinancialResponsibilityType>Y</FinancialResponsibilityType>
           </Request>
@@ -54,13 +54,13 @@ RMS QUERY
 ---------
 Request:
 {
-    "elasticQuery":  {
-                         "vehicle":  {
-                                         "vinNumber":  "1HGCM82633A123456"
-                                     }
-                     },
-    "from":  0,
-    "size":  50
+  "elasticQuery": {
+    "vehicle": {
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
 }
 
 Response:
@@ -73,12 +73,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KYT9C4VJS5RY9HY4HC8TS0JQ
+  Id                             01KZ4EAA9NSNW740SNJMHTQMAB
   VehicleIdentificationNumber    1HGCM82633A123456
   FinancialResponsibilityType    Y
 
 NOTES
 -----
-Automated capture (txId 01KYT9C4VJS5RY9HY4HC8TS0JQ). kind=guardrail; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZ4EAA9NSNW740SNJMHTQMAB). kind=guardrail; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

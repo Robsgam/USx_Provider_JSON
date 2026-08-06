@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: RQVehicleIdentificationNumber_any (RQVehicleIdentificationNumber_any (auto))
-Date: 2026-08-03 14:32:02
+Date: 2026-08-06 11:22:02
 Result: PASS
 JSON Version: 4.18
 Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4E9WGNX3DW15TW001P6BPP">
+    <api:Transaction id="01KZBTHZDER06GZ0JRYW0DHHKP">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KZ4E9WGNX3DW15TW001P6BPP</Id>
+            <Id>01KZBTHZDER06GZ0JRYW0DHHKP</Id>
             <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <State>GA</State>
@@ -57,16 +57,16 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "registrationStateAttrIds": [
-        69509555361
-      ],
-      "vinNumber": "1HGCM82633A123456"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69509555361
+                                                                      ],
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -79,7 +79,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KZ4E9WGNX3DW15TW001P6BPP
+  Id                             01KZBTHZDER06GZ0JRYW0DHHKP
   VehicleMakeCode                CNST_FORD
   VehicleIdentificationNumber    1HGCM82633A123456
   State                          GA
@@ -88,6 +88,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KZ4E9WGNX3DW15TW001P6BPP). kind=any; anyField=; expectedKeyRef=RQVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZBTHZDER06GZ0JRYW0DHHKP). kind=any; anyField=; expectedKeyRef=RQVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

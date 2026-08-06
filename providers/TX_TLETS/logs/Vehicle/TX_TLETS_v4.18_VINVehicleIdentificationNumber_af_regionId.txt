@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: VINVehicleIdentificationNumber_af_regionId (VINVehicleIdentificationNumber_af_regionId (auto))
-Date: 2026-08-03 14:32:06
+Date: 2026-08-06 11:22:08
 Result: PASS
 JSON Version: 4.18
 Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4E8X0WGX75BN9ZR6J8B4QX">
+    <api:Transaction id="01KZBTGZT402HGNMK1TKZE9RFZ">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KZ4E8X0WGX75BN9ZR6J8B4QX</Id>
+            <Id>01KZBTGZT402HGNMK1TKZE9RFZ</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <FinancialResponsibilityType>Y</FinancialResponsibilityType>
             <RegionId>0001</RegionId>
@@ -55,13 +55,13 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "vinNumber": "1HGCM82633A123456"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -74,13 +74,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KZ4E8X0WGX75BN9ZR6J8B4QX
+  Id                             01KZBTGZT402HGNMK1TKZE9RFZ
   VehicleIdentificationNumber    1HGCM82633A123456
   FinancialResponsibilityType    Y
   RegionId                       0001
 
 NOTES
 -----
-Automated capture (txId 01KZ4E8X0WGX75BN9ZR6J8B4QX). kind=any-field; anyField=regionId; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZBTGZT402HGNMK1TKZE9RFZ). kind=any-field; anyField=regionId; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

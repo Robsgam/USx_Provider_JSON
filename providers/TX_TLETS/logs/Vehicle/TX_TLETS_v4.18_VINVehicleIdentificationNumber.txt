@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: VINVehicleIdentificationNumber (VINVehicleIdentificationNumber (auto))
-Date: 2026-08-03 14:32:06
+Date: 2026-08-06 11:22:09
 Result: PASS
 JSON Version: 4.18
 Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4E8S3YAGQJMHY54CKENXB9">
+    <api:Transaction id="01KZBTGVXHHTS64Q0XJ2HZRV57">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KZ4E8S3YAGQJMHY54CKENXB9</Id>
+            <Id>01KZBTGVXHHTS64Q0XJ2HZRV57</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <FinancialResponsibilityType>Y</FinancialResponsibilityType>
           </Request>
@@ -54,13 +54,13 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "vinNumber": "1HGCM82633A123456"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -73,12 +73,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KZ4E8S3YAGQJMHY54CKENXB9
+  Id                             01KZBTGVXHHTS64Q0XJ2HZRV57
   VehicleIdentificationNumber    1HGCM82633A123456
   FinancialResponsibilityType    Y
 
 NOTES
 -----
-Automated capture (txId 01KZ4E8S3YAGQJMHY54CKENXB9). kind=combo; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZBTGVXHHTS64Q0XJ2HZRV57). kind=combo; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
 Combo: VINVehicleIdentificationNumber_any (VINVehicleIdentificationNumber_any (auto))
-Date: 2026-07-30 15:56:12
+Date: 2026-08-03 14:32:05
 Result: PASS
 JSON Version: 4.18
 Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KYT9B4MK0VBS1VSJATEAMRJY">
+    <api:Transaction id="01KZ4E9A7MNQBJSY9HJ3Z3KV0S">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01KYT9B4MK0VBS1VSJATEAMRJY</Id>
+            <Id>01KZ4E9A7MNQBJSY9HJ3Z3KV0S</Id>
             <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <FinancialResponsibilityType>Y</FinancialResponsibilityType>
@@ -58,16 +58,16 @@ RMS QUERY
 ---------
 Request:
 {
-    "elasticQuery":  {
-                         "vehicle":  {
-                                         "registrationStateAttrIds":  [
-                                                                          69509555361
-                                                                      ],
-                                         "vinNumber":  "1HGCM82633A123456"
-                                     }
-                     },
-    "from":  0,
-    "size":  50
+  "elasticQuery": {
+    "vehicle": {
+      "registrationStateAttrIds": [
+        69509555361
+      ],
+      "vinNumber": "1HGCM82633A123456"
+    }
+  },
+  "from": 0,
+  "size": 50
 }
 
 Response:
@@ -80,7 +80,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KYT9B4MK0VBS1VSJATEAMRJY
+  Id                             01KZ4E9A7MNQBJSY9HJ3Z3KV0S
   VehicleMakeCode                CNST_FORD
   VehicleIdentificationNumber    1HGCM82633A123456
   FinancialResponsibilityType    Y
@@ -90,6 +90,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KYT9B4MK0VBS1VSJATEAMRJY). kind=any; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZ4E9A7MNQBJSY9HJ3Z3KV0S). kind=any; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
