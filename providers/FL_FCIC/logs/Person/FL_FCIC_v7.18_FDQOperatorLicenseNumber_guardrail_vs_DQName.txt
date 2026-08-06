@@ -1,0 +1,86 @@
+﻿================================================================
+TEST LOG: FL_FCIC Person DriverLicenseQuery
+Combo: FDQOperatorLicenseNumber_guardrail_vs_DQName (FDQOperatorLicenseNumber_guardrail_vs_DQName (auto))
+Date: 2026-08-06 15:24:27
+Result: PASS
+JSON Version: 7.18
+Entity Fingerprint: e12edfb7f3087883ff2bd2ea148a421fdfeb2cbb1252bc0b97133e44a1b2d0ce
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777","SexCode":"Male"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZC8GHZ01P09AWB7A2CE4GK7">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KZC8GHZ01P09AWB7A2CE4GK7</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777",
+                         "sexAttrId":  "69510840269",
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "dateOfBirth":  "1990-01-15"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZC8GHZ01P09AWB7A2CE4GK7
+  ImageIndicator                 Y
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01KZC8GHZ01P09AWB7A2CE4GK7). kind=guardrail; anyField=; expectedKeyRef=FDQOperatorLicenseNumber; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
