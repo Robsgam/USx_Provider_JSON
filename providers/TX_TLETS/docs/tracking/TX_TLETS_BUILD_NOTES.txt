@@ -4,9 +4,23 @@ Provider: TX_TLETS
 State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 --------------------------------------------------------------------------------
-v4.19  2026-08-06  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v4.19  2026-08-06  DEX-1283: removed unneeded X default on Attention/EmailAddress
+  CHANGED: Removed initialValue='X' from the Attention (DH) and EmailAddress (DL+DH) hidden
+    gate-feeders, and the matching combo defaults[] entries ($imgDefs EmailAddress; $imgDefsDH
+    Attention + EmailAddress). sourceField stays non-empty and both fields stay in their combos'
+    any[] -- those two remain required (ConnectCic rejects an empty sourceField[] at import;
+    the platform serializes only fired-combo set[]/any[] fields). Only the third, never-isolated
+    condition from RULE_HANDLERS.txt handler #13's 2026-06-22 finding (live-proven
+    HI_HCJDC_OFML v2.9) was removed.
+  REASON: DEX-1283 reported Attention/EmailAddress showing "X" on USx forms. A scratch proof JSON
+    (24 captures) and then this real rebuild (92/92 captures, all 5 entities) both show the
+    rule handlers (CommsysGetLastNameFirstNameInitialRuleHandler,
+    GetUserProfileSingleValueRuleHandler) resolve the real officer values unconditionally --
+    with nothing in the source field at all. The "X" a form snapshot shows is the raw
+    pre-handler value in dex-log's Query String column, not what reaches CommSys; removing the
+    default changes nothing on the wire and needed no CAD defaults[] fallback either. Lockstep
+    rebuild: TX_TLETS_CCH v1.15 applied the identical fix same day. See
+    knowledge-base/RULE_HANDLERS.txt handler #13 for the full evidence trail.
 
 v4.18  2026-07-30  Devdoc optionals x routing: 17 dropped optionals wired (commit b95bc364)
   CHANGED: 17 devdoc-listed optionals that the officer could fill but that were transmitted

@@ -222,7 +222,11 @@ Found at 4 property paths in the JSON structure.
       Arguments:    none (ignores userArguments and attribute)
       Purpose:      Formats logged-in user's name as "LastName FirstInitial"
       Source:       CA_ESUN template, LA_LEMS
-      All builds:   NO -- CA_ESUN/LA_LEMS Attention pattern only
+      All builds:   NO -- originated CA_eSUN/LA_LEMS; now also AZ_AZDPS, CA_CLETS,
+                    CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, FL_FCIC,
+                    HI_HCJDC_OFML, NY_NYSPIN_EJUSTICE (as "Requestor"), OH_LEADS,
+                    TN_TIES, TX_TLETS, TX_TLETS_CCH (grepped 2026-08-06, not from memory --
+                    check for new adopters before citing this list as current)
 
       Output format:
         lastName="Smith", firstName="John"  -> "Smith J"
@@ -241,7 +245,7 @@ Found at 4 property paths in the JSON structure.
       The handler WORKS -- it emits the logged-in officer's name (LastName
       FirstInitial) from the RMS profile. Live proof: <Attention>SGAMBELLONE R</Attention>.
 
-      WORKING CONFIG (all three required):
+      WORKING CONFIG (TWO required -- corrected 2026-08-06, see below):
         1. sourceField = ["Attention"]  (NON-EMPTY). ConnectCic REJECTS [] at import
            ("Invalid attributes found in query input data mapping: [Attention]") --
            reproducible (HI v2.5 + dochandler diagnostic). The "[]" in the vendor doc
@@ -250,13 +254,30 @@ Found at 4 property paths in the JSON structure.
            this platform serializes ONLY fields in the FIRED COMBO's set[]/any[]. An
            attribute absent from the combo is dropped before the handler reaches the
            wire (why Attention failed v2.4-v2.8 regardless of handler).
-        3. A hidden "Attention" gate-feeder form field with a non-empty initialValue,
-           so the field is populated -> the combo includes it -> the handler runs and
-           overrides the placeholder with the profile name. Field stays hidden.
 
       The earlier "INERT / escalate" note was wrong -- the cause was the missing
       any[] membership, not the handler. validate.ps1 / verify_build.ps1 CHECK 8
       updated to match (an auto-fill Attention handler MUST be in a combo any[]).
+
+      *** CORRECTED 2026-08-06 (DEX-1283, live-proven on TX_TLETS v4.19) ***
+      The 2026-06-22 finding above ALSO listed a third condition -- "a hidden gate-feeder
+      form field with a non-empty initialValue" -- and that one was never independently
+      tested. It had been added at v2.7 as an untested experiment, sat there unverified for
+      two versions, and was still present (unchanged) when v2.9 added the real fix (any[]
+      membership) and went live. The v2.9 proof therefore verified the COMBINATION, not each
+      piece separately -- nobody removed just the initialValue and re-tested once the any[]
+      fix landed. Same for EmailAddress / GetUserProfileSingleValueRuleHandler below, which
+      copied this exact three-part pattern onto TX_TLETS at v4.1.
+
+      Isolated on TX_TLETS v4.19 (DEX-1283): removed the hidden feeder's initialValue='X' AND
+      the matching combo defaults[] entry for both Attention and EmailAddress, keeping sourceField
+      non-empty and any[] membership unchanged. 92/92 captures (all 5 entities, all 4 Person
+      combos DQName/DQOLN/KQName/KQOLN + toggles) resolved the real officer values with NOTHING
+      in the source field at all -- see providers/TX_TLETS/logs/Person/TX_TLETS_v4.19_{DQName,
+      DQOLN,KQName,KQOLN}.txt. The hidden gate-feeder's non-empty initialValue is NOT required.
+      It still needs to exist as a control (ConnectCic rejects an empty sourceField[] at import,
+      condition 1 above) -- it just does not need to carry a starting VALUE.
+      Do not re-add an initialValue='X' default to "help" this handler serialize; it does nothing.
 
   --------------------------------------------------------------------------
   14. IgnoreUserValueRuleHandler

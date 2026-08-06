@@ -6,10 +6,18 @@ Current: **v1.15** | Generated: 2026-08-06
 
 ---
 
-## v1.15 -- 2026-08-06 -- Pipeline rebuild
+## v1.15 -- 2026-08-06 -- Lockstep w/ TX_TLETS v4.19 (DEX-1283): removed unneeded X default
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** BASE-SYNC marker bumped TX_TLETS v4.18 -> v4.19. Removed initialValue='X' from the
+  Attention (DH) and EmailAddress (DL+DH) hidden gate-feeders, and the matching combo  
+  defaults[] entries ($imgDefs EmailAddress; $imgDefsDH Attention + EmailAddress) -- identical  
+  fix as TX_TLETS v4.19, same day. sourceField stays non-empty and both fields stay in their  
+  combos' any[]. Also added this build script's missing PENDING_UPDATES.txt auto-clear (TX_TLETS  
+  had it; CCH never did) at the migrated docs/tracking/ path. CCH-only transactions  
+  (AQ/AR/FQ/IQ/QH/QR/QWI/ZR) untouched -- neither field is CCH-specific.  
+**REASON:** See TX_TLETS v4.19 BUILD_NOTES + knowledge-base/RULE_HANDLERS.txt handler #13 for the
+  full DEX-1283 evidence trail (92/92 TX_TLETS captures resolved the real officer  
+  Attention/EmailAddress values with nothing in the source field at all).  
 
 ## v1.14 -- 2026-07-30 -- Devdoc optionals x routing: dropped optionals wired (commit b95bc364)
 
