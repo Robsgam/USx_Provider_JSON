@@ -1,6 +1,6 @@
-FL_FCIC v7.17 -- TEST MATRIX
+FL_FCIC v7.18 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-05
+Generated: 2026-08-06
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -12,7 +12,7 @@ Vehicle (1 card, 11 fields):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: decalNumber [Inp 10], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    ROW 4: Requestor [Inp X, 30]
+    ROW 4: Requestor [Inp 30]
     ROW 5: vinSequenceNumber [Inp 2]
 
 Person (2 cards, 16 fields):
@@ -23,14 +23,14 @@ Person (2 cards, 16 fields):
   CARD_DH (DRIVER HISTORY (OUT-OF-STATE) BY NAME "OR" DRIVERS LICENSE NUMBER):
     ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
-    ROW 3: Requestor [Inp X, 30]
-    ROW 4: Attention [Inp X, 30]
+    ROW 3: Requestor [Inp 30]
+    ROW 4: Attention [Inp 30]
 
 Firearm (1 card, 7 fields):
   CARD_GUN (FIREARM QUERY BY SERIAL NUMBER, "OR" NCIC NUMBER, "OR" PCN):
     ROW 1: serialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
     ROW 2: NCICNumber [Inp 10], processControlNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    ROW 3: Requestor [Inp X, 30]
+    ROW 3: Requestor [Inp 30]
     ROW 4: relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Article (1 card, 8 fields):
@@ -38,7 +38,7 @@ Article (1 card, 8 fields):
     ROW 1: ArticleSerialNumber [Inp 20], ownerAppliedNumber [Inp 20]
     ROW 2: ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
     ROW 3: NCICNumber [Inp 10], processControlNumber [Inp 10]
-    ROW 4: Requestor [Inp X, 30]
+    ROW 4: Requestor [Inp 30]
     ROW 5: relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Boat (1 card, 14 fields):
@@ -47,7 +47,7 @@ Boat (1 card, 14 fields):
     ROW 2: decalNumber [Inp 10], titleLienInformation [Inp 8], NCICNumber [Inp 10], processControlNumber [Inp 10]
     ROW 3: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate]
     ROW 4: RegistrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    ROW 5: Requestor [Inp X, 30]
+    ROW 5: Requestor [Inp 30]
 
 QIDM SUMMARY (6 QIDMs, 30 combos)
 ----------------------------------------
@@ -263,4 +263,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T73(Serial), T75(OAN), T77(NCIC), T79(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T38(QB+Hull), T40(FBQ+Reg), T42(BQ+Reg), T44(QB+Reg), T46(BQ+Name), T48(FBQ+Decal), T50(FBQ+TitleLien), T52(QB+CG), T54(QB+NCIC), T56(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.17.json
+IMPORT FILE: FL_FCIC_v7.18.json

@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.17.json
-  Generated: 2026-08-03 11:17
+  Source: FL_FCIC_v7.18.json
+  Generated: 2026-08-06 14:47
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== FL_FCIC_v7.17.json ===
+=== FL_FCIC_v7.18.json ===
 QIFs: 5
   Person | entity=Person | qidm= | cards=2 fields=9
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
@@ -51,9 +51,9 @@ LAYOUT DETAIL
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
       ROW ROW_DH_REQ [12]
-        Requestor (Text | maxLen=30 | default=X)
+        Requestor (Text | maxLen=30)
       ROW ROW_DH_ATTN [12]
-        Attention (Text | maxLen=30 | default=X)
+        Attention (Text | maxLen=30)
 
 === Vehicle ===
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
@@ -72,7 +72,7 @@ LAYOUT DETAIL
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
       ROW ROW_VEH_REQ [12]
-        Requestor (Text | maxLen=30 | default=X)
+        Requestor (Text | maxLen=30)
       ROW ROW_VEH_VSN [6]
         vinSequenceNumber (Text | maxLen=2)
 
@@ -88,7 +88,7 @@ LAYOUT DETAIL
         processControlNumber (Text | maxLen=10)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
       ROW ROW_GUN_REQ [12]
-        Requestor (Text | maxLen=30 | default=X)
+        Requestor (Text | maxLen=30)
       ROW ROW_GUN_RHS [6]
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
 
@@ -106,7 +106,7 @@ LAYOUT DETAIL
         NCICNumber (Text | maxLen=10)
         processControlNumber (Text | maxLen=10)
       ROW ROW_ART_REQ [12]
-        Requestor (Text | maxLen=30 | default=X)
+        Requestor (Text | maxLen=30)
       ROW ROW_ART_RHS [6]
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
 
@@ -132,7 +132,7 @@ LAYOUT DETAIL
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
       ROW ROW_BOA_REQ [12]
-        Requestor (Text | maxLen=30 | default=X)
+        Requestor (Text | maxLen=30)
 
 === RMS QIDMs ===
   RMS Person Search query

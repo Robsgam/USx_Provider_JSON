@@ -2,9 +2,27 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.17** | Generated: 2026-08-05
+Current: **v7.18** | Generated: 2026-08-06
 
 ---
+
+## v7.18 -- 2026-08-06 -- DEX-1283: removed unneeded X default on Attention/Requestor
+
+**CHANGED:** Removed initialValue='X' from the Attention (DH) and Requestor (VehReg, DH, Gun,
+  Article, Boat -- 6 hidden feeders total) hidden gate-feeders, and the matching combo  
+  defaults[] entries (Attention on KQName/KQOLN; Requestor's defaults-injection loop removed  
+  entirely). sourceField stays non-empty and both fields stay in their combos' any[] -- those  
+  two remain required (ConnectCic rejects an empty sourceField[] at import; the platform  
+  serializes only fired-combo set[]/any[] fields).  
+**REASON:** DEX-1283 (TX ticket, applying the same finding here per Rob's ordered revisit: FL, NY,
+  CA_CLETS, HI). The rule handlers (CommsysGetLastNameFirstNameInitialRuleHandler on both  
+  fields) resolve the real signed-in officer's name unconditionally -- proven on TX_TLETS v4.19  
+  (92/92 captures with nothing in the source field at all) and on a disposable scratch build  
+  before that. The "X" a form snapshot shows is the raw pre-handler value in dex-log's Query  
+  String column, not what CommSys receives. Removing the default changes nothing on the wire.  
+  See knowledge-base/RULE_HANDLERS.txt handler #13 for the full evidence trail. Accepts the  
+  full re-sweep cost (116 ALL-PASS logs archived, all 5 entities restart from T1) -- same  
+  trade-off Rob already accepted for the Requestor rollout itself (v7.15).  
 
 ## v7.17 -- 2026-08-03 -- Remove 3 dead officer controls from Person (commit 56b8b7ca)
 

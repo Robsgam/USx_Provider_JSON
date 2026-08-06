@@ -20,11 +20,11 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.7 | NEVER-TESTED -- 59 test(s) owed |
 | CA_CLETS | v2.23 | ALL-PASS (90 logs) |
-| FL_FCIC | v7.17 | ALL-PASS (116 logs) |
+| FL_FCIC | v7.18 | NEVER-TESTED -- 116 test(s) owed |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
 | NY_NYSPIN_EJUSTICE | v4.19 | ALL-PASS (64 logs) |
-| TX_TLETS | v4.19 | NEVER-TESTED -- 92 test(s) owed |
+| TX_TLETS | v4.19 | ALL-PASS (92 logs) |
 | _13 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.

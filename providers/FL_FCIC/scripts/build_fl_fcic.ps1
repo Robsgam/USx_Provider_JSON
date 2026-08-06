@@ -1,6 +1,15 @@
 # build_fl_fcic.ps1 -- FL_FCIC
 # Builds FL_FCIC.json from source\FL_FCIC.xml metadata + KB specs.
 #
+# v7.18 (DEX-1283): removed initialValue='X' from the Attention (DH) and Requestor (VehReg, DH,
+#   Gun, Article, Boat -- 6 hidden feeders total) hidden gate-feeders, and the matching combo
+#   defaults[] entries (Attention on KQName/KQOLN; Requestor's defaults-injection loop removed
+#   entirely). sourceField stays non-empty and both fields stay in their combos' any[] -- those
+#   two remain required (ConnectCic rejects an empty sourceField[] at import; the platform
+#   serializes only fired-combo set[]/any[] fields). Only the never-independently-verified third
+#   condition from RULE_HANDLERS.txt handler #13's 2026-06-22 finding (live-proven
+#   HI_HCJDC_OFML v2.9) came out -- same fix as TX_TLETS v4.19/TX_TLETS_CCH v1.15, applied here
+#   per Rob's ordered revisit (FL, NY, CA_CLETS, HI).
 # v7.12 (2026-07-28, entity display-order change -- direct Rob feedback): default entity order
 #   Person-first -> Vehicle-first (@('Person','Vehicle',...) -> @('Vehicle','Person','Firearm',
 #   'Article','Boat')), so the default variant now matches the CAD_DISPATCH/FIRST_RESPONDER
@@ -241,7 +250,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.17"
+    [string]$Version = "7.18"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -524,9 +533,9 @@ $dhQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationStateDH')
                 any        = @('purposeCodeDH','Attention')
-                # Attention auto-populates via the handler; the hidden gate-feeder carries
-                # initialValue='X', so CAD dispatch needs a matching combo default (audit_cad CHECK 6).
-                defaults   = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
+                # v7.18 (DEX-1283): removed the defaults[] Attention='X' entry -- the hidden
+                # gate-feeder no longer carries a starting value (see ROW_DH_ATTN below), and
+                # a combo default was never required for the handler to run either.
                 # Existence-only array (working class). NEVER add a value comparison
                 # here -- it would poison the array and kill this NOT_EXISTS (T-B).
                 # v5.1: references the unique DH attr name (not the shared 'OperatorLicenseNumber')
@@ -543,7 +552,6 @@ $dhQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('OperatorLicenseNumberDH','RegistrationStateDH')
                 any        = @('purposeCodeDH','Attention')
-                defaults   = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
                 # v7.0: RegistrationStateDH EXISTS -- explicit OOS gate. DH is OOS-only (destination
                 # state mandatory); makes the requirement explicit rather than set[]-implicit. Existence-only.
                 conditions = @([PSCustomObject]@{ field = @('RegistrationStateDH'); operator = 'EXISTS' })
@@ -890,12 +898,15 @@ $boatQuery = [PSCustomObject]@{
 # automated-identity-field standard (Rob 2026-06-22, extended to Requestor 2026-07-06), so it takes
 # CommsysGetLastNameFirstNameInitialRuleHandler and a HIDDEN gate-feeder -- exactly how this build
 # already carries Attention (see $dhQuery). Building it as a visible FormInput asks the officer to
-# retype their own name and trips verify_build's inverse check. Three parts, all required:
+# retype their own name and trips verify_build's inverse check. TWO parts required (corrected
+# v7.18, DEX-1283 -- see RULE_HANDLERS.txt #13):
 #   attr.rule       -- the handler that substitutes the officer's name
-#   hidden feeder   -- an attribute whose sourceField has no value is DROPPED from serialization,
-#                      so the handler never runs; the constant 'X' exists only to make it fire
-#   combo defaults  -- CAD ignores form initialValue entirely (audit_cad CHECK 6), so without this a
-#                      CAD-dispatched query silently drops Requestor
+#   hidden feeder + any[] membership -- ConnectCic rejects an empty sourceField[] at import, and
+#                      the platform serializes only fired-combo set[]/any[] fields; both remain
+#                      required. A non-empty INITIALVALUE on the feeder is NOT required -- nor is
+#                      a combo defaults[] entry for CAD's benefit -- the handler resolves the real
+#                      officer name unconditionally regardless of what (if anything) is in the
+#                      source field. Removed both in v7.18; live-proven on TX_TLETS v4.19 first.
 # No DH suffix, deliberately: DH-suffixing exists to stop a VISIBLE control from sharing the DL field
 # pool, and DriverLicenseQuery defines no Requestor attribute at all -- so nothing on the DL path can
 # transmit it however the pool is shared. It is any[]-only, so it also cannot alter routing.
@@ -910,16 +921,6 @@ foreach ($q in @($vehRegQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)) {
     foreach ($cm in @($q.combinations)) {
         $cur = @($cm.requirements.any | Where-Object { $_ })
         if ($cur -notcontains 'Requestor') { $cm.requirements.any = @($cur + 'Requestor') }
-        # defaults live INSIDE requirements (see the KQ combos above), NOT on the combination.
-        # Putting them a level up emits a property no gate reads: audit_cad CHECK 6 still reported
-        # "missing default" on all 26 while the JSON visibly contained them.
-        $rq = $cm.requirements
-        $dcur = @($rq.PSObject.Properties['defaults'] | ForEach-Object { $_.Value } | Where-Object { $_ })
-        if (-not @($dcur | Where-Object { "$($_.field)" -eq 'Requestor' }).Count) {
-            $dnew = @($dcur + [PSCustomObject]@{ field = 'Requestor'; value = 'X' })
-            if ($rq.PSObject.Properties['defaults']) { $rq.defaults = $dnew }
-            else { $rq | Add-Member -NotePropertyName defaults -NotePropertyValue $dnew }
-        }
     }
 }
 
@@ -1008,7 +1009,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_REQ'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_VEH_REQ' @{ initialValue = 'X' } }
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_VEH_REQ' }
             )}
             @{ id = 'ROW_VEH_VSN'; cols = @('6'); fields = @(
         @{ id = 'VINSequenceNumber_Input'; node = Inp 'vinSequenceNumber' 'VIN Sequence Number (optional)' '2' 'ROW_VEH_VSN' }
@@ -1071,16 +1072,17 @@ $perLayout = MakeLayouts @(
                 @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH'    'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
             )}
             @{ id = 'ROW_DH_REQ'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_DH_REQ' @{ initialValue = 'X' } }
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_DH_REQ' }
             )}
             # v6.0: hidden Attention gate-feeder (HI v2.9 live-proven pattern). The DH Attention
             # attribute (CommsysGetLastNameFirstNameInitialRuleHandler, sourceField=['Attention'])
-            # is dropped from serialization unless (a) Attention is in the fired combo's any[]
-            # (added to KQName/KQOLN above) AND (b) its sourceField resolves to a value. This
-            # hidden field supplies that value so the handler runs and emits the officer's profile
-            # name (e.g. "SGAMBELLONE R"). Reverses FL's prior "INERT/known-limitation" note.
+            # is dropped from serialization unless Attention is in the fired combo's any[]
+            # (added to KQName/KQOLN above) -- that's what makes the handler run and emit the
+            # officer's profile name (e.g. "SGAMBELLONE R"). v7.18 (DEX-1283): removed this
+            # field's initialValue='X' -- a non-empty starting value was never required, only
+            # non-empty sourceField[] (below) + any[] membership. See RULE_HANDLERS.txt #13.
             @{ id = 'ROW_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_DH_ATTN' @{ initialValue = 'X' } }
+                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_DH_ATTN' }
             )}
         )
     }
@@ -1111,7 +1113,7 @@ $faLayout = MakeLayouts @(
                 @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
             @{ id = 'ROW_GUN_REQ'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_GUN_REQ' @{ initialValue = 'X' } }
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_GUN_REQ' }
             )}
             @{ id = 'ROW_GUN_RHS'; cols = @('6'); fields = @(
         # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default)
@@ -1150,7 +1152,7 @@ $artLayout = MakeLayouts @(
                 @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_3' }
             )}
             @{ id = 'ROW_ART_REQ'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_ART_REQ' @{ initialValue = 'X' } }
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_ART_REQ' }
             )}
             @{ id = 'ROW_ART_RHS'; cols = @('6'); fields = @(
         # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default)
@@ -1203,7 +1205,7 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_4' }
             )}
             @{ id = 'ROW_BOA_REQ'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_BOA_REQ' @{ initialValue = 'X' } }
+                @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_BOA_REQ' }
             )}
         )
     }

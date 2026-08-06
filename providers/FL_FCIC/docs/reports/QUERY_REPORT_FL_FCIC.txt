@@ -1,15 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.17.json
-  Generated: 2026-08-03 11:17
+  Source: FL_FCIC_v7.18.json
+  Generated: 2026-08-06 14:47
 ================================================================
 QUERY SIMULATION
 ================
 
-  Seeded form defaults (4): Article.Requestor=X, Boat.Requestor=X, Firearm.Requestor=X, Vehicle.Requestor=X
 
 ================================================================
-  CommSys Query Simulator -- FL_FCIC_v7.17.json
+  CommSys Query Simulator -- FL_FCIC_v7.18.json
 ================================================================
 
 --- QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle] ---
@@ -20,7 +19,7 @@ QUERY SIMULATION
 
     [FIRES first-match] RQLicensePlateNumber
       set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-      any: [ImageIndicator, Requestor] -> matched: [ImageIndicator, Requestor]
+      any: [ImageIndicator, Requestor] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -90,7 +89,7 @@ QUERY SIMULATION
 
     [FIRES first-match] QGGunSerialNumber
       set: [serialNumber]
-      any: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator]
+      any: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [GunMake, ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -104,7 +103,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QGNCICNumber
       set: [NCICNumber]
-      any: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator]
+      any: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [GunMake, ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -118,7 +117,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QGProcessControlNumber
       set: [processControlNumber]
-      any: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator]
+      any: [GunMake, ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [GunMake, ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -140,7 +139,7 @@ QUERY SIMULATION
 
     [FIRES first-match] QAArticleSerialNumber
       set: [ArticleSerialNumber, ArticleTypeCode]
-      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, Requestor, relatedHitSearchIndicator]
+      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -153,7 +152,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QAOwnerAppliedNumber
       set: [ArticleTypeCode, ownerAppliedNumber]
-      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, Requestor, relatedHitSearchIndicator]
+      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -166,7 +165,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QANCICNumber
       set: [NCICNumber]
-      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, Requestor, relatedHitSearchIndicator]
+      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -178,7 +177,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QAProcessControlNumber
       set: [processControlNumber]
-      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, Requestor, relatedHitSearchIndicator]
+      any: [ImageIndicator, Requestor, relatedHitSearchIndicator] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -202,7 +201,7 @@ QUERY SIMULATION
 
     [FIRES first-match] QBBoatHullIdNumber
       set: [BoatHullIdNumber, relatedHitSearchIndicator]
-      any: [ImageIndicator, Requestor] -> matched: [ImageIndicator, Requestor]
+      any: [ImageIndicator, Requestor] -> matched: [ImageIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -215,7 +214,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QBCoastGuardDocumentNumber
       set: [coastGuardDocumentNumber]
-      any: [ImageIndicator, relatedHitSearchIndicator, Requestor] -> matched: [ImageIndicator, relatedHitSearchIndicator, Requestor]
+      any: [ImageIndicator, relatedHitSearchIndicator, Requestor] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -228,7 +227,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QBNCICNumber
       set: [NCICNumber]
-      any: [ImageIndicator, relatedHitSearchIndicator, Requestor] -> matched: [ImageIndicator, relatedHitSearchIndicator, Requestor]
+      any: [ImageIndicator, relatedHitSearchIndicator, Requestor] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -241,7 +240,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] QBProcessControlNumber
       set: [processControlNumber]
-      any: [ImageIndicator, relatedHitSearchIndicator, Requestor] -> matched: [ImageIndicator, relatedHitSearchIndicator, Requestor]
+      any: [ImageIndicator, relatedHitSearchIndicator, Requestor] -> matched: [ImageIndicator, relatedHitSearchIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -255,7 +254,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] BQName
       set: [BirthDate, NameLast, NameFirst, RegistrationState]
-      any: [BoatHullIdNumber, RegistrationNumber, Requestor] -> matched: [BoatHullIdNumber, RegistrationNumber, Requestor]
+      any: [BoatHullIdNumber, RegistrationNumber, Requestor] -> matched: [BoatHullIdNumber, RegistrationNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -270,7 +269,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] BQBoatHullIdNumber
       set: [BoatHullIdNumber, RegistrationState]
-      any: [Requestor] -> matched: [Requestor]
+      any: [Requestor] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
