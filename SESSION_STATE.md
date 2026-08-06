@@ -23,7 +23,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | FL_FCIC | v7.18 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
-| NY_NYSPIN_EJUSTICE | v4.21 | NEVER-TESTED -- 67 test(s) owed |
+| NY_NYSPIN_EJUSTICE | v4.21 | ALL-PASS (67 logs) |
 | TX_TLETS | v4.19 | ALL-PASS (92 logs) |
 | _13 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
