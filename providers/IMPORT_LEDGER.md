@@ -22,10 +22,10 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | Provider | URL | DEX | Installed (logged) | Repo | Note |
 |---|---|---|---|---|---|
 | NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.15 (36 logs) | v4.15 | current (tenant-complete 2026-07-31, ALL-PASS 36/36, four log gates green) |
-| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.17 (116 logs) | v7.17 | current (tenant-complete 2026-08-03, ALL-PASS 116/116, four log gates green). Swept in one session: Vehicle 20 / Person 21 / Firearm 15 / Article 16 / Boat 44, every entity reconciling submitted-vs-captured. Proved v7.15 Requestor (all 116 wires), v7.16 RelatedHitSearchIndicator (Gun+Article) and the v7.14 FRQ over-permit removal (0 of 12 FRQ wires carry VehicleMakeCode/vehicleYear). Note: this tenant sends ORI/Mnemonic=CA1234567 regardless of provider |
+| FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.18 (116 logs) | v7.18 | current (tenant-complete 2026-08-06, ALL-PASS 116/116, four log gates green). DEX-1283 fix: removed initialValue='X' from Attention (DH) + Requestor (VehReg/DH/Gun/Article/Boat, 6 hidden feeders) -- both confirmed resolving the real officer name on the wire with nothing in the source field. Full re-sweep: Vehicle 20 / Person 21 / Firearm 15 / Article 16 / Boat 44, matching the pre-rebuild v7.17 count exactly. Note: this tenant sends ORI/Mnemonic=CA1234567 regardless of provider |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.14 (46 logs) | v4.14 | current (tenant-complete, ALL-PASS 46/46) |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.19 (64 logs) | v4.19 | current (tenant-complete, ALL-PASS 64/64) |
-| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.18 (89 logs) | v4.18 | current (tenant-complete, ALL-PASS 89/89, 16/16 mutations killed) |
+| TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.19 (92 logs) | v4.19 | current (tenant-complete 2026-08-06, ALL-PASS 92/92). DEX-1283 fix: removed initialValue='X' from Attention (DH) + EmailAddress (DL+DH) hidden feeders + matching combo defaults[] -- both confirmed resolving the real officer name/email on the wire with nothing in the source field. Lockstep: TX_TLETS_CCH v1.15 same fix, same day (built + gated, not yet tenant-tested) |
 | CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | v2.23 (90 logs) | v2.23 | current (tenant-complete, ALL-PASS 90/90). The prior note here read "BLOCKED on 4 enforce FAILs + 6 under-required findings" — resolved at v2.23; enforce is 0 FAIL / 0 WARN. Count corrected 89→90 on 2026-08-04: the 89 was read mid-ingest, before the Firearm re-capture landed |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.4 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22. Confirm `dexStateUserId` populates on the FIRST query or all 5 badge combos silently fall back |
 
@@ -89,7 +89,7 @@ for p in */; do p="${p%/}"; [ -d "$p/logs" ] || continue
 done
 ```
 
-_Last reconciled: 2026-07-28._
+_Last reconciled: 2026-08-06._
 
 ### TX_TLETS_CCH -- built, NOT YET IMPORTED (recorded 2026-07-30, TX_TLETS half corrected 2026-08-03)
 
