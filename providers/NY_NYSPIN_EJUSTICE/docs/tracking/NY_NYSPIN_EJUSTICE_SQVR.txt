@@ -1,4 +1,4 @@
-NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ===============================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-08-06
@@ -37,14 +37,14 @@ v2.1 changes from v2.0:
   Choice-set: metadata RVEH has Choice(in-state plate / OOS plate+type+year+state).
     OOS option built as RVEHOUT with State in set[] (LIMITATION #36). See QIDM_REFERENCE.
 
-  RVIN -- VIN + State (OOS / NCIC/Nlets) [PENDING]
+  RVIN -- VIN + State (OOS / NCIC/Nlets) [CONFIRMED]
     set: vehicleIdentificationNumber, registrationState
     any: imageIndicator, vehicleMakeCode, vehicleYear
     defaults: ImageIndicator=N
     keyReference: RVIN
     Fires when: VIN + State both filled
 
-  RVEHOUT -- Plate + State (OOS / Nlets) [PENDING]
+  RVEHOUT -- Plate + State (OOS / Nlets) [CONFIRMED]
     set: licensePlateNumber, registrationState
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
     conditions: RegistrationState EXISTS  (v4.15 -- OOS gate; distinct from in-state RVEH)
@@ -52,7 +52,7 @@ v2.1 changes from v2.0:
     keyReference: RVEHOUT (invented; provider routes by content per NY v1.19)
     Fires when: Plate + State both filled.
 
-  RVEH -- Plate, in-state (NY DMV) [PENDING]
+  RVEH -- Plate, in-state (NY DMV) [CONFIRMED]
     set: licensePlateNumber
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
     conditions: RegistrationState NOT_EXISTS  (v4.15 -- NY in-state gate; State removed from any[]
@@ -61,7 +61,7 @@ v2.1 changes from v2.0:
     keyReference: RVEH
     Fires when: Plate filled, State blank
 
-  RCAR -- VIN only (NY DMV, no state) [PENDING]
+  RCAR -- VIN only (NY DMV, no state) [CONFIRMED]
     set: vehicleIdentificationNumber
     any: imageIndicator
     conditions: LicensePlateNumber NOT_EXISTS (Plate>VIN), RegistrationState NOT_EXISTS (v4.15 NY gate)
@@ -85,7 +85,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=Y
   CAD defaults: ImageIndicator=Y on DLICN and DLIC
 
-  DLICN -- Name + DOB [PENDING]
+  DLICN -- Name + DOB [CONFIRMED]
     set: birthDate, nameLast, nameFirst, sexCode
     any: imageIndicator, registrationState, nameMiddle, nameSuffix
     defaults: ImageIndicator=Y
@@ -93,7 +93,7 @@ v2.1 changes from v2.0:
     Name format: FormatStringRuleHandler "LAST, FIRST MIDDLE SUFFIX"
     Date format: CommsysParseDateRuleHandler yyyy-MM-dd -> MMddyyyy
 
-  DLIC -- OLN [PENDING]
+  DLIC -- OLN [CONFIRMED]
     set: operatorLicenseNumber
     any: imageIndicator, registrationState
     defaults: ImageIndicator=Y
