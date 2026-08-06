@@ -177,7 +177,7 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Firearm | QIDM: CA_CLETS_GunQuery | autoSelect: true
   2 combos
 
-  IG.QGH.A -- Owner Name + Age query (cross-entity) [PENDING]
+  IG.QGH.A -- Owner Name + Age query (cross-entity) [CONFIRMED]
     set: PurposeCode, NameLast, NameFirst, Age
     any: (none)
     keyReference: IG.QGH.A
@@ -186,7 +186,7 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
           satisfied NO metadata variant (#4 requires SexCode; #5/#6 put Choice[Age|BirthDate]
           INSIDE Set, making one of them required).
 
-  IG.QGH.B -- Owner Name + DOB query (cross-entity) [PENDING]
+  IG.QGH.B -- Owner Name + DOB query (cross-entity) [CONFIRMED]
     set: PurposeCode, NameLast, NameFirst, BirthDate
     any: (none)
     keyReference: IG.QGH.B
@@ -194,7 +194,7 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
           IG.QGH.A per devdoc listing order (#2 before #3); the two set[]s are disjoint peers, so
           specificity cannot separate them and the devdoc order is the tiebreaker.
 
-  IG.QGB -- Serial Number query [PENDING]
+  IG.QGB -- Serial Number query [CONFIRMED]
     set: PurposeCode, SerialNumber
     any: FirearmMake, GunCaliber, GunTypeCode
     keyReference: IG.QGB
@@ -206,12 +206,12 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   Entity: Article | QIDM: CA_CLETS_ArticleSingleQuery | autoSelect: true
   2 combos
 
-  IP.QA.S -- Serial Number query [PENDING]
+  IP.QA.S -- Serial Number query [CONFIRMED]
     set: PurposeCode, SerialNumber
     any: ArticleTypeCode, ArticleBrand
     keyReference: IP.QA.S
 
-  IP.QA.O -- OAN query [PENDING]
+  IP.QA.O -- OAN query [CONFIRMED]
     set: PurposeCode, OwnerAppliedNumber
     any: ArticleTypeCode, ArticleBrand
     keyReference: IP.QA.O
