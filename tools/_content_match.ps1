@@ -11,9 +11,29 @@
        defaults = fields carrying the identical value in EVERY snapshot of that messageType)
 #>
 
+# FULL 50-state + DC map (fixed 2026-08-06). The table had only the 9 states the six
+# tenant-tested providers' home/OOS-toggle fills happened to use (GA/NJ/HI/CA/FL/TX/NY/AZ/LA) --
+# grown one entry at a time as a provider needed it, never built out completely. TX_TLETS's
+# RegistrationState OOS-toggle tests (DQName/CPLName/DQOLN, fill value 'AK') fell into the gap:
+# dex-log's own "Query String" cell -- which the extension faithfully copies, this is NOT an
+# extension bug -- renders the SELECT's display label ("Alaska"), never the wire code, and
+# Test-CmValueMatch had no AK->ALASKA entry to resolve it. The wire itself was already correct
+# (<State>AK</State>, confirmed from the preserved capture) -- only the relabeler's ability to
+# ATTRIBUTE the capture back to its plan test was broken, for any of the 41 unlisted states.
+# Any future OOS/random toggle picking one of those 41 hits the identical failure, so the fix is
+# the complete table, not one more entry.
 $script:CmStateNames = @{
-    'GA'='GEORGIA'; 'NJ'='NEW JERSEY'; 'HI'='HAWAII'; 'CA'='CALIFORNIA'; 'FL'='FLORIDA'
-    'TX'='TEXAS'; 'NY'='NEW YORK'; 'AZ'='ARIZONA'; 'LA'='LOUISIANA'
+    'AL'='ALABAMA'; 'AK'='ALASKA'; 'AZ'='ARIZONA'; 'AR'='ARKANSAS'; 'CA'='CALIFORNIA'
+    'CO'='COLORADO'; 'CT'='CONNECTICUT'; 'DE'='DELAWARE'; 'DC'='DISTRICT OF COLUMBIA'
+    'FL'='FLORIDA'; 'GA'='GEORGIA'; 'HI'='HAWAII'; 'ID'='IDAHO'; 'IL'='ILLINOIS'
+    'IN'='INDIANA'; 'IA'='IOWA'; 'KS'='KANSAS'; 'KY'='KENTUCKY'; 'LA'='LOUISIANA'
+    'ME'='MAINE'; 'MD'='MARYLAND'; 'MA'='MASSACHUSETTS'; 'MI'='MICHIGAN'; 'MN'='MINNESOTA'
+    'MS'='MISSISSIPPI'; 'MO'='MISSOURI'; 'MT'='MONTANA'; 'NE'='NEBRASKA'; 'NV'='NEVADA'
+    'NH'='NEW HAMPSHIRE'; 'NJ'='NEW JERSEY'; 'NM'='NEW MEXICO'; 'NY'='NEW YORK'
+    'NC'='NORTH CAROLINA'; 'ND'='NORTH DAKOTA'; 'OH'='OHIO'; 'OK'='OKLAHOMA'; 'OR'='OREGON'
+    'PA'='PENNSYLVANIA'; 'RI'='RHODE ISLAND'; 'SC'='SOUTH CAROLINA'; 'SD'='SOUTH DAKOTA'
+    'TN'='TENNESSEE'; 'TX'='TEXAS'; 'UT'='UTAH'; 'VT'='VERMONT'; 'VA'='VIRGINIA'
+    'WA'='WASHINGTON'; 'WV'='WEST VIRGINIA'; 'WI'='WISCONSIN'; 'WY'='WYOMING'
 }
 function Test-CmValueMatch($fillVal, $display) {
     $f = "$fillVal".ToUpper(); $d = "$display".ToUpper()
