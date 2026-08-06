@@ -26,7 +26,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.14 (46 logs) | v4.14 | current (tenant-complete, ALL-PASS 46/46) |
 | NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.19 (64 logs) | v4.19 | current (tenant-complete, ALL-PASS 64/64) |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.19 (92 logs) | v4.19 | current (tenant-complete 2026-08-06, ALL-PASS 92/92). DEX-1283 fix: removed initialValue='X' from Attention (DH) + EmailAddress (DL+DH) hidden feeders + matching combo defaults[] -- both confirmed resolving the real officer name/email on the wire with nothing in the source field. Lockstep: TX_TLETS_CCH v1.15 same fix, same day (built + gated, not yet tenant-tested) |
-| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | v2.23 (90 logs) | v2.23 | current (tenant-complete, ALL-PASS 90/90). The prior note here read "BLOCKED on 4 enforce FAILs + 6 under-required findings" — resolved at v2.23; enforce is 0 FAIL / 0 WARN. Count corrected 89→90 on 2026-08-04: the 89 was read mid-ingest, before the Firearm re-capture landed |
+| CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | v2.24 (90 logs) | v2.24 | current (tenant-complete 2026-08-06, ALL-PASS 90/90). DEX-1283 fix: removed initialValue='X' from the Attention (DH) hidden feeder + matching combo defaults[] -- confirmed resolving the real officer name on the wire with nothing in the source field. Full re-sweep matches the pre-rebuild v2.23 count exactly |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.4 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22. Confirm `dexStateUserId` populates on the FIRST query or all 5 badge combos silently fall back |
 
 All other providers (CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY,
@@ -61,7 +61,7 @@ confirmation, never inferred from a version bump.
 | TX_TLETS | v4.18 | DEX-967, 2026-08-03 | 2026-08-03 | after the 89/89 ALL-PASS re-sweep; same pass as the Balcones Heights import |
 | NY_NYSPIN_EJUSTICE | v4.19 | DEX-969, 2026-08-03 | 2026-08-03 | after the 64/64 ALL-PASS re-sweep. No Foundation tenant carries NY, so there is no section B row to match |
 | NJ_NJCJIS | v4.15 | DEX-988, 2026-08-03 | 2026-08-03 | after the 36/36 ALL-PASS re-sweep; same pass as the Newark Foundation import |
-| CA_CLETS | v2.23 | DEX-976, 2026-08-03 | 2026-08-03 | after the 90/90 ALL-PASS re-sweep. No Foundation tenant carries CA_CLETS |
+| CA_CLETS | v2.24 | DEX-976, 2026-08-06 | 2026-08-06 | after the DEX-1283 fix (90/90 ALL-PASS re-sweep). No Foundation tenant carries CA_CLETS |
 | HI_HCJDC_OFML | v4.14 | DEX-1257, 2026-08-04 | 2026-08-04 | after the 46/46 ALL-PASS re-sweep. **No version bump** — v4.14 was already published; re-published as the re-verified artifact. Last of the original six |
 
 > **TENANT INFO STAYS OFF THE TICKETS (Rob, 2026-08-03, restated).** Nothing in section B or C goes
