@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: FBQRegistrationNumber_af_titleLienInformation (FBQRegistrationNumber_af_titleLienInformation (auto))
+Date: 2026-08-06 15:32:33
+Result: PASS
+JSON Version: 7.18
+Entity Fingerprint: d4126d914bdfb85d5ec62a5861082cc462fc1731ce1bf578549933ae7b81d1a3
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","RegistrationNumber":"FL1234AB","titleLienInformation":"ABCD1234"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZC8S0WJQQYEGBKMGT09R3MT">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KZC8S0WJQQYEGBKMGT09R3MT</Id>
+            <TitleLienInformation>ABCD1234</TitleLienInformation>
+            <ImageIndicator>N</ImageIndicator>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+            <Requestor>SGAMBELLONE R</Requestor>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZC8S0WJQQYEGBKMGT09R3MT
+  TitleLienInformation           ABCD1234
+  ImageIndicator                 N
+  RegistrationNumber             FL1234AB
+  Requestor                      SGAMBELLONE R
+
+NOTES
+-----
+Automated capture (txId 01KZC8S0WJQQYEGBKMGT09R3MT). kind=any-field; anyField=titleLienInformation; expectedKeyRef=FBQRegistrationNumber; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
