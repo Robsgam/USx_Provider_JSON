@@ -1,4 +1,10 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.24 (DEX-1283): removed initialValue='X' from the Attention (DH) hidden gate-feeder, and the
+#   matching combo defaults[] entries on NLTS.KQ.N/NLTS.KQ.O. sourceField stays non-empty and
+#   Attention stays in both combos' any[] -- those two remain required (ConnectCic rejects an
+#   empty sourceField[] at import; the platform serializes only fired-combo set[]/any[] fields).
+#   Same finding as TX_TLETS v4.19/FL_FCIC v7.18: the hidden feeder's non-empty initialValue was
+#   never independently verified -- see knowledge-base/RULE_HANDLERS.txt handler #13.
 # v2.22 (2026-07-28, lean-label pass + stale-count doc fixes -- direct Rob feedback + adversarial
 #   audit, NO functional change): (1) LEAN LABELS -- stripped every "(optional)"/"(with Name,
 #   optional)"/"(required with Name)" helper now that the card titles carry the query paths (matches
@@ -128,7 +134,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.23"
+    [string]$Version = "2.24"
 )
 
 $ErrorActionPreference = "Stop"
@@ -600,9 +606,11 @@ $dhQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCodeDH','BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH')
                 any        = @('RegistrationStateDH','Attention')
+                # v2.24 (DEX-1283): removed defaults[] Attention='X' -- the hidden gate-feeder no
+                # longer carries a starting value (see ROW_PER_DH_ATTN below); a combo default was
+                # never required for the handler to run either.
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
-                    [PSCustomObject]@{ field = 'Attention';      value = 'X' }
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
@@ -618,7 +626,6 @@ $dhQuery = [PSCustomObject]@{
                 any      = @('RegistrationStateDH','Attention')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
-                    [PSCustomObject]@{ field = 'Attention';      value = 'X' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -1054,7 +1061,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
             )}
             @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); fields = @(
-                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
+                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' }
             )}
         )
     }

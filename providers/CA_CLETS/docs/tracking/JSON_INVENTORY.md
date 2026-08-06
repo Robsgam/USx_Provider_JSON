@@ -36,6 +36,12 @@ writes phase files). Prior snapshots remain recoverable via `git log`/`git show`
 
 
 
+
+## v2.24 (2026-08-06)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_v2.24.json | v2.24 | Current | 79P/0F/0W/0LIM. |
 ## v2.23 (2026-07-31)
 
 | File | Version | Status | Notes |
