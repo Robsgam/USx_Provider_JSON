@@ -1,0 +1,78 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
+Combo: DALH_af_ImageIndicatorDH (DALH_af_ImageIndicatorDH (auto))
+Date: 2026-08-06 19:30:39
+Result: PASS
+JSON Version: 4.23
+Entity Fingerprint: d186f47a5fbfb6cdb51f87736699b2dd69c3f0f88be2f86d6d8af3e4e895b683
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","ImageIndicatorDH":"N","NameFirstDH":"JOHN","NameLastDH":"DOE","SexCodeDH":"Male","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZCPFS8BKFKFDB9XPFXJV2JG">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KZCPFS8BKFKFDB9XPFXJV2JG</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <NyNyspinTransactionName>DALL</NyNyspinTransactionName>
+            <SexCode>M</SexCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01KZCPFS8BKFKFDB9XPFXJV2JG
+  ImageIndicator                 N
+  NyNyspinTransactionName        DALL
+  SexCode                        M
+  BirthDate                      01151990
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KZCPFS8BKFKFDB9XPFXJV2JG). kind=any-field; anyField=ImageIndicatorDH; expectedKeyRef=DALH; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
