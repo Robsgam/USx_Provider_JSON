@@ -42,8 +42,8 @@ in repo, awaiting first tenant import.
 |---|---|---|---|---|
 | Newark Foundation | NJ_NJCJIS | v4.15 | 2026-08-03 | current — v4.14→v4.15, imported by Rob after the v4.15 re-sweep (36/36 ALL-PASS). Picks up the Boat QBN `RegistrationNumber` fix: a hull search now transmits the reg number instead of silently dropping it (devdoc BoatQuery #1) — wire-proven in that sweep |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
-| Miami Springs Foundation | FL_FCIC | v7.17 | 2026-08-03 | current — v7.12→v7.17, imported by Rob after the v7.17 tenant sweep (116/116 ALL-PASS). Picks up v7.13 FBQ hull RegistrationNumber, v7.14 FRQ over-permit removal, v7.15 Requestor, v7.16 RelatedHitSearchIndicator/VINSequenceNumber, v7.17 dead-control removal |
-| North Miami Foundation | FL_FCIC | v7.17 | 2026-08-03 | current — v7.12→v7.17, same import pass as Miami Springs |
+| Miami Springs Foundation | FL_FCIC | v7.18 | 2026-08-06 | current — v7.17→v7.18, imported by Rob after the DEX-1283 fix (Attention/Requestor 'X' default removed, 116/116 ALL-PASS) |
+| North Miami Foundation | FL_FCIC | v7.18 | 2026-08-06 | current — v7.17→v7.18, same import pass as Miami Springs |
 | Balcones Heights TX Foundation | TX_TLETS | v4.18 | 2026-08-03 | current — v4.12→v4.18, imported by Rob after the v4.18 re-sweep (89/89 ALL-PASS). Picks up v4.13 dead-RQ removal, v4.14 all-7-Vehicle-combos-reachable (prefills out), v4.15/v4.16 UI, v4.17 QV shadow removal, v4.18 17 dropped optionals |
 
 ## C. Published JSON — Jira ticket + Confluence catalog (MANUAL, from Rob's confirmation)
@@ -57,7 +57,7 @@ confirmation, never inferred from a version bump.
 
 | Provider | Version | Attached to ticket | Posted to catalog | Notes |
 |---|---|---|---|---|
-| FL_FCIC | v7.17 | DEX-971, 2026-08-03 | 2026-08-03 | after the 116/116 ALL-PASS sweep; same pass as the Miami Springs + North Miami imports |
+| FL_FCIC | v7.18 | DEX-971, 2026-08-06 | 2026-08-06 | after the DEX-1283 fix (116/116 ALL-PASS); same pass as the Miami Springs + North Miami imports |
 | TX_TLETS | v4.18 | DEX-967, 2026-08-03 | 2026-08-03 | after the 89/89 ALL-PASS re-sweep; same pass as the Balcones Heights import |
 | NY_NYSPIN_EJUSTICE | v4.19 | DEX-969, 2026-08-03 | 2026-08-03 | after the 64/64 ALL-PASS re-sweep. No Foundation tenant carries NY, so there is no section B row to match |
 | NJ_NJCJIS | v4.15 | DEX-988, 2026-08-03 | 2026-08-03 | after the 36/36 ALL-PASS re-sweep; same pass as the Newark Foundation import |
