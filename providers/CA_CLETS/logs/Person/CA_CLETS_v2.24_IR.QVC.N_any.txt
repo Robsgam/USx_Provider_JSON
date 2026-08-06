@@ -1,0 +1,100 @@
+﻿================================================================
+TEST LOG: CA_CLETS Person DriverLicenseQuery
+Combo: IR.QVC.N_any (IR.QVC.N_any (auto))
+Date: 2026-08-06 16:02:00
+Result: PASS
+JSON Version: 2.24
+Entity Fingerprint: 8b08b8521c7baef23ec769898845c2af02de9cbac74f560fe56c4912a867422a
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","SexCode":"Male","addressCounty":"LA","age":"35","height":"509","purposeCode":"C","purposeCodeDH":"C","raceCode":"White"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZCAGCBXW8HYSTV63X7PXECA">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KZCAGCBXW8HYSTV63X7PXECA</Id>
+            <AddressCounty>LA</AddressCounty>
+            <RaceCode>W</RaceCode>
+            <Height>509</Height>
+            <SexCode>M</SexCode>
+            <Age>35</Age>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "raceAttrIds":  [
+                                             69586241335
+                                         ],
+                         "sexAttrId":  "69586249083",
+                         "dateOfBirth":  "1990-01-15"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZCAGCBXW8HYSTV63X7PXECA
+  AddressCounty                  LA
+  RaceCode                       W
+  Height                         509
+  SexCode                        M
+  Age                            35
+  BirthDate                      19900115
+  Name                           DOE, JOHN
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01KZCAGCBXW8HYSTV63X7PXECA). kind=any; anyField=; expectedKeyRef=IR.QVC.N; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
