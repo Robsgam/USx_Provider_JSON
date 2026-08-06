@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Person DriverLicenseQuery
 Combo: DLIC_guardrail_vs_DLICN (DLIC_guardrail_vs_DLICN (auto))
-Date: 2026-08-06 17:06:03
+Date: 2026-08-06 17:08:47
 Result: PASS
 JSON Version: 4.21
 Entity Fingerprint: d186f47a5fbfb6cdb51f87736699b2dd69c3f0f88be2f86d6d8af3e4e895b683
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDate":"1990-01-15","BirthDateDH":"1990-01-15","ImageIndicator":"Y","ImageIndicatorDH":"N","NameFirst":"JOHN","NameFirstDH":"JOHN","NameLast":"DOE","NameLastDH":"DOE","OperatorLicenseNumber":"D999888777","OperatorLicenseNumberDH":"D999888777","RegistrationStateDH":"New Jersey","SexCode":"Male","SexCodeDH":"Male","nyNyspinTransactionNameDH":"DLIC","purposeCodeDH":"C"}
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","ImageIndicatorDH":"Y","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777","SexCode":"Male","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZCD1N2Z206H1B5632KWRXVF">
+    <api:Transaction id="01KZCEEHWCXC61WP99YKYWBET1">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZCD1N2Z206H1B5632KWRXVF</Id>
+            <Id>01KZCEEHWCXC61WP99YKYWBET1</Id>
             <ImageIndicator>Y</ImageIndicator>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
@@ -75,12 +75,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KZCD1N2Z206H1B5632KWRXVF
+  Id                             01KZCEEHWCXC61WP99YKYWBET1
   ImageIndicator                 Y
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01KZCD1N2Z206H1B5632KWRXVF). kind=guardrail; anyField=; expectedKeyRef=DLIC; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZCEEHWCXC61WP99YKYWBET1). kind=guardrail; anyField=; expectedKeyRef=DLIC; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
