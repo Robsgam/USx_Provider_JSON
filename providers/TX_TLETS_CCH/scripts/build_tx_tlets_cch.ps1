@@ -1,5 +1,10 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH (version comes from $Version below -- said v1.10 while emitting v1.14, corrected 2026-08-02)
-# BASE-SYNC: TX_TLETS v4.18   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.19   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# v1.15 (lockstep w/ TX_TLETS v4.19, DEX-1283): removed initialValue='X' from the Attention +
+#   EmailAddress hidden gate-feeders (DL + DH) and the matching combo defaults[] entries -- same
+#   fix as TX_TLETS v4.19, see that build script's header for the full evidence trail
+#   (RULE_HANDLERS.txt handler #13 / HI_HCJDC_OFML v2.9 2026-06-22 / 24-capture proof). CCH-only
+#   transactions (AQ/AR/FQ/IQ/QH/QR/QWI/ZR) untouched -- neither field is CCH-specific.
 # v1.5 (2026-07-27, DEX-1284 shadow correction, lockstep w/ TX_TLETS v4.9 + a CCH-only metadata fix):
 #   (base-6) removed QVLicensePlateNumber + QVVehicleIdentificationNumber (ungated subset-shadows,
 #   platform auto-fired -- see TX_TLETS v4.9); KEPT regionId (optional combination field) moved to the
@@ -92,7 +97,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.14"
+    [string]$Version = "1.15"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -175,7 +180,7 @@ $vehRegQuery = [PSCustomObject]@{
 # fields (ExpandedBirthDateSearchCode/RaceCode/RegionId) dropped too. DL now 3 combos.
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'DQ', 'CPL'; field-name suffixes (DQName, DQOLN, CPLName) synthetic.
-$imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'EmailAddress'; value = 'X' })
+$imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefs = @([PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dlQuery = [PSCustomObject]@{
     attributes = @(
@@ -215,7 +220,7 @@ $dlQuery = [PSCustomObject]@{
 # Attention auto-populates via CommsysGetLastNameFirstNameInitialRuleHandler; EmailAddress via
 # GetUserProfileSingleValueRuleHandler (arguments=['email']) -- both use a hidden gate-feeder
 # field carrying initialValue='X', so each DH combo needs a matching default (audit_cad CHECK 6).
-$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' }, [PSCustomObject]@{ field = 'EmailAddress'; value = 'X' })
+$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'; rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' } }
@@ -617,7 +622,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_DL_OPT' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DL_OE'; cols = @('12'); fields = @(
-                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_DL_OE' @{ initialValue = 'X' } }
+                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_DL_OE' }
             )}
         )
     }
@@ -629,7 +634,7 @@ $perLayout = MakeLayouts @(
             # Hidden gate-feeder (InpH initialValue='X') makes 'Attention' visible to the platform
             # so the handler's sourceField resolves and the value enters the serialization pool.
             @{ id = 'ROW_PER_DHA'; cols = @('12'); fields = @(
-                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' @{ initialValue = 'X' } }
+                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' }
             )}
             # "(DH...)" qualifier dropped from every label (TX_TLETS main v4.3 convention, mirrors
             # FL/NY/HI) -- the card's own "DRIVER HISTORY" title disambiguates it from "DRIVER LICENSE".
@@ -819,6 +824,14 @@ $output = [PSCustomObject]@{ bundles = @($entitiesBundle, $provBundle, $rmsBundl
 Write-ProviderJson -BundleObject $output -OutPath $OUT `
     -Label "Built TX_TLETS_CCH v${Version}" `
     -Version $Version
+
+# Clear the rebuild-pending flags -- this build's version bump + reset_test_package regenerated
+# the plan via the fixed emit_test_plan.ps1 ($script:PlatformFed presence + form-defaults
+# namespace fixes, flagged 2026-08-05), so both flags' deferred condition is now satisfied.
+# Migrated docs/tracking/ location (build_tx_tlets.ps1's own clear code still points at the
+# pre-migration flat docs/ path -- stale there, harmless since Test-Path just skips it).
+$pendingPath = Join-Path $PSScriptRoot "..\docs\tracking\PENDING_UPDATES.txt"
+if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
 
 Write-Host ""
 Write-Host "Build complete. TX_TLETS_CCH v${Version} -- 14 QIDMs (6 base + 8 CCH), Person CCH cards CCH-suffixed."

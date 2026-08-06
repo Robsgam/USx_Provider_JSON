@@ -9,7 +9,7 @@
 
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-05 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-06 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -18,13 +18,14 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 
 | Provider | Ver | State |
 |---|---|---|
+| AZ_AZDPS | v3.7 | NEVER-TESTED -- 59 test(s) owed |
 | CA_CLETS | v2.23 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.17 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
 | NY_NYSPIN_EJUSTICE | v4.19 | ALL-PASS (64 logs) |
-| TX_TLETS | v4.18 | PARTIAL -- 3 plan test(s) owed (89 captured) |
-| _14 others_ | -- | never tenant-tested: AZ_AZDPS, CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
+| TX_TLETS | v4.19 | NEVER-TESTED -- 92 test(s) owed |
+| _13 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an

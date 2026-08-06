@@ -1,5 +1,18 @@
 # build_tx_tlets.ps1  -- TX_TLETS   (current version comes from $Version below; do NOT restate it
 #   here -- this line read "v4.7" until 2026-08-02 while the build emitted v4.18, eleven adrift)
+# v4.19 (DEX-1283): removed initialValue='X' from the Attention + EmailAddress hidden gate-feeders
+#   (DL + DH cards) and the matching combo defaults[] entries (Attention/EmailAddress on
+#   $imgDefsDH; EmailAddress on $imgDefs) -- both mechanisms existed on the belief that the QIDM
+#   attribute needs SOME sourceField value to avoid being dropped before the rule handler runs.
+#   That belief was never independently re-tested once RULE_HANDLERS.txt handler #13's real fix
+#   (any[] membership) was found live on HI_HCJDC_OFML v2.9, 2026-06-22 -- the gate-feeder's
+#   initialValue had been sitting in the build, untested alone, since v2.7. Isolated on a scratch
+#   proof JSON (identical DL/DH QIDMs, initialValue + defaults[] removed, nothing else changed):
+#   24/24 wire captures across DQName/DQOLN/KQName/KQOLN still resolved the real officer
+#   Attention/EmailAddress values with no starting value anywhere. Rebuilt onto TX_TLETS itself and
+#   re-verified below (see logs/Person/ v4.19). Does NOT address DEX-1283's separate CAD-Attention
+#   item -- DriverHistoryQuery (the only query carrying Attention) uses DH-suffixed fields, which
+#   are CAD-unreachable by design; that is architecture, not something this default controlled.
 # Single build. 6 cards (Vehicle 1, Person 2 [DL+DH], Firearm 1, Article 1, Boat 1).
 #   Corrected 2026-08-02: read "7 cards (Person 3 [Options+DL+DH])", which described the RETIRED
 #   3-card Person design. Counted from the emitted JSON, not from memory. A tester following the old
@@ -184,7 +197,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.18"
+    [string]$Version = "4.19"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -320,7 +333,7 @@ $vehRegQuery = [PSCustomObject]@{
 # source/RND-57165_EmailAddressHandler/ for the ticket + handler reference docs.
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'DQ', 'QW', 'CPL'; field-name suffixes (DQName, DQOLN, CPLName) synthetic.
-$imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'EmailAddress'; value = 'X' })
+$imgDefs = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $noImgDefs = @([PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dlQuery = [PSCustomObject]@{
     attributes = @(
@@ -363,9 +376,17 @@ $dlQuery = [PSCustomObject]@{
 # PLATFORM CONSTRAINT: ConnectCIC requires unique keyRefs per QIDM (LIMITATION #21).
 # Metadata uses keyRef 'KQ'; synthetic labels KQName/KQOLN. See PLATFORM_CONSTRAINTS.txt.
 # Attention auto-populates via CommsysGetLastNameFirstNameInitialRuleHandler; EmailAddress via
-# GetUserProfileSingleValueRuleHandler (arguments=['email']) -- both use a hidden gate-feeder
-# field carrying initialValue='X', so each DH combo needs a matching default (audit_cad CHECK 6).
-$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' }, [PSCustomObject]@{ field = 'EmailAddress'; value = 'X' })
+# GetUserProfileSingleValueRuleHandler (arguments=['email']) -- both still use a hidden gate-feeder
+# field (required: ConnectCic rejects an empty sourceField[] at import) and both still ride in
+# each DH combo's any[] (required: platform serializes only fired-combo set[]/any[] fields --
+# RULE_HANDLERS.txt handler #13, live-proven HI_HCJDC_OFML v2.9, 2026-06-22).
+# v4.19 (DEX-1283): the THIRD condition that finding recorded -- "hidden gate-feeder with a
+# non-empty initialValue='X'" -- was never independently isolated; it was just sitting in the
+# build, unverified, when the any[] fix (the real cause) went live alongside it. Removed the
+# initialValue AND the matching combo defaults[] entries (Attention/EmailAddress) on both DL and
+# DH; DQName/DQOLN/KQName/KQOLN all still resolved the real officer values on the wire with
+# nothing in the source field at all. See providers/TX_TLETS/logs/Person/ v4.19 captures.
+$imgDefsDH = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'ReasonCode'; value = 'C' }, [PSCustomObject]@{ field = 'State'; value = 'TX' })
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         [PSCustomObject]@{ name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'; rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' } }
@@ -600,7 +621,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'reasonCode_Input';        node = Inp 'reasonCode' 'Reason Code' '1' 'ROW_PER_DL_OPT' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DL_OE'; cols = @('12'); fields = @(
-                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_DL_OE' @{ initialValue = 'X' } }
+                @{ id = 'EmailAddress_Hidden'; node = InpH 'emailAddress' 'Email Address (auto-populated from officer profile)' '80' 'ROW_PER_DL_OE' }
             )}
         )
     }
@@ -612,7 +633,7 @@ $perLayout = MakeLayouts @(
             # Hidden gate-feeder (InpH initialValue='X') makes 'Attention' visible to the platform
             # so the handler's sourceField resolves and the value enters the serialization pool.
             @{ id = 'ROW_PER_DHA'; cols = @('12'); fields = @(
-                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' @{ initialValue = 'X' } }
+                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' }
             )}
             # "(DH)" qualifier dropped from every label (Rob-confirmed 2026-07-17, mirrors
             # FL_FCIC/NY_NYSPIN_EJUSTICE/HI_HCJDC_OFML) -- the card's own "DRIVER HISTORY" title

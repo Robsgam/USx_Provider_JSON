@@ -1032,7 +1032,7 @@ if (-not (Test-Path $bnTool)) {
             Fail "$provName -- BUILD_NOTES entry for the current version is the generic stub while the JSON CHANGED: a real change is recorded as a no-op (tools\audit_buildnotes_fidelity.ps1 -Provider $provName)"
             Out "       $($verdict.Trim())"
         } elseif ($verdict -match '^\s+\[NOTE\]') {
-            Note "$provName -- BUILD_NOTES entry is generic but NOT COMPARABLE (no predecessor JSON reachable); not evidence either way"
+            Info "$provName -- BUILD_NOTES entry is generic but NOT COMPARABLE (no predecessor JSON reachable); not evidence either way"
         } else {
             Pass "$provName -- BUILD_NOTES entry describes its change (or is a TRUE no-op)"
         }

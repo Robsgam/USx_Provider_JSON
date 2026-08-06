@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH_v1.14.json
-  Generated: 2026-08-02 21:51
+  Source: TX_TLETS_CCH_v1.15.json
+  Generated: 2026-08-06 13:01
 ================================================================
 QUERY SIMULATION
 ================
 
-  Seeded form defaults (4): Person.emailAddress=X, Person.ImageIndicatorDH=Y, Person.reasonCode=C, Person.reasonCodeDH=C
+  Seeded form defaults (3): Person.ImageIndicatorDH=Y, Person.reasonCode=C, Person.reasonCodeDH=C
 
 ================================================================
-  CommSys Query Simulator -- TX_TLETS_CCH_v1.14.json
+  CommSys Query Simulator -- TX_TLETS_CCH_v1.15.json
 ================================================================
 
 --- QIDM: TX_TLETS_CCH_VehicleInsuranceRegistrationQuery [Vehicle] ---
@@ -67,12 +67,11 @@ QUERY SIMULATION
 
     [FIRES first-match] DQOLN
       set: [OperatorLicenseNumber]
-      any: [emailAddress, ImageIndicator, reasonCode, RegistrationState] -> matched: [emailAddress, ImageIndicator, reasonCode, RegistrationState]
+      any: [emailAddress, ImageIndicator, reasonCode, RegistrationState] -> matched: [ImageIndicator, reasonCode, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <EmailAddress>X</EmailAddress>
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <ReasonCode>C</ReasonCode>
@@ -80,7 +79,7 @@ QUERY SIMULATION
       </Transaction>
 
     >> PLATFORM FIRES: DQOLN (first matching combo)
-    >> UNION POOL (platform serializes): EmailAddress=X, ImageIndicator=Y, OperatorLicenseNumber=D123456789, ReasonCode=C, State=NJ
+    >> UNION POOL (platform serializes): ImageIndicator=Y, OperatorLicenseNumber=D123456789, ReasonCode=C, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -90,13 +89,12 @@ QUERY SIMULATION
 
     [FIRES first-match] KQOLN
       set: [OperatorLicenseNumberDH]
-      any: [Attention, ImageIndicatorDH, emailAddress, purposeCodeDH, reasonCodeDH, RegistrationStateDH] -> matched: [Attention, ImageIndicatorDH, emailAddress, purposeCodeDH, reasonCodeDH, RegistrationStateDH]
+      any: [Attention, ImageIndicatorDH, emailAddress, purposeCodeDH, reasonCodeDH, RegistrationStateDH] -> matched: [Attention, ImageIndicatorDH, purposeCodeDH, reasonCodeDH, RegistrationStateDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>KQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <Attention>DOE J</Attention>
-        <EmailAddress>X</EmailAddress>
         <ImageIndicator>Y</ImageIndicator>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <PurposeCode>C</PurposeCode>
@@ -105,7 +103,7 @@ QUERY SIMULATION
       </Transaction>
 
     >> PLATFORM FIRES: KQOLN (first matching combo)
-    >> UNION POOL (platform serializes): Attention=DOE J, EmailAddress=X, ImageIndicator=Y, OperatorLicenseNumber=D123456789, PurposeCode=C, ReasonCode=C, State=FL
+    >> UNION POOL (platform serializes): Attention=DOE J, ImageIndicator=Y, OperatorLicenseNumber=D123456789, PurposeCode=C, ReasonCode=C, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
