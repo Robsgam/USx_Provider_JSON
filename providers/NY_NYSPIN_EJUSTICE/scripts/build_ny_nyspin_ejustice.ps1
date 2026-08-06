@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.19"
+    [string]$Version = "4.20"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -349,7 +349,7 @@ $dhQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = @('RegistrationStateDH');      operator = 'EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Requestor'; value = 'X' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' })
             }
             primaryFieldReference = 'Name'
             keyReference          = 'DALHOUT'
@@ -370,7 +370,7 @@ $dhQuery = [PSCustomObject]@{
             state                 = 'In'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','purposeCodeDH','requestorDH','RegistrationStateDH'); any = @('ImageIndicatorDH','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('RegistrationStateDH'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Requestor'; value = 'X' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH','purposeCodeDH','requestorDH','RegistrationStateDH'); any = @('ImageIndicatorDH','nyNyspinTransactionNameDH'); conditions = @([PSCustomObject]@{ field = @('RegistrationStateDH'); operator = 'EXISTS' }); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'NyNyspinTransactionName'; value = 'DALL' }, [PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DALLOUT'
             state                 = 'Out'
@@ -716,11 +716,24 @@ $perLayout = MakeLayouts @(
             # as the optional-Attention standard elsewhere, deliberately extended to a required
             # field. Hidden gate-feeder + CommsysGetLastNameFirstNameInitialRuleHandler on the
             # 'Requestor' QIDM attribute (see below); sourceField=['requestorDH'] already pointed
-            # at this fieldId. Working config verified against RULE_HANDLERS.txt entry 13 (HI
-            # v2.9 live-proven recipe): non-empty sourceField + field listed in the combo's set[]
-            # (already true here) + hidden field with non-empty initialValue.
+            # at this fieldId.
+            # v4.20 (DEX-1283): removed the hidden feeder's initialValue='X' + the matching combo
+            # defaults[] entries (same fix as TX_TLETS v4.19 / FL_FCIC v7.18 / CA_CLETS v2.24) --
+            # BUT requestorDH stays in set[] UNCHANGED, unlike those three providers where the
+            # equivalent field is any[]-only. This is the ONE provider in the DEX-1283 revisit
+            # where that matters: a hidden field with no initialValue submits no key at all
+            # (confirmed on all three prior providers -- the captured form snapshot omits it
+            # entirely), and set[] membership means the platform's combo matcher checks for its
+            # presence. If a submitted key is required (not just a non-empty VALUE) to satisfy
+            # set[], DALHOUT/DALLOUT could stop firing entirely -- there is no sibling OOS DH
+            # combo without requestorDH to fall back to. Rob's call (2026-08-06): remove it and
+            # verify live rather than leave it unproven. THE DISCRIMINATING TEST is DALHOUT/DALLOUT
+            # actually firing on the wire with the real officer name in <Requestor> -- verify this
+            # FIRST, before the rest of the entity sweep. If it fails, revert this file's diff on
+            # requestorDH only (leave TX/FL/CA_CLETS untouched) and restore initialValue='X' +
+            # the combo defaults[].
             @{ id = 'ROW_PER_DH_5B'; cols = @('12'); fields = @(
-                @{ id = 'RequestorDH_Input'; node = InpH 'requestorDH' 'Requestor (auto-populated from officer profile)' '35' 'ROW_PER_DH_5B' @{ initialValue = 'X' } }
+                @{ id = 'RequestorDH_Input'; node = InpH 'requestorDH' 'Requestor (auto-populated from officer profile)' '35' 'ROW_PER_DH_5B' }
             )}
         )
     }
@@ -849,5 +862,11 @@ $output = [PSCustomObject]@{
 Write-ProviderJson -BundleObject $output -OutPath $OUT `
     -Label "Built NY_NYSPIN_EJUSTICE v${Version}" `
     -Version $Version
+
+# Clear the rebuild-pending flags -- this build's version bump + reset_test_package regenerated
+# the plan via the fixed emit_test_plan.ps1 (form-defaults namespace fix, flagged 2026-08-05), so
+# the deferred condition is now satisfied. Migrated docs/tracking/ location.
+$pendingPath = Join-Path $PSScriptRoot "..\docs\tracking\PENDING_UPDATES.txt"
+if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
 
 # =====================================================================

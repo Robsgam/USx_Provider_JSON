@@ -1,0 +1,1564 @@
+{
+    "provider":  "NY_NYSPIN_EJUSTICE",
+    "version":  "4.20",
+    "tier":  "Full",
+    "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
+    "testCount":  64,
+    "formDefaults":  {
+                         "Vehicle":  {
+                                         "ImageIndicator":  "N"
+                                     },
+                         "Person":  {
+                                        "ImageIndicator":  "Y",
+                                        "ImageIndicatorDH":  "Y",
+                                        "purposeCodeDH":  "C",
+                                        "nyNyspinTransactionNameDH":  "DALL"
+                                    },
+                         "Firearm":  {
+                                         "relatedHitSearchIndicator":  "Y"
+                                     },
+                         "Article":  {
+                                         "ImageIndicator":  "N",
+                                         "relatedHitSearchIndicator":  "Y"
+                                     },
+                         "Boat":  {
+                                      "ImageIndicator":  "N"
+                                  }
+                     },
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVIN",
+                      "expectedKeyRef":  "RVIN",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVIN",
+                      "expectedKeyRef":  "RVIN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVIN",
+                      "expectedKeyRef":  "RVIN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "VehicleMakeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVIN",
+                      "expectedKeyRef":  "RVIN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "vehicleYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVIN",
+                      "expectedKeyRef":  "RVIN",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVEHOUT",
+                      "expectedKeyRef":  "RVEHOUT",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVEHOUT",
+                      "expectedKeyRef":  "RVEHOUT",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  8,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVEHOUT",
+                      "expectedKeyRef":  "RVEHOUT",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  9,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVEH",
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "LicensePlateNumber",
+                                    "value":  "TEST123"
+                                }
+                  },
+                  {
+                      "n":  10,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVEH",
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  11,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVEH",
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "LicensePlateTypeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  12,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RVEH",
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  13,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RCAR",
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "VehicleIdentificationNumber",
+                                    "value":  "1HGCM82633A123456"
+                                }
+                  },
+                  {
+                      "n":  14,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RCAR",
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  15,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RCAR",
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  16,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ],
+                      "guardrailLoser":  "RVIN"
+                  },
+                  {
+                      "n":  17,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ],
+                      "guardrailLoser":  "RCAR"
+                  },
+                  {
+                      "n":  18,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DLICN",
+                      "expectedKeyRef":  "DLICN",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DLICN",
+                      "expectedKeyRef":  "DLICN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DLICN",
+                      "expectedKeyRef":  "DLICN",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  21,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DLIC",
+                      "expectedKeyRef":  "DLIC",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "OperatorLicenseNumber",
+                                    "value":  "D999888777"
+                                }
+                  },
+                  {
+                      "n":  22,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DLIC",
+                      "expectedKeyRef":  "DLIC",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  23,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DLIC",
+                      "expectedKeyRef":  "DLIC",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  24,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALHOUT",
+                      "expectedKeyRef":  "DALHOUT",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  25,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALHOUT",
+                      "expectedKeyRef":  "DALHOUT",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicatorDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  26,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALHOUT",
+                      "expectedKeyRef":  "DALHOUT",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "nyNyspinTransactionNameDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  27,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALHOUT",
+                      "expectedKeyRef":  "DALHOUT",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALH",
+                      "expectedKeyRef":  "DALH",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  29,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALH",
+                      "expectedKeyRef":  "DALH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicatorDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  30,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALH",
+                      "expectedKeyRef":  "DALH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "nyNyspinTransactionNameDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALH",
+                      "expectedKeyRef":  "DALH",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALLOUT",
+                      "expectedKeyRef":  "DALLOUT",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALLOUT",
+                      "expectedKeyRef":  "DALLOUT",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicatorDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  34,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALLOUT",
+                      "expectedKeyRef":  "DALLOUT",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "nyNyspinTransactionNameDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALLOUT",
+                      "expectedKeyRef":  "DALLOUT",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  36,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALL",
+                      "expectedKeyRef":  "DALL",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "OperatorLicenseNumberDH",
+                                    "value":  "D999888777"
+                                }
+                  },
+                  {
+                      "n":  37,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALL",
+                      "expectedKeyRef":  "DALL",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicatorDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  38,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALL",
+                      "expectedKeyRef":  "DALL",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "nyNyspinTransactionNameDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  39,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "DALL",
+                      "expectedKeyRef":  "DALL",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicatorDH",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "nyNyspinTransactionNameDH",
+                                        "value":  "DLIC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  40,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DLIC",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ],
+                      "guardrailLoser":  "DLICN"
+                  },
+                  {
+                      "n":  41,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "DALL",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    }
+                                ],
+                      "guardrailLoser":  "DALH"
+                  },
+                  {
+                      "n":  42,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "GINQ",
+                      "expectedKeyRef":  "GINQ",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "serialNumber",
+                                    "value":  "GUN12345"
+                                }
+                  },
+                  {
+                      "n":  43,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "GINQ",
+                      "expectedKeyRef":  "GINQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  44,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "GINQ",
+                      "expectedKeyRef":  "GINQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunCaliber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunCaliber",
+                                        "value":  "11"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  45,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "GINQ",
+                      "expectedKeyRef":  "GINQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  46,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "GINQ",
+                      "expectedKeyRef":  "GINQ",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
+                                        "fieldId":  "GunCaliber",
+                                        "value":  "11"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  47,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "AINQ",
+                      "expectedKeyRef":  "AINQ",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  48,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "AINQ",
+                      "expectedKeyRef":  "AINQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  49,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "AINQ",
+                      "expectedKeyRef":  "AINQ",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  50,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "AINQ",
+                      "expectedKeyRef":  "AINQ",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  51,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BVEH",
+                      "expectedKeyRef":  "BVEH",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  52,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BVEH",
+                      "expectedKeyRef":  "BVEH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  53,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BVEH",
+                      "expectedKeyRef":  "BVEH",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  54,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BVIN",
+                      "expectedKeyRef":  "BVIN",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  55,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BVIN",
+                      "expectedKeyRef":  "BVIN",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  56,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BVIN",
+                      "expectedKeyRef":  "BVIN",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  57,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "RVEH",
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "RegistrationNumber",
+                                    "value":  "FL1234AB"
+                                }
+                  },
+                  {
+                      "n":  58,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "RVEH",
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  59,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "RVEH",
+                      "expectedKeyRef":  "RVEH",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  60,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "RCAR",
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "BoatHullIdNumber",
+                                    "value":  "FL1234AB56H7"
+                                }
+                  },
+                  {
+                      "n":  61,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "RCAR",
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  62,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "RCAR",
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  63,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "BVEH"
+                  },
+                  {
+                      "n":  64,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "RCAR",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "RVEH"
+                  }
+              ]
+}

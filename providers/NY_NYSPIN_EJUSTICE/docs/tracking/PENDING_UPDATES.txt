@@ -1,4 +1,0 @@
-# PENDING_UPDATES -- empty. NY v4.19 has no rebuild-blocking items.
-# The requestorDH wire-verification gap is TOOLING, not an NY build defect: moved to
-# ENGINEERING_STANDARD.md deferred work so it cannot block this provider's sweep.
-[FLAG:guardrail-formdefaults-namespace] emit_test_plan.ps1 guardrail path passed COMBO defaults (attribute-keyed: BadgeNumber, State) where Get-FiringKeyRef matches FORM fieldIds (dexStateUserId, RegistrationState) -- a silent no-op union, so guardrail expectedKeyRef could name the wrong combo. Fixed to pass the form defaults like the three structural call sites. This provider's plan gains 3 guardrail test(s); adopting changes its test set, so it is deferred to its OWN next rebuild + re-sweep. (flagged 2026-08-05)

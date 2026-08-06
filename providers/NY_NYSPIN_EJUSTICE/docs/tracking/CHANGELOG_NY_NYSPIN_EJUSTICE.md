@@ -2,9 +2,30 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.19** | Generated: 2026-08-05
+Current: **v4.20** | Generated: 2026-08-06
 
 ---
+
+## v4.20 -- 2026-08-06 -- DEX-1283: removed X default on Requestor -- UNPROVEN, live-verify DALHOUT/DALLOUT first
+
+**CHANGED:** Removed initialValue='X' from the requestorDH hidden gate-feeder, and the matching
+  combo defaults[] entries on DALHOUT/DALLOUT. requestorDH stays UNCHANGED in set[] on both  
+  combos (metadata-mandatory for OOS DH per the devdoc/metadata OOS Set -- this is not being  
+  relaxed).  
+**REASON:** Same finding as TX_TLETS v4.19/FL_FCIC v7.18/CA_CLETS v2.24, BUT NY is structurally
+  different: on those three providers the equivalent field is any[]-only, so removing the  
+  default never affected combo MATCHING, only attribute VALUE resolution (which the rule  
+  handler overrides unconditionally regardless). Here requestorDH is in set[], so its  
+  PRESENCE gates whether DALHOUT/DALLOUT match at all -- and a hidden field with no  
+  initialValue submits no key whatsoever (confirmed empirically on all three prior providers:  
+  the captured form snapshot omits the field entirely). If the platform's set[] check requires  
+  a submitted key (not just a non-empty value) to be satisfied, these two combos could stop  
+  firing entirely, with no sibling OOS DH combo to fall back to. Rob's call (2026-08-06): apply  
+  it and verify live rather than leave it unproven. THE DISCRIMINATING TEST, before anything  
+  else in this sweep: does DALHOUT (Name+State) and DALLOUT (OLN+State) still fire, and does  
+  <Requestor> carry the real officer name on the wire? If either fails, revert this diff on  
+  requestorDH specifically (restore initialValue='X' + the two combo defaults[] entries) --  
+  do not touch the TX/FL/CA_CLETS fix, which is unrelated and already wire-proven.  
 
 ## v4.19 -- 2026-07-30 -- Label the orphaned Plate Year field; record the requestorDH gap (commit 22b1695b)
 
