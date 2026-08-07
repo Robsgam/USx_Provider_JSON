@@ -1,14 +1,14 @@
-﻿================================================================
+================================================================
   Build Report: IL_LEADS_OFML
-  Source: IL_LEADS_OFML_v2.0.json
-  Generated: 2026-08-07 11:02
+  Source: IL_LEADS_OFML_v2.1.json
+  Generated: 2026-08-07 12:19
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: IL_LEADS_OFML_v2.0
+ POST-BUILD VERIFICATION: IL_LEADS_OFML_v2.1
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -53,6 +53,15 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
+  [INFO] Field 'LicensePlateTypeCode' (any[]-only) label='Plate Type' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, prefilled PC))
+  [INFO] Field 'LicensePlateYear' (any[]-only) label='Plate Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, prefilled))
+  [INFO] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted ("Stolen Check" per DEX-1284 (any[] optional))
+  [INFO] Field 'VehicleMakeCode' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
+  [INFO] Field 'vehicleYear' (any[]-only) label='Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
+  [INFO] Field 'SexCode' (any[]-only) label='Sex' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'gunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'firearmMake' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'ownerAppliedNumber' (any[]-only) label='Owner Applied Number' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional article qualifier))
   [PASS] All form field labels have required routing hint qualifiers (25 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---

@@ -1,9 +1,31 @@
-STATUS: PROVISIONAL
-# IL_LEADS_OFML supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED
+# IL_LEADS_OFML supported queries -- CONFIRMED against the devdoc 2026-08-07 (v2.1 revisit turn).
+#
+# VERIFICATION PERFORMED (was: DERIVED FROM JSON COMBOS, NOT YET CONFIRMED -- i.e. a mirror of
+# what we built, which cannot see an omission). Read source/IL_LEADS_OFML_DEVDOC.txt directly and
+# walked its section boundaries. 'Basic Queries Supported:' is at line 35 and its query headings
+# are EXACTLY these five, in this order:
+#     ArticleSingleQuery (37), BoatQuery (59), DriverLicenseQuery (117), GunQuery (169),
+#     VehicleRegistrationQuery (211)
+# The next heading, CCHCriminalHistoryQHQuery (279), sits under a NEW section -- 'Transactions
+# Supported:' > 'Computerized Criminal History (CCH) Package:' -- and everything from
+# DriverLicenseByNameQuery (2676) onward sits under 'Expanded Transaction Supported:'.
+#
+# THEREFORE OUT OF BASIC SCOPE and correctly UNBUILT (no-combo-left-behind is BASIC-scoped):
+#   Transactions Supported / CCH : CCHCriminalHistoryQHQuery, CCHCriminalHistoryQR1Query
+#                                  (a future IL_LEADS_OFML_CCH variant, not this base provider)
+#   Expanded Transaction         : DriverLicenseByNameQuery, FirearmsOwnersIdQuery,
+#                                  IlLeadsDriverAbstractQuery, IlLeadsHandicapPlacardQuery,
+#                                  IlLeadsLeadsTypeQuery, IlLeadsSoundExQuery,
+#                                  IlLeadsVehicleTitleQuery, IlLeadsWantedQWXQuery
+#   Also in metadata, not in devdoc Basic: WMPIMissingPersonQuery, WMPIUnidentifiedPersonQuery,
+#                                  WMPIWantedPersonQuery, and the WMPE* enter/modify/clear
+#                                  transactions (entry forms, not queries)
+#   NOTE IlLeadsDriverAbstractQuery is IL's driver-history equivalent. It is EXPANDED, not Basic,
+#   which is why IL correctly builds no DriverHistoryQuery. Do not 'discover' this as a gap.
+#
+# STATUS is CONFIRMED, so audit_supported_queries CHECK 0 now gates on this file rather than
+# printing INFO. Every line below maps to one of the five Basic queries above.
 # Format: <QueryLabel> | <PrimaryFieldReference>
 
 Article | ArticleSerialNumber

@@ -1,4 +1,4 @@
-IL_LEADS_OFML v2.0 -- TEST MATRIX
+IL_LEADS_OFML v2.1 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-07
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -7,45 +7,32 @@ Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 9 fields):
-  CARD_VEH_OPT (OPTIONS):
-    RegistrationState [Sel STATE], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-    ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10]
-  CARD_VEH_VIN (VIN SEARCH):
-    VehicleIdentificationNumber [Inp 20]
-    VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+Vehicle (1 card, 9 fields):
+  CARD_VEH (VEHICLE SEARCH BY PLATE, "OR" VIN):
+    ROW 1: LicensePlateNumber [Inp 10], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    ROW 3: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
 
-Person (3 cards, 9 fields):
-  CARD_PER_OPT (OPTIONS):
-    RegistrationState [Sel STATE], SexCode [Sel SEX], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-    raceCode [Sel RACE]
-    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
-  CARD_PER_OLN (OLN SEARCH):
-    OperatorLicenseNumber [Inp 20]
-  CARD_PER_NAME (NAME SEARCH):
-    NameFirst [Inp 30], NameLast [Inp 30]
-    BirthDate [FormDate]
+Person (1 card, 9 fields):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
+    ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NameLast [Inp 30], NameFirst [Inp 30]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel RACE]
+    ROW 4: relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Firearm (1 card, 5 fields):
-  CARD_GUN (FIREARM SEARCH):
-    serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
-    gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
-    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+  CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
+    ROW 1: serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Article (1 card, 3 fields):
-  CARD_ART (ARTICLE SEARCH):
-    serialNumber [Inp 20], ownerAppliedNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
+  CARD_ART (ARTICLE SEARCH BY SERIAL NUMBER + TYPE):
+    serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ownerAppliedNumber [Inp 20]
 
-Boat (3 cards, 5 fields):
-  CARD_BOA_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
-  CARD_BOA_HULL (HULL SEARCH):
-    BoatHullIdNumber [Inp 20]
-  CARD_BOA_REG (REGISTRATION SEARCH):
-    RegistrationNumber [Inp 20]
+Boat (1 card, 5 fields):
+  CARD_BOA (BOAT SEARCH BY HULL ID, "OR" REGISTRATION NUMBER):
+    ROW 1: BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 20], RegistrationState [Sel STATE]
+    ROW 2: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 QIDM SUMMARY (5 QIDMs, 9 combos)
 ----------------------------------------
@@ -64,41 +51,41 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: BOAT (5 tests -- 3 cards, 2 combos)
+ENTITY 1: VEHICLE (7 tests -- 1 card, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Boat        BQ+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
-              Expected: BoatQuery fires (BQ.H)
- 2  Boat        BQ+.H              + ImageIndicator, relatedHitSearchIndicator, RegistrationState [    ]
-              Expected: any[] fields present in XML output.
- 3  Boat        BQ+.R              RegistrationNumber=FL1234AB      [    ]
-              Expected: BoatQuery fires (BQ.R)
- 4  Boat        BQ+.R              + ImageIndicator, relatedHitSearchIndicator, RegistrationState [    ]
-              Expected: any[] fields present in XML output.
- 5  Boat        Guardrail: BQ.H>BQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
-              Expected: BoatQuery fires (BQ.H). Reg absent from XML.
-
-ENTITY 2: VEHICLE (7 tests -- 3 cards, 3 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
- 6  Vehicle     Z5+Plate           LicensePlateNumber=TEST123       [    ]
+ 1  Vehicle     Z5+Plate           LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (Z5)
- 7  Vehicle     Z5+Plate           + ImageIndicator, LicensePlateTypeCode, LicensePlateYear, relatedHitSearchIndicator [    ]
+ 2  Vehicle     Z5+Plate           + ImageIndicator, LicensePlateTypeCode, LicensePlateYear, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
- 8  Vehicle     Z2+.V              VehicleIdentificationNumber=1HGCM8263... [    ]
+ 3  Vehicle     Z2+.V              VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (Z2.V)
- 9  Vehicle     Z2+.V              + ImageIndicator, relatedHitSearchIndicator, VehicleMakeCode, vehicleYear [    ]
+ 4  Vehicle     Z2+.V              + ImageIndicator, relatedHitSearchIndicator, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-10  Vehicle     Z2+.P              LicensePlateNumber=TEST123       [    ]
+ 5  Vehicle     Z2+.P              LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (Z2.P)
-11  Vehicle     Z2+.P              + ImageIndicator, LicensePlateTypeCode, LicensePlateYear, relatedHitSearchIndicator [    ]
+ 6  Vehicle     Z2+.P              + ImageIndicator, LicensePlateTypeCode, LicensePlateYear, relatedHitSearchIndicator [    ]
               Expected: any[] fields present in XML output.
-12  Vehicle     Guardrail: Z2.P>Z2.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+ 7  Vehicle     Guardrail: Z2.P>Z2.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (Z2.P). VIN absent from XML.
 
-ENTITY 3: PERSON (5 tests -- 3 cards, 2 combos)
+ENTITY 2: BOAT (5 tests -- 1 card, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+ 8  Boat        BQ+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (BQ.H)
+ 9  Boat        BQ+.H              + ImageIndicator, relatedHitSearchIndicator, RegistrationState [    ]
+              Expected: any[] fields present in XML output.
+10  Boat        BQ+.R              RegistrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (BQ.R)
+11  Boat        BQ+.R              + ImageIndicator, relatedHitSearchIndicator, RegistrationState [    ]
+              Expected: any[] fields present in XML output.
+12  Boat        Guardrail: BQ.H>BQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+              Expected: BoatQuery fires (BQ.H). Reg absent from XML.
+
+ENTITY 3: PERSON (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -135,10 +122,10 @@ ENTITY 5: ARTICLE (2 tests -- 1 card, 1 combo)
 TOTAL: 21 tests
 
 COMBO COVERAGE (9/9):
-  VehicleRegistrationQuery: 3/3 -- T6(Z5+Plate), T8(Z2+.V), T10(Z2+.P)
+  VehicleRegistrationQuery: 3/3 -- T1(Z5+Plate), T3(Z2+.V), T5(Z2+.P)
   DriverLicenseQuery: 2/2 -- T13(.O), T15(.N)
   GunQuery: 1/1 -- T18(serialNumber)
   ArticleSingleQuery: 1/1 -- T20(serialNumber)
-  BoatQuery: 2/2 -- T1(.H), T3(.R)
+  BoatQuery: 2/2 -- T8(.H), T10(.R)
 
-IMPORT FILE: IL_LEADS_OFML_v2.0.json
+IMPORT FILE: IL_LEADS_OFML_v2.1.json

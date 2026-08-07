@@ -36,13 +36,27 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-DEX-1283/1284 cycle **FL -> NY -> CA_CLETS -> HI**: FL v7.18, TX v4.19 (+CCH v1.15), CA_CLETS v2.24,
-NY v4.23 are DONE -- built, swept, Jira-posted, ledger-recorded. **HI_HCJDC_OFML is the only one
-left**: v4.14, ALL-PASS 46/46, NOT yet checked for the Attention/Requestor `X` pattern. Check FIRST
-whether its field is `any[]`-only or `set[]`-mandatory -- NY needed a different fix for exactly that
-reason (below). Then AZ_AZDPS v3.7 (NEVER-TESTED, 59 owed; needs Rob's review + import), then the 13.
+**IL_LEADS_OFML v2.1 DONE 08-07.** DEX-1284 pass + HI-style collapse (Veh/Per/Boat 3 cards -> 1;
+11 -> 5), OLN/`NCIC Image`/`Stolen Check` labels, ALL-CAPS path titles, 4/4/4 grid. Layout ONLY --
+9 combos, 0 under/over, 0 prefill-dead, 6/6 killed, unchanged from v2.0. IL enforce 0F/0W (40 PASS).
+Also closed: extract **PROVISIONAL -> CONFIRMED** (CHECK 0 gates; devdoc Basic = the 5 built) +
+ledger names v2.1 not-imported. No IL tenant exists, so it cannot be tenant-tested. IL has NO Jira
+ticket (no `JIRA_REFERENCE.txt` entry, no `DEX_TICKET.md`) -- do not invent one.
 
-Jira: NY DEX-969 at comment **794205** (verified 08-07). FL/TX/CA_CLETS posted 08-06.
+**NEXT: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, still owed the DEX-1283 Attention/Requestor `X`
+check. Determine FIRST whether its field is `any[]`-only or `set[]`-mandatory -- NY needed a
+different fix for that exact reason. Then AZ_AZDPS v3.7 (59 owed; needs Rob review + import),
+then the remaining 12. Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06.
+
+**TOOLING BUG, 08-07, NOT fixed (needs `usx-tooling` + a LAW 2 mutation):** one adjudicated devdoc
+combination cannot be recorded so that BOTH sibling gates honour it. 2p hardcodes rule
+`devdoc-combo-unbuilt` (`audit_devdoc_combinations` L323); 2q hardcodes `devdoc-optional-unreachable`
+(`audit_devdoc_optionals` L163); **neither uses the shared `_divergence_rules.ps1` vocabulary.** So
+IL's Article-#2 row satisfies 2p and is INERT for 2q -> 2q prints `[FAIL] ArticleSingleQuery #2 ->
+NO COMBO FIRES` permanently. Renaming the rule fixes 2q and BREAKS 2p: it is a GATE fix, never a
+registry edit. 2q is advisory, so nothing is blocked. Also open: `select-to-input` fuzz survivor --
+no gate stops a dropdown-required field (SexCode/raceCode/State) being built as FormInput;
+`verify_build` hard-gates only VehicleMakeCode.
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -69,9 +83,7 @@ Jira: NY DEX-969 at comment **794205** (verified 08-07). FL/TX/CA_CLETS posted 0
 Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 0/9 | audit_metadata 20/20 | portability 260 cells
 0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic.
 Gate stack changed heavily 08-02/04 -- do NOT re-derive; decision-trail hook + `git log -n 40` hold it.
-**NEW 08-07: `value-strip` plan-test kind** -- `emit_test_plan` auto-tests any
-`IgnoreUserValueRuleHandler` field with the handler's own ignored value. Only NY uses the rule; 19
-others verified unchanged.
+`value-strip` plan-test kind added 08-07 (only NY uses `IgnoreUserValueRuleHandler`; 19 unchanged).
 
 ## OPEN DECISIONS -- Rob's call
 
@@ -81,30 +93,28 @@ others verified unchanged.
 **Residual, recorded, NOT owed:** `VEHICLE_BODY_STYLE|NJ_NIBRS` across all 20 QRDMs vs CLAUDE.md's
 "CA=VEHICLE" -- HYPOTHESIS, unsettleable from the repo | fidelity advisory 11 UNDER / 40 OVER (none on
 the fixture; use `usx-adjudicate`) | CCH spec-plan name divergences | `audit_devdoc_optionals` /
-`audit_log_content` FLAKE under parallel load -- re-run alone.
+`audit_log_content` FLAKE under parallel load -- re-run alone | `attributeTypeId=RACE` used by 10
+providers vs FIELD_REFERENCE "DO NOT use" (AP #3) -- stale KB line, CA_CLETS is tenant-proven.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
 Cases live in the skills: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c, `usx-test-iterate`.
 
-- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED.** Three misses on 08-06/07, one shape:
-  concluded from partial evidence with the decisive check within reach -- assumed a code table was
-  universal when its own captured label read "CA Purpose Code"; called a WORKING fix a defect by
-  reading one `<Set>` line and forgetting keyRefs are never transmitted (LIMITATION #37), which a
-  30-second wire diff reversed; blamed a stale/cached plan for "17 vs 19 tests" when one grep found a
-  hardcoded filter. Not a knowledge gap -- a speak-before-checking gap.
+- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED.** Repeated 08-06/07 and again 08-07 (invented
+  a DEX number for IL; read grep COUNTS as "HI builds State2-5" when the 4 hits were EXCLUSION
+  comments). One shape: concluding while the decisive check is within reach. Not knowledge -- haste.
+- **CHECK IF IT IS ALREADY ADJUDICATED FIRST.** 08-07: re-derived BOTH IL findings from scratch;
+  both were already in `ACCEPTED_DIVERGENCES` from 08-02 with the same reasoning. Read the registry
+  and `git log` before investigating.
 - **NEVER cite another provider as authority.** Only CC->CA_CLETS and `<BASE>_<VARIANT>`->`<BASE>`.
   CA_CLETS and CA_VENTURA_COUNTY share an `IR.QVC{Name}` requiring OPPOSITE things.
-- **A RECORD IS A CLAIM -- read the artifact.** **`audit_lifecycle` (2r) reads `DEX_TICKET.md`, NOT
-  the ticket.** Re-proven 08-07: it read "Nothing owed" while FOUR versions were unposted and 2r
-  PASSed throughout. Fetch the ticket (~86k -- delegate to an agent, keep only the conclusion).
-- **A step that did not run is NOT a pass; print the denominator.** After wiring a gate, GREP FOR ITS
-  VERDICT LINE -- built a mute gate twice. Exit 0 is not evidence a gate spoke.
-- **A finding across MANY providers is almost always YOUR PROBE** (100/67/25/6 false findings).
-- **The driver's "N queries submitted" is NOT a send count.** Re-run before diagnosing.
-- **Add a new gate/test-kind to EVERY harness AND every consumer** -- fuzz, portability, efficacy;
-  for a plan-test kind also the label fn, relabeler, importer AND `driver.js`'s filter. Missing that
-  last one silently dropped the new tests from every run (08-07) and looked like a stale plan.
+- **A RECORD IS A CLAIM -- read the artifact.** `audit_lifecycle` (2r) reads `DEX_TICKET.md`, NOT the
+  ticket; enforce reads CACHED reports (2e said PROVISIONAL after the file said CONFIRMED -- rerun
+  `build_report`). Exit 0 is not evidence a gate spoke: grep its VERDICT line; print the denominator.
+- **A finding across MANY providers is almost always YOUR PROBE** (100/67/25/6 false findings; 08-07
+  `attributeTypeId=RACE` in 10 providers was a stale KB line, not 10 defects).
+- **Add a new gate/test-kind to EVERY harness AND consumer** -- fuzz, portability, efficacy, and for
+  a plan-test kind the label fn, relabeler, importer AND `driver.js`'s filter.
 - **MUTATION ORDER: mutate -> restore -> RE-STAMP -> verify.** `git status` clean is not sufficient.
 - **Multi-line `.Replace()` no-ops on CRLF -- use Edit.** Document a new tool in the SAME action.
-- **REPLACE this file, never append.** The line gate has now caught me SIX times.
+- **REPLACE this file, never append.** The line gate has now caught me SEVEN times.

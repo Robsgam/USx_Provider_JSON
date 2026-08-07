@@ -2,9 +2,57 @@
 
 Auto-generated from `IL_LEADS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.0** | Generated: 2026-08-07
+Current: **v2.1** | Generated: 2026-08-07
 
 ---
+
+## v2.1 -- 2026-08-07 -- DEX-1284 convention pass + card collapse (layout/label only, NO wire change)
+
+**CHANGED:** Brought IL from the pre-DEX-1284 methodology in line with HI/FL/NY/TX/CA/AZ.
+  (1) CARD COLLAPSE -- the separate shared "OPTIONS" card is the RETIRED pre-DEX-1284 layout.  
+      Vehicle 3 cards -> 1 (was OPTIONS + PLATE SEARCH + VIN SEARCH), Person 3 -> 1  
+      (was OPTIONS + OLN SEARCH + NAME SEARCH), Boat 3 -> 1 (was OPTIONS + HULL + REG).  
+      Firearm and Article were already 1 card. 11 cards -> 5.  
+  (2) CANONICAL LABELS -- OperatorLicenseNumber 'License Number' -> 'OLN'; all four  
+      ImageIndicator controls ('Image (optional)' x3, 'Image' x1) -> exactly 'NCIC Image';  
+      relatedHitSearchIndicator 'Related Hit Search (Y for NCIC stolen check)' x4 ->  
+      bare 'Stolen Check'.  
+  (3) CARD TITLES ALL-CAPS AND CARRYING THE QUERY PATHS -- e.g. 'VEHICLE SEARCH BY PLATE,  
+      "OR" VIN', 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'. CARD_VEH_PLATE previously had  
+      NO title at all.  
+  (4) LEAN LABELS -- stripped '(optional)' helpers from any[] qualifiers (Plate Type, Plate  
+      Year, Make, Year, Caliber, Sex, Race, Owner Applied Number) with LABEL-OVERRIDE tags  
+      recording each. State KEEPS its mandatory routing hint 'leave blank for IL'  
+      (CHECK 15 Rule 1). Identifier-priority hints kept on the losing identifier  
+      ('VIN (Plate wins if both entered)', 'Registration Number (Hull ID wins if both  
+      entered)', 'Last Name (OLN wins if both entered)').  
+  (5) UNIFORM GRID -- every card on a 4/4/4 grid (Person top row 6/3/3 per the BUILD_RULES  
+      Section 11 PERSON CARDS pattern: identifier keeps the width, State/Image are short  
+      codes). Removed the lone-[4] rows ROW_VEH_OPT_2 / ROW_PER_OPT_2 and the 12-col  
+      single-field rows that made each path card a stranded full-width box.  
+**REASON:** DEX-1284 portfolio convention pass, applied on IL's revisit turn (the conventions are
+  explicitly per-provider-on-revisit, not a retroactive sweep). IL was the last GALV provider  
+  still on the 3-card OPTIONS+path layout. Approved by Rob 2026-08-07 (full HI-style collapse  
+  over labels-only). ZERO QIDM/combo/routing/fieldId/default change -- every fieldId still  
+  appears exactly once per QIF, so there is no duplicate-fieldId (ISE) risk from the collapse.  
+NOT CHANGED, and deliberately so -- each verified against THIS provider's own authorities:  
+  - Article devdoc combination #2 (OwnerAppliedNumber, ArticleTypeCode) stays UNBUILT. IL  
+    metadata defines exactly ONE ArticleSingleQuery combination, QA{ArticleSerialNumber} with  
+    Set[ArticleSerialNumber, ArticleTypeCode, Any[OwnerAppliedNumber]]. ArticleSerialNumber is  
+    mandatory on every Article query; there is no OwnerAppliedNumber-keyed variant. Metadata is  
+    FIELD authority, so building #2 would emit a request no variant accepts. Already registered  
+    2026-08-02 (rule devdoc-combo-unbuilt). Re-derived independently this pass and reached the  
+    same conclusion.  
+  - Boat State2-State5 stay UNBUILT (no multi-state mechanism on the platform; same standing  
+    ruling HI_HCJDC_OFML applies to its DL/VehicleReg State2-5). Already registered 2026-08-02.  
+  - RegistrationState stays in Boat any[], NOT set[]. The devdoc field table marks State 'M',  
+    but metadata BQ{hull} and BQ{RegistrationNumber} both place State inside <Set><Any> --  
+    optional. Metadata wins; promoting it would make an in-state hull search impossible (the  
+    TN_TIES KQ.N defect class).  
+  - attributeTypeId=SEX + codeTypeProvider=NIBRS retained (the documented dual-consumer pattern  
+    that satisfies CommSys and RMS simultaneously, FIELD_REFERENCE Section 3).  
+SCRIPT : scripts/build_il_leads_ofml.ps1  
+OUTPUT : IL_LEADS_OFML_v2.1.json  
 
 ## v2.0 -- 2026-08-01 -- v1.1 -> v2.0 methodology galvanization (commit 876200b0)
 

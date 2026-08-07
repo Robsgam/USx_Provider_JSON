@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: IL_LEADS_OFML_v2.0
-  Source: IL_LEADS_OFML_v2.0.json
-  Generated: 2026-08-02 21:48
+  PICKLIST / DROPDOWN REPORT: IL_LEADS_OFML_v2.1
+  Source: IL_LEADS_OFML_v2.1.json
+  Generated: 2026-08-07 12:19
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -12,45 +12,45 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
 
   Entity: Boat
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     RegistrationState [State (leave blank for IL)]
       Config: attributeTypeId=STATE
-    relatedHitSearchIndicator [Related Hit Search (Y for NCIC stolen check)]
+    relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
-    firearmMake [Make (optional)]
+    firearmMake [Make]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    gunCaliber [Caliber (optional)]
+    gunCaliber [Caliber]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Related Hit Search (Y for NCIC stolen check)]
+    relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    ImageIndicator [Image] (default=Y)
+    ImageIndicator [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCode [Race]
       Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
     RegistrationState [State (leave blank for IL)]
       Config: attributeTypeId=STATE
-    relatedHitSearchIndicator [Related Hit Search (Y for NCIC stolen check)]
+    relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    SexCode [Sex (optional)]
+    SexCode [Sex]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    LicensePlateTypeCode [Plate Type (optional)] (default=PC)
+    LicensePlateTypeCode [Plate Type] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
     RegistrationState [State (leave blank for IL)]
       Config: attributeTypeId=STATE
-    relatedHitSearchIndicator [Related Hit Search (Y for NCIC stolen check)]
+    relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    VehicleMakeCode [Vehicle Make (optional)]
+    VehicleMakeCode [Make]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC
 
 SECTION 2: QRDM INBOUND TRANSLATION CODE TYPES
