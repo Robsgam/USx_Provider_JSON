@@ -104,7 +104,19 @@ function Infer-ComboFromXml($provider, $query, $xml) {
 # routing proof (over-send, existence-gated in/out selection) lives in audit_log_content.ps1's
 # guardrail check; this is the always-on set-presence backstop for EVERY combo test. Element-name
 # resolution mirrors Infer-ComboFromXml (targetField, not attr .name -- see its FL_FCIC note).
-function Test-ExpectedComboOnWire($provider, $query, $expectedKeyRef, $xml) {
+#
+# VALUE-STRIP TESTS INVERT ONE FIELD'S EXPECTATION (added 2026-08-07, DEX-1284). A combo whose
+# attribute carries IgnoreUserValueRuleHandler deliberately OMITS the stripped field from the wire
+# when the officer supplies the ignored value -- that absence is the whole point of the test. The
+# original set-presence loop scored exactly that as "routing=MISMATCH (wire missing an identifier
+# of expected combo)" and FAILed both NY_NYSPIN_EJUSTICE strip tests on their first real run, when
+# the build was correct and the handler had done its job.
+#
+# The fix is NOT to exempt the field -- an exemption would pass whether or not the handler fired,
+# i.e. a gate that cannot fail (ENGINEERING_STANDARD LAW 2). Instead the expectation is INVERTED:
+# for the stripped field, PRESENCE on the wire is the failure, because it means the handler did
+# not strip. Every other set[] field is still required present as before.
+function Test-ExpectedComboOnWire($provider, $query, $expectedKeyRef, $xml, $strippedField) {
     if (-not $expectedKeyRef -or -not $xml) { return $null }
     $qidm = Get-QidmForQuery $provider $query; if (-not $qidm) { return $null }
     $combo = $qidm.combinations | Where-Object { ($_.keyReference -eq $expectedKeyRef) -or ($_.keyRef -eq $expectedKeyRef) } | Select-Object -First 1
@@ -115,7 +127,13 @@ function Test-ExpectedComboOnWire($provider, $query, $expectedKeyRef, $xml) {
         $elem = $s
         $attr = $qidm.attributes | Where-Object { $_.name -ieq $s -or (@($_.sourceField) -contains $s) } | Select-Object -First 1
         if ($attr) { $elem = if ($attr.targetField) { $attr.targetField } else { $attr.name } }
-        if (-not ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($s.ToLower()))) { return $false }
+        $onWire = ($present.ContainsKey($elem.ToLower()) -or $present.ContainsKey($s.ToLower()))
+        if ($strippedField -and ($s -ieq $strippedField -or $elem -ieq $strippedField)) {
+            # INVERTED: this field must be GONE. Still on the wire => the handler did not strip it.
+            if ($onWire) { return $false }
+            continue
+        }
+        if (-not $onWire) { return $false }
     }
     return $true
 }
@@ -186,7 +204,7 @@ foreach ($file in $files) {
         # wire carries the EXPECTED combo's set[] identifiers. (a) alone was the old check -- every
         # fired query trivially satisfies it, so intra-query routing was never verified.
         $fired = $r.messageType
-        $routingOk = Test-ExpectedComboOnWire $r.provider $r.query $r.expectedKeyRef $r.requestXml
+        $routingOk = Test-ExpectedComboOnWire $r.provider $r.query $r.expectedKeyRef $r.requestXml $r.strippedField
         if (-not ($fired -and ($fired -eq $r.query))) { $result = 'FAIL' }
         elseif ($routingOk -eq $false) { $result = 'FAIL' }
         else { $result = 'PASS' }   # $true (verified) or $null (indeterminate -> family match)

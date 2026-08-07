@@ -32,8 +32,14 @@
   test_commsys.ps1 / run_test_matrix.ps1, so this cannot drift from the simulator.
 
   Log name suffixes are stripped to recover the base keyRef: _any, _af_<field>,
-  _guardrail_vs_<other>. A _guardrail_vs_X log asserts that X did NOT win, so the
-  claimed combo is the part before _guardrail_vs_.
+  _guardrail_vs_<other>, _strip_<field>. A _guardrail_vs_X log asserts that X did NOT
+  win, so the claimed combo is the part before _guardrail_vs_.
+
+  _strip_<field> (value-strip, 2026-08-07): the combo fired normally -- routing reads
+  raw FORM state, and the QUERY STRING this replays IS the form state, so the stripped
+  field is present here and the named combo is what fired. Only the outbound WIRE omits
+  the field (IgnoreUserValueRuleHandler). So this suffix needs stripping for the keyRef
+  to resolve, but changes nothing about the attribution logic itself.
 
   Usage: .\audit_log_combo_attribution.ps1 -Path <provider.json> [-OutFile <path>]
   Exit:  0 = every log's named combo is what fired, 1 = at least one misattribution
@@ -106,7 +112,7 @@ foreach ($lf in $logFiles) {
 
     $claimRaw = $mCombo.Groups[1].Value
     # strip harness suffixes to recover the base keyRef
-    $claim = $claimRaw -replace '_guardrail_vs_.*$','' -replace '_af_.*$','' -replace '_any$',''
+    $claim = $claimRaw -replace '_guardrail_vs_.*$','' -replace '_af_.*$','' -replace '_strip_.*$','' -replace '_any$',''
 
     try { $fillObj = $mFill.Groups[1].Value | ConvertFrom-Json } catch { $skipped++; continue }
     $fill = @{}

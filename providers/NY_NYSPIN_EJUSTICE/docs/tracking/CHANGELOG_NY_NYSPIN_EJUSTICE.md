@@ -2,9 +2,39 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.23** | Generated: 2026-08-06
+Current: **v4.23** | Generated: 2026-08-07
 
 ---
+
+## v4.23 -- 2026-08-06 -- DEX-1284 CLOSED -- item 3 (home-state strip) LIVE-PROVEN. ALL-PASS 69/69.
+
+(Header carries v4.23's BUILD date per the BUILD_NOTES-vs-JSON date checksum; the tenant  
+ capture, reclassification and closure below all happened 2026-08-07. No JSON change.)  
+**CHANGED:** No JSON change. Both value-strip tests captured on the tenant and now PASS:
+  * RVIN + State=NY  -> wire is <VehicleIdentificationNumber> + <ImageIndicator>, no <State>  
+    -- BYTE-IDENTICAL to our own in-state RCAR wire, an exact match for devdoc combination  
+    #2 "(In) VehicleIdentificationNumber, [ImageIndicator]". The correct NY DMV lookup.  
+  * RVEHOUT + State=NY -> Plate + PlateType + PlateYear + Image, no <State>. Matches devdoc  
+    #1 "(In) LicensePlateNumber, [ImageIndicator, LicensePlateTypeCode]" plus ONE extra  
+    field, LicensePlateYear, which #1 does not define (it is mandatory only on #3).  
+    ACCEPTED (Rob, 2026-08-07): over-permit is the mildest defect class, and the alternative  
+    is knowingly routing NY-registered vehicles out-of-state to Nlets. No config-side fix  
+    exists -- PlateYear is required by #3 so its default cannot be removed, the handler sits  
+    on the shared State attribute so it cannot be scoped per-combination, and conditions  
+    cannot value-compare (LIMITATION #37). Deliberately NOT registered as a divergence: no  
+    gate flags it, so a registry row would suppress nothing and risk the prefix-bridge  
+    over-suppression trap. Full reasoning in UNIVERSAL_SEARCH_HANDLERS.txt Sec 4 "RESOLVED".  
+  * Non-NY values unaffected -- State=GA still transmits on all 17 other Vehicle tests.  
+  Also fixed the classification bug this exposed: import_captured_tests.ps1's  
+  Test-ExpectedComboOnWire scored the deliberate absence as "routing=MISMATCH" and FAILed  
+  both tests on their first run. The stripped field's expectation is now INVERTED rather  
+  than exempted (presence = failure, because it means the handler did not strip), so the  
+  check still fails on a real regression -- proven with a 4-case LAW 2 harness. Taught  
+  audit_log_combo_attribution.ps1's suffix parser about _strip_<field>.  
+**REASON:** Leo Hisoire, DEX-1284 (2026-07-24) item 3. Settled on the METADATA+DEVDOC standard
+  (is the request compliant?), not on observed behaviour -- CommSys responses are never  
+  captured by this repo and mock-mode behaviour is not predictable, so "did it return the  
+  right data" is unanswerable by design and is NOT the bar.  
 
 ## v4.23 -- 2026-08-06 -- PLAN COVERAGE ADDED (same version, no JSON change): item 3's home-state
 

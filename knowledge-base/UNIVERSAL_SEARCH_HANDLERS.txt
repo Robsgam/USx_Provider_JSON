@@ -104,6 +104,9 @@ concluding a capability does not exist.
   hardcoding". That is correct ONLY for hardcoding (it cannot inject a value). It is NOT a dead end
   for STRIPPING a home state -- that is exactly what production uses it for. Corrected 2026-07-29.
 
+  *** SETTLED 2026-08-07 (DEX-1284) -- SEE THE "RESOLVED" BLOCK AT THE END OF THIS SECTION.
+      The narrowing notes below are kept because the REASONING is what was wrong, twice. ***
+
   *** OPEN QUESTION -- PARTIALLY NARROWED, STILL NOT SETTLED (DEX-1284, 2026-08-06) ***
   STATUS: HYPOTHESIS (discriminating test now needs a LIVE tenant, not just a simulator --
   see below for exactly why the simulator cannot finish this one).
@@ -136,6 +139,61 @@ concluding a capability does not exist.
   than any condition-gated provider's.
   IMPLICATION: adopting the eSUN pattern on a condition-gated provider is a ROUTING-MODEL question
   whose outcome is unknown until tested live, not a one-line handler addition to copy blind.
+
+  ================================================================================
+  RESOLVED 2026-08-07 -- IT WORKS ON A CONDITION-GATED PROVIDER. LIVE-PROVEN.
+  ================================================================================
+  STATUS: LIVE-PROVEN providers/NY_NYSPIN_EJUSTICE/logs/Vehicle/NY_NYSPIN_EJUSTICE_v4.23_RVIN_strip_RegistrationState.txt
+  STATUS: LIVE-PROVEN providers/NY_NYSPIN_EJUSTICE/logs/Vehicle/NY_NYSPIN_EJUSTICE_v4.23_RVEHOUT_strip_RegistrationState.txt
+  (NY_NYSPIN_EJUSTICE v4.23, `IgnoreUserValueRuleHandler(["NY"])` on VehicleRegistrationQuery's
+  State attribute. Both logs pass all four gates incl. 6d, which validates the wire DIRECTLY
+  against the metadata.)
+
+  WHAT THE WIRE ACTUALLY SHOWS -- NY devdoc "Possible Combinations" for VehicleRegistrationQuery:
+    1. (In)  LicensePlateNumber, [ImageIndicator, LicensePlateTypeCode]
+    2. (In)  VehicleIdentificationNumber, [ImageIndicator]
+    3. (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State, [ImageIndicator]
+    4. (Out) VehicleIdentificationNumber, State, [ImageIndicator, VehicleMakeCode, VehicleYear]
+
+  * VIN path (RVIN, devdoc #4): officer supplies VIN + CAD-autofilled NY. Wire emerges as
+    <VehicleIdentificationNumber> + <ImageIndicator>, NO <State> -- BYTE-IDENTICAL to the wire
+    our own in-state RCAR test produces, and an exact match for devdoc #2 (mandatory VIN + its
+    one optional). Nothing extra, nothing missing. This is the intended in-state NY DMV lookup.
+  * Plate path (RVEHOUT, devdoc #3): wire emerges as Plate + PlateType + PlateYear + Image,
+    no <State>. Matches devdoc #1 EXCEPT it carries LicensePlateYear, which #1 does not list
+    even as an optional (it appears only on #3, where it is mandatory). ONE OVER-PERMITTED FIELD
+    -- accepted, see the trade below.
+  * Non-ignored values are untouched: State=GA still transmits <State>GA</State> on every other
+    test (17/17 unaffected). The handler matches only the literal argument.
+
+  THE TRADE ON THE PLATE PATH (Rob's call 2026-08-07: KEEP THE STRIP):
+    without strip -> Plate+Type+Year+State=NY matches devdoc #3 PERFECTLY, but #3 is an (Out)
+                     transaction: it asks Nlets for a vehicle New York itself registers.
+                     Structurally flawless, wrong destination.
+    with strip    -> routes (In) to NY DMV, the correct destination, carrying one field that
+                     devdoc #1 does not define. Over-permit is the mildest defect class.
+  There is NO config-side way to get both: LicensePlateYear is a combo default on RVEHOUT because
+  devdoc #3 requires it (removing it breaks real out-of-state plate queries), the rule handler
+  lives on the SHARED State attribute so it cannot be scoped per-combination, and conditions
+  cannot do value comparison (LIMITATION #37, poisoned-array).
+
+  DELIBERATELY *NOT* REGISTERED as an accepted divergence. No gate flags it -- fidelity compares
+  the BUILT set[]/any[] (which matches devdoc #3 exactly) and cannot see a runtime strip, and 6d
+  passes because every wire field is metadata-defined and the field-set satisfies a real
+  combination. A registry row would therefore suppress nothing while risking the prefix-bridge
+  over-suppression trap (usx-build Step 3: an FL row once muted all four FRQ branches). The
+  decision lives here and in the provider BUILD_NOTES instead.
+
+  TWO REASONING ERRORS THIS COST, both worth more than the finding:
+   1. "The simulator cannot settle this, only a live response can." WRONG FRAMING. CommSys
+      responses are never captured by this repo and mock-mode behaviour is not predictable, so
+      "did it return the right data" is unanswerable BY DESIGN. The project's actual bar is
+      METADATA + DEVDOC COMPLIANCE of the request -- and that IS decidable from the wire alone.
+   2. "State is inside <Set> for RVIN/RVEHOUT, therefore omitting it is a defect." WRONG. The
+      keyReference is INTERNAL and never transmitted (LIMITATION #37) -- the server selects the
+      transaction from the field VALUES it receives. The question is never "does the wire satisfy
+      the combo we named", it is "does the wire satisfy SOME metadata combination". Reading one
+      <Set> line and concluding produced a recommendation to revert a working fix.
 
 ================================================================================
   5. behaviors BLOCK -- top-level, we never emit it
