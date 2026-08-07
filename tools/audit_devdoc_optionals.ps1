@@ -154,19 +154,51 @@ function Resolve-Refs($qidm, [string]$devTok) {
 }
 
 # ── walk every item x every optional subset ───────────────────────────────────────────
-$accepted = @()
+$accepted = @()      # rule 'devdoc-optional-unreachable' -- honoured by BOTH branches
+$acceptedExist = @() # EXISTENCE-class rules -- honoured ONLY by the NO-COMBO-FIRES branch
+. (Join-Path $PSScriptRoot '_divergence_rules.ps1')
 $accPath = Join-Path $provDir "docs\tracking\${provName}_ACCEPTED_DIVERGENCES.txt"
 if (Test-Path $accPath) {
     foreach ($l in (Get-Content $accPath)) {
         if ($l -match '^\s*#' -or -not $l.Trim()) { continue }
         $p = $l -split '\|'
-        if ($p.Count -ge 5 -and $p[3].Trim() -eq 'devdoc-optional-unreachable') {
-            $accepted += [pscustomobject]@{ Query = $p[0].Trim(); Field = $p[2].Trim().ToLower() }
-        }
+        if ($p.Count -lt 4) { continue }
+        $rule = $p[3].Trim()
+        $row  = [pscustomobject]@{ Query = $p[0].Trim(); Field = $p[2].Trim().ToLower(); Rule = $rule }
+        if ($p.Count -ge 5 -and $rule -eq 'devdoc-optional-unreachable') { $accepted += $row }
+        elseif ((Get-DivergenceRuleClass $rule) -eq 'existence')        { $acceptedExist += $row }
     }
 }
 function Test-Accepted([string]$q, [string[]]$fields) {
     foreach ($a in $accepted) {
+        if ($a.Query -ne $q) { continue }
+        foreach ($f in $fields) { if ((Canon $f) -eq (Canon $a.Field)) { return $true } }
+    }
+    return $false
+}
+# EXISTENCE-class acceptance, deliberately scoped to the NO-COMBO-FIRES branch ONLY.
+#
+# WHY IT EXISTS: 2p (audit_devdoc_combinations) hardcodes rule 'devdoc-combo-unbuilt' and 2q
+# hardcoded 'devdoc-optional-unreachable', and NEITHER consulted _divergence_rules.ps1 -- the shared
+# vocabulary that exists precisely so tools agree about what a recorded decision silences. So one
+# adjudicated "this devdoc combination cannot be built" could not be written in a single way both
+# gates honoured: IL_LEADS_OFML's Article-#2 row satisfied 2p and was INERT here, leaving a permanent
+# [FAIL] on a decision that was correctly made, reasoned and recorded on 2026-08-02.
+#
+# WHY IT IS *NOT* HONOURED BY THE DROPPED-OPTIONAL BRANCH -- measured 2026-08-07, and the naive
+# version of this change was ABANDONED because of it. Test-Accepted matches a row against ANY field
+# of the devdoc item, so an existence row is far too coarse for the routing branch: LA_LEMS carries
+# 'BoatQuery | BQ | BoatHullIdNumber | not-built', and its live 2q finding is the DROPPED OPTIONAL
+# "BoatQuery #1 +[State] -> fires QB but optional(s) State ... silently not transmitted". Honouring
+# existence rows there would have matched on BoatHullIdNumber and silenced a REAL, currently-PARKED
+# finding that Rob has explicitly said must not be silenced. A combination being unbuilt says nothing
+# about whether a DIFFERENT, built combination drops an optional.
+#
+# The distinction is exact and already structural in this file: `-not $fired` is an EXISTENCE
+# question ("does any combination serve this fill?"), which an existence row legitimately answers;
+# the else-branch is a ROUTING question ("does the winner carry this field?"), which it does not.
+function Test-AcceptedExistence([string]$q, [string[]]$fields) {
+    foreach ($a in $acceptedExist) {
         if ($a.Query -ne $q) { continue }
         foreach ($f in $fields) { if ((Canon $f) -eq (Canon $a.Field)) { return $true } }
     }
@@ -219,6 +251,8 @@ foreach ($it in ($items | Sort-Object Query, Num)) {
         if (-not $fired) {
             if (Test-Accepted $it.Query (@($it.Mand) + $usedToks)) {
                 Emit "  [NOTE] $label -> NO COMBO FIRES (accepted divergence)" 'Yellow'; $notes++
+            } elseif (Test-AcceptedExistence $it.Query (@($it.Mand) + $usedToks)) {
+                Emit "  [NOTE] $label -> NO COMBO FIRES (accepted divergence: existence-class registry row -- this devdoc combination is recorded as unbuildable)" 'Yellow'; $notes++
             } else {
                 Emit "  [FAIL] $label -> NO COMBO FIRES. A devdoc-legal fill sends no query." 'Red'
                 Emit "         filled: $((($fd.Keys | Sort-Object) -join ', '))" 'DarkGray'

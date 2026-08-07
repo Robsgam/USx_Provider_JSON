@@ -1,0 +1,50 @@
+# IL_LEADS_OFML — DEX Ticket
+
+**Active ticket:** [DEX-984](https://mark43.atlassian.net/browse/DEX-984)
+Project: DEX (CJIS/USx/DEx Implementation)
+
+Ticket number supplied by Rob 2026-08-07. **This file did not exist before that**, and its absence
+was briefly reported as "IL has no Jira ticket" — an inference from the silence of
+`knowledge-base/JIRA_REFERENCE.txt` and this missing file, not a verified fact. The lesson is the
+standing one: absence of a record is not evidence of absence.
+
+Post the changelog here on every version bump (dump first, then per-version diff, led by the
+🤖 auto-update attribution line; release line after that version's live testing passes).
+
+> **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-984`
+> (fields: comment) before asserting what is or is not owed.
+>
+> **`audit_lifecycle` (enforce 2r) READS THIS FILE, NOT THE TICKET.** So it can PASS on a lie (this
+> file updated, nothing actually posted) and FAIL on the truth (posted, file stale). Treat a 2r
+> verdict as "check both", never as proof either way.
+>
+> **TENANT INFO STAYS OFF THIS TICKET (Rob, 2026-08-03):** no attachment note, no catalog post, no
+> Foundation import line. Those belong in `providers/IMPORT_LEDGER.md` sections B and C.
+>
+> **JIRA UPDATES ARE HELD** (2026-07-31, Rob) until the process and results are fully trusted, and
+> every post is DRAFT-AND-WAIT for explicit approval — establishing that once on another provider
+> did not authorize it here.
+
+## Posted comments
+
+| Comment id | Version | Date | What |
+|---|---|---|---|
+| _(none)_ | — | — | **Nothing has been posted to DEX-984 yet.** |
+
+## Owed at the next lift of the Jira hold
+
+- **v2.1** (2026-08-07) — DEX-1284 convention pass + card collapse: Vehicle/Person/Boat 3 cards → 1
+  (11 cards → 5), `OLN` / `NCIC Image` / `Stolen Check` canonical labels, ALL-CAPS path-carrying card
+  titles, uniform 4/4/4 grid. Layout/label ONLY — 9 combos, fidelity 9 branches 0 under / 0 over,
+  0 prefill-dead, structurally identical to v2.0. Supported-query extract promoted
+  PROVISIONAL → CONFIRMED so `audit_supported_queries` CHECK 0 now gates (10 PASS / 0 FAIL).
+- Earlier versions (v1.0 → v2.0) have never been posted either; a first dump should cover the whole
+  history, not just v2.1. Read `docs/tracking/CHANGELOG_IL_LEADS_OFML.md` for the rendered source.
+
+## Tenant
+
+`https://usx-il-leads-ofml.mark43.com/rms/#/universal-search` — EXISTS. v2.1 is **not imported**;
+0 logs at any version, never tenant-tested. The capture extension covers this host as of
+`automation/extension/manifest.json` **0.4.0** (before that it matched only 7 tenants, so neither the
+driver nor the capture hook would have injected on IL). Import status is tracked in
+`providers/IMPORT_LEDGER.md`, not here.

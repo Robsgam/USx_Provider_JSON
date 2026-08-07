@@ -38,6 +38,16 @@
                              Results bundles only, never for request QIDMs)
     I DESELECT ORPHAN     queriesToDeselect naming a query that does not exist
                           -> the mutual exclusion never fires and both queries co-fire, silently
+    J ROUTING-ONLY FLD    an EXISTS condition gates a combination on a field that is in NEITHER
+                          that combination's set[] NOR its any[]
+                          -> the officer's value decides WHICH query fires and is then dropped from
+                             the request (e.g. an out-of-state Nlets query with no destination
+                             State). EXISTS only -- a NOT_EXISTS gate asserts ABSENCE, so there is
+                             nothing to transmit. Added 2026-08-07; found by mutation testing on
+                             IL_LEADS_OFML, where no existing gate could kill il-guardrail-wire-leak.
+                             Distinct from C and D: the control EXISTS and the condition WORKS; the
+                             field is simply missing from this ONE combination's pool while siblings
+                             carry it, which is why every form-level and provider-level check passes.
 
   F-I were probed across the portfolio on 2026-08-02 and found at ZERO, then folded in HERE rather
   than given their own script: same concern (is the form/QIDM pair internally coherent?), and a
@@ -78,7 +88,11 @@ function Canon([string]$t) { ("$t" -replace '[^A-Za-z0-9]','').ToLower() }
 # 20 providers (100 of 110 findings), which is exactly how a real signal gets buried under a
 # known-good one. It is platform context like CadUnit/CadEvent: consumed by the host, never by a QIDM.
 $ctxRx  = '(?i)^(cadunit|cadevent|linktoevent|linkcurrentassignedevent|dexstateuserid)'
-$totals = @{ A = 0; B = 0; C = 0; D = 0; E = 0; F = 0; G = 0; H = 0; I = 0; Providers = 0 }
+# JExamined is the class-J DENOMINATOR. J only applies to EXISTS conditions, so "0 findings" is
+# meaningless without the count of EXISTS conditions actually inspected -- zero findings over zero
+# subjects is a vacuous pass (ENGINEERING_STANDARD 4.3), and this check's own measurement probe hit
+# exactly that trap before it was fixed (it printed "hits: 0" having examined 0).
+$totals = @{ A = 0; B = 0; C = 0; D = 0; E = 0; F = 0; G = 0; H = 0; I = 0; J = 0; JExamined = 0; Providers = 0 }
 
 $targets = @()
 $pathMode = $false
@@ -185,6 +199,10 @@ foreach ($wk in $work) {
                     $totals.C++
                 }
             }
+            # THIS combination's own transmit pool, for class J below. Built here (not from $have,
+            # which is the union of controls on the form) because J is a PER-COMBINATION question.
+            $ownPool = @{}
+            foreach ($f in ($setF + $anyF)) { $ownPool[(Canon $f)] = $true }
             foreach ($cond in @($cm.requirements.conditions)) {
                 foreach ($f in @($cond.field)) {
                     if (-not "$f") { continue }
@@ -194,6 +212,36 @@ foreach ($wk in $work) {
                     if (-not $have.ContainsKey($k)) {
                         $findings.Add(("D INERT CONDITION   {0,-26} {1,-24} {2} '{3}' -- no control, so the gate never changes anything" -f $q.query, $kr, $cond.operator, $f)) | Out-Null
                         $totals.D++
+                        continue
+                    }
+                    # ── J ROUTING-ONLY FIELD ────────────────────────────────────────────────
+                    # An EXISTS gate asserts the field IS present, so the officer definitely typed
+                    # it. If that same combination carries the field in NEITHER set[] NOR any[],
+                    # the value decides WHICH query fires and is then silently dropped from the
+                    # request -- e.g. an out-of-state Nlets query with no destination state.
+                    #
+                    # ONLY 'EXISTS'. A NOT_EXISTS gate asserts the field is ABSENT, so demanding it
+                    # in the transmit pool would be nonsense -- and NOT_EXISTS is the overwhelmingly
+                    # common case (measured 2026-08-07 across all 20 providers: 244 NOT_EXISTS vs
+                    # 100 EXISTS). Including them would have produced ~244 false findings, the
+                    # textbook "a finding across MANY providers is your probe" error.
+                    #
+                    # WHY THIS IS NOT class C or D: C asks whether a set[]/any[] field has a control,
+                    # D whether a condition field has a control. Both are satisfied here -- the
+                    # control exists and the condition works. The break is that the field is absent
+                    # from THIS combination's pool while other combinations carry it, so every
+                    # form-level and provider-level check sees it as wired.
+                    #
+                    # BASELINE at introduction: 100 EXISTS conditions examined portfolio-wide,
+                    # exactly ONE hit -- TN_TIES VehicleRegistrationQuery/RQ05 (OOS dealer plate,
+                    # gated RegistrationState EXISTS, State in neither set[] nor any[]; its RQ06 and
+                    # RQ07 siblings DO carry it, so it reads as an omission, not a design decision).
+                    # A 1-in-100 rule is specific enough to be a gate. Found by mutation testing on
+                    # IL_LEADS_OFML (il-guardrail-wire-leak), which no existing gate could kill.
+                    if ("$($cond.operator)" -eq 'EXISTS') { $totals.JExamined++ }
+                    if (-not $ownPool.ContainsKey($k) -and "$($cond.operator)" -eq 'EXISTS') {
+                        $findings.Add(("J ROUTING-ONLY FLD  {0,-26} {1,-24} EXISTS '{2}' gates this combo but is in NEITHER its set[] NOR any[] -- the officer's value routes and is then NOT transmitted" -f $q.query, $kr, $f)) | Out-Null
+                        $totals.J++
                     }
                 }
             }
@@ -311,16 +359,17 @@ Write-Host ""
 Write-Host "----------------------------------------------------------------------------"
 Write-Host ("  {0} provider(s) checked" -f $totals.Providers)
 Write-Host ("  A dead control {0} / B orphan attribute {1} / C unfillable req {2} / D inert condition {3} / E inert default {4}" -f $totals.A, $totals.B, $totals.C, $totals.D, $totals.E)
-Write-Host ("  F variant gap {0} / G dup fieldId {1} / H dup targetField {2} / I deselect orphan {3}" -f $totals.F, $totals.G, $totals.H, $totals.I)
+Write-Host ("  F variant gap {0} / G dup fieldId {1} / H dup targetField {2} / I deselect orphan {3} / J routing-only {4}" -f $totals.F, $totals.G, $totals.H, $totals.I, $totals.J)
+Write-Host ("  ({0} EXISTS condition(s) examined for class J)" -f $totals.JExamined)
 Write-Host "  A and C are officer-facing: a control that discards input, or a path no human can fill."
 # EMIT A CONVENTIONAL VERDICT LINE. Without this the tool printed only its per-class counters, which
 # no consumer recognises: audit_tool_portability reported this gate as [NO-VERDICT] on all 20
 # providers the moment it was added to that sweep -- "a step that did not run is NOT a pass", and my
 # own new blocking gate was the thing failing it. Any gate must announce its verdict in the shape the
 # harnesses read (RESULT: / TOTALS: / [PASS] / [FAIL]), not just print numbers a human can interpret.
-$wcAll = $totals.A + $totals.B + $totals.C + $totals.D + $totals.E + $totals.F + $totals.G + $totals.H + $totals.I
+$wcAll = $totals.A + $totals.B + $totals.C + $totals.D + $totals.E + $totals.F + $totals.G + $totals.H + $totals.I + $totals.J
 if ($wcAll -eq 0) {
-    Write-Host ("  [PASS] wiring closed on {0} provider(s) -- no break in any of the nine classes" -f $totals.Providers) -ForegroundColor Green
+    Write-Host ("  [PASS] wiring closed on {0} provider(s) -- no break in any of the ten classes" -f $totals.Providers) -ForegroundColor Green
 } else {
     Write-Host ("  [FAIL] {0} wiring break(s) across {1} provider(s)" -f $wcAll, $totals.Providers) -ForegroundColor Red
 }

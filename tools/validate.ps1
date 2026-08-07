@@ -470,6 +470,26 @@ if ($entitiesBundle) {
                             Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' to FormSelect (Sel) with attributeTypeId='STATE', or to hidden FormInput (InpH) if outbound-only" -ForegroundColor Cyan
                         }
                     }
+                    # SEX / RACE attributeTypeId on a visible FormInput -- the SAME defect the STATE
+                    # block above catches, for the other two attributeTypeId-driven dropdowns.
+                    #
+                    # WHY THIS WAS MISSING: the SexCode and raceCode checks further down validate the
+                    # PROPS (attributeTypeId=SEX present? codeTypeProvider=NIBRS present? no
+                    # codeTypeCategory?) and never the COMPONENT TYPE. Converting the control from
+                    # FormSelect to FormInput leaves every one of those props intact, so all of them
+                    # pass while the officer now free-types where a numeric RMS attribute ID is
+                    # required -- CommSys receives raw text and the RMS reverse-lookup breaks.
+                    # Found 2026-08-07 by fuzz_gate_efficacy on IL_LEADS_OFML: the mutation
+                    # `select-to-input @ ENTITY_Person[SexCode_Input]` SURVIVED the whole gate panel,
+                    # while the identical mutation on RegistrationState was caught -- by the STATE
+                    # block above, which does test the type. Same defect, one covered and two not.
+                    # attributeTypeId=VEHICLE_MAKE has its own hard gate in verify_build.
+                    if ($node.props.attributeTypeId -in @('SEX','RACE') -and $node.props.hidden -ne $true -and $node.hidden -ne $true) {
+                        if ($node.type.resolvedName -eq 'FormInput') {
+                            Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' visible FormInput with attributeTypeId='$($node.props.attributeTypeId)' -- MUST be FormSelect: attributeTypeId sends a numeric RMS attribute ID, so free text breaks both the CommSys code and the RMS reverse-lookup"
+                            Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' to FormSelect (Sel) keeping attributeTypeId='$($node.props.attributeTypeId)' + codeTypeProvider='NIBRS'" -ForegroundColor Cyan
+                        }
+                    }
                     # Visible Attention FormInput: only flag if a QIDM auto-fills it via handler.
                     # The hidden flag is node-level ($node.hidden), not in props -- a hidden
                     # Attention gate-feeder (the working pattern on ConnectCic) must NOT warn.

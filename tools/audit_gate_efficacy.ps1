@@ -254,6 +254,25 @@ $MUTS = @(
      Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'
            $c.query = 'HiHcjdcOfmlDriverLicenseQuery' } }
 
+  # ── attributeTypeId dropdown MUST be FormSelect (SEX / RACE) ───────────────────────────
+  # GENERIC (no OnlyProvider): every provider builds a SexCode control with attributeTypeId='SEX'.
+  # Catalogued 2026-08-07 with the validate.ps1 check it proves. The defect had NO gate: the SexCode
+  # and raceCode checks validated PROPS (attributeTypeId / codeTypeProvider / codeTypeCategory) and
+  # never the COMPONENT TYPE, so flipping FormSelect -> FormInput left all of them passing while the
+  # officer free-types where a numeric RMS attribute ID is required. Found by fuzz on IL_LEADS_OFML
+  # (`select-to-input @ ENTITY_Person[SexCode_Input]` SURVIVED the entire panel) -- and the identical
+  # mutation on RegistrationState was CAUGHT, because the STATE block did test the type. One of three
+  # attributeTypeId dropdowns covered, two not.
+  @{ Id='sexcode-as-input'
+     Desc='the Person SexCode control flipped from FormSelect to FormInput while keeping attributeTypeId=SEX + codeTypeProvider=NIBRS -- every props-based check still passes, but the officer now free-types where a numeric RMS attribute ID is required, breaking the CommSys code AND the RMS sex reverse-lookup'
+     Gate='validate.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j)
+           $n = $null
+           foreach ($ent in @('Person')) { foreach ($fid in @('SexCode','sexCode')) {
+               if (-not $n) { $n = Get-Node $j $ent $fid } } }
+           if (-not $n) { throw 'no SexCode control on the Person form' }
+           $n.type.resolvedName = 'FormInput' } }
+
   # ── IL_LEADS_OFML ──────────────────────────────────────────────────────────────────────
   # Added 2026-08-07 at v2.1. BEFORE this map, IL ran only the 6 generic/structural mutations
   # (banned-pattern, toplevel-version-field, entities-bundle-not-first, missing-querylabel,
@@ -303,7 +322,7 @@ $MUTS = @(
 
   @{ Id='il-inert-condition-field'; OnlyProvider='IL_LEADS_OFML'
      Desc='Z2.N''s condition repointed from OperatorLicenseNumber to a fieldId no control emits (NoSuchField), so the OLN>Name guardrail silently stops discriminating while still LOOKING present in the JSON. A condition naming a non-existent sourceField is inert, and an inert guardrail reads identical to a working one on review.'
-     Gate='audit_wiring_closure.ps1'; Args={ @('-Provider','IL_LEADS_OFML') }
+     Gate='audit_wiring_closure.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'Z2.N'
            $cm.requirements.conditions[0].field=@('NoSuchField') } }
 
@@ -332,18 +351,17 @@ $MUTS = @(
            $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'articleTypeCode' })
            $cm.requirements.any=@(@($cm.requirements.any)+'articleTypeCode') } }
 
-  # PROMOTED FUZZ SURVIVOR (fuzz seed 33 #4, triaged real 2026-08-07). Expected verdict is
-  # SURVIVED until a gate is fixed -- recorded deliberately, per "promote a TRIAGED-REAL survivor
-  # so it becomes a permanent regression test, THEN fix the gate". It is a real wire defect:
-  # dropping State from Z2.P's any[] leaves its "RegistrationState EXISTS" condition intact, so the
-  # officer's State ROUTES the out-of-state plate query but is never TRANSMITTED -- CommSys receives
-  # an OOS query with no destination state. audit_wiring_closure does not catch it because
-  # RegistrationState still reaches the wire via OTHER combos, making that check per-provider where
-  # this defect is per-combination. NJ carries a dedicated mutation for the same class
-  # (nj-guardrail-wire-leak); IL had none.
+  # PROMOTED FUZZ SURVIVOR (fuzz seed 33 #4, triaged real 2026-08-07) -- and the mutation that
+  # CAUSED audit_wiring_closure class J to exist. It survived every gate on the panel because no
+  # gate asked the per-COMBINATION question: audit_wiring_closure was per-provider (State still
+  # reaches the wire via sibling combos, so it looked wired) and audit_devdoc_optionals cannot see
+  # it either, because State is NOT a devdoc OPTIONAL on VehReg -- it is mandatory on devdoc #5 and
+  # absent from #1's brackets, so there is no optional subset to test. Aiming it at 2q was my error;
+  # the honest fix was a new class, not a wider 2q. Class J baseline: 100 EXISTS conditions examined
+  # portfolio-wide, 1 pre-existing hit (TN_TIES RQ05).
   @{ Id='il-guardrail-wire-leak'; OnlyProvider='IL_LEADS_OFML'
-     Desc='RegistrationState removed from Z2.P any[] while its "RegistrationState EXISTS" routing condition is left in place -- the field decides which query fires and then does not ride the wire. Per-combination defect that a per-provider reachability check cannot see.'
-     Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
+     Desc='RegistrationState removed from Z2.P any[] while its "RegistrationState EXISTS" routing condition is left in place -- the field decides which query fires and then does not ride the wire, so an out-of-state plate query goes out with no destination state. Per-COMBINATION defect: sibling combos still carry State, so every per-provider and form-level check reads it as wired.'
+     Gate='audit_wiring_closure.ps1'; Args={ @('-Path',$workJson) }
      Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'Z2.P'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationState' }) } }
 

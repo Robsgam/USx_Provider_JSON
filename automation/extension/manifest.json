@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "USx Tenant Testing -- Driver + Capture",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Drives the universal-search query form and captures dex-log request XML on the Mark43 USx tenant, feeding the post_test pipeline. In-browser; no cert needed.",
   "permissions": ["downloads"],
   "background": { "service_worker": "background.js" },
@@ -14,7 +14,8 @@
         "https://usx-tx-tlets.mark43.com/rms/*",
         "https://usx-ny-nyspin-ejustice.mark43.com/rms/*",
         "https://usx-hi-hcjdc-ofml.mark43.com/rms/*",
-        "https://usx-az-azdps.mark43.com/rms/*"
+        "https://usx-az-azdps.mark43.com/rms/*",
+        "https://usx-il-leads-ofml.mark43.com/rms/*"
       ],
       "js": ["nethook.js"],
       "world": "MAIN",
@@ -28,7 +29,8 @@
         "https://usx-tx-tlets.mark43.com/rms/*",
         "https://usx-ny-nyspin-ejustice.mark43.com/rms/*",
         "https://usx-hi-hcjdc-ofml.mark43.com/rms/*",
-        "https://usx-az-azdps.mark43.com/rms/*"
+        "https://usx-az-azdps.mark43.com/rms/*",
+        "https://usx-il-leads-ofml.mark43.com/rms/*"
       ],
       "js": ["bridge.js"],
       "run_at": "document_start"
@@ -41,7 +43,8 @@
         "https://usx-tx-tlets.mark43.com/rms/*",
         "https://usx-ny-nyspin-ejustice.mark43.com/rms/*",
         "https://usx-hi-hcjdc-ofml.mark43.com/rms/*",
-        "https://usx-az-azdps.mark43.com/rms/*"
+        "https://usx-az-azdps.mark43.com/rms/*",
+        "https://usx-il-leads-ofml.mark43.com/rms/*"
       ],
       "js": ["usx_lib.js", "capture.js", "driver.js", "ui.js"],
       "world": "MAIN",

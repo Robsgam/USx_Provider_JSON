@@ -32,35 +32,33 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IL_LEADS_OFML v2.1 DONE 08-07** (DEX-1284 pass + HI-style collapse, 11 cards -> 5; layout ONLY,
-structure identical to v2.0). IL enforce 0F/0W. Extract **PROVISIONAL -> CONFIRMED** (2e gates now);
-ledger names v2.1 not-imported. **No IL tenant exists, so IL CANNOT be tenant-tested** -- provisioning
-+ import is Rob's step. IL has NO Jira ticket (no `JIRA_REFERENCE.txt` entry, no `DEX_TICKET.md`).
+**IL_LEADS_OFML v2.1 READY TO TEST 08-07.** DEX-1284 pass + HI-style collapse (11 cards -> 5, layout
+ONLY). IL enforce 0F/0W IL-scoped; **gate efficacy 6/17 (40%) -> 18/18**; 2e CONFIRMED-gating;
+2q/2r/2t PASS; 41 plan tests, 0 unfireable. **TENANT EXISTS: `usx-il-leads-ofml.mark43.com`,
+ticket DEX-984** (Rob, 08-07). I had recorded "no tenant provisioned" + "no Jira ticket" -- BOTH
+WRONG, inferred from the ledger's/JIRA_REFERENCE's own silence rather than verified.
+**Extension manifest 0.4.0 adds the IL host** -- it matched only 7 tenants, so NOTHING would have
+injected on IL. **NEXT STEP IS ROB'S: import v2.1 into that tenant, then sweep.**
 
-**IL mutation map added: gate efficacy 6/17 (40%) -> 15/17 (88%).** The old "6/6 KILLED" was 6 generic
-STRUCTURAL mutations with ZERO routing ones, so by LAW 2 IL's routing gates were unproven. 11 IL rows
-added to `$MUTS`. Controls held: **TX 16/16, NJ 11/11, SURVIVED 0.** Also fixed a message that told
-NJ/AZ/HI/FL/IL "no provider-specific mutation map" while they ran 1-11 -- it consulted only the
-`$PROV_MUTS` hashtable, not `OnlyProvider` rows, understating the very coverage it reports.
+**NEXT AFTER IL: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, still owed the DEX-1283 Attention/Requestor
+`X` check; determine FIRST whether its field is `any[]`-only or `set[]`-mandatory (NY needed a
+different fix for exactly that). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
+Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06.
 
-**NEXT: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, still owed the DEX-1283 Attention/Requestor `X`
-check. Determine FIRST whether its field is `any[]`-only or `set[]`-mandatory -- NY needed a
-different fix for that exact reason. Then AZ_AZDPS v3.7 (59 owed; needs Rob review + import),
-then the remaining 12. Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06.
+**GATE WORK DONE 08-07 (all four gaps CLOSED; do NOT re-derive):** new `audit_wiring_closure`
+**class J ROUTING-ONLY** (an EXISTS condition gating a combo on a field in NEITHER its set[] nor
+any[] -- routes then never transmits; EXISTS only, since 244 of 344 conditions are NOT_EXISTS and
+including them would fabricate ~244 findings). Baseline 97 EXISTS examined, **1 real hit: TN_TIES
+RQ05** -> flagged `[FLAG:wiring-closure-class-J-routing-only]`, NOT fixed (one provider at a time).
+`validate.ps1` now checks COMPONENT TYPE for `attributeTypeId` SEX/RACE (the props were checked, the
+type never was; State already was). 2q now honours EXISTENCE-class registry rows **in the
+NO-COMBO-FIRES branch ONLY** -- the naive version would have silenced LA_LEMS's real parked
+dropped-optional, measured before shipping.
 
-**FOUR OPEN GATE GAPS -- all mutation-found, none blocking, do NOT re-derive:**
-1. `il-inert-condition-field` SURVIVED: a condition naming a fieldId **no control emits** is inert;
-   `audit_wiring_closure` misses it though "inert condition" is its own documented class D.
-2. `il-guardrail-wire-leak` SURVIVED: dropping State from Z2.P `any[]` with its `EXISTS` condition
-   intact -- the field ROUTES but never reaches the wire. Closure is per-provider, defect is
-   per-COMBINATION.
-3. `select-to-input`: nothing stops a dropdown-required field (SexCode/raceCode/State) built as
-   FormInput; `verify_build` hard-gates only VehicleMakeCode.
-4. **2p/2q rule-vocabulary split** -- one adjudicated devdoc combo cannot be recorded so BOTH honour
-   it: 2p hardcodes `devdoc-combo-unbuilt` (`audit_devdoc_combinations` L323), 2q hardcodes
-   `devdoc-optional-unreachable` (`audit_devdoc_optionals` L163), neither uses shared
-   `_divergence_rules.ps1`. IL's Article-#2 row satisfies 2p, is INERT for 2q -> 2q prints
-   `NO COMBO FIRES` forever. Renaming fixes 2q and BREAKS 2p: GATE fix, never a registry edit.
+**PRE-EXISTING, NOT MINE, worth a look:** NY gate efficacy is **13/14** -- `ny-drop-oos-guardrail`
+SURVIVES `verify_build` (which I never touched; docs claiming NY 13/13 are stale since 07-30).
+`audit_requirement_fidelity -All` MISATTRIBUTES registry rows across providers (LA's rows printed
+under IL's header; IL alone is clean 9br 0/0) -- a reporting bug, it misled me once.
 
 ## ON HOLD / DO NOT RE-RAISE
 
