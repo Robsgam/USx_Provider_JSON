@@ -32,33 +32,32 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IL_LEADS_OFML v2.1 READY TO TEST 08-07.** DEX-1284 pass + HI-style collapse (11 cards -> 5, layout
-ONLY). IL enforce 0F/0W IL-scoped; **gate efficacy 6/17 (40%) -> 18/18**; 2e CONFIRMED-gating;
-2q/2r/2t PASS; 41 plan tests, 0 unfireable. **TENANT EXISTS: `usx-il-leads-ofml.mark43.com`,
-ticket DEX-984** (Rob, 08-07). I had recorded "no tenant provisioned" + "no Jira ticket" -- BOTH
-WRONG, inferred from the ledger's/JIRA_REFERENCE's own silence rather than verified.
-**Extension manifest 0.4.0 adds the IL host** -- it matched only 7 tenants, so NOTHING would have
-injected on IL. **NEXT STEP IS ROB'S: import v2.1 into that tenant, then sweep.**
+**IL v2.2 -- ROB RE-IMPORTS, then sweep.** Tenant `usx-il-leads-ofml.mark43.com`, **DEX-984**.
+**v2.1 IS INSTALLED** (proven: picklist capture returned v2.1-only labels `NCIC Image`/`Stolen
+Check`/`Make`; 0 logs = never TESTED, not never installed), so v2.2 needs a re-import. v2.1 =
+DEX-1284 collapse (11 cards -> 5); v2.2 = cosmetic pass (VIN spelled out, 3 identifier-priority
+hints removed, Person name First-then-Last). Both label/order ONLY -- 3 guardrails + composite Name
+`sourceField=[NameLast,NameFirst]` LAST-first wire format untouched. enforce 0F/0W IL-scoped,
+**gate efficacy 18/18**, 2e gating, 41 plan tests 0 unfireable. Extension **manifest 0.4.0** adds the
+IL host (matched only 7 before -- nothing would have injected). I wrongly recorded "no tenant" + "no
+Jira ticket", inferred from those files' silence.
+**PICKLISTS: 4 of 5 entities clean** (Person 5/5, Firearm 4/4, Article 1/1, Boat 3/3);
+**Vehicle owes a re-scope** -- 3 fields `not found in DOM` because the FIREARM form was rendered
+while Vehicle was selected. **Read `renderedSelectsNotInScope` every time** -- it names the
+wrong-form fields. Re-scoping one entity replaces only that entity, so a bad recapture destroys good.
 
-**NEXT AFTER IL: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, still owed the DEX-1283 Attention/Requestor
-`X` check; determine FIRST whether its field is `any[]`-only or `set[]`-mandatory (NY needed a
-different fix for exactly that). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
+**NEXT AFTER IL: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, owed the DEX-1283 Attention/Requestor `X`
+check; determine FIRST whether its field is `any[]`-only or `set[]`-mandatory (NY needed a different
+fix for exactly that). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
 Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06.
 
-**GATE WORK DONE 08-07 (all four gaps CLOSED; do NOT re-derive):** new `audit_wiring_closure`
-**class J ROUTING-ONLY** (an EXISTS condition gating a combo on a field in NEITHER its set[] nor
-any[] -- routes then never transmits; EXISTS only, since 244 of 344 conditions are NOT_EXISTS and
-including them would fabricate ~244 findings). Baseline 97 EXISTS examined, **1 real hit: TN_TIES
-RQ05** -> flagged `[FLAG:wiring-closure-class-J-routing-only]`, NOT fixed (one provider at a time).
-`validate.ps1` now checks COMPONENT TYPE for `attributeTypeId` SEX/RACE (the props were checked, the
-type never was; State already was). 2q now honours EXISTENCE-class registry rows **in the
-NO-COMBO-FIRES branch ONLY** -- the naive version would have silenced LA_LEMS's real parked
-dropped-optional, measured before shipping.
-
-**PRE-EXISTING, NOT MINE, worth a look:** NY gate efficacy is **13/14** -- `ny-drop-oos-guardrail`
-SURVIVES `verify_build` (which I never touched; docs claiming NY 13/13 are stale since 07-30).
-`audit_requirement_fidelity -All` MISATTRIBUTES registry rows across providers (LA's rows printed
-under IL's header; IL alone is clean 9br 0/0) -- a reporting bug, it misled me once.
+**GATE WORK 08-07 (4 gaps CLOSED):** `audit_wiring_closure` **class J ROUTING-ONLY** (EXISTS
+condition on a field in NEITHER set[] nor any[]; EXISTS-only, else ~244 NOT_EXISTS false hits) --
+97 examined, **1 hit TN_TIES RQ05**, flagged not fixed. `validate.ps1` checks COMPONENT TYPE for
+`attributeTypeId` SEX/RACE. 2q honours EXISTENCE rows in the NO-COMBO-FIRES branch ONLY -- the naive
+fix would have silenced LA_LEMS's parked finding. **PRE-EXISTING not mine:** NY efficacy 13/14
+(`ny-drop-oos-guardrail` vs untouched `verify_build`; NY 13/13 record stale since 07-30);
+`audit_requirement_fidelity -All` misattributes registry rows across providers.
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -80,10 +79,10 @@ under IL's header; IL alone is clean 9br 0/0) -- a reporting bug, it misled me o
 **NJ + TX PARTIAL is a coverage GAIN, not a regression.** OWED: NJ 4 + TX 3 OOS-toggle tests (fill
 **AK**), never generated before. Capture them -> ALL-PASS; no bump, no re-sweep.
 
-Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 0/9 | audit_metadata 20/20 | portability 260 cells
-0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic |
-PS-5.1 parse 108/0. Gate stack changed heavily 08-02/04/07 -- do NOT re-derive; decision-trail hook +
-`git log -n 40` hold it.
+Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 1/10 (TN RQ05, flagged) | audit_metadata 20/20 |
+portability 280 cells 0 unportable | fidelity fixture 116br 0/0 (414 total) | registry currency 0
+stale | PS-5.1 parse 108/0. Gate stack changed heavily 08-02/04/07 -- decision-trail hook +
+`git log -n 40` hold the reasoning; do NOT re-derive.
 
 ## OPEN DECISIONS -- Rob's call
 

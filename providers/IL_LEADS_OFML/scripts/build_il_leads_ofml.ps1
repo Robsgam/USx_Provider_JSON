@@ -15,7 +15,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_il_leads_ofml_mc.ps1 [-Version X.X]
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.1'
+$Version     = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\IL_LEADS_OFML_v${Version}.json"
@@ -318,6 +318,13 @@ $ilBundle = [PSCustomObject]@{
 # LABEL-OVERRIDE: LicensePlateTypeCode -- bare per DEX-1284 lean pass (any[] optional, prefilled PC)
 # LABEL-OVERRIDE: LicensePlateYear -- bare per DEX-1284 lean pass (any[] optional, prefilled)
 # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
+# LABEL-OVERRIDE: VehicleIdentificationNumber -- bare "Vehicle Identification Number", Rob 2026-08-07
+#   v2.2 cosmetic pass. The "(Plate wins if both entered)" identifier-priority hint is REMOVED at
+#   Rob's direction; the Plate>VIN guardrail itself is untouched (Z2.V still carries
+#   LicensePlateNumber NOT_EXISTS), so this is label-only and changes no routing.
+#   Spelled out rather than "VIN": the portfolio is SPLIT 10 "VIN" / 9 "Vehicle Identification
+#   Number" (measured 2026-08-07, NOT a settled convention) -- recorded so the next reader knows
+#   this was a choice on a split field, not conformance to a rule.
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
@@ -335,7 +342,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_VEH_2' }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN (Plate wins if both entered)' '20' 'ROW_VEH_3' }
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_3' }
                 @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
                 @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Year' '4' 'ROW_VEH_3' }
             )}
@@ -361,6 +368,16 @@ $vehicleForm = [PSCustomObject]@{
 # LABEL-OVERRIDE: raceCode -- bare per DEX-1284 lean pass (RMS-only refinement)
 # LABEL-OVERRIDE: SexCode -- bare per DEX-1284 lean pass (any[] optional)
 # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
+# LABEL-OVERRIDE: NameLast -- bare "Last Name", Rob 2026-08-07 (v2.2 cosmetic pass). The
+#   "(OLN wins if both entered)" identifier-priority hint is REMOVED at Rob's direction. The
+#   guardrail itself is UNTOUCHED: Z2.N still carries OperatorLicenseNumber NOT_EXISTS, so OLN
+#   still beats Name on a co-entry -- only the on-screen hint is gone.
+# NAME FIELD ORDER: First then Last on the form (Rob 2026-08-07; matches NY v4.8, which reordered
+#   First-before-Last on all its Person cards). THE FORM ORDER IS NOT THE WIRE ORDER -- the
+#   composite 'Name' attribute keeps sourceField = @('NameLast','NameFirst') with
+#   FormatStringRuleHandler ', ', which is what produces the authoritative ConnectCIC
+#   "LAST, FIRST" wire format (FIELD_REFERENCE Section 7). That array is deliberately NOT touched
+#   here; swapping it would silently invert every name search on the wire.
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
@@ -373,8 +390,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator'    'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (OLN wins if both entered)'  '30' 'ROW_PER_2' }
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_2' }
             )}
             @{ id = 'ROW_PER_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth' 'ROW_PER_3' }
@@ -468,6 +485,10 @@ $articleForm = [PSCustomObject]@{
 #   per query). Same standing ruling as HI_HCJDC_OFML (which excludes State2-5 on
 #   DL/VehicleReg for this reason). Registered, not built. See ACCEPTED_DIVERGENCES.
 # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
+# LABEL-OVERRIDE: RegistrationNumber -- bare "Registration Number", Rob 2026-08-07 (v2.2 cosmetic
+#   pass). The "(Hull ID wins if both entered)" identifier-priority hint is REMOVED at Rob's
+#   direction. The guardrail is UNTOUCHED: BQ.R still carries BoatHullIdNumber NOT_EXISTS, so hull
+#   still beats registration number on a co-entry -- label-only, no routing change.
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
@@ -476,7 +497,7 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number (Hull ID wins if both entered)' '20' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for IL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4'); fields = @(

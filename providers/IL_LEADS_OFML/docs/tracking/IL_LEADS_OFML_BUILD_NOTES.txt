@@ -3,6 +3,45 @@ IL_LEADS_OFML -- Build Notes
 Provider: IL_LEADS_OFML
 State: Illinois
 Network: LEADS (Law Enforcement Agencies Data System)
+v2.2  2026-08-07  Cosmetic pass -- Rob's direct review of the rendered v2.1 form (label/order ONLY)
+  CHANGED: Four items, all officer-facing, ZERO wire/routing/QIDM/combo change.
+    (1) Vehicle VIN: 'VIN (Plate wins if both entered)' -> 'Vehicle Identification Number'.
+        Helper removed AND the label spelled out. NOTE the portfolio is SPLIT on this label --
+        measured 2026-08-07: 10 providers say 'VIN' (AZ, CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO,
+        CA_VENTURA_COUNTY, CA_eSUN, FL, NY, OR, TX, TX_CCH) and 9 say 'Vehicle Identification
+        Number' (CA_CLETS, CA_CONTRA_COSTA, HI, LA, MD, NJ, NM, OH, TN). It was NEVER made
+        universal, so this is a choice on a split field, not conformance to a convention. Rob
+        asked whether it had been universalized; it had not, and the split is recorded here and
+        in the build script so it is not re-derived.
+    (2) Person: name fields reordered FIRST-then-LAST on the form (was Last then First).
+        Matches NY v4.8, which made the same reorder on all three of its Person cards.
+    (3) Person: 'Last Name (OLN wins if both entered)' -> bare 'Last Name'.
+    (4) Boat: 'Registration Number (Hull ID wins if both entered)' -> bare 'Registration Number'.
+  REASON: Rob's own rendered-form review of v2.1 in the USx tenant -- the manual gate no tool
+    replaces. Every removed string was an identifier-priority HINT; not one guardrail was touched.
+  THE DISTINCTION THAT MAKES THIS SAFE, stated because conflating the two would be a real defect:
+    * ROUTING is unchanged. Z2.V still carries 'LicensePlateNumber NOT_EXISTS' (plate beats VIN),
+      Z2.N still carries 'OperatorLicenseNumber NOT_EXISTS' (OLN beats Name), BQ.R still carries
+      'BoatHullIdNumber NOT_EXISTS' (hull beats reg number). Only the on-screen hints are gone.
+    * The Person NAME WIRE FORMAT is unchanged. The composite 'Name' attribute keeps
+      sourceField = @('NameLast','NameFirst') + FormatStringRuleHandler ', ', which is what emits
+      the authoritative ConnectCIC "LAST, FIRST" (FIELD_REFERENCE Section 7). Form control order
+      and QIDM sourceField order are INDEPENDENT; only the former moved. Swapping the sourceField
+      array would silently invert every IL name search, so it was deliberately left alone.
+  WHY A VERSION BUMP FOR A LABEL PASS: v2.1 was ALREADY IMPORTED into
+    usx-il-leads-ofml.mark43.com -- proven, not assumed, by the tenant picklist capture, whose
+    rendered labels came back 'NCIC Image', 'Stolen Check', 'Make' and
+    'State (leave blank for IL)' (all v2.1-only strings). An imported version is frozen: editing
+    v2.1 in place would leave one version number describing two different forms, and the wire XML
+    carries no version, so every log captured against it becomes unattributable (the AZ v3.5
+    lesson). Re-import is required before the sweep.
+  TENANT PICKLISTS: captured against v2.1 and still valid -- this pass changes no dropdown, no
+    codeTypeCategory and no codeTypeSource. Vehicle still owes a re-scope from the v2.1 capture
+    (3 of 5 fields came back 'field not found in DOM' because the Firearm form was rendered while
+    Vehicle was selected); that is unaffected by this bump.
+  SCRIPT : scripts/build_il_leads_ofml.ps1
+  OUTPUT : IL_LEADS_OFML_v2.2.json
+
 v2.1  2026-08-07  DEX-1284 convention pass + card collapse (layout/label only, NO wire change)
   CHANGED: Brought IL from the pre-DEX-1284 methodology in line with HI/FL/NY/TX/CA/AZ.
     (1) CARD COLLAPSE -- the separate shared "OPTIONS" card is the RETIRED pre-DEX-1284 layout.

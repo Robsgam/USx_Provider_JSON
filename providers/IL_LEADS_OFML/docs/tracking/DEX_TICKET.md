@@ -33,18 +33,27 @@ Post the changelog here on every version bump (dump first, then per-version diff
 
 ## Owed at the next lift of the Jira hold
 
+- **v2.2** (2026-08-07) — cosmetic pass on Rob's rendered-form review of v2.1: Vehicle VIN label
+  spelled out to `Vehicle Identification Number` (helper removed), Person name fields reordered
+  First-then-Last, and the identifier-priority hints stripped from Person `Last Name` and Boat
+  `Registration Number`. Label/order ONLY — every guardrail and the LAST-first name wire format are
+  unchanged. Gate efficacy 18/18.
 - **v2.1** (2026-08-07) — DEX-1284 convention pass + card collapse: Vehicle/Person/Boat 3 cards → 1
   (11 cards → 5), `OLN` / `NCIC Image` / `Stolen Check` canonical labels, ALL-CAPS path-carrying card
   titles, uniform 4/4/4 grid. Layout/label ONLY — 9 combos, fidelity 9 branches 0 under / 0 over,
   0 prefill-dead, structurally identical to v2.0. Supported-query extract promoted
   PROVISIONAL → CONFIRMED so `audit_supported_queries` CHECK 0 now gates (10 PASS / 0 FAIL).
 - Earlier versions (v1.0 → v2.0) have never been posted either; a first dump should cover the whole
-  history, not just v2.1. Read `docs/tracking/CHANGELOG_IL_LEADS_OFML.md` for the rendered source.
+  history, not just the two above. Read `docs/tracking/CHANGELOG_IL_LEADS_OFML.md` for the rendered
+  source.
 
 ## Tenant
 
-`https://usx-il-leads-ofml.mark43.com/rms/#/universal-search` — EXISTS. v2.1 is **not imported**;
-0 logs at any version, never tenant-tested. The capture extension covers this host as of
-`automation/extension/manifest.json` **0.4.0** (before that it matched only 7 tenants, so neither the
-driver nor the capture hook would have injected on IL). Import status is tracked in
+`https://usx-il-leads-ofml.mark43.com/rms/#/universal-search` — EXISTS, and **v2.1 IS INSTALLED**
+(evidenced by the 2026-08-07 picklist capture returning the v2.1-only rendered labels `NCIC Image`,
+`Stolen Check`, `Make`). 0 logs means never tenant-TESTED, not never installed. The repo is now
+**v2.2**, so a **re-import is owed before any sweep** — an imported version is frozen, which is why
+the cosmetic pass took a version bump rather than editing v2.1 in place. The capture extension covers
+this host as of `automation/extension/manifest.json` **0.4.0** (before that it matched only 7 tenants,
+so neither the driver nor the capture hook would have injected on IL). Import status is tracked in
 `providers/IMPORT_LEDGER.md`, not here.
