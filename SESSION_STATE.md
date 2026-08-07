@@ -18,10 +18,11 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.18 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
+| IL_LEADS_OFML | v2.2 | ALL-PASS (41 logs) |
 | NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
 | NY_NYSPIN_EJUSTICE | v4.23 | ALL-PASS (69 logs) |
 | TX_TLETS | v4.19 | ALL-PASS (92 logs) |
-| _13 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, IL_LEADS_OFML, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
+| _12 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an
@@ -32,24 +33,20 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IL v2.2 -- ROB RE-IMPORTS, then sweep.** Tenant `usx-il-leads-ofml.mark43.com`, **DEX-984**.
-**v2.1 IS INSTALLED** (proven: picklist capture returned v2.1-only labels `NCIC Image`/`Stolen
-Check`/`Make`; 0 logs = never TESTED, not never installed), so v2.2 needs a re-import. v2.1 =
-DEX-1284 collapse (11 cards -> 5); v2.2 = cosmetic pass (VIN spelled out, 3 identifier-priority
-hints removed, Person name First-then-Last). Both label/order ONLY -- 3 guardrails + composite Name
-`sourceField=[NameLast,NameFirst]` LAST-first wire format untouched. enforce 0F/0W IL-scoped,
-**gate efficacy 18/18**, 2e gating, 41 plan tests 0 unfireable. Extension **manifest 0.4.0** adds the
-IL host (matched only 7 before -- nothing would have injected). I wrongly recorded "no tenant" + "no
-Jira ticket", inferred from those files' silence.
-**PICKLISTS: 4 of 5 entities clean** (Person 5/5, Firearm 4/4, Article 1/1, Boat 3/3);
-**Vehicle owes a re-scope** -- 3 fields `not found in DOM` because the FIREARM form was rendered
-while Vehicle was selected. **Read `renderedSelectsNotInScope` every time** -- it names the
-wrong-form fields. Re-scoping one entity replaces only that entity, so a bad recapture destroys good.
-
-**NEXT AFTER IL: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, owed the DEX-1283 Attention/Requestor `X`
-check; determine FIRST whether its field is `any[]`-only or `set[]`-mandatory (NY needed a different
-fix for exactly that). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
-Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06.
+**IL_LEADS_OFML v2.2 DONE 08-07 -- ALL-PASS 41/41, tenant-complete.** Tenant
+`usx-il-leads-ofml.mark43.com`, **DEX-984**, v2.2 imported + swept same day (Veh 14 / Per 10 / Boat 9
+/ Gun 5 / Art 3). Four log gates green: 6c 41/41, 6d 41/41, 2i 41/41, plan completeness 5/5.
+enforce 0F/0W IL-scoped, gate efficacy 18/18, 2e CONFIRMED-gating, picklists 18/18.
+**All 3 identifier-priority guardrails LIVE-PROVEN** (v2.2 removed their on-screen hints, so this
+was the thing to check): plate rides + VIN absent, OLN rides + `<Name` count 0, hull rides + reg
+count 0. **Name still serialises LAST-first** (`<Name>DOE, JOHN</Name>`) though the form now shows
+First-then-Last -- form order and QIDM `sourceField` order are independent. The 3 truncated-dropdown
+WARNs all resolved by live fill (`CNST_FORD`, `BBICYCL`, `11 mm Mauser`).
+**NEXT: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, owed the DEX-1283 Attention/Requestor `X` check;
+determine FIRST whether its field is `any[]`-only or `set[]`-mandatory (NY needed a different fix for
+exactly that). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
+Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06. **IL owes its FIRST post** (DEX-984
+has nothing; v1.0->v2.2 all unposted) once the hold lifts.
 
 **GATE WORK 08-07 (4 gaps CLOSED):** `audit_wiring_closure` **class J ROUTING-ONLY** (EXISTS
 condition on a field in NEITHER set[] nor any[]; EXISTS-only, else ~244 NOT_EXISTS false hits) --
