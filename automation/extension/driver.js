@@ -148,7 +148,7 @@
     const dField = opts.fieldDelay || 450;   // pause after each field
     const dSettle = opts.settle || 900;      // pause after all fields, before submit (let autoSelect enable)
     const dBetween = opts.between || 1700;    // pause after submit/clear, before next combo
-    const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entityFilter || t.entity === entityFilter));
+    const tests = plan.tests.filter((t) => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail' || t.kind === 'value-strip') && (!entityFilter || t.entity === entityFilter));
     if (!tests.length) { console.warn('[USx-DRV] no combo tests for', entityFilter); return; }
     const manifest = []; const results = [];
     for (const t of tests) {
@@ -162,7 +162,7 @@
       // Store the NORMALIZED fills array (not t.fills) -- PowerShell's ConvertTo-Json collapses
       // a single-element array to a bare object, and idFills() downstream (capture.js) expects
       // a real array; storing the raw plan value here crashed __usxBulkFetch mid-batch.
-      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: new Date().toISOString() });
+      manifest.push({ provider: plan.provider, entity: t.entity, query: t.query, comboKeyRef: t.comboKeyRef, expectedKeyRef: t.expectedKeyRef, tier: t.tier, kind: t.kind, anyField: t.anyField || null, strippedField: t.strippedField || null, strippedValue: t.strippedValue || null, fills: fills, underFilled: !filled, n: t.n, submittedAt: new Date().toISOString() });
       // MUST await -- clickSendClear is async (it polls up to 6s for Send to enable). Calling it
       // bare returns a Promise, so `sent.ok`/`sent.err` are both undefined: every test logs
       // "NOT submitted (undefined)" even when the click lands, and the run does not wait for the
@@ -441,6 +441,6 @@
   };
 
   if (location.hash.includes('universal-search')) {
-    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
+    console.log('%c[USx-DRV]', 'color:#06c;font-weight:bold', 'driver ready. BUILD 2026-08-06a (value-strip kind added to __usxRunPlan filter). __usxRunOne({...}) = one combo; __usxRunPlan(plan,"Vehicle") = whole entity; __usxScopePicklists(scope,"Vehicle") = dump dropdown options. After a submit, run __usxRmsRecon() then __usxRmsRowRecon() to help find the RMS result/error row structure.');
   }
 })();

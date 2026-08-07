@@ -393,7 +393,9 @@
     return {
       provider: m.provider || L.providerFromHost(), entity: m.entity, query: m.query || rec.messageType,
       combo: m.comboKeyRef, tier: m.tier, expectedKeyRef: m.expectedKeyRef,
-      kind: m.kind || null, anyField: m.anyField || null, underFilled: m.underFilled || false,
+      kind: m.kind || null, anyField: m.anyField || null,
+      strippedField: m.strippedField || null, strippedValue: m.strippedValue || null,
+      underFilled: m.underFilled || false,
       messageType: rec.messageType, transactionId: rec.transactionId, requestXml: rec.requestXml,
       // Prefer the raw dex-log field-map JSON (rec.formState, e.g. from __usxBulkFetch's
       // parsedRawQuery) when present; fall back to deriving from rec.fields for capture paths
