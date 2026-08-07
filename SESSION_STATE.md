@@ -1,12 +1,8 @@
 # SESSION STATE — where we are RIGHT NOW
 
-> **The pick-up point** — injected into every new session by the SessionStart hook, committed so it
-> cannot drift from the code. **CURRENT STATE ONLY** (history lives in git + `CHANGELOG_<P>.md`);
-> **REPLACE, never append**; keep under ~80 lines or it stops being read; update in the SAME commit as
-> the work; derive every number from `portfolio_status.ps1` / `enforce.ps1` rather than remembering it.
-
-
-
+> **Pick-up point**, hook-injected + committed. CURRENT STATE ONLY (history = git + `CHANGELOG_<P>.md`).
+> **REPLACE, never append**; hard gate at 120 lines; update in the SAME commit as the work; derive
+> every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
 **Last updated:** 2026-08-07 (generated) | **Branch:** `main`
@@ -36,27 +32,35 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IL_LEADS_OFML v2.1 DONE 08-07.** DEX-1284 pass + HI-style collapse (Veh/Per/Boat 3 cards -> 1;
-11 -> 5), OLN/`NCIC Image`/`Stolen Check` labels, ALL-CAPS path titles, 4/4/4 grid. Layout ONLY --
-9 combos, 0 under/over, 0 prefill-dead, 6/6 killed, unchanged from v2.0. IL enforce 0F/0W (40 PASS).
-Also closed: extract **PROVISIONAL -> CONFIRMED** (CHECK 0 gates; devdoc Basic = the 5 built) +
-ledger names v2.1 not-imported. No IL tenant exists, so it cannot be tenant-tested. IL has NO Jira
-ticket (no `JIRA_REFERENCE.txt` entry, no `DEX_TICKET.md`) -- do not invent one.
+**IL_LEADS_OFML v2.1 DONE 08-07** (DEX-1284 pass + HI-style collapse, 11 cards -> 5; layout ONLY,
+structure identical to v2.0). IL enforce 0F/0W. Extract **PROVISIONAL -> CONFIRMED** (2e gates now);
+ledger names v2.1 not-imported. **No IL tenant exists, so IL CANNOT be tenant-tested** -- provisioning
++ import is Rob's step. IL has NO Jira ticket (no `JIRA_REFERENCE.txt` entry, no `DEX_TICKET.md`).
+
+**IL mutation map added: gate efficacy 6/17 (40%) -> 15/17 (88%).** The old "6/6 KILLED" was 6 generic
+STRUCTURAL mutations with ZERO routing ones, so by LAW 2 IL's routing gates were unproven. 11 IL rows
+added to `$MUTS`. Controls held: **TX 16/16, NJ 11/11, SURVIVED 0.** Also fixed a message that told
+NJ/AZ/HI/FL/IL "no provider-specific mutation map" while they ran 1-11 -- it consulted only the
+`$PROV_MUTS` hashtable, not `OnlyProvider` rows, understating the very coverage it reports.
 
 **NEXT: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, still owed the DEX-1283 Attention/Requestor `X`
 check. Determine FIRST whether its field is `any[]`-only or `set[]`-mandatory -- NY needed a
 different fix for that exact reason. Then AZ_AZDPS v3.7 (59 owed; needs Rob review + import),
 then the remaining 12. Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06.
 
-**TOOLING BUG, 08-07, NOT fixed (needs `usx-tooling` + a LAW 2 mutation):** one adjudicated devdoc
-combination cannot be recorded so that BOTH sibling gates honour it. 2p hardcodes rule
-`devdoc-combo-unbuilt` (`audit_devdoc_combinations` L323); 2q hardcodes `devdoc-optional-unreachable`
-(`audit_devdoc_optionals` L163); **neither uses the shared `_divergence_rules.ps1` vocabulary.** So
-IL's Article-#2 row satisfies 2p and is INERT for 2q -> 2q prints `[FAIL] ArticleSingleQuery #2 ->
-NO COMBO FIRES` permanently. Renaming the rule fixes 2q and BREAKS 2p: it is a GATE fix, never a
-registry edit. 2q is advisory, so nothing is blocked. Also open: `select-to-input` fuzz survivor --
-no gate stops a dropdown-required field (SexCode/raceCode/State) being built as FormInput;
-`verify_build` hard-gates only VehicleMakeCode.
+**FOUR OPEN GATE GAPS -- all mutation-found, none blocking, do NOT re-derive:**
+1. `il-inert-condition-field` SURVIVED: a condition naming a fieldId **no control emits** is inert;
+   `audit_wiring_closure` misses it though "inert condition" is its own documented class D.
+2. `il-guardrail-wire-leak` SURVIVED: dropping State from Z2.P `any[]` with its `EXISTS` condition
+   intact -- the field ROUTES but never reaches the wire. Closure is per-provider, defect is
+   per-COMBINATION.
+3. `select-to-input`: nothing stops a dropdown-required field (SexCode/raceCode/State) built as
+   FormInput; `verify_build` hard-gates only VehicleMakeCode.
+4. **2p/2q rule-vocabulary split** -- one adjudicated devdoc combo cannot be recorded so BOTH honour
+   it: 2p hardcodes `devdoc-combo-unbuilt` (`audit_devdoc_combinations` L323), 2q hardcodes
+   `devdoc-optional-unreachable` (`audit_devdoc_optionals` L163), neither uses shared
+   `_divergence_rules.ps1`. IL's Article-#2 row satisfies 2p, is INERT for 2q -> 2q prints
+   `NO COMBO FIRES` forever. Renaming fixes 2q and BREAKS 2p: GATE fix, never a registry edit.
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -64,11 +68,9 @@ no gate stops a dropdown-required field (SexCode/raceCode/State) being built as 
   devdoc combos and zero-comparison is a FAIL. The gate got stricter; CC did not get worse.
 - **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect
   `[WARN] Cross-provider: 207P/0F/1W` on EVERY provider's enforce -- it is LA's, not the one tested.**
-- **Jira: DRAFT AND WAIT, every provider, every time.** Rob approves each post individually;
-  establishing it once (TX) did not authorize the rest. **Tenant info stays OFF the tickets** --
-  attachment/catalog/Foundation belong in `IMPORT_LEDGER.md` B and C.
-- **GUI ONLY -- Rob never runs commands.** Translate console names to buttons (driver prints
-  `__usxCaptureBatch()`; say "⚡ Fetch results"). Corrected 3x. Memory: `feedback_gui_only_no_commands`.
+- **Jira: DRAFT AND WAIT, every provider, every time** (TX once != the rest authorized). **Tenant info
+  stays OFF tickets** -- attachment/catalog/Foundation go in `IMPORT_LEDGER.md` B and C.
+- **GUI ONLY -- Rob never runs commands.** Translate console names to buttons. Corrected 3x.
 - **Form review is Rob's MANUAL gate.** 2k `[INFO] not reviewed` is steady state. Never prompt.
 - TN_TIES prose divergence -- later. NCIC-number-keyed combos CLOSED 08-03 (OH residue only).
 
@@ -81,15 +83,14 @@ no gate stops a dropdown-required field (SexCode/raceCode/State) being built as 
 **AK**), never generated before. Capture them -> ALL-PASS; no bump, no re-sweep.
 
 Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 0/9 | audit_metadata 20/20 | portability 260 cells
-0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic.
-Gate stack changed heavily 08-02/04 -- do NOT re-derive; decision-trail hook + `git log -n 40` hold it.
-`value-strip` plan-test kind added 08-07 (only NY uses `IgnoreUserValueRuleHandler`; 19 unchanged).
+0 unportable | fidelity fixture 116 branches 0/0 | registry currency 0 stale | BUILD_NOTES 0 generic |
+PS-5.1 parse 108/0. Gate stack changed heavily 08-02/04/07 -- do NOT re-derive; decision-trail hook +
+`git log -n 40` hold it.
 
 ## OPEN DECISIONS -- Rob's call
 
 **LA_LEMS DP/DQ** -- PARKED. (AZ DL scope inversion CLOSED v3.5; the two AZ fuzz survivors CLOSED
 08-04 as HARNESS artifacts -- do NOT widen those gates.)
-
 **Residual, recorded, NOT owed:** `VEHICLE_BODY_STYLE|NJ_NIBRS` across all 20 QRDMs vs CLAUDE.md's
 "CA=VEHICLE" -- HYPOTHESIS, unsettleable from the repo | fidelity advisory 11 UNDER / 40 OVER (none on
 the fixture; use `usx-adjudicate`) | CCH spec-plan name divergences | `audit_devdoc_optionals` /
@@ -100,21 +101,20 @@ providers vs FIELD_REFERENCE "DO NOT use" (AP #3) -- stale KB line, CA_CLETS is 
 
 Cases live in the skills: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c, `usx-test-iterate`.
 
-- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED.** Repeated 08-06/07 and again 08-07 (invented
-  a DEX number for IL; read grep COUNTS as "HI builds State2-5" when the 4 hits were EXCLUSION
-  comments). One shape: concluding while the decisive check is within reach. Not knowledge -- haste.
-- **CHECK IF IT IS ALREADY ADJUDICATED FIRST.** 08-07: re-derived BOTH IL findings from scratch;
-  both were already in `ACCEPTED_DIVERGENCES` from 08-02 with the same reasoning. Read the registry
-  and `git log` before investigating.
+- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED.** 08-07: invented a DEX number for IL; read
+  grep COUNTS as "HI builds State2-5" when the 4 hits were EXCLUSION comments. Haste, not knowledge.
+- **CHECK IF IT IS ALREADY ADJUDICATED FIRST.** Re-derived both IL findings from scratch; both were
+  already in `ACCEPTED_DIVERGENCES` since 08-02. Read the registry + `git log` before investigating.
+- **AIM A MUTATION AT THE GATE THAT OWNS THE CLASS.** `il-drop-identifier-guardrail` "SURVIVED"
+  reachability because it is an ORDERING defect -> repointed to `audit_devdoc_order`, KILLED.
 - **NEVER cite another provider as authority.** Only CC->CA_CLETS and `<BASE>_<VARIANT>`->`<BASE>`.
-  CA_CLETS and CA_VENTURA_COUNTY share an `IR.QVC{Name}` requiring OPPOSITE things.
-- **A RECORD IS A CLAIM -- read the artifact.** `audit_lifecycle` (2r) reads `DEX_TICKET.md`, NOT the
-  ticket; enforce reads CACHED reports (2e said PROVISIONAL after the file said CONFIRMED -- rerun
-  `build_report`). Exit 0 is not evidence a gate spoke: grep its VERDICT line; print the denominator.
-- **A finding across MANY providers is almost always YOUR PROBE** (100/67/25/6 false findings; 08-07
-  `attributeTypeId=RACE` in 10 providers was a stale KB line, not 10 defects).
-- **Add a new gate/test-kind to EVERY harness AND consumer** -- fuzz, portability, efficacy, and for
-  a plan-test kind the label fn, relabeler, importer AND `driver.js`'s filter.
+- **A RECORD IS A CLAIM -- read the artifact.** 2r reads `DEX_TICKET.md`, not the ticket; enforce
+  reads CACHED reports (2e said PROVISIONAL after the file said CONFIRMED -- rerun `build_report`).
+  Exit 0 is not evidence a gate spoke: grep its VERDICT line; print the denominator.
+- **A finding across MANY providers is almost always YOUR PROBE** (08-07: `attributeTypeId=RACE` in
+  10 providers was a stale KB line, not 10 defects).
+- **Add a new gate/test-kind to EVERY harness AND consumer** (fuzz, portability, efficacy; plan-kinds
+  also need the label fn, relabeler, importer AND `driver.js` filter).
 - **MUTATION ORDER: mutate -> restore -> RE-STAMP -> verify.** `git status` clean is not sufficient.
 - **Multi-line `.Replace()` no-ops on CRLF -- use Edit.** Document a new tool in the SAME action.
-- **REPLACE this file, never append.** The line gate has now caught me SEVEN times.
+- **REPLACE this file, never append.** The line gate has now caught me EIGHT times.

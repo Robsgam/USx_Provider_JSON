@@ -254,6 +254,99 @@ $MUTS = @(
      Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'
            $c.query = 'HiHcjdcOfmlDriverLicenseQuery' } }
 
+  # ── IL_LEADS_OFML ──────────────────────────────────────────────────────────────────────
+  # Added 2026-08-07 at v2.1. BEFORE this map, IL ran only the 6 generic/structural mutations
+  # (banned-pattern, toplevel-version-field, entities-bundle-not-first, missing-querylabel,
+  # dup-targetfield-request, vehiclemake-as-input) and scored a flattering "6/6 KILLED" -- which is
+  # 6 of the 15 known defect classes, i.e. 40%, with NOT ONE routing or combination mutation among
+  # them. By LAW 2 that made every IL routing gate's PASS non-evidence, and the "6/6" actively
+  # concealed it. IL's routing is condition-heavy (three Vehicle combos separated ONLY by
+  # RegistrationState EXISTS/NOT_EXISTS plus a Plate NOT_EXISTS guardrail), so the untested classes
+  # were precisely the ones that matter here.
+  #
+  # IL SHAPE, read from the emitted v2.1 JSON (not the build script's intent):
+  #   VehicleRegistrationQuery  Z2.P set[LicensePlateNumber]           cond RegistrationState EXISTS
+  #                             Z2.V set[VehicleIdentificationNumber]  cond LicensePlateNumber NOT_EXISTS
+  #                             Z5   set[LicensePlateNumber]           cond RegistrationState NOT_EXISTS
+  #   DriverLicenseQuery        Z2.N set[BirthDate,NameLast,NameFirst] cond OperatorLicenseNumber NOT_EXISTS
+  #                             Z2.O set[OperatorLicenseNumber]        (ungated)
+  #   GunQuery QG / ArticleSingleQuery QA / BoatQuery BQ.H (ungated), BQ.R cond Hull NOT_EXISTS
+  @{ Id='il-prefill-routing-field'; OnlyProvider='IL_LEADS_OFML'
+     Desc='initialValue=IL on the Vehicle RegistrationState control. It is the sole discriminator between Z2.P (State EXISTS) and Z5 (State NOT_EXISTS), so prefilling it makes State permanently present and Z5''s NOT_EXISTS permanently FALSE -- Z5, the in-state plate search, becomes self-unsatisfiable. This is BUILD_RULES 24, the class that killed 35 combos across 6 providers, and it is exactly what IL''s v2.0 BUILD_NOTES records DROPPING the State initialValue to avoid. Targets the discriminator rather than a field every combo needs, so the mutation CREATES the defect instead of resembling it.'
+     Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $n=Get-Node $j 'Vehicle' 'RegistrationState'; $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'IL' -Force } }
+
+  @{ Id='il-demote-set-to-any'; OnlyProvider='IL_LEADS_OFML'
+     Desc='VehicleIdentificationNumber demoted from Z2.V set[] to any[] though metadata Z2{VehicleIdentificationNumber} requires it in <Set>. The query could then fire with no VIN at all -- an INVALID request, the severity-1 UNDER-REQUIRED class.'
+     Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'Z2.V'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'VehicleIdentificationNumber' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'VehicleIdentificationNumber') } }
+
+  @{ Id='il-promote-any-to-set'; OnlyProvider='IL_LEADS_OFML'
+     Desc='relatedHitSearchIndicator PROMOTED into Z5 set[] though metadata Z5 defines it in <Any>. Making an optional stolen-check flag mandatory means the in-state plate search cannot fire until the officer sets it.'
+     Gate='audit_metadata.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'Z5'
+           $cm.requirements.set=@(@($cm.requirements.set)+'relatedHitSearchIndicator') } }
+
+  @{ Id='il-poisoned-condition'; OnlyProvider='IL_LEADS_OFML'
+     Desc='A value-comparison operator (EQUALS) added to Z2.P''s conditions array alongside its EXISTS gate. ONE value-comparison operator disables the ENTIRE conditions array including the co-resident EXISTS (QIDM_REFERENCE Sec 2a), so Z2.P would stop being State-gated and, sitting at index 0 with set[LicensePlateNumber], would steal every plate fill from Z5. Nothing about the array LOOKS broken, which is why this class needs a gate rather than review.'
+     Gate='verify_build.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'Z2.P'
+           $cm.requirements.conditions=@(@($cm.requirements.conditions)+([pscustomobject]@{ field=@('LicensePlateTypeCode'); operator='EQUALS'; value='PC' })) } }
+
+  @{ Id='il-drop-identifier-guardrail'; OnlyProvider='IL_LEADS_OFML'
+     Desc='Z2.V''s "LicensePlateNumber NOT_EXISTS" guardrail removed. The condition is load-bearing and the trace is not obvious: on plate+VIN with NO State, Z2.P fails (State EXISTS false), so evaluation reaches Z2.V -- whose set[VIN] IS satisfied -- and only the guardrail defers it so Z5 can serve the plate. Without it a VIN search fires where the officer supplied a plate, inverting IL''s Plate>VIN identifier priority. AIMED AT audit_devdoc_order, NOT audit_combo_reachability: the first version targeted reachability and correctly SURVIVED, because nothing becomes unreachable (Z5 still fires on plate-only, no State) -- what changes is WHICH combo wins a plate+VIN fill, which is an ORDERING defect. Repointed 2026-08-07 rather than recorded as a blind spot, per "a mutation must be aimed at the gate that OWNS the defect class" -- the same error that made nj-drop-devdoc-optional a false survivor. Devdoc VehReg #1 is the plate search, so a now-ungated VIN combo sitting ahead of it is exactly the INVERSION that gate defines.'
+     Gate='audit_devdoc_order.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'Z2.V'
+           $cm.requirements.conditions=@() } }
+
+  @{ Id='il-inert-condition-field'; OnlyProvider='IL_LEADS_OFML'
+     Desc='Z2.N''s condition repointed from OperatorLicenseNumber to a fieldId no control emits (NoSuchField), so the OLN>Name guardrail silently stops discriminating while still LOOKING present in the JSON. A condition naming a non-existent sourceField is inert, and an inert guardrail reads identical to a working one on review.'
+     Gate='audit_wiring_closure.ps1'; Args={ @('-Provider','IL_LEADS_OFML') }
+     Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'Z2.N'
+           $cm.requirements.conditions[0].field=@('NoSuchField') } }
+
+  @{ Id='il-drop-devdoc-optional'; OnlyProvider='IL_LEADS_OFML'
+     Desc='firearmMake removed from QG any[] though the IL devdoc lists GunQuery #1 as "GunSerialNumber, [GunCaliber, GunMake, ImageIndicator, ...]" and metadata QG defines GunMake in <Any>. Both authorities agree it is carryable, so the officer types a make and it is silently not transmitted -- the dropped-optional class, which errors nowhere.'
+     Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_GunQuery'; $cm=Get-Combo $c 'QG'
+           $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'firearmMake' }) } }
+
+  @{ Id='il-remove-a-built-combo'; OnlyProvider='IL_LEADS_OFML'
+     Desc='BQ.R deleted outright. The IL devdoc lists BoatQuery #2 as "RegistrationNumber, State, [...]" and metadata defines BQ{RegistrationNumber}, so removing it deletes a documented search path. This is the class that is invisible to every JSON-enumerating check -- the test plan is generated FROM the JSON, so no combo means no test means no failure -- and only a devdoc->built direction can see it (LAW 3).'
+     Gate='audit_devdoc_combinations.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'
+           $c.combinations=@(@($c.combinations) | Where-Object { "$($_.keyReference)" -ne 'BQ.R' }) } }
+
+  @{ Id='il-true-shadow-pair'; OnlyProvider='IL_LEADS_OFML'
+     Desc='Both Z2.P''s and Z5''s conditions stripped, leaving two combinations with IDENTICAL set[LicensePlateNumber] and nothing to separate them. Z2.P sits first, so Z5 can never fire under any fill -- a genuine shadow no ordering can fix. Distinct from il-drop-identifier-guardrail: that one inverts which query serves a fill, this one makes a combination permanently dead.'
+     Gate='audit_combo_reachability.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'
+           (Get-Combo $c 'Z2.P').requirements.conditions=@(); (Get-Combo $c 'Z5').requirements.conditions=@() } }
+
+  @{ Id='il-fidelity-demote-mandatory'; OnlyProvider='IL_LEADS_OFML'
+     Desc='articleTypeCode demoted from QA set[] to any[] though metadata QA requires Set[ArticleSerialNumber, ArticleTypeCode]. Demotes the QUALIFIER, deliberately NOT the ArticleSerialNumber identifier: FL taught that demoting an identifier lets the matcher simply RE-PAIR the alternative to a sibling combo that still carries it, so the mutation is defeated by re-pairing rather than by gate blindness. IL has only ONE Article combination, so there is no sibling to re-pair to and the defect must surface.'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_ArticleSingleQuery'; $cm=Get-Combo $c 'QA'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'articleTypeCode' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'articleTypeCode') } }
+
+  # PROMOTED FUZZ SURVIVOR (fuzz seed 33 #4, triaged real 2026-08-07). Expected verdict is
+  # SURVIVED until a gate is fixed -- recorded deliberately, per "promote a TRIAGED-REAL survivor
+  # so it becomes a permanent regression test, THEN fix the gate". It is a real wire defect:
+  # dropping State from Z2.P's any[] leaves its "RegistrationState EXISTS" condition intact, so the
+  # officer's State ROUTES the out-of-state plate query but is never TRANSMITTED -- CommSys receives
+  # an OOS query with no destination state. audit_wiring_closure does not catch it because
+  # RegistrationState still reaches the wire via OTHER combos, making that check per-provider where
+  # this defect is per-combination. NJ carries a dedicated mutation for the same class
+  # (nj-guardrail-wire-leak); IL had none.
+  @{ Id='il-guardrail-wire-leak'; OnlyProvider='IL_LEADS_OFML'
+     Desc='RegistrationState removed from Z2.P any[] while its "RegistrationState EXISTS" routing condition is left in place -- the field decides which query fires and then does not ride the wire. Per-combination defect that a per-provider reachability check cannot see.'
+     Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_VehicleRegistrationQuery'; $cm=Get-Combo $c 'Z2.P'
+           $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationState' }) } }
+
   # ── FL_FCIC ────────────────────────────────────────────────────────────────────────────
   @{ Id='fl-drop-devdoc-optional'; OnlyProvider='FL_FCIC'
      Desc='RegistrationNumber removed from FBQBoatHullIdNumber any[] -- reverts the exact v7.13 dropped-optional fix (officer types hull + reg number, reg number silently not transmitted). This mutation exists so that fix can never regress unnoticed.'
@@ -453,9 +546,21 @@ $MUTS = @(
 # report the shortfall rather than letting a thin run look like full coverage.
 if ($PROV_MUTS.ContainsKey($Provider)) {
     $MUTS += @($PROV_MUTS[$Provider])
-    Emit "  provider-specific mutations for ${Provider}: $(@($PROV_MUTS[$Provider]).Count)" $null
+}
+# COUNT THE PROVIDER'S OWN MUTATIONS FROM BOTH SOURCES. There are two conventions in this file --
+# the $PROV_MUTS hashtable (NY only) and an OnlyProvider tag on a $MUTS row (NJ, AZ, HI, FL, IL) --
+# and this message used to consult ONLY the hashtable. So every provider using the second
+# convention was told "no provider-specific mutation map" while running 4-11 dedicated mutations:
+# NJ (4), AZ (1), HI (1), FL (4) and IL (11) all got a note asserting the opposite of the truth,
+# directly understating the coverage this tool exists to report. Found 2026-08-07 while adding the
+# IL map -- the note fired on a run in which all 11 IL mutations had just executed. The shortfall
+# warning is still worth printing, but it must be driven by the ACTUAL count, not by one of the
+# two places a map can live.
+$ownCount = @($PROV_MUTS[$Provider]).Count + @($MUTS | Where-Object { $_.OnlyProvider -eq $Provider }).Count
+if ($ownCount -gt 0) {
+    Emit "  provider-specific mutations for ${Provider}: $ownCount" $null
 } elseif ($Provider -ne 'TX_TLETS') {
-    Emit "  [NOTE] no provider-specific mutation map for $Provider -- the generic mutations below name TX keyRefs and will report INVALID here. That is honest, not a pass." 'Yellow'
+    Emit "  [NOTE] no provider-specific mutation map for $Provider -- only the generic/structural mutations run, so the routing and combination classes are UNTESTED here and this run's KILLED score covers a fraction of the catalogue. That is honest, not a pass." 'Yellow'
 }
 
 # ── run ───────────────────────────────────────────────────────────────────────────────
