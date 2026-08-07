@@ -1,8 +1,8 @@
 ﻿================================================================
 TEST LOG: NY_NYSPIN_EJUSTICE Vehicle VehicleRegistrationQuery
-Combo: RVEH_any (RVEH_any (auto))
-Date: 2026-08-07 09:39:13
-Result: PASS
+Combo: RVIN_strip_RegistrationState (RVIN_strip_RegistrationState (auto))
+Date: 2026-08-07 09:39:10
+Result: FAIL
 JSON Version: 4.23
 Entity Fingerprint: c66d24283f6bd30643aea19946c091527a2db5ffb37e6e8cb11a0cf593fdbdb3
 Tier: Full
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"Y","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC"}
+{"ImageIndicator":"N","RegistrationState":"New York","VehicleIdentificationNumber":"1HGCM82633A123456"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZCYYBM77B82QHWCR08JRNB7">
+    <api:Transaction id="01KZE73DJ68EJY8VXD5WN90Q60">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,10 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KZCYYBM77B82QHWCR08JRNB7</Id>
-            <ImageIndicator>Y</ImageIndicator>
-            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <Id>01KZE73DJ68EJY8VXD5WN90Q60</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>N</ImageIndicator>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -57,7 +56,10 @@ Request:
 {
     "elasticQuery":  {
                          "vehicle":  {
-                                         "tag":  "TEST123"
+                                         "registrationStateAttrIds":  [
+                                                                          69509802469
+                                                                      ],
+                                         "vinNumber":  "1HGCM82633A123456"
                                      }
                      },
     "from":  0,
@@ -74,13 +76,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01KZCYYBM77B82QHWCR08JRNB7
-  ImageIndicator                 Y
-  LicensePlateTypeCode           PC
-  LicensePlateNumber             TEST123
+  Id                             01KZE73DJ68EJY8VXD5WN90Q60
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
 
 NOTES
 -----
-Automated capture (txId 01KZCYYBM77B82QHWCR08JRNB7). kind=any; anyField=; expectedKeyRef=RVEH; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZE73DJ68EJY8VXD5WN90Q60). kind=value-strip; anyField=; expectedKeyRef=RVIN; firedMessageType=VehicleRegistrationQuery. routing=MISMATCH (wire missing an identifier of expected combo RVIN)
 
-RESULT: PASS
+RESULT: FAIL
