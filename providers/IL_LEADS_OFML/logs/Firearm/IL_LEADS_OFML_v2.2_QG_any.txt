@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: IL_LEADS_OFML Firearm GunQuery
+Combo: QG_any (QG_any (auto))
+Date: 2026-08-07 15:40:35
+Result: PASS
+JSON Version: 2.2
+Entity Fingerprint: efe228eb87e368d8650535c028dafde80549deea675ceec3ff4c2748a2e1f82f
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","gunCaliber":"11","relatedHitSearchIndicator":"Y","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZEVVC9H952ZE6N6CHP1J9P1">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KZEVVC9H952ZE6N6CHP1J9P1</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunCaliber>11</GunCaliber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZEVVC9H952ZE6N6CHP1J9P1
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 Y
+  GunSerialNumber                GUN12345
+  GunCaliber                     11
+
+NOTES
+-----
+Automated capture (txId 01KZEVVC9H952ZE6N6CHP1J9P1). kind=any; anyField=; expectedKeyRef=QG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
