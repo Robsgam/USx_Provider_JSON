@@ -204,6 +204,7 @@ foreach ($file in $files) {
         $comboLabel = $combo
         if ($testKind -eq 'any-field' -and $testAnyField) { $comboLabel = "${combo}_af_${testAnyField}" }
         elseif ($testKind -eq 'any') { $comboLabel = "${combo}_any" }
+        elseif ($testKind -eq 'value-strip' -and $r.strippedField) { $comboLabel = "${combo}_strip_$($r.strippedField)" }
         elseif ($testKind -eq 'guardrail') {
             # guardrailLoser (stamped by relabel_batch.ps1 from the matched plan test) disambiguates
             # the rare case where >1 loser combo resolves to the SAME winner -- e.g. FL_FCIC Boat's

@@ -70,6 +70,7 @@ function Get-CmPlanLabel($t) {
     # audit_log_combo_attribution.ps1, which replays the recorded fill and needs no filename help.
     if ($t.kind -eq 'any')       { return "$($t.comboKeyRef)_any" }
     if ($t.kind -eq 'any-field') { return "$($t.comboKeyRef)_af_$($t.anyField)" }
+    if ($t.kind -eq 'value-strip') { return "$($t.comboKeyRef)_strip_$($t.strippedField)" }
     return $t.comboKeyRef
 }
 

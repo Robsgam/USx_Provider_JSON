@@ -6,6 +6,24 @@ Current: **v4.23** | Generated: 2026-08-06
 
 ---
 
+## v4.23 -- 2026-08-06 -- PLAN COVERAGE ADDED (same version, no JSON change): item 3's home-state
+
+strip test is now permanent. Built a new 'value-strip' test kind into  
+tools/emit_test_plan.ps1 -- any QIDM attribute using IgnoreUserValueRuleHandler  
+automatically gets a dedicated test per owning combo, filled with the handler's own  
+ignored value (RegistrationState=NY on both RVIN and RVEHOUT). This is what makes  
+DEX-1283/1284's item-3 experiment survive every future rebuild instead of being a  
+one-off manual test that the import pipeline correctly drops as "matched no plan  
+test" and that never becomes a committed log. Wired through _content_match.ps1  
+(Get-CmPlanLabel), relabel_batch.ps1 (Get-CmRecordLabel + field propagation), and  
+import_captured_tests.ps1 (label branch) so a captured wire XML using these exact  
+fill values will be recognized and logged like any other plan test. Regenerated  
+NY's committed TEST_PLAN_v4.23.json in place: 67 -> 69 tests, 2 owed (RVIN_strip_  
+RegistrationState, RVEHOUT_strip_RegistrationState) -- state correctly reads PARTIAL  
+until those two are captured through the normal Vehicle sweep. Verified zero effect  
+on all other 19 providers (none use this rule) via a full regeneration sweep before  
+committing.  
+
 ## v4.23 -- 2026-08-06 -- DEX-1284 item 1: reverted PurposeCode dropdown -- DISPROVEN LIVE
 
 **CHANGED:** purposeCodeDH reverted from FormSelect (attributeTypeId='DEX_INQUIRY_PURPOSE_CODE',

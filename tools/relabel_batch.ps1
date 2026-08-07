@@ -72,6 +72,7 @@ function Get-CmRecordLabel($r) {
         if ($r.guardrailLoser) { return "$($r.expectedKeyRef)_guardrail_vs_$($r.guardrailLoser)" }
         return "$($r.expectedKeyRef)_guardrail"
     }
+    if ($r.kind -eq 'value-strip') { return "$($r.combo)_strip_$($r.strippedField)" }
     return "$($r.combo)$(if ($r.anyField) { '_af_' + $r.anyField })$(if ($r.kind -eq 'any') { '_any' })"
 }
 $usedRec = @{}
@@ -114,6 +115,8 @@ for ($i = 0; $i -lt $records.Count; $i++) {
     $r | Add-Member -NotePropertyName kind -NotePropertyValue $t.kind -Force
     $r | Add-Member -NotePropertyName anyField -NotePropertyValue $t.anyField -Force
     $r | Add-Member -NotePropertyName guardrailLoser -NotePropertyValue $t.guardrailLoser -Force
+    $r | Add-Member -NotePropertyName strippedField -NotePropertyValue $t.strippedField -Force
+    $r | Add-Member -NotePropertyName strippedValue -NotePropertyValue $t.strippedValue -Force
     $r | Add-Member -NotePropertyName underFilled -NotePropertyValue $false -Force
     $r | Add-Member -NotePropertyName contentMatched -NotePropertyValue $true -Force
 }

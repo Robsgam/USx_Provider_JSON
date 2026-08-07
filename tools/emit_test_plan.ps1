@@ -520,6 +520,55 @@ foreach ($ent in $entities) {
             $tests.Add($test)
         }
     }
+
+    # VALUE-STRIP tests. An attribute using IgnoreUserValueRuleHandler strips a SPECIFIC VALUE
+    # from the outbound wire (e.g. CAD auto-fills the officer's home state) WITHOUT changing which
+    # combo fires -- routing reads raw FORM state, the handler only transforms the OUTBOUND value
+    # (UNIVERSAL_SEARCH_HANDLERS.txt Sec 4). No ordinary combo/any test ever fills the SPECIFIC
+    # ignored value, so this defect class (DEX-1284, NY_NYSPIN_EJUSTICE v4.22-4.23) would otherwise
+    # only ever be exercised by a one-off manual test outside the plan -- which the import pipeline
+    # correctly drops as "matched no plan test" and which never becomes a committed log. Built in
+    # 2026-08-06 so it survives every future rebuild automatically. Zero effect on any provider that
+    # does not use this rule (only NY_NYSPIN_EJUSTICE's Vehicle State attribute does, as of writing).
+    foreach ($q in $entQidms) {
+        foreach ($attr in @($q.attributes | Where-Object { $_.rule -and $_.rule.function -eq 'IgnoreUserValueRuleHandler' })) {
+            $srcNames = @($attr.sourceField | Where-Object { $_ })
+            if (-not $srcNames.Count) { continue }
+            $stripFid = $fieldIds | Where-Object { $_ -ieq $srcNames[0] } | Select-Object -First 1
+            if (-not $stripFid) { $stripFid = $srcNames[0] }
+            if (@($hiddenIds) -icontains $stripFid) { continue }   # can't type into a hidden field
+            foreach ($ignoreVal in @($attr.rule.arguments | Where-Object { $_ })) {
+                # One strip test per combo whose set[] actually REQUIRES this field (not any[] --
+                # an optional field doesn't gate existence-based routing the way a set[] member
+                # does, so it isn't part of the routing mechanics this test class exercises).
+                # Every such combo, not just the first: the field is shared across all of them
+                # (one QIDM attribute), and each is an independently reachable, independently
+                # affected wire path (e.g. NY's RVIN [VIN+State] and RVEHOUT [plate+State] both
+                # require RegistrationState and both route through the same handler).
+                foreach ($q2 in $entQidms) {
+                    foreach ($c2 in $q2.combinations) {
+                        $origSetNames = @($c2.requirements.set | Where-Object { $_ })
+                        if (-not ($origSetNames | Where-Object { $_ -ieq $srcNames[0] })) { continue }
+                        $ownerKr = if ($c2.keyReference) { $c2.keyReference } else { $c2.keyRef }
+                        $isOOS2 = [bool]($origSetNames | Where-Object { $_ -match '(?i)^(registrationState|state)$' })
+                        $setNames2 = @($origSetNames | Where-Object { $_ -ine $srcNames[0] })
+                        $vsFills = @(Build-Fills $setNames2 $q2 $fieldIds $isOOS2 $hiddenIds)
+                        $vsFills += [ordered]@{ fieldId = $stripFid; value = "$ignoreVal" }
+                        $n++
+                        $vsKr = Resolve-ExpectedKeyRef $entQidms $vsFills $formDefaultsByEntity[$ent] $ownerKr
+                        $tVs = [ordered]@{
+                            n = $n; entity = $ent; query = $q2.query; comboKeyRef = $ownerKr
+                            expectedKeyRef = $vsKr; kind = 'value-strip'; tier = 'Full'
+                            strippedField = $stripFid; strippedValue = "$ignoreVal"
+                            fills = $vsFills
+                        }
+                        if ($vsKr -ne $ownerKr) { $tVs.reroutedFrom = $ownerKr }
+                        $tests.Add($tVs)
+                    }
+                }
+            }
+        }
+    }
 }
 
 # ── DROP TESTS WHOSE NOMINAL COMBO CANNOT FIRE ───────────────────────────────────
