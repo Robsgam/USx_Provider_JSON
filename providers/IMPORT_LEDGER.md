@@ -24,7 +24,7 @@ When repo > tenant, the newer build has been built but not yet re-imported+captu
 | NJ_NJCJIS | usx-nj-njcjis.mark43.com | DEX-988 | v4.15 (36 logs) | v4.15 | current (tenant-complete 2026-07-31, ALL-PASS 36/36, four log gates green) |
 | FL_FCIC | usx.fl-fcic.mark43.com (`usx.` dot form) | DEX-971 | v7.18 (116 logs) | v7.18 | current (tenant-complete 2026-08-06, ALL-PASS 116/116, four log gates green). DEX-1283 fix: removed initialValue='X' from Attention (DH) + Requestor (VehReg/DH/Gun/Article/Boat, 6 hidden feeders) -- both confirmed resolving the real officer name on the wire with nothing in the source field. Full re-sweep: Vehicle 20 / Person 21 / Firearm 15 / Article 16 / Boat 44, matching the pre-rebuild v7.17 count exactly. Note: this tenant sends ORI/Mnemonic=CA1234567 regardless of provider |
 | HI_HCJDC_OFML | usx-hi-hcjdc-ofml.mark43.com | DEX-1257 | v4.14 (46 logs) | v4.14 | current (tenant-complete, ALL-PASS 46/46) |
-| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.19 (64 logs) | v4.19 | current (tenant-complete, ALL-PASS 64/64) |
+| NY_NYSPIN_EJUSTICE | usx-ny-nyspin-ejustice.mark43.com | DEX-969 | v4.23 (69 logs) | v4.23 | current (tenant-complete 2026-08-07, ALL-PASS 69/69, four log gates green). DEX-1283 fix landed at v4.21 as a `requestorDH` set[]->any[] demotion, NOT the plain 'X' removal that worked on TX/FL/CA_CLETS -- on NY the field is metadata-mandatory in set[], so set[] membership makes the BROWSER gate Send and v4.20 left DALHOUT permanently unsubmittable. DEX-1284: Purpose Code dropdown reverted (LIMITATION #39, renders empty on this tenant); Vehicle home-state strip kept and live-proven |
 | TX_TLETS | usx-tx-tlets.mark43.com | DEX-967 | v4.19 (92 logs) | v4.19 | current (tenant-complete 2026-08-06, ALL-PASS 92/92). DEX-1283 fix: removed initialValue='X' from Attention (DH) + EmailAddress (DL+DH) hidden feeders + matching combo defaults[] -- both confirmed resolving the real officer name/email on the wire with nothing in the source field. Lockstep: TX_TLETS_CCH v1.15 same fix, same day (built + gated, not yet tenant-tested) |
 | CA_CLETS | usx-ca-clets.mark43.com | DEX-976 | v2.24 (90 logs) | v2.24 | current (tenant-complete 2026-08-06, ALL-PASS 90/90). DEX-1283 fix: removed initialValue='X' from the Attention (DH) hidden feeder + matching combo defaults[] -- confirmed resolving the real officer name on the wire with nothing in the source field. Full re-sweep matches the pre-rebuild v2.23 count exactly |
 | AZ_AZDPS | usx-az-azdps.mark43.com | DEX-974 | none | v3.4 | never imported/captured; DEX-974 had no JSON attached as of 2026-07-22. Confirm `dexStateUserId` populates on the FIRST query or all 5 badge combos silently fall back |
@@ -59,7 +59,7 @@ confirmation, never inferred from a version bump.
 |---|---|---|---|---|
 | FL_FCIC | v7.18 | DEX-971, 2026-08-06 | 2026-08-06 | after the DEX-1283 fix (116/116 ALL-PASS); same pass as the Miami Springs + North Miami imports |
 | TX_TLETS | v4.18 | DEX-967, 2026-08-03 | 2026-08-03 | after the 89/89 ALL-PASS re-sweep; same pass as the Balcones Heights import |
-| NY_NYSPIN_EJUSTICE | v4.19 | DEX-969, 2026-08-03 | 2026-08-03 | after the 64/64 ALL-PASS re-sweep. No Foundation tenant carries NY, so there is no section B row to match |
+| NY_NYSPIN_EJUSTICE | v4.23 | DEX-969, 2026-08-07 | 2026-08-07 | after the DEX-1284 closure (69/69 ALL-PASS). Supersedes the v4.19 publish of 2026-08-03. No Foundation tenant carries NY, so there is no section B row to match |
 | NJ_NJCJIS | v4.15 | DEX-988, 2026-08-03 | 2026-08-03 | after the 36/36 ALL-PASS re-sweep; same pass as the Newark Foundation import |
 | CA_CLETS | v2.24 | DEX-976, 2026-08-06 | 2026-08-06 | after the DEX-1283 fix (90/90 ALL-PASS re-sweep). No Foundation tenant carries CA_CLETS |
 | HI_HCJDC_OFML | v4.14 | DEX-1257, 2026-08-04 | 2026-08-04 | after the 46/46 ALL-PASS re-sweep. **No version bump** — v4.14 was already published; re-published as the re-verified artifact. Last of the original six |
@@ -89,7 +89,7 @@ for p in */; do p="${p%/}"; [ -d "$p/logs" ] || continue
 done
 ```
 
-_Last reconciled: 2026-08-06._
+_Last reconciled: 2026-08-07._
 
 ### TX_TLETS_CCH -- built, NOT YET IMPORTED (recorded 2026-07-30, TX_TLETS half corrected 2026-08-03)
 
