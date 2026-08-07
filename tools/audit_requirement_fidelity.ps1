@@ -353,6 +353,15 @@ foreach ($d in $dirs) {
     # IA.QV | devdoc-combo-unbuilt' row added by hand dropped CA_CLETS from 27 branches to 26 --
     # IA.QV is built and working; only the devdoc ITEM was unbuilt. An unbuilt-class row must name
     # the unbuilt thing (e.g. '(devdoc #1)'), never a live combo.
+    # THE PROVIDER HEADER MUST BE PRINTED BEFORE ANY PER-PROVIDER FINDING. It used to sit AFTER the
+    # over-suppression block below, so in an -All sweep those NOTEs appeared under the PREVIOUS
+    # provider's heading. That is not cosmetic -- it attributes one provider's registry defects to
+    # another, and on 2026-08-07 it did exactly that: LA_LEMS's seven unbuilt-class rows (QB, BQ,
+    # QWDN, DQ x4) printed under IL_LEADS_OFML, which sorts immediately before it, and were reported
+    # to Rob as IL's. IL's registry holds five rows and emits ZERO of these. Run alone each provider
+    # was correct, which is what makes the class nasty: the -All output is the one nobody re-checks.
+    Out-Line "`n=== $($d.Name)  ($(Split-Path $jp -Leaf)) ===" 'Cyan'
+
     $allBuiltKrs = @{}
     foreach ($qk in $built.Keys) { foreach ($cmb in $built[$qk]) { if ($cmb.KeyRef) { $allBuiltKrs["$($cmb.KeyRef)"] = $qk } } }
     foreach ($rr in $unbuiltRows) {
@@ -361,7 +370,6 @@ foreach ($d in $dirs) {
         }
     }
 
-    Out-Line "`n=== $($d.Name)  ($(Split-Path $jp -Leaf)) ===" 'Cyan'
     $pUnder = 0; $pOver = 0; $pMatched = 0; $pNote = 0
 
     # ── ONE-TO-ONE ASSIGNMENT, per query ──────────────────────────────────────────────
