@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS
   Source: LA_LEMS_v3.0.json
-  Generated: 2026-08-04 14:46
+  Generated: 2026-08-07 11:03
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,7 +25,7 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 9 fieldIds
-  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
+  [WARN] QIF 'ENTITY_Person' ImageIndicator initialValue='Y' AND a combo gates on ImageIndicator NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b: never existence-gate a mandatorily-defaulted field)
   [PASS] QIF 'ENTITY_Person' -> Person : 18 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 6 fieldIds
@@ -88,8 +88,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'LA_LEMS_BoatQuery' combo 'BQ': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 64 PASS / 0 FAIL / 0 WARN
+  RESULTS: 63 PASS / 0 FAIL / 1 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Ready for import.
+  Review WARN items -- they may cause runtime issues.
 
