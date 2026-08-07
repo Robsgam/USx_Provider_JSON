@@ -470,25 +470,37 @@ if ($entitiesBundle) {
                             Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' to FormSelect (Sel) with attributeTypeId='STATE', or to hidden FormInput (InpH) if outbound-only" -ForegroundColor Cyan
                         }
                     }
-                    # SEX / RACE attributeTypeId on a visible FormInput -- the SAME defect the STATE
-                    # block above catches, for the other two attributeTypeId-driven dropdowns.
+                    # ── DROPDOWN-PROP FIELD BUILT AS FormInput ──────────────────────────────
+                    # GENERAL RULE: a control carrying codeTypeCategory or attributeTypeId is a
+                    # DROPDOWN by definition -- those props only do anything on a FormSelect. Built
+                    # as a FormInput the props survive untouched and every props-based check still
+                    # passes, while the officer free-types where a code or a numeric RMS attribute
+                    # ID is required. CommSys then receives raw text and any reverse-lookup breaks.
                     #
-                    # WHY THIS WAS MISSING: the SexCode and raceCode checks further down validate the
-                    # PROPS (attributeTypeId=SEX present? codeTypeProvider=NIBRS present? no
-                    # codeTypeCategory?) and never the COMPONENT TYPE. Converting the control from
-                    # FormSelect to FormInput leaves every one of those props intact, so all of them
-                    # pass while the officer now free-types where a numeric RMS attribute ID is
-                    # required -- CommSys receives raw text and the RMS reverse-lookup breaks.
-                    # Found 2026-08-07 by fuzz_gate_efficacy on IL_LEADS_OFML: the mutation
-                    # `select-to-input @ ENTITY_Person[SexCode_Input]` SURVIVED the whole gate panel,
-                    # while the identical mutation on RegistrationState was caught -- by the STATE
-                    # block above, which does test the type. Same defect, one covered and two not.
-                    # attributeTypeId=VEHICLE_MAKE has its own hard gate in verify_build.
-                    if ($node.props.attributeTypeId -in @('SEX','RACE') -and $node.props.hidden -ne $true -and $node.hidden -ne $true) {
-                        if ($node.type.resolvedName -eq 'FormInput') {
-                            Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' visible FormInput with attributeTypeId='$($node.props.attributeTypeId)' -- MUST be FormSelect: attributeTypeId sends a numeric RMS attribute ID, so free text breaks both the CommSys code and the RMS reverse-lookup"
-                            Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' to FormSelect (Sel) keeping attributeTypeId='$($node.props.attributeTypeId)' + codeTypeProvider='NIBRS'" -ForegroundColor Cyan
-                        }
+                    # HISTORY, because the scope was wrong twice. The STATE block above has always
+                    # tested the component type. On 2026-08-07 fuzz_gate_efficacy on IL_LEADS_OFML
+                    # showed `select-to-input @ ENTITY_Person[SexCode_Input]` SURVIVING the entire
+                    # gate panel while the identical mutation on RegistrationState was caught -- so
+                    # a SEX/RACE clause was added. More fuzz seeds then produced the SAME survivor on
+                    # relatedHitSearchIndicator (Boat, Vehicle, Firearm, Person) and articleTypeCode,
+                    # which are codeTypeCategory-driven and so still uncovered. Enumerating the class
+                    # instead of naming members is the fix; a per-field allowlist would have needed a
+                    # third revision the next time a new dropdown appeared.
+                    #
+                    # MEASURED BEFORE WIDENING (the whole portfolio, 2026-08-07): 286 fields carry
+                    # codeTypeCategory or attributeTypeId and ZERO are FormInput -- so this rule adds
+                    # no false positive anywhere. Hidden controls are included deliberately: the
+                    # sanctioned hidden patterns are SelH WITH attributeTypeId and InpH WITHOUT it
+                    # (FIELD_REFERENCE Sec 1), so a hidden FormInput carrying these props is the same
+                    # defect. STATE is excluded here only to avoid double-reporting -- its own block
+                    # above already covers it with a more specific message.
+                    if (($node.props.codeTypeCategory -or $node.props.attributeTypeId) -and
+                        $node.props.attributeTypeId -ne 'STATE' -and
+                        $node.type.resolvedName -eq 'FormInput') {
+                        $why = if ($node.props.attributeTypeId) { "attributeTypeId='$($node.props.attributeTypeId)' sends a numeric RMS attribute ID" }
+                               else { "codeTypeCategory='$($node.props.codeTypeCategory)' drives a code dropdown" }
+                        Write-Warn "QIF '$($cfg.name)' field '$($node.props.fieldId)' is a FormInput but carries dropdown props -- MUST be FormSelect: $why, so free text reaches the wire uncoded"
+                        Write-Host "    [FIX] In build script: change '$($node.props.fieldId)' from Inp/InpH to Sel/SelH, keeping its existing codeTypeCategory/codeTypeSource/attributeTypeId props" -ForegroundColor Cyan
                     }
                     # Visible Attention FormInput: only flag if a QIDM auto-fills it via handler.
                     # The hidden flag is node-level ($node.hidden), not in props -- a hidden

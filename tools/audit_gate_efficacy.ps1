@@ -273,6 +273,22 @@ $MUTS = @(
            if (-not $n) { throw 'no SexCode control on the Person form' }
            $n.type.resolvedName = 'FormInput' } }
 
+  # SECOND member of the same class, catalogued because the FIRST fix was scoped too narrowly and
+  # only more fuzz seeds revealed it. sexcode-as-input covers the attributeTypeId branch; this
+  # covers the codeTypeCategory branch, which stayed uncovered and kept surviving on
+  # relatedHitSearchIndicator across FOUR entities plus articleTypeCode. Two mutations, because a
+  # single one would let half the rule rot silently if the other branch regressed.
+  @{ Id='codetype-select-as-input'
+     Desc='a codeTypeCategory-driven dropdown (relatedHitSearchIndicator, YES_NO_UNKNOWN) flipped from FormSelect to FormInput with its props intact -- the officer free-types where a coded value is required and it reaches the wire uncoded. Distinct from sexcode-as-input: that one is attributeTypeId-driven, this one codeTypeCategory-driven, and the original SEX/RACE-only check was blind to this branch.'
+     Gate='validate.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j)
+           $n = $null
+           foreach ($ent in @('Vehicle','Person','Firearm','Boat')) {
+               foreach ($fid in @('relatedHitSearchIndicator','RelatedHitSearchIndicator','ImageIndicator')) {
+                   if (-not $n) { $n = Get-Node $j $ent $fid } } }
+           if (-not $n) { throw 'no codeTypeCategory dropdown found to mutate' }
+           $n.type.resolvedName = 'FormInput' } }
+
   # ── IL_LEADS_OFML ──────────────────────────────────────────────────────────────────────
   # Added 2026-08-07 at v2.1. BEFORE this map, IL ran only the 6 generic/structural mutations
   # (banned-pattern, toplevel-version-field, entities-bundle-not-first, missing-querylabel,
