@@ -157,3 +157,47 @@ REMAINING BACKLOG
   branches). Those are registrations, not fixes. Anything that survives that triage is CLASS 4.
   Next pass: narrow the branch match by primaryFieldReference to collapse CLASS 3, then register the
   CLASS 1 remainder per provider at its own rebuild.
+
+--------------------------------------------------------------------------------
+DIAGNOSED 2026-08-07 -- WHY OVER-PERMITTED IS BLIND WITHIN A SHARED keyRef. The mechanism for the
+"next pass" above, established by instrumentation rather than argued. DO NOT re-derive.
+--------------------------------------------------------------------------------
+  FOUND BY: fuzz_gate_efficacy on IL_LEADS_OFML. `over-permit @ VehicleRegistrationQuery[0]
+  vehicleYear` SURVIVED across seeds. Verified it is a REAL blind spot, not an unlanded mutation and
+  not a re-pairing artefact -- the mutated replica was asserted on disk to contain vehicleYear in
+  Z2.P's any[], and branches-compared stayed at 9 before and after.
+
+  THE ARTIFACTS (IL VehicleRegistrationQuery):
+      metadata  Z2{LicensePlateNumber}          any[ImageIndicator, LicensePlateTypeCode,
+                                                    LicensePlateYear, RelatedHitSearchIndicator, State]
+      metadata  Z2{VehicleIdentificationNumber} any[ImageIndicator, RelatedHitSearchIndicator,
+                                                    VehicleMakeCode, VehicleYear, State]
+      built     Z2.P  any[... no vehicleYear]     built  Z2.V  any[... vehicleYear ...]
+  So adding vehicleYear to the PLATE combo must be OVER-PERMITTED: no plate branch defines it.
+
+  WHAT THE TOOL ACTUALLY COMPARES (debug print, mutant run):
+      meta VehicleRegistrationQuery|Z2 alt0/1 -> built 'Z2.P' | shN=1 |
+        mAny=[imageindicator,licenseplatetypecode,licenseplateyear,relatedhitsearchindicator,
+              registrationstate,vehiclemakecode,vehicleyear]
+  Both Z2 variants report **alt0/1** -- AltTotal is 1, not 2 -- and the alternative's any[] is the
+  UNION of the plate branch and the VIN branch. vehicleYear therefore "is defined by" the branch and
+  the over-permit check at the `Test-Has $mAnyC $w` line legitimately skips it.
+
+  ROOT CAUSE: the metadata model keys an alternative on keyRef ALONE, so two <Combination> entries
+  sharing a keyRef but differing in primaryFieldReference are merged into one pooled alternative.
+  This is the same disease as METADATA_REFERENCE.txt flattening <Choice> branches, and the same rule
+  applies -- A KEYREF IS NOT A VARIANT (line 61 above).
+
+  SCOPE, so nobody mistakes this for an IL quirk: it applies wherever one keyRef carries several
+  primaryFieldReference variants, which is most of the portfolio -- TX RQ{Plate}/RQ{VIN},
+  FL FBQ x4, NJ RAND/FULL, NY RVEH, OR BQ{Hull}/BQ{Reg}. In all of those, OVER-PERMITTED cannot see
+  a field leaking in from a SIBLING variant of the same keyRef. UNDER-REQUIRED is unaffected: it
+  walks metadata-mandatory fields, and pooling any[] does not relax a mandatory set[].
+
+  THE FIX IS THE "next pass" ABOVE -- split alternatives by (keyRef, primaryFieldReference) rather
+  than keyRef. NOT ATTEMPTED HERE, deliberately: it is a portfolio-wide matcher change, its nearest
+  neighbour (keyRef-scoped candidate filtering) is the REVERTED negative result recorded directly
+  above, and the standing rule from that reversal applies unchanged -- measure against the
+  six-provider fixture (116 branches, 0/0) BEFORE believing it, because a plausible mechanism is not
+  evidence. Expect it to interact with the SHARED-COMBO UNION block, which exists precisely to let
+  one built combo legitimately serve several branches.
