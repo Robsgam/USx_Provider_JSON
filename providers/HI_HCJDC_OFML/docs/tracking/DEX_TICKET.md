@@ -38,7 +38,20 @@ Post the changelog here on every version bump (dump first, then per-version diff
   independent (`State=GA` on DL vs `State=NJ` on DH, same session, both -> canonical `<State>`), and
   OLN>Name holding separately on each card.
 
-**Current: v4.14 — tenant-verified twice (2026-07-28, re-verified 2026-08-04), ALL-PASS 46/46**
+**Current: v4.15 — BUILT 2026-08-10, NOT yet tenant-tested (46 owed), re-import owed.**
+DEX-1283 Attention `'X'` removal: dropped `initialValue='X'` from the hidden DH gate-feeder and
+`Attention='X'` from both KQ/KQN combo `defaults[]` (`PurposeCode='C'` kept). The control, its
+`any[]` membership and the `CommsysGetLastNameFirstNameInitialRuleHandler` attribute are unchanged —
+only the literal value went. HI was the last provider still prefilling it; FL/TX/CA_CLETS/NY all run
+the same handler with no prefill and resolve the officer name on 38/38 DH wires. Gates: validator
+65P/0F/0W, verify clean, fidelity 14 branches 0/0, 0 prefill-dead, gate efficacy 8/8, enforce
+40 PASS / 0 HI-scoped FAIL-or-WARN.
+**Owed to this ticket:** the v4.15 changelog + its release line, once the 46-test re-sweep passes.
+**The discriminating observation for that sweep:** `<Attention>SGAMBELLONE R</Attention>` must still
+land on all 9 Driver-History wires. Absent ⇒ the v2.9 gate-feeder theory was correct after all and
+v4.15 gets reverted.
+
+**Prior: v4.14 — tenant-verified twice (2026-07-28, re-verified 2026-08-04), ALL-PASS 46/46**
 (Vehicle 16 / Person 14 / Firearm 6 / Article 3 / Boat 7), four log gates green, enforce 44P/0F/0W.
 
 **Nothing owed to this ticket.**

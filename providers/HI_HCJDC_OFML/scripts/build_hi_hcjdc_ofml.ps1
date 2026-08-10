@@ -217,7 +217,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.14",
+    [string]$Version = "4.15",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -536,14 +536,14 @@ $dhQuery = [PSCustomObject]@{
         # Name/Sex/DOB do not bleed onto the DriverHistoryQuery wire. Mirrors the v3.7 DL-side
         # guardrail (DQ/QW). conditions[].field = sourceField (DH-suffix, PascalCase).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ'
             state                 = 'In/Out'
         }
         # KQN: OLN path -- 1 set[]. DH-suffix. State+PurposeCode optional.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }, [PSCustomObject]@{ field = 'Attention'; value = 'X' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQN'
             state                 = 'In/Out'
@@ -769,7 +769,15 @@ if ($AttnDiagnostic -and ($AttnMode -eq 'passthrough' -or $AttnMode -eq 'handler
     $attnFieldNode = Inp  'Attention' 'ATTENTION TEST - type any value, it should appear verbatim in the XML' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'ATTNTEST123' }
 } else {
     $attnRowHidden = $true
-    $attnFieldNode = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' }
+    # v4.15 (DEX-1283): initialValue='X' REMOVED. The 'X' was a gate-feeder sentinel added at v2.9
+    # in the same change that added 'Attention' to KQ/KQN any[] -- and the any[] membership was the
+    # actual fix (v2.9's own note: "Root cause = missing any[] entry, not handler config"). The 'X'
+    # was never isolated as necessary, and it is not: FL_FCIC, TX_TLETS, CA_CLETS and NY all run this
+    # SAME handler with Attention/Requestor in any[], NO initialValue and NO combo default, and their
+    # committed wires carry the resolved officer name on 38 of 38 Driver-History logs. HI was the last
+    # provider still prefilling it. Empty source field is required (v2.5 proved sourceField=@() is
+    # import-REJECTED, "Invalid attributes ... [Attention]"), so the control stays -- only its value goes.
+    $attnFieldNode = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN'
 }
 $perLayout = MakeLayouts @(
     @{

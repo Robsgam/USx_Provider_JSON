@@ -3,6 +3,50 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.15  2026-08-10  DEX-1283: remove the Attention 'X' prefill -- HI was the last provider carrying it
+  CHANGED: Three sites, all for one field. (1) The hidden DH gate-feeder
+    InpH 'Attention' loses initialValue='X'. (2) KQ combo defaults[] loses
+    Attention='X' (PurposeCode='C' KEPT). (3) KQN combo defaults[] likewise.
+    The Attention CONTROL, its any[] membership on KQ/KQN, and the attribute
+    (sourceField=['Attention'] + CommsysGetLastNameFirstNameInitialRuleHandler)
+    are all UNCHANGED. Only the literal value goes.
+  REASON: DEX-1283 ("TX Provider Issues", sub-task of DEX-967) item 2 -- Attention being
+    set to X from USx forms. Applied to FL_FCIC v7.18, TX_TLETS v4.19 and CA_CLETS v2.24
+    on 2026-08-06; HI was the last provider still prefilling it.
+  WHY THE 'X' WAS NOT NEEDED -- and why the provider's own history says otherwise.
+    v2.9 (2026-06-22) recorded the 'X' as the gate-feeder that makes the handler's
+    sourceField='Attention' RESOLVE, live-proven by <Attention>SGAMBELLONE R</Attention>.
+    That conclusion was CONFOUNDED: v2.9 changed TWO things in one version -- it added
+    'Attention' to KQ/KQN any[] AND added the 'X'. Its own text names the real cause
+    ("Root cause = missing any[] entry, not handler config"), so the any[] membership was
+    the fix and the 'X' rode along, never isolated. Measured 2026-08-10 across the
+    portfolio: FL_FCIC, TX_TLETS, CA_CLETS and NY_NYSPIN_EJUSTICE all run this SAME
+    handler with the field in any[], NO initialValue and NO combo default, and their
+    committed wires carry the resolved officer name on 38 of 38 Driver-History logs
+    (FL 7/7, TX 13/13, CA_CLETS 7/7, NY 11/11 DH-OOS). An empty source field is
+    sufficient. Rob caught the wrong call ("why would we leave it here") -- a June note
+    had been weighted over August wire evidence.
+  NOT the NY shape, and NOT a set[] requirement. NY is the provider with the set[]
+    story and it runs the OPPOSITE way: requestorDH was metadata-mandatory in set[],
+    which made the BROWSER gate Send and left DALHOUT permanently unsubmittable, so
+    v4.21 DEMOTED it set[] -> any[]. No provider needs this field in set[] for the
+    handler to fire; NY's problem was getting it OUT of set[]. HI's Attention was
+    already any[]-only, so no placement change was needed here.
+  THE CONTROL STAYS. v2.5 proved sourceField=@() is import-REJECTED by ConnectCic
+    ("Invalid attributes ... [Attention]"), reverted at v2.6 -- so the hidden control and
+    the sourceField reference must remain. Only the value is removed.
+  WHY THIS IS WORTH A BUMP + FULL RE-SWEEP: v4.14 is tenant-verified ALL-PASS 46/46 and
+    published (DEX-1257 + catalog, 2026-08-04), so an imported version is frozen. Beyond
+    portfolio consistency, the combo defaults[] Attention='X' sits on the CAD path, which
+    NONE of the 46 form-driven logs exercises -- and DEX-1283's second symptom is exactly
+    "not present when you do it from a CAD event". That path was carrying a literal 'X'
+    with no test able to see it.
+  EXPECTED AFTER RE-TEST: <Attention>SGAMBELLONE R</Attention> unchanged on all 9 DH
+    wires. If it comes back ABSENT, the v2.9 gate-feeder theory was right after all and
+    this must be reverted -- that is the single discriminating observation of the re-sweep.
+  SCRIPT : scripts/build_hi_hcjdc_ofml.ps1
+  OUTPUT : HI_HCJDC_OFML_v4.15.json
+
 v4.14  2026-07-30  Layout review -- Vehicle 1-card collapse + Boat order tidy (direct Rob feedback, NO functional change)
   RE-SWEPT 2026-08-04 at the SAME version -- 6th and LAST of the original six (Rob's call after the
     build process changed). Package reset with -Force so 46 fresh captures REPLACED the prior 46.

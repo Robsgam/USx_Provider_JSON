@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-07 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-10 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -17,7 +17,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.7 | NEVER-TESTED -- 59 test(s) owed |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.18 | ALL-PASS (116 logs) |
-| HI_HCJDC_OFML | v4.14 | ALL-PASS (46 logs) |
+| HI_HCJDC_OFML | v4.15 | NEVER-TESTED -- 46 test(s) owed |
 | IL_LEADS_OFML | v2.2 | ALL-PASS (41 logs) |
 | NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
 | NY_NYSPIN_EJUSTICE | v4.23 | ALL-PASS (69 logs) |
@@ -33,20 +33,24 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IL_LEADS_OFML v2.2 DONE 08-07 -- ALL-PASS 41/41, tenant-complete.** Tenant
-`usx-il-leads-ofml.mark43.com`, **DEX-984**, v2.2 imported + swept same day (Veh 14 / Per 10 / Boat 9
-/ Gun 5 / Art 3). Four log gates green: 6c 41/41, 6d 41/41, 2i 41/41, plan completeness 5/5.
-enforce 0F/0W IL-scoped, gate efficacy 18/18, 2e CONFIRMED-gating, picklists 18/18.
-**All 3 identifier-priority guardrails LIVE-PROVEN** (v2.2 removed their on-screen hints, so this
-was the thing to check): plate rides + VIN absent, OLN rides + `<Name` count 0, hull rides + reg
-count 0. **Name still serialises LAST-first** (`<Name>DOE, JOHN</Name>`) though the form now shows
-First-then-Last -- form order and QIDM `sourceField` order are independent. The 3 truncated-dropdown
-WARNs all resolved by live fill (`CNST_FORD`, `BBICYCL`, `11 mm Mauser`).
-**NEXT: HI_HCJDC_OFML** -- v4.14 ALL-PASS 46/46, owed the DEX-1283 Attention/Requestor `X` check;
-determine FIRST whether its field is `any[]`-only or `set[]`-mandatory (NY needed a different fix for
-exactly that). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
-Jira: NY DEX-969 comment **794205**; FL/TX/CA_CLETS posted 08-06. **IL owes its FIRST post** (DEX-984
-has nothing; v1.0->v2.2 all unposted) once the hold lifts.
+**HI_HCJDC_OFML v4.15 BUILT 08-10 -- ROB RE-IMPORTS, then 46-test re-sweep.** DEX-1283 Attention
+`'X'` removed (form `initialValue` + both KQ/KQN combo `defaults[]`; control, `any[]` membership and
+handler all UNCHANGED). enforce 42 PASS 0 HI-scoped F/W, validator 65P/0F/0W, fidelity 14br 0/0,
+gate efficacy 8/8, 12 combos. v4.14's 46 ALL-PASS logs archived to `_archive_pre_v4.15/`.
+Picklists already captured and STILL VALID (no dropdown/codeType change) -- no re-scope.
+**THE ONE OBSERVATION THAT DECIDES IT:** `<Attention>SGAMBELLONE R</Attention>` must still appear on
+all 9 DH wires. ABSENT ⇒ v2.9's gate-feeder theory was right and v4.15 REVERTS.
+**Why the `X` came out (Rob caught me arguing to keep it):** HI's v2.9 note credited the `X` as the
+gate-feeder that makes the handler resolve -- but v2.9 changed TWO things at once (added `Attention`
+to KQ/KQN `any[]` AND the `X`) and its own text names the `any[]` entry as root cause. FL/TX/CA_CLETS/NY
+run the SAME handler with no prefill and no default and resolve the name on **38/38** DH wires. A June
+note was being weighted over August wire evidence. **NOT a set[] question** -- NY is the set[] story
+and it runs the OTHER way (set[] blocked Send; v4.21 DEMOTED set[]->any[]). No provider needs set[].
+
+**IL_LEADS_OFML v2.2 DONE + POSTED.** ALL-PASS 41/41, four log gates, 3 guardrails wire-proven, Name
+still LAST-first. **DEX-984 comment 795041** = first-ever post (full v1.0->v2.2 dump). Ledger section
+C records Rob's attach+catalog 08-10. **v2.2 RELEASE LINE drafted + approved but HELD until HI is
+tested** -- do not post it unprompted. Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
 
 **GATE WORK 08-07 (4 gaps CLOSED):** `audit_wiring_closure` **class J ROUTING-ONLY** (EXISTS
 condition on a field in NEITHER set[] nor any[]; EXISTS-only, else ~244 NOT_EXISTS false hits) --
