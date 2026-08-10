@@ -38,26 +38,23 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 approved in substance 08-10, was HELD until HI tested -- HI is now tested, so it unblocks; still
 draft-and-wait). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
 
-**HI_HCJDC_OFML v4.15 TENANT-COMPLETE 08-10 -- ALL-PASS 46/46** (Veh 16/Per 14/Gun 6/Art 3/Boat 7),
-four log gates 46/46, inflation 0/0/0/0, enforce 43 PASS 0 HI-scoped F/W, validator 65P/0F/0W.
-**DEX-1283 Attention `'X'` removal is SETTLED BY WIRE, 9/9:** `<Attention>SGAMBELLONE R</Attention>`
-lands on every KQ/KQN log with NO `initialValue` and NO combo default -- `any[]` membership alone
-feeds the handler, so v2.9's gate-feeder claim is refuted on HI's own wires (it changed two things in
-one version and its own text named `any[]` as root cause). Rob caught me arguing to keep the `X`; I
-was weighting a June note over August evidence. Control: DL side emits NO `<Attention>` at all.
-**STATED LIMIT, do not overclaim:** the CAD `defaults[]` half is inspection-only -- no form-driven
-log exercises the CAD path, which is exactly DEX-1283's second symptom.
+**HI v4.15 TENANT-COMPLETE 08-10 -- ALL-PASS 46/46** (Veh 16/Per 14/Gun 6/Art 3/Boat 7), four log
+gates 46/46, inflation 0/0/0/0, enforce 43 PASS 0 HI-scoped F/W. **DEX-1283 Attention `'X'` removal
+SETTLED BY WIRE 9/9:** `<Attention>SGAMBELLONE R</Attention>` on every KQ/KQN log with NO prefill and
+NO combo default, so `any[]` membership alone feeds the handler and v2.9's gate-feeder claim is
+refuted on HI's own wires. Rob overruled my "leave it". DL side emits NO `<Attention>` at all.
+**STATED LIMIT:** the CAD `defaults[]` half is inspection-only -- no form log exercises the CAD path,
+which is exactly DEX-1283's second symptom. **IL v2.2 DONE** (41/41, DEX-984 comment 795041).
 
-**IL_LEADS_OFML v2.2 DONE.** ALL-PASS 41/41, four log gates, 3 guardrails wire-proven, Name LAST-first.
-**DEX-984 comment 795041** = first-ever post (full v1.0->v2.2 dump). Ledger C records attach+catalog.
-
-**GATE WORK 08-07 (4 gaps CLOSED):** `audit_wiring_closure` **class J ROUTING-ONLY** (EXISTS
-condition on a field in NEITHER set[] nor any[]; EXISTS-only, else ~244 NOT_EXISTS false hits) --
-97 examined, **1 hit TN_TIES RQ05**, flagged not fixed. `validate.ps1` checks COMPONENT TYPE for
-`attributeTypeId` SEX/RACE. 2q honours EXISTENCE rows in the NO-COMBO-FIRES branch ONLY -- the naive
-fix would have silenced LA_LEMS's parked finding. **PRE-EXISTING not mine:** NY efficacy 13/14
-(`ny-drop-oos-guardrail` vs untouched `verify_build`; NY 13/13 record stale since 07-30);
-`audit_requirement_fidelity -All` misattributes registry rows across providers.
+**GATE WORK 08-10 -- `audit_sqvr_integrity` CHECK 2 was VACUOUS on 17 of 20**, matching 3 exact
+phrasings and printing `[PASS]` having compared nothing. HI's SQVR read `Total combos: 17` (JSON 12)
++ `PENDING: ALL 5 entities` on a twice-ALL-PASS provider, for nine bumps. Fixed: all real phrasings +
+explicit `[NOTE] CHECK 2 DID NOT RUN` for the 13 asserting no total. Coverage 3->7. **Trap: NJ writes
+`Total combos: 5 QIDMs / 8 combos` -- the digit BEFORE "combos" wins or you FAIL on the QIDM count.**
+LAW 2 proven by re-injecting HI's 17. One real find: **FL 31-vs-30, `[FLAG:sqvr-totals-denominator]`,
+NOT fixed by me** (tooling 8c). 08-07: wiring-closure class J (1 hit TN RQ05, flagged); `validate`
+component-type check; 2q EXISTENCE rows. **PRE-EXISTING:** NY efficacy 13/14; `-All` fidelity
+misattributes registry rows.
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -89,32 +86,35 @@ stale | PS-5.1 parse 108/0. Gate stack changed heavily 08-02/04/07 -- decision-t
 
 ## OPEN DECISIONS -- Rob's call
 
-**LA_LEMS DP/DQ** -- PARKED. (AZ DL scope inversion CLOSED v3.5; the two AZ fuzz survivors CLOSED
-08-04 as HARNESS artifacts -- do NOT widen those gates.)
-**Residual, recorded, NOT owed:** `VEHICLE_BODY_STYLE|NJ_NIBRS` across all 20 QRDMs vs CLAUDE.md's
+**LA_LEMS DP/DQ** -- PARKED. (AZ DL scope inversion CLOSED v3.5; the 2 AZ fuzz survivors CLOSED 08-04
+as HARNESS artifacts -- do NOT widen those gates.)
+**Residual, recorded, NOT owed:** `VEHICLE_BODY_STYLE|NJ_NIBRS` in all 20 QRDMs vs CLAUDE.md's
 "CA=VEHICLE" -- HYPOTHESIS, unsettleable from the repo | fidelity advisory 11 UNDER / 40 OVER (none on
-the fixture; use `usx-adjudicate`) | CCH spec-plan name divergences | `audit_devdoc_optionals` /
-`audit_log_content` FLAKE under parallel load -- re-run alone | `attributeTypeId=RACE` used by 10
-providers vs FIELD_REFERENCE "DO NOT use" (AP #3) -- stale KB line, CA_CLETS is tenant-proven.
+the fixture) | CCH spec-plan name divergences | `audit_devdoc_optionals` / `audit_log_content` FLAKE
+under parallel load -- re-run alone | `attributeTypeId=RACE` in 10 providers vs FIELD_REFERENCE "DO
+NOT use" (AP #3) -- stale KB line, CA_CLETS is tenant-proven.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
 Cases live in the skills: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c, `usx-test-iterate`.
 
-- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED.** 08-07: invented a DEX number for IL; read
-  grep COUNTS as "HI builds State2-5" when the 4 hits were EXCLUSION comments. Haste, not knowledge.
-- **CHECK IF IT IS ALREADY ADJUDICATED FIRST.** Re-derived both IL findings from scratch; both were
-  already in `ACCEPTED_DIVERGENCES` since 08-02. Read the registry + `git log` before investigating.
-- **AIM A MUTATION AT THE GATE THAT OWNS THE CLASS.** `il-drop-identifier-guardrail` "SURVIVED"
-  reachability because it is an ORDERING defect -> repointed to `audit_devdoc_order`, KILLED.
-- **NEVER cite another provider as authority.** Only CC->CA_CLETS and `<BASE>_<VARIANT>`->`<BASE>`.
-- **A RECORD IS A CLAIM -- read the artifact.** 2r reads `DEX_TICKET.md`, not the ticket; enforce
-  reads CACHED reports (2e said PROVISIONAL after the file said CONFIRMED -- rerun `build_report`).
-  Exit 0 is not evidence a gate spoke: grep its VERDICT line; print the denominator.
-- **A finding across MANY providers is almost always YOUR PROBE** (08-07: `attributeTypeId=RACE` in
-  10 providers was a stale KB line, not 10 defects).
-- **Add a new gate/test-kind to EVERY harness AND consumer** (fuzz, portability, efficacy; plan-kinds
-  also need the label fn, relabeler, importer AND `driver.js` filter).
-- **MUTATION ORDER: mutate -> restore -> RE-STAMP -> verify.** `git status` clean is not sufficient.
-- **Multi-line `.Replace()` no-ops on CRLF -- use Edit.** Document a new tool in the SAME action.
-- **REPLACE this file, never append.** The line gate has now caught me EIGHT times.
+- **A RECORD IS A CLAIM -- READ THE ARTIFACT. Worst repeat offender.** 08-10: HI's BUILD_NOTES said
+  the Attention `'X'` was the gate-feeder, I read the note (correctly, per build 6c) and STOPPED
+  there instead of asking whether the version asserting it could support the claim -- it changed two
+  things at once. Rob overruled me and the wire proved him right 9/9. Same class: 2r reads
+  `DEX_TICKET.md` not the ticket; enforce reads CACHED reports. **Exit 0 is not evidence a gate
+  spoke -- grep its VERDICT line and print the DENOMINATOR** (08-10: `audit_sqvr_integrity` CHECK 2
+  compared ZERO on 17 providers and printed PASS).
+- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED.** 08-07: invented a DEX number; read grep
+  COUNTS as "HI builds State2-5" when the 4 hits were EXCLUSION comments.
+- **CHECK IF IT IS ALREADY ADJUDICATED FIRST** -- registry + `git log` before investigating.
+- **AIM A MUTATION AT THE GATE THAT OWNS THE CLASS** (ordering defect -> `audit_devdoc_order`).
+- **DON'T RE-IMPLEMENT A PARSER (std 4.4).** 08-10: hand-counted HI's combos twice, got nothing, then
+  `audit_test_coverage` answered it instantly. **NEVER cite another provider as authority** (only
+  CC->CA_CLETS, `<BASE>_<VARIANT>`->`<BASE>`).
+- **A finding across MANY providers is usually YOUR PROBE** -- but not always: verify at artifact
+  level either way (08-10's 17-of-20 vacuous check was real, confirmed on HI's own numbers first).
+- **A shared-tool change that reddens ANOTHER provider gets a FLAG, never a fix** (tooling 8c).
+- **Add a new gate/test-kind to EVERY harness AND consumer.** MUTATION ORDER: mutate -> restore ->
+  RE-STAMP -> verify. Multi-line `.Replace()` no-ops on CRLF -- use Edit.
+- **REPLACE this file, never append.** The line gate has now caught me NINE times.

@@ -25,8 +25,36 @@
      [DORMANT] (VehicleStolenQuery is not built, the server auto-generates it), so markers
      DORMANT / NOT BUILT / NOTBUILT / REMOVED / OUT OF SCOPE / NOT APPLICABLE / SKIP are
      accepted and reported as [NOTE].
-  2. Stated totals match reality ("Total CommSys combos: N", "N CommSys QIDMs", "N combos").
+  2. Stated totals match reality -- the GRAND-total combo count, the CommSys QIDM count and the
+     Architecture line. CHECK 2 REPORTS ITS OWN DENOMINATOR and says so when it finds nothing to
+     compare; see the note below for why that is not cosmetic.
   3. The stated "JSON version:" matches the active JSON's filename version.
+
+  WHY CHECK 2 PRINTS A DENOMINATOR (fixed 2026-08-10, LAW 2 / ENGINEERING_STANDARD 4.3)
+  --------------------------------------------------------------------------------------
+  CHECK 2 originally matched three EXACT phrasings: 'Total CommSys combos: N', 'N CommSys QIDMs'
+  and '^Architecture: ..., N combos'. Measured across the portfolio, those fire on 3 providers.
+  The other 17 got ZERO totals comparisons and the tool still printed
+  '[PASS] SQVR consistent with the JSON' -- a vacuous pass on 85% of the portfolio, on the one
+  check this tool exists to perform.
+  It was caught on HI_HCJDC_OFML, which wrote 'Total combos: 12 CommSys' -- the word CommSys
+  AFTER the number, so every pattern missed. HI's SQVR asserted 17 combos against a JSON holding
+  12, plus 'CONFIRMED: none on v4.6' and 'PENDING: ALL 5 entities' on a provider tenant-verified
+  ALL-PASS twice, and this gate passed it through nine version bumps. The SQVR is what a tester
+  reads to decide what to test, so a stale total is not a typo.
+  Only 7 of 20 SQVRs assert a grand total at all. For the 13 that do not, CHECK 2 now emits an
+  explicit [NOTE] that it did not run, rather than contributing silence to a PASS. Making that a
+  FAIL was rejected: it would redden 13 providers for a sentence they never wrote.
+
+  THE PHRASING TRAP -- read before "simplifying" the grand-total regex.
+  NJ_NJCJIS writes 'Total combos: 5 QIDMs / 8 combos (+ 3 user-approved skips)'. The obvious
+  pattern 'Total combos:\s*(\d+)' captures 5 -- the QIDM count -- and emits a FALSE FAIL against
+  a JSON with 8. So the number immediately PRECEDING the word 'combos' wins, and only if there is
+  none do we fall back to the number FOLLOWING 'combos:'. That ordering resolves all 7 asserting
+  providers correctly (FL 31, HI 12, LA 12, NJ 8, NY 16, TX 19 -- verified 2026-08-10 against
+  audit_test_coverage's count from each emitted JSON). Do NOT broaden this to a bare
+  '(\d+) combos' anywhere in the file: every SQVR carries per-entity and per-section counts
+  ('15 combos', '8 combos', '2 combos') that are not the grand total.
 
   Deliberately NOT checked: whether every JSON combo has an SQVR block. 13 never-tested
   providers use a lighter SQVR format with no per-combo blocks at all; flagging those would
@@ -116,21 +144,51 @@ for ($i = 0; $i -lt $txt.Count; $i++) {
 }
 
 # -- CHECK 2: stated totals --
+# Assertions COMPARED is tracked and printed: a CHECK 2 that matched nothing must not be
+# indistinguishable from a CHECK 2 that found everything correct. See the header note.
 $allTxt = $txt -join "`n"
-$m2 = [regex]::Match($allTxt, 'Total CommSys combos:\s*(\d+)')
-if ($m2.Success) {
-    if ([int]$m2.Groups[1].Value -eq $comboCount) { Emit "  [PASS] stated CommSys combo total ($comboCount) matches the JSON" "Green"; $pass++ }
-    else { Emit "  [FAIL] stated 'Total CommSys combos: $($m2.Groups[1].Value)' but the JSON has $comboCount" "Red"; $fail++ }
+$totalsChecked = 0
+
+# Grand-total combo count. Accept every phrasing the portfolio actually uses:
+#   'Total CommSys combos: 19'          -> 19
+#   'Total combos: 12 CommSys + RMS'    -> 12
+#   'Total combos: 31 CommSys (6 QIDMs)'-> 31
+#   'Total combos: 5 QIDMs / 8 combos'  -> 8   (NOT 5 -- see THE PHRASING TRAP in the header)
+# Scope to the line carrying the 'Total ... combos' phrase so per-section counts can't be swept in.
+$totalLine = ($txt | Where-Object { $_ -match 'Total\s+(CommSys\s+)?combos?\s*:' } | Select-Object -First 1)
+if ($totalLine) {
+    $stated = $null
+    # A digit immediately BEFORE the word 'combos' is the authoritative one when present.
+    $pre = [regex]::Match($totalLine, '(\d+)\s+combos?\b')
+    if ($pre.Success) { $stated = [int]$pre.Groups[1].Value }
+    else {
+        $post = [regex]::Match($totalLine, 'combos?\s*:\s*(\d+)')
+        if ($post.Success) { $stated = [int]$post.Groups[1].Value }
+    }
+    if ($null -ne $stated) {
+        $totalsChecked++
+        if ($stated -eq $comboCount) { Emit "  [PASS] stated CommSys combo total ($comboCount) matches the JSON" "Green"; $pass++ }
+        else { Emit "  [FAIL] SQVR states $stated combo(s) but the JSON has $comboCount -- '$($totalLine.Trim())'" "Red"; $fail++ }
+    }
 }
 $m3 = [regex]::Match($allTxt, '(\d+)\s+CommSys QIDMs')
 if ($m3.Success) {
+    $totalsChecked++
     if ([int]$m3.Groups[1].Value -eq $qidmCount) { Emit "  [PASS] stated CommSys QIDM count ($qidmCount) matches the JSON" "Green"; $pass++ }
     else { Emit "  [FAIL] stated '$($m3.Groups[1].Value) CommSys QIDMs' but the JSON has $qidmCount" "Red"; $fail++ }
 }
 $m4 = [regex]::Match($allTxt, '(?m)^Architecture:.*?,\s*(\d+)\s+combos')
 if ($m4.Success) {
+    $totalsChecked++
     if ([int]$m4.Groups[1].Value -eq $comboCount) { Emit "  [PASS] Architecture line combo count ($comboCount) matches the JSON" "Green"; $pass++ }
     else { Emit "  [FAIL] Architecture line says '$($m4.Groups[1].Value) combos' but the JSON has $comboCount" "Red"; $fail++ }
+}
+if ($totalsChecked -eq 0) {
+    Emit "  [NOTE] CHECK 2 DID NOT RUN -- this SQVR asserts no combo/QIDM total, so nothing was compared" "Yellow"
+    Emit "         (not a defect: 13 of 20 SQVRs use the lighter format. Recorded so a silent" "DarkGray"
+    Emit "          non-comparison is never read as a verified total -- ENGINEERING_STANDARD 4.3.)" "DarkGray"
+} else {
+    Emit "  [INFO] CHECK 2 compared $totalsChecked stated total(s) against the JSON" "DarkGray"
 }
 
 # -- CHECK 3: stated version --

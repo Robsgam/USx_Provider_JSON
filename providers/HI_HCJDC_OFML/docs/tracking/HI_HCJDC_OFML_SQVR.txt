@@ -11,10 +11,13 @@ Live test: COMPLETE + INTEGRITY-CERTIFIED -- v4.7 zero-error pass 2026-07-02 (at
 v4.0 gap tests 2026-06-23: T1-T5 (renders), T22 (BQ+Reg any[]), T23 (KQ+Name any[]),
 T26 (DH deselects DL), T27-T28 (negatives) all PASS. 28/28 tests PASS.
 
-NOTE: v4.6 rebuild un-confirms ALL entities -- full re-test from T1 required (PENDING).
-Prior live evidence (v3.6 Vehicle T1-T7, v2.9 Person, v3.5 Firearm/Article/Boat) is
-retained below for reference but no longer counts as CONFIRMED until re-tested on v4.6.
-v4.6 changes: VehicleMakeName code-source fix (result-mapping) + Vehicle State label.
+CURRENT (v4.15, 2026-08-10): ALL 5 ENTITIES CONFIRMED -- USx tenant re-sweep ALL-PASS 46/46
+(Vehicle 16 / Person 14 / Firearm 6 / Article 3 / Boat 7), four log gates 46/46, inflation
+0/0/0/0. v4.15 removed the Attention 'X' (DEX-1283) and the discriminating observation came
+back positive: <Attention>SGAMBELLONE R</Attention> on 9/9 DH wires with no prefill and no
+combo default. Everything below dated v4.14 or earlier is retained as history, not as the
+current confirmation. (The stale "v4.6 rebuild un-confirms ALL entities (PENDING)" note that
+sat here through nine subsequent versions was removed 2026-08-10.)
 
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9)
 Reference: HIDLE.json (hand-built HI production JSON, comparison only)
@@ -117,7 +120,8 @@ Architecture notes:
 
   M55L_guardrail -- plate-wins: Plate+VIN co-entry -> plate path wins (bare plate -> M55L per
     v4.7 CHECK 16 routing; +Type -> RQ), VIN absent from XML. Was mislabelled RQ_guardrail
-    until the 2026-07-02 content-based relabel (sim expectation corrected). [PENDING]
+    until the 2026-07-02 content-based relabel (sim expectation corrected). [CONFIRMED]
+    v4.15 re-verified 2026-08-10: M55L_guardrail_vs_M55S + M55L_guardrail_vs_RQV both PASS.
     v4.14 USx-tenant-verified 2026-07-28: M55L_guardrail_vs_M55S + M55L_guardrail_vs_RQV both PASS
     (captured combo names carry a _vs_<loser> suffix the SQVR line's generic label predates;
     hand-reconciled -- auto-updater matches keyReference: lines, not guardrail variants).
@@ -255,8 +259,9 @@ Architecture notes:
     any: (empty)
     keyReference: QG
 
-  QG_any -- Serial + Make + Caliber + Model + RelatedSearchHitIndicator all present [PENDING]
+  QG_any -- Serial + Make + Caliber + Model + RelatedSearchHitIndicator all present [CONFIRMED]
     v4.14 USx-tenant-verified 2026-07-28: HI_HCJDC_OFML_v4.14_QG_any.txt PASS (both PHASE 6 gates verified).
+    v4.15 re-verified 2026-08-10: HI_HCJDC_OFML_v4.15_QG_any.txt PASS (all four log gates).
 
 ================================================================================
 5. ArticleSingleQuery -- Article Entity
@@ -292,8 +297,9 @@ Architecture notes:
     any: (empty)
     keyReference: QB
 
-  QB_guardrail -- Hull>Reg: Hull+Reg co-entry -> only QB fires, BQ exits pool [PENDING]
+  QB_guardrail -- Hull>Reg: Hull+Reg co-entry -> only QB fires, BQ exits pool [CONFIRMED]
     v4.14 USx-tenant-verified 2026-07-28: HI_HCJDC_OFML_v4.14_QB_guardrail_vs_BQ.txt PASS.
+    v4.15 re-verified 2026-08-10: HI_HCJDC_OFML_v4.15_QB_guardrail_vs_BQ.txt PASS.
 
   Priority order: BQ > QB -- CONFIRMED (note; backed by live v3.5 T22/T23)
     Registration before Hull. T22: RegistrationNumber filled -> BQ. T23: Hull filled -> QB.
@@ -311,10 +317,19 @@ RMS BUNDLE
 SUMMARY
 ================================================================================
 
-  Total combos: 17 CommSys + RMS co-fires
-  CONFIRMED: none on v4.6 -- full re-test from T1 required (rebuild un-confirms all entities).
-  Prior gap tests 2026-06-23 (T1-T5 renders, T22/T23 any[], T26 deselect, T27-T28 negatives,
-    28/28 PASS) and v3.6 Vehicle T1-T7 are retained for reference only.
-  PENDING: ALL 5 entities (v4.6 rebuild: VehicleMakeName code-source fix + Vehicle State label).
+  Total combos: 12 CommSys + RMS co-fires
+    (counted 2026-08-10 from the emitted v4.15 JSON via audit_test_coverage, which reports
+    "Total combos (CommSys): 12 / 100% coverage / 46 logs". The previous "17" was stale and
+    had survived nine version bumps -- see the note under CONFIRMED below.)
+  CONFIRMED: ALL 5 entities on v4.15 (2026-08-10) -- ALL-PASS 46/46, 12/12 combos carry at
+    least one log, four log gates 46/46, inflation 0/0/0/0.
+  PENDING: none.
+  DOC-DEFECT FOUND AND FIXED 2026-08-10, recorded so it is not re-introduced: this block still
+    read "Total combos: 17", "CONFIRMED: none on v4.6" and "PENDING: ALL 5 entities" while the
+    provider had been tenant-verified ALL-PASS twice on v4.14. Three per-combo [PENDING] markers
+    (M55L_guardrail, QG_any, QB_guardrail) each sat directly ABOVE a line recording their own
+    PASS -- the evidence was appended and the marker was never flipped. audit_sqvr_integrity
+    PASSED throughout, so its totals check does not read these lines; that gate gap is the
+    follow-up, not this document.
   Plate-wins guardrail: LIVE-PROVEN HI v3.6 (T6 all-fields decisive + T7 bare plate+VIN decisive).
   vehicleYear any[] fix: LIVE-PROVEN HI v3.6 (T3 M55S + T5 RQV, VehicleYear=2019 in XML).

@@ -1,3 +1,4 @@
 # PENDING_UPDATES -- empty. Both v7.12 blockers resolved at v7.13 (2026-07-30):
 # the RegistrationNumber dropped-optional is FIXED; the TitleLienInformation devdoc gap is a
 # recorded product sunset, re-filed with the rule enforce 2p accepts. Narrative in BUILD_NOTES.
+[FLAG:sqvr-totals-denominator] audit_sqvr_integrity CHECK 2 broadened (2026-08-10): it previously matched 3 exact phrasings and so compared NOTHING on 17 of 20 providers while printing PASS. FL_FCIC now FAILs: its SQVR asserts "Total combos: 31 CommSys" against 30 in the emitted v7.18 JSON (audit_test_coverage). ADJUDICATE at FL next rebuild -- decide whether 30 is correct (v7.15-v7.17 removed a dead control, so the count plausibly dropped and the SQVR was not updated) or whether the SQVR counts something the tool does not, then correct the losing side. Doc-only: no wire impact, no version bump. (flagged 2026-08-10)
