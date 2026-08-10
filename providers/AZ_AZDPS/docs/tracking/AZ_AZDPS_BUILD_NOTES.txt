@@ -1,7 +1,26 @@
 AZ_AZDPS -- Build Notes
 ========================
 Last updated: 2026-08-10
-Current version: v3.8 (DEX-1283 Attention 'X' removed)
+Current version: v3.9 (canonical NCIC Image label -- AZ now conforms on every measured convention)
+
+v3.9  2026-08-10  DEX-1284 label conformance -- ONE label, measured not assumed
+  CHANGED: 'NCIC Image (select Y to request a licence photo)' -> 'NCIC Image'. Nothing else.
+  WHY ONLY ONE: rather than apply a remembered checklist, the conventions were MEASURED across the
+    seven tenant-complete providers first. AZ already conformed on all of them except this label:
+      OLN label exactly 'OLN'          -- 8 of 9 providers; AZ already correct
+      'Stolen Check' bare              -- canonical on FL/HI/IL/NY/TX; AZ already correct
+      zero '(optional)' label suffixes -- AZ already at 0
+      ALL-CAPS card titles carrying the query paths -- AZ already correct (6 cards, 6 path titles)
+    So the honest scope was one label, not a sweep. The helper it carried is exactly what the
+    lean-label convention strips: the CARD TITLE carries the query paths, and verify_build CHECK 15
+    accepts the bare form via $canonicalBareLabels, so no LABEL-OVERRIDE tag is needed for it.
+  NOT CHANGED, deliberately: 'State (leave blank for AZ)' and 'State (DH)' keep their routing hints
+    (the convention explicitly exempts State -- the hint tells the officer which combo fires), and
+    'Attention (auto)' / 'Badge (auto)' / 'Requestor (auto)' sit on HIDDEN controls no officer sees.
+  GATES: validator 68 PASS / 0 FAIL / 0 WARN, verify 17 PASS / 0 WARN / 0 FAIL.
+  COST: none. AZ is NEVER-TESTED and NOT imported, so the bump archived 0 logs.
+
+v3.8  2026-08-10  DEX-1283 Attention 'X' + four Vehicle over-permits
 
 v3.8  2026-08-10  DEX-1283: remove the Attention 'X' -- AZ was NOT exempt, and I said it was
   CHANGED: Three sites, one field, identical to the HI_HCJDC_OFML v4.15 fix earlier today.

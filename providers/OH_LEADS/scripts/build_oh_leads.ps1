@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.2'
+$Version     = '2.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -354,7 +354,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','RegistrationState','attention')
-                defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
+                defaults = @()
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
@@ -365,7 +365,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('OperatorLicenseNumberDH'); any = @('purposeCodeDH','RegistrationState','attention')
-                defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
+                defaults = @()
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
@@ -552,6 +552,15 @@ $ohBundle = [PSCustomObject]@{
 
 # ------------------------------------------------------------------
 # Vehicle -- 6 cards
+#
+# v2.3 DEX-1284 LEAN-LABEL PASS. The four tags below declare labels deliberately left BARE, which
+# downgrades verify_build CHECK 15 from WARN to INFO (the documented mechanism -- IL_LEADS_OFML
+# carries 16 of them). Stripping the helper WITHOUT the tag is what produced 4 fresh WARNs on the
+# first v2.3 build; the label and the tag are one change, not two.
+# LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284, canonical on FL/HI/IL/NY/TX (any[] optional)
+# LABEL-OVERRIDE: firearmMake -- bare "Make" per DEX-1284 lean pass (any[] optional gun qualifier)
+# LABEL-OVERRIDE: gunCaliber -- bare "Caliber" per DEX-1284 lean pass (any[] optional gun qualifier)
+# LABEL-OVERRIDE: AddressCounty -- bare "County Code" per DEX-1284 lean pass (any[] optional owner-search qualifier)
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
@@ -607,7 +616,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'OwnerLastName_Input';  node = Inp 'OwnerLastName'  'Owner Last Name'  '30' 'ROW_VEH_NAME_1' }
             )}
             @{ id = 'ROW_VEH_NAME_2'; cols = @('6'); fields = @(
-                @{ id = 'AddressCounty_Input'; node = Inp 'AddressCounty' 'County Code (optional)' '4' 'ROW_VEH_NAME_2' }
+                @{ id = 'AddressCounty_Input'; node = Inp 'AddressCounty' 'County Code' '4' 'ROW_VEH_NAME_2' }
             )}
         )
     }
@@ -645,7 +654,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (out-of-state OLN, optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
             )}
         )
     }
@@ -654,7 +663,7 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER LICENSE - OLN SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_OLN_1' }
             )}
         )
     }
@@ -677,11 +686,11 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER HISTORY - OLN SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_DH_OLN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number' '20' 'ROW_PER_DH_OLN_1' }
-                @{ id = 'PurposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code (optional)' '1' 'ROW_PER_DH_OLN_1' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_OLN_1' }
+                @{ id = 'PurposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_OLN_1' }
             )}
             @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
+                @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' }
             )}
         )
     }
@@ -719,11 +728,11 @@ $faLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
-                @{ id = 'FirearmMake_Input';  node = Sel 'firearmMake'  'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'FirearmMake_Input';  node = Sel 'firearmMake'  'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('6','6'); fields = @(
-                @{ id = 'GunCaliber_Input';                node = Sel 'gunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-gun check (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                @{ id = 'GunCaliber_Input';                node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -753,8 +762,8 @@ $artLayout = MakeLayouts @(
                 @{ id = 'NCICNumber_Input'; node = Inp 'NCICNumber' 'NCIC Number' '9' 'ROW_ART_2' }
             )}
             @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_3' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-article check (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_3' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_3' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_3' }
             )}
         )
     }
@@ -778,8 +787,8 @@ $boaLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_BOA_OPT_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'Image (in-state blank, optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Y for NCIC stolen-boat check (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_OPT_1' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_OPT_1' }
             )}
         )
     }

@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: OH_LEADS_v2.2
-  Source: OH_LEADS_v2.2.json
-  Generated: 2026-08-02 21:50
+  PICKLIST / DROPDOWN REPORT: OH_LEADS_v2.3
+  Source: OH_LEADS_v2.3.json
+  Generated: 2026-08-10 15:56
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -10,29 +10,29 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Article
     articleTypeCode [Article Type]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
-    ImageIndicator [Image (optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Y for NCIC stolen-article check (optional)]
+    relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
-    ImageIndicator [Image (in-state blank, optional)] (default=N)
+    ImageIndicator [NCIC Image] (default=N)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     RegistrationState [State (leave blank for OH)]
       Config: attributeTypeId=STATE
-    relatedHitSearchIndicator [Y for NCIC stolen-boat check (optional)]
+    relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
-    firearmMake [Make (optional)]
+    firearmMake [Make]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    gunCaliber [Caliber (optional)]
+    gunCaliber [Caliber]
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Y for NCIC stolen-gun check (optional)]
+    relatedHitSearchIndicator [Stolen Check]
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person
-    ImageIndicator [Image (out-of-state OLN, optional)] (default=Y)
+    ImageIndicator [NCIC Image] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     RegistrationState [State (leave blank for OH)]
       Config: attributeTypeId=STATE

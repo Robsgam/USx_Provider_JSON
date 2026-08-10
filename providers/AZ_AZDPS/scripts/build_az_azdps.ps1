@@ -160,7 +160,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.8'
+$Version = '3.9'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -821,7 +821,11 @@ $perLayout = MakeLayouts @(
             # registered dead combo precisely because the prefill makes the field always-present.
             # Left visible and un-automated: exposing a field before automating it is the standing rule.
             @{ id = 'ROW_PER_DL_5'; cols = @('12'); fields = @(
-                @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image (select Y to request a licence photo)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_PER_DL_5' }
+                # v3.9: canonical bare 'NCIC Image' (DEX-1284 global label rule). The old
+                # "(select Y to request a licence photo)" helper is exactly what the lean-label
+                # convention strips -- the card title carries the query paths. verify_build CHECK 15
+                # accepts the bare form via $canonicalBareLabels, so no LABEL-OVERRIDE is needed.
+                @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_PER_DL_5' }
             )}
             # Requestor HIDDEN + handler-fed. ORDERING IS WHAT KEEPS THIS SAFE: because Requestor and
             # ImageIndicator are BOTH always-present, DQPN's variable requirement is only badge+Name --

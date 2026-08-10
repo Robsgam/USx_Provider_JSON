@@ -1,0 +1,45 @@
+# AZ_AZDPS — DEX Ticket
+
+**Active ticket:** [DEX-974 — \[AZ - AZDPS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-974)
+Project: DEX (CJIS/USx/DEx Implementation) · Status (verified 2026-08-10): In Progress · Unassigned
+
+Post the changelog here on every version bump (dump first, then per-version diff, led by the
+🤖 auto-update attribution line; release line after that version's tenant testing passes).
+
+> **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-974`
+> (cloudId `5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c`). The equivalent file on HI_HCJDC_OFML lied once
+> by stopping three comments short, and the one on FL produced a confidently wrong "nine versions
+> owed" the same way. `audit_lifecycle` (enforce 2r) READS THIS FILE, NOT THE TICKET — it can PASS
+> on a lie and FAIL on the truth.
+>
+> **TENANT INFO STAYS OFF THIS TICKET (Rob, 2026-08-03):** no attachment note, no catalog post, no
+> Foundation import line. Track those in `providers/IMPORT_LEDGER.md` sections B and C.
+
+**Why this file only exists from 2026-08-10:** AZ had no ticket pointer at all until then, so
+`audit_lifecycle` reported `[NOTE] no DEX_TICKET.md; no ticket pointer exists for this provider` and
+the lifecycle tail was ungated for this provider. It was created when
+`audit_provider_uniformity` compared AZ against the seven tenant-complete providers and found
+`DEX_TICKET.md` present on 7 of 9 — AZ and OH_LEADS were the two without one. The DEX number was
+taken from `knowledge-base/JIRA_REFERENCE.txt` line 21 and `IMPORT_LEDGER.md`, which agree, and then
+**confirmed against Jira itself** rather than trusted — the summary really is
+"\[AZ - AZDPS\] USx Provider Build". (Inventing a DEX number is a mistake already made once on IL
+in this project; hence the verification.)
+
+**Posted so far** (indexed from the ticket 2026-08-10 — 1 comment, accounted for):
+- 776896 (2026-07-10, Leo Hisoire) — a scheduling/roadmap note referencing FB-6040 and a Friday
+  meeting. **Not a changelog.** No 🤖 auto-update comment has ever been posted here.
+
+**Current: v3.9 — BUILT 2026-08-10, NEVER tenant-tested (55 tests owed), never imported.**
+Recent history (full detail in `AZ_AZDPS_BUILD_NOTES.txt`):
+- **v3.9** — DEX-1284 label conformance: `NCIC Image` canonicalised (one label; every other measured
+  convention already conformed).
+- **v3.8** — two real wire fixes: DEX-1283 Attention `'X'` removed (feeder `initialValue` + both
+  KQH/KQ combo `defaults[]`), and **four over-permitted fields** removed from the Vehicle combos
+  (`VehicleMakeCode`/`vehicleYear` off the plate combo, `LicensePlateTypeCode`/`LicensePlateYear`
+  plus their `defaults[]` off the VIN combo) — the two metadata `ACVR` variants share one keyRef and
+  define disjoint optionals.
+- **v3.7** — BadgeNumber actually wired (it never had been) + four prefill shadows removed.
+
+**Owed to this ticket:** the full changelog dump (v1.0 → v3.9) has NEVER been posted, plus a release
+line once the 55-test sweep passes. **Jira is DRAFT-AND-WAIT: draft it and wait for Rob's explicit
+approval before posting, every provider, every time.**

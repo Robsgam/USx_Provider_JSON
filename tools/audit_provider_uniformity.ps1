@@ -112,6 +112,31 @@ $optionalByDesign = @{
 $contentDirs = @('source')
 
 # ---------------------------------------------------------------------------------------------
+# TEST-STATE artifacts. These exist as a CONSEQUENCE of tenant testing, so on a provider that has
+# never been tested their absence is the CORRECT state, not drift.
+#
+# Added 2026-08-10 after running the default ALL-PASS scope out to 9 providers (7 tenant-complete
+# + AZ_AZDPS + OH_LEADS, both NEVER-TESTED) on Rob's ask to compare them. It reported 14
+# divergences of which ELEVEN were this one fact restated -- "no captures yet, so no logs/<Entity>/".
+# That is a probe reporting its own scope as a finding, and it buried the 3 real gaps. The default
+# scope had hidden the flaw because every provider in it was tested.
+#
+# The distinction that matters is WHICH SIDE OF TESTING an artifact is born on:
+#   PRE-test  (a provider should have it BEFORE its first sweep, so absence IS a real gap):
+#             <P>_PICKLIST_SCOPE.json / .console.js -- emit_picklist_scope.ps1 produces these and
+#             the browser scope tool CONSUMES them, so they are an input to testing.
+#   POST-test (absence is correct until tested):
+#             logs/<Entity>/ folders, TENANT_PICKLISTS.json (import_picklists.ps1 writes it FROM a
+#             capture download), .test_state.json / .test_version.
+# ---------------------------------------------------------------------------------------------
+$postTestArtifacts = @(
+    'Vehicle','Person','Firearm','Article','Boat',
+    'TENANT_PICKLISTS.json','.test_state.json','.test_version'
+)
+# Which providers in scope have actually been tenant-tested (log-truth, same classifier as above).
+$testedState = @{}
+
+# ---------------------------------------------------------------------------------------------
 # Scope
 # ---------------------------------------------------------------------------------------------
 $allDirs = Get-ChildItem $provRoot -Directory | Sort-Object Name
@@ -143,6 +168,17 @@ $scopeLabel = if ($Providers) { 'explicit -Providers' } elseif ($All) { 'ALL pro
 Emit ""
 Emit "  Scope: $scopeLabel -- $($scope.Count) provider(s)"
 Emit "         $(($scope | ForEach-Object { $_.Name }) -join ', ')"
+
+foreach ($d in $scope) {
+    $st = Get-ProviderTestState -ProvDir $d.FullName -Name $d.Name
+    $testedState[$d.Name] = ($st.State -eq 'ALL-PASS' -or $st.State -eq 'PARTIAL' -or $st.State -eq 'HAS-FAIL')
+}
+$untested = @($scope | Where-Object { -not $testedState[$_.Name] } | ForEach-Object { $_.Name })
+if ($untested.Count -gt 0) {
+    Emit "         NEVER-TESTED in scope: $($untested -join ', ') -- POST-test artifacts (logs/<Entity>/," 'DarkGray'
+    Emit "         TENANT_PICKLISTS.json, .test_state) report [NOTE] for these, not [FAIL]. PRE-test" 'DarkGray'
+    Emit "         inputs like <P>_PICKLIST_SCOPE.* still FAIL, because a provider needs those to test." 'DarkGray'
+}
 
 # ---------------------------------------------------------------------------------------------
 # Collect the normalized artifact token set per provider, per area
@@ -203,6 +239,14 @@ foreach ($area in $areas.Keys) {
         $reason = $null
         foreach ($k in $optionalByDesign.Keys) { if ($tok -eq $k) { $reason = $optionalByDesign[$k] } }
 
+        # A POST-test artifact missing ONLY on never-tested providers is correct state, not drift.
+        if (-not $reason -and $postTestArtifacts -contains $tok) {
+            $missingAllUntested = @($missing | Where-Object { $testedState[$_] }).Count -eq 0
+            if ($missingAllUntested) {
+                $reason = "POST-test artifact -- absent only on never-tested provider(s), which is the correct state"
+            }
+        }
+
         if ($reason) {
             Emit "      [NOTE] $tok" 'Yellow'
             Emit "             on $($have.Count)/$($scope.Count): $($have -join ', ')" 'DarkGray'
@@ -235,9 +279,16 @@ $entClean = $true
 foreach ($e in $entities) {
     $tokensCompared++
     $missing = @($scope | Where-Object { -not (Test-Path (Join-Path $_.FullName "logs\$e")) } | ForEach-Object { $_.Name })
-    if ($missing.Count -gt 0) {
-        Emit "      [FAIL] logs/$e missing on: $($missing -join ', ')" 'Red'
+    if ($missing.Count -eq 0) { continue }
+    # Entity log folders are created BY capture ingest, so on a never-tested provider their absence
+    # is the correct state. Only a TESTED provider missing one is a real finding.
+    $missingTested = @($missing | Where-Object { $testedState[$_] })
+    if ($missingTested.Count -gt 0) {
+        Emit "      [FAIL] logs/$e missing on TESTED provider(s): $($missingTested -join ', ')" 'Red'
         $fail++; $entClean = $false
+    } else {
+        Emit "      [NOTE] logs/$e absent on never-tested: $($missing -join ', ') -- correct state" 'Yellow'
+        $note++; $entClean = $false
     }
 }
 if ($entClean) { Emit "      [PASS] all 5 entity folders present on all $($scope.Count) provider(s)" 'Green'; $pass++ }

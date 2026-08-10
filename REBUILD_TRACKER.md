@@ -37,7 +37,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 1 | NJ_NJCJIS | v4.15 |  | 61P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 2 | HI_HCJDC_OFML | v4.15 |  | 65P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 3 | NY_NYSPIN_EJUSTICE | v4.23 |  | 76P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
-| 4 | AZ_AZDPS | v3.8 |  | 68P/0F/0W/0LIM | 0 | v3.1 (2026-07-24) existence-gate identifier-priority guardrails added (were demotion-only in v3.0); single-JSON; NOT USx-tenant-tested |
+| 4 | AZ_AZDPS | v3.9 |  | 68P/0F/0W/0LIM | 0 | v3.1 (2026-07-24) existence-gate identifier-priority guardrails added (were demotion-only in v3.0); single-JSON; NOT USx-tenant-tested |
 | 5 | FL_FCIC | v7.18 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v4.19 |  | 79P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
@@ -48,7 +48,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 12 | CA_SAN_LUIS_OBISPO | v2.3 |  | 67P/0F/0W/0LIM | 0 | out of scope |
 | 13 | IL_LEADS_OFML | v2.2 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 14 | MD_METERS | v2.0 |  | 69P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 15 | OH_LEADS | v2.2 |  | 77P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 15 | OH_LEADS | v2.3 |  | 78P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 16 | NM_NMLETS_OFML | v2.1 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 17 | OR_LEDS | v2.2 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 18 | TN_TIES | v2.1 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |

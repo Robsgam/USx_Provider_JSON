@@ -53,4 +53,13 @@
 #   Never USx-tenant-tested. v2.1 owes a full 5-entity sweep from T1.
 #   3 metadata combinations remain MISSING/advisory (audit_query_trace) -- adjudicate vs devdoc Basic
 #   scope on the next pass; the devdoc lists no counterpart for them.
-[FLAG:validate-imgind-20b-l30] validate.ps1 + audit_cross_provider.ps1: LIMITATION #30 now requires State in a set[]; ImageIndicator check moved to BUILD_RULES 20b (prefill REQUIRED for serialization -- the defect is a combo gated ImageIndicator NOT_EXISTS). render_officer_guide + suggest_field_labels: -Encoding utf8NoBOM is PS7-only, a hard parameter-binding failure under the 5.1 engine enforce/pipeline use. Rebuild to re-record scores; LA_LEMS also gains a real 20b WARN. (flagged 2026-08-04)
+# [FLAG:validate-imgind-20b-l30]  RESOLVED 2026-08-10 at v2.3 -- the flag asked for exactly one thing,
+#   "Rebuild to re-record scores", and the v2.3 rebuild did it: validator now records 78 PASS / 0 FAIL
+#   / 0 WARN (STATUS.txt had been stuck at 77P since the 08-07 validate.ps1 generalization added a
+#   PASS line). Nothing in OH's build needed changing for it: LIMITATION #30 is satisfied (State is in
+#   set[] on the OOS combos), and the ImageIndicator/20b concern does not apply here -- OH gates no
+#   combo on ImageIndicator NOT_EXISTS, which is the actual defect 20b names.
+#   NOTE the flag did NOT self-clear on rebuild. CLAUDE.md says "build script clears it"; OH's build
+#   script has no such logic, so it was cleared by hand here. Do not assume the auto-clear exists.
+# (original text kept below for the record)
+# [FLAG:validate-imgind-20b-l30] validate.ps1 + audit_cross_provider.ps1: LIMITATION #30 now requires State in a set[]; ImageIndicator check moved to BUILD_RULES 20b (prefill REQUIRED for serialization -- the defect is a combo gated ImageIndicator NOT_EXISTS). render_officer_guide + suggest_field_labels: -Encoding utf8NoBOM is PS7-only, a hard parameter-binding failure under the 5.1 engine enforce/pipeline use. Rebuild to re-record scores; LA_LEMS also gains a real 20b WARN. (flagged 2026-08-04)
