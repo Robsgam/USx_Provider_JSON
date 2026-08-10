@@ -1,0 +1,148 @@
+IL_LEADS_OFML -- STATE BULLETIN LOG
+================================================================================
+Illinois State Police (ISP) LEADS bulletins and advisories that bear on this
+provider's configuration, with the assessment made at the time and the evidence it
+rested on. APPEND newest-first; never overwrite an entry -- the point of this file
+is that a future "did we already look at this?" is answerable without re-deriving.
+
+WHY THIS FILE EXISTS
+  A state bulletin is an EXTERNAL authority with a DEADLINE. It is not the devdoc
+  (query authority) and not the metadata XML (field authority), so no existing gate
+  reads it and nothing in the repo will ever surface it on its own. Stored here so
+  that if it comes back to us -- e.g. as a CommSys metadata change request, a
+  tenant-config task, or a rejection after an ISP edit goes live -- the analysis is
+  already on record with its evidence, and nobody has to re-open the PDF cold.
+
+CONVENTION (established 2026-08-10, first entry below)
+  bulletin PDF -> docs/reference/bulletins/IL_LEADS_OFML_LEADS_BULLETIN_<yyyy-MM-dd>.pdf
+  extracted    -> docs/reference/bulletins/IL_LEADS_OFML_LEADS_BULLETIN_<yyyy-MM-dd>.txt
+                  (pdftotext -layout; stored because poppler is NOT on PATH on this
+                   machine -- pdftotext.exe lives at
+                   C:\Program Files\Git\mingw64\bin\pdftotext.exe. Keeping the .txt
+                   means the bulletin stays greppable with no tooling.)
+  assessment   -> this file
+
+  *** DO NOT PUT BULLETINS IN source/. *** They were briefly placed there on
+  2026-08-10 and moved out the same hour, because source/ is not a document folder --
+  it is the TWO AUTHORITIES (devdoc PDF + metadata XML) that the tools assume, and
+  several of them glob it loosely:
+      audit_supported_queries.ps1:74   Get-ChildItem $srcDir -Filter '*.pdf'
+                                       (its devdoc FALLBACK when no _DEVDOC.txt exists)
+      audit_structure.ps1:478          Get-ChildItem $sourceDir -Filter '*.pdf'
+  A second PDF in source/ therefore becomes a candidate devdoc. IL survived only
+  because it HAS a _DEVDOC.txt and because 'IL_LEADS_OFML.pdf' happens to sort before
+  'IL_LEADS_OFML_LEADS_BULLETIN_...pdf' ('.' 0x2E < '_' 0x5F) -- luck, not design, and
+  this repo has already been burned once by an alphabetical source-folder glob reading
+  the wrong file and reporting green (see knowledge-base/README.txt, the
+  CA_CONTRA_COSTA 6-node-excerpt-vs-466-node-metadata incident). Keeping bulletins
+  under docs/reference/bulletins/ removes the hazard instead of relying on sort order.
+
+
+================================================================================
+2026-08-06 -- LEADS DAILY BULLETIN: "Illinois FoxTalk/OFML Requirements --
+              Improper XML Placeholders and Text Submissions"
+              Reviewed 2026-08-10 at IL_LEADS_OFML v2.2. NO CONFIG CHANGE MADE.
+================================================================================
+
+WHAT ISP IS DOING
+  Edits go live **2026-11-01** that will REJECT two classes of non-conformant
+  FoxTalk/OFML message. Both currently pass. Agencies are told to contact their
+  vendor to confirm whether changes are required.
+    CLASS 1  Improper XML placeholders -- self-closing / empty required HDR fields,
+             named explicitly as <USR/> and <ORI/>. "Adjustments have been made to
+             the edits to interrogate each of the above required HDR fields and
+             reject those messages with improper configurations."
+    CLASS 2  Text submissions -- legacy message keys carried in embedded text
+             elements, i.e. <MKE>FREE</MKE> with <FRE>LZV5.LIC/BJ9999.LIS/IL.</FRE>.
+  Reference + correct/incorrect examples:
+    https://isp.illinois.gov/LawEnforcement/LEADSInterfaces
+  Contact: ISP.HelpDesk@illinois.gov / 866-LEADS-00
+
+WHY IT LANDS ON THIS PROVIDER SPECIFICALLY
+  The bulletin's own CORRECT examples are our queries. It shows
+  <MKE>Z2</MKE> with <OLN>/<IMQ>/<RSH>, which is exactly the built Z2.O combo
+  (DriverLicenseQuery set[OperatorLicenseNumber] any[ImageIndicator,
+  relatedHitSearchIndicator, RegistrationState]), and <MKE>Z5</MKE>, our in-state
+  plate combo. IL_LEADS_OFML is a FoxTalk/OFML provider by name and by spec.
+
+ASSESSMENT AT v2.2: NOT OUT OF SPEC ON EITHER CLASS -- evidence, not opinion
+  CLASS 1 -- PASS. All 41 captured v2.2 tenant-test wires carry POPULATED
+    <UserName> and <ORI>; ZERO self-closing auth elements across 41/41 logs
+    (checked 2026-08-10 over providers/IL_LEADS_OFML/logs/*/). Example:
+        <Authentication>
+          <UserName>MK43RS</UserName>
+          <ORI>MK1234567</ORI>
+          <Mnemonic>MK1234567</Mnemonic>
+        </Authentication>
+  CLASS 2 -- PASS. Only structured message keys are built: Z2.P, Z2.V, Z5, Z2.N,
+    Z2.O, QG, QA, BQ.H, BQ.R. No MKE=FREE, no <FRE>. The single "FreeText" token in
+    the emitted JSON is the SHARED Build-CommsysQrdm RESPONSE mapping -- it appears
+    exactly once in all 20 providers (7x in TX_TLETS_CCH, which has extra CCH
+    response mappings) and is a response-parsing target, not a request key. Checked
+    rather than assumed, because a bare grep for "FreeText" looks alarming.
+
+THE SCOPE BOUNDARY THAT LIMITS WHAT WE CAN BE OUT OF SPEC ON
+  Our captured wire is the CONNECTCIC request to CommSys, NOT the OFML message ISP
+  will be validating. CommSys builds the OFML <HDR> (ID / DAC / DAT / USR / MKE /
+  ORI) from our <Authentication> block. So we control whether those fields have
+  CONTENT by supplying them; the OFML serialization is CommSys's. A config change on
+  our side can only ever be about supplying values, never about tag form.
+
+TWO CAVEATS -- one benign, one genuinely open
+  1. OUR VALUES ARE TEST-TENANT, NOT ILLINOIS-REAL. UserName=MK43RS,
+     ORI=MK1234567. The bulletin's example ORI is IL0999999. Production must supply
+     the agency's LEADS-assigned ORI and the state-assigned UserId. That is TENANT
+     CONFIG, not provider JSON -- the mechanism is proven, the values are not ours.
+  2. <CDCName> IS ABSENT FROM ALL 41 WIRES. This is the one open item.
+     - The JSON is CORRECT: Build-Auth is called with
+       -ExtraAttributes @{name='CDCName'; size=10; sourceField=@('CDCName');
+       targetField='CDCName'} and -ExtraAny @('CDCName'), and both are present in
+       the emitted AUTH config.
+     - The devdoc requires it: "The LEADS assigned CDC name (maximum 10 characters)
+       for the agency submitting the transaction should be placed in the
+       <Authentication>/<CDCName> field."
+     - It is absent because it sits in the AUTH combo's any[] and the test tenant
+       supplies no value, so the platform OMITS the element rather than emitting
+       <CDCName/>. Omission is the SAFE direction for this bulletin -- an omitted
+       element is not a self-closing one -- but it means CDCName has never been
+       wire-proven on this provider at any version.
+     - The devdoc also allows it to be set once in the "Other State Settings"
+       CDCName field when a single agency uses the message-switch connection, which
+       may be the intended production path and would explain the omission entirely.
+
+THE ONE QUESTION FOR COMMSYS -- ask before 2026-11-01
+  Does the CommSys OFML serializer emit a SELF-CLOSING TAG or OMIT THE ELEMENT when
+  a ConnectCIC <Authentication> field is empty or absent?
+    - If it OMITS: an unset CDCName is harmless and nothing is owed.
+    - If it SELF-CLOSES: an unset CDCName (or any unset required HDR field) becomes
+      a 2026-11-01 rejection, and the fix is tenant config, not JSON.
+  This single answer is the whole difference between "we are fine" and "we are fine
+  except possibly CDCName". It is NOT recorded as a PLATFORM_CONSTRAINTS limitation
+  on purpose -- it is an unverified question, and the hypothesis-quarantine gate
+  exists to keep unverified platform claims from driving churn.
+
+IF THIS COMES BACK AS A COMMSYS METADATA CHANGE
+  Most likely shapes, and what each would actually cost here:
+    (a) "Populate CDCName per transaction" -- NO JSON CHANGE. The attribute and
+        any[] membership already exist; it is a tenant-config value. Would want a
+        wire re-proof of one query afterwards.
+    (b) "CDCName must be MANDATORY in the header" -- would move CDCName from the
+        AUTH combo's any[] into set[]. Small, but it is a wire change: version bump
+        + full 41-test re-sweep, and BUILD_RULES 24 applies if anything prefills it.
+    (c) "New/changed OFML HDR field" -- metadata XML would change; re-run
+        extract_metadata_reference.ps1 and treat it as a devdoc/metadata update per
+        the usx-test-iterate Part B reconciliation path, NOT a hand edit.
+    (d) "Legacy message key retirement affects a query we build" -- does not apply
+        today (no FREE/FRE), but re-check if a free-text query is ever added.
+
+CROSS-PROVIDER ANGLE, recorded but deliberately NOT acted on
+  The empty-vs-omitted auth-field question is not Illinois-specific: it applies to
+  any provider whose tenant leaves an <Authentication> field blank. The OFML spec
+  family in this portfolio is HI_HCJDC_OFML, IL_LEADS_OFML and NM_NMLETS_OFML. The
+  BULLETIN is Illinois-only, so nothing was changed on the other two -- but if
+  CommSys answers "self-closes", that answer is portfolio-wide and each provider
+  should be checked at its own rebuild (one provider at a time).
+
+STATUS: NO ACTION OWED BY THIS REPO as of 2026-08-10. The two things to confirm
+before 2026-11-01 are both TENANT-SIDE: a real IL ORI + state UserId in production,
+and CDCName populated either per-transaction or via "Other State Settings".

@@ -1,0 +1,89 @@
+                  LEADS DAILY BULLETIN
+
+                  August 6, 2026
+
+                           Illinois FoxTalk/OFML Requirements
+
+                           Improper XML Placeholders and Text Submissions
+
+Recently, agencies using an interface (Computer Aided Dispatch (CAD), Record Management
+System (RMS), Mobile Data Computer (MDC)) to query LEADS information and/or perform file
+maintenance (enter, modify, cancel, clear) on Illinois' hot files were required to migrate to the
+new connection specifications, FoxTalk/OFML. During recent administrative reviews, many
+interfaces were submitting non-conformant messages.
+
+Improper XML Placeholders
+
+         As part of the FoxTalk/OFML specifications, certain fields must be submitted for
+         transactions to be accepted. These fields are contained in the OFML header section and
+         defined by the Illinois Specific Requirements found here -
+         https://isp.illinois.gov/LawEnforcement/LEADSInterfaces
+
+LEADS Administration has become aware of interfaces submitting placeholder or self-
+closing tags for the USR (<USR/>) and ORI (<ORI/>) fields ­ meaning the element has no
+content. To date, these messages have passed current edits. However, adjustments have
+been made to the edits to interrogate each of the above required HDR fields and reject
+those messages with improper configurations. See examples of correct and incorrect
+messages here https://isp.illinois.gov/LawEnforcement/LEADSInterfaces.
+
+Text Submissions
+
+Additionally, some interfaces are submitting messages using legacy message keys via
+
+embedded TXT elements. These messages must also be changed to reflect FoxTalk/OFML
+
+standards.        See examples of correct and incorrect messages here
+
+https://isp.illinois.gov/LawEnforcement/LEADSInterfaces.
+
+On November 1, 2026, the edits will be implemented to reject improperly formatted messages.
+As of this date, messages formatted with self-closing tags or legacy message keys will be
+rejected. Agencies using an interface (Computer Aided Dispatch (CAD), Record Management
+System (RMS), Mobile Data Computer (MDC)) must contact their vendor to confirm if changes are
+required.
+If you have questions, please contact the ISP Help Desk at ISP.HelpDesk@illinois.gov or by calling
+866/LEADS-00.
+
+Illinois FoxTalk/OFML Requirements
+
+Improper XML Placeholders:  Incorrect Message
+
+CORRECT MESSAGE             <OFML>
+                            <HDR>
+<OFML>                      <ID>5f5xxx6</ID>
+<HDR>                       <DAC>CAA</DAC>
+<ID>NB9999</ID>             <DAT>20230210130504</DAT>
+<DAT>2026030940001</DAT>    <USR/>
+<DAC>ABC</DAC>              <ORI/>
+<USR>USERID</USR>           <MKE>Z2</MKE>
+<MKE>Z2</MKE>               </HDR>
+<ORI>IL0999999</ORI>        <TRN>
+</HDR>                      <OLN>D1545xxxxxxx</OLN>
+<TRN>                       <IMQ>Y</IMQ>
+<OLN>F300xxxxxxxx</OLN>     <RSH>Y</RSH>
+<IMQ>Y</IMQ>                </TRN>
+<RSH>Y</RSH>                </OFML>
+</TRN>
+</OFML>
+Illinois FoxTalk/OFML Requirements  Incorrect Message
+
+Text Submissions                    <OFML>
+                                     <HDR>
+CORRECT MESSAGE                       <ID>PGXY</ID>
+                                      <DAC>ABC</DAC>
+<OFML>                                <DAT>20260509080012</DAT>
+<HDR>                                 <USR>1298767</USR>
+<ID>xx3979</ID>                       <REF>x18xxxx</REF>
+<DAT>20260208530001</DAT>             <MKE>FREE</MKE>
+<DAC>ABC</DAC>                        <ORI>ILxxx0000</ORI>
+<USR>USERID</USR>                    </HDR>
+<MKE>Z5</MKE>                        <TRN>
+<ORI>IL0999999</ORI>                  <FRE>LZV5.LIC/BJ9999.LIS/IL.</FRE>
+</HDR>                               </TRN>
+<TRN>                               </OFML>
+<OLN>F300188xxxxx</OLN>
+<IMQ>Y</IMQ>
+<RSH>Y</RSH>
+</TRN>
+</OFML>
+

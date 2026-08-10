@@ -47,6 +47,25 @@ Post the changelog here on every version bump (dump first, then per-version diff
   history, not just the two above. Read `docs/tracking/CHANGELOG_IL_LEADS_OFML.md` for the rendered
   source.
 
+## Open external dependency — ISP LEADS bulletin, deadline 2026-11-01
+
+**Not owed by this repo, but it has a date.** The 2026-08-06 LEADS Daily Bulletin says ISP turns on
+edits on **2026-11-01** that reject FoxTalk/OFML messages with self-closing required HDR fields
+(`<USR/>`, `<ORI/>`) or legacy free-text message keys (`<MKE>FREE</MKE>`). Assessed at v2.2 on
+2026-08-10: **not out of spec on either class** — 41/41 captured wires carry populated `<UserName>`
+and `<ORI>` with zero self-closing auth elements, and only structured keys are built
+(Z2/Z5/QG/QA/BQ, no `FRE`).
+
+Two confirmations owed, **both tenant-side not JSON-side**: production must supply a real IL ORI +
+state UserId (ours are the `MK43RS` / `MK1234567` test values), and `<CDCName>` — declared correctly
+in AUTH but absent from all 41 wires — must be populated per-transaction or via "Other State
+Settings". One question for CommSys decides whether that CDCName gap matters at all: does their OFML
+serializer **omit** an empty ConnectCIC auth field or **self-close** it?
+
+Full analysis, evidence and the likely-metadata-change scenarios:
+**`docs/reference/IL_LEADS_OFML_STATE_BULLETINS.txt`** · bulletin PDF + text extract in
+`docs/reference/bulletins/`.
+
 ## Tenant
 
 `https://usx-il-leads-ofml.mark43.com/rms/#/universal-search` — EXISTS, and **v2.1 IS INSTALLED**
