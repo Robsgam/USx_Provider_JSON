@@ -1,7 +1,64 @@
 AZ_AZDPS -- Build Notes
 ========================
-Last updated: 2026-08-05
+Last updated: 2026-08-10
 Current version: v3.7 (BadgeNumber actually wired + discriminators un-prefilled -- ALL 13 combos reachable)
+
+v3.7 SCOPE-GATE PASS  2026-08-10  NO JSON CHANGE, NO VERSION BUMP -- docs/reference only
+  The PHASE 1 audit came back structurally clean: [1] devdoc combinations all accounted for,
+  [2] optionals all route and transmit, [3] 15 combos most-specific-first, [3b] order agrees,
+  [4] 15 branches 0 under / 0 over, [5] 15 built / 0 prefill-dead / 0 shadow / 0 missing,
+  [6] gate efficacy 9/9 killed. The JSON needed nothing, so it was not touched and v3.7 stands.
+  What WAS wrong was the SCOPE DOCUMENTATION, and it was wrong in the way a mirror always is.
+  AZ_AZDPS_SUPPORTED_QUERIES.txt read "DERIVED FROM JSON COMBOS, NOT YET CONFIRMED" and
+  STATUS: PROVISIONAL -- a file generated FROM the JSON, then compared TO the JSON. A closed
+  loop cannot see an omission or an over-build, and PROVISIONAL additionally downgraded every
+  mismatch to [INFO], so nothing it found could block. It had also gone stale in the one
+  direction a mirror can: five lines claimed authorization for queries the JSON no longer
+  builds, and they had outlived their own removal.
+  REMOVED, each checked against the devdoc line by line:
+    Driver License | SocialSecurityNumber -- the Basic DriverLicenseQuery (devdoc line 161)
+      lists EIGHT combinations and none contains SocialSecurityNumber. SSN is legal ONLY for
+      AzAzdpsDriverLicenseQuery (line 393, combination #4 at line 441), which sits past the
+      Basic boundary. That prefixed sibling wearing the same "Driver License" label is the
+      exact duplicate-transaction trap CHECK 0 exists for; the DQSS combo it once authorized
+      was already deleted, and this line was its residue.
+    Missing Person | Name / NCICNumber and Wanted Person | Name / NCICNumber -- no Basic query
+      is a Wanted or Missing Person query. The devdoc's only mentions are
+      CanadianWantedPersonQuery (819) and the WMPEMissingPerson* admin transactions (1285+),
+      all past the boundary. The WMPI QIDMs were correctly deleted at v3.3 as out-of-Basic-scope;
+      these four lines kept asserting a scope the devdoc never granted.
+  THE BOUNDARY, recorded because everything above depends on it: devdoc line 25 opens
+    "Basic Queries Supported:"; the six Basic headings are 27 ArticleSingleQuery, 66 BoatQuery,
+    97 DriverHistoryQuery, 161 DriverLicenseQuery, 197 GunQuery, 244 VehicleRegistrationQuery;
+    line 298 ArticleStolenQuery begins the expanded material. Basic = lines 27-297.
+  PROMOTED PROVISIONAL -> CONFIRMED, and PROVED the promotion is not cosmetic. Same injected
+    mismatch, both states: CONFIRMED gives "[FAIL] combo ACQG ... NOT in supported-query list"
+    (15 PASS / 1 FAIL), PROVISIONAL gives the identical sentence as [INFO] (15 PASS / 0 FAIL /
+    1 INFO). Final state 16 PASS / 0 FAIL / 0 WARN, gating. The five WARNs are gone because the
+    file no longer claims those queries -- not because anything was silenced.
+  RE-VERIFIED THE FOUR devdoc-combo-unbuilt REGISTRY ROWS instead of trusting them (a record is
+    a claim). GunQuery defines exactly SIX fields -- BadgeNumber, GunCaliber, GunMake, GunModel,
+    GunSerialNumber, RelatedHitSearchIndicator -- and ONE combination, ACQG, 1 of 1 built. There
+    is no Name, no BirthDate and no ConcealedWeaponPermitNumber anywhere in that transaction, so
+    devdoc GunQuery #1 (gun by owner name) and #2 (CCW permit) are unbuildable, not skipped.
+    OwnerAppliedNumber has ZERO definitions in the metadata XML (grep count 0), which settles
+    ArticleSingleQuery #2/#3. AZ is 15 of 15 METADATA combinations built, 100% -- the gap is
+    devdoc-vs-metadata, and metadata is field authority. Do NOT "fix" it by inventing fields.
+  TWO FUZZ SURVIVORS TRIAGED AND DISMISSED (seed 1280043): set-to-any @ DriverLicenseQuery[1]
+    (DQPN) NameLast, and drop-set @ DriverLicenseQuery[3] (DQN) NameFirst. Both mutate ONE
+    component of the composite Name. Every authority defines a single Name field -- devdoc #3 is
+    "(In) Name, [SexCode]", metadata Basic DQ{Name} is Set[Name] -- so both mutants still emit a
+    valid request, just a broader search. The build is right to require both components for a
+    fuller search, but no authority makes that mandatory, so no gate SHOULD fail on it. NOT
+    promoted into audit_gate_efficacy $MUTS: a mutation that ought to survive becomes a permanent
+    SURVIVED row and teaches the next reader to ignore the report.
+    NOTE these are NOT the two survivors closed on 08-04 (those were over-permit SexCode @ DQP
+    and drop-any RegistrationNumber @ Boat hull, still open as gate gaps). Different seed,
+    different mutations -- the earlier closure does not cover these, and citing it would have
+    been the "already adjudicated" shortcut applied to the wrong thing.
+  ENFORCE reads CACHED reports, so build_report was re-run in this same pass -- otherwise 2e
+    would keep reporting PROVISIONAL after the file said CONFIRMED (the exact trap on record).
+
 v3.7  2026-08-05  BadgeNumber WIRED (it never was) + the four prefill shadows removed
   CHANGED:
     (1) BadgeNumber now carries rule=CommsysGetDexStateUserIdRuleHandler arguments=['true'] at ALL FIVE

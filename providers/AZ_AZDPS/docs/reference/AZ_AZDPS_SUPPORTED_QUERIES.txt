@@ -1,9 +1,59 @@
-STATUS: PROVISIONAL
-# AZ_AZDPS supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED
+# AZ_AZDPS supported queries -- VERIFIED against the devdoc "Basic Queries Supported"
+# section on 2026-08-10, line by line. This is now a HARD GATE: audit_supported_queries
+# CHECK 0 and the per-combo checks FAIL rather than report INFO.
+#
+# THE DEVDOC SECTION BOUNDARY, because it decides everything below.
+#   source/AZ_AZDPS_DEVDOC.txt line 25 opens "Basic Queries Supported:". The six Basic
+#   query headings are lines 27 ArticleSingleQuery, 66 BoatQuery, 97 DriverHistoryQuery,
+#   161 DriverLicenseQuery, 197 GunQuery, 244 VehicleRegistrationQuery. Line 298
+#   ArticleStolenQuery begins the EXPANDED "Transactions Supported" material, so the Basic
+#   section is lines 27-297 and nothing at or past 298 is authorized for this provider.
+#
+# WHAT WAS REMOVED 2026-08-10 AND WHY -- five lines this file had asserted as "supported".
+#   This file used to read "DERIVED FROM JSON COMBOS, NOT YET CONFIRMED", i.e. it was a
+#   MIRROR of what we built rather than a statement of what the devdoc authorizes. That is
+#   the closed loop the standard warns about: a gate comparing the JSON to a file generated
+#   from the JSON cannot see an omission or an over-build. It also went stale in the one
+#   direction a mirror can -- queries were removed from the JSON and stayed listed here.
+#
+#   Driver License | SocialSecurityNumber   REMOVED. The Basic DriverLicenseQuery (line 161)
+#     lists EIGHT combinations and none contains SocialSecurityNumber:
+#       1 (In) BadgeNumber, BirthDate, Name, [SexCode]
+#       2 (In) BadgeNumber, BirthDate, ImageIndicator="Y", Name, Requestor, SexCode
+#       3 (In) Name, [SexCode]
+#       4 (In) OperatorLicenseNumber
+#       5 (In) BadgeNumber, ImageIndicator="Y", OperatorLicenseNumber, Requestor
+#       6 (Out) BadgeNumber, BirthDate, Name, SexCode, State, [OperatorLicenseNumber]
+#       7 (Out) BirthDate, Name, SexCode, State
+#       8 (Out) OperatorLicenseNumber, State
+#     SSN IS legal -- but only for AzAzdpsDriverLicenseQuery (line 393, combination #4 at
+#     line 441), which sits PAST the Basic boundary. That prefixed sibling wearing the same
+#     "Driver License" label is exactly the duplicate-transaction trap CHECK 0 was built for:
+#     the DQSS combo it authorized was removed from the JSON, and this line outlived it.
+#
+#   Missing Person | Name / | NCICNumber and Wanted Person | Name / | NCICNumber  REMOVED.
+#     No Basic query is a Wanted or Missing Person query. The devdoc's only mentions are
+#     CanadianWantedPersonQuery (line 819) and the WMPEMissingPerson* entry/cancel/clear
+#     administrative transactions (line 1285+) -- all past the Basic boundary. The WMPI
+#     QIDMs were correctly deleted from the JSON at v3.3 as out-of-Basic-scope; these four
+#     lines were the residue of that removal and kept claiming authorization the devdoc
+#     never gave.
+#
+# NOT LISTED, AND CORRECTLY SO -- four devdoc-Basic combinations metadata cannot express.
+#   Registered in AZ_AZDPS_ACCEPTED_DIVERGENCES.txt (rule devdoc-combo-unbuilt) and
+#   re-verified against the authorities 2026-08-10:
+#     GunQuery #1 "BadgeNumber, BirthDate, Name" (gun by owner name) and #2
+#       "BadgeNumber, ConcealedWeaponPermitNumber" -- the GunQuery transaction defines
+#       exactly SIX fields (BadgeNumber, GunCaliber, GunMake, GunModel, GunSerialNumber,
+#       RelatedHitSearchIndicator) and ONE combination (ACQG). No Name, no BirthDate, no
+#       ConcealedWeaponPermitNumber exists to put in a request.
+#     ArticleSingleQuery #2/#3 -- both require OwnerAppliedNumber; the metadata XML contains
+#       ZERO OwnerAppliedNumber definitions (grep count 0, verified).
+#   Metadata is FIELD authority, so building these would emit requests no variant accepts.
+#   AZ is 15 of 15 METADATA combinations built (100%); the gap is devdoc-vs-metadata, not
+#   coverage. Do not "fix" it by inventing fields.
+#
 # Format: <QueryLabel> | <PrimaryFieldReference>
 
 Article | ArticleTypeCode
@@ -13,11 +63,6 @@ Driver History | Name
 Driver History | OperatorLicenseNumber
 Driver License | Name
 Driver License | OperatorLicenseNumber
-Driver License | SocialSecurityNumber
 Firearm | GunSerialNumber
-Missing Person | Name
-Missing Person | NCICNumber
 Vehicle Registration | LicensePlateNumber
 Vehicle Registration | VehicleIdentificationNumber
-Wanted Person | Name
-Wanted Person | NCICNumber
