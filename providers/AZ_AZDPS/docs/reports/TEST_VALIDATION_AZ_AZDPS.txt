@@ -1,16 +1,16 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.7.json
-  Generated: 2026-08-05 12:23
+  Source: AZ_AZDPS_v3.8.json
+  Generated: 2026-08-10 15:36
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- AZ_AZDPS_v3.7
+TEST MATRIX <-> JSON CONSISTENCY -- AZ_AZDPS_v3.8
 ============================================================
-Source: AZ_AZDPS_v3.7.json
+Source: AZ_AZDPS_v3.8.json
 Matrix: AZ_AZDPS_TEST_MATRIX.txt
-Generated: 2026-08-05
+Generated: 2026-08-10
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
@@ -38,9 +38,9 @@ ENTITY: PERSON (18 tests -- 2 cards, 7 combos)
   T18  Person     [PASS] queriesToDeselect verified
 ENTITY: VEHICLE (5 tests -- 1 card, 2 combos)
   T19  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
-  T20  Vehicle    [PASS] any[] fields verified: LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleMakeCode
+  T20  Vehicle    [PASS] any[] fields verified: LicensePlateYear, LicensePlateTypeCode, RegistrationState
   T21  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVRV)
-  T22  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode
+  T22  Vehicle    [PASS] any[] fields verified: RegistrationState, VehicleMakeCode, vehicleYear
   T23  Vehicle    [PASS] VehicleRegistrationQuery fires (ACVR)
 ENTITY: BOAT (10 tests -- 1 card, 4 combos)
   T24  Boat       [PASS] BoatQuery fires (BQ)

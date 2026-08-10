@@ -2,9 +2,52 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.7** | Generated: 2026-08-10
+Current: **v3.8** | Generated: 2026-08-10
 
 ---
+
+## v3.8 -- 2026-08-10 -- DEX-1283: remove the Attention 'X' -- AZ was NOT exempt, and I said it was
+
+**CHANGED:** Three sites, one field, identical to the HI_HCJDC_OFML v4.15 fix earlier today.
+  (1) The hidden DH feeder InpH 'attention' loses initialValue='X'.  
+  (2) KQH combo defaults[] loses Attention='X' (State='AZ' KEPT).  
+  (3) KQ combo defaults[] likewise.  
+  UNCHANGED: the control itself, 'attention' in KQH/KQ any[], and the Attention attribute's  
+  CommsysGetLastNameFirstNameInitialRuleHandler. Only the literal value went.  
+  NOT TOUCHED: Requestor='X' on DQPN/DQP. That is a DIFFERENT field, devdoc-mandated on the two  
+  photo paths, and automated on Rob's explicit "requester needs to be automated" instruction  
+  (see v3.5). DEX-1283 item 2 is about Attention. Whether 'X' is the right feeder value for  
+  Requestor is a separate question and is NOT being answered here.  
+WHY THIS ENTRY EXISTS AT ALL -- I DECLARED AZ DONE WITH THIS DEFECT IN IT.  
+  Earlier today I audited AZ, found PHASE 1 structurally clean, fixed the supported-query  
+  extract, ran enforce to 40 PASS / 0 AZ-scoped FAIL, and committed it (98676c95) as complete.  
+  The Attention 'X' was sitting in the build script the whole time, three sites, in exactly the  
+  shape I had removed from HI_HCJDC_OFML that same morning and written a Jira release line about.  
+  It surfaced only when OH_LEADS's random fuzz threw `prefill-field @ Attention_DH_Input` and  
+  SURVIVED -- because the field was ALREADY prefilled, so the mutation was a no-op. Chasing that  
+  into a portfolio sweep showed EIGHT providers still carrying it, AZ among them.  
+THE ROOT CAUSE IS STRUCTURAL, NOT JUST INATTENTION. The DEX-1283 retrofit is tracked by  
+  CONVENTION -- CLAUDE.md says such passes are "applied to each provider on its revisit turn,  
+  not a retroactive sweep" -- and NO GATE CHECKS IT. So on a provider's revisit turn the only  
+  thing standing between the defect and another green board is whether the person remembers.  
+  PHASE 1 has seven steps and none of them asks this question; enforce has ~10 phases and none  
+  asks either. A convention with no gate is a to-do list that only fires when someone recalls it,  
+  which is the same failure mode as the BUILD_NOTES stub problem and the SQVR mirror problem.  
+  Recorded here rather than fixed here: building that gate is a shared-tool change and belongs  
+  in its own pass, not inside an AZ-only rebuild.  
+SAFE TO REMOVE, on evidence and not on symmetry: the same handler with the field in any[], no  
+  initialValue and no default, resolves the officer name on 47 of 47 committed Driver-History  
+  wires -- FL_FCIC 7/7, TX_TLETS 13/13, CA_CLETS 7/7, NY_NYSPIN_EJUSTICE 11/11 (DH-OOS) and  
+  HI_HCJDC_OFML 9/9 captured today at v4.15. AZ has never been tenant-tested, so this provider's  
+  own wire proof is owed at its first sweep; the mechanism is not in doubt.  
+COST: none. AZ is NEVER-TESTED and NOT imported (IMPORT_LEDGER section A: installed = none), so  
+  the version bump archived 0 logs and reset 0 SQVR markers. There was no reason to hesitate.  
+ARTIFACT-VERIFIED, not script-verified: emitted v3.8 has 0 "field": "Attention" defaults, no  
+  initialValue anywhere near the attention control, and still carries the handler and the  
+  Attention targetField.  
+
+## v3.7 -- 2026-08-05 -- / scope-gate pass 2026-08-10 (BadgeNumber wired + discriminators un-prefilled)
+
 
 ## v3.7 -- 2026-08-05 -- BadgeNumber WIRED (it never was) + the four prefill shadows removed
 

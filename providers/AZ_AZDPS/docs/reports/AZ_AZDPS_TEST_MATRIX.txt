@@ -1,4 +1,4 @@
-AZ_AZDPS v3.7 -- TEST MATRIX
+AZ_AZDPS v3.8 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-10
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -28,7 +28,7 @@ Person (2 cards, 23 fields):
     ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 20]
     ROW 3: NameMiddleDH [Inp 20], NameSuffixDH [Inp 4], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 4: RegistrationStateDH [Sel STATE, AZ]
-    ROW 5: attention [Inp X, 30]
+    ROW 5: attention [Inp 30]
 
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
@@ -119,11 +119,11 @@ ENTITY 2: VEHICLE (5 tests -- 1 card, 2 combos)
 --  ----------  --------------------------------------------------  ------
 19  Vehicle     ACVR+ACVR          dexStateUserId=BADGE, LicensePlateNum... [    ]
               Expected: VehicleRegistrationQuery fires (ACVR)
-20  Vehicle     ACVR+ACVR          + LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleMakeCode [    ]
+20  Vehicle     ACVR+ACVR          + LicensePlateYear, LicensePlateTypeCode, RegistrationState [    ]
               Expected: any[] fields present in XML output.
 21  Vehicle     ACVRV+ACVRV        dexStateUserId=BADGE, VehicleIdentifi... [    ]
               Expected: VehicleRegistrationQuery fires (ACVRV)
-22  Vehicle     ACVRV+ACVRV        + LicensePlateTypeCode, LicensePlateYear, RegistrationState, VehicleMakeCode [    ]
+22  Vehicle     ACVRV+ACVRV        + RegistrationState, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
 23  Vehicle     Guardrail: ACVR>ACVRV  LicensePlateNumber=TEST123, dexStateU... [    ]
               Expected: VehicleRegistrationQuery fires (ACVR). dexStateUserId+VIN absent from XML.
@@ -182,4 +182,4 @@ COMBO COVERAGE (15/15):
   ArticleSingleQuery: 1/1 -- T36(ACQA)
   BoatQuery: 4/4 -- T24(BQ+Reg), T26(BQ+H), T28(ACQB+ACQB), T30(ACQBH+ACQBH)
 
-IMPORT FILE: AZ_AZDPS_v3.7.json
+IMPORT FILE: AZ_AZDPS_v3.8.json

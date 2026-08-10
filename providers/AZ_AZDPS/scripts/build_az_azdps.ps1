@@ -160,7 +160,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.7'
+$Version = '3.8'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -203,8 +203,14 @@ $vehQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 # Plate>VIN guardrail: VIN removed from any[] so the plate combo's serialized
                 # pool never carries VehicleIdentificationNumber (VIN has its own combo ACVRV).
+                # v3.8 OVER-PERMIT REMOVED: VehicleMakeCode + vehicleYear are GONE from this any[].
+                # metadata Combination keyReference="ACVR" primaryFieldReference="LicensePlateNumber"
+                # is Set[BadgeNumber, LicensePlateNumber] Any[LicensePlateYear, LicensePlateTypeCode,
+                # State] -- it defines NEITHER make nor year. Those two belong to the SIBLING variant
+                # (primaryFieldReference="VehicleIdentificationNumber"), and devdoc #1/#3 agree:
+                # plate optionals are [LicensePlateTypeCode, LicensePlateYear] only.
                 set = @('dexStateUserId','LicensePlateNumber')
-                any = @('LicensePlateYear','LicensePlateTypeCode','RegistrationState','VehicleMakeCode','vehicleYear')
+                any = @('LicensePlateYear','LicensePlateTypeCode','RegistrationState')
                 defaults = @(
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
@@ -220,11 +226,19 @@ $vehQuery = [PSCustomObject]@{
                 # Plate>VIN guardrail: LicensePlateNumber NOT_EXISTS gates this VIN combo OUT when
                 # a plate is present, so plate+VIN co-entry fires ACVR (plate) only and VIN is not
                 # double-sent. Plate removed from any[] per gate-xor-companion (CHECK 14).
+                # v3.8 OVER-PERMIT REMOVED: LicensePlateTypeCode + LicensePlateYear are GONE from
+                # this any[], AND their combo defaults[] went with them. metadata Combination
+                # keyReference="ACVR" primaryFieldReference="VehicleIdentificationNumber" is
+                # Set[BadgeNumber, VehicleIdentificationNumber] Any[VehicleMakeCode, VehicleYear,
+                # State] -- it defines no plate field at all, and devdoc #2/#4/#5 agree. The two
+                # defaults HAD to go in the same edit: a default on a field that is in neither set[]
+                # nor any[] is an INERT DEFAULT (audit_wiring_closure class E) -- removing the any[]
+                # entry alone would have traded one defect for another. The portfolio
+                # PlateType=PC / PlateYear=<year> standard is a PLATE-combo convention; on a VIN
+                # transaction those fields are undefined, so it does not apply here.
                 set = @('dexStateUserId','VehicleIdentificationNumber')
-                any = @('LicensePlateTypeCode','LicensePlateYear','RegistrationState','VehicleMakeCode','vehicleYear')
+                any = @('RegistrationState','VehicleMakeCode','vehicleYear')
                 defaults = @(
-                    [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
-                    [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
                     [PSCustomObject]@{ field = 'State';                value = 'AZ' }
                 )
                 conditions = @(
@@ -478,8 +492,10 @@ $dhistQuery = [PSCustomObject]@{
                 # from any[] per gate-xor-companion (CHECK 14).
                 set = @('RegistrationStateDH','NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH')
                 any = @('attention','NameMiddleDH','NameSuffixDH','purposeCodeDH')
+                # DEX-1283 v3.8: the Attention='X' default is GONE. 'attention' stays in any[] and the
+                # attribute keeps CommsysGetLastNameFirstNameInitialRuleHandler -- any[] membership is
+                # what feeds the handler, proven on FL/TX/CA_CLETS/NY/HI over 47 of 47 DH wires.
                 defaults = @(
-                    [PSCustomObject]@{ field = 'Attention'; value = 'X' }
                     [PSCustomObject]@{ field = 'State';     value = 'AZ' }
                 )
                 conditions = @(
@@ -504,8 +520,8 @@ $dhistQuery = [PSCustomObject]@{
                 # removal was never considered. They are retired.
                 set = @('RegistrationStateDH','OperatorLicenseNumberDH')
                 any = @('attention','purposeCodeDH')
+                # DEX-1283 v3.8 -- see the KQH note above; only the literal 'X' was removed.
                 defaults = @(
-                    [PSCustomObject]@{ field = 'Attention'; value = 'X' }
                     [PSCustomObject]@{ field = 'State';     value = 'AZ' }
                 )
             }
@@ -845,7 +861,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'StateDH_Input'; node = SelH 'RegistrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DH_STEDH' }
             )}
             @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' @{ initialValue = 'X' } }
+                @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' }
             )}
         )
     }

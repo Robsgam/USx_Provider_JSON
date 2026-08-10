@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.7.json
-  Generated: 2026-08-05 12:23
+  Source: AZ_AZDPS_v3.8.json
+  Generated: 2026-08-10 15:36
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- AZ_AZDPS_v3.7.json
+  CommSys Query Simulator -- AZ_AZDPS_v3.8.json
 ================================================================
 
 --- QIDM: AZ_AZDPS_VehicleRegistrationQuery [Vehicle] ---
@@ -16,7 +16,7 @@ QUERY SIMULATION
 
     [FIRES first-match] ACVR
       set: [dexStateUserId, LicensePlateNumber]
-      any: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleMakeCode, vehicleYear] -> matched: [LicensePlateYear, LicensePlateTypeCode, RegistrationState, VehicleMakeCode, vehicleYear]
+      any: [LicensePlateYear, LicensePlateTypeCode, RegistrationState] -> matched: [LicensePlateYear, LicensePlateTypeCode, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -26,13 +26,11 @@ QUERY SIMULATION
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
       </Transaction>
     [SKIP] ACVRV -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
     >> PLATFORM FIRES: ACVR (first matching combo)
-    >> UNION POOL (platform serializes): BadgeNumber=BADG, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, VehicleMakeCode=FORD, VehicleYear=2023
+    >> UNION POOL (platform serializes): BadgeNumber=BADG, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
