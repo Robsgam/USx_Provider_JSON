@@ -64,6 +64,7 @@ confirmation, never inferred from a version bump.
 | NJ_NJCJIS | v4.15 | DEX-988, 2026-08-03 | 2026-08-03 | after the 36/36 ALL-PASS re-sweep; same pass as the Newark Foundation import |
 | CA_CLETS | v2.24 | DEX-976, 2026-08-06 | 2026-08-06 | after the DEX-1283 fix (90/90 ALL-PASS re-sweep). No Foundation tenant carries CA_CLETS |
 | HI_HCJDC_OFML | v4.14 | DEX-1257, 2026-08-04 | 2026-08-04 | after the 46/46 ALL-PASS re-sweep. **No version bump** — v4.14 was already published; re-published as the re-verified artifact. Last of the original six |
+| IL_LEADS_OFML | v2.2 | DEX-984, 2026-08-10 | 2026-08-10 | Rob's confirmation 2026-08-10. First publish for this provider — DEX-984 had zero comments and zero attachments before today. Follows the 41/41 ALL-PASS first-ever tenant sweep (v2.2) and the DEX-1284 convention pass + card collapse. No Foundation tenant carries IL, so there is no section B row to match |
 
 > **TENANT INFO STAYS OFF THE TICKETS (Rob, 2026-08-03, restated).** Nothing in section B or C goes
 > into a Jira comment — not the attachment, not the catalog post, not a Foundation import. **This

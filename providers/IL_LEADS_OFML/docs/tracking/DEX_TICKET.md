@@ -29,7 +29,11 @@ Post the changelog here on every version bump (dump first, then per-version diff
 
 | Comment id | Version | Date | What |
 |---|---|---|---|
-| _(none)_ | — | — | **Nothing has been posted to DEX-984 yet.** |
+| **795041** | v1.0 → v2.2 | 2026-08-10 | **First post on this ticket** — full changelog dump. Verified before posting that DEX-984 was genuinely empty (`comments: []`), so this is the initial dump, not a catch-up. Covers v2.2 cosmetic pass, v2.1 DEX-1284 convention pass + card collapse, v2.0 galvanization, v1.1/v1.0, plus the three documented non-builds (Article devdoc #2, Boat State2–5, Boat RegistrationState staying optional). Tenant details deliberately excluded. |
+
+**Held, not owed:** the **v2.2 RELEASE LINE** (ALL-PASS 41/41, four log gates, enforce 42 PASS) is
+drafted and approved in substance but deliberately NOT posted yet — Rob's call 2026-08-10: post it
+after HI_HCJDC_OFML is tested. Do not post it unprompted.
 
 ## Owed at the next lift of the Jira hold
 
