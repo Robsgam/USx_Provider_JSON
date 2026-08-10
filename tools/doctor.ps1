@@ -130,6 +130,22 @@ try {
 # (not per-provider blocking), so doctor is the right home: visible on every health check,
 # blocking nothing. A gate that nothing runs is not a gate.
 Emit ""
+# A finished provider's ARTIFACT SET is its deliverable -- the officer guide a department reads, the
+# SQVR a tester reads. audit_structure checks each provider against a template IN ISOLATION and
+# reported ALL CLEAN on all six tenant-complete providers while their sets genuinely differed;
+# audit_cross_provider is cross-provider but only compares JSON content. So nothing measured this
+# until 2026-08-10, when it found CA_CLETS carrying a CAD_GUIDE from a tool archived 2026-07-24.
+Emit ""
+Emit "--- PROVIDER UNIFORMITY (do the FINISHED providers carry the same artifact set; audit_provider_uniformity.ps1) ---"
+try {
+    # NOT -Quiet: doctor greps the console lines, and -Quiet renders the section EMPTY, which reads
+    # exactly like clean (the mistake already made once on registry currency, two sections below).
+    $pu = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_provider_uniformity.ps1" *>&1 | Out-String
+    ($pu -split "`n" | Where-Object { $_ -match 'COMPARED:|\[FAIL\]|Scope:' } | Select-Object -First 12) |
+        ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] audit_provider_uniformity.ps1 failed: $($_.Exception.Message)" }
+
+Emit ""
 Emit "--- SUPPRESSION SCOPE (registry rows silencing more than they adjudicate; audit_suppression_scope.ps1) ---"
 try {
     $ss = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_suppression_scope.ps1" *>&1 | Out-String

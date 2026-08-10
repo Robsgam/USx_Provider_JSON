@@ -1373,6 +1373,50 @@ AUTHORITATIVE SOURCE FILES (read-only)
     everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
     equivalent fallbacks.)
 
+  tools/audit_provider_uniformity.ps1
+    ARE THE FINISHED PROVIDERS THE SAME SHAPE? -- the artifact-set direction that neither
+    structural gate covers. audit_structure.ps1 checks ONE provider against a template IN
+    ISOLATION, and reported "RESULT: ALL CLEAN" on all six tenant-complete providers while
+    their artifact sets genuinely differed -- a template says "docs/ must exist", never "IL
+    must carry the same files as TX". audit_cross_provider.ps1 IS cross-provider but its 8
+    checks all compare JSON CONTENT (defaults, queryLabels, code types, field types, fieldId
+    casing, RMS autoSelect) and it never looks at what is on disk. So "the finished providers
+    are documented and packaged identically" was an assumption nobody had measured.
+    Built 2026-08-10 when Rob asked to confirm it. What the sweep found, all of it green on
+    every existing gate:
+      * CA_CLETS carried CAD_GUIDE_CA_CLETS.html/.pdf -- output of render_cad_guide.ps1,
+        ARCHIVED 2026-07-24 and consolidated into render_officer_guide.ps1 (see the archived
+        -tools section above). Dated Jun 26, so an officer-facing folder held a CAD guide
+        describing a ~v2.1x form while the shipped JSON was v2.24. Deleted, uncited.
+      * TX_TLETS carried a vestigial logs/.gitkeep beside 29 live entries. Deleted.
+      * CLAUDE.md still called the docs/ 4-category migration and the phases/ retirement a
+        "rollout, NJ_NJCJIS pilot" five weeks after both hit 20/20. Corrected.
+    WHY IT IS NOT TIDINESS: the artifact set IS the deliverable for a finished provider --
+    the officer guide a department reads, the SQVR a tester reads to decide what to test, the
+    BUILD_NOTES a Jira changelog is written from. A provider silently missing one is
+    INCOMPLETE, and the reason nobody noticed is that no gate compared it to its peers.
+    THE HARD PART IS NOT FLATTENING STATE INTO STRUCTURE. Three files are legitimately absent
+    on some providers and manufacturing them would be a real defect:
+      * <P>_FORM_REVIEW.txt   -- records that a HUMAN reviewed the rendered form. Creating one
+        to satisfy a uniformity check fakes Rob's own manual gate, which is exactly what
+        audit_form_review's header forbids ("a review is a human act and must not be
+        manufacturable to satisfy a gate"). IL has none because none was recorded.
+      * PENDING_UPDATES.txt   -- reverse-propagation flag STATE; absent means no pending flag.
+        Naive-probe warning: grepping this file for 'FLAG' counts "# [FLAG:...] RESOLVED"
+        comment lines, so CA_CLETS reads as 2 pending flags when it has zero. Count ACTIVE.
+      * TEST_VALUE_OVERRIDES.txt -- OPTIONAL override read by emit_test_plan,
+        emit_test_plan_spec, generate_test_matrix, import_picklists, _combo_value_resolver.
+    Those live in an $optionalByDesign allowlist, each WITH its reason, and report [NOTE] --
+    an auditable allowlist rather than invisible silence. '.gitkeep' is deliberately NOT in it:
+    v1 of the allowlist included it and would have hidden its own motivating finding.
+    Scopes to State='ALL-PASS' via _test_status_lib (the same classifier portfolio_status and
+    SESSION_STATE use, so the three cannot disagree). PRINTS ITS DENOMINATOR and FAILs a
+    scope under 2 providers -- comparing one provider to itself is the vacuous pass that let
+    audit_sqvr_integrity CHECK 2 compare nothing on 17 of 20 the very same day.
+    LAW 2 proven three ways: a removed OFFICER_GUIDE pdf, a re-introduced .gitkeep, and a
+    single-provider scope. Baseline: 6 providers x 56 tokens, 5 areas identical, 8 explained.
+    Composed into doctor.ps1. Usage: [-Providers <list>] [-All] [-Quiet] [-OutFile <path>]
+
   tools/audit_tool_portability.ps1
     TOOL PORTABILITY SWEEP -- does every shared gate actually RUN on every provider?
     Rob, 2026-08-01: "shared tools need to work everywhere." Every gate here is
