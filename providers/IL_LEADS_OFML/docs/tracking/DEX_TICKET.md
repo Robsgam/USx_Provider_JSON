@@ -30,10 +30,14 @@ Post the changelog here on every version bump (dump first, then per-version diff
 | Comment id | Version | Date | What |
 |---|---|---|---|
 | **795041** | v1.0 → v2.2 | 2026-08-10 | **First post on this ticket** — full changelog dump. Verified before posting that DEX-984 was genuinely empty (`comments: []`), so this is the initial dump, not a catch-up. Covers v2.2 cosmetic pass, v2.1 DEX-1284 convention pass + card collapse, v2.0 galvanization, v1.1/v1.0, plus the three documented non-builds (Article devdoc #2, Boat State2–5, Boat RegistrationState staying optional). Tenant details deliberately excluded. |
+| **795242** | v2.2 | 2026-08-10 | **v2.2 RELEASE LINE.** ALL-PASS 41/41 (Veh 14 / Per 10 / Gun 5 / Art 3 / Boat 9), four log gates 41/41 each + plan completeness 5/5, validator 61P/0F/0W, 9 combos all reachable. Names all three guardrails with their conditions (`Z2.V` plate>VIN, `Z2.N` OLN>Name, `BQ.R` hull>reg) and confirms composite `Name` still wires LAST-first despite the v2.2 form reorder. Was held pending HI's sweep; released by Rob's "do both" once HI came back 46/46. |
 
-**Held, not owed:** the **v2.2 RELEASE LINE** (ALL-PASS 41/41, four log gates, enforce 42 PASS) is
-drafted and approved in substance but deliberately NOT posted yet — Rob's call 2026-08-10: post it
-after HI_HCJDC_OFML is tested. Do not post it unprompted.
+**The published "9 combos" was verified, not assumed.** IL is one of the 13 providers whose SQVR
+asserts no combo total, so `audit_sqvr_integrity` CHECK 2 reports `DID NOT RUN` here and had never
+machine-checked it — and the same class of stale count was found wrong by 5 on HI the same day.
+Re-counted from the emitted v2.2 JSON via `audit_test_coverage`: 9 combos / 9 matched / 100%. Correct
+as published. Note `audit_combo_reachability` says "7 combination(s) checked" for IL — that is what it
+COMPARED, not a combo count; do not cite it as one.
 
 ## Owed at the next lift of the Jira hold
 

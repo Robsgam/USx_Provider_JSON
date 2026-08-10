@@ -59,8 +59,13 @@ Removing `Attention='X'` from KQ/KQN `defaults[]` is precisely the half no form-
 exercise, and DEX-1283's second symptom ("not present when you do it from a CAD event") is that
 path.
 
-**Owed to this ticket:** the v4.15 changelog + its release line — DRAFTED, awaiting Rob's approval
-(draft-and-wait applies every provider, every time).
+**POSTED 2026-08-10 — comment 795241: v4.15 changelog + RELEASE LINE** (approved by Rob, "do both").
+Carries the 9/9 Attention evidence, the v2.9-was-confounded explanation, the DL-side control
+observation, and the CAD-is-inspection-only limit stated rather than glossed. Also notes the SQVR
+corrections and the gate fix behind them. Rob attached the v4.15 JSON and updated the catalog in the
+same pass — recorded in `IMPORT_LEDGER.md` section C, deliberately NOT on the ticket.
+
+**Nothing owed to this ticket.**
 
 **Prior: v4.14 — tenant-verified twice (2026-07-28, re-verified 2026-08-04), ALL-PASS 46/46**
 (Vehicle 16 / Person 14 / Firearm 6 / Article 3 / Boat 7), four log gates green, enforce 44P/0F/0W.
