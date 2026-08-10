@@ -41,7 +41,7 @@ tools/                     -- Shared scripts (validator, renderers, simulators)
 | CA_SAN_LUIS_OBISPO | providers/CA_SAN_LUIS_OBISPO/ | v2.3 | 67P/0F/0W | NEVER 0/5 | Regional interface (not direct CLETS), DL+DH DH-suffix+queriesToDeselect, short keyRefs, no State initialValue (LIMITATION #30 in/out split), no ImageIndicator | [changelog](providers/CA_SAN_LUIS_OBISPO/docs/tracking/CHANGELOG_CA_SAN_LUIS_OBISPO.md) |
 | IL_LEADS_OFML | providers/IL_LEADS_OFML/ | v2.2 | 61P/0F/0W | ALL-PASS 5/5 (41 logs) | 5 basic queries (no DH), Z2/Z5 keyRefs, CDCName in AUTH, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails | [changelog](providers/IL_LEADS_OFML/docs/tracking/CHANGELOG_IL_LEADS_OFML.md) |
 | MD_METERS | providers/MD_METERS/ | v2.0 | 70P/0F/0W | NEVER 0/5 | 6 basic queries, DH-suffix+queriesToDeselect, ZVEH/ZLRG/ZWAR/ZLDR/ZDRV/ZBOA keyRefs, OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails, State no-default | [changelog](providers/MD_METERS/docs/tracking/CHANGELOG_MD_METERS.md) |
-| OH_LEADS | providers/OH_LEADS/ | v2.3 | 78P/0F/0W | NEVER 0/5 | 6 basic queries, 7 VehReg combos (9 metadata, 2 NCIC shadows dropped) + owner SSN/Name cross-entity, DH-suffix+queriesToDeselect, Attention eSUN feeder, existence-only routing gates, identifier-priority guardrails (Plate>VIN>SSN>Name, OLN>Name, Hull>Reg), State no-default | [changelog](providers/OH_LEADS/docs/tracking/CHANGELOG_OH_LEADS.md) |
+| OH_LEADS | providers/OH_LEADS/ | v2.4 | 80P/0F/0W | NEVER 0/5 | 6 basic queries, 7 VehReg combos (9 metadata, 2 NCIC shadows dropped) + owner SSN/Name cross-entity, DH-suffix+queriesToDeselect, Attention eSUN feeder, existence-only routing gates, identifier-priority guardrails (Plate>VIN>SSN>Name, OLN>Name, Hull>Reg), State no-default | [changelog](providers/OH_LEADS/docs/tracking/CHANGELOG_OH_LEADS.md) |
 | NM_NMLETS_OFML | providers/NM_NMLETS_OFML/ | v2.1 | 66P/0F/0W | NEVER 0/5 | 6 basic queries, DH-suffix+queriesToDeselect, GunModel field, existence-only routing gates (Vehicle/Boat NCIC-vs-Nlets by State), identifier-priority guardrails, DH PurposeCode+RaceCode optional any[] | [changelog](providers/NM_NMLETS_OFML/docs/tracking/CHANGELOG_NM_NMLETS_OFML.md) |
 | OR_LEDS | providers/OR_LEDS/ | v2.2 | 55P/0F/0W | NEVER 0/5 | 5 basic queries (no DH), invented keyRefs (RQ/DQ/QG/QA/BQ splits), OOS EXISTS/NOT_EXISTS gates, identifier-priority guardrails, MC multi-card | [changelog](providers/OR_LEDS/docs/tracking/CHANGELOG_OR_LEDS.md) |
 | TN_TIES | providers/TN_TIES/ | v2.1 | 74P/0F/0W | NEVER 0/5 | 6 basic queries, 22 combos (8 Veh incl. Dealer/Handicap/Temp specialty, 5 DL, 3 DH, Gun/Article/Boat), no State initialValue (LIMITATION #30), DH-suffix + queriesToDeselect, Attention auto-handler feeder, existence-only OOS gates + identifier-priority guardrails | [changelog](providers/TN_TIES/docs/tracking/CHANGELOG_TN_TIES.md) |
@@ -203,6 +203,7 @@ Every QIDM must have a `queryLabel` property. Use these standard values:
 | DriverLicenseQuery | Driver License |
 | NyNyspinDriverLicenseNameQuery | DL Name Search |
 | DriverHistoryQuery | Driver History |
+| ImageQuery | Driver Photo |
 | GunQuery | Firearm |
 | ArticleSingleQuery | Article |
 | BoatQuery | Boat |

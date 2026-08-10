@@ -3,6 +3,76 @@ OH_LEADS -- Build Notes
 Provider: OH_LEADS
 State: Ohio
 Network: LEADS (Law Enforcement Automated Data System)
+v2.4  2026-08-10  CARD COLLAPSE 14 -> 6 + ImageQuery BUILT (the two items v2.3 left open)
+  Both were flagged at v2.3 as "Rob's call". His call was: do them. So they are done, in one version.
+
+  (A) CARD COLLAPSE 14 -> 6, every title now carrying its query paths.
+    Vehicle 6 -> 1  (was OPTIONS / PLATE / DEALER PLATE / VIN / NAME / SSN)
+    Person  5 -> 2  (Driver License + Driver History)
+    Boat    3 -> 1  (was OPTIONS / HULL / REGISTRATION)
+    Firearm 1, Article 1 -- unchanged in count, titles rewritten to carry paths.
+    OH was the ONLY provider of nine with 14 cards and ZERO path-carrying titles; every other one
+    runs 5-6 cards with 5-6 such titles (NJ 3 of 5). Vehicle alone was six boxes for one entity.
+    ZERO ROUTING CHANGE: not one set[], any[], condition, default, fieldId or QIDM moved. Only the
+    card grouping, the row/column geometry (now a uniform 4/4/4 grid) and the titles.
+    PERSON STAYS TWO CARDS, NOT ONE. The DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH,
+    BirthDateDH, SexCodeDH, purposeCodeDH) are a SEPARATE FIELD POOL -- that is the isolation
+    mechanism that keeps a DH fill from co-firing DriverLicenseQuery, not a layout accident. Merging
+    them into one card would put two pools in one box and invite exactly the confusion the DH-suffix
+    design exists to prevent. HI/NY/TX/AZ all keep Person at two cards for the same reason.
+    THE HELPER LABELS CAME OUT AS A CONSEQUENCE, WHICH IS THE WHOLE POINT: 18 at v2.2 -> 8 at v2.3
+    -> 2 now. The six that survived v2.3 -- 'Date of Birth (out-of-state)', 'Sex (out-of-state)',
+    'Serial Number (with Article Type)', 'Dealer Plate Type (with Plate Number + Type)',
+    'Vehicle Make (with State, optional)', 'Vehicle Year (with State, optional)' -- were all saying
+    WHICH COMBO NEEDS THIS FIELD, which is precisely a card title's job. Once the titles said it, the
+    labels could go bare without losing information. Stripping them at v2.3 (before the titles
+    existed) would have made the form LESS usable, which is why they were deliberately left then.
+    The only two helpers remaining are the standing exemptions: 'Attention (auto)' on a HIDDEN
+    control, and 'State (leave blank for OH)' -- State keeps its routing hint by convention (IL
+    carries the identical 'State (leave blank for IL)').
+
+  (B) ImageQuery BUILT -- the last unbuilt devdoc-Basic query. See the block in the build script for
+    the full reasoning; in short: audit_supported_queries CHECK 0 had been reporting it as
+    "devdoc-Basic but NOT BUILT, each must be a documented skip" and it was documented NOWHERE.
+    devdoc line 248 gives "(In/Out) OperatorLicenseNumber, [ReasonCode, Requestor, UserName]";
+    metadata v9 gives ONE Combination BMVIMS{OperatorLicenseNumber} = Set[OperatorLicenseNumber]
+    Any[ReasonCode, Requestor, UserName]. Built EXACTLY to the metadata -- set[OperatorLicenseNumber],
+    any[] empty -- and it needed no new form control because the DL card's OLN already feeds it.
+    autoSelect = $false ON PURPOSE. A standalone photo transaction must not co-fire on every OLN
+    entry, or every routine licence check silently pulls a photo the officer never requested (and OH
+    already has ImageIndicator on the DL card for the in-band image). $false makes it a named opt-in
+    checkbox via queryLabel, the TX_TLETS_CCH pattern for officer-chosen transactions. The DL card
+    title now says "tick DRIVER PHOTO for a photo-only request" so the control is discoverable.
+    THE OPTIONAL TRIO IS NOT WIRED, AND THAT IS NOT A DROPPED OPTIONAL. UserName is the transaction
+    ENVELOPE user already supplied by AUTH -- a form control would duplicate it (the class where 55
+    "dropped optional" FAILs on FL traced to one envelope field). Requestor and ReasonCode have no
+    control anywhere on OH, so there is no officer input to discard; the devdoc-optional rule is
+    about not throwing away what was typed.
+    WHY THE CLOSED LOOP HID IT FOR SO LONG: OH_LEADS_SUPPORTED_QUERIES.txt was PROVISIONAL and
+    "DERIVED FROM JSON COMBOS" -- generated from the JSON, then compared to the JSON. ImageQuery was
+    absent from the JSON, therefore absent from the list, therefore nothing reported it. Only CHECK 0,
+    which reads the DEVDOC instead, could see it. The extract is now CONFIRMED (gating) and carries
+    'Driver Photo | OperatorLicenseNumber'. Unlike AZ, no line had to be REMOVED here -- every entry
+    was real; the defect was what the list did NOT contain.
+
+  REGISTERED THE NEW QUERY KIND WITH EVERY CONSUMER, not just the provider. 'Driver Photo' was the
+    first new queryLabel in the portfolio, so the first build FAILED verify_build CHECK ("queryLabel
+    not in standard set") -- correctly. Added to tools/verify_build.ps1 $validLabels AND to the
+    CLAUDE.md queryLabel table. Both additive, so neither can redden another provider.
+
+  GATES: validator 80 PASS / 0 FAIL / 0 WARN · verify 17 PASS / 0 WARN / 0 FAIL · supported-queries
+    23 PASS / 0 FAIL / 0 WARN with all SEVEN Basic transactions built and the extract GATING ·
+    reachability 20 combinations all reachable · wiring closure clean on all ten classes · devdoc
+    combinations 0 FAIL / 20 compared · Craft.js tree verified intact (0 null/scalar `nodes` lists,
+    the failure mode a whole-tree recase once caused). Combos 21 -> 22.
+  STILL ADVISORY, unchanged and NOT introduced here: fidelity reports 1 UNDER-REQUIRED
+    (DQ.O missing SocialSecurityNumber) -- the shared-keyRef artifact. BMVIMS names both
+    DriverLicenseQuery's OLN variant and its SSN variant, the tool bridges on the bare keyRef and
+    compares against their union. DL-by-SSN is NOT in OH's Basic DL list (five combinations, OLN and
+    Name only), so it is correctly unbuilt. Deliberately NOT registered: naming the BUILT combo DQ.O
+    with an existence-class rule would suppress its entire comparison.
+  COST: none. OH is NEVER-TESTED and NOT imported, so the bump archived 0 logs / 0 SQVR markers.
+
 v2.3  2026-08-10  DEX-1283 Attention 'X' + DEX-1284 label conformance (OH was the portfolio outlier)
   CHANGED, all officer-facing or wire-value; ZERO QIDM / combo / routing / fieldId change:
     (1) DEX-1283: the hidden DH feeder loses initialValue='X' and BOTH KQ.N/KQ.O combo defaults[]

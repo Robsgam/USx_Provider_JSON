@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.3.json
-  Generated: 2026-08-10 15:56
+  Source: OH_LEADS_v2.4.json
+  Generated: 2026-08-10 16:23
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- OH_LEADS_v2.3.json
+  CommSys Query Simulator -- OH_LEADS_v2.4.json
 ================================================================
 
 --- QIDM: OH_LEADS_VehicleRegistrationQuery [Vehicle] ---
@@ -79,6 +79,23 @@ QUERY SIMULATION
 
     >> PLATFORM FIRES: KQ.O (first matching combo)
     >> UNION POOL (platform serializes): Attention=DOE J, OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: OH_LEADS_ImageQuery [Person] ---
+    Query: ImageQuery  |  Attrs: 1  |  Combos: 1
+
+    [FIRES first-match] BMVIMS
+      set: [OperatorLicenseNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>BMVIMS</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+      </Transaction>
+
+    >> PLATFORM FIRES: BMVIMS (first matching combo)
+    >> UNION POOL (platform serializes): OperatorLicenseNumber=D123456789
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

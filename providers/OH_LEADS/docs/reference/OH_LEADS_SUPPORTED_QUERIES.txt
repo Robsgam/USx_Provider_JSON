@@ -1,9 +1,43 @@
-STATUS: PROVISIONAL
-# OH_LEADS supported queries -- DERIVED FROM JSON COMBOS, NOT YET CONFIRMED.
-# ACTION: verify this list against the provider devdoc 'Basic Queries Supported'.
-#   - remove any line the devdoc does NOT authorize
-#   - add any devdoc-supported query intentionally not built (document as a skip)
-# Then change STATUS to CONFIRMED to turn this into a hard gate.
+STATUS: CONFIRMED
+# OH_LEADS supported queries -- VERIFIED line by line against the devdoc "Basic Queries Supported"
+# section on 2026-08-10. This is now a HARD GATE: mismatches FAIL rather than report INFO.
+#
+# THE DEVDOC SECTION BOUNDARY. source/OH_LEADS_DEVDOC.txt lists SEVEN Basic query headings:
+#   22 ArticleSingleQuery · 60 BoatQuery · 104 DriverHistoryQuery · 148 DriverLicenseQuery
+#   210 GunQuery · 248 ImageQuery · 280 VehicleRegistrationQuery
+# Line 682 AOSOrionQuery begins the expanded "Transactions Supported" material, so Basic is
+# lines 22-681 and nothing at or past 682 (AOSOrion, the CBI* family, ...) is authorized here.
+#
+# ALL SEVEN BASIC QUERIES ARE NOW BUILT (v2.4). ImageQuery was the last one missing.
+#
+# WHAT CHANGED 2026-08-10, and why this file was PROVISIONAL until now:
+#   It read "DERIVED FROM JSON COMBOS, NOT YET CONFIRMED" -- a file generated FROM the JSON and then
+#   compared TO the JSON. That closed loop cannot see an omission, which is exactly how ImageQuery
+#   stayed invisible: it was absent from the JSON, therefore absent from this list, therefore nothing
+#   ever reported it missing. Only audit_supported_queries CHECK 0, which reads the DEVDOC rather than
+#   this file, caught it ("devdoc-Basic but NOT BUILT -- each must be a documented skip").
+#   Unlike AZ_AZDPS, no line here had to be REMOVED -- every entry that was here was real (22 PASS /
+#   0 FAIL / 0 WARN before the change). The defect was what the list did not contain.
+#
+#   ADDED: "Driver Photo | OperatorLicenseNumber" -- the newly built ImageQuery.
+#     devdoc line 248:  "Possible Combinations 1. (In/Out) OperatorLicenseNumber,
+#                        [ReasonCode, Requestor, UserName]" (OLN mandatory, the rest optional)
+#     metadata v9:      ONE Combination keyReference="BMVIMS"
+#                        primaryFieldReference="OperatorLicenseNumber",
+#                        Set[OperatorLicenseNumber] Any[ReasonCode, Requestor, UserName]
+#     Built EXACTLY to the metadata: set[OperatorLicenseNumber], any[] empty. It is autoSelect=$false
+#     -- an officer opt-in checkbox -- because a standalone photo transaction must NOT co-fire on
+#     every OLN entry; OH already has ImageIndicator on the DL card for the in-band image.
+#     queryLabel "Driver Photo" is NEW to the portfolio (registered in CLAUDE.md's queryLabel table
+#     and in verify_build's $validLabels the same day; no provider had ever built an ImageQuery).
+#
+# NOTE ON keyRef BMVIMS: it is shared with DriverLicenseQuery. That is the metadata's own naming and
+# it is legal -- keyRefs collide across QIDMs (BUILD_RULES 13), which is why tools resolve combos by
+# (query, keyRef). It is also the reason audit_requirement_fidelity reports a phantom UNDER-REQUIRED
+# "DQ.O missing SocialSecurityNumber": it bridges on the bare keyRef and compares against the union
+# of BOTH BMVIMS variants. DL-by-SSN is NOT in the Basic DriverLicenseQuery list (its five
+# combinations are OLN and Name only), so that variant is correctly unbuilt. Do not "fix" it.
+#
 # Format: <QueryLabel> | <PrimaryFieldReference>
 
 Article | ArticleSerialNumber
@@ -14,6 +48,7 @@ Driver History | Name
 Driver History | OperatorLicenseNumber
 Driver License | Name
 Driver License | OperatorLicenseNumber
+Driver Photo | OperatorLicenseNumber
 Firearm | GunSerialNumber
 Vehicle Registration | LicensePlateNumber
 Vehicle Registration | Name

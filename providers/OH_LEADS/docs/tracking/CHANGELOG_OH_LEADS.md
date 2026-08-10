@@ -2,9 +2,13 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-10
+Current: **v2.4** | Generated: 2026-08-10
 
 ---
+
+## v2.4 -- 2026-08-10 -- CARD COLLAPSE 14 -> 6 + ImageQuery BUILT (the two items v2.3 left open)
+
+Both were flagged at v2.3 as "Rob's call". His call was: do them. So they are done, in one version.  
 
 ## v2.3 -- 2026-08-10 -- DEX-1283 Attention 'X' + DEX-1284 label conformance (OH was the portfolio outlier)
 

@@ -2,10 +2,9 @@
   SUPPORTED-QUERY (DEVDOC) AUDIT -- OH_LEADS
 ================================================================
 
-[PASS] CHECK 0 transaction-name scope: all 6 built transaction(s) are devdoc-authorized (compared against 7 Basic name(s))
-[INFO] CHECK 0 devdoc-Basic but NOT BUILT: ImageQuery -- each must be a documented skip (ACCEPTED_DIVERGENCES / BUILD_NOTES)
+[PASS] CHECK 0 transaction-name scope: all 7 built transaction(s) are devdoc-authorized (compared against 7 Basic name(s))
 
-Extract STATUS: PROVISIONAL  (PROVISIONAL -- mismatches INFO until devdoc sign-off)
+Extract STATUS: CONFIRMED  (GATING -- mismatches FAIL)
 Devdoc 'Basic Queries Supported' (OH_LEADS_DEVDOC.txt, lines 20-338): ArticleSingleQuery, BoatQuery, DriverHistoryQuery, DriverLicenseQuery, GunQuery, ImageQuery, VehicleRegistrationQuery
 
 [PASS] combo ATDP: 'Vehicle Registration | LicensePlateNumber' is devdoc-supported
@@ -22,6 +21,7 @@ Devdoc 'Basic Queries Supported' (OH_LEADS_DEVDOC.txt, lines 20-338): ArticleSin
 [PASS] combo DN: 'Driver License | Name' is devdoc-supported
 [PASS] combo KQ.N: 'Driver History | Name' is devdoc-supported
 [PASS] combo KQ.O: 'Driver History | OperatorLicenseNumber' is devdoc-supported
+[PASS] combo BMVIMS: 'Driver Photo | OperatorLicenseNumber' is devdoc-supported
 [PASS] combo QG: 'Firearm | GunSerialNumber' is devdoc-supported
 [PASS] combo QA.S: 'Article | ArticleSerialNumber' is devdoc-supported
 [PASS] combo QA.N: 'Article | NCICNumber' is devdoc-supported
@@ -30,4 +30,4 @@ Devdoc 'Basic Queries Supported' (OH_LEADS_DEVDOC.txt, lines 20-338): ArticleSin
 [PASS] combo BQ.R: 'Boat | RegistrationNumber' is devdoc-supported
 [PASS] combo QB.R: 'Boat | RegistrationNumber' is devdoc-supported
 
-RESULTS: 22 PASS / 0 FAIL / 0 WARN (1 INFO)
+RESULTS: 23 PASS / 0 FAIL / 0 WARN (0 INFO)
