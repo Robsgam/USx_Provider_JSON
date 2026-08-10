@@ -48,6 +48,24 @@ WHY THIS IS WORTH A BUMP + FULL RE-SWEEP: v4.14 is tenant-verified ALL-PASS 46/4
 EXPECTED AFTER RE-TEST: <Attention>SGAMBELLONE R</Attention> unchanged on all 9 DH  
   wires. If it comes back ABSENT, the v2.9 gate-feeder theory was right after all and  
   this must be reverted -- that is the single discriminating observation of the re-sweep.  
+ANSWERED 2026-08-10 -- PREDICTION HELD, 9 of 9. USx tenant re-sweep ALL-PASS 46/46  
+  (Vehicle 16 / Person 14 / Firearm 6 / Article 3 / Boat 7). Every KQ/KQN log carries  
+  <Attention>SGAMBELLONE R</Attention> with NO initialValue and NO combo default  
+  anywhere in the JSON: KQ, KQN, KQ_any, KQN_any, KQ_af_RegistrationStateDH,  
+  KQN_af_RegistrationStateDH, KQ_af_purposeCodeDH, KQN_af_purposeCodeDH,  
+  KQN_guardrail_vs_KQ. Zero logs carry a literal 'X'. So the any[] membership alone  
+  feeds the handler and the v2.9 'X' was decoration on a confounded version -- now  
+  settled by wire evidence on THIS provider, not inferred from the other four.  
+  Control observation worth keeping: the DL side (DQ, DQN, DQ_any, DQN_any,  
+  DQN_guardrail_vs_DQ) emits NO <Attention> element at all -- the field is genuinely  
+  DH-scoped and does not leak through the shared field pool.  
+  Gates: four log gates 46/46 (content, metadata, attribution, plan completeness 5/5),  
+  inflation 0/0/0/0 (46 distinct wires, fingerprints matched, no orphan field, no  
+  degenerate guardrail), enforce 43 PASS / 0 HI-scoped FAIL-or-WARN.  
+  STILL UNTESTED BY CONSTRUCTION: the CAD path. Removing Attention='X' from KQ/KQN  
+  defaults[] is the half of this fix that no form-driven log can exercise (see the BUMP  
+  rationale above), so DEX-1283's "not present when you do it from a CAD event" symptom  
+  is addressed by inspection, not by a captured wire. Do not record it as proven.  
 SCRIPT : scripts/build_hi_hcjdc_ofml.ps1  
 OUTPUT : HI_HCJDC_OFML_v4.15.json  
 

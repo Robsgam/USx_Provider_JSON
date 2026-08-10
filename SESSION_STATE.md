@@ -17,7 +17,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.7 | NEVER-TESTED -- 59 test(s) owed |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.18 | ALL-PASS (116 logs) |
-| HI_HCJDC_OFML | v4.15 | NEVER-TESTED -- 46 test(s) owed |
+| HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.2 | ALL-PASS (41 logs) |
 | NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
 | NY_NYSPIN_EJUSTICE | v4.23 | ALL-PASS (69 logs) |
@@ -33,24 +33,23 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**HI_HCJDC_OFML v4.15 BUILT 08-10 -- ROB RE-IMPORTS, then 46-test re-sweep.** DEX-1283 Attention
-`'X'` removed (form `initialValue` + both KQ/KQN combo `defaults[]`; control, `any[]` membership and
-handler all UNCHANGED). enforce 42 PASS 0 HI-scoped F/W, validator 65P/0F/0W, fidelity 14br 0/0,
-gate efficacy 8/8, 12 combos. v4.14's 46 ALL-PASS logs archived to `_archive_pre_v4.15/`.
-Picklists already captured and STILL VALID (no dropdown/codeType change) -- no re-scope.
-**THE ONE OBSERVATION THAT DECIDES IT:** `<Attention>SGAMBELLONE R</Attention>` must still appear on
-all 9 DH wires. ABSENT ⇒ v2.9's gate-feeder theory was right and v4.15 REVERTS.
-**Why the `X` came out (Rob caught me arguing to keep it):** HI's v2.9 note credited the `X` as the
-gate-feeder that makes the handler resolve -- but v2.9 changed TWO things at once (added `Attention`
-to KQ/KQN `any[]` AND the `X`) and its own text names the `any[]` entry as root cause. FL/TX/CA_CLETS/NY
-run the SAME handler with no prefill and no default and resolve the name on **38/38** DH wires. A June
-note was being weighted over August wire evidence. **NOT a set[] question** -- NY is the set[] story
-and it runs the OTHER way (set[] blocked Send; v4.21 DEMOTED set[]->any[]). No provider needs set[].
+**TWO JIRA DRAFTS AWAIT ROB'S APPROVAL -- nothing else is owed on HI or IL.**
+1. **DEX-1257 HI v4.15** changelog + release line. 2. **DEX-984 IL v2.2** release line (drafted +
+approved in substance 08-10, was HELD until HI tested -- HI is now tested, so it unblocks; still
+draft-and-wait). Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
 
-**IL_LEADS_OFML v2.2 DONE + POSTED.** ALL-PASS 41/41, four log gates, 3 guardrails wire-proven, Name
-still LAST-first. **DEX-984 comment 795041** = first-ever post (full v1.0->v2.2 dump). Ledger section
-C records Rob's attach+catalog 08-10. **v2.2 RELEASE LINE drafted + approved but HELD until HI is
-tested** -- do not post it unprompted. Then AZ_AZDPS v3.7 (59 owed), then the remaining 12.
+**HI_HCJDC_OFML v4.15 TENANT-COMPLETE 08-10 -- ALL-PASS 46/46** (Veh 16/Per 14/Gun 6/Art 3/Boat 7),
+four log gates 46/46, inflation 0/0/0/0, enforce 43 PASS 0 HI-scoped F/W, validator 65P/0F/0W.
+**DEX-1283 Attention `'X'` removal is SETTLED BY WIRE, 9/9:** `<Attention>SGAMBELLONE R</Attention>`
+lands on every KQ/KQN log with NO `initialValue` and NO combo default -- `any[]` membership alone
+feeds the handler, so v2.9's gate-feeder claim is refuted on HI's own wires (it changed two things in
+one version and its own text named `any[]` as root cause). Rob caught me arguing to keep the `X`; I
+was weighting a June note over August evidence. Control: DL side emits NO `<Attention>` at all.
+**STATED LIMIT, do not overclaim:** the CAD `defaults[]` half is inspection-only -- no form-driven
+log exercises the CAD path, which is exactly DEX-1283's second symptom.
+
+**IL_LEADS_OFML v2.2 DONE.** ALL-PASS 41/41, four log gates, 3 guardrails wire-proven, Name LAST-first.
+**DEX-984 comment 795041** = first-ever post (full v1.0->v2.2 dump). Ledger C records attach+catalog.
 
 **GATE WORK 08-07 (4 gaps CLOSED):** `audit_wiring_closure` **class J ROUTING-ONLY** (EXISTS
 condition on a field in NEITHER set[] nor any[]; EXISTS-only, else ~244 NOT_EXISTS false hits) --
@@ -76,6 +75,9 @@ fix would have silenced LA_LEMS's parked finding. **PRE-EXISTING not mine:** NY 
 
 **ENFORCED 0F/0W except:** LA_LEMS + CA_CONTRA_COSTA (above); MD_METERS + OH_LEADS carry
 `[FLAG:validate-imgind-20b-l30]` and clear at their OWN next rebuild -- don't rebuild to chase a score.
+**EXPECT ON EVERY PROVIDER'S ENFORCE, not the one you tested:** `[FAIL] Repo audit 3 FAIL` =
+LA/MD/OH STATUS.txt score drift (63P/70P/78P) from the 08-07 `validate.ps1` generalization. Each
+clears at its OWN rebuild -- syncing them now is the mass-rebuild-by-back-door mistake (tooling 8c).
 
 **NJ + TX PARTIAL is a coverage GAIN, not a regression.** OWED: NJ 4 + TX 3 OOS-toggle tests (fill
 **AK**), never generated before. Capture them -> ALL-PASS; no bump, no re-sweep.
