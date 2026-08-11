@@ -1,5 +1,16 @@
 OR_LEDS -- Build Notes
 =======================
+
+DOCUMENTED SKIP (recorded 2026-08-11) -- ImageQuery: UNBUILDABLE, not deferred.
+  audit_supported_queries CHECK 0 reports "devdoc-Basic but NOT BUILT: ImageQuery -- each must be a
+  documented skip", and it had never been written down. Now it is, with the reason:
+  OR_LEDS metadata contains ZERO ImageQuery transactions (verified from the raw XML:
+  //Transaction[@name='ImageQuery'] -> 0 nodes, 0 Combinations). Metadata is FIELD authority, so
+  there is no transaction to build against and no request shape that any variant would accept.
+  Same class as AZ_AZDPS's GunQuery #1/#2 (devdoc lists a path metadata does not define).
+  This is CLOSED, not owed. Contrast LA_LEMS, where ImageQuery IS defined (1 combination,
+  DP{OperatorLicenseNumber}) and therefore genuinely is owed at that provider's own turn.
+
 Provider: OR_LEDS
 State: Oregon
 Network: LEDS (Law Enforcement Data System)

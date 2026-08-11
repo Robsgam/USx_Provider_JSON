@@ -1,5 +1,18 @@
 LA_LEMS -- Build Notes
 =============================
+
+OPEN AT THIS PROVIDER'S OWN TURN (recorded 2026-08-11) -- ImageQuery is devdoc-Basic and NOT BUILT.
+  audit_supported_queries CHECK 0 has been reporting "devdoc-Basic but NOT BUILT: ImageQuery -- each
+  must be a documented skip" and it was documented nowhere. It is BUILDABLE, so this is a genuine
+  coverage gap and not a metadata dead end: LA_LEMS metadata defines ImageQuery with ONE combination,
+  keyReference="DP" primaryFieldReference="OperatorLicenseNumber" (verified from the raw XML) --
+  the same shape OH_LEADS built at v2.4 (autoSelect=$false opt-in photo request off the DL card's
+  existing OLN control, so no new form field is needed).
+  NOT built here: LA_LEMS is PARKED on Rob's call (the BUILD_RULES 20b WARN must not be silenced),
+  and one-provider-at-a-time means this is picked up on LA's own rebuild, not folded into someone
+  else's pass. Recorded so the next check does not read LA as clean.
+  For contrast, OR_LEDS's identical CHECK 0 line is CLOSED, not owed -- its metadata defines zero
+  ImageQuery transactions, so there is nothing to build.
 Provider: LA_LEMS (internal: LA_LEMS, System LEMS v18)
 State: Louisiana
 Network: LETTS (Law Enforcement Telecommunications System)

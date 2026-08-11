@@ -49,7 +49,36 @@ v4.18  2026-07-30  Devdoc optionals x routing: 17 dropped optionals wired (commi
     merely present (ImageIndicator=Y, ReasonCode=C, EmailAddress=ROB.SGAMBELLONE@MARK43.COM), which
     is the T6 devdoc constraint satisfied for real; Boat Hull>Reg sends hull ONLY.
     MessageType=VehicleInsuranceRegistrationQuery on all 20 Vehicle wires is CORRECT -- TX metadata
-    defines RQ/REG/VIN/DPSI/QV under that query and has no separate VehicleRegistrationQuery.
+    defines RQ/REG/VIN/DPSI/QV under that query.
+    *** CORRECTION 2026-08-11: the second half of that sentence ("and has no separate
+    VehicleRegistrationQuery") WAS FALSE and is retracted. TX metadata DOES define a separate
+    VehicleRegistrationQuery transaction with SEVEN combinations. Verified from the raw XML:
+      //Transaction[@name='VehicleRegistrationQuery']  -> 1 transaction, 7 Combination nodes.
+    The two transactions overlap on FIVE byte-identical combinations (RQ{Plate}, QV{Plate}, RQ{VIN},
+    QV{VIN}, DPSI{StickerNumber}) and then diverge:
+      only in VehicleInsuranceRegistrationQuery (BUILT):  REG{LicensePlateNumber} and VIN{VIN},
+        both requiring FinancialResponsibilityType -- i.e. the insurance paths.
+      only in VehicleRegistrationQuery (NOT BUILT):       DPSI{LicensePlateNumber}
+        Set[LicensePlateYear, LicensePlateNumber] Any[State], and DPSI{VehicleIdentificationNumber}
+        Set[VehicleIdentificationNumber] Any[State].
+    So TX is missing TWO REAL PATHS: a DPSI (inspection/sticker) lookup BY PLATE and BY VIN. Today
+    DPSI is reachable only if the officer already has the StickerNumber.
+    The devdoc lists BOTH transactions in "Basic Queries Supported" (VehicleInsuranceRegistrationQuery
+    at line 235, VehicleRegistrationQuery at line 277), so this is in scope, not out of it.
+    HOW IT WENT UNNOTICED: audit_supported_queries CHECK 0 has been reporting
+    "devdoc-Basic but NOT BUILT: VehicleRegistrationQuery -- each must be a documented skip" and this
+    note was mistaken for that documentation. A skip note that states a falsehood is worse than no
+    note: it converts an open finding into a closed one and the next reader stops looking. Found
+    2026-08-11 by checking the claim against the metadata instead of reading the sentence.
+    NOT BUILT IN THIS PASS, DELIBERATELY -- two reasons, both about cost and correctness:
+      (a) TX is tenant-verified ALL-PASS 92/92. A version bump archives all 92 logs and costs a full
+          hands-on re-sweep, which is Rob's time, not a free rebuild.
+      (b) A naive VehicleRegistrationQuery QIDM with autoSelect=true would DOUBLE-FIRE: five of its
+          seven combinations are byte-identical to the built Insurance query's, so every plate or VIN
+          entry would emit two transactions. The correct build carries ONLY the two unique DPSI paths
+          and almost certainly needs autoSelect=false (an opt-in "inspection sticker" request), the
+          same shape as OH_LEADS's ImageQuery.
+    Awaiting Rob's call on whether to spend the re-sweep. ***
 
 v4.17  2026-07-30  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1
