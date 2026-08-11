@@ -2,7 +2,7 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.9** | Generated: 2026-08-10
+Current: **v3.9** | Generated: 2026-08-11
 
 ---
 
