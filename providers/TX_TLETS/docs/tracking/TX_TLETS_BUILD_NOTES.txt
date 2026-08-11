@@ -70,15 +70,28 @@ v4.18  2026-07-30  Devdoc optionals x routing: 17 dropped optionals wired (commi
     note was mistaken for that documentation. A skip note that states a falsehood is worse than no
     note: it converts an open finding into a closed one and the next reader stops looking. Found
     2026-08-11 by checking the claim against the metadata instead of reading the sentence.
-    NOT BUILT IN THIS PASS, DELIBERATELY -- two reasons, both about cost and correctness:
-      (a) TX is tenant-verified ALL-PASS 92/92. A version bump archives all 92 logs and costs a full
-          hands-on re-sweep, which is Rob's time, not a free rebuild.
-      (b) A naive VehicleRegistrationQuery QIDM with autoSelect=true would DOUBLE-FIRE: five of its
-          seven combinations are byte-identical to the built Insurance query's, so every plate or VIN
-          entry would emit two transactions. The correct build carries ONLY the two unique DPSI paths
-          and almost certainly needs autoSelect=false (an opt-in "inspection sticker" request), the
-          same shape as OH_LEADS's ImageQuery.
-    Awaiting Rob's call on whether to spend the re-sweep. ***
+    APPROVED SKIP -- ROB'S RULING, 2026-08-11: *"we purposely choose the veh insurance query only as
+    it should return veh and more."* VehicleInsuranceRegistrationQuery is chosen DELIBERATELY because
+    it is the RICHER response -- registration data plus the financial-responsibility/insurance detail
+    -- and it already carries the four primary lookups an officer actually uses (RQ and QV by both
+    plate and VIN) with byte-identical requirements to the unbuilt sibling. Building the second
+    transaction to duplicate those four paths would add wire traffic and no information. So this is a
+    scope CHOICE on the response payload, not an oversight, and it is the same class as FL_FCIC's
+    user-approved ImageQuery skip. DO NOT "fix" it; DO NOT re-raise it as a gap.
+    *** CLOSED -- DO NOT BUILD IT BACK IN. Rob, 2026-08-11, explicitly: *"we do not want to build the
+    veh query back in."* This is a settled scope decision, not a deferred item and not an open
+    question. No future pass should propose, cost, or re-adjudicate it, and CHECK 0's standing
+    "devdoc-Basic but NOT BUILT: VehicleRegistrationQuery" line IS expected output for this provider
+    -- treat it exactly like NJ_NJCJIS's VehicleStolenQuery line and FL_FCIC's ImageQuery line. ***
+    Factual scope of what is skipped, for the record only: the two unique combinations are DPSI-keyed,
+    and DPSI is the inspection/sticker dataset rather than a richer registration response. DPSI is
+    still reachable today because VehicleInsuranceRegistrationQuery carries DPSI{StickerNumber}; what
+    is not offered is keying DPSI off a plate or a VIN. That is the whole of the difference.
+    NOTE ON MY EARLIER REASONING, corrected the same day: the first version of this block also cited
+    "a bump archives 92 logs and costs a full hands-on re-sweep" as a reason not to build. Rob:
+    *"testing is no longer a blocker or consideration now that we have honed the driver and capture
+    tools."* Re-test labour must never appear in a build/no-build decision -- the version-freeze rule
+    is about log ATTRIBUTION, not effort. The skip stands on the scope ruling alone. ***
 
 v4.17  2026-07-30  Pipeline rebuild
   CHANGED: Rebuilt via pipeline.ps1

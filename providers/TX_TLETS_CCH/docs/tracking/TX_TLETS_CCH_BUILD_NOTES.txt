@@ -3,18 +3,20 @@
   Created: 2026-06-09
 ================================================================
 
-INHERITED OPEN FINDING (recorded 2026-08-11, not introduced here)
+INHERITED APPROVED SKIP -- CLOSED (recorded 2026-08-11, not a defect here or on the base)
   audit_supported_queries CHECK 0 reports "devdoc-Basic but NOT BUILT: VehicleRegistrationQuery" on
-  this variant too. That is NOT a CCH defect and must not be fixed here independently: this provider
-  reuses TX_TLETS's devdoc (see "Provider Variants" in CLAUDE.md -- a variant's query authority is its
-  BASE's devdoc) and its base-6 QIDMs are held in lockstep via `# BASE-SYNC: TX_TLETS v4.19`.
-  The finding is TX_TLETS's: TX metadata DOES define a separate VehicleRegistrationQuery (7
-  combinations), of which two are unique and unbuilt -- DPSI{LicensePlateNumber} and
-  DPSI{VehicleIdentificationNumber}, i.e. inspection-sticker lookup by plate and by VIN. TX's own
-  BUILD_NOTES had claimed no such transaction existed; that claim was retracted 2026-08-11.
-  WHEN THE BASE BUILDS IT, THIS VARIANT MUST BE REBUILT IN THE SAME PASS and its BASE-SYNC marker
-  bumped -- base and variants are one logical provider and must never drift. Do not close this line
-  here on its own.
+  this variant too. That line is EXPECTED OUTPUT and requires no action. This provider reuses
+  TX_TLETS's devdoc (a variant's query authority is its BASE's devdoc -- see "Provider Variants" in
+  CLAUDE.md), so it inherits the base's scope ruling along with the base-6 QIDMs held in lockstep by
+  `# BASE-SYNC: TX_TLETS v4.19`.
+  THE RULING (Rob, 2026-08-11): TX deliberately builds VehicleInsuranceRegistrationQuery ONLY, because
+  it returns registration data AND the insurance detail -- the richer response -- and it already
+  carries RQ and QV by both plate and VIN with requirements byte-identical to the unbuilt sibling.
+  *"we do not want to build the veh query back in."* Settled, not deferred: do not propose, cost or
+  re-adjudicate it here or on the base. Treat it like NJ_NJCJIS's VehicleStolenQuery line.
+  (A separate correction the same day: TX's BUILD_NOTES had wrongly claimed the metadata contained no
+  such transaction -- it defines 7 combinations. The claim was retracted; the SKIP was always right,
+  only its stated reason was wrong.)
 
 v1.15  2026-08-06  Lockstep w/ TX_TLETS v4.19 (DEX-1283): removed unneeded X default
   CHANGED: BASE-SYNC marker bumped TX_TLETS v4.18 -> v4.19. Removed initialValue='X' from the
