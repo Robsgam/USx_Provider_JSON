@@ -1,6 +1,6 @@
 ﻿================================================================
 TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
-Combo: FULL_any (FULL_any (auto))
+Combo: FULL_af_RegistrationState (FULL_af_RegistrationState (auto))
 Date: 2026-08-11 12:19:40
 Result: PASS
 JSON Version: 4.15
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDate":"1990-01-15","ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","SexCode":"Male"}
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Alaska"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZRSWTT7NBCDKVMEANZV68BT">
+    <api:Transaction id="01KZRSWJPWQSXNVNDQYB6JYEPH">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZRSWTT7NBCDKVMEANZV68BT</Id>
-            <ImageIndicator>N</ImageIndicator>
-            <State>GA</State>
-            <SexCode>M</SexCode>
+            <Id>01KZRSWJPWQSXNVNDQYB6JYEPH</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>AK</State>
             <BirthDate>01151990</BirthDate>
             <Name>DOE, JOHN</Name>
           </Request>
@@ -60,9 +59,8 @@ Request:
     "elasticQuery":  {
                          "lastName":  "DOE",
                          "firstName":  "JOHN",
-                         "sexAttrId":  "69509891711",
                          "dateOfBirth":  "1990-01-15",
-                         "registrationStateAttrId":  "69509895916"
+                         "registrationStateAttrId":  "69509885958"
                      },
     "from":  0,
     "size":  50
@@ -78,15 +76,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZRSWTT7NBCDKVMEANZV68BT
-  ImageIndicator                 N
-  State                          GA
-  SexCode                        M
+  Id                             01KZRSWJPWQSXNVNDQYB6JYEPH
+  ImageIndicator                 Y
+  State                          AK
   BirthDate                      01151990
   Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01KZRSWTT7NBCDKVMEANZV68BT). kind=any; anyField=; expectedKeyRef=FULL; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZRSWJPWQSXNVNDQYB6JYEPH). kind=any-field; anyField=RegistrationState; expectedKeyRef=FULL; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

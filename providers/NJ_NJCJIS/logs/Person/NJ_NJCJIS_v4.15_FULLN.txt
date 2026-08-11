@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
 Combo: FULLN (FULLN (auto))
-Date: 2026-08-03 16:04:47
+Date: 2026-08-11 12:19:40
 Result: PASS
 JSON Version: 4.15
 Entity Fingerprint: ecc06b05fcff3a7c5956b4657bba88916e114043f58678bb7a2869456a3617a0
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4KM2H4SDJM280TV8CHA4TR">
+    <api:Transaction id="01KZRSWXSH16SSQ6RGK59VSBWB">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZ4KM2H4SDJM280TV8CHA4TR</Id>
+            <Id>01KZRSWXSH16SSQ6RGK59VSBWB</Id>
             <ImageIndicator>Y</ImageIndicator>
             <State>NJ</State>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
@@ -55,12 +55,12 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "dlNumber": "D999888777",
-    "registrationStateAttrId": "69509884952"
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777",
+                         "registrationStateAttrId":  "69509884952"
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -73,13 +73,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZ4KM2H4SDJM280TV8CHA4TR
+  Id                             01KZRSWXSH16SSQ6RGK59VSBWB
   ImageIndicator                 Y
   State                          NJ
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01KZ4KM2H4SDJM280TV8CHA4TR). kind=combo; anyField=; expectedKeyRef=FULLN; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZRSWXSH16SSQ6RGK59VSBWB). kind=combo; anyField=; expectedKeyRef=FULLN; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

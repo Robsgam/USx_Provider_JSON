@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: NJ_NJCJIS Person DriverLicenseQuery
 Combo: FULL_af_ImageIndicator (FULL_af_ImageIndicator (auto))
-Date: 2026-08-03 16:04:48
+Date: 2026-08-11 12:19:42
 Result: PASS
 JSON Version: 4.15
 Entity Fingerprint: ecc06b05fcff3a7c5956b4657bba88916e114043f58678bb7a2869456a3617a0
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4KKFFPP1C89DC35QA58QDH">
+    <api:Transaction id="01KZRSW4DH03Y8A0Z2G7GV3NDC">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZ4KKFFPP1C89DC35QA58QDH</Id>
+            <Id>01KZRSW4DH03Y8A0Z2G7GV3NDC</Id>
             <ImageIndicator>N</ImageIndicator>
             <State>NJ</State>
             <BirthDate>01151990</BirthDate>
@@ -56,14 +56,14 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "lastName": "DOE",
-    "firstName": "JOHN",
-    "dateOfBirth": "1990-01-15",
-    "registrationStateAttrId": "69509884952"
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "dateOfBirth":  "1990-01-15",
+                         "registrationStateAttrId":  "69509884952"
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -76,7 +76,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZ4KKFFPP1C89DC35QA58QDH
+  Id                             01KZRSW4DH03Y8A0Z2G7GV3NDC
   ImageIndicator                 N
   State                          NJ
   BirthDate                      01151990
@@ -84,6 +84,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KZ4KKFFPP1C89DC35QA58QDH). kind=any-field; anyField=ImageIndicator; expectedKeyRef=FULL; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZRSW4DH03Y8A0Z2G7GV3NDC). kind=any-field; anyField=ImageIndicator; expectedKeyRef=FULL; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
