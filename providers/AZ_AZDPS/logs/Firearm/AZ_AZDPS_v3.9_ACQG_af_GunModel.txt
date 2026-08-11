@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: AZ_AZDPS Firearm GunQuery
+Combo: ACQG_af_GunModel (ACQG_af_GunModel (auto))
+Date: 2026-08-11 15:49:27
+Result: PASS
+JSON Version: 3.9
+Entity Fingerprint: dcb9468612a3538a6d47d2c5a321b579c6870730702e531f8921990ad6c355a7
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunModel":"TEST","dexStateUserId":"X","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZS5XKM8CYFZP4YYT1KM6GVZ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KZS5XKM8CYFZP4YYT1KM6GVZ</Id>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunModel>TEST</GunModel>
+            <BadgeNumber>MK43RS</BadgeNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZS5XKM8CYFZP4YYT1KM6GVZ
+  GunSerialNumber                GUN12345
+  GunModel                       TEST
+  BadgeNumber                    MK43RS
+
+NOTES
+-----
+Automated capture (txId 01KZS5XKM8CYFZP4YYT1KM6GVZ). kind=any-field; anyField=GunModel; expectedKeyRef=ACQG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
