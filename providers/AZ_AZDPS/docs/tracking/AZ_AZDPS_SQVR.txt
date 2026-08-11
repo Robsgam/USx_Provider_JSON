@@ -1,7 +1,7 @@
-AZ_AZDPS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+﻿AZ_AZDPS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 =====================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-10
+Last updated: 2026-08-11
 JSON version: v3.9
 Validator: see docs/reports/VALIDATOR_REPORT_AZ_AZDPS.txt (authoritative) -- v3.3 = 0 FAIL / 0 WARN. Hardcoded counts removed 2026-07-29: they were stale (quoted a pre-v3.3 70/4LIM/18FIRE run) and duplicated a generated report.
 Live test: PENDING (import not yet performed)
@@ -44,13 +44,13 @@ KNOWN LIMITATIONS (4):
   Combos: ACVR (plate+badge), ACVRV (VIN+badge)
   Defaults: State=AZ, PlateType=PC, PlateYear=2026
 
-  ACVR -- Plate + Badge (dexStateUserId) [PENDING]
+  ACVR -- Plate + Badge (dexStateUserId) [CONFIRMED]
     set: dexStateUserId, LicensePlateNumber
     any: LicensePlateYear, LicensePlateTypeCode, RegistrationState,
          VehicleIdentificationNumber, VehicleMakeCode, VehicleYear
     keyReference: ACVR
 
-  ACVRV -- VIN + Badge (dexStateUserId) [PENDING]
+  ACVRV -- VIN + Badge (dexStateUserId) [CONFIRMED]
     set: dexStateUserId, VehicleIdentificationNumber
     any: LicensePlateYear, LicensePlateTypeCode, RegistrationState,
          LicensePlateNumber, VehicleMakeCode, VehicleYear
