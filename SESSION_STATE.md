@@ -14,7 +14,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 
 | Provider | Ver | State |
 |---|---|---|
-| AZ_AZDPS | v3.9 | NEVER-TESTED -- 55 test(s) owed |
+| AZ_AZDPS | v3.9 | ALL-PASS (55 logs) |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.18 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
@@ -33,27 +33,32 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**ALL 8 TENANT-COMPLETE PROVIDERS ARE CLOSED END TO END** -- build, sweep, four log gates, Jira,
-ledger. AZ (55 tests) + OH (never swept) are the only owed sweeps; **testing is no longer a blocker
-on deciding a fix** (Rob 08-11) -- do NOT cite re-test cost as a reason to defer.
+**AZ_AZDPS SWEPT 2026-08-11 -- ALL-PASS 55/55, its first FULL sweep ever** (Veh 11 / Per 24 / Gun 6 /
+Art 3 / Boat 11). v3.9 imported same day; tenant had been on v3.6. Four log gates 55/55, inflation
+0/0/0/0 (B compared 55). **NEXT: Rob wants a COSMETIC PASS on AZ ("this needs work") -> v3.10, which
+archives this package -- that is accepted, testing is not a blocker.** I have ONE verified finding
+(`nameMiddle`/`NameMiddleDH` are maxLen=20 but labeled **"MI"**; FL kept MI only because its field was
+maxLen=1). **THREE of my other suspicions were FALSE and I nearly reported them** -- card titles DO
+exist (render_layout prints the NODE ID, not the title), and `dexStateUserId`/`Requestor`/`attention`/
+`RegistrationStateDH` are HIDDEN documented exceptions (my regex probe said otherwise; it was an
+artifact). **Ask Rob what his eye caught -- every gate-checkable convention already passes.**
+**AZ WIRE FACTS, first ever for this provider:** `<UserName>MK43RS` on 55/55 -> the 5 badge combos
+really fire, no silent fallback (this was the pre-sweep risk). `Attention`/`Requestor` both resolve
+`SGAMBELLONE R` -> DEX-1283 settled on AZ's own wires. **ZERO logs carry a bare `>X<`.** All 4 Boat
+combos fired DISTINCTLY (ACQB/ACQBH/BQ/BQH) -- wire proof for the v3.7/v3.8 un-prefill fix, which had
+collapsed them into EXACT collisions. `ACWL` fired -> the reorder ahead of `DQPN` works.
+**OH_LEADS is now the only never-swept provider. Testing is no longer a blocker on deciding a fix.**
 
-**JIRA PAPER TRAIL CONSOLIDATED 08-11 (Rob: "i want the same format for each provider and for each
-update").** 7 tickets, **91 comments rewritten to stubs**, 2 keepers each (HISTORY ANCHOR + release
-line). **THE RULE: one comment per RELEASE, and EDIT it in place if the numbers move -- never a
-sibling correction.** Sibling corrections left FL claiming 121-118-117-116 and NJ 35-36-40 as four and
-three *mutually exclusive* completion claims. Format is FIXED and single-sourced:
-`knowledge-base/JIRA_COMMENT_TEMPLATE.txt` (6 numbered sections, `None` not omitted). Procedure +
-ticket map: `JIRA_REFERENCE.txt` (rewritten -- it had carried comment-ids/test-status frozen since
-07-06 and asserted six wrong numbers; **do not re-add a status column**). **NO delete-comment tool
-exists and an edit is IRREVERSIBLE** -- capture the body first; only edit robot-attributed comments,
-and NOT by displayName (the automation posts as Rob). **2r now 2 PASS / 0 GAP on all 9.**
+**JIRA CONSOLIDATED 08-11:** 7 tickets, **91 comments stubbed**, 2 keepers each. **THE RULE: one
+comment per RELEASE, EDIT it in place if numbers move -- never a sibling correction** (that left FL
+claiming 121-118-117-116). Format single-sourced in `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`;
+procedure + ticket map in `JIRA_REFERENCE.txt` (**do not re-add a status column**). **No delete tool
+exists, edits are IRREVERSIBLE** -- capture first; only robot-attributed comments, and NOT by
+displayName. 2r now 2 PASS / 0 GAP on all 9.
 
-**THE LESSON FROM MY OWN VERIFICATION:** I built the stub inventory from `DEX_TICKET.md` indexes and
-it was short by **18 comments across 5 tickets** -- 8 of them LIVE contradictions (FL 118, CA 92 + 25
-combos, TX 87 + 21 combos, NJ 35, NY 17 combos) and 4 sibling duplicates of a release line posted days
-later. Only re-fetching each ticket found them. **A tracking file is a CLAIM; the ticket is the
-artifact.** Also: my `[GAP]` regex missed `[GAP ]` and under-reported 3 stale `Current:` lines --
-a probe bug, caught only by reading one full output.
+**THE LESSON, twice today:** my stub inventory came from `DEX_TICKET.md` and was short by **18
+comments**; the AZ ledger row claimed "never installed" while a v3.6 picklist and v3.6 Person logs sat
+on disk. **A tracking file is a CLAIM; the artifact is the evidence.**
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -72,9 +77,8 @@ a probe bug, caught only by reading one full output.
 **ENFORCED 0F/0W except:** LA_LEMS + CA_CONTRA_COSTA (above); MD_METERS carries
 `[FLAG:validate-imgind-20b-l30]`, clears at its OWN rebuild. **EXPECT ON EVERY PROVIDER'S ENFORCE, not
 the one you tested:** `[FAIL] Repo audit` = LA/MD/OH STATUS score drift from the 08-07 `validate.ps1`
-change (OH's clears when its rebuild lands). Syncing them now = mass-rebuild-by-back-door (8c).
-**NJ + TX PARTIAL is a coverage GAIN.** OWED: NJ 4 + TX 3 OOS-toggle tests (fill **AK**), never
-generated before. Capture -> ALL-PASS; no bump, no re-sweep.
+change -- **LA + MD only now; OH's cleared at its v2.4 rebuild.** Syncing them = back-door mass
+rebuild (8c). **All 8 tenant-tested providers are at full plan coverage; nothing is PARTIAL.**
 
 Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 1/10 (TN RQ05) | audit_metadata 20/20 | portability
 280 cells 0 unportable | fidelity fixture 116br 0/0 | uniformity 6 prov 0 unexplained | registry
