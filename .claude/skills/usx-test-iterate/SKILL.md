@@ -265,6 +265,31 @@ This is a version bump — it auto-triggers GATE 1 (Part A0 above): the *entire*
 package restarts from Test 1, regardless of how small the metadata/devdoc change was. There is
 no partial-retest path.
 
+## Part C — The Jira release line, once a sweep passes
+
+A completed sweep is what a release line reports, so this is where the format rule bites.
+
+**Jira is HELD** (Rob, 2026-07-31) and every post is **DRAFT-AND-WAIT, every provider, every
+time** — approval on one provider does not authorize the next.
+
+When you do write it:
+- **ONE comment per RELEASE.** Not one per version (Rob 2026-08-03: per-version "becomes tldr").
+- **If the numbers move before the next release, EDIT that comment in place** (Rob 2026-08-11).
+  This is the rule a test sweep breaks most easily: NJ's plan grew from 35 to 36 to 40 tests with
+  no rebuild, and each count was posted as a *new* final comment — leaving three mutually
+  exclusive completion claims for a reader to choose between. FL did the same 121 → 118 → 117 →
+  116. Undoing it took rewriting 73 comments to stubs.
+- **Format is fixed:** `knowledge-base/JIRA_COMMENT_TEMPLATE.txt` (single source, six numbered
+  sections, `None` rather than omitted). Procedure and the ticket map:
+  `knowledge-base/JIRA_REFERENCE.txt`.
+- **There is no delete-comment tool**, and an edit is irreversible — capture the original body
+  before overwriting. Only edit automation-authored comments, never Rob's own notes or a third
+  party's (and do **not** judge authorship by displayName — the automation posts under his
+  account).
+- **Every number from a tool:** `report_test_status.ps1` for pass counts, the four log gates and
+  `audit_log_inflation` for the gate line, `audit_test_coverage.ps1` for combo counts.
+- **Tenant/attachment/catalog detail stays OFF the ticket** → `providers/IMPORT_LEDGER.md` B/C.
+
 ## Verification
 
 Part A: `tools/enforce.ps1 -Provider <NAME>` PHASE 6 = CLOSED.

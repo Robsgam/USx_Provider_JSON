@@ -24,7 +24,9 @@ SOURCE AUTHORITY RULES:
   Document any MetaData vs. DevDoc discrepancies in provider docs.
 
 ================================================================================
-FILES IN THIS FOLDER (14 files, organized by question)
+FILES IN THIS FOLDER (16 files incl. this README, organized by question)
+  Count corrected 2026-08-11: it read "14" while the folder held 15, so it was already
+  stale before JIRA_COMMENT_TEMPLATE.txt was added. Recount when you add a file.
 ================================================================================
 
   README.txt               This file -- index and overview
@@ -88,6 +90,34 @@ FILES IN THIS FOLDER (14 files, organized by question)
                            Provider -> DEX ticket mapping (cloudId + per-provider
                            ticket/status/last-comment table). Reference for changelog
                            comment updates.
+
+  JIRA_COMMENT_TEMPLATE.txt "What EXACTLY does a DEX changelog comment look like?"
+                           THE CANONICAL FORMAT, single source -- six fixed sections in a
+                           fixed order, every one always present ("None" rather than
+                           omitted). Written 2026-08-11 on Rob's "i want the same format
+                           for each provider and for each update", after a measured sweep
+                           found 87 automation-posted comments across 7 tickets with no
+                           two providers sharing a structure. Also holds the two standing
+                           constraints -- ONE COMMENT PER RELEASE and EDIT IT IF THE
+                           NUMBERS MOVE (never a correction as a sibling: that is how
+                           DEX-969 accumulated NINE contradictory totals and DEX-967's
+                           latest comment ended up claiming 89/89 at v4.18 while the
+                           provider was v4.19/92), and the fact that NO DELETE-COMMENT
+                           TOOL EXISTS, so superseded comments are rewritten to the stub
+                           defined here and every edit is irreversible. Includes which
+                           comments may be edited at all: only the automation's own, never
+                           Rob's manual notes or a third party's, and NOT identified by
+                           displayName since the automation posts under his account.
+
+  FIDELITY_TRIAGE.txt      "audit_requirement_fidelity flagged something -- is it real?"
+                           How to read an UNDER-REQUIRED / OVER-PERMITTED finding, and the
+                           tool's known blind spot: when two metadata variants SHARE a
+                           keyRef it bridges on the bare keyRef and compares against the
+                           UNION of their requirements. Confirmed twice (OH_LEADS BMVIMS
+                           DL pair; AZ_AZDPS's two ACVR variants, where 4 real
+                           over-permits read as 0 both before AND after the fix).
+
+  PRODUCTION_TRIAGE.txt    "A live/production query is misbehaving -- where do I start?"
 
   PLATFORM_BUG_REPORT.txt  "What platform bugs are open/worked-around?"
                            Confirmed CommSys/ConnectCIC platform defects found during

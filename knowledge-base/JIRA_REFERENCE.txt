@@ -1,22 +1,71 @@
-# JIRA_REFERENCE.txt — Provider → DEX Ticket Mapping
-# cloudId: 5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c
-# Updated: 2026-07-06
-#
-# Columns: Provider | DEX Ticket | Status | Last Comment ID | Test Status
-#
-# Testing tiers were REMOVED 2026-07-01 — it's all-or-nothing now. There is one "Full" pass:
-#   render per entity + EVERY combo (required set[] fields) + each combo's optional any[]
-#   permutations + guardrail/priority tests + deselect tests + a negative per entity.
-#   (The former "Preliminary" subset no longer exists.)
-# The full pass requires, per test, an XML-bearing log STAMPED with the current JSON version +
-# entity fingerprint (post_test.ps1 stamps Tier: Full automatically). A [CONFIRMED] combo or a
-# blocked entity with no valid current-version backing log FAILS enforce.ps1 — no hand-stamping.
-#
-NJ_NJCJIS          | DEX-988   | In Progress | 782204 | v4.9 COMPLETE (2026-07-20): cosmetic relabel pass (bare State, spelled-out VIN, dropped (required)/helper text -- label-only, no functional change) + full re-test all 5 entities block_entity-locked, SQVR 8 CONFIRMED/0 PENDING, 35/35 logs verified, enforce 28P/0F/0W. Folded in the any-field-toggle tooling fix. v4.9 given to Bert Anzini USx test tenant (implementation). Initial changelog dump posted (comment 782204). Prior -- v4.8 ZERO-ERROR RE-VERIFIED (35/35, 2026-07-02); tenant picklists captured all 5 entities -> TENANT_PICKLISTS.json (2026-07-09)
-CA_CLETS           | DEX-976   | In Progress | 772071 | ZERO-ERROR pass COMPLETE (v2.12, 93/93, 0 corrections, 0 unmatched, XML SAME, 2026-07-02)
-FL_FCIC            | DEX-971   | In Progress | 782269 | v7.7 COMPLETE (2026-07-20): toggle-fix re-test cycle, no config/label change; all 5 entities block_entity-locked, SQVR 34 CONFIRMED/0 PENDING, 118/118 logs verified, enforce 27P/0F/0W. Decal RMS "invalid message payload" characterized as expected (decalNumber has no RMS mapping -- RMS searches plate/VIN; CommSys payload correct), noted in SQVR so it won't re-flag. Posted comment 782269. Prior -- ZERO-ERROR pass COMPLETE (v7.1, 121/121, enforce 25P/0F/0W, 2026-07-02)
-HI_HCJDC_OFML      | DEX-1257  | In Progress | 782246 | v4.10 COMPLETE (2026-07-20): cosmetic relabel pass (Vehicle Type bare, Vehicle-page + Person Sex/DOB helpers normalized to parenthetical, NCIC Image "(if available)" -- HI-scoped divergence from other providers' dash wording) + toggle-fix re-test; all 5 entities block_entity-locked, SQVR 17 CONFIRMED/0 PENDING, 46/46 logs verified, enforce 28P/0F/0W. Posted comment 782246. Prior -- v4.9 CONFIRMED (FL_FCIC/NY-style labeling + Person 3->2 collapse + render follow-up, 2026-07-17)
-TX_TLETS           | DEX-967   | In Progress | 780118 | v4.2 BUILT, UNTESTED 2026-07-15: v4.1 EmailAddress auto-populate handler delivered (RND-57165) + v4.2 QWName shadow-combo removed (portfolio QW audit). enforce 27P/0F/0W. Full live re-test from T1 pending (covers both changes); update ticket again once complete. Prior -- v4.0 TESTED 2026-07-10: full automation pass all 5 entities, enforce 25P/0F/0W, 95/95 logs verified, picklists scoped; was BLOCK-OUT DEFERRED pending the EmailAddress handler.
-NY_NYSPIN_EJUSTICE | DEX-969   | In Progress | 782227 | v4.9 USx TENANT TESTING COMPLETE (2026-07-20): all 5 entities re-tested from T1 + block_entity-locked, SQVR 17 CONFIRMED/0 PENDING, 73/73 logs content-verified, enforce 27P/0F/0W. Covered the v4.9 labeling/render pass + the any-field-toggle tooling fix (optional-field toggles now exercised on the wire). The 3 prior accepted CHECK-15 WARNs (Plate Type/Year, Transaction Type) converted to formal LABEL-OVERRIDE exceptions -> verify now 0 WARN (build-script comments only, JSON byte-identical). Posted comment 782227. Prior -- v4.9 (2026-07-17): FL_FCIC-style labeling cleanup finished on Vehicle/Firearm/Article/Boat (Image label wording, Vehicle title/Make/Year, Related Hit Search wording, Article Serial Number) + Person residual "(opt)" spellouts + DGRP Address State rename, plus a render-driven layout pass (Vehicle/Boat/Person-DL/Person-DH State fields moved off crowded rows to their own row w/ Image at 6/6; DGRP DOB Range rebalanced). Vehicle Plate Type/Year + DH Transaction Type left fully bare by design (Rob-confirmed accepted verify_build CHECK-15 WARN x3 -- merely-defaulted officer-editable fields, not a defect). Label/title/layout-only, no combo/QIDM/wire change. enforce 80P/0F/3W(accepted). Built; all 5 entities reset to PENDING, awaiting USx Tenant Testing -- NOT yet tested at v4.9. Prior -- v4.8 (2026-07-16): dropped "(DH..." qualifier from Driver History labels (mirrors FL_FCIC DEX-1278), Name fields reordered First-before-Last on all 3 Person cards. Prior -- v4.7 TESTING COMPLETE (2026-07-16): Vehicle (20 PASS)/Boat (14 PASS)/Article (4 PASS) live-tested via extension capture, all block_entity-locked; Firearm+Person preserved blocked at v4.6 (unchanged fingerprint). enforce 27P/0F/0W, iterate-phase gate CLOSED (17/17 valid-backed). Also fixed 2 audit_test_coverage.ps1 bugs this session: cross-entity keyRef false-positive coverage (Boat RVEH/RCAR vs Vehicle) and Gate provenance not accepting a blocked entity's preserved version. Prior -- v4.6 TESTING COMPLETE (2026-07-10): full pass re-run via extension Run Plan, 72/72 PASS 0 FAIL all 5 entities, block_entity-locked, enforce 25P/0F/0W. Prior detail -- v4.6: 6 cards (Veh 1, Per 3 [DL+DH+DL-Name-Search], Gun 1, Art 1, Boat 1). DGRP own card (full 10-field metadata set, autoSelect); DH self-contained w/ own RegistrationStateDH+ImageIndicatorDH; DL/DH path-tagged labels ("(Name search)"/"(opt)", DH keeps "(DH," per verify_build Sec 11). Tenant picklists captured (all 5 entities, one-time scope). LIVE-PROVEN v4.6 (73P/0F full capture, NY 17/17 SQVR CONFIRMED): DGRP auto-fire isolation; DH OOS routing on RegistrationStateDH; Requestor(DH) auto-populate handler (DALLOUT log shows <Requestor>SGAMBELLONE R</Requestor> on the wire). enforce 0F/0W/0LIM 2026-07-07. Session tooling: post_test + audit_log_content entity-scoped for the shared Boat/Vehicle RVEH/RCAR keyRefs (no more manual SQVR reconcile); audit_picklist_scope advisory NOTE added to enforce. Docs migrated to 4-category structure (tracking/reports/reference/deliverables) mirroring NJ/HI/FL. All 4 cleanup items (Boat SQVR auto-fix, picklist reminder, docs migration, Requestor live-proof) DONE 2026-07-07
-AZ_AZDPS           | DEX-974   | In Progress | TBD    | Pending rebuild + full pass
-IL_LEADS_OFML      | DEX-984   | In Progress | TBD    | Ticket number supplied by Rob 2026-08-07; this provider had NO entry here before that, and its absence was briefly (and wrongly) reported as "IL has no Jira ticket" -- an inference from this file's silence, not a verified fact. Tenant: usx-il-leads-ofml.mark43.com (EXISTS; capture extension covers the host as of manifest 0.4.0). v2.1 BUILT + gated, NOT imported, NEVER tenant-tested -- 41 plan tests ready, 0 unfireable. Nothing posted to the ticket yet (Jira updates remain HELD).
+JIRA_REFERENCE.txt -- Provider -> DEX ticket mapping, and the POSTING PROCEDURE
+cloudId: 5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c
+Rewritten: 2026-08-11
+
+WHAT THIS FILE IS, AND WHAT IT DELIBERATELY NO LONGER HOLDS
+-----------------------------------------------------------
+Until 2026-08-11 this file carried two more columns -- "Last Comment ID" and a free-text
+"Test Status" -- and BOTH had been frozen since 2026-07-06/07-20 while the tickets and the
+providers moved on. It asserted CA_CLETS's newest comment was 772071 (six comments stale), TX
+"v4.2 BUILT, UNTESTED" (the provider is v4.19 ALL-PASS), FL "118/118" (it is 116), NY "73/73"
+(69). Every one of those numbers is derived state that something else already owns:
+
+  - CURRENT VERSION / TEST STATE  -> tools\portfolio_status.ps1  (run it verbatim; log-derived)
+  - POSTED COMMENT IDS + WHAT IS OWED -> providers/<P>/docs/tracking/DEX_TICKET.md
+  - AND THAT FILE IS ITSELF A CLAIM   -> the TICKET is authoritative. getJiraIssue <KEY>
+    fields:["comment"]. DEX_TICKET.md has demonstrably lied twice (HI indexed 2 of 16; FL
+    produced a confidently wrong "nine versions owed"). audit_lifecycle (enforce 2r) reads the
+    FILE, not the ticket, so it can PASS on a lie and FAIL on the truth.
+
+So this file now holds only what does not change: the provider -> ticket mapping, and the
+procedure. Do not re-add a status or comment-id column -- that is the drift this rewrite removed.
+
+PROVIDER -> TICKET
+------------------
+  Provider              | DEX Ticket | Notes
+  NJ_NJCJIS             | DEX-988    |
+  CA_CLETS              | DEX-976    |
+  FL_FCIC               | DEX-971    |
+  HI_HCJDC_OFML         | DEX-1257   | DEX-983 is an older DUPLICATE, marked Done -- do NOT post there
+  TX_TLETS              | DEX-967    |
+  NY_NYSPIN_EJUSTICE    | DEX-969    |
+  AZ_AZDPS              | DEX-974    | carries one THIRD-PARTY comment (roadmap note) -- never edit it
+  IL_LEADS_OFML         | DEX-984    | supplied by Rob 2026-08-07; this file's prior SILENCE was once
+                        |            | reported as "IL has no ticket". Absence of a record is not
+                        |            | evidence of absence -- ask, or query Jira.
+  OH_LEADS              | DEX-990    | found by querying Jira, not from the repo -- nothing recorded it
+
+  The other 12 providers have no ticket recorded here. That means NOT RECORDED, not "none
+  exists". Query Jira (summary pattern "[<ST> - <SYSTEM>] USx Provider Build") before concluding
+  either way, and NEVER invent a plausible DEX number -- that mistake was made once on IL.
+
+THE POSTING PROCEDURE
+---------------------
+1. JIRA UPDATES ARE HELD (Rob, 2026-07-31) until the process and results are fully trusted.
+2. DRAFT AND WAIT, every provider, EVERY time. Approval on one provider does not authorize the
+   next one, and approval of one comment does not authorize a follow-up.
+3. FORMAT IS FIXED -- knowledge-base/JIRA_COMMENT_TEMPLATE.txt is the single source. Six numbered
+   sections in a fixed order, every one present, an explicit "None" rather than an omitted
+   section. Do not restate the template here; it would drift from itself. Two providers' comments
+   placed side by side must differ only in their VALUES.
+4. ONE COMMENT PER RELEASE -- not one per version (Rob 2026-08-03: the per-version format
+   "becomes tldr").
+5. IF THE NUMBERS MOVE BEFORE THE NEXT RELEASE, EDIT THAT COMMENT IN PLACE. Never post the
+   correction as a sibling (Rob, 2026-08-11). Posting corrections as siblings is what left FL
+   claiming ALL-PASS at 121/121, then 118, then 117, then 116, and NJ at 35, then 36, then 40 --
+   four and three mutually exclusive completion claims in one thread each, with no way for a
+   reader to tell which was current. 73 comments had to be rewritten to stubs to undo it.
+6. THERE IS NO DELETE-COMMENT TOOL. addCommentToJiraIssue with a commentId EDITS IN PLACE and the
+   edit is IRREVERSIBLE -- capture the original body before overwriting it. Superseded comments
+   are rewritten to the stub form in the template, never removed. Do not plan around a delete
+   that does not exist; deleting requires Rob in the Jira UI and he declined in favour of stubs.
+7. ONLY EDIT COMMENTS THE AUTOMATION AUTHORED (the leading robot attribution line). Never Rob's
+   own manual notes, never a third party's. DO NOT identify authorship by displayName -- the
+   automation posts under Rob's account, so displayName cannot distinguish them; the attribution
+   line can.
+8. TENANT INFO STAYS OFF THE TICKETS (Rob, 2026-08-03): no attachment note, no catalog post, no
+   Foundation import line. Those go in providers/IMPORT_LEDGER.md sections B and C.
+9. EVERY NUMBER COMES FROM A TOOL, never from memory or from a tracking file:
+   report_test_status.ps1 for pass counts, the gate outputs for gate lines,
+   audit_test_coverage.ps1 for combo counts. A stale count restated confidently is exactly the
+   defect this file used to embody.

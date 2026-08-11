@@ -229,7 +229,15 @@ tools\audit_lifecycle.ps1 -Provider <NAME>
 against a full re-sweep of Rob's hands-on time.
 
 **Standing instructions (do not re-ask):**
-- **Jira: HELD** until the process and results are fully trusted. Do not comment on any DEX ticket.
+- **Jira: HELD** until the process and results are fully trusted, and **DRAFT-AND-WAIT every
+  provider every time** — approval on one does not carry to the next. When the hold lifts:
+  **one comment per RELEASE**, and if the numbers move before the next release **EDIT that comment
+  in place** rather than posting a correction as a sibling. Format is fixed —
+  `knowledge-base/JIRA_COMMENT_TEMPLATE.txt` is the single source; procedure in
+  `knowledge-base/JIRA_REFERENCE.txt`. **There is no delete-comment tool** and an edit is
+  irreversible, so capture the original body first. Sibling corrections are what left FL claiming
+  121/121 → 118 → 117 → 116 and NJ 35 → 36 → 40 on one thread each; 73 comments had to be rewritten
+  to stubs on 2026-08-11 to undo it.
 - **Rendered form review is MANUAL and Rob's own gate.** `enforce` PHASE 2k is advisory and will
   read `[INFO] not reviewed`. **Never prompt for it, never list it as an owed item.** Be ready to
   record it when he says so: `tools\audit_form_review.ps1 -Path <json> -Record -Reviewer <name>`.

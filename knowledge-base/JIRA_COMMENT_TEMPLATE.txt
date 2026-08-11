@@ -1,0 +1,190 @@
+================================================================================
+ JIRA_COMMENT_TEMPLATE.txt -- THE CANONICAL DEX COMMENT FORMAT
+ Single source. Every other location points HERE rather than restating it, so the
+ format cannot drift between copies.
+================================================================================
+
+WHY THIS FILE EXISTS
+--------------------
+Rob, 2026-08-11: "i want the same format for each provider and for each update."
+
+Measured that day across the 7 DEX tickets carrying provider changelogs: 87 comments
+posted by the automation, and no two providers shared a structure. Three consequences,
+all of which this template is designed to prevent:
+
+  1. VOLUME. One comment per VERSION rather than per RELEASE. DEX-969 (NY) held 24 of
+     mine, DEX-976 (CA_CLETS) 16 -- many describing cosmetic bumps (UPPERCASE titles,
+     relabel passes) or interim "built, re-test pending" states closed days later.
+     Rob had already called this out on 2026-08-03: the per-version format "becomes tldr".
+
+  2. CONTRADICTION -- the part that actively misleads. Each release line posted its own
+     total as final, so a reader scanning one thread sees several mutually exclusive
+     completion claims and cannot tell which is current:
+        DEX-969 NY  : 73, 17, 72, 73, 17, 67, 66, 64, 69   (nine)
+        DEX-976 CA  : 38, 67, 40, 60, 25, 93, 87, 93, 92, 90
+        DEX-971 FL  : 121, 118, 117, 116
+        DEX-988 NJ  : 35 x5, 36, 40
+     Worse, a *latest* comment can be wrong: DEX-967 (TX) claimed 89/89 at v4.18 while
+     the provider was v4.19 with 92 logs.
+
+  3. OMISSION READ AS COVERAGE. Sections were simply left out when inconvenient. The
+     absence of a "known limits" statement made several comments imply more verification
+     than the logs supported. Hence Section 5 below is MANDATORY.
+
+TWO STANDING CONSTRAINTS
+------------------------
+  * ONE COMMENT PER RELEASE, AND EDIT IT IF THE NUMBERS MOVE. Never post a correction as
+    a sibling comment -- that is exactly how the sequences above were created. A release
+    comment is a living record until the next release supersedes it.
+  * THERE IS NO DELETE-COMMENT TOOL. `addCommentToJiraIssue` takes an optional `commentId`
+    and EDITS IN PLACE; nothing in the toolchain can remove a comment. So a superseded
+    comment is rewritten to the stub at the bottom of this file, never deleted, and any
+    edit is IRREVERSIBLE -- capture the original body before overwriting it.
+
+================================================================================
+ THE TEMPLATE -- fixed sections, fixed order, fixed headings
+================================================================================
+Every section is ALWAYS present. A section with nothing to say gets an explicit "None"
+rather than being dropped, so the shape never varies and two providers can be diffed
+side by side.
+
+--------------------------------------------------------------------------------
+🤖 Auto-update from the ConnectCIC provider-JSON repo — generated from the build and
+gate artifacts (BUILD_NOTES, the four log gates, `audit_log_inflation`, `enforce`).
+
+**<PROVIDER> <vX.Y> — <BUILT | TENANT-VERIFIED | SUPERSEDED>**
+
+**1. Scope**
+Versions covered: <vA.B–vX.Y or single>. Configuration changed: <yes | no — docs/tests
+only>. Supersedes: <comment id of the previous release line, or "initial post">.
+
+**2. Changed**
+- <wire/routing-affecting items first, one bullet each>
+- <cosmetic/label/layout items after>
+(or: "No configuration change — <coverage extension | re-verification | records
+correction>.")
+
+**3. Verified on the wire**
+<Vehicle n / Person n / Firearm n / Article n / Boat n = total>
+<the specific evidence that matters for THIS change -- the element that had to appear
+and did, the guardrail that had to hold and held>
+
+**4. Gates**
+validator <n>P/0F/0W · four log gates <n>/<n> (content, metadata, attribution, plan
+completeness <e>/5) · inflation 0/0/0/0 · enforce <n> PASS / 0 provider-scoped
+FAIL-or-WARN · <c> combos, all reachable
+
+**5. Known limits**
+<what this evidence does NOT establish. Or "None.">
+
+**6. Documented skips**
+<devdoc-Basic queries not built, each with its authority. Or "None — all <n>
+devdoc-Basic queries built.">
+
+**RELEASE LINE — <vX.Y> is verified and ready.**
+   (or "**NOT YET TENANT-TESTED** — <n> tests owed.")
+--------------------------------------------------------------------------------
+
+RULES THAT TRAVEL WITH THE TEMPLATE
+-----------------------------------
+  * SECTION 5 IS MANDATORY AND MUST NOT BE PADDED. It is where caveats live -- e.g.
+    "the CAD defaults[] path is verified by inspection only; no form-driven log
+    exercises it". Writing "None" is legitimate; omitting the section is not, because
+    omission is what previously let a comment read as broader than its evidence.
+  * SECTION 4 IS FIXED TEXT. Same fields, same order, every time. That is what makes a
+    superseded count obvious at a glance instead of buried in prose.
+  * NO TENANT DETAIL ANYWHERE (Rob, 2026-08-03). No host, no attachment note, no catalog
+    post, no Foundation import line. Those live in providers/IMPORT_LEDGER.md B and C.
+    Note some tickets carry OLDER comments with Newark-style import lines -- that
+    precedent is superseded, not a licence to repeat it.
+  * EVERY NUMBER COMES FROM A TOOL, NEVER FROM MEMORY:
+        counts + entity split   tools/report_test_status.ps1 -Provider <NAME>
+        combo count             tools/audit_test_coverage.ps1 -Path <json>
+                                (NOT audit_combo_reachability's "N checked" -- that is
+                                 what it COMPARED and runs lower)
+        validator / enforce     the reports, or a live run
+        devdoc-Basic scope      tools/audit_supported_queries.ps1 (CHECK 0)
+  * DRAFT AND WAIT. Show Rob the drafted comment and wait for explicit approval before
+    posting -- every provider, every time. One approval does not carry to the next.
+
+WHOSE COMMENTS MAY BE EDITED
+----------------------------
+ONLY comments generated by this automation, identified by the 🤖 attribution line or an
+"Auto-update / Auto-generated / posted by Claude Code" opener. The tickets also carry
+Rob's OWN manual notes and third-party comments -- e.g. DEX-988 `724488` (devdoc-vs-
+metadata differences sent to Commsys, CASE-5669), DEX-988 `747148` (JSON installed +
+deployed to Newark), DEX-974 `776896` (Leo Hisoire, roadmap/FB-6040). Those are somebody
+else's words: never stub them, never rewrite them, never count them.
+
+Do not identify authorship by displayName -- the automation posts under Rob's account, so
+every comment reads "Rob Sgambellone". The attribution line is the only reliable marker.
+
+================================================================================
+ SECOND SHAPE: THE HISTORY ANCHOR -- one per ticket, for the initial changelog dump
+================================================================================
+The release template above does NOT fit a historical dump: "Verified on the wire" and
+"Gates" have no meaning for a v1.0-to-now version list, and forcing them produces filler
+that makes the format look followed while saying nothing. So the ONE initial-dump comment
+per ticket uses this shape instead. Two shapes total per ticket, both fixed:
+
+--------------------------------------------------------------------------------
+🤖 Auto-update from the ConnectCIC provider-JSON repo — **VERSION HISTORY** (not a
+release statement). Current state lives in comment <ID>.
+
+**<PROVIDER> — version history v1.0 → <vX.Y>**
+
+<one line per version, newest first, wire-affecting changes called out:>
+- **<vX.Y>** — <change> <(wire) | (layout/label only)>
+- ...
+
+**Documented non-builds** — <devdoc-Basic queries not built, each with its authority, or
+"None">.
+
+For current version, counts, gates and known limits see comment <ID>.
+--------------------------------------------------------------------------------
+
+Rules: no metrics in a history anchor (that is what created the contradictions -- counts
+belong only in the ONE current release comment); mark each version wire-affecting or not,
+since that is the distinction a reader actually needs; end with the pointer so the anchor
+can never be mistaken for current state.
+
+CONDENSE -- DO NOT ENUMERATE EVERY VERSION. The providers carry 35-43 version headings
+each (NJ 35, TX 43), and a large share are "Pipeline rebuild" no-ops. Listing all of them
+reproduces the exact tldr problem this file exists to fix, just inside one comment instead
+of across twenty. So: name each WIRE-AFFECTING change on its own line, and collapse runs of
+cosmetic ones -- "v4.11-v4.14 — label, card-title and layout passes; no wire change". A
+reader needs to know what changed the request and roughly when, not that a rebuild ran.
+
+================================================================================
+ THE SUPERSEDED STUB -- for collapsing an obsolete comment in place
+================================================================================
+--------------------------------------------------------------------------------
+⤺ SUPERSEDED — <one clause: what this was> (<no wire change | interim state | version
+never shipped | metric superseded>). Consolidated into comment <ID> (<version> release
+line). Retained for the audit trail; do not read the detail above as current.
+--------------------------------------------------------------------------------
+
+  * Where a metric was superseded, NAME THE CORRECTION: "the 121/121 count here was later
+    corrected to 116/116 at v7.17". A bare "superseded" leaves the wrong number as the
+    only concrete thing on screen.
+  * Where a claim was deliberately REVERSED, say why, not just that it was. DEX-988
+    `771940` reports the Hull+Reg guardrail as "RegistrationNumber absent from wire";
+    v4.15 intentionally reversed that (it now rides in QBN's any[] because the devdoc
+    lists it as an optional on the hull combination). A stub that omits the reason invites
+    someone to "restore" the old behaviour.
+  * Where the version never shipped, say so, so nobody hunts for its logs. DEX-971
+    `767877` documents v6.7, superseded by v6.8 before testing began.
+
+WHAT COUNTS AS SUPERSEDED
+-------------------------
+  - cosmetic-only version comments (relabels, UPPERCASE titles, card collapses, order)
+  - interim "built, re-test pending" comments later closed by a release line
+  - comments for versions that never shipped
+  - any comment whose headline metric has since been corrected  <- the priority
+  - comments carrying tenant/import detail now barred from tickets
+
+WHAT IS KEPT (and re-authored to the template above)
+----------------------------------------------------
+  - the initial full changelog dump: the historical anchor for that provider
+  - the latest release line: the one whose numbers are still true today
+Two per ticket. Everything else collapses.

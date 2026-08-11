@@ -3,8 +3,15 @@
 **Active ticket:** [DEX-976 — \[CA - CLETS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-976)
 Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
 
-Post the changelog here on every version bump (dump first, then per-version diff, led by the
-🤖 auto-update attribution line; release line after that version's live testing passes).
+POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
+move** -- never post a correction as a sibling comment. That is what produced contradictory totals
+across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
+provider was at 92). Format is FIXED for every provider and every update -- see
+knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
+plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
+so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
+irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
+never Rob's own manual notes, never a third party's.
 
 > **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-976`
 > (fields: comment). DEX-976 is ~55k chars and blows the tool-result limit: fetch it, then grep the
@@ -29,7 +36,7 @@ Post the changelog here on every version bump (dump first, then per-version diff
 - 2026-08-04 — comment 791400: **v2.23 changelog + RELEASE LINE** — 90/90 ALL-PASS, four log gates
   green, enforce 43P/0F/0W, inflation 0/0/0/0, with all four wire fixes proven on the wire.
 
-**Current: v2.23 — tenant-verified 2026-08-03, ALL-PASS 90/90** (Vehicle 23 / Person 41 / Firearm 7 /
+**Current: v2.24 — tenant-verified, ALL-PASS 90/90** (Vehicle 23 / Person 41 / Firearm 7 /
 Article 10 / Boat 9), four log gates green, enforce 43 PASS / 0 FAIL / 0 WARN.
 
 > ⚠️ **THE v2.22 RELEASE LINE ON THIS TICKET WAS GREEN AND WRONG.** Comment 787391 reports v2.22
@@ -42,3 +49,5 @@ Article 10 / Boat 9), four log gates green, enforce 43 PASS / 0 FAIL / 0 WARN.
 
 **Nothing owed to this ticket.** The v2.23 gap was closed by comment 791400. One consolidated comment
 per release, not one per version (Rob 2026-08-03: the per-version format "becomes tldr").
+
+**JIRA CONSOLIDATION PASS 2026-08-11.** 17 superseded comments on this ticket were rewritten to one-line stubs, each pointing at the current release line. The version history remains readable at comment 783180. Format for every future update is fixed by `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`; there is no delete-comment tool, so superseded comments are stubbed, never removed.

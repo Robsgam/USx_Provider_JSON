@@ -3,8 +3,15 @@
 **Active ticket:** [DEX-1257 — \[HI - HI_HCJDC_OFML\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-1257)
 Project: DEX (CJIS/USx/DEx Implementation) · Status (2026-08-04): In Progress
 
-Post the changelog here on every version bump (dump first, then per-version diff, led by the
-🤖 auto-update attribution line; release line after that version's live testing passes).
+POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
+move** -- never post a correction as a sibling comment. That is what produced contradictory totals
+across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
+provider was at 92). Format is FIXED for every provider and every update -- see
+knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
+plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
+so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
+irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
+never Rob's own manual notes, never a third party's.
 
 > **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-1257`
 > (fields: comment; cloudId `5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c`). It is ~51k chars and blows the
@@ -74,3 +81,5 @@ same pass — recorded in `IMPORT_LEDGER.md` section C, deliberately NOT on the 
 
 **Note:** [DEX-983](https://mark43.atlassian.net/browse/DEX-983) ("\[HI - HCJDC-OFML\]") is an
 older **duplicate**, marked Done — do NOT post there. Use DEX-1257.
+
+**JIRA CONSOLIDATION PASS 2026-08-11.** 15 superseded comments on this ticket were rewritten to one-line stubs, each pointing at comment 795241 (the v4.15 release line). The version history remains readable at comment 767719. Format for every future update is fixed by `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`; there is no delete-comment tool, so superseded comments are stubbed, never removed.

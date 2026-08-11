@@ -3,8 +3,15 @@
 **Active ticket:** [DEX-967 — \[TX - TLETS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-967)
 Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
 
-Post the changelog here on every version bump (dump first, then per-version diff, led by the
-🤖 auto-update attribution line; release line after that version's live testing passes).
+POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
+move** -- never post a correction as a sibling comment. That is what produced contradictory totals
+across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
+provider was at 92). Format is FIXED for every provider and every update -- see
+knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
+plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
+so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
+irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
+never Rob's own manual notes, never a third party's.
 
 Related tickets: DEX-968 (TX identified dropdown info), DEX-1282 (email handler subtask,
 delivered as RND-57165 → TX v4.1). TX_TLETS_CCH has **no** ticket of its own — tracked here only
@@ -36,7 +43,7 @@ by mention, not posted to (per Rob's call).
 - comment 790861 — **v4.13–v4.18 changelog + v4.18 RELEASE LINE** (2026-08-03): 89/89 ALL-PASS,
   four log gates green, enforce 41P/0F/0W, inflation 0/0/0/0. Tenant info deliberately omitted.
 
-**Current: v4.18 — tenant-verified 2026-08-03, ALL-PASS 89/89** (Vehicle 20 / Person 29 /
+**Current: v4.19 — tenant-verified, ALL-PASS 92/92** (Vehicle 20 / Person 29 /
 Firearm 10 / Article 8 / Boat 22), 33 combos, four log gates green, enforce 41 PASS / 0 FAIL / 0 WARN.
 
 **Nothing owed to this ticket.** The v4.13–v4.18 gap was closed by comment 790861. The
@@ -44,3 +51,5 @@ per-version-comment format was collapsed to ONE consolidated comment at Rob's di
 ("it has become quite verbose and becomes tldr") — do not revert to a comment per version.
 The parked `LIMITATION #38` VehicleMakeCode item is excluded from Jira by Rob's call and lives in
 `knowledge-base/PLATFORM_CONSTRAINTS.txt`.
+
+**JIRA CONSOLIDATION PASS 2026-08-11.** 10 superseded comments on this ticket were rewritten to one-line stubs, each pointing at comment 790861 (the current release line). The version history remains readable at comment 776220. Format for every future update is fixed by `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`; there is no delete-comment tool, so superseded comments are stubbed, never removed.

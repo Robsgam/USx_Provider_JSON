@@ -3,8 +3,15 @@
 **Active ticket:** [DEX-969 — \[NY - NYSPIN_EJUSTICE\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-969)
 Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
 
-Post the changelog here on every version bump (dump first, then per-version diff, led by the
-🤖 auto-update attribution line; release line after that version's live testing passes).
+POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
+move** -- never post a correction as a sibling comment. That is what produced contradictory totals
+across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
+provider was at 92). Format is FIXED for every provider and every update -- see
+knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
+plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
+so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
+irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
+never Rob's own manual notes, never a third party's.
 
 **Related tickets:** DEX-970 ("Unable to Import JSON", Done), DEX-1066 ("assistance -
 DriverHistoryQuery", Backlog), DEX-698 (DEx Support, Done). Provider-build ticket is **DEX-969**.
@@ -50,3 +57,5 @@ this line. The v4.17–v4.19 gap was closed by comment 790896. The
 per-version-comment format was collapsed to ONE consolidated comment at Rob's direction 2026-08-03
 ("it has become quite verbose and becomes tldr") — do not revert to a comment per version.
 The parked `LIMITATION #38` VehicleMakeCode item is excluded from Jira by Rob's call.
+
+**JIRA CONSOLIDATION PASS 2026-08-11.** 23 superseded comments on this ticket were rewritten to one-line stubs (the largest set of the seven), each pointing at the current release line. The version history remains readable at comment 782804. Format for every future update is fixed by `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`; there is no delete-comment tool, so superseded comments are stubbed, never removed.

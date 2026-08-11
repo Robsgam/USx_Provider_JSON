@@ -3,8 +3,15 @@
 **Active ticket:** [DEX-988 — \[NJ - NJCJIS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-988)
 Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
 
-Post the changelog here on every version bump (dump first, then per-version diff, led by the
-🤖 auto-update attribution line; release line after that version's live testing passes).
+POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
+move** -- never post a correction as a sibling comment. That is what produced contradictory totals
+across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
+provider was at 92). Format is FIXED for every provider and every update -- see
+knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
+plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
+so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
+irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
+never Rob's own manual notes, never a third party's.
 
 > **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-988`
 > (fields: comment) before stating what is owed. Until 2026-08-03 this file indexed 2 comments while
@@ -27,11 +34,19 @@ Post the changelog here on every version bump (dump first, then per-version diff
   to ONE Driver License card, v4.13 UPPERCASE card titles.
 - 2026-07-28 — comments 786904 / 786921: v4.14 layout pass (Vehicle 3 cards -> 1, Boat title
   enumerated) + **RELEASE LINE** 35/35 ALL-PASS, enforce 31P/0F/0W.
-- 2026-08-03 — comment 790914: **v4.15 changelog + RELEASE LINE** — 36/36 ALL-PASS, four log gates
-  green, enforce 42P/0F/0W, inflation 0/0/0/0.
+- 2026-08-03 — comment 790914: v4.15 changelog + release line at **36/36**. **SUPERSEDED by 795856**
+  — its count was correct for the plan as it then stood, but the plan later grew to 40 tests.
+- **2026-08-11 — comment 795856: v4.15 coverage extension + full re-verification, ALL-PASS 40/40.**
+  **First comment written to the canonical template** (`knowledge-base/JIRA_COMMENT_TEMPLATE.txt`) —
+  six fixed sections, so it is the reference example for the other six tickets.
 
-**Current: v4.15 — tenant-verified 2026-08-03, ALL-PASS 36/36** (Vehicle 11 / Person 8 / Firearm 6 /
-Article 3 / Boat 8), four log gates green, enforce 42 PASS / 0 FAIL / 0 WARN.
+**Current: v4.15 — tenant-verified 2026-08-11, ALL-PASS 40/40** (Vehicle 13 / Person 10 / Firearm 6 /
+Article 3 / Boat 8), four log gates 40/40, inflation 0/0/0/0, enforce 43 PASS / 0 NJ-scoped FAIL-or-WARN.
+No rebuild and no re-import: the JSON never changed, the **test plan** grew by four out-of-state
+toggle tests that had never been generated, so NJ correctly read PARTIAL (36 of 40) until they were
+captured. All four transmit `<State>AK</State>` and attribute to their expected keyRef, which proves
+NJ carries out-of-state state as an `any[]` passenger on the same combination rather than forking to
+a dedicated OOS keyRef the way FL and NY do.
 
 > ⚠️ **A PRIOR CLAIM ON THIS TICKET IS NOW SUPERSEDED, deliberately.** Comment 771940 (v4.8,
 > 2026-07-02) reports the Hull+Reg guardrail as "QBN — RegistrationNumber **absent** from wire".
@@ -40,5 +55,12 @@ Article 3 / Boat 8), four log gates green, enforce 42 PASS / 0 FAIL / 0 WARN.
 > Silently dropping it was the defect. Wire-confirmed 2026-08-03. Do NOT "restore" the old behaviour
 > by reading that older comment — and do not read it as a regression.
 
-**Nothing owed to this ticket.** The v4.15 gap was closed by comment 790914. One consolidated comment
-per release, not one per version (Rob 2026-08-03: the per-version format "becomes tldr").
+**Nothing owed to this ticket.** Closed by comment 795856 at full plan coverage.
+
+**CONSOLIDATION PASS 2026-08-11.** NJ carried nine changelog comments and three mutually exclusive
+completion claims (35/35, 36/36, 40/40 — each posted as final). All superseded comments on this
+ticket are now one-line stubs pointing at 795856; the version history remains readable at 782204.
+Two special stubs, because a generic "superseded" would have misled: **771940** states that its
+Hull+Reg claim was *deliberately reversed* at v4.15 and must not be "restored", and **790914** names
+36/40 as the count that was corrected rather than merely outdated. This ticket is why the
+edit-in-place half of the posting rule exists.

@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-10 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-11 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -19,7 +19,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | FL_FCIC | v7.18 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.2 | ALL-PASS (41 logs) |
-| NJ_NJCJIS | v4.15 | PARTIAL -- 4 plan test(s) owed (36 captured) |
+| NJ_NJCJIS | v4.15 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.23 | ALL-PASS (69 logs) |
 | TX_TLETS | v4.19 | ALL-PASS (92 logs) |
 | _12 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
@@ -33,35 +33,27 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IN FLIGHT (Rob 08-10: "work on az and oh, then circle back to test nj"):** AZ **v3.8 BUILT** (two
-wire fixes below); **OH_LEADS rebuild NEXT, NOT started** -- ACTIVE `[FLAG:validate-imgind-20b-l30]`
-("rebuild to re-record scores") + STATUS 77P vs actual 78P, both clear on rebuild. THEN NJ's 4 OOS
-tests (fill **AK**). OH also owes nothing else: PHASE 1 is clean bar the same shared-keyRef fidelity
-artifact (BMVIMS DL pair -- DL-by-SSN is NOT devdoc-Basic, so correctly unbuilt).
-**AZ v3.8 = (1) DEX-1283 Attention `'X'` removed** (feeder + KQH/KQ defaults; control/`any[]`/handler
-untouched; Requestor='X' KEPT, different field). **I had declared AZ done WITH this in it** (98676c95):
-the retrofit is convention-only, NO gate checks it, and it surfaced only via OH's fuzz
-`prefill-field @ Attention` SURVIVING (already prefilled = no-op). **Sweep: 8 providers still carry the
-`X`** -- AZ, OH, TN, LA, CA_eSUN, CA_VENTURA, CA_SLO, CA_CC. **A gate for this is worth building.**
-**AZ v3.8 = (2) FOUR OVER-PERMITS on Vehicle.** TWO `ACVR` variants share one keyRef: plate
-`Any[PlateYear, PlateTypeCode, State]` vs VIN `Any[MakeCode, VehicleYear, State]`. ACVR carried
-make+year; ACVRV the plate pair **+ their defaults[]** (dropping `any[]` alone leaves INERT DEFAULTS,
-class E). Devdoc agrees -> FIX. **Fidelity said 0 OVER before AND after** (unions both variants across
-the shared keyRef) -- verified by raw XML + simulator, not a gate. 2nd FIDELITY_TRIAGE shared-keyRef
-instance (OH's BMVIMS DL pair is 1st). NOT swept.
-**Jira POSTED 08-10 (both approved by Rob's "do both"):** DEX-1257 comment **795241** = HI v4.15
-changelog + release line; DEX-984 comment **795242** = IL v2.2 release line. Rob attached HI's v4.15
-JSON + updated the catalog; recorded in `IMPORT_LEDGER.md` section C, deliberately NOT on the ticket.
+**ALL 8 TENANT-COMPLETE PROVIDERS ARE CLOSED END TO END** -- build, sweep, four log gates, Jira,
+ledger. AZ (55 tests) + OH (never swept) are the only owed sweeps; **testing is no longer a blocker
+on deciding a fix** (Rob 08-11) -- do NOT cite re-test cost as a reason to defer.
 
-**HI v4.15 + IL v2.2 CLOSED end to end** (46/46, 41/41, four log gates each, posted, ledgered).
-DEX-1283 on HI SETTLED BY WIRE 9/9. **Its CAD half stays inspection-only** -- no form log reaches the
-CAD path, which is DEX-1283's 2nd symptom; never let a later summary upgrade that to "verified".
-**GATE WORK 08-10** (detail in `git log`): `audit_sqvr_integrity` CHECK 2 was **VACUOUS on 17 of 20**
--- fixed, prints its denominator, coverage 3->7. **Trap: NJ writes `Total combos: 5 QIDMs / 8 combos`
--- the digit BEFORE "combos" wins.** New gate **`audit_provider_uniformity`** (finished providers'
-artifact SETS vs each other; nothing checked that). **`audit_combo_reachability`'s "N checked" is NOT a
-combo count** -- use `audit_test_coverage`. **PRE-EXISTING:** NY efficacy 13/14; `-All` fidelity
-misattributes registry rows.
+**JIRA PAPER TRAIL CONSOLIDATED 08-11 (Rob: "i want the same format for each provider and for each
+update").** 7 tickets, **91 comments rewritten to stubs**, 2 keepers each (HISTORY ANCHOR + release
+line). **THE RULE: one comment per RELEASE, and EDIT it in place if the numbers move -- never a
+sibling correction.** Sibling corrections left FL claiming 121-118-117-116 and NJ 35-36-40 as four and
+three *mutually exclusive* completion claims. Format is FIXED and single-sourced:
+`knowledge-base/JIRA_COMMENT_TEMPLATE.txt` (6 numbered sections, `None` not omitted). Procedure +
+ticket map: `JIRA_REFERENCE.txt` (rewritten -- it had carried comment-ids/test-status frozen since
+07-06 and asserted six wrong numbers; **do not re-add a status column**). **NO delete-comment tool
+exists and an edit is IRREVERSIBLE** -- capture the body first; only edit robot-attributed comments,
+and NOT by displayName (the automation posts as Rob). **2r now 2 PASS / 0 GAP on all 9.**
+
+**THE LESSON FROM MY OWN VERIFICATION:** I built the stub inventory from `DEX_TICKET.md` indexes and
+it was short by **18 comments across 5 tickets** -- 8 of them LIVE contradictions (FL 118, CA 92 + 25
+combos, TX 87 + 21 combos, NJ 35, NY 17 combos) and 4 sibling duplicates of a release line posted days
+later. Only re-fetching each ticket found them. **A tracking file is a CLAIM; the ticket is the
+artifact.** Also: my `[GAP]` regex missed `[GAP ]` and under-reported 3 stale `Current:` lines --
+a probe bug, caught only by reading one full output.
 
 ## ON HOLD / DO NOT RE-RAISE
 

@@ -8,8 +8,15 @@ was briefly reported as "IL has no Jira ticket" — an inference from the silenc
 `knowledge-base/JIRA_REFERENCE.txt` and this missing file, not a verified fact. The lesson is the
 standing one: absence of a record is not evidence of absence.
 
-Post the changelog here on every version bump (dump first, then per-version diff, led by the
-🤖 auto-update attribution line; release line after that version's live testing passes).
+POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
+move** -- never post a correction as a sibling comment. That is what produced contradictory totals
+across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
+provider was at 92). Format is FIXED for every provider and every update -- see
+knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
+plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
+so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
+irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
+never Rob's own manual notes, never a third party's.
 
 > **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-984`
 > (fields: comment) before asserting what is or is not owed.
@@ -84,3 +91,5 @@ the cosmetic pass took a version bump rather than editing v2.1 in place. The cap
 this host as of `automation/extension/manifest.json` **0.4.0** (before that it matched only 7 tenants,
 so neither the driver nor the capture hook would have injected on IL). Import status is tracked in
 `providers/IMPORT_LEDGER.md`, not here.
+
+**JIRA CONSOLIDATION PASS 2026-08-11.** NOTHING to collapse on this ticket -- both of its comments are current (795041 history, 795242 release line). It was the only one of the seven already conforming to the one-comment-per-release rule, because it was first posted after that rule existed. Format for every future update is fixed by `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`; there is no delete-comment tool, so superseded comments are stubbed, never removed.

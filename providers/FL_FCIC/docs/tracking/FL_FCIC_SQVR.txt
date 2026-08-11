@@ -441,7 +441,14 @@ RMS BUNDLE
 SUMMARY
 ================================================================================
 
-  Total combos: 31 CommSys (6 QIDMs) + guardrail routing tests + RMS co-fires
+  Total combos: 30 CommSys (6 QIDMs) + guardrail routing tests + RMS co-fires
+    Corrected 2026-08-11: read "31" against a JSON holding 30. Counted from the emitted
+    v7.18 JSON via audit_test_coverage ("Total combos (CommSys): 30"), which is the
+    authority for this number -- NOT audit_combo_reachability's "N checked", which reports
+    what it COMPARED and runs lower. The overstatement dated from v7.14/v7.17, which
+    removed combos without this line following; it was invisible until
+    audit_sqvr_integrity CHECK 2 was broadened on 2026-08-10 (before that it matched three
+    exact phrasings and compared nothing on 17 of 20 providers).
     VehicleRegistrationQuery 6, DriverLicenseQuery 4, DriverHistoryQuery 2,
     GunQuery 3, ArticleSingleQuery 4, BoatQuery 12.
   CONFIRMED: 31 / 31 combos -- every built combo cites its base log in logs/<Entity>/.
