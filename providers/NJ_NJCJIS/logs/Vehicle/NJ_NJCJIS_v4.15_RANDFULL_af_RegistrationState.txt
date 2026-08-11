@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
-Combo: RANDFULL_af_LicensePlateYear (RANDFULL_af_LicensePlateYear (auto))
-Date: 2026-08-11 12:18:04
+Combo: RANDFULL_af_RegistrationState (RANDFULL_af_RegistrationState (auto))
+Date: 2026-08-11 12:18:05
 Result: PASS
 JSON Version: 4.15
 Entity Fingerprint: 194bc54748f4a1d558059f3ef33a2deddc4fe5a875c047e806f33d25cb77cd31
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2025","RandomRequest":"N","RegistrationState":"New Jersey"}
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RandomRequest":"N","RegistrationState":"Alaska"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZRSSD799R5TX2SVHYWG7PMF">
+    <api:Transaction id="01KZRSS2D80F1FHH9CNYXDMZVF">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KZRSSD799R5TX2SVHYWG7PMF</Id>
+            <Id>01KZRSS2D80F1FHH9CNYXDMZVF</Id>
             <ImageIndicator>N</ImageIndicator>
-            <LicensePlateYear>2025</LicensePlateYear>
-            <State>NJ</State>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <State>AK</State>
             <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <RandomRequest>N</RandomRequest>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
@@ -61,7 +61,7 @@ Request:
     "elasticQuery":  {
                          "vehicle":  {
                                          "registrationStateAttrIds":  [
-                                                                          69509884952
+                                                                          69509885958
                                                                       ],
                                          "tag":  "TEST123"
                                      }
@@ -80,16 +80,16 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZRSSD799R5TX2SVHYWG7PMF
+  Id                             01KZRSS2D80F1FHH9CNYXDMZVF
   ImageIndicator                 N
-  LicensePlateYear               2025
-  State                          NJ
+  LicensePlateYear               2026
+  State                          AK
   LicensePlateTypeCode           PC
   RandomRequest                  N
   LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01KZRSSD799R5TX2SVHYWG7PMF). kind=any-field; anyField=LicensePlateYear; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZRSS2D80F1FHH9CNYXDMZVF). kind=any-field; anyField=RegistrationState; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

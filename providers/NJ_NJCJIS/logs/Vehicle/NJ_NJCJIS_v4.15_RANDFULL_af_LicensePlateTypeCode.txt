@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
 Combo: RANDFULL_af_LicensePlateTypeCode (RANDFULL_af_LicensePlateTypeCode (auto))
-Date: 2026-08-03 15:59:40
+Date: 2026-08-11 12:18:05
 Result: PASS
 JSON Version: 4.15
 Entity Fingerprint: 194bc54748f4a1d558059f3ef33a2deddc4fe5a875c047e806f33d25cb77cd31
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4KA5YWEEWJ6ASXYD0KKVK5">
+    <api:Transaction id="01KZRSS5WPR6EPXKJEXE1CM3S4">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KZ4KA5YWEEWJ6ASXYD0KKVK5</Id>
+            <Id>01KZRSS5WPR6EPXKJEXE1CM3S4</Id>
             <ImageIndicator>N</ImageIndicator>
             <LicensePlateYear>2026</LicensePlateYear>
             <State>NJ</State>
@@ -58,16 +58,16 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "registrationStateAttrIds": [
-        69509884952
-      ],
-      "tag": "TEST123"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69509884952
+                                                                      ],
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -80,7 +80,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZ4KA5YWEEWJ6ASXYD0KKVK5
+  Id                             01KZRSS5WPR6EPXKJEXE1CM3S4
   ImageIndicator                 N
   LicensePlateYear               2026
   State                          NJ
@@ -90,6 +90,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KZ4KA5YWEEWJ6ASXYD0KKVK5). kind=any-field; anyField=LicensePlateTypeCode; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZRSS5WPR6EPXKJEXE1CM3S4). kind=any-field; anyField=LicensePlateTypeCode; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
 Combo: RANDFULLN_af_RandomRequest (RANDFULLN_af_RandomRequest (auto))
-Date: 2026-08-03 15:59:38
+Date: 2026-08-11 12:18:01
 Result: PASS
 JSON Version: 4.15
 Entity Fingerprint: 194bc54748f4a1d558059f3ef33a2deddc4fe5a875c047e806f33d25cb77cd31
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4KARNMKX3YB7GAAJWBPCQ3">
+    <api:Transaction id="01KZRST0PQC4GJ0VKSP82867YQ">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KZ4KARNMKX3YB7GAAJWBPCQ3</Id>
+            <Id>01KZRST0PQC4GJ0VKSP82867YQ</Id>
             <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
             <ImageIndicator>N</ImageIndicator>
             <State>NJ</State>
@@ -56,16 +56,16 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "registrationStateAttrIds": [
-        69509884952
-      ],
-      "vinNumber": "1HGCM82633A123456"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69509884952
+                                                                      ],
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -78,7 +78,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZ4KARNMKX3YB7GAAJWBPCQ3
+  Id                             01KZRST0PQC4GJ0VKSP82867YQ
   VehicleIdentificationNumber    1HGCM82633A123456
   ImageIndicator                 N
   State                          NJ
@@ -86,6 +86,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KZ4KARNMKX3YB7GAAJWBPCQ3). kind=any-field; anyField=RandomRequest; expectedKeyRef=RANDFULLN; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZRST0PQC4GJ0VKSP82867YQ). kind=any-field; anyField=RandomRequest; expectedKeyRef=RANDFULLN; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

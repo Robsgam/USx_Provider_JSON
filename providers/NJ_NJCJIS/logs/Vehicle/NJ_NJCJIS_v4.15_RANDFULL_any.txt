@@ -1,7 +1,7 @@
-================================================================
+﻿================================================================
 TEST LOG: NJ_NJCJIS Vehicle VehicleRegistrationQuery
 Combo: RANDFULL_any (RANDFULL_any (auto))
-Date: 2026-08-03 15:59:39
+Date: 2026-08-11 12:18:03
 Result: PASS
 JSON Version: 4.15
 Entity Fingerprint: 194bc54748f4a1d558059f3ef33a2deddc4fe5a875c047e806f33d25cb77cd31
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZ4KAJ6R4E2D20R6NM8772ZE">
+    <api:Transaction id="01KZRSSP2PRFE1C4MKXK2SF46S">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01KZ4KAJ6R4E2D20R6NM8772ZE</Id>
+            <Id>01KZRSSP2PRFE1C4MKXK2SF46S</Id>
             <ImageIndicator>Y</ImageIndicator>
             <LicensePlateYear>2025</LicensePlateYear>
             <State>GA</State>
@@ -58,16 +58,16 @@ RMS QUERY
 ---------
 Request:
 {
-  "elasticQuery": {
-    "vehicle": {
-      "registrationStateAttrIds": [
-        69509895916
-      ],
-      "tag": "TEST123"
-    }
-  },
-  "from": 0,
-  "size": 50
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69509895916
+                                                                      ],
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
 }
 
 Response:
@@ -80,7 +80,7 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZ4KAJ6R4E2D20R6NM8772ZE
+  Id                             01KZRSSP2PRFE1C4MKXK2SF46S
   ImageIndicator                 Y
   LicensePlateYear               2025
   State                          GA
@@ -90,6 +90,6 @@ AUTO-EXTRACTED FROM COMMSYS XML:
 
 NOTES
 -----
-Automated capture (txId 01KZ4KAJ6R4E2D20R6NM8772ZE). kind=any; anyField=; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZRSSP2PRFE1C4MKXK2SF46S). kind=any; anyField=; expectedKeyRef=RANDFULL; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
