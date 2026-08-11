@@ -1403,6 +1403,53 @@ AUTHORITATIVE SOURCE FILES (read-only)
     everywhere. (enforce.ps1, block_entity.ps1, build_report.ps1 carry their own
     equivalent fallbacks.)
 
+  tools/audit_layout_flow.ps1
+    IS THE FORM A PROJECTION OF ITS COMBINATIONS? -- the cosmetic/usability direction no gate
+    covered. render_layout.ps1 renders the form but has no opinion; verify_build CHECK 15
+    checks label TEXT; audit_wiring_closure checks that a control REACHES the wire. None asked
+    whether the form's SHAPE -- card count, row order, field order, widths, grouping -- follows
+    the query paths the officer actually drives. Built 2026-08-11 on Rob's ask ("see if you can
+    figure out card label feild label and file size/ordeing based on query combinations and
+    flow ... build a cosmetic skill around it if we are successful").
+    Rules (7 mechanised, see .claude/skills/usx-cosmetic for the full set incl. the two that
+    are not): L4 one card per entity (Person 2 = DL+DH) · L2 mandatory set[] leads its own
+    optionals · L3 hidden/auto rows last · L5 no full 12-col row for a control that cannot use
+    it · L6 visible rows sum to 12 · L7 label must match capacity (MI only if maxLen=1) ·
+    L9 an RMS-only field must not share a row with a mandatory CommSys identifier.
+    THE GOAL IS UNIFORMITY -- Rob 2026-08-11: "the skill should posintion them all the same in
+    terms of layouts and veriabege". An officer working two states should not have to relearn
+    the form, so DIVERGENCE BETWEEN PROVIDERS IS A FINDING, NOT A PREFERENCE; the only
+    legitimate reason A differs from B is that A's own combinations/metadata force it. Most of
+    the variation in the current portfolio is just the order the providers were built in.
+    THE OPERATOR HAS FINAL SAY on every finding -- each is a RECOMMENDATION, and an override
+    must be recorded (# LABEL-OVERRIDE: tag, or a BUILD_NOTES line) or it gets rediscovered
+    and re-litigated next pass.
+    ADVISORY and NOT YET wired into enforce/pipeline (Rob: "lets test before we put any of this
+    in the the production pipeline") -- because the rules were still being corrected, not
+    because drift is acceptable. Wire it once the portfolio is converged and the remaining
+    findings are all recorded overrides.
+    WHAT IT COST TO GET RIGHT -- the first draft raised 165 findings and was wrong three ways,
+    each caught only by running it against the providers it was DERIVED FROM:
+      * `hidden` is a NODE-level property, not props.hidden -> NINE false findings in one run,
+        all hidden gate-feeders the officer never sees. verify_build CHECK 6 had it right.
+      * L1 "form order should match combo array order" WITHDRAWN. The array encodes
+        SPECIFICITY for first-match firing; form order should follow IDENTIFIER PRIORITY, which
+        lives in the NOT_EXISTS guardrails. Fired 4 times on AZ, wrong 4 times.
+      * L2 punished the convention it should reward. A field in >1 combo's any[] is SHARED
+        CONTEXT and belongs grouped high with the primary identifier, hence above the
+        combo-specific mandatory fields. Un-guarded it raised 8 findings against FL_FCIC --
+        one of the two layouts the rules came from -- and was 71 of 165 findings.
+      IF A RULE FIRES ON THE PROVIDER YOU COPIED IT FROM, THE RULE IS WRONG.
+    LAW 2 proven both directions: PASSES clean on NJ_NJCJIS (8 rows compared, so not a vacuous
+    pass) and FAILS on an injected templateColumns defect.
+    Baseline 2026-08-11: 20 compared / 19 with findings / 139 total. L4 34 · L5 26 · L2 11 ·
+    L7 10 · L3 7 · L9 3. The L4 mass is the un-collapsed-layout split -- collapsed providers
+    run 5-6 cards, un-collapsed 11-20 (CA_VENTURA 20, CA_CLETS_OCATS 16, TN/MD/NM/CA_SLO 13-14,
+    LA 12, OR 11). Their LOW scores on the other rules are PARTLY VACUOUS: small cards hold
+    few rows, so there is less to trip. L4 says so in its own message.
+    NJ_NJCJIS is the only clean provider and OH_LEADS the next (2) -- the two most recent
+    layout passes. Do NOT copy FL (7) or NY (6) for layout; they predate the convention.
+
   tools/audit_provider_uniformity.ps1
     ARE THE FINISHED PROVIDERS THE SAME SHAPE? -- the artifact-set direction that neither
     structural gate covers. audit_structure.ps1 checks ONE provider against a template IN
