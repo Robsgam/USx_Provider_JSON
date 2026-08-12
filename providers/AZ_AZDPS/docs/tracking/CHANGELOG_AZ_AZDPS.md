@@ -6,10 +6,63 @@ Current: **v3.10** | Generated: 2026-08-12
 
 ---
 
-## v3.10 -- 2026-08-12 -- Pipeline rebuild
+## v3.10 -- 2026-08-12 -- Cosmetic/layout pass -- 12 layout findings -> 0, AND a hidden State field fixed
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+WIRE UNCHANGED, PROVEN NOT ASSERTED: all three bundles' QIDM sets are BYTE-IDENTICAL to v3.9  
+  (hash-compared). Every change below is form/label only.  
+LAYOUT (Rob: "fix all 12 and bring az to the standard layout"), each traced to its rule:  
+  - SSN + Race moved to their OWN row. NEITHER appears in any CommSys combination -- both feed  
+    only the RMS person search -- yet SSN sat beside OLN, giving the most prominent slot on the  
+    Person card to a field that does not query the state.  
+  - 'MI' -> 'Middle Name' on nameMiddle and NameMiddleDH: both are maxLen=20, i.e. full middle  
+    names. 'MI' means middle INITIAL. FL keeps 'MI' only because its field is maxLen=1.  
+  - First BEFORE Last, all four name parts on one row (DL and DH). Wire unaffected: the composite  
+    Name attribute keeps its own sourceField order, which is what emits ConnectCIC LAST-first.  
+  - NCIC Image and Firearm Serial off their 12-wide rows; a 2-option dropdown cannot use 12 cols.  
+  - Hidden badge rows moved to the BOTTOM on Firearm and Article (they were row 2, splitting the  
+    serial from make/model/caliber).  
+  - DH DOB + Sex given their own row: both mandatory in KQH set[], previously behind two optionals.  
+  - Row widths tiled to 12 on every multi-field row.  
+THE REAL DEFECT, and it was not cosmetic -- RegistrationStateDH IS NOW VISIBLE.  
+  Rob 2026-08-12: "i don't think we should ever hide a state fiedl  why was this done?"  
+  He was right and BOTH authorities agree:  
+    DEVDOC (query authority), DriverHistoryQuery inside "Basic Queries Supported" (line 97):  
+      1. (In/Out) OperatorLicenseNumber, State, [Attention, PurposeCode]  
+      2. (In/Out) BirthDate, Name, SexCode, State, [Attention, PurposeCode]  
+      Both (In/Out); State UNBRACKETED = required and officer-supplied.  
+    METADATA (field authority), raw <Requirements> per <Combination>: both KQ variants put  
+      <Field reference="State"/> directly inside <Set>. Mandatory. No <Choice>, no nested <Set>.  
+      There is NO separate out-of-state transaction and no in/out keyRef fork, so State is ALWAYS  
+      sent and its VALUE selects the destination.  
+    CLINCHER, same provider: DriverLicenseQuery's devdoc splits (In) combos #1-#5 (no State at  
+      all) from (Out) #6-#8 (State present). AZ's devdoc DOES distinguish in/out where that is the  
+      design -- and for DH it deliberately does not.  
+  CONSEQUENCE OF THE OLD STATE: hidden SelH pinned to 'AZ' made OUT-OF-STATE DRIVER HISTORY  
+    UNREACHABLE -- the (Out) half of both documented combinations was dead. The wire was never  
+    wrong; the FORM prevented the officer from using it.  
+  WHY IT WAS EVER HIDDEN, from this file at v1.1 (2026-04-20), the FIRST build:  
+    "DH hidden state: InpH fieldId='StateDH', initialValue='AZ' (mandatory in KQ/KQH set[])"  
+    i.e. "mandatory, so guarantee presence by prefilling and hiding". Same wrong move as the  
+    ImageIndicator case (usx-build 6b) -- except here it buys nothing and costs a capability. It  
+    then SURVIVED because CLAUDE.md wrote it up as a feature ("RegistrationStateDH hidden SelH"):  
+    a record became its own justification.  
+  initialValue='AZ' KEPT and safe under BUILD_RULES 24 -- no AZ combination needs State ABSENT and  
+    there is no NOT_EXISTS gate on it (verified, 0 occurrences), so the prefill cannot shadow one  
+    path over another. In-state stays one-click; the officer changes it for out-of-state.  
+    Row shape [6 3 3] (OLN | State | Purpose Code) matches FL/NY's DH row 1 exactly.  
+GATE FIXED IN THE SAME PASS, because the gate should have caught this: verify_build CHECK 6's  
+  hidden-field whitelist led with a BARE SUBSTRING pattern '(?i)state', written for the narrow RMS  
+  dual-field case but approving ANY fieldId containing 'state' -- so it printed "documented  
+  exception, allowed" on this defect for four months. Pattern REMOVED. Measured first: with it gone,  
+  ZERO of 20 providers raise a new WARN, so it protected nothing. LAW 2 proven with a self-checked  
+  probe (mutation confirmed in the parsed object first): re-hiding the field now yields  
+  "[WARN] Hidden field RegistrationStateDH not on approved-exception list".  
+PORTFOLIO SWEEP: AZ was the ONLY provider hiding a real State field. All 20 checked; the remaining  
+  hits are dexStateUserId, which is the badge field and legitimately hidden.  
+GATES: validator 68P/0F/0W; PHASE 1 steps 1-6b clean; fuzz 8/8 CAUGHT 0 SURVIVED (v3.9 had 1);  
+  gate efficacy 9/9; audit_layout_flow 12 -> 0 PASS; PS 5.1 parse 110/0.  
+OWED: RE-IMPORT + full re-sweep. The bump archived v3.9's 55 logs. Expect the plan to GAIN a DH  
+  out-of-state test now that State is officer-settable -- a coverage gain, same class as NJ's AK tests.  
 
 ## v3.9 -- 2026-08-10 -- DEX-1284 label conformance -- ONE label, measured not assumed
 

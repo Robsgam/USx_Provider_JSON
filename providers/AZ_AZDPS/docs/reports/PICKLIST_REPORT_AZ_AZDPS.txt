@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: AZ_AZDPS_v3.10
   Source: AZ_AZDPS_v3.10.json
-  Generated: 2026-08-12 10:23
+  Generated: 2026-08-12 11:59
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -32,9 +32,9 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
     raceCode [Race]
       Config: attributeTypeId=RACE, codeTypeProvider=NIBRS
-    RegistrationState [State] (default=AZ)
+    RegistrationState [State (leave blank for AZ)]
       Config: attributeTypeId=STATE
-    RegistrationStateDH [State] (default=AZ)
+    RegistrationStateDH [State (required)]
       Config: attributeTypeId=STATE
     SexCode [Sex]
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
@@ -44,7 +44,7 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Vehicle
     LicensePlateTypeCode [Plate Type] (default=PC)
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
-    RegistrationState [State] (default=AZ)
+    RegistrationState [State (leave blank for AZ)]
       Config: attributeTypeId=STATE
     VehicleMakeCode [Make]
       Config: attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC

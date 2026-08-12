@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
   Source: AZ_AZDPS_v3.10.json
-  Generated: 2026-08-12 10:23
+  Generated: 2026-08-12 11:59
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -58,9 +58,8 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (bare "State" (NJ pattern); initialValue=AZ kept)
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'RegistrationStateDH' label='State' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'RegistrationStateDH' label='State (required)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -70,7 +69,6 @@ POST-BUILD VERIFICATION
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'LicensePlateYear' (any[]-only) label='Plate Year' -- manual label override accepted (merely-defaulted convenience field (initialValue current year),)
   [INFO] Field 'LicensePlateTypeCode' (any[]-only) label='Plate Type' -- manual label override accepted (merely-defaulted convenience field (initialValue PC), no)
-  [INFO] Field 'RegistrationState' (any[]-only) label='State' -- manual label override accepted (bare "State" (NJ pattern); initialValue=AZ kept)
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
   [INFO] Field 'vehicleYear' (any[]-only) label='Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
   [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial)

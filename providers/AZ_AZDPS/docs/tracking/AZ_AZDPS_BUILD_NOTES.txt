@@ -55,6 +55,33 @@ v3.10  2026-08-12  Cosmetic/layout pass -- 12 layout findings -> 0, AND a hidden
     "[WARN] Hidden field RegistrationStateDH not on approved-exception list".
   PORTFOLIO SWEEP: AZ was the ONLY provider hiding a real State field. All 20 checked; the remaining
     hits are dexStateUserId, which is the badge field and legitimately hidden.
+  STATE CONVENTION ADOPTED (Rob 2026-08-12: "we want consistency  make the change").
+    MEASURED FIRST, and the measurement REVERSED my assumption: 17 of 20 providers label State
+    'State (leave blank for <ST>)' with NO initialValue. Only AZ, NJ and TX used bare 'State' + a
+    home default, so the portfolio standard is the OTHER one -- I had been calling AZ's form the norm.
+    Label and default are COUPLED: "leave blank for AZ" is only true if blank really means AZ.
+    APPLIED:
+      Vehicle    'State (leave blank for AZ)', default DROPPED  (State is any[]-only on ACVR/ACVRV)
+      Person DL  'State (leave blank for AZ)', default DROPPED  (any[]-only on ACWL/DQN/DQ)
+      Boat       'State (leave blank for AZ)', already no default -- UNCHANGED
+      Person DH  'State (required)', default DROPPED -- see below
+    DH IS THE ONE EXCEPTION AND IT IS PRINCIPLED: State is set[]-MANDATORY on both KQ combos, so
+      blank means the query CANNOT FIRE and "leave blank for AZ" would be a lie. FL_FCIC is the only
+      other provider with a mandatory DH State and it uses exactly 'State (required)' with no
+      default -- adopted verbatim so the two agree rather than inventing a third spelling.
+    WIRE DELTA, STATED PLAINLY: in-state Vehicle/DL queries no longer auto-send <State>AZ</State>.
+      Metadata places State in <Any> on those variants, so both forms are valid, and it is what the
+      other 17 providers already do. Verified safe: audit_prefill_shadow 18 ordered pairs 0 FAIL,
+      query trace 0 prefill-dead / 0 shadow, requirement fidelity 15 branches 0 under / 0 over.
+    ALSO NOTED, NOT FIXED: no combo carries a defaults[] entry for State on any AZ query, and CAD
+      ignores form initialValue -- so a CAD-originated DH cannot satisfy its mandatory State. That
+      predates this change (removing the form prefill did not cause it) and is a separate question.
+  GATE EFFICACY CAUGHT ITSELF, and the finding was a STALE MUTATION not a blind gate: dropping the
+    prefill made 'az-state-prefill-routes' report SURVIVED, because that mutation only added State to
+    DQ's set[] and INHERITED the initialValue from the build. State in set[] with no prefill is a
+    plain mandatory field, so validate.ps1 was right not to fire. Repaired to inject BOTH halves;
+    9/9 KILLED restored. A mutation must CREATE the whole defect, never inherit half from the
+    provider -- otherwise a correct build change turns a catalogue entry into a false accusation.
   GATES: validator 68P/0F/0W; PHASE 1 steps 1-6b clean; fuzz 8/8 CAUGHT 0 SURVIVED (v3.9 had 1);
     gate efficacy 9/9; audit_layout_flow 12 -> 0 PASS; PS 5.1 parse 110/0.
   OWED: RE-IMPORT + full re-sweep. The bump archived v3.9's 55 logs. Expect the plan to GAIN a DH

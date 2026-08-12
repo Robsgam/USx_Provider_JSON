@@ -244,8 +244,22 @@ $MUTS = @(
   @{ Id='az-state-prefill-routes'; OnlyProvider='AZ_AZDPS'
      Desc='RegistrationState ADDED to DriverLicenseQuery/DQ set[], making it a routing field while the Person form still prefills it with initialValue=AZ -- the real LIMITATION #30 mechanism (an always-present field permanently hides every combo needing its ABSENCE). Catalogued 2026-08-04 alongside NARROWING that check: validate.ps1 G-3 used to fire on ANY QIDM that had a state=In or state=Out combo plus a State prefill, without asking whether State was in a set[] at all. That flagged AZ v3.5 twice purely because its DQP photo combos are honestly labelled state=In (metadata DQP defines NO State field, so they cannot serve out-of-state) while ACWL/DQ/DQN are In/Out -- a LABEL, not a routing risk, and the alternative was to MISLABEL DQP as In/Out to satisfy the gate. Measured at zero LIMITATION #30 lines across all 20 providers before narrowing, so no coverage was lost. This mutation is what makes the narrowed check''s PASS mean something: it puts State back into a set[] and the check must fail again.'
      Gate='validate.ps1'; Args={ @('-Path',$workJson) }
+     # 2026-08-12 -- NOW INJECTS BOTH HALVES. It used to add State to set[] ONLY, and relied on the
+     # AZ build already carrying initialValue='AZ' on the Person State control. AZ v3.10 adopted the
+     # portfolio State convention (17 of 20 providers: 'State (leave blank for <ST>)' with NO
+     # default), which REMOVED that prefill -- so the mutation stopped creating a LIMITATION #30
+     # condition at all and reported SURVIVED while validate.ps1 was behaving correctly. State in a
+     # set[] with no prefill is simply a mandatory field, not a routing hazard.
+     # That is a STALE MUTATION, not a blind gate: its precondition was a build detail that
+     # legitimately changed. A mutation must CREATE the whole defect it tests, never inherit half of
+     # it from the provider -- otherwise a correct build change silently converts the catalogue entry
+     # into a permanent false accusation, which is the exact failure mode this harness exists to
+     # avoid inflicting on other gates.
      Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'DQ'
-           $cm.requirements.set=@(@($cm.requirements.set)+'RegistrationState') } }
+           $cm.requirements.set=@(@($cm.requirements.set)+'RegistrationState')
+           $n=Get-Node $j 'Person' 'RegistrationState'
+           if ($n.props.PSObject.Properties.Name -contains 'initialValue') { $n.props.initialValue = 'AZ' }
+           else { $n.props | Add-Member -NotePropertyName initialValue -NotePropertyValue 'AZ' -Force } } }
 
   # ── devdoc transaction-name scope ──────────────────────────────────────────────────────
   @{ Id='hi-out-of-basic-transaction'; OnlyProvider='HI_HCJDC_OFML'

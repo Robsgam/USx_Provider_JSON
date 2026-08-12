@@ -753,8 +753,17 @@ $vehLayout = MakeLayouts @(
             # v3.10 LAYOUT-OVERRIDE (L6): shared-context row carries ONE field, so it cannot both
             # sum to 12 and avoid a 12-wide dropdown (L5). Narrowed 6 -> 4 and left partial:
             # a left-aligned third-width dropdown is what NY ships. Recorded, not silently ignored.
+            # v3.10 STATE CONVENTION (Rob 2026-08-12: "we want consistency"): adopted the portfolio
+            # standard, which was MEASURED not assumed -- 17 of 20 providers label State
+            # 'State (leave blank for <ST>)' with NO initialValue; only AZ, NJ and TX used bare
+            # 'State' + a home default. The label and the default are COUPLED: "leave blank for AZ"
+            # is only true if blank actually means AZ, so the hint requires dropping the default.
+            # Safe here: State is any[]-ONLY on both Vehicle combos (ACVR/ACVRV), so it routes
+            # nothing and its absence simply means it is not transmitted -- exactly what the other
+            # 17 providers do. WIRE DELTA, stated plainly: an in-state Vehicle query no longer
+            # auto-sends <State>AZ</State>; metadata has State in <Any> so both forms are valid.
             @{ id = 'ROW_VEH_3'; cols = @('4'); fields = @(
-                @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_VEH_3' }
+                @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State (leave blank for AZ)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_Veh'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_VEH_BADGE' @{ initialValue = 'X' } }
@@ -789,8 +798,9 @@ $perLayout = MakeLayouts @(
             # State + NCIC Image, matching FL/NY row 1 ([6 3 3] identifier + context).
             @{ id = 'ROW_PER_DL_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OLN_Per_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
-                # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
-                @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DL_1' }
+                # v3.10: portfolio State convention (17 of 20) -- hint + NO default. any[]-only on
+                # all three DL combos (ACWL/DQN/DQ), so it routes nothing.
+                @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State (leave blank for AZ)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
                 @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_PER_DL_1' }
             )}
             # v3.10 (L8): First BEFORE Last, portfolio convention. The wire is UNAFFECTED -- the
@@ -894,7 +904,14 @@ $perLayout = MakeLayouts @(
             # Row shape [6 3 3] matches FL/NY's DH row 1 exactly (OLN | State | Purpose Code).
             @{ id = 'ROW_PER_DH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OLN_DH_Input';     node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
-                @{ id = 'StateDH_Input';   node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DH_1' }
+                # v3.10 STATE CONVENTION -- DH is the ONE case that cannot take the "leave blank"
+                # hint, because State is set[]-MANDATORY on both KQ combos: blank means the query
+                # cannot fire, so "leave blank for AZ" would be a lie. FL_FCIC is the only other
+                # provider with a mandatory DH State and it uses exactly this -- blank, labelled
+                # 'State (required)', no default. Adopted verbatim so the two agree.
+                # The AZ default is dropped for the same reason it was wrong to HIDE the field: it
+                # silently pinned every driver-history query to Arizona. The officer now picks.
+                @{ id = 'StateDH_Input';   node = Sel 'RegistrationStateDH' 'State (required)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
                 @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' }
             )}
             # v3.10 (L8 + L7): First BEFORE Last, all four name parts on one row, and 'MI' ->
