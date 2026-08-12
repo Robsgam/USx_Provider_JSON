@@ -865,8 +865,36 @@ $perLayout = MakeLayouts @(
             # v3.10: OLN 8 -> 6 (maxLen=20 needs no more than half a row; FL/NY both use 6) and
             # Purpose Code 4 -> 3, matching the [6 3 3] identifier-row shape used everywhere else.
             # The third slot is empty here because DH's State is HIDDEN (see ROW_PER_DH_STEDH).
-            @{ id = 'ROW_PER_DH_1'; cols = @('8','4'); fields = @(
+            # v3.10 -- STATE IS NOW VISIBLE, and it should never have been hidden.
+            # Rob 2026-08-12: "i don't think we should ever hide a state fiedl why was this done?"
+            # He was right, and BOTH authorities say so:
+            #   DEVDOC (query authority), DriverHistoryQuery -- Basic Queries Supported, line 97:
+            #     1. (In/Out) OperatorLicenseNumber, State, [Attention, PurposeCode]
+            #     2. (In/Out) BirthDate, Name, SexCode, State, [Attention, PurposeCode]
+            #   Both combinations are (In/Out) and State is UNBRACKETED = required and officer-supplied.
+            #   METADATA (field authority), raw <Requirements> per <Combination> -- the sanctioned
+            #   raw-XML exception -- both KQ variants put <Field reference="State"/> directly inside
+            #   <Set>: mandatory, no <Choice>, no nested <Set>. There is NO separate out-of-state
+            #   transaction and no in/out keyRef fork, so State is ALWAYS sent and its VALUE selects
+            #   the destination.
+            # The clincher is the contrast on this same provider: DriverLicenseQuery's devdoc splits
+            # (In) combos #1-#5 (NO State at all) from (Out) combos #6-#8 (State present). AZ's devdoc
+            # DOES distinguish in/out where that is the design -- and for DH it deliberately does not.
+            # WHY IT WAS HIDDEN, from AZ's own BUILD_NOTES at v1.1 (2026-04-20), the FIRST build:
+            #   "DH hidden state: InpH fieldId='StateDH', initialValue='AZ' (mandatory in KQ/KQH set[])"
+            # i.e. "the field is mandatory, so guarantee it is present by prefilling and hiding it."
+            # Same wrong move as the ImageIndicator case (usx-build 6b) -- except here it buys NOTHING
+            # and costs a documented capability: out-of-state driver history was UNREACHABLE, both
+            # devdoc combinations' (Out) half dead. It then survived because CLAUDE.md wrote it up as a
+            # feature ("RegistrationStateDH hidden SelH") -- a record became its own justification.
+            # initialValue='AZ' is KEPT and is SAFE under BUILD_RULES 24: no AZ combination requires
+            # State ABSENT and there is no NOT_EXISTS gate on it anywhere (verified, 0 occurrences), so
+            # the prefill cannot shadow one path over another. In-state stays one-click; the officer
+            # changes it for out-of-state. maxLength=2 per the devdoc size row; QIDM targetField='State'.
+            # Row shape [6 3 3] matches FL/NY's DH row 1 exactly (OLN | State | Purpose Code).
+            @{ id = 'ROW_PER_DH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OLN_DH_Input';     node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
+                @{ id = 'StateDH_Input';   node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DH_1' }
                 @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' }
             )}
             # v3.10 (L8 + L7): First BEFORE Last, all four name parts on one row, and 'MI' ->
@@ -887,10 +915,8 @@ $perLayout = MakeLayouts @(
                 @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth'  'ROW_PER_DH_3' }
                 @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
             )}
-            # DH self-contained: hidden RegistrationStateDH (SelH, initialValue AZ) + Attention feeder.
-            @{ id = 'ROW_PER_DH_STEDH'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'StateDH_Input'; node = SelH 'RegistrationStateDH' 'State (DH)' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DH_STEDH' }
-            )}
+            # v3.10: ROW_PER_DH_STEDH RETIRED -- RegistrationStateDH moved to the visible row 1 above.
+            # DH remains self-contained via its own DH-suffixed field pool + the Attention feeder.
             @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' }
             )}

@@ -33,35 +33,35 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**AZ_AZDPS v3.10 BUILT 2026-08-12 -- cosmetic/layout pass, Rob: "fix all 12 and bring az to the
-standard layout".** `audit_layout_flow` 12 -> **0 findings, PASSES**. **WIRE PROVABLY UNCHANGED:** all
-3 bundles' QIDMs byte-identical to v3.9. PHASE 1 clean incl. fuzz **8/8 caught, 0 survived** (v3.9 had
-1). AZ-scoped enforce 0 FAIL / 0 WARN. **OWED: RE-IMPORT + full 55-test re-sweep** (the bump archived
-v3.9's 55 logs -- accepted cost, testing is not a blocker).
-**HONEST SPLIT, because I changed rules and the build in one pass:** new tool vs OLD v3.9 = **8
-findings**, vs v3.10 = 0. So **8 were real fixes; the other 4 of the original 12 were MY TOOL being
-wrong.** Always re-run the new gate against the pre-fix artifact or you cannot tell a fix from a
-suppression.
-**APPLYING THE RULESET FOUND TWO CONFLICTS IN IT** -- both fixed in the tool with the reasoning:
-(a) L5 vs L6 -- a lone short control has NO legal width (12 = wasted, 4 = short row), so L6 now judges
-MULTI-field rows only; (b) L8 vs L2 -- grouping all four name parts necessarily puts optional
-middle/suffix ahead of mandatory DOB/Sex, so name components are excluded from L2. L8 wins: a name is
-one thing to an officer. Reference providers improved too (FL 7->4, NY 6->5, OH 2->1, NJ still 0).
-**NOT TOUCHED, awaiting Rob:** `RegistrationStateDH` is HIDDEN + prefilled AZ, so **out-of-state
-driver history is unreachable**. Making it visible is FUNCTIONAL, not cosmetic, and needs a devdoc
-ruling -- deliberately left alone rather than silently changed under a cosmetic mandate.
+**AZ_AZDPS v3.10 BUILT 2026-08-12 -- cosmetic/layout pass + the hidden-State fix below.**
+`audit_layout_flow` 12 -> **0, PASSES**. **WIRE PROVABLY UNCHANGED** (3 bundles' QIDMs byte-identical
+to v3.9). PHASE 1 clean, fuzz **8/8 caught 0 survived** (v3.9 had 1), AZ-scoped enforce 0F/0W.
+**OWED: RE-IMPORT + full re-sweep** (bump archived v3.9's 55 logs -- accepted, testing is not a blocker).
+**HONEST SPLIT (I changed rules AND build in one pass):** new tool vs OLD v3.9 = **8**, vs v3.10 = 0.
+**8 real fixes; the other 4 were MY TOOL wrong.** Re-run a new gate against the PRE-FIX artifact or
+you cannot tell a fix from a suppression. **Applying the ruleset found 2 conflicts IN it**, both
+fixed (L5-vs-L6 lone-control width; L8-vs-L2 name grouping wins). FL 7->4, NY 6->5, OH 2->1, NJ 0.
+**HIDDEN-STATE DEFECT FIXED -- Rob was right ("we should never hide a state fiedl").**
+`RegistrationStateDH` was a hidden SelH pinned to `AZ` since **v1.1 (2026-04-20)**, making
+**out-of-state DH UNREACHABLE** (the `(Out)` half of BOTH devdoc combos dead). Now visible `[6 3 3]`,
+`initialValue='AZ'` kept (0 NOT_EXISTS gates, so safe). Devdoc: both DH combos `(In/Out)`, State
+**unbracketed**; metadata: State in `<Set>` on both KQ variants, NO separate OOS transaction -- State
+is always sent and its VALUE picks the destination. **The wire was never wrong; the FORM blocked the
+officer.** Full reasoning in AZ BUILD_NOTES v3.10.
+**ROOT CAUSE WAS A GATE:** `verify_build` CHECK 6's whitelist led with a BARE SUBSTRING `'(?i)state'`,
+so it printed "documented exception, allowed" for four months. **REMOVED** -- measured first, 0 of 20
+gain a WARN. LAW 2 re-proven with a SELF-CHECKED probe: **my first injection was a dud (duplicate JSON
+key, last-wins) -- always confirm the mutation in the PARSED object before trusting a verdict.**
+**Sweep: AZ was the ONLY provider hiding a real State field.**
 **OH_LEADS is the only never-swept provider. Testing is no longer a blocker on deciding a fix.**
 
-**JIRA CONSOLIDATED 08-11:** 7 tickets, **91 comments stubbed**, 2 keepers each. **THE RULE: one
-comment per RELEASE, EDIT it in place if numbers move -- never a sibling correction** (that left FL
-claiming 121-118-117-116). Format single-sourced in `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`;
-procedure + ticket map in `JIRA_REFERENCE.txt` (**do not re-add a status column**). **No delete tool
-exists, edits are IRREVERSIBLE** -- capture first; only robot-attributed comments, and NOT by
-displayName. 2r now 2 PASS / 0 GAP on all 9.
-
-**THE LESSON, twice today:** my stub inventory came from `DEX_TICKET.md` and was short by **18
-comments**; the AZ ledger row claimed "never installed" while a v3.6 picklist and v3.6 Person logs sat
-on disk. **A tracking file is a CLAIM; the artifact is the evidence.**
+**JIRA CONSOLIDATED 08-11:** 7 tickets, 91 comments stubbed, 2 keepers each. **RULE: one comment per
+RELEASE, EDIT in place if numbers move -- never a sibling correction.** Format single-sourced in
+`knowledge-base/JIRA_COMMENT_TEMPLATE.txt`; procedure in `JIRA_REFERENCE.txt` (**no status column**).
+No delete tool; edits IRREVERSIBLE. 2r 2 PASS / 0 GAP on all 9.
+**THE LESSON, three times now:** the stub inventory came from `DEX_TICKET.md` and was short by 18; the
+AZ ledger claimed "never installed" against on-disk v3.6 artifacts; CLAUDE.md wrote up AZ's hidden
+State as a FEATURE. **A tracking file is a CLAIM; the artifact is the evidence.**
 
 ## ON HOLD / DO NOT RE-RAISE
 

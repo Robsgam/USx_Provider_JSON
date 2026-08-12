@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
   Source: AZ_AZDPS_v3.10.json
-  Generated: 2026-08-12 09:00
+  Generated: 2026-08-12 10:23
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -67,8 +67,9 @@ LAYOUT DETAIL
       ROW ROW_PER_DL_BADGE [12]
         dexStateUserId (Text | default=X)
     CARD "CARD_PER_DH"
-      ROW ROW_PER_DH_1 [8 4]
+      ROW ROW_PER_DH_1 [6 3 3]
         OperatorLicenseNumberDH (Text | maxLen=20)
+        RegistrationStateDH (Dropdown | attributeTypeId=STATE | default=AZ)
         purposeCodeDH (Text | maxLen=1)
       ROW ROW_PER_DH_2 [4 4 2 2]
         NameFirstDH (Text | maxLen=20)
@@ -78,8 +79,6 @@ LAYOUT DETAIL
       ROW ROW_PER_DH_3 [6 6]
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-      ROW ROW_PER_DH_STEDH [12]
-        RegistrationStateDH (Dropdown | attributeTypeId=STATE | default=AZ)
       ROW ROW_PER_DH_ATTN [12]
         attention (Text | maxLen=30)
 

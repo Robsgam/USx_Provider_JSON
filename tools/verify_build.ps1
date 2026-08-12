@@ -277,7 +277,21 @@ Write-Host "--- CHECK 6: Visible-First Mandate ---" -ForegroundColor Yellow
 #   - dexStateUserId auto-populated from the officer's RMS profile
 #   - CAD / First-Responder dispatch context fields
 $hiddenFieldWhitelist = @(
-    '(?i)state',                         # RMS dual-field State exception
+    # 2026-08-12: THE BARE '(?i)state' PATTERN WAS REMOVED. It is how AZ_AZDPS shipped a HIDDEN,
+    # hard-coded RegistrationStateDH from v1.1 (2026-04-20) until v3.10 -- four months of this gate
+    # printing "documented exception, allowed" on the defect it exists to catch.
+    # The exception was written for the narrow RMS DUAL-FIELD case (a hidden SelH for RMS ALONGSIDE a
+    # visible control), but a bare substring match approves ANY fieldId containing "state" -- including
+    # one that is the ONLY control for that field. On AZ that made out-of-state driver history
+    # UNREACHABLE: both devdoc DH combinations are "(In/Out)" with State unbracketed, and both metadata
+    # KQ variants put <Field reference="State"/> directly in <Set>, so State is always sent and its
+    # VALUE picks the destination. Hiding it pinned every DH query to Arizona.
+    # Rob 2026-08-12: "i don't think we should ever hide a state fiedl why was this done?" -- correct,
+    # and the gate should have been the one asking.
+    # MEASURED BEFORE REMOVING: with this pattern gone, ZERO of 20 providers raise a new WARN, so it
+    # was protecting nothing (dexStateUserId is covered by its own entry below). If a provider ever
+    # genuinely needs the dual-field fallback, add a PRECISE pattern for that fieldId with the reason
+    # -- do not restore a substring match.
     '(?i)dexStateUserId',                # AUTH user id from RMS profile
     '(?i)cadUnit|cadEvent|linkToEvent',  # CAD / First-Responder context
     # 2026-08-02: widened to the DH-suffixed spelling. DH-suffixing is the standard mechanism for
