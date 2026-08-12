@@ -36,7 +36,20 @@ in this project; hence the verification.)
 - 776896 (2026-07-10, Leo Hisoire) — a scheduling/roadmap note referencing FB-6040 and a Friday
   meeting. **Not a changelog.** No 🤖 auto-update comment has ever been posted here.
 
-**Current: v3.9 — BUILT 2026-08-10, NEVER tenant-tested (55 tests owed), never imported.**
+**Current: v3.10 — BUILT 2026-08-12 (cosmetic/layout pass). RE-IMPORT + full 55-test re-sweep owed.**
+v3.10 took audit_layout_flow from 12 findings to 0. **The wire is provably unchanged** — all three
+bundles'' QIDMs are byte-identical to v3.9 — so this is layout and labels only. Changes: SSN and Race
+grouped onto their own row (both are RMS-only, in NO CommSys combination, and SSN had been sitting
+beside OLN reading as a state identifier); MI → Middle Name on both name fields (maxLen=20, so
+MI misrepresented capacity); name order First-before-Last with all four parts on one row; NCIC
+Image moved off a full-width row into the identifier row; hidden badge rows moved to the bottom on
+Firearm and Article, where they had been splitting the serial from make/model/caliber; row widths
+tiled to 12. PHASE 1 clean, fuzz 8/8 caught 0 survived, AZ-scoped enforce 0 FAIL / 0 WARN.
+**NOT changed, awaiting a ruling:** RegistrationStateDH is hidden and prefilled AZ, which makes
+out-of-state driver history unreachable. That is functional, not cosmetic.
+
+**Prior: v3.9 — TENANT-VERIFIED 2026-08-11, ALL-PASS 55/55** (Veh 11 / Per 24 / Gun 6 / Art 3 /
+Boat 11), four log gates 55/55, inflation 0/0/0/0. First full sweep this provider ever had.
 Recent history (full detail in `AZ_AZDPS_BUILD_NOTES.txt`):
 - **v3.9** — DEX-1284 label conformance: `NCIC Image` canonicalised (one label; every other measured
   convention already conformed).

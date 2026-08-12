@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-11 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-12 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -14,7 +14,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 
 | Provider | Ver | State |
 |---|---|---|
-| AZ_AZDPS | v3.9 | ALL-PASS (55 logs) |
+| AZ_AZDPS | v3.10 | NEVER-TESTED -- 55 test(s) owed |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.18 | ALL-PASS (116 logs) |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
@@ -33,21 +33,24 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**AZ_AZDPS SWEPT 2026-08-11 -- ALL-PASS 55/55, its first FULL sweep ever** (Veh 11 / Per 24 / Gun 6 /
-Art 3 / Boat 11). v3.9 imported same day; tenant had been on v3.6. Four log gates 55/55, inflation
-0/0/0/0 (B compared 55). **NEXT: Rob wants a COSMETIC PASS on AZ ("this needs work") -> v3.10, which
-archives this package -- that is accepted, testing is not a blocker.** I have ONE verified finding
-(`nameMiddle`/`NameMiddleDH` are maxLen=20 but labeled **"MI"**; FL kept MI only because its field was
-maxLen=1). **THREE of my other suspicions were FALSE and I nearly reported them** -- card titles DO
-exist (render_layout prints the NODE ID, not the title), and `dexStateUserId`/`Requestor`/`attention`/
-`RegistrationStateDH` are HIDDEN documented exceptions (my regex probe said otherwise; it was an
-artifact). **Ask Rob what his eye caught -- every gate-checkable convention already passes.**
-**AZ WIRE FACTS, first ever for this provider:** `<UserName>MK43RS` on 55/55 -> the 5 badge combos
-really fire, no silent fallback (this was the pre-sweep risk). `Attention`/`Requestor` both resolve
-`SGAMBELLONE R` -> DEX-1283 settled on AZ's own wires. **ZERO logs carry a bare `>X<`.** All 4 Boat
-combos fired DISTINCTLY (ACQB/ACQBH/BQ/BQH) -- wire proof for the v3.7/v3.8 un-prefill fix, which had
-collapsed them into EXACT collisions. `ACWL` fired -> the reorder ahead of `DQPN` works.
-**OH_LEADS is now the only never-swept provider. Testing is no longer a blocker on deciding a fix.**
+**AZ_AZDPS v3.10 BUILT 2026-08-12 -- cosmetic/layout pass, Rob: "fix all 12 and bring az to the
+standard layout".** `audit_layout_flow` 12 -> **0 findings, PASSES**. **WIRE PROVABLY UNCHANGED:** all
+3 bundles' QIDMs byte-identical to v3.9. PHASE 1 clean incl. fuzz **8/8 caught, 0 survived** (v3.9 had
+1). AZ-scoped enforce 0 FAIL / 0 WARN. **OWED: RE-IMPORT + full 55-test re-sweep** (the bump archived
+v3.9's 55 logs -- accepted cost, testing is not a blocker).
+**HONEST SPLIT, because I changed rules and the build in one pass:** new tool vs OLD v3.9 = **8
+findings**, vs v3.10 = 0. So **8 were real fixes; the other 4 of the original 12 were MY TOOL being
+wrong.** Always re-run the new gate against the pre-fix artifact or you cannot tell a fix from a
+suppression.
+**APPLYING THE RULESET FOUND TWO CONFLICTS IN IT** -- both fixed in the tool with the reasoning:
+(a) L5 vs L6 -- a lone short control has NO legal width (12 = wasted, 4 = short row), so L6 now judges
+MULTI-field rows only; (b) L8 vs L2 -- grouping all four name parts necessarily puts optional
+middle/suffix ahead of mandatory DOB/Sex, so name components are excluded from L2. L8 wins: a name is
+one thing to an officer. Reference providers improved too (FL 7->4, NY 6->5, OH 2->1, NJ still 0).
+**NOT TOUCHED, awaiting Rob:** `RegistrationStateDH` is HIDDEN + prefilled AZ, so **out-of-state
+driver history is unreachable**. Making it visible is FUNCTIONAL, not cosmetic, and needs a devdoc
+ruling -- deliberately left alone rather than silently changed under a cosmetic mandate.
+**OH_LEADS is the only never-swept provider. Testing is no longer a blocker on deciding a fix.**
 
 **JIRA CONSOLIDATED 08-11:** 7 tickets, **91 comments stubbed**, 2 keepers each. **THE RULE: one
 comment per RELEASE, EDIT it in place if numbers move -- never a sibling correction** (that left FL

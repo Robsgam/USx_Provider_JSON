@@ -243,8 +243,14 @@ function Audit-One($jsonPath, $provName) {
             foreach ($r in $rows) {
                 $nFields += $r.fields.Count
 
-                # ---- L6 ROW-SUM-12 (visible rows only) ------------------------------
-                if ($r.cols.Count -gt 0 -and -not $r.hidden) {
+                # ---- L6 ROW-SUM-12 (visible MULTI-FIELD rows only) -------------------
+                # Only rows with 2+ fields are judged. A SINGLE-field row is a deliberate
+                # left-aligned control, and demanding it sum to 12 is unsatisfiable next to L5:
+                # a lone dropdown at [12] is wasted width (L5) and at [4] is a short row (L6),
+                # so there is no legal width. Found by applying the rules to AZ_AZDPS v3.10 --
+                # fixing four L5 findings created four new L6 ones, which is a rule conflict, not
+                # progress. A multi-field row that does not tile to 12 IS a mistake.
+                if ($r.cols.Count -gt 1 -and $r.fields.Count -gt 1 -and -not $r.hidden) {
                     $sum = 0
                     foreach ($c in $r.cols) { $sum += [int]$c }
                     if ($sum -ne 12) {
@@ -299,6 +305,13 @@ function Audit-One($jsonPath, $provName) {
                     #     after ImageIndicator". L2 was 71 of 165 portfolio findings before
                     #     this guard.
                     if ($anyShareCount.ContainsKey($f) -and $anyShareCount[$f] -gt 1) { continue }
+                    # (c) NAME COMPONENTS are one concept and are grouped as a unit (rule L8: all
+                    #     four parts on one row). Middle name and suffix are optional while Last,
+                    #     DOB and Sex may be mandatory, so grouping the name necessarily puts two
+                    #     optionals ahead of them -- L8 and L2 conflict, and L8 wins because a name
+                    #     is a single thing to an officer. Found by applying the rules to AZ v3.10:
+                    #     the KQH finding survived a correct fix, which means the rule was wrong.
+                    if ($f -match '^[Nn]ame(Middle|Suffix)') { continue }
                     if ($pos.ContainsKey($f)) { $anyPos += [pscustomobject]@{ f = $f; p = $pos[$f] } }
                 }
                 if ($setPos.Count -eq 0 -or $anyPos.Count -eq 0) { continue }

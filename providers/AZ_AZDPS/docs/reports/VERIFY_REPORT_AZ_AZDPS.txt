@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.9.json
-  Generated: 2026-08-11 15:31
+  Source: AZ_AZDPS_v3.10.json
+  Generated: 2026-08-12 09:00
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: AZ_AZDPS_v3.9
+ POST-BUILD VERIFICATION: AZ_AZDPS_v3.10
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -62,9 +62,9 @@ POST-BUILD VERIFICATION
   [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (bare "State" (NJ pattern); initialValue=AZ kept)
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'NameMiddleDH' label='MI' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -73,9 +73,9 @@ POST-BUILD VERIFICATION
   [INFO] Field 'RegistrationState' (any[]-only) label='State' -- manual label override accepted (bare "State" (NJ pattern); initialValue=AZ kept)
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
   [INFO] Field 'vehicleYear' (any[]-only) label='Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
-  [INFO] Field 'nameMiddle' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial)
   [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per DEX-1284 lean pass (any[] optional))
-  [INFO] Field 'NameMiddleDH' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'NameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial)
   [INFO] Field 'NameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'GunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'GunMake' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))

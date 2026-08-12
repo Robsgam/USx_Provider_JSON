@@ -160,7 +160,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.9'
+$Version = '3.10'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -750,7 +750,10 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'Year_Veh_Input';  node = Inp 'vehicleYear' 'Year' '4' 'ROW_VEH_2' }
             )}
             # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept, officer-editable for OOS, not an in/out routing toggle
-            @{ id = 'ROW_VEH_3'; cols = @('6'); fields = @(
+            # v3.10 LAYOUT-OVERRIDE (L6): shared-context row carries ONE field, so it cannot both
+            # sum to 12 and avoid a 12-wide dropdown (L5). Narrowed 6 -> 4 and left partial:
+            # a left-aligned third-width dropdown is what NY ships. Recorded, not silently ignored.
+            @{ id = 'ROW_VEH_3'; cols = @('4'); fields = @(
                 @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_BADGE'; cols = @('12'); hidden = $true; fields = @(
@@ -780,26 +783,44 @@ $perLayout = MakeLayouts @(
         # as a DL path would be a lie on the form.
         title = 'DRIVER LICENSE SEARCH BY OLN "OR" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO'
         rows  = @(
-            @{ id = 'ROW_PER_DL_1'; cols = @('6','6'); fields = @(
+            # v3.10 (L9): SSN moved OFF this row. It is in NO CommSys combination -- it feeds the RMS
+            # person search ONLY -- so sitting beside OLN it read as a state-query identifier and took
+            # the most prominent slot on the card. OLN now shares the row with the shared-context
+            # State + NCIC Image, matching FL/NY row 1 ([6 3 3] identifier + context).
+            @{ id = 'ROW_PER_DL_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OLN_Per_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
-                @{ id = 'SSN_Per_Input'; node = Inp 'SocialSecurityNumber' 'SSN' '9' 'ROW_PER_DL_1' }
+                # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
+                @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DL_1' }
+                @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_PER_DL_1' }
             )}
-            @{ id = 'ROW_PER_DL_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '20' 'ROW_PER_DL_2' }
-            )}
-            @{ id = 'ROW_PER_DL_3'; cols = @('3','3','3','3'); fields = @(
-                # LABEL-OVERRIDE: nameMiddle -- bare "MI" per DEX-1284 lean pass (any[] optional)
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '20' 'ROW_PER_DL_3' }
+            # v3.10 (L8): First BEFORE Last, portfolio convention. The wire is UNAFFECTED -- the
+            # composite Name attribute keeps sourceField order [NameLast, NameFirst, ...] with
+            # FormatStringRuleHandler, which is what emits ConnectCIC LAST-first. Form-control order
+            # and QIDM sourceField order are independent (wire-proven on IL v2.2).
+            # v3.10 (L7): 'MI' -> 'Middle Name'. The field is maxLen=20, i.e. a full middle name;
+            # 'MI' means middle INITIAL and misrepresented capacity. FL keeps 'MI' only because its
+            # equivalent field is maxLen=1. All four name parts now share one row (L8).
+            @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst' 'First Name' '20' 'ROW_PER_DL_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
+                # LABEL-OVERRIDE: nameMiddle -- bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '20' 'ROW_PER_DL_2' }
                 # LABEL-OVERRIDE: nameSuffix -- bare "Suffix" per DEX-1284 lean pass (any[] optional)
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'  '4' 'ROW_PER_DL_3' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'       '4' 'ROW_PER_DL_2' }
+            )}
+            # v3.10: DOB + Sex are CommSys qualifiers (both in ACWL's set[]) and stay with the
+            # name group they qualify.
+            @{ id = 'ROW_PER_DL_3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input';  node = Dt  'BirthDate'  'Date of Birth'  'ROW_PER_DL_3' }
                 @{ id = 'SexCode_Input';    node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
             )}
+            # v3.10 (L9): the RMS-ONLY row. Neither SSN nor Race appears in ANY CommSys combination
+            # -- both feed only the RMS person search -- so they are grouped together and kept OFF
+            # any row carrying a mandatory state identifier. Previously SSN sat beside OLN (reading
+            # as a state identifier) and Race beside RegistrationState.
             @{ id = 'ROW_PER_DL_4'; cols = @('6','6'); fields = @(
-                # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept.
-                # Safe under BUILD_RULES 24: State is any[]-ONLY in every DL combo, so it routes nothing.
-                @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DL_4' }
+                # LABEL-OVERRIDE: SocialSecurityNumber -- bare "SSN" (RMS-only person-search field)
+                @{ id = 'SSN_Per_Input';  node = Inp 'SocialSecurityNumber' 'SSN' '9' 'ROW_PER_DL_4' }
                 # LABEL-OVERRIDE: raceCode -- bare "Race" (any[]/RMS-only person-search field; relocated from the removed WMPI card, v3.3)
                 @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
             )}
@@ -820,13 +841,10 @@ $perLayout = MakeLayouts @(
             # rule: LA_LEMS gates DP on ImageIndicator EXISTS and DQ on NOT_EXISTS, and its DQ is a
             # registered dead combo precisely because the prefill makes the field always-present.
             # Left visible and un-automated: exposing a field before automating it is the standing rule.
-            @{ id = 'ROW_PER_DL_5'; cols = @('12'); fields = @(
-                # v3.9: canonical bare 'NCIC Image' (DEX-1284 global label rule). The old
-                # "(select Y to request a licence photo)" helper is exactly what the lean-label
-                # convention strips -- the card title carries the query paths. verify_build CHECK 15
-                # accepts the bare form via $canonicalBareLabels, so no LABEL-OVERRIDE is needed.
-                @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_PER_DL_5' }
-            )}
+            # v3.10 (L5): ImageIndicator MOVED to row 1 beside OLN + State. It had a whole 12-column
+            # row to itself for a two-option dropdown, which it cannot use; FL and NY both carry it at
+            # [3] in the identifier row. Its initialValue='Y' and every word of the reasoning above is
+            # UNCHANGED -- only the row and width moved. Row ROW_PER_DL_5 is retired.
             # Requestor HIDDEN + handler-fed. ORDERING IS WHAT KEEPS THIS SAFE: because Requestor and
             # ImageIndicator are BOTH always-present, DQPN's variable requirement is only badge+Name --
             # a strict subset of ACWL's badge+Name+DOB+Sex. ACWL is therefore ordered FIRST (Option A):
@@ -844,19 +862,28 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
+            # v3.10: OLN 8 -> 6 (maxLen=20 needs no more than half a row; FL/NY both use 6) and
+            # Purpose Code 4 -> 3, matching the [6 3 3] identifier-row shape used everywhere else.
+            # The third slot is empty here because DH's State is HIDDEN (see ROW_PER_DH_STEDH).
             @{ id = 'ROW_PER_DH_1'; cols = @('8','4'); fields = @(
                 @{ id = 'OLN_DH_Input';     node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
                 @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' }
             )}
-            @{ id = 'ROW_PER_DH_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_2' }
-                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name' '20' 'ROW_PER_DH_2' }
-            )}
-            @{ id = 'ROW_PER_DH_3'; cols = @('3','3','3','3'); fields = @(
-                # LABEL-OVERRIDE: NameMiddleDH -- bare "MI" per DEX-1284 lean pass (any[] optional)
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'NameMiddleDH' 'MI'     '20' 'ROW_PER_DH_3' }
+            # v3.10 (L8 + L7): First BEFORE Last, all four name parts on one row, and 'MI' ->
+            # 'Middle Name' because the field is maxLen=20. Wire unaffected: the composite NameDH
+            # attribute keeps its own sourceField order, which is what emits LAST-first.
+            @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH' 'First Name' '20' 'ROW_PER_DH_2' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_2' }
+                # LABEL-OVERRIDE: NameMiddleDH -- bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'NameMiddleDH' 'Middle Name' '20' 'ROW_PER_DH_2' }
                 # LABEL-OVERRIDE: NameSuffixDH -- bare "Suffix" per DEX-1284 lean pass (any[] optional)
-                @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix'  '4' 'ROW_PER_DH_3' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix'       '4' 'ROW_PER_DH_2' }
+            )}
+            # v3.10 (L2): DOB + Sex on their own row. Both are MANDATORY in KQH's set[], and they had
+            # been sharing a row with the optional middle name and suffix -- so the officer met two
+            # optional boxes before reaching two required ones. Mandatory fields lead.
+            @{ id = 'ROW_PER_DH_3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth'  'ROW_PER_DH_3' }
                 @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
             )}
@@ -885,11 +912,11 @@ $faLayout = MakeLayouts @(
         id    = 'CARD_GUN'
         title = 'FIREARM SEARCH BY SERIAL NUMBER'
         rows  = @(
-            @{ id = 'ROW_GUN_1'; cols = @('12'); fields = @(
+            # v3.10 (L5 + L3): Serial Number was alone on a 12-column row at maxLen=11, and the hidden
+            # badge row sat BETWEEN it and the make/model/caliber group, splitting fields that belong
+            # together. Serial now leads its own group at [6] and the badge row moved to the bottom.
+            @{ id = 'ROW_GUN_1'; cols = @('6'); fields = @(
                 @{ id = 'Serial_FA_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
-            )}
-            @{ id = 'ROW_GUN_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_FA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_GUN_BADGE' @{ initialValue = 'X' } }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 # LABEL-OVERRIDE: GunMake -- bare per DEX-1284 lean pass (any[] optional)
@@ -902,6 +929,10 @@ $faLayout = MakeLayouts @(
             # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
             @{ id = 'ROW_GUN_3'; cols = @('4'); fields = @(
                 @{ id = 'RelHit_FA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_GUN_3' }
+            )}
+            # v3.10 (L3): hidden rows LAST. Was row 2 of 4, splitting serial from make/model/caliber.
+            @{ id = 'ROW_GUN_BADGE'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'dexStateUserId_FA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_GUN_BADGE' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -921,16 +952,19 @@ $artLayout = MakeLayouts @(
         id    = 'CARD_ART'
         title = 'ARTICLE SEARCH BY TYPE + SERIAL NUMBER'
         rows  = @(
-            @{ id = 'ROW_ART_1'; cols = @('5','7'); fields = @(
+            # v3.10 (L5): [5 7] -> [4 8]. Both fields are mandatory in ACQA's set[], so they stay
+            # together on row 1; the dropdown no longer takes an odd 5/12 slice.
+            @{ id = 'ROW_ART_1'; cols = @('4','8'); fields = @(
                 @{ id = 'Type_ART_Input';   node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
                 @{ id = 'Serial_ART_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '11' 'ROW_ART_1' }
-            )}
-            @{ id = 'ROW_ART_BADGE'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'dexStateUserId_ART'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_ART_BADGE' @{ initialValue = 'X' } }
             )}
             # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
             @{ id = 'ROW_ART_2'; cols = @('4'); fields = @(
                 @{ id = 'RelHit_ART_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_2' }
+            )}
+            # v3.10 (L3): hidden rows LAST. Was row 2 of 3, between the identifiers and Stolen Check.
+            @{ id = 'ROW_ART_BADGE'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'dexStateUserId_ART'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_ART_BADGE' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -957,7 +991,8 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'Reg_BOA_Input';  node = Inp 'RegistrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
                 @{ id = 'Hull_BOA_Input'; node = Inp 'BoatHullIdNumber'   'Hull ID Number'      '20' 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('4','4'); fields = @(
+            # v3.10 (L6): [4 4] -> [6 6] so the shared-context row tiles the full width.
+            @{ id = 'ROW_BOA_2'; cols = @('6','6'); fields = @(
                 # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept
                 # v3.7: initialValue='AZ' REMOVED -- LIMITATION #30. State is now the Boat in/out ROUTING
                 # discriminator. Prefilled, ACQB's variable requirement collapsed to [RegistrationNumber],

@@ -1,6 +1,6 @@
-AZ_AZDPS v3.9 -- TEST MATRIX
+AZ_AZDPS v3.10 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-11
+Generated: 2026-08-12
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -16,32 +16,31 @@ Vehicle (1 card, 8 fields):
 
 Person (2 cards, 23 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN "OR" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO):
-    ROW 1: OperatorLicenseNumber [Inp 20], SocialSecurityNumber [Inp 9]
-    ROW 2: NameLast [Inp 30], NameFirst [Inp 20]
-    ROW 3: nameMiddle [Inp 20], nameSuffix [Inp 4], BirthDate [FormDate], SexCode [Sel SEX]
-    ROW 4: RegistrationState [Sel STATE, AZ], raceCode [Sel RACE]
-    ROW 5: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC]
-    ROW 6: Requestor [Inp X, 5]
-    ROW 7: dexStateUserId [Inp X]
+    ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE, AZ], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    ROW 2: NameFirst [Inp 20], NameLast [Inp 30], nameMiddle [Inp 20], nameSuffix [Inp 4]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 4: SocialSecurityNumber [Inp 9], raceCode [Sel RACE]
+    ROW 5: Requestor [Inp X, 5]
+    ROW 6: dexStateUserId [Inp X]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp 1]
-    ROW 2: NameLastDH [Inp 30], NameFirstDH [Inp 20]
-    ROW 3: NameMiddleDH [Inp 20], NameSuffixDH [Inp 4], BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 2: NameFirstDH [Inp 20], NameLastDH [Inp 30], NameMiddleDH [Inp 20], NameSuffixDH [Inp 4]
+    ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 4: RegistrationStateDH [Sel STATE, AZ]
     ROW 5: attention [Inp 30]
 
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
     serialNumber [Inp 11]
-    dexStateUserId [Inp X]
     GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunModel [Inp 11], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
     relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    dexStateUserId [Inp X]
 
 Article (1 card, 4 fields):
   CARD_ART (ARTICLE SEARCH BY TYPE + SERIAL NUMBER):
     ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleSerialNumber [Inp 11]
-    dexStateUserId [Inp X]
     relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    dexStateUserId [Inp X]
 
 Boat (1 card, 5 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID):
@@ -182,4 +181,4 @@ COMBO COVERAGE (15/15):
   ArticleSingleQuery: 1/1 -- T36(ACQA)
   BoatQuery: 4/4 -- T24(BQ+Reg), T26(BQ+H), T28(ACQB+ACQB), T30(ACQBH+ACQBH)
 
-IMPORT FILE: AZ_AZDPS_v3.9.json
+IMPORT FILE: AZ_AZDPS_v3.10.json

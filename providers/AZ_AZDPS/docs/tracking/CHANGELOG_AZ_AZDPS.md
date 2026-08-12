@@ -2,9 +2,14 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.9** | Generated: 2026-08-11
+Current: **v3.10** | Generated: 2026-08-12
 
 ---
+
+## v3.10 -- 2026-08-12 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v3.9 -- 2026-08-10 -- DEX-1284 label conformance -- ONE label, measured not assumed
 
