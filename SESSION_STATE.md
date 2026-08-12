@@ -37,10 +37,9 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 `audit_layout_flow` 12 -> **0, PASSES**. **WIRE PROVABLY UNCHANGED** (3 bundles' QIDMs byte-identical
 to v3.9). PHASE 1 clean, fuzz **8/8 caught 0 survived** (v3.9 had 1), AZ-scoped enforce 0F/0W.
 **OWED: RE-IMPORT + full re-sweep** (bump archived v3.9's 55 logs -- accepted, testing is not a blocker).
-**HONEST SPLIT (I changed rules AND build in one pass):** new tool vs OLD v3.9 = **8**, vs v3.10 = 0.
+**HONEST SPLIT (rules AND build changed in one pass):** new tool vs OLD v3.9 = **8**, vs v3.10 = 0.
 **8 real fixes; the other 4 were MY TOOL wrong.** Re-run a new gate against the PRE-FIX artifact or
-you cannot tell a fix from a suppression. **Applying the ruleset found 2 conflicts IN it**, both
-fixed (L5-vs-L6 lone-control width; L8-vs-L2 name grouping wins). FL 7->4, NY 6->5, OH 2->1, NJ 0.
+you cannot tell a fix from a suppression. Applying the ruleset found 2 conflicts IN it, both fixed.
 **HIDDEN-STATE DEFECT FIXED -- Rob was right ("we should never hide a state fiedl").**
 `RegistrationStateDH` was a hidden SelH pinned to `AZ` since **v1.1 (2026-04-20)**, making
 **out-of-state DH UNREACHABLE** (the `(Out)` half of BOTH devdoc combos dead). Now visible `[6 3 3]`,
@@ -49,10 +48,12 @@ fixed (L5-vs-L6 lone-control width; L8-vs-L2 name grouping wins). FL 7->4, NY 6-
 is always sent and its VALUE picks the destination. **The wire was never wrong; the FORM blocked the
 officer.** Full reasoning in AZ BUILD_NOTES v3.10.
 **ROOT CAUSE WAS A GATE:** `verify_build` CHECK 6's whitelist led with a BARE SUBSTRING `'(?i)state'`,
-so it printed "documented exception, allowed" for four months. **REMOVED** -- measured first, 0 of 20
-gain a WARN. LAW 2 re-proven with a SELF-CHECKED probe: **my first injection was a dud (duplicate JSON
-key, last-wins) -- always confirm the mutation in the PARSED object before trusting a verdict.**
-**Sweep: AZ was the ONLY provider hiding a real State field.**
+so it printed "documented exception, allowed" for four months. **REMOVED** (measured: 0 of 20 gain a
+WARN). LAW 2 re-proven with a SELF-CHECKED probe -- **my first injection was a dud (duplicate JSON
+key, last-wins); always confirm the mutation in the PARSED object.** Sweep: AZ was the ONLY provider
+hiding a real State field. **STATE CONVENTION then adopted portfolio-wide-standard (17 of 20):
+`State (leave blank for <ST>)` + NO default; DH is `State (required)` because its State is
+set[]-mandatory (FL precedent). Boat KEEPS no-default -- prefilling it killed 4 combos at v3.7.**
 **OH_LEADS is the only never-swept provider. Testing is no longer a blocker on deciding a fix.**
 
 **JIRA CONSOLIDATED 08-11:** 7 tickets, 91 comments stubbed, 2 keepers each. **RULE: one comment per
@@ -67,10 +68,13 @@ State as a FEATURE. **A tracking file is a CLAIM; the artifact is the evidence.*
 
 - **CA_CONTRA_COSTA** -- on hold, BLOCKED (08-02): `audit_devdoc_combinations` compares ZERO devdoc
   combos, and zero-comparison is a FAIL. The gate got stricter; CC did not get worse.
-- **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect
-  `[WARN] Cross-provider: 207P/0F/1W` on EVERY provider's enforce -- it is LA's, not the one tested.**
+- **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect LA's
+  `[WARN] Cross-provider` on EVERY provider's enforce -- it is LA's, not the one tested.**
 - **Jira: DRAFT AND WAIT, every provider, every time** (one approval != the next). **Tenant info stays
   OFF tickets** -- attachment/catalog/Foundation go in `IMPORT_LEDGER.md` B and C.
+- **DRIVER HISTORY IS NOT SUPPORTED FROM CAD** (Rob 2026-08-12). So "DH has no State combo default
+  and CAD ignores form initialValue" is MOOT, not a defect -- I raised it, he closed it. Never
+  re-raise, and never add a State default to DH to "fix" it.
 - **GUI ONLY -- Rob never runs commands.** Translate console names to buttons. Corrected 3x.
   **Form review is Rob's MANUAL gate** -- 2k `[INFO] not reviewed` is steady state; never prompt.
   TN_TIES prose divergence -- later. NCIC-number-keyed combos CLOSED 08-03 (OH residue only).
@@ -84,20 +88,18 @@ change -- **LA + MD only now; OH's cleared at its v2.4 rebuild.** Syncing them =
 rebuild (8c). **All 8 tenant-tested providers are at full plan coverage; nothing is PARTIAL.**
 
 Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 1/10 (TN RQ05) | audit_metadata 20/20 | portability
-280 cells 0 unportable | fidelity fixture 116br 0/0 | uniformity 6 prov 0 unexplained | registry
-currency 0 stale | PS-5.1 parse 109/0. Gate stack changed heavily 08-02/04/07/10 -- the
-decision-trail hook + `git log -n 40` hold the reasoning; do NOT re-derive.
+280 cells 0 unportable | fidelity fixture 116br 0/0 | registry currency 0 stale | PS-5.1 parse 110/0.
+The decision-trail hook + `git log -n 40` hold the reasoning; do NOT re-derive.
 
 ## OPEN DECISIONS -- Rob's call
 
-**LA_LEMS DP/DQ** -- PARKED. **AZ's 08-04 fuzz closure (`over-permit SexCode @ DQP`, `drop-any
-RegistrationNumber @ Boat hull`) names THOSE TWO ONLY and does not cover later seeds** -- 08-10 threw
-different ones and one was a real 4-field over-permit. Triage every survivor fresh; the
-composite-`Name` component class is the genuine no-op (no authority defines two Name fields).
-**Residual, recorded, NOT owed:** `VEHICLE_BODY_STYLE|NJ_NIBRS` in all 20 QRDMs vs CLAUDE.md's
-"CA=VEHICLE" (HYPOTHESIS, unsettleable) | fidelity advisory 11 UNDER / 40 OVER | CCH spec-plan name
-divergences | `audit_devdoc_optionals` / `audit_log_content` FLAKE under parallel load, re-run alone |
-`attributeTypeId=RACE` in 10 providers vs FIELD_REFERENCE (stale KB line) | **FL SQVR 31-30, flagged.**
+**LA_LEMS DP/DQ** -- PARKED. **TRIAGE EVERY FUZZ SURVIVOR FRESH:** AZ's 08-04 closure names TWO only
+and does not cover later seeds. **A STALE MUTATION LOOKS LIKE A BLIND GATE** -- 08-12 `az-state-
+prefill-routes` "SURVIVED" because it INHERITED the prefill my build change removed; a mutation must
+CREATE the whole defect. composite-`Name` component survivors are the genuine no-op.
+**Residual, recorded, NOT owed:** `VEHICLE_BODY_STYLE|NJ_NIBRS` in all 20 QRDMs (HYPOTHESIS) |
+fidelity advisory 11 UNDER / 40 OVER | CCH spec-plan names | `audit_devdoc_optionals` /
+`audit_log_content` FLAKE under parallel load | `attributeTypeId=RACE` x10 vs FIELD_REFERENCE.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
@@ -109,10 +111,9 @@ Cases live in the skills: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5
   **Exit 0 is not evidence a gate spoke -- grep its VERDICT line, print the DENOMINATOR.**
 - **A GREEN GATE IS NOT COVERAGE OF THE QUESTION YOU ASKED.** 08-10 AZ: fidelity said 0 OVER while 4
   fields were over-permitted, because two variants shared a keyRef. Ask what the gate COMPARES.
-- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED**; **check if it is ALREADY ADJUDICATED first**
-  (registry + `git log`) -- but a closure names SPECIFIC findings and does not generalise.
-  **DON'T RE-IMPLEMENT A PARSER (std 4.4)**; **NEVER cite another provider as authority** (only
-  CC->CA_CLETS, `<BASE>_<VARIANT>`->`<BASE>`); **AIM A MUTATION AT THE GATE OWNING THE CLASS.**
+- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED**; check if ALREADY ADJUDICATED first (registry
+  + `git log`). **DON'T RE-IMPLEMENT A PARSER (std 4.4)**; **NEVER cite another provider as authority**
+  (only CC->CA_CLETS, `<BASE>_<VARIANT>`->`<BASE>`); aim a mutation at the gate OWNING the class.
 - **A finding across MANY providers is usually YOUR PROBE** -- verify at artifact level either way.
   **A shared-tool change reddening ANOTHER provider gets a FLAG, never a fix** (8c). Add a new
   gate/test-kind to EVERY harness. MUTATE -> restore -> RE-STAMP -> verify. `.Replace()` no-ops on CRLF.

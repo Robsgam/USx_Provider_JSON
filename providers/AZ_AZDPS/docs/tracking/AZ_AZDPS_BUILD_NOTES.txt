@@ -73,9 +73,11 @@ v3.10  2026-08-12  Cosmetic/layout pass -- 12 layout findings -> 0, AND a hidden
       Metadata places State in <Any> on those variants, so both forms are valid, and it is what the
       other 17 providers already do. Verified safe: audit_prefill_shadow 18 ordered pairs 0 FAIL,
       query trace 0 prefill-dead / 0 shadow, requirement fidelity 15 branches 0 under / 0 over.
-    ALSO NOTED, NOT FIXED: no combo carries a defaults[] entry for State on any AZ query, and CAD
-      ignores form initialValue -- so a CAD-originated DH cannot satisfy its mandatory State. That
-      predates this change (removing the form prefill did not cause it) and is a separate question.
+    A CAD CONCERN I RAISED AND ROB CLOSED -- recorded so nobody chases it again: I flagged that no
+      combo carries a defaults[] entry for State and CAD ignores form initialValue, so a
+      CAD-originated DH could not satisfy its mandatory State. Rob 2026-08-12: "driver history is not
+      currently supported from cad." So there is NO CAD path to DH and the gap is moot. NOT a defect,
+      NOT owed. Do not re-raise it, and do not add a State combo default to DH to "fix" it.
   GATE EFFICACY CAUGHT ITSELF, and the finding was a STALE MUTATION not a blind gate: dropping the
     prefill made 'az-state-prefill-routes' report SURVIVED, because that mutation only added State to
     DQ's set[] and INHERITED the initialValue from the build. State in set[] with no prefill is a
