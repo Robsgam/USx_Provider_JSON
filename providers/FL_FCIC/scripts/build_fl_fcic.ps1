@@ -250,7 +250,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.19"
+    [string]$Version = "7.20"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -1003,16 +1003,19 @@ $vehLayout = MakeLayouts @(
             # v7.5: bottom row now carries Decal + State + Image together (was Decal alone
             # after v7.4's Title/Lien removal; State/Image moved down from the now-retired
             # CARD_VEH_OPT "Search Options" card).
-            @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
+            # v7.20 (Rob 2026-08-12): "put vin seq next to decal on sam eline". VIN Sequence Number
+            # joins the Decal row and ROW_VEH_VSN is retired -- it had been a lone 6-wide row for a
+            # 2-character field, at the very bottom of the card, below the hidden Requestor row.
+            # Widths tightened to fit four: Decal(3) State(3) Image(3) VIN Seq(3) = 12.
+            @{ id = 'ROW_VEH_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'DecalNumber_Input';        node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_VEH_3' }
+                # LABEL-OVERRIDE: vinSequenceNumber -- bare "VIN Sequence Number" per DEX-1284 lean pass (any[] optional, no default; card title carries the paths; matches VehicleMakeCode/vehicleYear on the row above)
+                @{ id = 'VINSequenceNumber_Input';  node = Inp 'vinSequenceNumber' 'VIN Sequence Number' '2' 'ROW_VEH_3' }
                 @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
                 @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_VEH_REQ' }
-            )}
-            @{ id = 'ROW_VEH_VSN'; cols = @('6'); fields = @(
-        @{ id = 'VINSequenceNumber_Input'; node = Inp 'vinSequenceNumber' 'VIN Sequence Number (optional)' '2' 'ROW_VEH_VSN' }
             )}
         )
     }
@@ -1057,14 +1060,34 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_DH'
         title = 'DRIVER HISTORY (OUT-OF-STATE) BY NAME "OR" DRIVERS LICENSE NUMBER'
         rows  = @(
-            @{ id = 'ROW_DH1'; cols = @('6','3','3'); fields = @(
+            # v7.20: cols 6/3/3 -> 5/4/3 so the DH State label fits without wrapping in a 3-wide cell.
+            @{ id = 'ROW_DH1'; cols = @('5','4','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_DH1' }
-                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'State (required)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
+                # LABEL-OVERRIDE: RegistrationStateDH -- "Destination State (required, not FL)" (Rob 2026-08-12).
+                # He asked for an FL default here and for "(required)" to go. The FL default is
+                # REFUSED BY THE SOURCE: FCIC wrote (2026-06-12) that KQ "can only be used out of
+                # state and would require the destination to be something other than FL", and the
+                # devdoc lists both KQ combos as (Out) with State unbracketed. Defaulting FL would
+                # prefill the ONE value the query cannot carry. So the control must stay blank and
+                # officer-chosen -- and the label therefore has to carry BOTH facts, because each one
+                # alone misleads: "State (required)" (the old label) invites an FL pick, which is the
+                # single illegal value; "Destination State (not FL)" (my first pass at this, which Rob
+                # rejected) drops that it is mandatory and the query cannot fire without it. Rob
+                # 2026-08-12: "the lable need to be clear required and not fl". Hence all three words:
+                # DESTINATION (whose state -- not the driver's), REQUIRED, NOT FL.
+                # Contrast AZ, whose DH is (In/Out) and therefore DOES default it (AZ v3.11).
+                @{ id = 'RegistrationStateDH_Input';     node = Sel 'RegistrationStateDH' 'Destination State (required, not FL)' @{ attributeTypeId = 'STATE' } 'ROW_DH1' }
                 @{ id = 'PurposeCodeDH_Input';            node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_DH1' }
             )}
-            # v7.2 (DEX-1278): reordered First/Last/MI/DOB/Sex (was Last/First/DOB/Sex);
-            # nameMiddleDH added visible-only, mirrors DL card's unwired nameMiddle/nameSuffix
-            # (not in the KQName combo's set[]/any[] or the Name attribute's sourceField).
+            # v7.2 (DEX-1278): reordered First/Last/MI/DOB/Sex (was Last/First/DOB/Sex).
+            # STALE COMMENT CORRECTED v7.20: this used to claim "nameMiddleDH added visible-only,
+            # mirrors DL card's unwired nameMiddle/nameSuffix". Measured against the emitted JSON
+            # 2026-08-12 -- FL builds NO middle-name and NO suffix input control on either the DL or
+            # the DH card. `nameMiddle` appears exactly twice and BOTH are response-side
+            # (QUERYRESULTDATAMAPPING, mapping an inbound middle name for display); `nameSuffix` and
+            # `nameMiddleDH` appear zero times. audit_wiring_closure reports 0 dead controls.
+            # So the dead-control class Rob flagged on AZ ("the middle and last are on the forms yet
+            # the handler doesn't process them") DOES NOT EXIST on FL -- nothing to eliminate here.
             @{ id = 'ROW_DH2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_DH2' }
@@ -1102,8 +1125,14 @@ $faLayout = MakeLayouts @(
         id    = 'CARD_GUN'
         title = 'FIREARM QUERY BY SERIAL NUMBER, "OR" NCIC NUMBER, "OR" PCN'
         rows  = @(
-            @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
+            # v7.20 (Rob 2026-08-12): "firearm stiolen check on top line 2 lines only". Stolen Check
+            # moves up beside Serial + Gun Make and ROW_GUN_RHS is retired, leaving exactly two
+            # visible rows. Safe: relatedHitSearchIndicator is any[]-only on all three QG combos with
+            # no condition on it, so neither the move nor its 'Y' default can shadow a path.
+            @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
+                # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" (DEX-1284)
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_1' }
                 # LABEL-OVERRIDE: GunMake -- bare "Gun Make" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX)
                 @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
@@ -1115,17 +1144,10 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_GUN_REQ' }
             )}
-            @{ id = 'ROW_GUN_RHS'; cols = @('6'); fields = @(
-        # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default)
-        # v7.19 (Rob 2026-08-12): "if the stolen check is an any it makes sense to use a default of yes
-        # to get the most out of every query ... previoulsy i stated to use defaults everywhere where
-        # it made sense and didn't ruin in state default routing."
-        # SAFE ON FIREARM: relatedHitSearchIndicator is any[]-ONLY on all three QG combos and carries
-        # NO condition there, so it cannot shadow a path. Measured across the tested portfolio first --
-        # HI, NY and TX all default their stolen-hit indicator to 'Y'; FL and IL were the outliers.
-        # NOT DONE ON BOAT -- see ROW_BOA_4, where the same field IS the routing discriminator.
-        @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_RHS' }
-            )}
+            # ROW_GUN_RHS RETIRED at v7.20 -- Stolen Check moved up to ROW_GUN_1 (Rob: "2 lines only").
+            # Its v7.19 'Y' default is unchanged and still justified: measured across the tested
+            # portfolio, HI/NY/TX all default their stolen-hit indicator to 'Y'; FL and IL were the
+            # outliers. NOT DONE ON BOAT -- see ROW_BOA_4, where the same field IS the discriminator.
         )
     }
 )
@@ -1146,27 +1168,27 @@ $artLayout = MakeLayouts @(
         rows  = @(
             # v7.6 (DEX-1281): split the old 4-field row -- Serial Number + Owner Applied
             # Number on their own line, Article Type + Image below.
-            @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
+            # v7.20 (Rob 2026-08-12): "article serial and article type and oan on top line combine th
+            # rest on line 2". Three rows of two collapse to two rows: the identifier trio the officer
+            # actually searches by leads, and NCIC Image / NCIC Number / PCN / Stolen Check combine
+            # below. ROW_ART_3 and ROW_ART_RHS are retired.
+            @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
+                @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
                 @{ id = 'OwnerAppliedNumber_Input';  node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
             )}
-            @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
-                @{ id = 'ArticleTypeCode_Input'; node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_2' }
-                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
-            )}
-            @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
-                @{ id = 'NCICNumber_Input';           node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_3' }
-                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_3' }
+            @{ id = 'ROW_ART_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NCICNumber_Input';           node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_ART_2' }
+                @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_ART_2' }
+                # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" (DEX-1284).
+                # 'Y' default is v7.19's and is safe here: any[]-only on every QA combo, no condition.
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
+                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
             )}
             @{ id = 'ROW_ART_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_ART_REQ' }
             )}
-            @{ id = 'ROW_ART_RHS'; cols = @('6'); fields = @(
-        # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default)
-        # v7.19: same as Firearm -- any[]-only on all four QA combos, no condition, so defaulting it
-        # cannot shadow a path. See the ROW_GUN_RHS comment for the reasoning and the measurement.
-        @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_RHS' }
-            )}
+            # ROW_ART_RHS RETIRED at v7.20 -- Stolen Check combined into ROW_ART_2.
         )
     }
 )
@@ -1192,23 +1214,13 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
                 @{ id = 'CoastGuardDocumentNumber_Input'; node = Inp 'coastGuardDocumentNumber' 'Coast Guard Doc #' '8' 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'DecalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_BOA_2' }
-                @{ id = 'TitleLienInformation_Input';     node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_BOA_2' }
-                @{ id = 'NCICNumber_Input';               node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_2' }
-                @{ id = 'ProcessControlNumber_Input';     node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_2' }
-            )}
-            # v7.6: reordered First-before-Last, matching Person's v7.5 fix ("like the others").
-            @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state)' '30' 'ROW_BOA_3' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state)'  '30' 'ROW_BOA_3' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'DOB (out-of-state)' 'ROW_BOA_3' }
-            )}
-            # v7.6: DestState/Stolen/Image moved here from the now-retired CARD_BOA_OPT
-            # "Search Options" card (Boat didn't free up an existing row like Vehicle did, so
-            # this is a new row, not a merge into one).
-            @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_4' }
+            # v7.20 (Rob 2026-08-12): "move state stolen and ncic image to scond line and move the
+            # others down one". The three search-scope controls now sit directly under the identifier
+            # row instead of at the bottom of the card, below the owner-name row -- an officer picks
+            # the scope (in/out of state, stolen, image) right after typing the identifier.
+            # v7.6 history: these three arrived from the retired CARD_BOA_OPT "Search Options" card.
+            @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
                 # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX portfolio convention)
                 # v7.19 -- DELIBERATELY LEFT BLANK, and this is the exception to the stolen-check
                 # default applied on Firearm and Article. On BOAT this same field IS the routing
@@ -1217,8 +1229,23 @@ $boaLayout = MakeLayouts @(
                 # the ordinary registration path). A default makes it permanently present, which
                 # turns FBQ's NOT_EXISTS gate permanently FALSE and kills the non-stolen Boat search
                 # outright -- BUILD_RULES 24. Blank is load-bearing here; do not "make it consistent".
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_4' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_4' }
+                # v7.20: Rob asked for a default here too; MEASURED on a replica before answering --
+                # audit_combo_reachability reported [FAIL] DEAD COMBO on FBQ and audit_prefill_shadow
+                # named the pair, so the exception stands and was reported back with that evidence.
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
+            )}
+            @{ id = 'ROW_BOA_3'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'DecalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_BOA_3' }
+                @{ id = 'TitleLienInformation_Input';     node = Inp 'titleLienInformation' 'Title/Lien Info' '8' 'ROW_BOA_3' }
+                @{ id = 'NCICNumber_Input';               node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_BOA_3' }
+                @{ id = 'ProcessControlNumber_Input';     node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_3' }
+            )}
+            # v7.6: reordered First-before-Last, matching Person's v7.5 fix ("like the others").
+            @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
+                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state)' '30' 'ROW_BOA_4' }
+                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state)'  '30' 'ROW_BOA_4' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'DOB (out-of-state)' 'ROW_BOA_4' }
             )}
             @{ id = 'ROW_BOA_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_BOA_REQ' }

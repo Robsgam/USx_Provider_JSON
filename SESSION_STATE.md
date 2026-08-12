@@ -16,7 +16,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (50 logs) |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
-| FL_FCIC | v7.19 | NEVER-TESTED -- 116 test(s) owed |
+| FL_FCIC | v7.20 | NEVER-TESTED -- 116 test(s) owed |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.3 | NEVER-TESTED -- 41 test(s) owed |
 | NJ_NJCJIS | v4.15 | ALL-PASS (40 logs) |
@@ -33,33 +33,32 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**AZ_AZDPS v3.10 BUILT 2026-08-12 -- cosmetic/layout pass + the hidden-State fix below.**
-`audit_layout_flow` 12 -> **0, PASSES**. **WIRE PROVABLY UNCHANGED** (3 bundles' QIDMs byte-identical
-to v3.9). PHASE 1 clean, fuzz **8/8 caught 0 survived** (v3.9 had 1), AZ-scoped enforce 0F/0W.
-**OWED: RE-IMPORT + full re-sweep** (bump archived v3.9's 55 logs -- accepted, testing is not a blocker).
-**HONEST SPLIT (rules AND build changed in one pass):** new tool vs OLD v3.9 = **8**, vs v3.10 = 0.
-**8 real fixes; 4 were MY TOOL wrong.** Re-run a new gate against the PRE-FIX artifact or you cannot
-tell a fix from a suppression.
+**FL_FCIC v7.20 BUILT 2026-08-12 -- Rob's cosmetic spec. NEXT: IMPORT + 116-test sweep (his, not mine).
+He said "once we test live(not with you) we can finailize any assumptions."** 4 rows retired (Veh VSN,
+Gun RHS, Art 3+RHS): Veh VIN-Seq joins Decal; Gun 2 rows; Art Serial+Type+OAN on top, rest on line 2;
+Boat State/Stolen/Image up to row 2. `audit_layout_flow` **4 -> 1** (same denominator 56 fields/30
+combos) -- the 1 left (L2 Veh RegistrationState after VehicleMakeCode) is **PRE-EXISTING, verified by
+running the gate on v7.19 from git**. wiring closure closed 0/10, prefill-shadow 92 pairs 0F,
+verify 0W/0F, validator 91P.
+**TWO OF ROB'S ITEMS REFUSED BY THE SOURCES, both MEASURED not argued:** (1) FL default on DH State --
+FCIC wrote 2026-06-12 that KQ needs a "destination something other than FL", so FL is the ONE illegal
+value. (2) Boat Stolen Check default -- replica injection gave **[FAIL] 4 dead combos of 30** (I
+predicted 2). **FL has NO middle/suffix input control** -- the AZ dead-control class is absent here.
 **USE [Certain]/[Likely]/[Guessing] TAGS -- standing directive, and I dropped them for a whole
 session until Rob called it out 08-12. Tag every load-bearing claim.**
-**AZ v3.11 TENANT-VERIFIED ALL-PASS 50/50** (Veh 9 / Per 21 / Gun 6 / Art 3 / Boat 11), four log
-gates 50/50, inflation 0/0/0/0. **`<State>NJ</State>` on 7/7 DH logs -- OUT-OF-STATE DH WORKS, and at
-v3.9 it was UNREACHABLE** (hidden control pinned to AZ). `<Attention>SGAMBELLONE R</Attention>` x7,
-Stolen Check Y x10 + N x10, `<UserName>MK43RS` 50/50, zero bare `>X<`.
-**THE v3.10 REGRESSION AND ITS RULE:** I made DH State visible (right) AND dropped its default
-(wrong). **A `set[]` field with no value GATES THE BROWSER SEND BUTTON** -- NY v4.20's mechanism,
-already written down, and Rob hit it at T26. v3.11 restored the default, kept it VISIBLE. **The
-decision rule: default a mandatory State only when the devdoc has an (In) or (In/Out) combo.** AZ's
-DH is (In/Out) -> needs it. **FL's DH is (Out)-ONLY -> blank + 'State (required)' is CORRECT there**,
-so copying FL onto AZ was the error. Same field, opposite answer, decided by each provider's scope.
+**AZ v3.11 TENANT-VERIFIED ALL-PASS 50/50.** `<State>NJ</State>` on 7/7 DH logs -- OUT-OF-STATE DH
+WORKS, and at v3.9 it was UNREACHABLE (hidden control pinned to AZ).
+**THE STATE-DEFAULT RULE (AZ v3.10 cost a stuck T26 to learn):** a `set[]` field with no value **GATES
+THE BROWSER SEND BUTTON** (NY v4.20's mechanism). So **default a mandatory State only when the devdoc
+has an (In) or (In/Out) combo** -- AZ's DH is (In/Out) and needs it; FL's is (Out)-ONLY and must stay
+blank, labelled `Destination State (required, not FL)`. Same field, opposite answer, per-provider scope.
 
 **JIRA: 91 comments stubbed 08-11, one comment per RELEASE, EDIT in place -- never a sibling
 correction.** Format in `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`, procedure in `JIRA_REFERENCE.txt`
 (**no status column**). No delete tool; edits IRREVERSIBLE. **NOTHING POSTS WITHOUT ROB'S EXPLICIT
-APPROVAL (08-12).** Awaiting approval: AZ v3.11, FL v7.19, IL v2.3.
-**A tracking file is a CLAIM; the artifact is the evidence** -- 4x now (stub inventory short by 18;
-AZ ledger said "never installed" against on-disk v3.6 logs; CLAUDE.md wrote up the hidden State as a
-FEATURE; a stale v3.10 TEST_PLAN drove a changed form).
+APPROVAL (08-12).** Awaiting approval: AZ v3.11, FL v7.20, IL v2.3.
+**A tracking file is a CLAIM; the artifact is the evidence** -- 5x now, newest: FL's build comment
+claimed an unwired `nameMiddleDH` control that has not existed for versions.
 
 ## ON HOLD / DO NOT RE-RAISE
 

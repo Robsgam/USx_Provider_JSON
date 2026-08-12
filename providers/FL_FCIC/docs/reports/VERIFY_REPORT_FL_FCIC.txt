@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.19.json
-  Generated: 2026-08-12 13:39
+  Source: FL_FCIC_v7.20.json
+  Generated: 2026-08-12 15:15
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: FL_FCIC_v7.19
+ POST-BUILD VERIFICATION: FL_FCIC_v7.20
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -63,12 +63,13 @@ POST-BUILD VERIFICATION
 
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'RegistrationStateDH' label='State (required)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'RegistrationStateDH' label='Destination State (required, not FL)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'vinSequenceNumber' (any[]-only) label='VIN Sequence Number' -- manual label override accepted (bare "VIN Sequence Number" per DEX-1284 lean pass (any[] optional, no default; card title carries the paths; matches VehicleMakeCode/vehicleYear on the row above))
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare "Vehicle Make" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX))
   [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare "Vehicle Year" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX))
   [INFO] Field 'GunMake' (any[]-only) label='Gun Make' -- manual label override accepted (bare "Gun Make" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX))

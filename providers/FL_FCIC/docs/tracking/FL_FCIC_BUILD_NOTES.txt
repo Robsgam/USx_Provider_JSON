@@ -3,6 +3,68 @@ FL_FCIC -- Build Notes
 Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
+v7.20  2026-08-12  Cosmetic/layout pass on Rob's rendered-form review -- 4 rows retired, 0 wire change
+  WHY: Rob 2026-08-12, verbatim: "here is what i wan t in fl n veh put vin seq next to decal on sam
+    eline and should all the fields on person ass state default of fl under dh and remove the label
+    helper firearm stiolen check on top line 2 lines only article serial and article type and oan on
+    top line combine th rest on line 2 boat fix stolen check to have default and move state stolen and
+    ncic image to scond line and move the others down one"
+  CHANGED (layout + labels only -- no QIDM, no combination, no default value touched):
+      Vehicle  vinSequenceNumber joins the Decal row (ROW_VEH_3 -> 3/3/3/3); ROW_VEH_VSN RETIRED.
+               It had been a lone 6-wide row for a 2-character field, below the hidden Requestor row.
+      Firearm  Stolen Check moved up to ROW_GUN_1 (4/4/4); ROW_GUN_RHS RETIRED -> 2 visible rows.
+      Article  ROW_ART_1 = Serial + Article Type + OAN (4/4/4); ROW_ART_2 = NCIC + PCN + Stolen Check
+               + NCIC Image (3/3/3/3); ROW_ART_3 and ROW_ART_RHS RETIRED -> 2 visible rows.
+      Boat     State + Stolen Check + NCIC Image moved from the BOTTOM row up to ROW_BOA_2, directly
+               under the identifier row; Decal/Title/NCIC/PCN and the owner-name row each shift down
+               one. Officer picks scope right after typing the identifier.
+      Person   DH State label 'State (required)' -> 'Destination State (required, not FL)'
+               (LABEL-OVERRIDE); ROW_DH1 cols 6/3/3 -> 5/4/3 so it fits without wrapping.
+               TWO PASSES, and the first was wrong: I shipped 'Destination State (not FL)', which
+               fixed the FL trap but dropped that the field is mandatory. Rob: "the lable need to be
+               clear required and not fl". Each half alone misleads -- "State (required)" invites the
+               one illegal pick, "(not FL)" alone hides that the query cannot fire without it. All
+               three facts now on the label: DESTINATION (whose state), REQUIRED, NOT FL.
+               Also fixed in the same pass: moving vinSequenceNumber dropped its '(optional)'
+               qualifier and raised a real verify_build CHECK 15 WARN. Resolved with a LABEL-OVERRIDE
+               matching VehicleMakeCode/vehicleYear on the row above, not by re-adding the helper --
+               its whole row is bare-labelled per DEX-1284. verify_build now 0 WARN / 0 FAIL.
+  TWO OF ROB'S ITEMS WERE REFUSED BY THE SOURCES, AND BOTH WERE MEASURED, NOT ARGUED:
+    1. "state default of fl under dh" -- REFUSED BY FCIC ITSELF. FCIC wrote 2026-06-12 that KQ "can
+       only be used out of state and would require the destination to be something other than FL";
+       the devdoc lists both KQ combos as (Out) with State unbracketed. An FL default would prefill
+       the ONE value the query cannot carry. Contrast AZ, whose DH is (In/Out) and so DOES default it
+       (AZ v3.11) -- same field, opposite answer, decided by each provider's own scope. The
+       "(required)" helper Rob wanted gone was replaced rather than deleted, because with no default
+       the control is the officer's only choice point and a bare "State" understates the constraint.
+    2. "boat fix stolen check to have default" -- REFUSED BY MEASUREMENT. Injected initialValue='Y'
+       into a replica inside the provider dir (all 3 layout variants, asserted present in the
+       REPARSED JSON) and ran the two owning gates. Same denominator as the clean baseline
+       (30 combinations checked / 92 ordered pairs), so the verdict change is the mutation alone:
+         clean   -> [PASS] 30 combination(s) checked -- all reachable / [PASS] no prefill-caused shadow
+         mutant  -> [FAIL] 4 dead combination(s) of 30 checked
+                    [FAIL] DEAD COMBO (self-unsatisfiable): BoatQuery/FBQBoatHullIdNumber
+                    [FAIL] DEAD COMBO (self-unsatisfiable): BoatQuery/FBQRegistrationNumber
+                    [FAIL] DEAD COMBO: BoatQuery/BQBoatHullIdNumber
+                    [FAIL] DEAD COMBO: BoatQuery/BQRegistrationNumber
+                    [FAIL] 'QBBoatHullIdNumber' SHADOWS 'BQBoatHullIdNumber' only because of
+                           prefill(s): relatedHitSearchIndicator   (+ the RegistrationNumber pair)
+       I predicted 2 dead combos; it is 4. On Boat this field IS the discriminator, gated BOTH ways
+       (EXISTS on QB where it also sits in set[]; NOT_EXISTS on FBQ), so a default turns FBQ's gate
+       permanently false AND lets QB eat BQ. BUILD_RULES 24. Blank is load-bearing on Boat only.
+  STALE COMMENT CORRECTED: ROW_DH2 claimed 'nameMiddleDH added visible-only, mirrors DL card's unwired
+    nameMiddle/nameSuffix'. Measured against the emitted JSON: FL builds NO middle-name and NO suffix
+    input control anywhere. `nameMiddle` occurs exactly twice and BOTH are response-side
+    (QUERYRESULTDATAMAPPING); `nameSuffix`/`nameMiddleDH` occur zero times. So the dead-control class
+    Rob flagged on AZ does not exist on FL -- nothing to eliminate.
+  GATES: validator 91P/0F/0W. audit_layout_flow 4 findings -> 1 (the three L3 HIDDEN-MID-CARD findings
+    cleared because retiring the trailing rows put the hidden Requestor rows at the bottom, where they
+    belong); denominator unchanged at 56 fields / 30 combinations, rows 26 -> 22. The 1 remaining
+    finding (L2, Vehicle RegistrationState after VehicleMakeCode on RQVehicleIdentificationNumber) is
+    PRE-EXISTING -- verified by running the gate against the v7.19 artifact from git, not assumed.
+    audit_wiring_closure closed, 0 breaks in all ten classes. prefill-shadow 92 pairs 0 FAIL.
+  OWED: re-import + full 116-test sweep. v7.19's 20 Vehicle logs were archived by the version bump.
+
 v7.19  2026-08-12  Stolen Check defaults to 'Y' on Firearm + Article (Boat deliberately excluded)
   WHY: Rob 2026-08-12 -- "if the stolen check is an any it makes sense to use a default of yes to get
     the most out of every query ... previoulsy i stated to use defaults everywhere where it made sense

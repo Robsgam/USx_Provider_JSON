@@ -1,8 +1,8 @@
-﻿FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+FL_FCIC -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-08-12
-JSON version: v7.19
+JSON version: v7.20
 Validator: 91 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
 Live test: COMPLETE + INTEGRITY-CERTIFIED -- v7.1 zero-error pass 2026-07-02: 121/121
   submitted+captured, 0 skipped, 0 unmatched, content audit 121/121, XML consistency PASS
@@ -55,7 +55,7 @@ Architecture notes:
     carry LicensePlateNumber NOT_EXISTS, so when a plate is also entered the VIN combos exit
     the union pool and the plate path wins.
 
-  FRQDecalNumber -- in-state Decal [CONFIRMED]
+  FRQDecalNumber -- in-state Decal [PENDING]
     set: decalNumber, LicensePlateYear
     any: ImageIndicator
     conditions: RegistrationState NOT_EXISTS
@@ -69,7 +69,7 @@ Architecture notes:
     tenant's RMS simulation mode. Deploy the CommSys-correct JSON (commsys-priority rule). Do not
     re-flag on the next re-test.
 
-  FRQLicensePlateNumber -- in-state Plate [CONFIRMED]
+  FRQLicensePlateNumber -- in-state Plate [PENDING]
     set: LicensePlateNumber
     any: LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator
     conditions: RegistrationState NOT_EXISTS
@@ -77,7 +77,7 @@ Architecture notes:
     keyReference: FRQLicensePlateNumber
     evidence: logs/Vehicle/FL_FCIC_v7.12_FRQLicensePlateNumber.txt
 
-  FRQVehicleIdentificationNumber -- in-state VIN [CONFIRMED]
+  FRQVehicleIdentificationNumber -- in-state VIN [PENDING]
     set: VehicleIdentificationNumber
     any: VehicleMakeCode, vehicleYear, ImageIndicator
     conditions: RegistrationState NOT_EXISTS AND LicensePlateNumber NOT_EXISTS (Plate>VIN)
@@ -85,7 +85,7 @@ Architecture notes:
     keyReference: FRQVehicleIdentificationNumber
     evidence: logs/Vehicle/FL_FCIC_v7.12_FRQVehicleIdentificationNumber.txt
 
-  RQLicensePlateNumber -- OOS Plate + State [CONFIRMED]
+  RQLicensePlateNumber -- OOS Plate + State [PENDING]
     set: LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: ImageIndicator
     conditions: RegistrationState EXISTS (explicit OOS gate, v7.0 -- mirror of FRQ NOT_EXISTS)
@@ -93,7 +93,7 @@ Architecture notes:
     keyReference: RQLicensePlateNumber
     evidence: logs/Vehicle/FL_FCIC_v7.12_RQLicensePlateNumber.txt
 
-  RQVehicleIdentificationNumber -- OOS VIN + State [CONFIRMED]
+  RQVehicleIdentificationNumber -- OOS VIN + State [PENDING]
     set: VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, vehicleYear, ImageIndicator
     conditions: LicensePlateNumber NOT_EXISTS (Plate>VIN guardrail)
