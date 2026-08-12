@@ -275,28 +275,28 @@ Architecture notes:
   Combos: QA by Serial+Type(1), QA by OAN+Type(2), QA by NCIC#(3), QA by PCN(4) = 4 combos
   Optional fields: ImageIndicator
 
-  QAArticleSerialNumber -- Serial + ArticleType [PENDING]
+  QAArticleSerialNumber -- Serial + ArticleType [CONFIRMED]
     set: ArticleSerialNumber, ArticleTypeCode
     any: ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QAArticleSerialNumber
     evidence: logs/Article/FL_FCIC_v7.12_QAArticleSerialNumber.txt
 
-  QAOwnerAppliedNumber -- OwnerAppliedNumber + ArticleType [PENDING]
+  QAOwnerAppliedNumber -- OwnerAppliedNumber + ArticleType [CONFIRMED]
     set: ArticleTypeCode, ownerAppliedNumber
     any: ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QAOwnerAppliedNumber
     evidence: logs/Article/FL_FCIC_v7.12_QAOwnerAppliedNumber.txt
 
-  QANCICNumber -- NCIC Number [PENDING]
+  QANCICNumber -- NCIC Number [CONFIRMED]
     set: NCICNumber
     any: ImageIndicator
     defaults: ImageIndicator=N
     keyReference: QANCICNumber
     evidence: logs/Article/FL_FCIC_v7.12_QANCICNumber.txt
 
-  QAProcessControlNumber -- Process Control Number [PENDING]
+  QAProcessControlNumber -- Process Control Number [CONFIRMED]
     set: processControlNumber
     any: ImageIndicator
     defaults: ImageIndicator=N
