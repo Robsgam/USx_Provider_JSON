@@ -38,31 +38,28 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 to v3.9). PHASE 1 clean, fuzz **8/8 caught 0 survived** (v3.9 had 1), AZ-scoped enforce 0F/0W.
 **OWED: RE-IMPORT + full re-sweep** (bump archived v3.9's 55 logs -- accepted, testing is not a blocker).
 **HONEST SPLIT (rules AND build changed in one pass):** new tool vs OLD v3.9 = **8**, vs v3.10 = 0.
-**8 real fixes; the other 4 were MY TOOL wrong.** Re-run a new gate against the PRE-FIX artifact or
-you cannot tell a fix from a suppression. Applying the ruleset found 2 conflicts IN it, both fixed.
-**HIDDEN-STATE DEFECT FIXED -- Rob was right ("we should never hide a state fiedl").**
-`RegistrationStateDH` was a hidden SelH pinned to `AZ` since **v1.1 (2026-04-20)**, making
-**out-of-state DH UNREACHABLE** (the `(Out)` half of BOTH devdoc combos dead). Now visible `[6 3 3]`,
-`initialValue='AZ'` kept (0 NOT_EXISTS gates, so safe). Devdoc: both DH combos `(In/Out)`, State
-**unbracketed**; metadata: State in `<Set>` on both KQ variants, NO separate OOS transaction -- State
-is always sent and its VALUE picks the destination. **The wire was never wrong; the FORM blocked the
-officer.** Full reasoning in AZ BUILD_NOTES v3.10.
-**ROOT CAUSE WAS A GATE:** `verify_build` CHECK 6's whitelist led with a BARE SUBSTRING `'(?i)state'`,
-so it printed "documented exception, allowed" for four months. **REMOVED** (measured: 0 of 20 gain a
-WARN). LAW 2 re-proven with a SELF-CHECKED probe -- **my first injection was a dud (duplicate JSON
-key, last-wins); always confirm the mutation in the PARSED object.** Sweep: AZ was the ONLY provider
-hiding a real State field. **STATE CONVENTION then adopted portfolio-wide-standard (17 of 20):
-`State (leave blank for <ST>)` + NO default; DH is `State (required)` because its State is
-set[]-mandatory (FL precedent). Boat KEEPS no-default -- prefilling it killed 4 combos at v3.7.**
-**OH_LEADS is the only never-swept provider. Testing is no longer a blocker on deciding a fix.**
+**8 real fixes; 4 were MY TOOL wrong.** Re-run a new gate against the PRE-FIX artifact or you cannot
+tell a fix from a suppression.
+**USE [Certain]/[Likely]/[Guessing] TAGS -- standing directive, and I dropped them for a whole
+session until Rob called it out 08-12. Tag every load-bearing claim.**
+**AZ v3.11 TENANT-VERIFIED ALL-PASS 50/50** (Veh 9 / Per 21 / Gun 6 / Art 3 / Boat 11), four log
+gates 50/50, inflation 0/0/0/0. **`<State>NJ</State>` on 7/7 DH logs -- OUT-OF-STATE DH WORKS, and at
+v3.9 it was UNREACHABLE** (hidden control pinned to AZ). `<Attention>SGAMBELLONE R</Attention>` x7,
+Stolen Check Y x10 + N x10, `<UserName>MK43RS` 50/50, zero bare `>X<`.
+**THE v3.10 REGRESSION AND ITS RULE:** I made DH State visible (right) AND dropped its default
+(wrong). **A `set[]` field with no value GATES THE BROWSER SEND BUTTON** -- NY v4.20's mechanism,
+already written down, and Rob hit it at T26. v3.11 restored the default, kept it VISIBLE. **The
+decision rule: default a mandatory State only when the devdoc has an (In) or (In/Out) combo.** AZ's
+DH is (In/Out) -> needs it. **FL's DH is (Out)-ONLY -> blank + 'State (required)' is CORRECT there**,
+so copying FL onto AZ was the error. Same field, opposite answer, decided by each provider's scope.
 
-**JIRA CONSOLIDATED 08-11:** 7 tickets, 91 comments stubbed, 2 keepers each. **RULE: one comment per
-RELEASE, EDIT in place if numbers move -- never a sibling correction.** Format single-sourced in
-`knowledge-base/JIRA_COMMENT_TEMPLATE.txt`; procedure in `JIRA_REFERENCE.txt` (**no status column**).
-No delete tool; edits IRREVERSIBLE. 2r 2 PASS / 0 GAP on all 9.
-**THE LESSON, three times now:** the stub inventory came from `DEX_TICKET.md` and was short by 18; the
-AZ ledger claimed "never installed" against on-disk v3.6 artifacts; CLAUDE.md wrote up AZ's hidden
-State as a FEATURE. **A tracking file is a CLAIM; the artifact is the evidence.**
+**JIRA: 91 comments stubbed 08-11, one comment per RELEASE, EDIT in place -- never a sibling
+correction.** Format in `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`, procedure in `JIRA_REFERENCE.txt`
+(**no status column**). No delete tool; edits IRREVERSIBLE. **NOTHING POSTS WITHOUT ROB'S EXPLICIT
+APPROVAL (08-12).** Awaiting approval: AZ v3.11, FL v7.19, IL v2.3.
+**A tracking file is a CLAIM; the artifact is the evidence** -- 4x now (stub inventory short by 18;
+AZ ledger said "never installed" against on-disk v3.6 logs; CLAUDE.md wrote up the hidden State as a
+FEATURE; a stale v3.10 TEST_PLAN drove a changed form).
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -70,14 +67,17 @@ State as a FEATURE. **A tracking file is a CLAIM; the artifact is the evidence.*
   combos, and zero-comparison is a FAIL. The gate got stricter; CC did not get worse.
 - **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect LA's
   `[WARN] Cross-provider` on EVERY provider's enforce -- it is LA's, not the one tested.**
+  **NEW 08-12, NOT FIXED (parked + never tested): LA VehReg is the SAME CLASS as AZ's DH bug** --
+  devdoc combos 1+2 are BOTH `(In/Out)` with State UNBRACKETED, every built combo has State in
+  `set[]`, and the control is BLANK. So an in-state LA plate query needs an explicit LA pick, and a
+  `set[]` field with no value gates the browser Send button. Rob's call whether to fix.
 - **Jira: DRAFT AND WAIT, every provider, every time** (one approval != the next). **Tenant info stays
   OFF tickets** -- attachment/catalog/Foundation go in `IMPORT_LEDGER.md` B and C.
 - **DRIVER HISTORY IS NOT SUPPORTED FROM CAD** (Rob 2026-08-12). So "DH has no State combo default
   and CAD ignores form initialValue" is MOOT, not a defect -- I raised it, he closed it. Never
   re-raise, and never add a State default to DH to "fix" it.
-- **GUI ONLY -- Rob never runs commands.** Translate console names to buttons. Corrected 3x.
-  **Form review is Rob's MANUAL gate** -- 2k `[INFO] not reviewed` is steady state; never prompt.
-  TN_TIES prose divergence -- later. NCIC-number-keyed combos CLOSED 08-03 (OH residue only).
+- **GUI ONLY -- Rob never runs commands.** Translate console names to buttons. **Form review is his
+  MANUAL gate** -- 2k `[INFO] not reviewed` is steady state; never prompt.
 
 ## STATE
 
@@ -93,28 +93,28 @@ The decision-trail hook + `git log -n 40` hold the reasoning; do NOT re-derive.
 
 ## OPEN DECISIONS -- Rob's call
 
-**LA_LEMS DP/DQ** -- PARKED. **TRIAGE EVERY FUZZ SURVIVOR FRESH:** AZ's 08-04 closure names TWO only
-and does not cover later seeds. **A STALE MUTATION LOOKS LIKE A BLIND GATE** -- 08-12 `az-state-
-prefill-routes` "SURVIVED" because it INHERITED the prefill my build change removed; a mutation must
-CREATE the whole defect. composite-`Name` component survivors are the genuine no-op.
-**Residual, recorded, NOT owed:** `VEHICLE_BODY_STYLE|NJ_NIBRS` in all 20 QRDMs (HYPOTHESIS) |
-fidelity advisory 11 UNDER / 40 OVER | CCH spec-plan names | `audit_devdoc_optionals` /
-`audit_log_content` FLAKE under parallel load | `attributeTypeId=RACE` x10 vs FIELD_REFERENCE.
+**TRIAGE EVERY FUZZ SURVIVOR FRESH** -- old closures name specific seeds only. **A STALE MUTATION
+LOOKS LIKE A BLIND GATE**: 08-12 `az-state-prefill-routes` "SURVIVED" because it INHERITED a prefill
+my build change removed; a mutation must CREATE the whole defect. composite-`Name` = genuine no-op.
+**Residual, NOT owed** (detail in `git log`): `VEHICLE_BODY_STYLE|NJ_NIBRS` HYPOTHESIS | fidelity
+advisory 11 UNDER / 40 OVER | `audit_devdoc_optionals`+`audit_log_content` FLAKE under parallel load.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING
 
 Cases live in the skills: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c, `usx-test-iterate`.
-- **A RECORD IS A CLAIM -- READ THE ARTIFACT. Worst repeat offender.** 08-10: HI's BUILD_NOTES called
-  the Attention `'X'` the gate-feeder; I read the note and stopped instead of asking whether that
-  version could support the claim (it changed two things at once). Rob overruled me; the wire proved
-  him right 9/9. Same class: 2r reads `DEX_TICKET.md` not the ticket; enforce reads CACHED reports.
-  **Exit 0 is not evidence a gate spoke -- grep its VERDICT line, print the DENOMINATOR.**
+- **A RECORD IS A CLAIM -- READ THE ARTIFACT. Worst repeat offender.** 08-10 HI: BUILD_NOTES called
+  the Attention `'X'` the gate-feeder; I stopped at the note instead of asking whether that version
+  could support it. Rob overruled me; the wire proved him right 9/9. **Exit 0 is not evidence a gate
+  spoke -- grep its VERDICT line, print the DENOMINATOR.** 08-12: I filtered a build for
+  `RESULTS:|FAIL`, a ParserError matched neither, and I read 3 cycles of stale-JSON gate output.
 - **A GREEN GATE IS NOT COVERAGE OF THE QUESTION YOU ASKED.** 08-10 AZ: fidelity said 0 OVER while 4
   fields were over-permitted, because two variants shared a keyRef. Ask what the gate COMPARES.
 - **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED**; check if ALREADY ADJUDICATED first (registry
   + `git log`). **DON'T RE-IMPLEMENT A PARSER (std 4.4)**; **NEVER cite another provider as authority**
   (only CC->CA_CLETS, `<BASE>_<VARIANT>`->`<BASE>`); aim a mutation at the gate OWNING the class.
-- **A finding across MANY providers is usually YOUR PROBE** -- verify at artifact level either way.
-  **A shared-tool change reddening ANOTHER provider gets a FLAG, never a fix** (8c). Add a new
-  gate/test-kind to EVERY harness. MUTATE -> restore -> RE-STAMP -> verify. `.Replace()` no-ops on CRLF.
-- **REPLACE, never append** -- gate caught me TEN+ times, 4x today. **Cut an OLD line per new one.**
+- **A finding across MANY providers is usually YOUR PROBE** -- 08-12 a State sweep flagged 65 rows on
+  15 providers; the real answer was 1. **`@()` BEFORE `[0]`** -- a 1-element `Where-Object` result is a
+  STRING and `[0]` gives its FIRST CHARACTER, which made every lookup key `Person|R` and every row
+  read "(blank)". A shared-tool change reddening ANOTHER provider gets a FLAG, never a fix (8c).
+  MUTATE -> restore -> RE-STAMP -> verify. `.Replace()` no-ops on CRLF.
+- **REPLACE, never append** -- gate caught me TEN+ times. **Cut an OLD line per new one.**
