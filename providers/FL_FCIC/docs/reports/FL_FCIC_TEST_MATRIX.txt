@@ -1,4 +1,4 @@
-FL_FCIC v7.22 -- TEST MATRIX
+FL_FCIC v7.23 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-12
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -145,7 +145,7 @@ ENTITY 3: BOAT (33 tests -- 1 card, 12 combos)
 --  ----------  --------------------------------------------------  ------
 34  Boat        FBQ+Hull           BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (FBQBoatHullIdNumber)
-35  Boat        FBQ+Hull           + ImageIndicator, Requestor     [    ]
+35  Boat        FBQ+Hull           + Requestor                     [    ]
               Expected: any[] fields present in XML output.
 36  Boat        BQ+Hull+State      BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQBoatHullIdNumber)
@@ -157,7 +157,7 @@ ENTITY 3: BOAT (33 tests -- 1 card, 12 combos)
               Expected: any[] fields present in XML output.
 40  Boat        FBQ+Reg            RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (FBQRegistrationNumber)
-41  Boat        FBQ+Reg            + ImageIndicator, Requestor     [    ]
+41  Boat        FBQ+Reg            + Requestor                     [    ]
               Expected: any[] fields present in XML output.
 42  Boat        BQ+Reg+State       RegistrationNumber=FL1234AB, Registra... [    ]
               Expected: BoatQuery fires (BQRegistrationNumber)
@@ -173,11 +173,11 @@ ENTITY 3: BOAT (33 tests -- 1 card, 12 combos)
               Expected: any[] fields present in XML output.
 48  Boat        FBQ+Decal          decalNumber=FL12345678           [    ]
               Expected: BoatQuery fires (FBQDecalNumber)
-49  Boat        FBQ+Decal          + ImageIndicator, Requestor     [    ]
+49  Boat        FBQ+Decal          + Requestor                     [    ]
               Expected: any[] fields present in XML output.
 50  Boat        FBQ+TitleLien      titleLienInformation=ABCD1234    [    ]
               Expected: BoatQuery fires (FBQTitleLienInformation)
-51  Boat        FBQ+TitleLien      + ImageIndicator, Requestor     [    ]
+51  Boat        FBQ+TitleLien      + Requestor                     [    ]
               Expected: any[] fields present in XML output.
 52  Boat        QB+CG              coastGuardDocumentNumber=CG123456 [    ]
               Expected: BoatQuery fires (QBCoastGuardDocumentNumber)
@@ -259,4 +259,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T73(Serial), T75(OAN), T77(NCIC), T79(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T38(QB+Hull), T40(FBQ+Reg), T42(BQ+Reg), T44(QB+Reg), T46(BQ+Name), T48(FBQ+Decal), T50(FBQ+TitleLien), T52(QB+CG), T54(QB+NCIC), T56(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.22.json
+IMPORT FILE: FL_FCIC_v7.23.json

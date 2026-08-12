@@ -397,9 +397,9 @@ $MUTS = @(
 
   # ── FL_FCIC ────────────────────────────────────────────────────────────────────────────
   @{ Id='fl-drop-devdoc-optional'; OnlyProvider='FL_FCIC'
-     Desc='RegistrationNumber removed from FBQBoatHullIdNumber any[] -- reverts the exact v7.13 dropped-optional fix (officer types hull + reg number, reg number silently not transmitted). This mutation exists so that fix can never regress unnoticed.'
+     Desc='RegistrationNumber removed from QBBoatHullIdNumber any[] -- reverts the dropped-optional fix (officer types hull + reg number, reg number silently not transmitted). RE-POINTED 2026-08-12, and the reason is the standing trap: it used to aim at FBQBoatHullIdNumber, which FL v7.22 made a REGISTERED DEAD COMBO (Rob directed the Boat Stolen Check to default Y, so that combo''s relatedHitSearchIndicator NOT_EXISTS condition is permanently false). A combo that cannot fire cannot produce a dropped-optional finding, so the mutation silently became a NO-OP and reported *** SURVIVED -- GATE IS BLIND *** on a gate that had fired 5 times that same hour. A STALE MUTATION LOOKS EXACTLY LIKE A BLIND GATE; the fix is the mutation, never the gate. QB{BoatHullIdNumber} is the live equivalent -- metadata defines RegistrationNumber in its <Any> and v7.22 added it there for exactly this devdoc-optional reason, so the mutation now reverts a real, reachable fix.'
      Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
-     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'FBQBoatHullIdNumber'
+     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'; $cm=Get-Combo $c 'QBBoatHullIdNumber'
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationNumber' }) } }
 
   @{ Id='fl-fidelity-demote-mandatory'; OnlyProvider='FL_FCIC'

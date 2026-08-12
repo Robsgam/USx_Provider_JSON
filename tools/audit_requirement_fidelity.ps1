@@ -245,7 +245,15 @@ foreach ($d in $dirs) {
             #   exact | registry keyRef PREFIXED by the metadata keyRef (QV -> QVLicensePlateNumber)
             #   | the row TEXT names the metadata keyRef on a word boundary (the QW row is filed
             #     under "(devdoc #3)" and says "metadata keyRef QW" in its reason).
-            if ($rule -match '(?i)shadow|unbuilt|not-built|dropped-combo|dead-combo' -and $rule -notmatch '(?i)restored') {   # 'not-built' does NOT contain 'unbuilt' (hyphenated), so FL's QW|*|not-built and QV|*|not-built rows were silently INERT. 'RESTORED' excluded because a restored combo IS built -- including it cost TX 2 branches of coverage.
+            # 'dead-combo' REMOVED FROM THIS CLASS 2026-08-12. A dead combo IS BUILT -- it is UNREACHABLE,
+            # not ABSENT -- so its set[]/any[] are real and still worth comparing; if anything, a combo
+            # nobody can reach is where a requirement error would hide longest. Treating it as unbuilt
+            # made the row suppress the combo's whole comparison, which is the exact over-suppression
+            # this tool already WARNS about ("names a combo that IS BUILT"). It self-diagnosed: FL_FCIC's
+            # two v7.22 `dead-combo` rows dropped it 30 -> 28 branches with the finding count still 0,
+            # and the NOTE fired naming both rows. Same reasoning as the 'restored' exclusion below.
+            # Measured across all 20 providers before and after; see BUILD_NOTES / commit for the delta.
+            if ($rule -match '(?i)shadow|unbuilt|not-built|dropped-combo' -and $rule -notmatch '(?i)restored|dead-combo') {   # 'not-built' does NOT contain 'unbuilt' (hyphenated), so FL's QW|*|not-built and QV|*|not-built rows were silently INERT. 'RESTORED' excluded because a restored combo IS built -- including it cost TX 2 branches of coverage.
                 $unbuiltRows += [pscustomobject]@{ Query = $q; KeyRef = $k; Rule = $rule; Text = $ln }
             }
             if ($rule -match '(?i)promoted-to-any')     { $promoted["$q|$k|$(Canon $fd)"] = $rule }

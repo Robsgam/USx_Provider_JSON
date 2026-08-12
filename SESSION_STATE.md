@@ -16,7 +16,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (50 logs) |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
-| FL_FCIC | v7.22 | NEVER-TESTED -- 109 test(s) owed |
+| FL_FCIC | v7.23 | NEVER-TESTED -- 110 test(s) owed |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.3 | NEVER-TESTED -- 41 test(s) owed |
 | NJ_NJCJIS | v4.15 | ALL-PASS (40 logs) |
@@ -33,39 +33,41 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**FL_FCIC v7.22 BUILT 2026-08-12. NEXT: IMPORT + 109-test sweep (Rob's, not mine) -- "once we test
-live(not with you) we can finailize any assumptions."** v7.20 retired 4 layout rows; v7.21 moved Gun
-Make under Serial + set **NCIC Image='Y' on all 5 entities** (5 controls + all 25 combo `defaults[]`);
-v7.22 set the **Boat Stolen Check='Y'** on Rob's direct order and **moved BQ ahead of QB**, which
-recovered the 2 out-of-state combos his prefill had shadowed (reachability 4 dead -> 2, shadow 2F -> 0F).
-The 2 remaining (FBQ Hull/Reg) are REGISTERED `dead-combo` by his decision. FL enforce: no FL FAIL/WARN.
+**FL_FCIC v7.23 BUILT 2026-08-12. NEXT: IMPORT + 110-test sweep (Rob's, not mine) -- "once we test
+live(not with you) we can finailize any assumptions."** v7.20 4 layout rows retired; v7.21 Gun Make
+under Serial + **NCIC Image='Y' all 5 entities**; v7.22 **Boat Stolen Check='Y'** (his direct order) +
+**BQ moved ahead of QB**, recovering the 2 OOS combos his prefill shadowed (4 dead -> 2, shadow 2F -> 0F;
+the 2 left REGISTERED `dead-combo` by his decision); **v7.23 removed `ImageIndicator` from all 4 FBQ
+combos -- a REAL over-permit live since v7.6** (metadata FBQ `<Any>` and devdoc items 1-4 `(In)` list it
+nowhere; 5-9 `(In/Out)` do, so QB keeps it). PHASE 1: fidelity 30br 0/0, efficacy **12/12**, no FL F/W.
 
-**⛔ THE BIG LESSON: MESSAGE KEYS ARE NEVER SENT.** The wire carries `<MessageType>BoatQuery</MessageType>`
-+ required/optional FIELDS -- Rob: *"we only send the transaction type and required and optional fields
-... not the message keys."* Proven: log `FL_FCIC_v7.8_QBBoatHullIdNumber.txt` contains the literal `QB`
-**ZERO** times. So `FBQ`/`QB`/`BQ` are NOT three transactions -- they are three `<Combination>`s of ONE
-`<Transaction name="BoatQuery">`. Every devdoc says `Data-Mined Transactions: NCIC (QA,QB,QG,QV,QW)`; I
-swept 20 JSONs for keyRefs matching those codes and reported **10 providers building data-mined
-transactions (FL 12, TX 7)** -- **100% FALSE**, keyRefs are internal labels as CLAUDE.md already states.
-**READ THE WIRE BEFORE SWEEPING 20 PROVIDERS.** I also retracted to Rob the claim that a Boat Stolen
-default "kills the registration search": same MessageType, so the real loss is only a hull/reg query
-WITHOUT the related-hit field. **Killing FBQ{Hull} then orphaned a devdoc optional** -- 5 FAIL,
-`audit_optional_scope` 3x FIX, so `RegistrationNumber` went back into QB{Hull}/FBQ{Decal}/FBQ{TitleLien}
-`any[]` (v6.9's "Hull>Reg de-bleed" had stripped it -- the AZ v3.1 mistake, `usx-build` 6c: identifier
-priority is ROUTING, never deleting a permitted field). 5 FAIL -> 0.
+**⚠️ TWO GATE HOLES, CHARACTERISED, BOTH ROB'S SCOPE CALL -- do not silently fix:**
+**(A) `$formOnly` WHITELIST HIDES REAL OVER-PERMITS.** `audit_requirement_fidelity` exempts
+`ImageIndicator` AND `RegistrationState` from OVER-PERMITTED -- exactly how v7.23's defect hid for 16
+versions. Confirmed twice: found by hand from the raw `<Requirements>`, then fuzz seed 72431 raised
+`over-permit @ BoatQuery[10] RegistrationState` and it SURVIVED the panel. Narrowing it could surface
+findings on all 20. **(B) A RE-ROUTE NOTE MASKS A DROPPED OPTIONAL.** `audit_devdoc_optionals` prints
+`re-routes X -> Y (discriminator)` as a NOTE and never checks the DESTINATION still carries the
+optionals -- dropped `Requestor` from FBQ{TitleLien}, ran the gate ALONE on the asserted mutation,
+**0 FAIL**. Fidelity is silent by design (a missing OPTIONAL is neither UNDER nor OVER); nothing owns it.
+
+**⛔ MESSAGE KEYS ARE NEVER SENT.** The wire carries `<MessageType>BoatQuery</MessageType>` + the FIELDS
+-- Rob: *"we only send the transaction type and required and optional fields ... not the message keys."*
+Proven: log `FL_FCIC_v7.8_QBBoatHullIdNumber.txt` holds the literal `QB` **ZERO** times. `FBQ`/`QB`/`BQ`
+are three `<Combination>`s of ONE `<Transaction name="BoatQuery">`, not three transactions. Every devdoc
+says `Data-Mined Transactions: NCIC (QA,QB,QG,QV,QW)`; I swept 20 JSONs for keyRefs matching those codes
+and reported **10 providers building them (FL 12, TX 7)** -- **100% FALSE**, keyRefs are internal labels
+as CLAUDE.md already states. **READ THE WIRE BEFORE SWEEPING 20 PROVIDERS.**
 **NCIC IMAGE RULE CHANGED (Rob): 'Y' on EVERY entity** -- he ruled the GATE wrong, not the build.
-`audit_cross_provider` now expects 'Y' on Vehicle; both safety guards HOISTED out of the Person block
-first (else Vehicle got a silently dead guard) and LAW-2 proven 3 ways. CLAUDE.md + FIELD_REFERENCE +
-BUILD_RULES 684 + `preflight_rebuild` corrected. **NOT MECHANICAL: AZ has it in 2 `set[]`s, LA in 1 +
-2 conditions.** All 19 others carry `[FLAG:ncic-image-default-y-everywhere]`, which BLOCKS their enforce
-PHASE 1 (verified on NJ) -- 6 tenant-verified providers un-done until rebuilt; lift if he scopes narrower.
-**REFUSED BY THE SOURCE, still standing:** an FL default on DH State -- FCIC wrote 2026-06-12 that KQ
-needs a "destination something other than FL". Label: `Destination State (required, not FL)`.
-**USE [Certain]/[Likely]/[Guessing] TAGS -- standing directive I dropped for a whole session until Rob
-called it out 08-12.** **THE STATE-DEFAULT RULE (a stuck T26 to learn):** a `set[]` field with no value
-**GATES THE BROWSER SEND BUTTON** (NY v4.20) -- default a mandatory State only where the devdoc has an
-(In)/(In/Out) combo. AZ's DH is (In/Out) -> defaults; FL's is (Out)-ONLY -> blank + a label naming both
-facts. Same field, opposite answer, per-provider scope.
+`audit_cross_provider` now expects 'Y' on Vehicle (guards HOISTED out of the Person block first, else
+Vehicle got a silently dead guard; LAW-2 proven 3 ways). CLAUDE.md + FIELD_REFERENCE + BUILD_RULES 684 +
+`preflight_rebuild` corrected. **NOT MECHANICAL: AZ has it in 2 `set[]`s, LA in 1 + 2 conditions.** All
+19 others carry `[FLAG:ncic-image-default-y-everywhere]`, which BLOCKS their enforce PHASE 1 (verified
+on NJ) -- 6 tenant-verified providers un-done until rebuilt; lift if he scopes narrower.
+**USE [Certain]/[Likely]/[Guessing] TAGS.** **THE STATE-DEFAULT RULE (a stuck T26 to learn):** a `set[]`
+field with no value **GATES THE BROWSER SEND BUTTON** (NY v4.20) -- default a mandatory State only where
+the devdoc has an (In)/(In/Out) combo. AZ's DH is (In/Out) -> defaults; FL's is (Out)-ONLY -> blank,
+labelled `Destination State (required, not FL)` (FCIC 2026-06-12: destination must not be FL).
 
 **JIRA: one comment per RELEASE, EDIT in place -- never a sibling correction.** Format in
 `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`, procedure in `JIRA_REFERENCE.txt` (**no status column**).
@@ -74,12 +76,11 @@ Awaiting: AZ v3.11, FL v7.22, IL v2.3.
 
 ## ON HOLD / DO NOT RE-RAISE
 
-- **CA_CONTRA_COSTA** -- on hold, BLOCKED (08-02): `audit_devdoc_combinations` compares ZERO devdoc
-  combos, and zero-comparison is a FAIL. The gate got stricter; CC did not get worse.
+- **CA_CONTRA_COSTA** -- BLOCKED (08-02): `audit_devdoc_combinations` compares ZERO devdoc combos, and
+  zero-comparison is a FAIL. The gate got stricter; CC did not get worse.
 - **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect LA's
-  `[WARN] Cross-provider` on EVERY provider's enforce -- it is LA's, not the one tested.** Its VehReg
-  is the SAME CLASS as AZ's DH bug (both combos `(In/Out)`, State in `set[]`, control BLANK -> Send
-  gated on an in-state plate query). NOT FIXED; Rob's call.
+  `[WARN] Cross-provider` on EVERY provider's enforce.** Its VehReg is the SAME CLASS as AZ's DH bug
+  (both combos `(In/Out)`, State in `set[]`, control BLANK -> Send gated). NOT FIXED; Rob's call.
 - **Jira: DRAFT AND WAIT, every provider, every time** (one approval != the next). **Tenant info stays
   OFF tickets** -- attachment/catalog/Foundation go in `IMPORT_LEDGER.md` B and C.
 - **DRIVER HISTORY IS NOT SUPPORTED FROM CAD** (Rob 08-12). So "DH has no State combo default and CAD

@@ -2,9 +2,69 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.22** | Generated: 2026-08-12
+Current: **v7.23** | Generated: 2026-08-12
 
 ---
+
+## v7.23 -- 2026-08-12 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
+
+## v7.23 -- 2026-08-12 -- ImageIndicator REMOVED from all 4 FBQ combos -- a real over-permit since v7.6
+
+WHY: Rob asked for another pass -- "we have yet to review and not find an issue" -- and there was one.  
+THE DEFECT: every in-state Boat registration query transmitted an ImageIndicator that the firing  
+  combination does not define. BOTH authorities say so and both were read verbatim, not paraphrased:  
+    raw metadata, <Transaction name="BoatQuery">, FBQ's <Any> on all 4 variants:  
+      [DecalNumber, RegistrationNumber, Requestor, TitleLienInformation]  
+    devdoc "Possible Combinations" items 1-4 (In), WITH their continuation lines:  
+      1. (In) BoatHullIdNumber, [DecalNumber, RegistrationNumber, Requestor, TitleLienInformation]  
+      4. (In) TitleLienInformation, [BoatHullIdNumber, DecalNumber, RegistrationNumber, Requestor]  
+  Neither lists ImageIndicator. Items 5-9 (In/Out) -- the QB combinations -- DO, which is why it  
+  stays there. Present since v7.6, and v7.21 made it worse by flipping the value N -> Y.  
+  Removed from any[] AND defaults[] on all four; verified from the EMITTED JSON (FBQ x4 and BQ x3  
+  now carry none, QB x5 still carry it). Practical impact is small -- with the Stolen Check now  
+  defaulting to Y, in-state hull/reg searches route to QB anyway, where the field is legal.  
+WHY NO GATE CAUGHT IT, AND THIS IS THE PART THAT MATTERS. audit_requirement_fidelity keeps  
+  ImageIndicator (and RegistrationState) on its `$formOnly` whitelist, so they are EXEMPT from the  
+  OVER-PERMITTED check. Its "0 OVER-PERMITTED / 30 branches compared" was a TRUE answer to a question  
+  it does not ask -- the standing "a green gate is not coverage of the question you asked". Found by  
+  hand, from the raw <Requirements>. Then CONFIRMED INDEPENDENTLY the same hour: fuzz seed 72431  
+  produced `over-permit @ BoatQuery[10] RegistrationState` and it SURVIVED the whole panel. Two  
+  routes to the same hole. OPEN FOR ROB: narrowing that whitelist is a shared-tool change that could  
+  surface findings on all 20, so it is his scope call, not a silent edit.  
+ALSO FIXED IN THIS PASS:  
+  - audit_requirement_fidelity: `dead-combo` REMOVED from the unbuilt-class rule set. A dead combo is  
+    BUILT (unreachable, not absent), so its requirements are still comparable -- suppressing them is  
+    the over-suppression the tool already WARNs about, and it self-diagnosed here ("names a combo  
+    that IS BUILT") after my own v7.22 registrations dropped FL 30 -> 28 branches with findings still  
+    at 0. MEASURED ALL 20 BEFORE AND AFTER: total branches 418 -> 421; only FL (28->30) and LA_LEMS  
+    (11->12) moved; ZERO providers gained a finding, so rule 8c needs no flag. Fixture back to its  
+    documented 116 (CA 27 + FL 30 + HI 14 + NJ 10 + NY 16 + TX 19), all 0/0. LAW 2 re-proven: both  
+    fidelity mutations still KILL, efficacy 12/12 / 0 survived. PS-5.1 110/0, portability 280 cells.  
+  - audit_gate_efficacy `fl-drop-devdoc-optional` RE-POINTED from FBQBoatHullIdNumber to  
+    QBBoatHullIdNumber. v7.22 made the FBQ combo a registered dead combo, so the mutation became a  
+    NO-OP and reported "*** SURVIVED -- GATE IS BLIND ***" against a gate that had fired 5 times that  
+    same hour. A STALE MUTATION LOOKS EXACTLY LIKE A BLIND GATE; repair the mutation, never the gate.  
+THE OTHER PHASE-1 ITEMS, ALL ADJUDICATED, NONE A DEFECT:  
+  MISSING x4 -- `QW set[BirthDate,Name]` and `QW set[Name,OperatorLicenseNumber]` are the registered  
+    not-built NCIC Wanted query (CommSys auto-sends it); `FRQ set[TitleLienInformation]` is Gordon's  
+    registered DEX-1279 removal; `KQ set[OperatorLicenseNumber,State]` IS BUILT -- verified by  
+    resolving sourceFields through the attribute map, where KQOperatorLicenseNumber's set[] is exactly  
+    {OperatorLicenseNumber, State}. That last one is a TOOL artefact: audit_query_trace compares in  
+    sourceField space, so every DH-suffixed combo on every provider reads as a false MISSING.  
+  FUZZ (seed 72431) 4 survivors, all triaged: 2x swap-order on disjoint identifiers (QB NCIC<->PCN,  
+    FRQ Decal<->Plate) = harmless; prefill-field on the Boat Stolen Check = already prefilled by  
+    Rob's v7.22 decision, so a no-op; over-permit RegistrationState = the $formOnly hole above.  
+  An earlier seed's `drop-any @ BoatQuery[3] Requestor` was triaged separately and is a SECOND real  
+    gate hole: run alone against an asserted mutation, audit_devdoc_optionals returns 0 FAIL because  
+    it reports "re-routes ... (discriminator; confirm intended)" as a NOTE and never checks whether  
+    the DESTINATION combo still carries the optionals. Fidelity is silent by design (a missing  
+    OPTIONAL is neither UNDER nor OVER). Also open for Rob.  
+GATES: validator 91P/0F/0W, fidelity 30 branches 0/0, reachability 30/30 (2 accepted), prefill-shadow  
+  92 pairs 0 FAIL, devdoc optionals 0 FAIL / 30 NOTE, wiring closure closed 0/10, efficacy 12/12.  
+OWED: re-import + full sweep. Nothing wire-verified.  
 
 ## v7.22 -- 2026-08-12 -- Boat Stolen Check defaults to 'Y' (Rob's directive) + BQ ordered ahead of QB
 

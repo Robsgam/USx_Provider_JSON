@@ -250,7 +250,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.22"
+    [string]$Version = "7.23"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -724,14 +724,14 @@ $boatQuery = [PSCustomObject]@{
                 # when Hull fires, any[] fields present in the form are sent regardless of conditions.
                 # Reg was in Hull's any[], causing Reg to leak into XML even when Hull>Reg guardrail
                 # correctly blocked FBQRegistrationNumber from firing.
-                any        = @('decalNumber','titleLienInformation','RegistrationNumber','ImageIndicator')
+                any        = @('decalNumber','titleLienInformation','RegistrationNumber')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');             operator = 'NOT_EXISTS' }
                     # relatedHitSearchIndicator (camelCase = QIF fieldId); NOT RelatedHitSearchIndicator
                     # (attribute name) -- wrong casing is silently inert (live-proven HI v3.3 / FL v3.x pattern)
                     [PSCustomObject]@{ field = @('relatedHitSearchIndicator');     operator = 'NOT_EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'FBQBoatHullIdNumber'
@@ -745,9 +745,9 @@ $boatQuery = [PSCustomObject]@{
                 # RegistrationNumber and this build dropped it, so an officer's Reg value was discarded
                 # on a decal search. Surfaced only now because devdoc item #1's fills used to land on
                 # FBQ{Hull}; with that combo dead by Rob's Stolen-Check decision they fall here instead.
-                any        = @('BoatHullIdNumber','titleLienInformation','RegistrationNumber','ImageIndicator')
+                any        = @('BoatHullIdNumber','titleLienInformation','RegistrationNumber')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+
             }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FBQDecalNumber'
@@ -758,7 +758,7 @@ $boatQuery = [PSCustomObject]@{
                 set        = @('RegistrationNumber')
                 # v6.0: Hull removed from any[] -- the Hull>Reg guardrail below makes this combo
                 # fire ONLY when Hull is absent, so Hull can never coexist here (would self-contradict).
-                any        = @('decalNumber','titleLienInformation','RegistrationNumber','ImageIndicator')
+                any        = @('decalNumber','titleLienInformation','RegistrationNumber')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');           operator = 'NOT_EXISTS' }
                     # relatedHitSearchIndicator (camelCase = QIF fieldId); NOT RelatedHitSearchIndicator
@@ -768,7 +768,7 @@ $boatQuery = [PSCustomObject]@{
                     # unique permanent identifier; when present, this Reg combo exits and FBQ Hull wins.
                     [PSCustomObject]@{ field = @('BoatHullIdNumber');           operator = 'NOT_EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'FBQRegistrationNumber'
@@ -780,9 +780,9 @@ $boatQuery = [PSCustomObject]@{
                 # v7.1: RegistrationNumber removed from any[] (same LIMITATION #1 fix as FBQHull).
                 # v7.22 FIX (audit_optional_scope: FIX): metadata FBQ{TitleLienInformation}:Any DEFINES
                 # RegistrationNumber; same class as the decal combo above.
-                any        = @('BoatHullIdNumber','decalNumber','RegistrationNumber','ImageIndicator')
+                any        = @('BoatHullIdNumber','decalNumber','RegistrationNumber')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+
             }
             primaryFieldReference = 'TitleLienInformation'
             keyReference          = 'FBQTitleLienInformation'
@@ -832,6 +832,24 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'BQRegistrationNumber'
             state                 = 'Out'
         }
+        # ===== v7.23: ImageIndicator REMOVED from all four FBQ combos (any[] AND defaults[]). =====
+        # OVER-PERMIT, and BOTH authorities say so, quoted rather than paraphrased:
+        #   raw metadata <Transaction name="BoatQuery">, the FBQ combinations' <Any> is exactly
+        #     [DecalNumber, RegistrationNumber, Requestor, TitleLienInformation] on all 4 variants.
+        #   devdoc "Possible Combinations", items 1-4 (In), with their continuation lines:
+        #     1. (In) BoatHullIdNumber, [DecalNumber, RegistrationNumber, Requestor, TitleLienInformation]
+        #     ... 4. (In) TitleLienInformation, [BoatHullIdNumber, DecalNumber, RegistrationNumber, Requestor]
+        #   NEITHER lists ImageIndicator. Items 5-9 (In/Out) -- the QB combinations -- DO list it, which
+        #   is why it stays there. Same field, same query, decided by the combination.
+        # This build carried it in FBQ's any[] WITH a defaults[] since v7.6, so every in-state Boat
+        # registration query transmitted an ImageIndicator the combination does not define -- and v7.21
+        # made that worse by flipping the transmitted value N -> Y.
+        # WHY NO GATE CAUGHT IT: audit_requirement_fidelity keeps ImageIndicator on its $formOnly
+        # whitelist, so it is EXEMPT from the OVER-PERMITTED check. Its "0 OVER-PERMITTED / 30 branches"
+        # was a true answer to a question it does not ask. Found by reading the raw <Requirements> by
+        # hand, not by a gate -- see BUILD_NOTES v7.23 for the gate-coverage consequence.
+        # Practical impact is small: with the Stolen Check now defaulting to Y, in-state hull/reg
+        # searches route to QB anyway, where ImageIndicator IS defined and still rides.
         # QB combos -- devdoc 5-9 (NCIC stolen; Hull/Reg gated by relatedHitSearchIndicator
         # in set[] -- presence-based, no conditions; officer types Y per card hint)
         [PSCustomObject]@{
