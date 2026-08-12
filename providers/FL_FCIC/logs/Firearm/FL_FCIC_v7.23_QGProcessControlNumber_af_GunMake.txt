@@ -1,0 +1,78 @@
+﻿================================================================
+TEST LOG: FL_FCIC Firearm GunQuery
+Combo: QGProcessControlNumber_af_GunMake (QGProcessControlNumber_af_GunMake (auto))
+Date: 2026-08-12 17:57:11
+Result: PASS
+JSON Version: 7.23
+Entity Fingerprint: 95af1d35233aeddbe2562b89eec1e30a3b48b39123f58ab0b24e4f4c340b9da7
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunMake":"IMI","ImageIndicator":"Y","processControlNumber":"0000012345","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZVZKKRWM2EBQKA490CTW6DX">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KZVZKKRWM2EBQKA490CTW6DX</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <GunMake>IMI</GunMake>
+            <Requestor>SGAMBELLONE R</Requestor>
+            <ProcessControlNumber>0000012345</ProcessControlNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZVZKKRWM2EBQKA490CTW6DX
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 Y
+  GunMake                        IMI
+  Requestor                      SGAMBELLONE R
+  ProcessControlNumber           0000012345
+
+NOTES
+-----
+Automated capture (txId 01KZVZKKRWM2EBQKA490CTW6DX). kind=any-field; anyField=GunMake; expectedKeyRef=QGProcessControlNumber; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
