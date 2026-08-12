@@ -2,9 +2,59 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.21** | Generated: 2026-08-12
+Current: **v7.22** | Generated: 2026-08-12
 
 ---
+
+## v7.22 -- 2026-08-12 -- Boat Stolen Check defaults to 'Y' (Rob's directive) + BQ ordered ahead of QB
+
+WHY: Rob 2026-08-12, after being shown the cost twice: "Default it to Y anyway."  
+I HAD BEEN REFUSING THIS FOR TWO VERSIONS AND MY STATED REASON WAS PARTLY WRONG. v7.20's note and  
+  the v7.20/v7.21 Jira drafts said defaulting it would kill "the ordinary Boat registration search".  
+  THE WIRE REFUTES THAT. Log FL_FCIC_v7.8_QBBoatHullIdNumber.txt sends  
+  `<MessageType>BoatQuery</MessageType>` and the literal string 'QB' appears ZERO times in the  
+  request. Message keys are NOT TRANSMITTED -- CLAUDE.md has always said "keyRef is platform-internal  
+  only; provider does not validate it" -- and the metadata has ONE `<Transaction name="BoatQuery">`  
+  holding FBQ, QB and BQ as `<Combination>` elements. So FBQ and QB are NOT two different searches;  
+  they are two FIELD COMBINATIONS of the same transaction. Rob supplied the correction: "we only send  
+  the transaction type and required and optional fields ... not the message keys."  
+WHAT IS ACTUALLY LOST -- narrow, and this is the accurate statement:  
+  (a) a hull/registration BoatQuery that OMITS the related-hit indicator, and  
+  (b) carrying decalNumber/titleLienInformation alongside a hull search.  
+  NOT the Florida registration lookup: FBQDecalNumber and FBQTitleLienInformation carry no relatedHit  
+  condition and are untouched, and clearing the dropdown to blank reaches the other two.  
+**CHANGED:**
+  1. Boat form relatedHitSearchIndicator initialValue='Y' + combo defaults[] on the three QB combos  
+     that hold it in any[] (CG/NCIC/PCN). The two QB combos holding it in set[] cannot be satisfied  
+     by a default from CAD -- a defaults[] entry does not satisfy set[] for ROUTING -- so a  
+     CAD-originated boat query still routes to FBQ. That is sensible CAD behaviour, noted not fixed.  
+  2. BQ BLOCK MOVED AHEAD OF THE QB BLOCK. This is the part that mattered. The prefill made  
+     relatedHitSearchIndicator always-present, so QB{Hull}/QB{Reg} matched on the identifier ALONE  
+     and -- ordered first -- stole every Hull+State / Reg+State fill from BQ, killing the  
+     out-of-state boat search. Applied Rob's own AZ_AZDPS ruling ("we do not leave out queries  
+     because it is hard ... use ordering and recognize the shadows"). BQ requires RegistrationState  
+     in set[] so it CANNOT steal an in-state query. MEASURED: reachability 4 dead -> 2 dead,  
+     prefill-shadow 2 FAIL -> 0 FAIL (92 pairs). Both OOS combos recovered at zero cost.  
+     DEPARTS from devdoc listing order (QB 5-9 before BQ 10-12) DELIBERATELY -- specificity is line 1  
+     of the ordering rule and devdoc order is only the tiebreaker; the prefill put them in conflict.  
+  3. FBQBoatHullIdNumber + FBQRegistrationNumber REGISTERED as `dead-combo` accepted divergences,  
+     naming this decision and the corrected loss statement. Reachability now reports  
+     `[PASS] 30 combination(s) checked -- all reachable (2 accepted dead-combo divergence(s))`.  
+A FINDING I RAISED AND RETRACTED THE SAME HOUR -- worth keeping because the probe was seductive.  
+  Rob said "qb should not be in the json. that is the auto mined stuff" and pointed at the devdoc  
+  line, which is real and on page 1 of 16 of 20 devdocs:  
+      Data-Mined Transactions:  NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle)  
+  I then swept all 20 JSONs for built keyRefs matching those codes and reported 10 providers with  
+  "data-mined transactions built" -- FL 12, TX 7, TX_CCH 10. THAT FINDING WAS ENTIRELY FALSE. It  
+  matched on keyRef NAMES, which are internal labels with no wire meaning. Nothing is being built or  
+  sent that shouldn't be; `MessageType` carries the devdoc-supported query name and CommSys mines  
+  NCIC internally. The standing rule caught it exactly as written -- "a finding across MANY providers  
+  is usually YOUR PROBE" -- but only after Rob supplied the mechanism. READ THE WIRE BEFORE SWEEPING  
+  20 PROVIDERS. The QV/QW `not-built` registry rows are about not building those QUERIES as separate  
+  QIDMs, which is a different statement from keyRef naming.  
+GATES: validator 91P/0F/0W, reachability 30/30 (2 accepted), prefill-shadow 92 pairs 0 FAIL,  
+  wiring closure closed 0/10, verify_build 0W/0F.  
+OWED: re-import + full 116-test sweep. Nothing wire-verified.  
 
 ## v7.21 -- 2026-08-12 -- Firearm row re-order + NCIC Image defaults to 'Y' on all five entities
 

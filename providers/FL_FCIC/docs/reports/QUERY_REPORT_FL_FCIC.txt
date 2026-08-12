@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.21.json
-  Generated: 2026-08-12 16:08
+  Source: FL_FCIC_v7.22.json
+  Generated: 2026-08-12 16:30
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- FL_FCIC_v7.21.json
+  CommSys Query Simulator -- FL_FCIC_v7.22.json
 ================================================================
 
 --- QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle] ---
@@ -199,15 +199,44 @@ QUERY SIMULATION
     [SKIP] FBQRegistrationNumber -- conditions failed: RegistrationState NOT_EXISTS [value='FL']; relatedHitSearchIndicator NOT_EXISTS [value='Y']; BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
     [SKIP] FBQTitleLienInformation -- conditions failed: RegistrationState NOT_EXISTS [value='FL']
 
-    [FIRES first-match] QBBoatHullIdNumber
+    [FIRES first-match] BQName
+      set: [BirthDate, NameLast, NameFirst, RegistrationState]
+      any: [BoatHullIdNumber, RegistrationNumber, Requestor] -> matched: [BoatHullIdNumber, RegistrationNumber]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>BQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <BirthDate>19900115</BirthDate>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <Name>Doe, John</Name>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
+        <State>FL</State>
+        <Requestor>DOE J</Requestor>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] BQBoatHullIdNumber
+      set: [BoatHullIdNumber, RegistrationState]
+      any: [Requestor] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>BQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <State>FL</State>
+        <Requestor>DOE J</Requestor>
+      </Transaction>
+    [SKIP] BQRegistrationNumber -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
+
+    [FIRES shadowed -- first match above wins] QBBoatHullIdNumber
       set: [BoatHullIdNumber, relatedHitSearchIndicator]
-      any: [ImageIndicator, Requestor] -> matched: [ImageIndicator]
+      any: [ImageIndicator, RegistrationNumber, Requestor] -> matched: [ImageIndicator, RegistrationNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>QB</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
         <ImageIndicator>Y</ImageIndicator>
+        <RegistrationNumber>FL1234AB</RegistrationNumber>
         <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
         <Requestor>DOE J</Requestor>
       </Transaction>
@@ -252,35 +281,7 @@ QUERY SIMULATION
       </Transaction>
     [SKIP] QBRegistrationNumber -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
-    [FIRES shadowed -- first match above wins] BQName
-      set: [BirthDate, NameLast, NameFirst, RegistrationState]
-      any: [BoatHullIdNumber, RegistrationNumber, Requestor] -> matched: [BoatHullIdNumber, RegistrationNumber]
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
-        <MessageKey>BQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <BirthDate>19900115</BirthDate>
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <Name>Doe, John</Name>
-        <RegistrationNumber>FL1234AB</RegistrationNumber>
-        <State>FL</State>
-        <Requestor>DOE J</Requestor>
-      </Transaction>
-
-    [FIRES shadowed -- first match above wins] BQBoatHullIdNumber
-      set: [BoatHullIdNumber, RegistrationState]
-      any: [Requestor] -> matched: []
-      -- CommSys XML --
-      <?xml version="1.0" encoding="UTF-8"?>
-      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
-        <MessageKey>BQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
-        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
-        <State>FL</State>
-        <Requestor>DOE J</Requestor>
-      </Transaction>
-    [SKIP] BQRegistrationNumber -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
-
-    >> PLATFORM FIRES: QBBoatHullIdNumber (first matching combo)
+    >> PLATFORM FIRES: BQName (first matching combo)
     >> UNION POOL (platform serializes): BirthDate=19900115, BoatHullIdNumber=FL1234AB56H7, CoastGuardDocumentNumber=CG123456, ImageIndicator=Y, Name=Doe, John, NCICNumber=B123456789, ProcessControlNumber=0000012345, RegistrationNumber=FL1234AB, State=FL, RelatedHitSearchIndicator=Y, Requestor=DOE J
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)

@@ -250,7 +250,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.21"
+    [string]$Version = "7.22"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -741,7 +741,11 @@ $boatQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('decalNumber')
                 # v7.1: RegistrationNumber removed from any[] (same LIMITATION #1 fix as FBQHull).
-                any        = @('BoatHullIdNumber','titleLienInformation','ImageIndicator')
+                # v7.22 FIX (audit_optional_scope: FIX): metadata FBQ{DecalNumber}:Any DEFINES
+                # RegistrationNumber and this build dropped it, so an officer's Reg value was discarded
+                # on a decal search. Surfaced only now because devdoc item #1's fills used to land on
+                # FBQ{Hull}; with that combo dead by Rob's Stolen-Check decision they fall here instead.
+                any        = @('BoatHullIdNumber','titleLienInformation','RegistrationNumber','ImageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
@@ -774,7 +778,9 @@ $boatQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('titleLienInformation')
                 # v7.1: RegistrationNumber removed from any[] (same LIMITATION #1 fix as FBQHull).
-                any        = @('BoatHullIdNumber','decalNumber','ImageIndicator')
+                # v7.22 FIX (audit_optional_scope: FIX): metadata FBQ{TitleLienInformation}:Any DEFINES
+                # RegistrationNumber; same class as the decal combo above.
+                any        = @('BoatHullIdNumber','decalNumber','RegistrationNumber','ImageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
@@ -782,64 +788,17 @@ $boatQuery = [PSCustomObject]@{
             keyReference          = 'FBQTitleLienInformation'
             state                 = 'In/Out'
         }
-        # QB combos -- devdoc 5-9 (NCIC stolen; Hull/Reg gated by relatedHitSearchIndicator
-        # in set[] -- presence-based, no conditions; officer types Y per card hint)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('BoatHullIdNumber','relatedHitSearchIndicator')
-                # v6.9: RegistrationNumber removed from any[] -- Hull>Reg guardrail de-bleed.
-                # Hull is the priority identifier; the Hull query must not carry Reg on the wire.
-                any        = @('ImageIndicator')
-                # v6.9: relatedHitSearchIndicator EXISTS -- explicit Stolen gate. set[] membership
-                # is NOT a firing gate (platform fires on primaryFieldReference); without this, the
-                # QB combo would shadow the BQ OOS Hull combo on a Hull+State payload. Mirrors FBQ's
-                # relatedHit NOT_EXISTS (FBQ<->QB routing symmetry). verify_build CHECK 16.
-                conditions = @([PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
-            }
-            primaryFieldReference = 'BoatHullIdNumber'
-            keyReference          = 'QBBoatHullIdNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('coastGuardDocumentNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
-            primaryFieldReference = 'CoastGuardDocumentNumber'
-            keyReference          = 'QBCoastGuardDocumentNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
-            primaryFieldReference = 'NCICNumber'
-            keyReference          = 'QBNCICNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
-            primaryFieldReference = 'ProcessControlNumber'
-            keyReference          = 'QBProcessControlNumber'
-            state                 = 'In/Out'
-        }
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set        = @('RegistrationNumber','relatedHitSearchIndicator')
-                any        = @('ImageIndicator')
-                # Two conditions (v6.9):
-                #  - BoatHullIdNumber NOT_EXISTS: Hull>Reg identifier-priority guardrail. Hull ID (HIN)
-                #    is the unique permanent identifier; when Hull is also entered, this Reg combo exits
-                #    and QBBoatHullIdNumber wins alone (kills the bleed).
-                #  - relatedHitSearchIndicator EXISTS: explicit Stolen gate. set[] is not a firing gate;
-                #    without this, QBRegistrationNumber shadows the BQ OOS Reg combo on a Reg+State
-                #    payload (verify_build CHECK 16). Mirrors FBQ's relatedHit NOT_EXISTS.
-                conditions = @(
-                    [PSCustomObject]@{ field = @('BoatHullIdNumber');          operator = 'NOT_EXISTS' }
-                    [PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' }
-                )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
-            }
-            primaryFieldReference = 'RegistrationNumber'
-            keyReference          = 'QBRegistrationNumber'
-            state                 = 'In/Out'
-        }
+        # ===== ORDER CHANGED v7.22: BQ (out-of-state Nlets) now sits AHEAD of QB (NCIC stolen). =====
+        # Rob 2026-08-12 directed the Boat Stolen Check to default to Y. A permanent prefill makes
+        # relatedHitSearchIndicator always-present, so QB{Hull}/QB{Reg} match on the identifier ALONE
+        # and -- ordered first -- stole every Hull+State / Reg+State fill from BQ, killing the
+        # out-of-state boat search (audit_prefill_shadow named exactly that pair). This applies Rob's
+        # own AZ_AZDPS ruling: "we do not leave out queries because it is hard ... use ordering and
+        # recognize the shadows." BQ requires RegistrationState in set[], so it CANNOT steal an in-state
+        # query (State blank -> BQ does not match -> QB fires); moving it up recovers both OOS combos at
+        # zero cost. DEPARTS from devdoc listing order (QB 5-9 before BQ 10-12) DELIBERATELY: specificity
+        # is line 1 of the ordering rule and devdoc order is only the tiebreaker, and the prefill put the
+        # two in conflict. audit_devdoc_order may flag it; that is the correct trade, recorded here.
         # BQ combos -- devdoc 10-12 (Nlets OOS; destination state in set[]. Non-FL rule
         # NOT enforceable config-side -- LIMITATION, dropdown + card hint only)
         [PSCustomObject]@{
@@ -872,6 +831,64 @@ $boatQuery = [PSCustomObject]@{
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'BQRegistrationNumber'
             state                 = 'Out'
+        }
+        # QB combos -- devdoc 5-9 (NCIC stolen; Hull/Reg gated by relatedHitSearchIndicator
+        # in set[] -- presence-based, no conditions; officer types Y per card hint)
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('BoatHullIdNumber','relatedHitSearchIndicator')
+                # v6.9: RegistrationNumber removed from any[] -- Hull>Reg guardrail de-bleed.
+                # Hull is the priority identifier; the Hull query must not carry Reg on the wire.
+                any        = @('ImageIndicator','RegistrationNumber')  # v7.22 FIX: metadata QB{BoatHullIdNumber}:Any DEFINES RegistrationNumber; v6.9 stripped it as a Hull>Reg 'de-bleed' and that was the AZ_AZDPS v3.1 mistake (usx-build 6c) -- identifier priority is about ROUTING, never about deleting a permitted field from the payload. Routing is unchanged: the Reg combos still carry BoatHullIdNumber NOT_EXISTS.
+                # v6.9: relatedHitSearchIndicator EXISTS -- explicit Stolen gate. set[] membership
+                # is NOT a firing gate (platform fires on primaryFieldReference); without this, the
+                # QB combo would shadow the BQ OOS Hull combo on a Hull+State payload. Mirrors FBQ's
+                # relatedHit NOT_EXISTS (FBQ<->QB routing symmetry). verify_build CHECK 16.
+                conditions = @([PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+            }
+            primaryFieldReference = 'BoatHullIdNumber'
+            keyReference          = 'QBBoatHullIdNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('coastGuardDocumentNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'relatedHitSearchIndicator'; value = 'Y' }) }
+            primaryFieldReference = 'CoastGuardDocumentNumber'
+            keyReference          = 'QBCoastGuardDocumentNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'relatedHitSearchIndicator'; value = 'Y' }) }
+            primaryFieldReference = 'NCICNumber'
+            keyReference          = 'QBNCICNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'relatedHitSearchIndicator'; value = 'Y' }) }
+            primaryFieldReference = 'ProcessControlNumber'
+            keyReference          = 'QBProcessControlNumber'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set        = @('RegistrationNumber','relatedHitSearchIndicator')
+                any        = @('ImageIndicator')
+                # Two conditions (v6.9):
+                #  - BoatHullIdNumber NOT_EXISTS: Hull>Reg identifier-priority guardrail. Hull ID (HIN)
+                #    is the unique permanent identifier; when Hull is also entered, this Reg combo exits
+                #    and QBBoatHullIdNumber wins alone (kills the bleed).
+                #  - relatedHitSearchIndicator EXISTS: explicit Stolen gate. set[] is not a firing gate;
+                #    without this, QBRegistrationNumber shadows the BQ OOS Reg combo on a Reg+State
+                #    payload (verify_build CHECK 16). Mirrors FBQ's relatedHit NOT_EXISTS.
+                conditions = @(
+                    [PSCustomObject]@{ field = @('BoatHullIdNumber');          operator = 'NOT_EXISTS' }
+                    [PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' }
+                )
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+            }
+            primaryFieldReference = 'RegistrationNumber'
+            keyReference          = 'QBRegistrationNumber'
+            state                 = 'In/Out'
         }
     )
     description     = 'BoatQuery -- devdoc order: FBQ (hull/decal/reg/title; State+RelatedHit NOT_EXISTS), QB (hull/CG/NCIC/PCN/reg; Stolen in set[]), BQ (name/hull/reg; State in set[], non-FL is LIMITATION). 12 combos.'
@@ -1234,10 +1251,22 @@ $boaLayout = MakeLayouts @(
                 # the ordinary registration path). A default makes it permanently present, which
                 # turns FBQ's NOT_EXISTS gate permanently FALSE and kills the non-stolen Boat search
                 # outright -- BUILD_RULES 24. Blank is load-bearing here; do not "make it consistent".
-                # v7.20: Rob asked for a default here too; MEASURED on a replica before answering --
-                # audit_combo_reachability reported [FAIL] DEAD COMBO on FBQ and audit_prefill_shadow
-                # named the pair, so the exception stands and was reported back with that evidence.
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
+                # v7.22 -- EVERYTHING ABOVE IS NOW HISTORY. ROB'S DECISION, TAKEN TWICE WITH THE COST IN
+                # FRONT OF HIM: "Default it to Y anyway." So it defaults, and the consequences are
+                # engineered rather than accepted whole:
+                #   RECOVERED by ordering -- BQ{Hull} and BQ{Reg} (out-of-state). The prefill let
+                #     QB{Hull}/QB{Reg} match on the identifier alone and, ordered first, steal every
+                #     Hull+State fill. Moving the BQ block ahead of QB fixes it with no other cost,
+                #     because BQ needs RegistrationState in set[] and so cannot touch an in-state query.
+                #   LOST, and STRUCTURALLY so -- FBQ{Hull} and FBQ{Reg}. Those two are gated
+                #     relatedHitSearchIndicator NOT_EXISTS, which a permanent prefill makes permanently
+                #     false. No ordering rescues them: with the field always present, "boat registration
+                #     WITHOUT a stolen check" is not expressible on Hull or Reg. Registered as an
+                #     accepted divergence (dead-combo) naming this decision, not silently dropped.
+                #   STILL REACHABLE -- Florida registration by DECAL NUMBER and by TITLE/LIEN INFO.
+                #     FBQ{Decal} and FBQ{TitleLien} carry no relatedHit condition, so they are untouched.
+                #     An officer can also clear this dropdown to blank to reach FBQ{Hull}/FBQ{Reg}.
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_3'; cols = @('3','3','3','3'); fields = @(

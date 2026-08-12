@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.21 -- entity forms",
+                        "description":  "Provider configuration for FL_FCIC v7.22 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Person queries -- DL (FDQ/DQ) + DH (KQ, out-of-state only) on separate cards. DH-suffix fields. QW auto-sent by CommSys.",
@@ -5465,8 +5465,9 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedHitSearchIndicator",
                                                                                                                                         "label":  "Stolen Check",
-                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN",
-                                                                                                                                        "codeTypeSource":  "NCIC"
+                                                                                                                                        "initialValue":  "Y",
+                                                                                                                                        "codeTypeSource":  "NCIC",
+                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -5944,8 +5945,9 @@
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedHitSearchIndicator",
                                                                                                                                              "label":  "Stolen Check",
-                                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN",
-                                                                                                                                             "codeTypeSource":  "NCIC"
+                                                                                                                                             "initialValue":  "Y",
+                                                                                                                                             "codeTypeSource":  "NCIC",
+                                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
                                                                                                                                          },
                                                                                                                                "isCanvas":  false,
                                                                                                                                "hidden":  false,
@@ -6504,8 +6506,9 @@
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedHitSearchIndicator",
                                                                                                                                                 "label":  "Stolen Check",
-                                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN",
-                                                                                                                                                "codeTypeSource":  "NCIC"
+                                                                                                                                                "initialValue":  "Y",
+                                                                                                                                                "codeTypeSource":  "NCIC",
+                                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN"
                                                                                                                                             },
                                                                                                                                   "isCanvas":  false,
                                                                                                                                   "hidden":  false,
@@ -9041,6 +9044,7 @@
                                                                                                  "any":  [
                                                                                                              "BoatHullIdNumber",
                                                                                                              "titleLienInformation",
+                                                                                                             "RegistrationNumber",
                                                                                                              "ImageIndicator",
                                                                                                              "Requestor"
                                                                                                          ],
@@ -9114,6 +9118,7 @@
                                                                                                  "any":  [
                                                                                                              "BoatHullIdNumber",
                                                                                                              "decalNumber",
+                                                                                                             "RegistrationNumber",
                                                                                                              "ImageIndicator",
                                                                                                              "Requestor"
                                                                                                          ],
@@ -9134,133 +9139,6 @@
                                                                                              },
                                                                             "primaryFieldReference":  "TitleLienInformation",
                                                                             "keyReference":  "FBQTitleLienInformation",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "BoatHullIdNumber",
-                                                                                                             "relatedHitSearchIndicator"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator",
-                                                                                                             "Requestor"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "relatedHitSearchIndicator"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "Y"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "BoatHullIdNumber",
-                                                                            "keyReference":  "QBBoatHullIdNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "coastGuardDocumentNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator",
-                                                                                                             "relatedHitSearchIndicator",
-                                                                                                             "Requestor"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "Y"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "CoastGuardDocumentNumber",
-                                                                            "keyReference":  "QBCoastGuardDocumentNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "NCICNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator",
-                                                                                                             "relatedHitSearchIndicator",
-                                                                                                             "Requestor"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "Y"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "NCICNumber",
-                                                                            "keyReference":  "QBNCICNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "processControlNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator",
-                                                                                                             "relatedHitSearchIndicator",
-                                                                                                             "Requestor"
-                                                                                                         ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "Y"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "ProcessControlNumber",
-                                                                            "keyReference":  "QBProcessControlNumber",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "RegistrationNumber",
-                                                                                                             "relatedHitSearchIndicator"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "ImageIndicator",
-                                                                                                             "Requestor"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "BoatHullIdNumber"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "relatedHitSearchIndicator"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "ImageIndicator",
-                                                                                                                      "value":  "Y"
-                                                                                                                  }
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "RegistrationNumber",
-                                                                            "keyReference":  "QBRegistrationNumber",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -9316,6 +9194,146 @@
                                                                             "primaryFieldReference":  "RegistrationNumber",
                                                                             "keyReference":  "BQRegistrationNumber",
                                                                             "state":  "Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "BoatHullIdNumber",
+                                                                                                             "relatedHitSearchIndicator"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ImageIndicator",
+                                                                                                             "RegistrationNumber",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "relatedHitSearchIndicator"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "BoatHullIdNumber",
+                                                                            "keyReference":  "QBBoatHullIdNumber",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "coastGuardDocumentNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ImageIndicator",
+                                                                                                             "relatedHitSearchIndicator",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "relatedHitSearchIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "CoastGuardDocumentNumber",
+                                                                            "keyReference":  "QBCoastGuardDocumentNumber",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "NCICNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ImageIndicator",
+                                                                                                             "relatedHitSearchIndicator",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "relatedHitSearchIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "NCICNumber",
+                                                                            "keyReference":  "QBNCICNumber",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "processControlNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ImageIndicator",
+                                                                                                             "relatedHitSearchIndicator",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "relatedHitSearchIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "ProcessControlNumber",
+                                                                            "keyReference":  "QBProcessControlNumber",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "RegistrationNumber",
+                                                                                                             "relatedHitSearchIndicator"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "ImageIndicator",
+                                                                                                             "Requestor"
+                                                                                                         ],
+                                                                                                 "conditions":  [
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "BoatHullIdNumber"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "field":  [
+                                                                                                                                      "relatedHitSearchIndicator"
+                                                                                                                                  ],
+                                                                                                                        "operator":  "EXISTS"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "RegistrationNumber",
+                                                                            "keyReference":  "QBRegistrationNumber",
+                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
                                                    "description":  "BoatQuery -- devdoc order: FBQ (hull/decal/reg/title; State+RelatedHit NOT_EXISTS), QB (hull/CG/NCIC/PCN/reg; Stolen in set[]), BQ (name/hull/reg; State in set[], non-FL is LIMITATION). 12 combos.",
@@ -9329,13 +9347,13 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for FL_FCIC v7.21",
+                        "description":  "Provider configuration for FL_FCIC v7.22",
                         "name":  "FL_FCIC",
                         "type":  "BUNDLE",
                         "provider":  "FL_FCIC"
                     },
                     {
-                        "description":  "Provider configuration for FL_FCIC v7.21 -- RMS bundle",
+                        "description":  "Provider configuration for FL_FCIC v7.22 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

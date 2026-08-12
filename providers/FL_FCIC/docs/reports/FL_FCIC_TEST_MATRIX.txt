@@ -1,4 +1,4 @@
-FL_FCIC v7.21 -- TEST MATRIX
+FL_FCIC v7.22 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-12
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -40,7 +40,7 @@ Article (1 card, 8 fields):
 Boat (1 card, 14 fields):
   CARD_BOA_SEARCH (BOAT SEARCH BY HULL ID, "OR" REGISTRATION NUMBER, "OR" COAST GUARD DOC #, "OR" NCIC NUMBER, "OR" PCN):
     ROW 1: BoatHullIdNumber [Inp 62], RegistrationNumber [Inp 8], coastGuardDocumentNumber [Inp 8]
-    ROW 2: RegistrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: RegistrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 3: decalNumber [Inp 10], titleLienInformation [Inp 8], NCICNumber [Inp 10], processControlNumber [Inp 10]
     ROW 4: NameFirst [Inp 30], NameLast [Inp 30], BirthDate [FormDate]
     ROW 5: Requestor [Inp 30]
@@ -205,10 +205,10 @@ ENTITY 3: BOAT (33 tests -- 1 card, 12 combos)
               Expected: BoatQuery fires (FBQBoatHullIdNumber). Reg absent from XML.
 64  Boat        Guardrail: BQName>FBQTitleLienInformation  RegistrationState=GA, titleLienInform... [    ]
               Expected: BoatQuery fires (BQName). TitleLien absent from XML.
-65  Boat        Guardrail: FBQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
-              Expected: BoatQuery fires (FBQBoatHullIdNumber). relatedHitSearchIndicator absent from XML.
-66  Boat        Guardrail: FBQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+65  Boat        Guardrail: FBQBoatHullIdNumber>BQRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (FBQBoatHullIdNumber). RegistrationState absent from XML.
+66  Boat        Guardrail: FBQBoatHullIdNumber>QBRegistrationNumber  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+              Expected: BoatQuery fires (FBQBoatHullIdNumber). relatedHitSearchIndicator absent from XML.
 
 ENTITY 4: FIREARM (6 tests -- 1 card, 3 combos)
 ------------------------------------------------------------------------
@@ -259,4 +259,4 @@ COMBO COVERAGE (30/30):
   ArticleSingleQuery: 4/4 -- T73(Serial), T75(OAN), T77(NCIC), T79(PCN)
   BoatQuery: 12/12 -- T34(FBQ+Hull), T36(BQ+Hull), T38(QB+Hull), T40(FBQ+Reg), T42(BQ+Reg), T44(QB+Reg), T46(BQ+Name), T48(FBQ+Decal), T50(FBQ+TitleLien), T52(QB+CG), T54(QB+NCIC), T56(QB+PCN)
 
-IMPORT FILE: FL_FCIC_v7.21.json
+IMPORT FILE: FL_FCIC_v7.22.json
