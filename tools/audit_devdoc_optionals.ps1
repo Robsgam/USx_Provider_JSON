@@ -19,6 +19,24 @@
          not carry it either), and it is silently not transmitted. The query still succeeds, just
          narrower than the officer asked for -- the worst kind of defect because nothing errors.
 
+  THE UNION POOL IS DELIBERATE AND CORRECT -- DO NOT "FIX" IT INTO A PER-COMBO CHECK.
+  Read this before concluding the "[NOTE] ... re-routes X -> Y (discriminator)" line masks a
+  dropped optional. It cannot: the DROPPED check runs FIRST and `continue`s, so the re-route NOTE
+  is only ever reached when nothing was dropped.
+  I got this wrong on 2026-08-12 and reported a gate hole that does not exist. The mutation that
+  fooled me removed `Requestor` from ONE combination (FL_FCIC BoatQuery FBQ{TitleLienInformation})
+  and the gate stayed silent -- which I read as blindness. It was a CORRECT SURVIVOR: the fill also
+  matched QB{BoatHullIdNumber}, which still carried Requestor, so the field was never dropped.
+  That is not a modelling convenience -- it is what the platform actually does. LIMITATION #40
+  (LIVE-PROVEN 2026-08-12, 38/38 FL Boat logs, 0 mispredicted): THE WIRE IS A UNION ACROSS EVERY
+  MATCHING COMBINATION, not the firing combination's field list. A per-combo check here would
+  report drops that demonstrably do not occur.
+  PROOF THE GATE STILL BITES (LAW 2, run 2026-08-12): strip `Requestor` from EVERY Boat combination
+  -- 12 lists, 0 combos left carrying it -- and the same fills that were silent now FAIL, including
+  `+[Requestor,TitleLienInformation] -> fires FBQTitleLienInformation`. Clean build: 0 FAIL /
+  30 NOTE. Catalogued permanently as `fl-drop-optional-everywhere` in audit_gate_efficacy so this
+  behaviour cannot regress unnoticed and the question does not get re-litigated a third time.
+
     Both classes are invisible to: validate, verify_build, audit_metadata, audit_combo_reachability
     (walks built combos, not devdoc fills), audit_devdoc_combinations (mandatory wiring only), and
     the test plan (generated from the JSON, and it does not enumerate optional powersets).

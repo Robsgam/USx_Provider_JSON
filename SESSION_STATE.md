@@ -40,21 +40,22 @@ BQ-ahead-of-QB reorder RECOVERED `BQBoatHullIdNumber` + `BQRegistrationNumber` (
 prefill had shadowed them dead); `<State>NJ</State>` on **7/7** DH wires, **0** FL.
 
 **⛔ LIMITATION #40 -- THE WIRE IS A UNION ACROSS EVERY MATCHING COMBINATION, not the firing combo's
-field list. LIVE-PROVEN, 38/38 Boat logs, 0 mispredicted.** A field rides when the fill matches ANY
-combination defining it. Proof: `FBQDecalNumber_af_BoatHullIdNumber` carries `DecalNumber` (in NO QB
-combo, so FBQ{Decal} fired -- 2i was RIGHT) yet also `ImageIndicator` + `RelatedHitSearchIndicator`,
-which FBQ{Decal} does not define; they ride because the same fill also satisfies QB{Hull}. Control:
-decal-alone matches no QB combo and carries neither, though the form still holds `ImageIndicator=Y` --
-so it is MATCH-driven, not "the form value is always sent".
+field list. LIVE-PROVEN, 38/38 Boat logs, 0 mispredicted.** Proof: `FBQDecalNumber_af_BoatHullIdNumber`
+carries `DecalNumber` (in NO QB combo, so FBQ{Decal} fired -- 2i was RIGHT) yet ALSO `ImageIndicator` +
+`RelatedHitSearchIndicator`, which it does not define; they ride because the fill also satisfies
+QB{Hull}. Control: decal-alone matches no QB combo and carries neither, though the form still holds
+`ImageIndicator=Y` -- MATCH-driven, not "the form value is always sent".
 **THIS CORRECTS WHAT I WROTE EARLIER TODAY.** I recorded the `$formOnly` whitelist (ImageIndicator,
 RegistrationState) as a plain gate hole. #40 says it looks like an EMPIRICAL WORKAROUND for this
 behaviour -- `audit_requirement_fidelity` models the FIRING combo only and structurally cannot express
 a union. **Do NOT narrow that whitelist without reading #40 first.** Removing a field from the firing
 combo is also not automatically a fix: v7.23 stripped `ImageIndicator` from all 4 FBQ combos (correct
 per both authorities) and 5 of 8 FBQ wires still carry it.
-**STILL OPEN, Rob's call:** `audit_devdoc_optionals` prints `re-routes X -> Y (discriminator)` as a
-NOTE and never checks the DESTINATION still carries the optionals -- dropped `Requestor` from
-FBQ{TitleLien}, ran the gate ALONE on the asserted mutation, **0 FAIL**. Nothing owns that class.
+**WITHDRAWN -- the `audit_devdoc_optionals` "re-route hole" DOES NOT EXIST.** I reported it, Rob said
+fix it, the code refuted it: the DROPPED check runs FIRST and `continue`s, and its pool is a UNION over
+co-matching combos -- which #40 proves is what the wire does. My mutation removed `Requestor` from ONE
+combo and survived CORRECTLY. **LAW 2:** strip it from ALL 12 Boat lists -> those fills FAIL. Catalogued
+`fl-drop-optional-everywhere`, efficacy **13/13**. **DO NOT "FIX" IT** -- reasoning in the tool header.
 
 **⛔ MESSAGE KEYS ARE NEVER SENT** -- the wire carries `<MessageType>` + FIELDS (Rob). `FBQ`/`QB`/`BQ`
 are three `<Combination>`s of ONE `<Transaction name="BoatQuery">`. Off this I swept 20 JSONs for

@@ -396,6 +396,15 @@ $MUTS = @(
            $cm.requirements.any=@(@($cm.requirements.any) | Where-Object { $_ -ne 'RegistrationState' }) } }
 
   # ── FL_FCIC ────────────────────────────────────────────────────────────────────────────
+  @{ Id='fl-drop-optional-everywhere'; OnlyProvider='FL_FCIC'
+     Desc='Requestor removed from EVERY BoatQuery combination -- the genuine dropped-optional defect, as opposed to removing it from ONE combo (which is a CORRECT survivor, because the LIMITATION #1/#40 union pool still carries it from a co-matching combination). Catalogued 2026-08-12 after I reported a non-existent "the re-route NOTE masks a dropped optional" hole in audit_devdoc_optionals: the DROPPED check runs FIRST and continues, so the NOTE is only reached when nothing was dropped, and the union pool is CORRECT because LIMITATION #40 proves the wire is a union across every MATCHING combination (38/38 FL Boat logs, 0 mispredicted). This mutation exists so the distinction is permanent: it must KILL, while a single-combo removal legitimately survives. If someone "fixes" the union pool into a per-combo check, the tool starts reporting drops that do not occur on the wire.'
+     Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_BoatQuery'
+           foreach ($cb in @($c.combinations)) {
+             foreach ($k in @('set','any')) {
+               $cur = @($cb.requirements.$k)
+               if ($cur -contains 'Requestor') { $cb.requirements.$k = @($cur | Where-Object { $_ -ne 'Requestor' }) } } } } }
+
   @{ Id='fl-drop-devdoc-optional'; OnlyProvider='FL_FCIC'
      Desc='RegistrationNumber removed from QBBoatHullIdNumber any[] -- reverts the dropped-optional fix (officer types hull + reg number, reg number silently not transmitted). RE-POINTED 2026-08-12, and the reason is the standing trap: it used to aim at FBQBoatHullIdNumber, which FL v7.22 made a REGISTERED DEAD COMBO (Rob directed the Boat Stolen Check to default Y, so that combo''s relatedHitSearchIndicator NOT_EXISTS condition is permanently false). A combo that cannot fire cannot produce a dropped-optional finding, so the mutation silently became a NO-OP and reported *** SURVIVED -- GATE IS BLIND *** on a gate that had fired 5 times that same hour. A STALE MUTATION LOOKS EXACTLY LIKE A BLIND GATE; the fix is the mutation, never the gate. QB{BoatHullIdNumber} is the live equivalent -- metadata defines RegistrationNumber in its <Any> and v7.22 added it there for exactly this devdoc-optional reason, so the mutation now reverts a real, reachable fix.'
      Gate='audit_devdoc_optionals.ps1'; Args={ @('-Path',$workJson) }
