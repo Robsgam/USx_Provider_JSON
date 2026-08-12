@@ -1,0 +1,88 @@
+﻿================================================================
+TEST LOG: FL_FCIC Vehicle VehicleRegistrationQuery
+Combo: FRQLicensePlateNumber_af_LicensePlateYear (FRQLicensePlateNumber_af_LicensePlateYear (auto))
+Date: 2026-08-12 14:46:03
+Result: PASS
+JSON Version: 7.19
+Entity Fingerprint: 3d5812dde6a3ff82b58f82a3240e8eb0879943504c9a848628ff611c7e62b4b2
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2025"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZVMH9G88HFK21DMV6QG5AVQ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KZVMH9G88HFK21DMV6QG5AVQ</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <LicensePlateYear>2025</LicensePlateYear>
+            <Requestor>SGAMBELLONE R</Requestor>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZVMH9G88HFK21DMV6QG5AVQ
+  ImageIndicator                 N
+  LicensePlateYear               2025
+  Requestor                      SGAMBELLONE R
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01KZVMH9G88HFK21DMV6QG5AVQ). kind=any-field; anyField=LicensePlateYear; expectedKeyRef=FRQLicensePlateNumber; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
