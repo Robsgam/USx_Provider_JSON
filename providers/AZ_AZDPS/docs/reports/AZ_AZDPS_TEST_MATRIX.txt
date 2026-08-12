@@ -1,4 +1,4 @@
-AZ_AZDPS v3.10 -- TEST MATRIX
+AZ_AZDPS v3.11 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-12
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -22,7 +22,7 @@ Person (2 cards, 23 fields):
     ROW 5: Requestor [Inp X, 5]
     ROW 6: dexStateUserId [Inp X]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
-    ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp 1]
+    ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE, AZ], purposeCodeDH [Inp 1]
     ROW 2: NameFirstDH [Inp 20], NameLastDH [Inp 30], NameMiddleDH [Inp 20], NameSuffixDH [Inp 4]
     ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 4: attention [Inp 30]
@@ -89,11 +89,11 @@ ENTITY 1: PERSON (18 tests -- 2 cards, 7 combos)
          Must be filled if PurposeCode = CA
          Must be filled if PurposeCode = CO
          CHECK: do any combo defaults trigger a constraint that has no default/handler?
-10  Person      KQ+RegistrationStateDH  OperatorLicenseNumberDH=D999888777 [    ]
+10  Person      KQ+RegistrationStateDH  RegistrationStateDH=AZ, OperatorLicen... [    ]
               Expected: DriverHistoryQuery fires (KQ)
 11  Person      KQ+RegistrationStateDH  + attention, purposeCodeDH      [    ]
               Expected: any[] fields present in XML output.
-12  Person      KQ+H               NameLastDH=DOE, NameFirstDH=JOHN, Bir... [    ]
+12  Person      KQ+H               RegistrationStateDH=AZ, NameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (KQH)
 13  Person      KQ+H               + attention, NameMiddleDH, NameSuffixDH, purposeCodeDH [    ]
               Expected: any[] fields present in XML output.
@@ -103,7 +103,7 @@ ENTITY 1: PERSON (18 tests -- 2 cards, 7 combos)
               Expected: DriverLicenseQuery fires (DQP). dexStateUserId+ImageIndicator+LastName+FirstName+Requestor absent from XML.
 16  Person      Guardrail: DQP>DQN  OperatorLicenseNumber=D999888777, Nam... [    ]
               Expected: DriverLicenseQuery fires (DQP). LastName+FirstName absent from XML.
-17  Person      Guardrail: KQ>KQH  OperatorLicenseNumberDH=D999888777, N... [    ]
+17  Person      Guardrail: KQ>KQH  OperatorLicenseNumberDH=D999888777, R... [    ]
               Expected: DriverHistoryQuery fires (KQ). RegistrationStateDH+LastName+FirstName+DOB+SexCodeDH absent from XML.
 18  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
@@ -177,4 +177,4 @@ COMBO COVERAGE (15/15):
   ArticleSingleQuery: 1/1 -- T36(ACQA)
   BoatQuery: 4/4 -- T24(BQ+Reg), T26(BQ+H), T28(ACQB+ACQB), T30(ACQBH+ACQBH)
 
-IMPORT FILE: AZ_AZDPS_v3.10.json
+IMPORT FILE: AZ_AZDPS_v3.11.json

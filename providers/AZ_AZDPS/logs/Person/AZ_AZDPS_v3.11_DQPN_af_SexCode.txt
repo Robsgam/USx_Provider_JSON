@@ -1,0 +1,90 @@
+﻿================================================================
+TEST LOG: AZ_AZDPS Person DriverLicenseQuery
+Combo: DQPN_af_SexCode (DQPN_af_SexCode (auto))
+Date: 2026-08-12 14:23:27
+Result: PASS
+JSON Version: 3.11
+Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","Requestor":"X","SexCode":"Male","dexStateUserId":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZVK15ZADBF50K6FZZ46Y78X">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KZVK15ZADBF50K6FZZ46Y78X</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <SexCode>M</SexCode>
+            <Requestor>SGAMBELLONE R</Requestor>
+            <BadgeNumber>MK43RS</BadgeNumber>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "sexAttrId":  "69585921178"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZVK15ZADBF50K6FZZ46Y78X
+  ImageIndicator                 N
+  SexCode                        M
+  Requestor                      SGAMBELLONE R
+  BadgeNumber                    MK43RS
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01KZVK15ZADBF50K6FZZ46Y78X). kind=any-field; anyField=SexCode; expectedKeyRef=DQPN; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

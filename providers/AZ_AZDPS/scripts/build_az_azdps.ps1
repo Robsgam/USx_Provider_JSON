@@ -160,7 +160,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.10'
+$Version = '3.11'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -938,14 +938,30 @@ $perLayout = MakeLayouts @(
             # Row shape [6 3 3] matches FL/NY's DH row 1 exactly (OLN | State | Purpose Code).
             @{ id = 'ROW_PER_DH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'OLN_DH_Input';     node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
-                # v3.10 STATE CONVENTION -- DH is the ONE case that cannot take the "leave blank"
-                # hint, because State is set[]-MANDATORY on both KQ combos: blank means the query
-                # cannot fire, so "leave blank for AZ" would be a lie. FL_FCIC is the only other
-                # provider with a mandatory DH State and it uses exactly this -- blank, labelled
-                # 'State (required)', no default. Adopted verbatim so the two agree.
-                # The AZ default is dropped for the same reason it was wrong to HIDE the field: it
-                # silently pinned every driver-history query to Arizona. The officer now picks.
-                @{ id = 'StateDH_Input';   node = Sel 'RegistrationStateDH' 'State (required)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
+                # v3.11 -- initialValue='AZ' RESTORED, field STAYS VISIBLE. This is the fix for a
+                # defect I introduced at v3.10 and Rob hit on the very first DH test:
+                #   "looks like t26 is stuck  there was not send button"
+                # THE MECHANISM, and it is already recorded in this repo from NY v4.20: a field in
+                # set[] makes the BROWSER gate the Send button until it has a value. RegistrationStateDH
+                # is set[]-MANDATORY on both KQ combos. v3.10 made it visible (correct) AND dropped its
+                # default (wrong), so it rendered empty and DH became unsubmittable -- T26 had no Send
+                # button at all. The test plan could not paper over it either: the plan fills only
+                # Name/DOB/Sex on KQH because under v3.9 the field was hidden+prefilled and therefore
+                # never a driven control.
+                # WHY BLANK IS RIGHT ON FL AND WRONG HERE -- the distinction I missed at v3.10:
+                # FL_FCIC's DriverHistory is OUT-OF-STATE ONLY, so its officer must always pick a
+                # state and 'State (required)' with no default is correct there. AZ's DH combos are
+                # both (In/Out) -- in-state is the COMMON case -- so a blank mandatory State just
+                # blocks the ordinary query.
+                # VISIBLE + DEFAULTED is what satisfies both goals at once, and it is the NJ/TX
+                # pattern: Send is never gated, in-state stays one-click, and out-of-state is reachable
+                # because the officer can CHANGE it. The original defect was that the field was HIDDEN
+                # and therefore unchangeable -- never that it carried a default.
+                # Safe under BUILD_RULES 24: no AZ combination requires State ABSENT and there is no
+                # NOT_EXISTS gate on it anywhere, so the prefill cannot shadow one path over another.
+                # Label back to bare 'State' -- with an always-present default, '(required)' told the
+                # officer nothing and implied they had to act.
+                @{ id = 'StateDH_Input';   node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'AZ' } 'ROW_PER_DH_1' }
                 @{ id = 'Purpose_DH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' }
             )}
             # v3.10 (L8 + L7): First BEFORE Last, all four name parts on one row, and 'MI' ->

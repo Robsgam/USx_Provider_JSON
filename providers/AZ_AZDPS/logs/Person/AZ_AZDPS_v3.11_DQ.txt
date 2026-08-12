@@ -1,0 +1,80 @@
+﻿================================================================
+TEST LOG: AZ_AZDPS Person DriverLicenseQuery
+Combo: DQ (DQ (auto))
+Date: 2026-08-12 14:23:35
+Result: PASS
+JSON Version: 3.11
+Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"OperatorLicenseNumber":"D999888777","Requestor":"X","dexStateUserId":"X"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZVJWK8K71XQ20JBX5594CXK">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KZVJWK8K71XQ20JBX5594CXK</Id>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZVJWK8K71XQ20JBX5594CXK
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01KZVJWK8K71XQ20JBX5594CXK). kind=combo; anyField=; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

@@ -79,7 +79,7 @@ KNOWN LIMITATIONS (4):
   ORDER IS LOAD-BEARING: DQ{OLN} set[] is a STRICT SUBSET of DQP{OLN} set[], so DQP must precede DQ
   or the photo path is dead on arrival; DQN set[] is a subset of both ACWL and DQPN.
 
-  DQPN -- Photo request by Name (devdoc #2) [PENDING]
+  DQPN -- Photo request by Name (devdoc #2) [CONFIRMED]
     set: dexStateUserId, ImageIndicator, NameLast, NameFirst, Requestor
     any: BirthDate, SexCode, nameMiddle, nameSuffix
     conditions: OperatorLicenseNumber NOT_EXISTS   (OLN>Name guardrail)
@@ -87,13 +87,13 @@ KNOWN LIMITATIONS (4):
     metadata: DQP{Name} = Set[BadgeNumber, ImageIndicator, Name, Requestor] Any[BirthDate, SexCode]
     NOTE: NO State -- that variant defines none, so RegistrationState is deliberately absent from any[]
 
-  DQP -- Photo request by OLN (devdoc #5) [PENDING]
+  DQP -- Photo request by OLN (devdoc #5) [CONFIRMED]
     set: dexStateUserId, ImageIndicator, OperatorLicenseNumber, Requestor
     any: (none -- metadata defines NO <Any> for this variant)
     keyReference: DQP
     metadata: DQP{OperatorLicenseNumber} = Set[BadgeNumber, ImageIndicator, OperatorLicenseNumber, Requestor]
 
-  ACWL -- Badge + Name + DOB + Sex (devdoc #1 In / #6 Out) [PENDING]
+  ACWL -- Badge + Name + DOB + Sex (devdoc #1 In / #6 Out) [CONFIRMED]
     set: dexStateUserId, BirthDate, NameLast, NameFirst, SexCode
     any: nameMiddle, nameSuffix, RegistrationState
     conditions: dexStateUserId EXISTS; OperatorLicenseNumber NOT_EXISTS
@@ -102,7 +102,7 @@ KNOWN LIMITATIONS (4):
     NOTE: metadata's Any[OperatorLicenseNumber] deliberately NOT carried -- OLN is this combo's
           NOT_EXISTS gate, and gate-xor-companion (verify_build CHECK 14) forbids both roles.
 
-  DQN -- Name (devdoc #3 In / #7 Out) [PENDING]
+  DQN -- Name (devdoc #3 In / #7 Out) [CONFIRMED]
     set: NameLast, NameFirst
     any: BirthDate, SexCode, dexStateUserId, nameMiddle, nameSuffix, RegistrationState
     conditions: OperatorLicenseNumber NOT_EXISTS
@@ -112,7 +112,7 @@ KNOWN LIMITATIONS (4):
     BirthDate: CommsysParseDateRuleHandler yyyy-MM-dd -> yyyyMMdd
     Sex: NIBRS reverse-lookup -> M/F/U
 
-  DQ -- OLN (devdoc #4 In / #8 Out) [PENDING]
+  DQ -- OLN (devdoc #4 In / #8 Out) [CONFIRMED]
     set: OperatorLicenseNumber
     any: RegistrationState
     keyReference: DQ
