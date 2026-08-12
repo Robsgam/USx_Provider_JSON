@@ -976,3 +976,47 @@ CROSS-REFERENCE INDEX
   LIMITATION #34 -> Section 10 (Build Process) -- DH-suffix CAD unreachable
   LIMITATION #35 -> Section 5 (Combo Routing) -- OOS home-state misroute
   LIMITATION #36 -> Section 5 (Combo Routing) -- Choice-set OOS combos missing
+
+LIMITATION #40: THE WIRE IS A UNION ACROSS EVERY MATCHING COMBINATION, NOT THE
+  FIRING COMBINATION'S FIELD LIST.
+  STATUS: LIVE-PROVEN providers/FL_FCIC/logs/Boat/FL_FCIC_v7.23_FBQDecalNumber_af_BoatHullIdNumber.txt
+  Control (must carry NEITHER field): providers/FL_FCIC/logs/Boat/FL_FCIC_v7.23_FBQDecalNumber.txt
+  Quantified 2026-08-12: 38/38 Boat logs predicted correctly, 0 mispredicted, 37 conditions evaluated.
+
+  A field reaches the CommSys request when the officer's fill satisfies ANY built combination
+  that defines it -- NOT only the combination that actually fires. Removing a field from the
+  firing combination's set[]/any[] therefore does NOT guarantee it stops transmitting.
+
+  THE PROOF, and why it is not ambiguous. FL_FCIC v7.23 BoatQuery, fill = decalNumber + hull
+  (+ the form-prefilled relatedHitSearchIndicator=Y and ImageIndicator=Y):
+    wire = BoatHullIdNumber, DecalNumber, Id, ImageIndicator, MessageType,
+           RelatedHitSearchIndicator, Requestor
+    - DecalNumber is in NO QB combination, so the FIRING combo is unambiguously FBQ{Decal};
+      audit_log_combo_attribution independently agrees (110/110 across the sweep).
+    - FBQ{Decal}'s any[] at v7.23 is [BoatHullIdNumber, titleLienInformation,
+      RegistrationNumber]. It defines NEITHER ImageIndicator NOR RelatedHitSearchIndicator.
+    - Both nevertheless ride, because the same fill ALSO satisfies QB{BoatHullIdNumber}
+      (set[Hull, relatedHitSearchIndicator], condition relatedHitSearchIndicator EXISTS),
+      and QB defines both.
+  The control case settles it: fill = decalNumber alone, or decalNumber + titleLienInformation,
+  matches no QB combination, and those wires carry NEITHER field -- even though the form still
+  holds ImageIndicator=Y. So it is not "the form value is always sent"; it is match-driven.
+
+  CONSEQUENCES:
+  1. A per-COMBINATION over-permit is not necessarily a wire defect, and removing the field from
+     the firing combo is not necessarily a fix. Ask instead: does ANY matching combination define
+     it? FL_FCIC v7.23 removed ImageIndicator from all four FBQ combos (both authorities agree it
+     does not belong there -- metadata FBQ <Any> and devdoc items 1-4 list it nowhere) and 5 of 8
+     FBQ wires still carry it, because those 5 fills also match a QB combination.
+  2. audit_requirement_fidelity's OVER-PERMITTED check models the firing combination only, so it
+     cannot express this. Its $formOnly whitelist (ImageIndicator, RegistrationState) may well be
+     an empirical workaround for exactly this behaviour rather than an oversight -- do not remove
+     that whitelist without re-reading this entry first.
+  3. Identifier-priority guardrails still work, because they change WHICH combos MATCH (a
+     NOT_EXISTS condition makes the loser stop matching), not merely which one is ordered first.
+     That is why the Hull>Reg NOT_EXISTS gates de-bleed correctly while an any[] removal does not.
+
+  NOT YET ESTABLISHED: whether this generalises beyond BoatQuery/FL_FCIC. Discriminating test --
+  on any provider, fill a combination whose siblings define an extra optional it does not, and
+  check whether the sibling's field rides. Until run, treat #40 as proven for FL_FCIC BoatQuery
+  and STRONGLY INDICATED elsewhere.

@@ -3,9 +3,56 @@ FL_FCIC -- Build Notes
 Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
-v7.23  2026-08-12  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v7.23  TENANT-VERIFIED 2026-08-12 -- ALL-PASS 110/110, and the sweep produced LIMITATION #40
+  SWEEP: Vehicle 20 / Person 21 / Firearm 15 / Article 16 / Boat 38 = 110 PASS / 0 FAIL / 0 PENDING.
+    Four log gates all 110/110 -- 6c content, 6d metadata, 2i attribution, plan completeness 5/5
+    entities. Submitted-vs-captured reconciled per entity, every one exact.
+  THE THREE DECISIONS THIS SWEEP EXISTED TO SETTLE, all confirmed ON THE WIRE:
+    - Rob's Boat Stolen Check 'Y': 24 QB wires carry RelatedHitSearchIndicator -- 18 Y, 6 N (the
+      toggle tests), ZERO absent. The default reaches the wire.
+    - The BQ-ahead-of-QB reorder: BQBoatHullIdNumber and BQRegistrationNumber both FIRED and logged.
+      Before the reorder the prefill shadowed them dead, so this is the recovery proven, not argued.
+    - FL's DH destination state: <State>NJ</State> on 7 of 7 DH wires, ZERO carrying FL. The FCIC
+      rule ("destination something other than FL") holds, and an FL default would have prefilled the
+      one illegal value on all seven.
+  ** LIMITATION #40 -- THE WIRE IS A UNION ACROSS EVERY MATCHING COMBINATION. LIVE-PROVEN HERE. **
+    Chasing why 5 of 8 FBQ wires still carried ImageIndicator AFTER v7.23 removed it from all four
+    FBQ combos' any[] AND defaults[]. Rob: "do that" (chase the mechanism).
+    THE DISCRIMINATOR, from the committed logs -- no new test was needed, because the two candidate
+    explanations predict DIFFERENT FIELD SETS:
+      FBQDecalNumber_af_BoatHullIdNumber.txt wire =
+        BoatHullIdNumber, DecalNumber, Id, ImageIndicator, MessageType,
+        RelatedHitSearchIndicator, Requestor
+      DecalNumber is in NO QB combination -> the firing combo is unambiguously FBQ{Decal}, so gate
+      2i was RIGHT and "attribution is broken" is REFUTED. Yet ImageIndicator AND
+      RelatedHitSearchIndicator ride, and FBQ{Decal} defines neither.
+      They ride because the SAME FILL also satisfies QB{BoatHullIdNumber}, which defines both.
+    CONTROL: decal alone, and decal+titleLien, match no QB combination -- and those wires carry
+      NEITHER field, though the form still holds ImageIndicator=Y. So it is NOT "a form value is
+      always sent"; it is MATCH-driven.
+    QUANTIFIED: predicted "ImageIndicator on the wire IFF the fill matches some combination that
+      defines it" across ALL 38 Boat logs -> 38 correct / 0 mispredicted, 37 conditions actually
+      evaluated (the first run of this probe threw 12 null-field exceptions and I did NOT report its
+      38/38 until it re-ran clean -- an unevaluated condition would have made the agreement vacuous).
+    WHAT IT MEANS, and it is bigger than FL:
+      1. A per-COMBINATION over-permit is not automatically a wire defect, and removing the field
+         from the firing combo is not automatically a fix. The v7.23 change was still correct by both
+         authorities (metadata FBQ <Any> and devdoc items 1-4 list ImageIndicator nowhere) and it did
+         reduce the leak -- with the old defaults[] entry all 8 FBQ wires would have carried it, now
+         5 do -- but it cannot reach zero while QB defines the field and the fill matches QB.
+      2. audit_requirement_fidelity models the FIRING combination only, so it cannot express this.
+         Its $formOnly whitelist (ImageIndicator, RegistrationState) now looks like an EMPIRICAL
+         WORKAROUND for exactly this behaviour rather than an oversight. Do not narrow that whitelist
+         without reading LIMITATION #40 first -- that is a change of position from this same session,
+         where I had it recorded as a plain gate hole.
+      3. Identifier-priority guardrails are unaffected: a NOT_EXISTS condition changes which combos
+         MATCH, not merely which is ordered first, which is why Hull>Reg de-bleeds correctly.
+    NOT ESTABLISHED: whether #40 generalises past FL BoatQuery. Discriminating test recorded in the
+    KB entry. Treated as proven here, STRONGLY INDICATED elsewhere.
+  PROBE DISCIPLINE THIS PASS -- three of my own probes were wrong before any finding was real:
+    matched '_FBQ' which also hit 'QB..._guardrail_vs_FBQ...'; searched the WHOLE log file so the
+    RESPONSE section counted as wire evidence; and the null-condition run above. Every one was caught
+    by adding a CONTROL (a QB log that SHOULD carry the field) and by printing what was evaluated.
 
 v7.23  2026-08-12  ImageIndicator REMOVED from all 4 FBQ combos -- a real over-permit since v7.6
   WHY: Rob asked for another pass -- "we have yet to review and not find an issue" -- and there was one.

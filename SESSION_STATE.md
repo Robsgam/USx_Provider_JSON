@@ -16,7 +16,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (50 logs) |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
-| FL_FCIC | v7.23 | NEVER-TESTED -- 110 test(s) owed |
+| FL_FCIC | v7.23 | ALL-PASS (110 logs) |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.3 | NEVER-TESTED -- 41 test(s) owed |
 | NJ_NJCJIS | v4.15 | ALL-PASS (40 logs) |
@@ -33,46 +33,48 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**FL_FCIC v7.23 BUILT 2026-08-12. NEXT: IMPORT + 110-test sweep (Rob's, not mine) -- "once we test
-live(not with you) we can finailize any assumptions."** v7.20 4 layout rows retired; v7.21 Gun Make
-under Serial + **NCIC Image='Y' all 5 entities**; v7.22 **Boat Stolen Check='Y'** (his direct order) +
-**BQ moved ahead of QB**, recovering the 2 OOS combos his prefill shadowed (4 dead -> 2, shadow 2F -> 0F;
-the 2 left REGISTERED `dead-combo` by his decision); **v7.23 removed `ImageIndicator` from all 4 FBQ
-combos -- a REAL over-permit live since v7.6** (metadata FBQ `<Any>` and devdoc items 1-4 `(In)` list it
-nowhere; 5-9 `(In/Out)` do, so QB keeps it). PHASE 1: fidelity 30br 0/0, efficacy **12/12**, no FL F/W.
+**FL_FCIC v7.23 TENANT-VERIFIED 2026-08-12 -- ALL-PASS 110/110** (Veh 20 / Per 21 / Gun 15 / Art 16 /
+Boat 38), four log gates 110/110, submitted-vs-captured reconciled per entity. **All three contested
+decisions WIRE-PROVEN:** Boat Stolen Check 'Y' rides 24 QB wires (18 Y / 6 N toggle / **0 absent**); the
+BQ-ahead-of-QB reorder RECOVERED `BQBoatHullIdNumber` + `BQRegistrationNumber` (both fired, where the
+prefill had shadowed them dead); `<State>NJ</State>` on **7/7** DH wires, **0** FL.
 
-**⚠️ TWO GATE HOLES, CHARACTERISED, BOTH ROB'S SCOPE CALL -- do not silently fix:**
-**(A) `$formOnly` WHITELIST HIDES REAL OVER-PERMITS.** `audit_requirement_fidelity` exempts
-`ImageIndicator` AND `RegistrationState` from OVER-PERMITTED -- exactly how v7.23's defect hid for 16
-versions. Confirmed twice: found by hand from the raw `<Requirements>`, then fuzz seed 72431 raised
-`over-permit @ BoatQuery[10] RegistrationState` and it SURVIVED the panel. Narrowing it could surface
-findings on all 20. **(B) A RE-ROUTE NOTE MASKS A DROPPED OPTIONAL.** `audit_devdoc_optionals` prints
-`re-routes X -> Y (discriminator)` as a NOTE and never checks the DESTINATION still carries the
-optionals -- dropped `Requestor` from FBQ{TitleLien}, ran the gate ALONE on the asserted mutation,
-**0 FAIL**. Fidelity is silent by design (a missing OPTIONAL is neither UNDER nor OVER); nothing owns it.
+**⛔ LIMITATION #40 -- THE WIRE IS A UNION ACROSS EVERY MATCHING COMBINATION, not the firing combo's
+field list. LIVE-PROVEN, 38/38 Boat logs, 0 mispredicted.** A field rides when the fill matches ANY
+combination defining it. Proof: `FBQDecalNumber_af_BoatHullIdNumber` carries `DecalNumber` (in NO QB
+combo, so FBQ{Decal} fired -- 2i was RIGHT) yet also `ImageIndicator` + `RelatedHitSearchIndicator`,
+which FBQ{Decal} does not define; they ride because the same fill also satisfies QB{Hull}. Control:
+decal-alone matches no QB combo and carries neither, though the form still holds `ImageIndicator=Y` --
+so it is MATCH-driven, not "the form value is always sent".
+**THIS CORRECTS WHAT I WROTE EARLIER TODAY.** I recorded the `$formOnly` whitelist (ImageIndicator,
+RegistrationState) as a plain gate hole. #40 says it looks like an EMPIRICAL WORKAROUND for this
+behaviour -- `audit_requirement_fidelity` models the FIRING combo only and structurally cannot express
+a union. **Do NOT narrow that whitelist without reading #40 first.** Removing a field from the firing
+combo is also not automatically a fix: v7.23 stripped `ImageIndicator` from all 4 FBQ combos (correct
+per both authorities) and 5 of 8 FBQ wires still carry it.
+**STILL OPEN, Rob's call:** `audit_devdoc_optionals` prints `re-routes X -> Y (discriminator)` as a
+NOTE and never checks the DESTINATION still carries the optionals -- dropped `Requestor` from
+FBQ{TitleLien}, ran the gate ALONE on the asserted mutation, **0 FAIL**. Nothing owns that class.
 
-**⛔ MESSAGE KEYS ARE NEVER SENT.** The wire carries `<MessageType>BoatQuery</MessageType>` + the FIELDS
--- Rob: *"we only send the transaction type and required and optional fields ... not the message keys."*
-Proven: log `FL_FCIC_v7.8_QBBoatHullIdNumber.txt` holds the literal `QB` **ZERO** times. `FBQ`/`QB`/`BQ`
-are three `<Combination>`s of ONE `<Transaction name="BoatQuery">`, not three transactions. Every devdoc
-says `Data-Mined Transactions: NCIC (QA,QB,QG,QV,QW)`; I swept 20 JSONs for keyRefs matching those codes
-and reported **10 providers building them (FL 12, TX 7)** -- **100% FALSE**, keyRefs are internal labels
-as CLAUDE.md already states. **READ THE WIRE BEFORE SWEEPING 20 PROVIDERS.**
-**NCIC IMAGE RULE CHANGED (Rob): 'Y' on EVERY entity** -- he ruled the GATE wrong, not the build.
+**⛔ MESSAGE KEYS ARE NEVER SENT** -- the wire carries `<MessageType>` + FIELDS (Rob). `FBQ`/`QB`/`BQ`
+are three `<Combination>`s of ONE `<Transaction name="BoatQuery">`. Off this I swept 20 JSONs for
+keyRefs matching each devdoc's `Data-Mined Transactions: NCIC (QA,QB,QG,QV,QW)` line and reported
+**10 providers building them -- 100% FALSE**. **READ THE WIRE BEFORE SWEEPING 20 PROVIDERS.**
+**NCIC IMAGE RULE (Rob): 'Y' on EVERY entity** -- he ruled the GATE wrong, not the build.
 `audit_cross_provider` now expects 'Y' on Vehicle (guards HOISTED out of the Person block first, else
 Vehicle got a silently dead guard; LAW-2 proven 3 ways). CLAUDE.md + FIELD_REFERENCE + BUILD_RULES 684 +
 `preflight_rebuild` corrected. **NOT MECHANICAL: AZ has it in 2 `set[]`s, LA in 1 + 2 conditions.** All
-19 others carry `[FLAG:ncic-image-default-y-everywhere]`, which BLOCKS their enforce PHASE 1 (verified
-on NJ) -- 6 tenant-verified providers un-done until rebuilt; lift if he scopes narrower.
-**USE [Certain]/[Likely]/[Guessing] TAGS.** **THE STATE-DEFAULT RULE (a stuck T26 to learn):** a `set[]`
+19 others carry `[FLAG:ncic-image-default-y-everywhere]`, BLOCKING their enforce PHASE 1 (verified on
+NJ) -- 6 tenant-verified providers un-done until rebuilt; lift if he scopes narrower.
+**USE [Certain]/[Likely]/[Guessing] TAGS.** **STATE-DEFAULT RULE (a stuck T26 to learn):** a `set[]`
 field with no value **GATES THE BROWSER SEND BUTTON** (NY v4.20) -- default a mandatory State only where
-the devdoc has an (In)/(In/Out) combo. AZ's DH is (In/Out) -> defaults; FL's is (Out)-ONLY -> blank,
-labelled `Destination State (required, not FL)` (FCIC 2026-06-12: destination must not be FL).
+the devdoc has an (In)/(In/Out) combo. AZ DH (In/Out) -> defaults; FL DH (Out)-ONLY -> blank + label.
 
 **JIRA: one comment per RELEASE, EDIT in place -- never a sibling correction.** Format in
 `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`, procedure in `JIRA_REFERENCE.txt` (**no status column**).
-No delete tool; edits IRREVERSIBLE. **NOTHING POSTS WITHOUT ROB'S EXPLICIT APPROVAL (08-12).**
-Awaiting: AZ v3.11, FL v7.22, IL v2.3.
+No delete tool; edits IRREVERSIBLE. **DRAFT AND WAIT every provider, every time -- one approval != the
+next.** **Tenant info stays OFF tickets** (-> `IMPORT_LEDGER.md` B/C). **GUI ONLY; form review is Rob's
+MANUAL gate -- never prompt.** Awaiting: AZ v3.11, **FL v7.23 (RELEASE LINE, ALL-PASS 110/110)**, IL v2.3.
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -81,11 +83,8 @@ Awaiting: AZ v3.11, FL v7.22, IL v2.3.
 - **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect LA's
   `[WARN] Cross-provider` on EVERY provider's enforce.** Its VehReg is the SAME CLASS as AZ's DH bug
   (both combos `(In/Out)`, State in `set[]`, control BLANK -> Send gated). NOT FIXED; Rob's call.
-- **Jira: DRAFT AND WAIT, every provider, every time** (one approval != the next). **Tenant info stays
-  OFF tickets** -- attachment/catalog/Foundation go in `IMPORT_LEDGER.md` B and C.
 - **DRIVER HISTORY IS NOT SUPPORTED FROM CAD** (Rob 08-12). So "DH has no State combo default and CAD
   ignores form initialValue" is MOOT -- I raised it, he closed it. Never re-raise.
-- **GUI ONLY** (memory has the button map). **Form review is his MANUAL gate** -- never prompt.
 
 ## STATE
 
@@ -102,10 +101,10 @@ fidelity advisory 11 UNDER / 40 OVER | `audit_devdoc_optionals`+`audit_log_conte
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING (cases: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c)
 
-- **A RECORD IS A CLAIM -- READ THE ARTIFACT. Worst repeat offender.** **Exit 0 is not evidence a gate
-  spoke -- grep its VERDICT line, print the DENOMINATOR.** 08-12 gave three confident EMPTY answers
-  (ParserError matching neither `RESULTS:` nor `FAIL`; a probe typing `QUERYINPUTDATAMAP` for
-  `...MAPPING`; `Get-ProviderRootJson` needing BOTH `-Provider` AND `-ProvDir`).
+- **A RECORD IS A CLAIM -- READ THE ARTIFACT.** **Exit 0 is not evidence a gate spoke -- grep its
+  VERDICT line, print the DENOMINATOR.** 08-12: three confident EMPTY answers, plus a wire probe that
+  matched `_FBQ` inside `QB..._vs_FBQ...` and searched the RESPONSE section as if it were the request.
+  **ADD A CONTROL** (a log that SHOULD carry the field) -- that is what caught all of them.
 - **VERIFY WITH A DIFFERENT PATTERN THAN YOU EDITED WITH** -- my N->Y sweep and its residual check
   shared one over-strict regex, so a `;   value = 'N'` site survived and the check said 0 left.
 - **A GREEN GATE IS NOT COVERAGE OF THE QUESTION YOU ASKED.** Ask what it COMPARES: fidelity said
