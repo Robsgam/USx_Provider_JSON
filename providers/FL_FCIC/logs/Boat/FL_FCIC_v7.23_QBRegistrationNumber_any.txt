@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: FL_FCIC Article ArticleSingleQuery
-Combo: QAOwnerAppliedNumber_af_ImageIndicator (QAOwnerAppliedNumber_af_ImageIndicator (auto))
-Date: 2026-08-12 17:59:34
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBRegistrationNumber_any (QBRegistrationNumber_any (auto))
+Date: 2026-08-12 18:03:01
 Result: PASS
 JSON Version: 7.23
-Entity Fingerprint: 838b3d18ab0127097eb712b950099546abbeff7c75910538a5313abcbf4a1527
+Entity Fingerprint: c6f33d970ff6b3c101b417041f45bda131d9bffc58ab242b10c0691565c272c2
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"ArticleTypeCode":"BBICYCL","ImageIndicator":"N","ownerAppliedNumber":"OAN999","relatedHitSearchIndicator":"Y"}
+{"ImageIndicator":"N","RegistrationNumber":"FL1234AB","relatedHitSearchIndicator":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZVZNG8NXGPT831MEWTX97QD">
+    <api:Transaction id="01KZVZWMNPMWN3JE7AQQKHX0CE">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MARK43LEO</Id>
@@ -35,12 +35,11 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>ArticleSingleQuery</MessageType>
-            <Id>01KZVZNG8NXGPT831MEWTX97QD</Id>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KZVZWMNPMWN3JE7AQQKHX0CE</Id>
             <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
             <ImageIndicator>N</ImageIndicator>
-            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
-            <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
             <Requestor>SGAMBELLONE R</Requestor>
           </Request>
         </Transaction>
@@ -64,15 +63,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KZVZNG8NXGPT831MEWTX97QD
+  Id                             01KZVZWMNPMWN3JE7AQQKHX0CE
   RelatedHitSearchIndicator      Y
   ImageIndicator                 N
-  ArticleTypeCode                BBICYCL
-  OwnerAppliedNumber             OAN999
+  RegistrationNumber             FL1234AB
   Requestor                      SGAMBELLONE R
 
 NOTES
 -----
-Automated capture (txId 01KZVZNG8NXGPT831MEWTX97QD). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QAOwnerAppliedNumber; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZVZWMNPMWN3JE7AQQKHX0CE). kind=any; anyField=; expectedKeyRef=QBRegistrationNumber; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

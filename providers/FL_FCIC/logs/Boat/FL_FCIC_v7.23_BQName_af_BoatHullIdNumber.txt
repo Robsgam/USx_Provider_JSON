@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: FL_FCIC Article ArticleSingleQuery
-Combo: QAOwnerAppliedNumber_af_ImageIndicator (QAOwnerAppliedNumber_af_ImageIndicator (auto))
-Date: 2026-08-12 17:59:34
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: BQName_af_BoatHullIdNumber (BQName_af_BoatHullIdNumber (auto))
+Date: 2026-08-12 18:03:17
 Result: PASS
 JSON Version: 7.23
-Entity Fingerprint: 838b3d18ab0127097eb712b950099546abbeff7c75910538a5313abcbf4a1527
+Entity Fingerprint: c6f33d970ff6b3c101b417041f45bda131d9bffc58ab242b10c0691565c272c2
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"ArticleTypeCode":"BBICYCL","ImageIndicator":"N","ownerAppliedNumber":"OAN999","relatedHitSearchIndicator":"Y"}
+{"BirthDate":"1990-01-15","BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","relatedHitSearchIndicator":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZVZNG8NXGPT831MEWTX97QD">
+    <api:Transaction id="01KZVZSS4G3TC16TMM7CYH6AY7">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MARK43LEO</Id>
@@ -35,13 +35,15 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>ArticleSingleQuery</MessageType>
-            <Id>01KZVZNG8NXGPT831MEWTX97QD</Id>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KZVZSS4G3TC16TMM7CYH6AY7</Id>
             <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-            <ImageIndicator>N</ImageIndicator>
-            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
-            <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>Y</ImageIndicator>
+            <State>GA</State>
             <Requestor>SGAMBELLONE R</Requestor>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -64,15 +66,17 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01KZVZNG8NXGPT831MEWTX97QD
+  Id                             01KZVZSS4G3TC16TMM7CYH6AY7
   RelatedHitSearchIndicator      Y
-  ImageIndicator                 N
-  ArticleTypeCode                BBICYCL
-  OwnerAppliedNumber             OAN999
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 Y
+  State                          GA
   Requestor                      SGAMBELLONE R
+  BirthDate                      19900115
+  Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01KZVZNG8NXGPT831MEWTX97QD). kind=any-field; anyField=ImageIndicator; expectedKeyRef=QAOwnerAppliedNumber; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZVZSS4G3TC16TMM7CYH6AY7). kind=any-field; anyField=BoatHullIdNumber; expectedKeyRef=BQName; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
