@@ -52,6 +52,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v3.11 (2026-08-12)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| AZ_AZDPS_v3.11.json | v3.11 | Current | 68P/0F/0W/0LIM. |
 ## v3.10 (2026-08-12)
 
 | File | Version | Status | Notes |

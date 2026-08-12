@@ -36,7 +36,7 @@ in this project; hence the verification.)
 - 776896 (2026-07-10, Leo Hisoire) — a scheduling/roadmap note referencing FB-6040 and a Friday
   meeting. **Not a changelog.** No 🤖 auto-update comment has ever been posted here.
 
-**Current: v3.10 — BUILT 2026-08-12 (cosmetic/layout pass). RE-IMPORT + full 55-test re-sweep owed.**
+**Current: v3.11 — TENANT-VERIFIED 2026-08-12, ALL-PASS 50/50** (Veh 9 / Per 21 / Gun 6 / Art 3 / Boat 11), four log gates 50/50, inflation 0/0/0/0. **Out-of-state driver history now works and is wire-proven** (`<State>NJ</State>` on 7 of 7 DH logs; at v3.9 the hidden AZ-pinned control made it unreachable). v3.11 restored the DH State default that v3.10 wrongly dropped -- a set[] field with no value gates the browser Send button. Prior: v3.10 cosmetic/layout pass, superseded same day.
 v3.10 took audit_layout_flow from 12 findings to 0. **The wire is provably unchanged** — all three
 bundles'' QIDMs are byte-identical to v3.9 — so this is layout and labels only. Changes: SSN and Race
 grouped onto their own row (both are RMS-only, in NO CommSys combination, and SSN had been sitting

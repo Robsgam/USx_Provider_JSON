@@ -2,9 +2,14 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.10** | Generated: 2026-08-12
+Current: **v3.11** | Generated: 2026-08-12
 
 ---
+
+## v3.11 -- 2026-08-12 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v3.10 -- 2026-08-12 -- Cosmetic/layout pass -- 12 layout findings -> 0, AND a hidden State field fixed
 
