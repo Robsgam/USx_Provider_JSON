@@ -46,6 +46,16 @@ Re-counted from the emitted v2.2 JSON via `audit_test_coverage`: 9 combos / 9 ma
 as published. Note `audit_combo_reachability` says "7 combination(s) checked" for IL — that is what it
 COMPARED, not a combo count; do not cite it as one.
 
+**Current: v2.3 — BUILT 2026-08-12, re-import + full 41-test re-sweep OWED.** Stolen Check now
+defaults to `Y` on all four entities that carry it (Vehicle / Person / Firearm / Boat) — form
+`initialValue` **and** the matching combo `defaults[]` on all eight carrying combos, because CAD
+ignores form defaults and a form-only change would leave CAD-originated queries with no stolen check
+at all. Safe: the field is `any[]`-only everywhere on IL, so no routing moved — IL's Vehicle
+discriminator is `RegistrationState` (`Z2.P` EXISTS vs `Z5` NOT_EXISTS) and is untouched. Rob's
+standing rule, 2026-08-12: default everywhere it makes sense and does not ruin in-state routing.
+IL and FL were the only two of eight tested providers not following it. Gates: validator 61P/0F/0W,
+prefill-shadow 5 pairs 0 FAIL, combo reachability 7 checked all reachable, audit_cad 60P/0F/0W.
+
 ## Owed at the next lift of the Jira hold
 
 - **v2.2** (2026-08-07) — cosmetic pass on Rob's rendered-form review of v2.1: Vehicle VIN label

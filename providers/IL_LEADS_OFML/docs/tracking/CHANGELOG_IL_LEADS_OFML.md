@@ -2,9 +2,14 @@
 
 Auto-generated from `IL_LEADS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.2** | Generated: 2026-08-07
+Current: **v2.3** | Generated: 2026-08-12
 
 ---
+
+## v2.3 -- 2026-08-12 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.2 -- 2026-08-07 -- Cosmetic pass -- Rob's direct review of the rendered v2.1 form (label/order ONLY)
 

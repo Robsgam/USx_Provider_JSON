@@ -1,12 +1,12 @@
-================================================================
+﻿================================================================
   Build Report: IL_LEADS_OFML
-  Source: IL_LEADS_OFML_v2.2.json
-  Generated: 2026-08-07 15:10
+  Source: IL_LEADS_OFML_v2.3.json
+  Generated: 2026-08-12 13:40
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== IL_LEADS_OFML_v2.2.json ===
+=== IL_LEADS_OFML_v2.3.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=1 fields=3
@@ -36,7 +36,7 @@ LAYOUT DETAIL
       ROW ROW_VEH_2 [4 4 4]
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_VEH_3 [4 4 4]
         VehicleIdentificationNumber (Text | maxLen=20)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
@@ -58,7 +58,7 @@ LAYOUT DETAIL
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
       ROW ROW_PER_4 [4]
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=
@@ -70,7 +70,7 @@ LAYOUT DETAIL
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
       ROW ROW_GUN_2 [4 4]
         gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
@@ -91,7 +91,7 @@ LAYOUT DETAIL
         RegistrationState (Dropdown | attributeTypeId=STATE)
       ROW ROW_BOA_2 [4 4]
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === RMS QIDMs ===
   RMS Person Search query

@@ -16,9 +16,9 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.10 | NEVER-TESTED -- 55 test(s) owed |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
-| FL_FCIC | v7.18 | ALL-PASS (116 logs) |
+| FL_FCIC | v7.19 | NEVER-TESTED -- 116 test(s) owed |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
-| IL_LEADS_OFML | v2.2 | ALL-PASS (41 logs) |
+| IL_LEADS_OFML | v2.3 | NEVER-TESTED -- 41 test(s) owed |
 | NJ_NJCJIS | v4.15 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.23 | ALL-PASS (69 logs) |
 | TX_TLETS | v4.19 | ALL-PASS (92 logs) |

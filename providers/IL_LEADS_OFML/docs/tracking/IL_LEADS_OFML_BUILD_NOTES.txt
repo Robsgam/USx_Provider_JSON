@@ -3,6 +3,30 @@ IL_LEADS_OFML -- Build Notes
 Provider: IL_LEADS_OFML
 State: Illinois
 Network: LEADS (Law Enforcement Agencies Data System)
+v2.3  2026-08-12  Stolen Check defaults to 'Y' on all four entities that carry it
+  WHY: Rob 2026-08-12 -- "if the stolen check is an any it makes sense to use a default of yes to get
+    the most out of every query ... previoulsy i stated to use defaults everywhere where it made sense
+    and didn't ruin in state default routing." IL was one of two providers not following that rule.
+  MEASURED FIRST, across the 8 tenant-tested providers: HI, NY and TX all default their stolen-hit
+    indicator to 'Y' and carry the matching combo defaults[]; only IL and FL left it blank. IL was the
+    widest gap of the two -- FOUR entities affected.
+  CHANGED, form + CAD twin together (a form initialValue alone is HALF a default: CAD ignores form
+    initialValue, so a CAD-originated query would carry no stolen check at all):
+      Vehicle  form 'Y' + defaults[] on Z2.P, Z2.V, Z5
+      Person   form 'Y' + defaults[] on Z2.N, Z2.O
+      Firearm  form 'Y' + defaults[] on QG
+      Boat     form 'Y' + defaults[] on BQ.H, BQ.R
+    SAFE ON ALL FOUR: relatedHitSearchIndicator is any[]-ONLY on every one of those eight
+    combinations, so it cannot shadow a path. Note the discriminator on IL's Vehicle is
+    RegistrationState (Z2.P State EXISTS vs Z5 State NOT_EXISTS) and that is untouched -- the stolen
+    check is not a routing field here, which is exactly why the default is allowed.
+  VERIFIED after: validator 61P/0F/0W, prefill-shadow 5 pairs 0 FAIL, combo reachability 7 checked
+    ALL reachable, audit_cad 60P/0F/0W.
+  COST: the bump archived the v2.2 package (41 logs). Re-import + full re-sweep owed. IL had also been
+    awaiting a re-import at v2.2 already (the tenant was on v2.1), so this folds into that.
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v2.2  2026-08-07  Cosmetic pass -- Rob's direct review of the rendered v2.1 form (label/order ONLY)
   CHANGED: Four items, all officer-facing, ZERO wire/routing/QIDM/combo change.
     (1) Vehicle VIN: 'VIN (Plate wins if both entered)' -> 'Vehicle Identification Number'.

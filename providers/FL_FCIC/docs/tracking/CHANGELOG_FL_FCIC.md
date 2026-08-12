@@ -2,9 +2,14 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.18** | Generated: 2026-08-07
+Current: **v7.19** | Generated: 2026-08-12
 
 ---
+
+## v7.19 -- 2026-08-12 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v7.18 -- 2026-08-06 -- DEX-1283: removed unneeded X default on Attention/Requestor
 

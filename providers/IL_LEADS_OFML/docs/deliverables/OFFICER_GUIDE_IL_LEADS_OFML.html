@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>IL_LEADS_OFML — Officer Query Guide v2.2</title>
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>IL_LEADS_OFML — Officer Query Guide v2.3</title>
 <style>@page { size: portrait; margin: 0.6cm; }
 * { box-sizing: border-box; }
 body { font-family: 'Segoe UI', Arial, sans-serif; color:#1a1a1a; font-size: 8.5pt; line-height:1.25; margin: 0; padding: 4px 8px; }
@@ -19,24 +19,24 @@ thead th.req { color:#7a1f1f; }
 thead th.opt { color:#3a5a3a; }
 .pre { color:#666; font-style:italic; }
 footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777; font-size:7.5pt; }</style></head><body>
-<h1>IL_LEADS_OFML — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.2)</span></h1>
+<h1>IL_LEADS_OFML — Query Guide <span style='font-weight:normal;font-size:60%;color:#555'>(build v2.3)</span></h1>
 <p class='howto'>Find your entity, pick a row by what you want to <b>search by</b>, fill the <b style='color:#7a1f1f'>Must enter</b> fields; <span style='color:#3a5a3a'>You can also add</span> fields are optional. Values in (parentheses) are pre-filled — change only if needed.</p>
 <section class='entity'><h2>Vehicle</h2>
 <table class='qt'><caption>Vehicle Registration</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Plate Number</td><td class='req'>Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Stolen Check, State</td></tr>
-<tr><td class='sb'>Vehicle Identification Number</td><td class='req'>Vehicle Identification Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Stolen Check, Make, Year, State</td></tr>
-<tr><td class='sb'>Plate Number</td><td class='req'>Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Stolen Check</td></tr>
+<tr><td class='sb'>Plate Number</td><td class='req'>Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Stolen Check <span class='pre'>(Y)</span>, State</td></tr>
+<tr><td class='sb'>Vehicle Identification Number</td><td class='req'>Vehicle Identification Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Stolen Check <span class='pre'>(Y)</span>, Make, Year, State</td></tr>
+<tr><td class='sb'>Plate Number</td><td class='req'>Plate Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Plate Type <span class='pre'>(PC)</span>, Plate Year <span class='pre'>(2026)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Person</h2>
 <table class='qt'><caption>Driver License</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Name</td><td class='req'>Date of Birth, Last Name, First Name</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check, Sex</td></tr>
-<tr><td class='sb'>OLN</td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check, State</td></tr>
+<tr><td class='sb'>Name</td><td class='req'>Date of Birth, Last Name, First Name</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span>, Sex</td></tr>
+<tr><td class='sb'>OLN</td><td class='req'>OLN</td><td class='opt'>NCIC Image <span class='pre'>(Y)</span>, Stolen Check <span class='pre'>(Y)</span>, State</td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Firearm</h2>
 <table class='qt'><caption>Firearm</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Serial Number</td><td class='req'>Serial Number</td><td class='opt'>Caliber, Make, NCIC Image <span class='pre'>(N)</span>, Stolen Check</td></tr>
+<tr><td class='sb'>Serial Number</td><td class='req'>Serial Number</td><td class='opt'>Caliber, Make, NCIC Image <span class='pre'>(N)</span>, Stolen Check <span class='pre'>(Y)</span></td></tr>
 </tbody></table>
 </section>
 <section class='entity'><h2>Article</h2>
@@ -46,10 +46,10 @@ footer { margin-top:8px; border-top:1px solid #ccc; padding-top:4px; color:#777;
 </section>
 <section class='entity'><h2>Boat</h2>
 <table class='qt'><caption>Boat</caption><thead><tr><th class='sb'>Search by</th><th class='req'>Must enter</th><th class='opt'>You can also add</th></tr></thead><tbody>
-<tr><td class='sb'>Hull ID Number</td><td class='req'>Hull ID Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Stolen Check, State</td></tr>
-<tr><td class='sb'>Registration Number</td><td class='req'>Registration Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Stolen Check, State</td></tr>
+<tr><td class='sb'>Hull ID Number</td><td class='req'>Hull ID Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Stolen Check <span class='pre'>(Y)</span>, State</td></tr>
+<tr><td class='sb'>Registration Number</td><td class='req'>Registration Number</td><td class='opt'>NCIC Image <span class='pre'>(N)</span>, Stolen Check <span class='pre'>(Y)</span>, State</td></tr>
 </tbody></table>
 </section>
 
-<footer>IL_LEADS_OFML build v2.2 &middot; Generated 2026-08-07 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
+<footer>IL_LEADS_OFML build v2.3 &middot; Generated 2026-08-12 &middot; Reference only — supported search paths and field requirements. If the form on your screen does not match this sheet, this sheet is out of date — ask for the current one.</footer>
 </body></html>

@@ -39,7 +39,7 @@ never Rob's own manual notes, never a third party's.
 - comment 786864 — v7.12 **RELEASE LINE** (118/118 ALL-PASS, both log gates green)
   · ⚠️ **superseded by v7.17** — those 118 logs were archived by the v7.13–v7.17 bumps
 
-**Current: v7.18 — tenant-verified, ALL-PASS 116/116** (Vehicle 20 / Person 21 /
+**Current: v7.19 — BUILT 2026-08-12, re-import + full 116-test re-sweep OWED.** Stolen Check now defaults to 'Y' on Firearm + Article (form default AND the combo defaults[] CAD twin). Boat deliberately excluded -- there the same field is the routing discriminator (EXISTS on QB, NOT_EXISTS on FBQ), so a default would kill the ordinary Boat registration search. Prior: **v7.18 — tenant-verified, ALL-PASS 116/116** (Vehicle 20 / Person 21 /
 Firearm 15 / Article 16 / Boat 44), four log gates green, enforce 41P/0F/0W. Covers v7.13 FBQ hull
 RegistrationNumber, v7.14 FRQ over-permit removal, v7.15 Requestor, v7.16
 RelatedHitSearchIndicator + VINSequenceNumber, v7.17 dead-control removal.

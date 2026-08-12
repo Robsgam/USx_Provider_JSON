@@ -3,6 +3,40 @@ FL_FCIC -- Build Notes
 Started  : 2026-04-07
 Engineer : Gordon Hallof / Claude (claude-sonnet-4-6)
 Directory: C:\Users\Gordon Hallof\FL_FCIC\
+v7.19  2026-08-12  Stolen Check defaults to 'Y' on Firearm + Article (Boat deliberately excluded)
+  WHY: Rob 2026-08-12 -- "if the stolen check is an any it makes sense to use a default of yes to get
+    the most out of every query ... previoulsy i stated to use defaults everywhere where it made sense
+    and didn't ruin in state default routing." FL was one of two providers not following that rule.
+  MEASURED FIRST, across the 8 tenant-tested providers: HI (Article/Boat/Firearm), NY
+    (Article/Firearm) and TX (Article/Boat/Firearm) all default their stolen-hit indicator to 'Y' AND
+    carry the matching combo defaults[]. FL and IL were the only two leaving it blank. So this was
+    never a style question -- FL was the outlier.
+  CHANGED, form + CAD twin together (a form initialValue alone is HALF a default, because CAD ignores
+    form initialValue and would send no stolen check at all):
+      Firearm  form initialValue='Y'  + defaults[] on QGGunSerialNumber, QGNCICNumber,
+                                        QGProcessControlNumber
+      Article  form initialValue='Y'  + defaults[] on QAArticleSerialNumber, QAOwnerAppliedNumber,
+                                        QANCICNumber, QAProcessControlNumber
+    Safe on both: relatedHitSearchIndicator is any[]-ONLY on all seven of those combinations and
+    carries NO condition there, so it cannot shadow a path.
+  BOAT DELIBERATELY NOT CHANGED -- and this is the load-bearing exception. On Boat the SAME field IS
+    the routing discriminator, gated BOTH ways: relatedHitSearchIndicator EXISTS on QB Hull/Reg (where
+    it also sits in set[]) and NOT_EXISTS on FBQ Hull/Reg. A default makes it permanently present,
+    which turns FBQ's NOT_EXISTS gate permanently FALSE and kills the ordinary Boat registration
+    search outright. BUILD_RULES 24. Do not "make Boat consistent" -- blank is the design.
+  A TOOL BUG THIS EXPOSED, fixed in the same pass: audit_prefill_shadow built its prefilled-field map
+    GLOBALLY by fieldId, with no entity scoping. FL carries relatedHitSearchIndicator on Firearm,
+    Article AND Boat, so defaulting the first two made the audit believe Boat's control was prefilled
+    too and it raised two false FAILs ('QB shadows BQ'). A form initialValue lives on ONE QIF; each
+    entity has its own control instance. Now scoped per targetEntity. Verified: 20/20 providers 0 FAIL
+    with non-zero denominators, and LAW 2 re-proven -- a real SAME-entity shadow (AZ ImageIndicator)
+    still FAILs, so only the cross-entity false positive went away.
+  GATES: validator 91P/0F/0W, prefill-shadow 92 pairs 0 FAIL, combo reachability 30 checked ALL
+    reachable, audit_cad 83P/0F/0W.
+  COST: the bump archived the v7.18 package (116 logs). Re-import + full re-sweep owed.
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v7.18  2026-08-06  DEX-1283: removed unneeded X default on Attention/Requestor
   CHANGED: Removed initialValue='X' from the Attention (DH) and Requestor (VehReg, DH, Gun,
     Article, Boat -- 6 hidden feeders total) hidden gate-feeders, and the matching combo

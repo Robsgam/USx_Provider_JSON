@@ -20,6 +20,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.3 (2026-08-12)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| IL_LEADS_OFML_v2.3.json | v2.3 | Current | 61P/0F/0W/0LIM. |
 ## v2.2 (2026-08-07)
 
 | File | Version | Status | Notes |

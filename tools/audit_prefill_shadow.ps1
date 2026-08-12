@@ -56,25 +56,41 @@ Emit "================================================================"
 Emit ''
 
 # ---- always-present fields = every form control carrying a non-empty initialValue -----------------
-$prefilled = @{}
+# SCOPED PER ENTITY, and that scoping is the whole point (fixed 2026-08-12). A form initialValue
+# lives on ONE QIF; each entity has its own layout and its own control instance, so Firearm's
+# prefill cannot populate Boat's control even when both use the SAME fieldId. This map was global,
+# and FL_FCIC is the provider that exposed it: it carries `relatedHitSearchIndicator` on Firearm,
+# Article AND Boat. Defaulting the Firearm/Article controls to 'Y' -- which is correct there,
+# they are any[]-only -- made the global map report the field as prefilled for BOAT too, and the
+# audit then raised two FAILs claiming QB shadows BQ. Boat's own control is blank, so on the wire
+# nothing changed and FBQ's NOT_EXISTS gate is intact; the finding was pure scope error.
+# Dangerous class, because it fails in the FALSE-POSITIVE direction on exactly the providers with
+# the most cross-entity field reuse, and the fix it invites is to remove a correct default.
+$prefilledByEntity = @{}
 foreach ($b in $json.bundles) {
     foreach ($c in $b.configurations) {
         if ($c.type -ne 'QUERYINPUTFORM') { continue }
+        $ent = "$($c.targetEntity)"
+        if (-not $prefilledByEntity.ContainsKey($ent)) { $prefilledByEntity[$ent] = @{} }
         foreach ($lv in $c.layout.PSObject.Properties) {
             foreach ($n in $lv.Value.PSObject.Properties) {
                 $p = $n.Value.props
                 if ($p -and $p.fieldId -and $null -ne $p.initialValue -and "$($p.initialValue)" -ne '') {
-                    $prefilled["$($p.fieldId)"] = "$($p.initialValue)"
+                    $prefilledByEntity[$ent]["$($p.fieldId)"] = "$($p.initialValue)"
                 }
             }
         }
     }
 }
-Emit ("  prefilled control(s): {0}" -f $(if ($prefilled.Count) { (($prefilled.Keys | Sort-Object | ForEach-Object { "$_=$($prefilled[$_])" }) -join '  ') } else { '(none)' }))
+# $prefilled is rebound per QIDM below to that QIDM's targetEntity map.
+$prefilled = @{}
+foreach ($e in $prefilledByEntity.Keys) {
+    Emit ("  prefilled control(s) [{0}]: {1}" -f $e, $(if ($prefilledByEntity[$e].Count) { (($prefilledByEntity[$e].Keys | Sort-Object | ForEach-Object { "$_=$($prefilledByEntity[$e][$_])" }) -join '  ') } else { '(none)' }))
+}
 Emit ''
 
 function Get-Variable-Set($combo) {
-    return @(@($combo.requirements.set) | Where-Object { $_ -and -not $prefilled.ContainsKey("$_") })
+    return @(@($combo.requirements.set) | Where-Object { $_ -and -not $script:prefilled.ContainsKey("$_") })
 }
 function Test-IsSubset($a, $b) {   # is every element of $a in $b?
     foreach ($x in @($a)) { if (@($b) -notcontains $x) { return $false } }
@@ -99,6 +115,9 @@ foreach ($b in $json.bundles) {
     foreach ($c in $b.configurations) {
         if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
         if ("$($c.provider)" -eq 'RMS') { continue }
+        # Bind the prefill map to THIS QIDM's entity -- a combo is only ever fed by its own QIF.
+        $ent = "$($c.targetEntity)"
+        $script:prefilled = if ($prefilledByEntity.ContainsKey($ent)) { $prefilledByEntity[$ent] } else { @{} }
         $combos = @($c.combinations)
         for ($i = 0; $i -lt $combos.Count; $i++) {
             for ($k = $i + 1; $k -lt $combos.Count; $k++) {
