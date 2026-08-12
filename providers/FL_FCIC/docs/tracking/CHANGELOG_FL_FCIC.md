@@ -2,9 +2,73 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.20** | Generated: 2026-08-12
+Current: **v7.21** | Generated: 2026-08-12
 
 ---
+
+## v7.21 -- 2026-08-12 -- Firearm row re-order + NCIC Image defaults to 'Y' on all five entities
+
+WHY: Rob 2026-08-12, verbatim: "on firearm move gun make under serial number and move ncic imgae on  
+  teh first line to replace it boat atill has an undefaulted stolen check and ncic image should  
+  default to y everywhere"  
+**CHANGED:**
+  1. FIREARM row re-order (layout only). Gun Make drops to the FIRST cell of row 2 so it sits  
+     directly beneath Serial Number -- the identifier it qualifies -- and NCIC Image takes the row-1  
+     slot it vacated. Row 1 = Serial Number / Stolen Check / NCIC Image (the three controls the  
+     officer touches first); row 2 = Gun Make / NCIC Number / PCN. Still exactly 2 visible rows.  
+  2. NCIC IMAGE now defaults to 'Y' EVERYWHERE on this provider: 3 form controls flipped  
+     (Vehicle/Article/Boat; Firearm flipped in the row edit above; Person was already 'Y') AND all  
+     25 combo `defaults[]` entries, because CAD ignores form initialValue and a form-only flip would  
+     leave every CAD-originated query still asking 'N'. Emitted-JSON assertion: 5 form controls 'Y',  
+     25 combo defaults 'Y', 0 non-'Y'.  
+SAFE, AND MEASURED BEFORE APPLYING -- not inferred from the Stolen Check decision:  
+     ImageIndicator on FL is in **0** `set[]` and **0** conditions across all 36 combinations, and  
+     rides `any[]` on 25. So no prefill can move routing (BUILD_RULES 24 does not bite). Confirmed  
+     after the fact too: reachability 30/30 reachable, prefill-shadow 92 pairs 0 FAIL -- both  
+     identical to v7.20.  
+     Also cleared the MANDATORY pre-test gate (the TX_TLETS T6 class): FL's devdoc contains NO  
+     "must be filled if ImageIndicator = Y" conditional anywhere -- every occurrence of the field is  
+     inside a bracketed OPTIONAL list -- so defaulting 'Y' cannot silently make another field  
+     required. FL's METADATA_REFERENCE has no FIELD CONSTRAINTS section at all (0 matches).  
+BUT THE PORTFOLIO CONVENTION IS THE OPPOSITE, AND ROB WAS TOLD SO. Measured across all 20 providers  
+  (20 compared, not sampled): **every** provider that builds the control uses Person='Y' and  
+  Vehicle/Firearm/Article/Boat='N' -- 18 of 20 carry a Person 'Y', and the count of non-person  
+  controls set to 'Y' before this change was ZERO out of 20. This is the exact inverse of the Stolen  
+  Check case, where FL and IL genuinely were the outliers and Rob's instruction corrected them. Here  
+  FL was already conformant and this change makes it the only provider of 20 defaulting the  
+  non-person image request. Applied because it is Rob's explicit call and it is measurably safe; the  
+  other 19 are FLAGGED (`flag_pending_fix`) to pick it up at their OWN next rebuild rather than being  
+  mass-rebuilt (rule 8c), so uniformity is restored forward instead of by a back-door sweep.  
+BOAT STOLEN CHECK -- STILL BLANK, and the reason is now STRONGER than the v7.20 reachability proof.  
+  Read FL's raw metadata `<Requirements>` per `<Combination>` for BoatQuery (the sanctioned raw-XML  
+  exception). RelatedHitSearchIndicator appears in `<Any>` on **QB only** -- all five variants. On  
+  **FBQ** (the Florida registration transaction, 4 variants) it is NOT DEFINED AT ALL, and neither is  
+  it on **BQ** (out-of-state Nlets, 3 variants). The FL devdoc says the same thing independently:  
+  BoatQuery combos 1-4 are `(In)` and bracket only [DecalNumber, RegistrationNumber, Requestor,  
+  TitleLienInformation]; combos 5-9 `(In/Out)` bracket [ImageIndicator, RelatedHitSearchIndicator,  
+  Requestor]. So on Boat the stolen check is NOT "an any[] we could default for free" -- it is the  
+  field that SELECTS the NCIC stolen transaction instead of the FL registration one. Defaulting it  
+  would not add a stolen check to the boat registration query; it would REPLACE that query. That is  
+  why Firearm and Article can default it (there it is a true `any[]` add-on to the same transaction,  
+  metadata-defined on all 3 QG and all 4 QA variants) and Boat cannot. Same field, same provider,  
+  opposite answers -- decided by the firing combination's own variant, exactly as the registry  
+  already records for RelatedHitSearchIndicator on Vehicle FRQ vs QV.  
+OPEN FINDING, DELIBERATELY NOT FIXED IN THIS PASS -- Rob's ruling (see DEX_TICKET):  
+  The same raw-XML read shows FL's **FBQ** `<Any>` does not define **ImageIndicator** either, yet all  
+  four built FBQ combos carry it in `any[]` WITH a `defaults[]` entry -- so every in-state Boat  
+  registration query transmits an ImageIndicator the transaction does not define (an OVER-PERMIT).  
+  It is PRE-EXISTING (since v7.6), was tolerated on the wire (v7.18 was ALL-PASS 116/116 with these  
+  combos sending 'N'), and `audit_requirement_fidelity` is silent on it BY DESIGN because  
+  ImageIndicator sits on that gate's `$formOnly` whitelist -- so its "0 OVER-PERMITTED / 30 branches"  
+  is a true statement about a question it does not ask. There is no registry row for it. This change  
+  flips its transmitted value N -> Y, which does not create the over-permit but does change what an  
+  undefined field carries, and whether FCIC ignores 'Y' as it ignored 'N' is UNKNOWN [Guessing].  
+  Recommended fix if Rob wants it: drop ImageIndicator from the 4 FBQ combos' any[]/defaults[]  
+  (metadata-correct, and the control stays live for QB on the same card). Not done unilaterally  
+  because it is a wire change on a previously tenant-verified path.  
+GATES: validator 91P/0F/0W, reachability 30/30, prefill-shadow 92 pairs 0F, wiring closure closed  
+  0/10, audit_layout_flow 1 finding (the same PRE-EXISTING L2 as v7.20, denominator unchanged).  
+OWED: re-import + full 116-test sweep. Nothing here is wire-verified -- Rob runs the sweep.  
 
 ## v7.20 -- 2026-08-12 -- Cosmetic/layout pass on Rob's rendered-form review -- 4 rows retired, 0 wire change
 

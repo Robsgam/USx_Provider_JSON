@@ -1,0 +1,2605 @@
+{
+    "provider":  "FL_FCIC",
+    "version":  "7.21",
+    "tier":  "Full",
+    "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
+    "testCount":  116,
+    "formDefaults":  {
+                         "Vehicle":  {
+                                         "LicensePlateTypeCode":  "PC",
+                                         "LicensePlateYear":  "2026",
+                                         "ImageIndicator":  "Y"
+                                     },
+                         "Person":  {
+                                        "ImageIndicator":  "Y"
+                                    },
+                         "Firearm":  {
+                                         "relatedHitSearchIndicator":  "Y",
+                                         "ImageIndicator":  "Y"
+                                     },
+                         "Article":  {
+                                         "relatedHitSearchIndicator":  "Y",
+                                         "ImageIndicator":  "Y"
+                                     },
+                         "Boat":  {
+                                      "ImageIndicator":  "Y"
+                                  }
+                     },
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQDecalNumber",
+                      "expectedKeyRef":  "FRQDecalNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "decalNumber",
+                                        "value":  "FL12345678"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQDecalNumber",
+                      "expectedKeyRef":  "FRQDecalNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "decalNumber",
+                                        "value":  "FL12345678"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQDecalNumber",
+                      "expectedKeyRef":  "FRQDecalNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "decalNumber",
+                                        "value":  "FL12345678"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQLicensePlateNumber",
+                      "expectedKeyRef":  "FRQLicensePlateNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "LicensePlateNumber",
+                                    "value":  "TEST123"
+                                }
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQLicensePlateNumber",
+                      "expectedKeyRef":  "FRQLicensePlateNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "LicensePlateYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2025"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQLicensePlateNumber",
+                      "expectedKeyRef":  "FRQLicensePlateNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQLicensePlateNumber",
+                      "expectedKeyRef":  "FRQLicensePlateNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2025"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  8,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "FRQVehicleIdentificationNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "VehicleIdentificationNumber",
+                                    "value":  "1HGCM82633A123456"
+                                }
+                  },
+                  {
+                      "n":  9,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "FRQVehicleIdentificationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  10,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "FRQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "FRQVehicleIdentificationNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  11,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQLicensePlateNumber",
+                      "expectedKeyRef":  "RQLicensePlateNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  12,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQLicensePlateNumber",
+                      "expectedKeyRef":  "RQLicensePlateNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  13,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQLicensePlateNumber",
+                      "expectedKeyRef":  "RQLicensePlateNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  14,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "RQVehicleIdentificationNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  15,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "RQVehicleIdentificationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "VehicleMakeCode",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  16,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "RQVehicleIdentificationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "vehicleYear",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  17,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "RQVehicleIdentificationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  18,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  "RQVehicleIdentificationNumber",
+                      "expectedKeyRef":  "RQVehicleIdentificationNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "CNST_FORD"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2023"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "FRQLicensePlateNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ],
+                      "guardrailLoser":  "FRQVehicleIdentificationNumber"
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "FRQLicensePlateNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ],
+                      "guardrailLoser":  "RQVehicleIdentificationNumber"
+                  },
+                  {
+                      "n":  21,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FDQName",
+                      "expectedKeyRef":  "FDQName",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  22,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FDQName",
+                      "expectedKeyRef":  "FDQName",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  23,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FDQName",
+                      "expectedKeyRef":  "FDQName",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  24,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FDQOperatorLicenseNumber",
+                      "expectedKeyRef":  "FDQOperatorLicenseNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "OperatorLicenseNumber",
+                                    "value":  "D999888777"
+                                }
+                  },
+                  {
+                      "n":  25,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FDQOperatorLicenseNumber",
+                      "expectedKeyRef":  "FDQOperatorLicenseNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  26,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FDQOperatorLicenseNumber",
+                      "expectedKeyRef":  "FDQOperatorLicenseNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  27,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DQName",
+                      "expectedKeyRef":  "DQName",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DQName",
+                      "expectedKeyRef":  "DQName",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  29,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DQName",
+                      "expectedKeyRef":  "DQName",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  30,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DQOperatorLicenseNumber",
+                      "expectedKeyRef":  "DQOperatorLicenseNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DQOperatorLicenseNumber",
+                      "expectedKeyRef":  "DQOperatorLicenseNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "DQOperatorLicenseNumber",
+                      "expectedKeyRef":  "DQOperatorLicenseNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQName",
+                      "expectedKeyRef":  "KQName",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  34,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQName",
+                      "expectedKeyRef":  "KQName",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "purposeCodeDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQName",
+                      "expectedKeyRef":  "KQName",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  36,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQOperatorLicenseNumber",
+                      "expectedKeyRef":  "KQOperatorLicenseNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  37,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQOperatorLicenseNumber",
+                      "expectedKeyRef":  "KQOperatorLicenseNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "purposeCodeDH",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  38,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  "KQOperatorLicenseNumber",
+                      "expectedKeyRef":  "KQOperatorLicenseNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  39,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "FDQOperatorLicenseNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ],
+                      "guardrailLoser":  "FDQName"
+                  },
+                  {
+                      "n":  40,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "FDQOperatorLicenseNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ],
+                      "guardrailLoser":  "DQName"
+                  },
+                  {
+                      "n":  41,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "KQOperatorLicenseNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "D999888777"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationStateDH",
+                                        "value":  "NJ"
+                                    }
+                                ],
+                      "guardrailLoser":  "KQName"
+                  },
+                  {
+                      "n":  42,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGGunSerialNumber",
+                      "expectedKeyRef":  "QGGunSerialNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "serialNumber",
+                                    "value":  "GUN12345"
+                                }
+                  },
+                  {
+                      "n":  43,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGGunSerialNumber",
+                      "expectedKeyRef":  "QGGunSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  44,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGGunSerialNumber",
+                      "expectedKeyRef":  "QGGunSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  45,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGGunSerialNumber",
+                      "expectedKeyRef":  "QGGunSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  46,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGGunSerialNumber",
+                      "expectedKeyRef":  "QGGunSerialNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  47,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGNCICNumber",
+                      "expectedKeyRef":  "QGNCICNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "NCICNumber",
+                                    "value":  "G123456789"
+                                }
+                  },
+                  {
+                      "n":  48,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGNCICNumber",
+                      "expectedKeyRef":  "QGNCICNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "G123456789"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  49,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGNCICNumber",
+                      "expectedKeyRef":  "QGNCICNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "G123456789"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  50,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGNCICNumber",
+                      "expectedKeyRef":  "QGNCICNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "G123456789"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  51,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGNCICNumber",
+                      "expectedKeyRef":  "QGNCICNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "G123456789"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  52,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGProcessControlNumber",
+                      "expectedKeyRef":  "QGProcessControlNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "processControlNumber",
+                                    "value":  "0000012345"
+                                }
+                  },
+                  {
+                      "n":  53,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGProcessControlNumber",
+                      "expectedKeyRef":  "QGProcessControlNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "GunMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  54,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGProcessControlNumber",
+                      "expectedKeyRef":  "QGProcessControlNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  55,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGProcessControlNumber",
+                      "expectedKeyRef":  "QGProcessControlNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  56,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGProcessControlNumber",
+                      "expectedKeyRef":  "QGProcessControlNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "GunMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  57,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAArticleSerialNumber",
+                      "expectedKeyRef":  "QAArticleSerialNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  58,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAArticleSerialNumber",
+                      "expectedKeyRef":  "QAArticleSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  59,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAArticleSerialNumber",
+                      "expectedKeyRef":  "QAArticleSerialNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  60,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAArticleSerialNumber",
+                      "expectedKeyRef":  "QAArticleSerialNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleSerialNumber",
+                                        "value":  "ART99999"
+                                    },
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  61,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAOwnerAppliedNumber",
+                      "expectedKeyRef":  "QAOwnerAppliedNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ownerAppliedNumber",
+                                        "value":  "OAN999"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  62,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAOwnerAppliedNumber",
+                      "expectedKeyRef":  "QAOwnerAppliedNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ownerAppliedNumber",
+                                        "value":  "OAN999"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  63,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAOwnerAppliedNumber",
+                      "expectedKeyRef":  "QAOwnerAppliedNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ownerAppliedNumber",
+                                        "value":  "OAN999"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  64,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAOwnerAppliedNumber",
+                      "expectedKeyRef":  "QAOwnerAppliedNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ArticleTypeCode",
+                                        "value":  "BBICYCL"
+                                    },
+                                    {
+                                        "fieldId":  "ownerAppliedNumber",
+                                        "value":  "OAN999"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  65,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QANCICNumber",
+                      "expectedKeyRef":  "QANCICNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "NCICNumber",
+                                    "value":  "A123456789"
+                                }
+                  },
+                  {
+                      "n":  66,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QANCICNumber",
+                      "expectedKeyRef":  "QANCICNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "A123456789"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  67,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QANCICNumber",
+                      "expectedKeyRef":  "QANCICNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "A123456789"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  68,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QANCICNumber",
+                      "expectedKeyRef":  "QANCICNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "A123456789"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  69,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAProcessControlNumber",
+                      "expectedKeyRef":  "QAProcessControlNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "processControlNumber",
+                                    "value":  "0000012345"
+                                }
+                  },
+                  {
+                      "n":  70,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAProcessControlNumber",
+                      "expectedKeyRef":  "QAProcessControlNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  71,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAProcessControlNumber",
+                      "expectedKeyRef":  "QAProcessControlNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  72,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "QAProcessControlNumber",
+                      "expectedKeyRef":  "QAProcessControlNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  73,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQBoatHullIdNumber",
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "BoatHullIdNumber",
+                                    "value":  "FL1234AB56H7"
+                                }
+                  },
+                  {
+                      "n":  74,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQBoatHullIdNumber",
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "decalNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "decalNumber",
+                                        "value":  "FL12345678"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  75,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQBoatHullIdNumber",
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "titleLienInformation",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "titleLienInformation",
+                                        "value":  "ABCD1234"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  76,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQBoatHullIdNumber",
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  77,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQBoatHullIdNumber",
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  78,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQBoatHullIdNumber",
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "decalNumber",
+                                        "value":  "FL12345678"
+                                    },
+                                    {
+                                        "fieldId":  "titleLienInformation",
+                                        "value":  "ABCD1234"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  79,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQDecalNumber",
+                      "expectedKeyRef":  "FBQDecalNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "decalNumber",
+                                    "value":  "FL12345678"
+                                }
+                  },
+                  {
+                      "n":  80,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQDecalNumber",
+                      "expectedKeyRef":  "FBQDecalNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "titleLienInformation",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "decalNumber",
+                                        "value":  "FL12345678"
+                                    },
+                                    {
+                                        "fieldId":  "titleLienInformation",
+                                        "value":  "ABCD1234"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  81,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQDecalNumber",
+                      "expectedKeyRef":  "FBQDecalNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "decalNumber",
+                                        "value":  "FL12345678"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  82,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQRegistrationNumber",
+                      "expectedKeyRef":  "FBQRegistrationNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "RegistrationNumber",
+                                    "value":  "FL1234AB"
+                                }
+                  },
+                  {
+                      "n":  83,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQRegistrationNumber",
+                      "expectedKeyRef":  "FBQRegistrationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "titleLienInformation",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "titleLienInformation",
+                                        "value":  "ABCD1234"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  84,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQRegistrationNumber",
+                      "expectedKeyRef":  "FBQRegistrationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  85,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQRegistrationNumber",
+                      "expectedKeyRef":  "FBQRegistrationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  86,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQTitleLienInformation",
+                      "expectedKeyRef":  "FBQTitleLienInformation",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "titleLienInformation",
+                                    "value":  "ABCD1234"
+                                }
+                  },
+                  {
+                      "n":  87,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "FBQTitleLienInformation",
+                      "expectedKeyRef":  "FBQTitleLienInformation",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "titleLienInformation",
+                                        "value":  "ABCD1234"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  88,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBBoatHullIdNumber",
+                      "expectedKeyRef":  "QBBoatHullIdNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  89,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBBoatHullIdNumber",
+                      "expectedKeyRef":  "QBBoatHullIdNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  90,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBBoatHullIdNumber",
+                      "expectedKeyRef":  "QBBoatHullIdNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  91,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBCoastGuardDocumentNumber",
+                      "expectedKeyRef":  "QBCoastGuardDocumentNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "coastGuardDocumentNumber",
+                                    "value":  "CG123456"
+                                }
+                  },
+                  {
+                      "n":  92,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBCoastGuardDocumentNumber",
+                      "expectedKeyRef":  "QBCoastGuardDocumentNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "coastGuardDocumentNumber",
+                                        "value":  "CG123456"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  93,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBCoastGuardDocumentNumber",
+                      "expectedKeyRef":  "QBCoastGuardDocumentNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "coastGuardDocumentNumber",
+                                        "value":  "CG123456"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  94,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBCoastGuardDocumentNumber",
+                      "expectedKeyRef":  "QBCoastGuardDocumentNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "coastGuardDocumentNumber",
+                                        "value":  "CG123456"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  95,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBNCICNumber",
+                      "expectedKeyRef":  "QBNCICNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "NCICNumber",
+                                    "value":  "B123456789"
+                                }
+                  },
+                  {
+                      "n":  96,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBNCICNumber",
+                      "expectedKeyRef":  "QBNCICNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "B123456789"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  97,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBNCICNumber",
+                      "expectedKeyRef":  "QBNCICNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "B123456789"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  98,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBNCICNumber",
+                      "expectedKeyRef":  "QBNCICNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "B123456789"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  99,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBProcessControlNumber",
+                      "expectedKeyRef":  "QBProcessControlNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "processControlNumber",
+                                    "value":  "0000012345"
+                                }
+                  },
+                  {
+                      "n":  100,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBProcessControlNumber",
+                      "expectedKeyRef":  "QBProcessControlNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  101,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBProcessControlNumber",
+                      "expectedKeyRef":  "QBProcessControlNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "relatedHitSearchIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  102,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBProcessControlNumber",
+                      "expectedKeyRef":  "QBProcessControlNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "processControlNumber",
+                                        "value":  "0000012345"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  103,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBRegistrationNumber",
+                      "expectedKeyRef":  "QBRegistrationNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  104,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBRegistrationNumber",
+                      "expectedKeyRef":  "QBRegistrationNumber",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  105,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QBRegistrationNumber",
+                      "expectedKeyRef":  "QBRegistrationNumber",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  106,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQName",
+                      "expectedKeyRef":  "BQName",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  107,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQName",
+                      "expectedKeyRef":  "BQName",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "BoatHullIdNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  108,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQName",
+                      "expectedKeyRef":  "BQName",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "RegistrationNumber",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  109,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQName",
+                      "expectedKeyRef":  "BQName",
+                      "kind":  "any",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  110,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQBoatHullIdNumber",
+                      "expectedKeyRef":  "BQBoatHullIdNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  111,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQRegistrationNumber",
+                      "expectedKeyRef":  "BQRegistrationNumber",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "GA"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  112,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "QBBoatHullIdNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    }
+                                ],
+                      "guardrailLoser":  "FBQBoatHullIdNumber"
+                  },
+                  {
+                      "n":  113,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "QBRegistrationNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "FBQRegistrationNumber"
+                  },
+                  {
+                      "n":  114,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "FBQRegistrationNumber"
+                  },
+                  {
+                      "n":  115,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "QBBoatHullIdNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ],
+                      "guardrailLoser":  "QBRegistrationNumber"
+                  },
+                  {
+                      "n":  116,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "FBQBoatHullIdNumber",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "FL1234AB56H7"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ],
+                      "guardrailLoser":  "BQRegistrationNumber"
+                  }
+              ]
+}

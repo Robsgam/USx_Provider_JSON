@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.20.json
-  Generated: 2026-08-12 15:15
+  Source: FL_FCIC_v7.21.json
+  Generated: 2026-08-12 15:44
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== FL_FCIC_v7.20.json ===
+=== FL_FCIC_v7.21.json ===
 QIFs: 5
   Person | entity=Person | qidm= | cards=2 fields=9
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
@@ -71,7 +71,7 @@ LAYOUT DETAIL
         decalNumber (Text | maxLen=10)
         vinSequenceNumber (Text | maxLen=2)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_VEH_REQ [12]
         Requestor (Text | maxLen=30)
 
@@ -82,11 +82,11 @@ LAYOUT DETAIL
       ROW ROW_GUN_1 [4 4 4]
         serialNumber (Text | maxLen=11)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_GUN_2 [4 4 4]
+        GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
         NCICNumber (Text | maxLen=10)
         processControlNumber (Text | maxLen=10)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
       ROW ROW_GUN_REQ [12]
         Requestor (Text | maxLen=30)
 
@@ -102,7 +102,7 @@ LAYOUT DETAIL
         NCICNumber (Text | maxLen=10)
         processControlNumber (Text | maxLen=10)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_ART_REQ [12]
         Requestor (Text | maxLen=30)
 
@@ -117,7 +117,7 @@ LAYOUT DETAIL
       ROW ROW_BOA_2 [4 4 4]
         RegistrationState (Dropdown | attributeTypeId=STATE)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_BOA_3 [3 3 3 3]
         decalNumber (Text | maxLen=10)
         titleLienInformation (Text | maxLen=8)

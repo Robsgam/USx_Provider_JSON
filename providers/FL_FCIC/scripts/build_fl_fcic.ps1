@@ -250,7 +250,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.20"
+    [string]$Version = "7.21"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -310,7 +310,7 @@ $vehRegQuery = [PSCustomObject]@{
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 # LicensePlateYear is in set[] with a form initialValue; CAD ignores initialValue,
                 # so it needs a combo default or CAD-dispatched FRQ-by-decal can't fire (CHECK 6).
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
             }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FRQDecalNumber'
@@ -323,7 +323,7 @@ $vehRegQuery = [PSCustomObject]@{
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
                 defaults   = @(
                     [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }
-                    [PSCustomObject]@{ field = 'ImageIndicator';   value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator';   value = 'Y' }
                 )
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -340,7 +340,7 @@ $vehRegQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = @('RegistrationState');  operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'FRQVehicleIdentificationNumber'
@@ -356,7 +356,7 @@ $vehRegQuery = [PSCustomObject]@{
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
                 # PlateType/PlateYear are in set[] with form initialValues; CAD ignores initialValue,
                 # so combo defaults are required for CAD-dispatched RQ-by-plate to fire (CHECK 6).
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQLicensePlateNumber'
@@ -368,7 +368,7 @@ $vehRegQuery = [PSCustomObject]@{
                 any      = @('VehicleMakeCode','vehicleYear','ImageIndicator')
                 # v6.0: LicensePlateNumber NOT_EXISTS (Plate>VIN guardrail -- OOS VIN combo exits pool when a plate is also entered)
                 conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' })
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQVehicleIdentificationNumber'
@@ -590,19 +590,19 @@ $gunQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('serialNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'QGGunSerialNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QGNCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('GunMake','ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QGProcessControlNumber'
             state                 = 'In/Out'
@@ -636,25 +636,25 @@ $artQuery = [PSCustomObject]@{
     )
     combinations = @(
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ArticleSerialNumber','ArticleTypeCode'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('ArticleSerialNumber','ArticleTypeCode'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QAArticleSerialNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('ArticleTypeCode','ownerAppliedNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('ArticleTypeCode','ownerAppliedNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'OwnerAppliedNumber'
             keyReference          = 'QAOwnerAppliedNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QANCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('ImageIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' }) }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QAProcessControlNumber'
             state                 = 'In/Out'
@@ -731,7 +731,7 @@ $boatQuery = [PSCustomObject]@{
                     # (attribute name) -- wrong casing is silently inert (live-proven HI v3.3 / FL v3.x pattern)
                     [PSCustomObject]@{ field = @('relatedHitSearchIndicator');     operator = 'NOT_EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'FBQBoatHullIdNumber'
@@ -743,7 +743,7 @@ $boatQuery = [PSCustomObject]@{
                 # v7.1: RegistrationNumber removed from any[] (same LIMITATION #1 fix as FBQHull).
                 any        = @('BoatHullIdNumber','titleLienInformation','ImageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'DecalNumber'
             keyReference          = 'FBQDecalNumber'
@@ -764,7 +764,7 @@ $boatQuery = [PSCustomObject]@{
                     # unique permanent identifier; when present, this Reg combo exits and FBQ Hull wins.
                     [PSCustomObject]@{ field = @('BoatHullIdNumber');           operator = 'NOT_EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'FBQRegistrationNumber'
@@ -776,7 +776,7 @@ $boatQuery = [PSCustomObject]@{
                 # v7.1: RegistrationNumber removed from any[] (same LIMITATION #1 fix as FBQHull).
                 any        = @('BoatHullIdNumber','decalNumber','ImageIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'TitleLienInformation'
             keyReference          = 'FBQTitleLienInformation'
@@ -795,26 +795,26 @@ $boatQuery = [PSCustomObject]@{
                 # QB combo would shadow the BQ OOS Hull combo on a Hull+State payload. Mirrors FBQ's
                 # relatedHit NOT_EXISTS (FBQ<->QB routing symmetry). verify_build CHECK 16.
                 conditions = @([PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' })
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'QBBoatHullIdNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('coastGuardDocumentNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('coastGuardDocumentNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'CoastGuardDocumentNumber'
             keyReference          = 'QBCoastGuardDocumentNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'NCICNumber'
             keyReference          = 'QBNCICNumber'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }) }
+            requirements          = [PSCustomObject]@{ set = @('processControlNumber'); any = @('ImageIndicator','relatedHitSearchIndicator'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }) }
             primaryFieldReference = 'ProcessControlNumber'
             keyReference          = 'QBProcessControlNumber'
             state                 = 'In/Out'
@@ -834,7 +834,7 @@ $boatQuery = [PSCustomObject]@{
                     [PSCustomObject]@{ field = @('BoatHullIdNumber');          operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('relatedHitSearchIndicator'); operator = 'EXISTS' }
                 )
-                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'RegistrationNumber'
             keyReference          = 'QBRegistrationNumber'
@@ -1012,7 +1012,7 @@ $vehLayout = MakeLayouts @(
                 # LABEL-OVERRIDE: vinSequenceNumber -- bare "VIN Sequence Number" per DEX-1284 lean pass (any[] optional, no default; card title carries the paths; matches VehicleMakeCode/vehicleYear on the row above)
                 @{ id = 'VINSequenceNumber_Input';  node = Inp 'vinSequenceNumber' 'VIN Sequence Number' '2' 'ROW_VEH_3' }
                 @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for FL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
-                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_3' }
             )}
             @{ id = 'ROW_VEH_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_VEH_REQ' }
@@ -1129,17 +1129,22 @@ $faLayout = MakeLayouts @(
             # moves up beside Serial + Gun Make and ROW_GUN_RHS is retired, leaving exactly two
             # visible rows. Safe: relatedHitSearchIndicator is any[]-only on all three QG combos with
             # no condition on it, so neither the move nor its 'Y' default can shadow a path.
+            # v7.21 (Rob 2026-08-12): "on firearm move gun make under serial number and move ncic
+            # imgae on teh first line to replace it". Gun Make drops to the first cell of row 2 so it
+            # sits directly beneath Serial Number (the identifier it qualifies); NCIC Image takes the
+            # slot it vacated. Row 1 is now the three scope/identifier controls the officer touches
+            # first; row 2 is Gun Make plus the two alternate identifiers. Still 2 visible rows.
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
                 # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" (DEX-1284)
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_1' }
-                # LABEL-OVERRIDE: GunMake -- bare "Gun Make" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX)
-                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
+                # LABEL-OVERRIDE: GunMake -- bare "Gun Make" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX)
+                @{ id = 'GunMake_Input';         node = Sel 'GunMake' 'Gun Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
                 @{ id = 'NCICNumber_Input';         node = Inp 'NCICNumber' 'NCIC Number' '10' 'ROW_GUN_2' }
                 @{ id = 'ProcessControlNumber_Input'; node = Inp 'processControlNumber' 'PCN' '10' 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';      node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
             )}
             @{ id = 'ROW_GUN_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_GUN_REQ' }
@@ -1183,7 +1188,7 @@ $artLayout = MakeLayouts @(
                 # LABEL-OVERRIDE: relatedHitSearchIndicator -- canonical bare "Stolen Check" (DEX-1284).
                 # 'Y' default is v7.19's and is safe here: any[]-only on every QA combo, no condition.
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
-                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_2' }
+                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_2' }
             )}
             @{ id = 'ROW_ART_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_ART_REQ' }
@@ -1233,7 +1238,7 @@ $boaLayout = MakeLayouts @(
                 # audit_combo_reachability reported [FAIL] DEAD COMBO on FBQ and audit_prefill_shadow
                 # named the pair, so the exception stands and was reported back with that evidence.
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'DecalNumber_Input';              node = Inp 'decalNumber' 'Decal Number' '10' 'ROW_BOA_3' }

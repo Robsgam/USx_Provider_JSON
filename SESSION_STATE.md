@@ -16,7 +16,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (50 logs) |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
-| FL_FCIC | v7.20 | NEVER-TESTED -- 116 test(s) owed |
+| FL_FCIC | v7.21 | NEVER-TESTED -- 116 test(s) owed |
 | HI_HCJDC_OFML | v4.15 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.3 | NEVER-TESTED -- 41 test(s) owed |
 | NJ_NJCJIS | v4.15 | ALL-PASS (40 logs) |
@@ -33,87 +33,85 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**FL_FCIC v7.20 BUILT 2026-08-12 -- Rob's cosmetic spec. NEXT: IMPORT + 116-test sweep (his, not mine).
-He said "once we test live(not with you) we can finailize any assumptions."** 4 rows retired (Veh VSN,
-Gun RHS, Art 3+RHS): Veh VIN-Seq joins Decal; Gun 2 rows; Art Serial+Type+OAN on top, rest on line 2;
-Boat State/Stolen/Image up to row 2. `audit_layout_flow` **4 -> 1** (same denominator 56 fields/30
-combos) -- the 1 left (L2 Veh RegistrationState after VehicleMakeCode) is **PRE-EXISTING, verified by
-running the gate on v7.19 from git**. wiring closure closed 0/10, prefill-shadow 92 pairs 0F,
-verify 0W/0F, validator 91P.
-**TWO OF ROB'S ITEMS REFUSED BY THE SOURCES, both MEASURED not argued:** (1) FL default on DH State --
-FCIC wrote 2026-06-12 that KQ needs a "destination something other than FL", so FL is the ONE illegal
-value. (2) Boat Stolen Check default -- replica injection gave **[FAIL] 4 dead combos of 30** (I
-predicted 2). **FL has NO middle/suffix input control** -- the AZ dead-control class is absent here.
-**USE [Certain]/[Likely]/[Guessing] TAGS -- standing directive, and I dropped them for a whole
-session until Rob called it out 08-12. Tag every load-bearing claim.**
-**AZ v3.11 TENANT-VERIFIED ALL-PASS 50/50.** `<State>NJ</State>` on 7/7 DH logs -- OUT-OF-STATE DH
-WORKS, and at v3.9 it was UNREACHABLE (hidden control pinned to AZ).
-**THE STATE-DEFAULT RULE (AZ v3.10 cost a stuck T26 to learn):** a `set[]` field with no value **GATES
-THE BROWSER SEND BUTTON** (NY v4.20's mechanism). So **default a mandatory State only when the devdoc
-has an (In) or (In/Out) combo** -- AZ's DH is (In/Out) and needs it; FL's is (Out)-ONLY and must stay
-blank, labelled `Destination State (required, not FL)`. Same field, opposite answer, per-provider scope.
+**FL_FCIC v7.21 BUILT 2026-08-12 -- Rob's cosmetic spec. NEXT: IMPORT + 116-test sweep (his, not mine).
+"once we test live(not with you) we can finailize any assumptions."** v7.20 retired 4 rows; v7.21 moved
+Gun Make under Serial (NCIC Image takes its row-1 slot) and set **NCIC Image = 'Y' on all 5 entities**
+(5 form controls + all 25 combo `defaults[]`, asserted in the emitted JSON). Safe on FL: 0 `set[]`/0
+conditions of 36 combos; reachability 30/30 + prefill-shadow 92 pairs 0F unchanged. `audit_layout_flow`
+4 -> 1, that 1 PRE-EXISTING (proved by running the gate on v7.19 from git).
 
-**JIRA: 91 comments stubbed 08-11, one comment per RELEASE, EDIT in place -- never a sibling
-correction.** Format in `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`, procedure in `JIRA_REFERENCE.txt`
-(**no status column**). No delete tool; edits IRREVERSIBLE. **NOTHING POSTS WITHOUT ROB'S EXPLICIT
-APPROVAL (08-12).** Awaiting approval: AZ v3.11, FL v7.20, IL v2.3.
-**A tracking file is a CLAIM; the artifact is the evidence** -- 5x now, newest: FL's build comment
-claimed an unwired `nameMiddleDH` control that has not existed for versions.
+**⚠️ ROB'S CALL -- "Y everywhere" COLLIDES WITH THE 0-WARN RULE.** `audit_cross_provider` HARD-CODES
+`Vehicle ImageIndicator initialValue='N'`, so FL now carries `[WARN] ... (expected 'N')` permanently.
+Measured 20/20: every provider used Person='Y', other entities='N' -- FL is now the sole exception.
+**Do NOT silence the gate.** Options: (a) update the gate to expect 'Y' = 19 providers WARN until they
+flip (8c), (b) Y on Gun/Art/Boat only, keep Vehicle 'N' = 0 WARN, (c) revert. **I flagged all 19 with
+`[FLAG:ncic-image-default-y-everywhere]`, which BLOCKS their enforce PHASE 1** -- verified on NJ -- so
+6 tenant-verified providers are now un-done pending rebuild. Lift the flags if he scopes it narrower.
+**TWO OF ROB'S ITEMS REFUSED BY THE SOURCES, MEASURED not argued:** (1) FL default on DH State -- FCIC
+wrote 2026-06-12 that KQ needs a "destination something other than FL", so FL is the ONE illegal value.
+(2) Boat Stolen Check default -- raw metadata: RelatedHitSearchIndicator is in `<Any>` on **QB only**;
+UNDEFINED on FBQ (FL registration) and BQ (Nlets), devdoc agrees (combos 1-4 `(In)` bracket neither). It
+SELECTS the stolen transaction rather than enriching the registration one, so defaulting REPLACES the
+query. Replica injection: **[FAIL] 4 dead combos of 30** (I predicted 2). **OPEN, NOT FIXED:** FBQ
+carries `ImageIndicator` in `any[]`+`defaults[]` yet metadata's FBQ `<Any>` omits it -- a real
+OVER-PERMIT fidelity cannot see (`$formOnly`). **FL has NO middle/suffix control** -- AZ's class absent.
+**USE [Certain]/[Likely]/[Guessing] TAGS -- standing directive I dropped for a whole session until Rob
+called it out 08-12.** **THE STATE-DEFAULT RULE (a stuck T26 to learn):** a `set[]` field with no value
+**GATES THE BROWSER SEND BUTTON** (NY v4.20) -- default a mandatory State only where the devdoc has an
+(In)/(In/Out) combo. AZ's DH is (In/Out) -> defaults; FL's is (Out)-ONLY -> blank + a label naming both
+facts. Same field, opposite answer, per-provider scope.
+
+**JIRA: one comment per RELEASE, EDIT in place -- never a sibling correction.** Format in
+`knowledge-base/JIRA_COMMENT_TEMPLATE.txt`, procedure in `JIRA_REFERENCE.txt` (**no status column**).
+No delete tool; edits IRREVERSIBLE. **NOTHING POSTS WITHOUT ROB'S EXPLICIT APPROVAL (08-12).**
+Awaiting approval: AZ v3.11, FL v7.21, IL v2.3. **A tracking file is a CLAIM; the artifact is the
+evidence** -- 5x, newest: FL's comment claimed a `nameMiddleDH` control gone for versions.
 
 ## ON HOLD / DO NOT RE-RAISE
 
 - **CA_CONTRA_COSTA** -- on hold, BLOCKED (08-02): `audit_devdoc_combinations` compares ZERO devdoc
   combos, and zero-comparison is a FAIL. The gate got stricter; CC did not get worse.
 - **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect LA's
-  `[WARN] Cross-provider` on EVERY provider's enforce -- it is LA's, not the one tested.**
-  **NEW 08-12, NOT FIXED (parked + never tested): LA VehReg is the SAME CLASS as AZ's DH bug** --
-  devdoc combos 1+2 are BOTH `(In/Out)` with State UNBRACKETED, every built combo has State in
-  `set[]`, and the control is BLANK. So an in-state LA plate query needs an explicit LA pick, and a
-  `set[]` field with no value gates the browser Send button. Rob's call whether to fix.
+  `[WARN] Cross-provider` on EVERY provider's enforce -- it is LA's, not the one tested.** Its VehReg
+  is the SAME CLASS as AZ's DH bug (both combos `(In/Out)`, State in `set[]`, control BLANK -> Send
+  gated on an in-state plate query). NOT FIXED; Rob's call.
 - **Jira: DRAFT AND WAIT, every provider, every time** (one approval != the next). **Tenant info stays
   OFF tickets** -- attachment/catalog/Foundation go in `IMPORT_LEDGER.md` B and C.
-- **DRIVER HISTORY IS NOT SUPPORTED FROM CAD** (Rob 2026-08-12). So "DH has no State combo default
-  and CAD ignores form initialValue" is MOOT, not a defect -- I raised it, he closed it. Never
-  re-raise, and never add a State default to DH to "fix" it.
+- **DRIVER HISTORY IS NOT SUPPORTED FROM CAD** (Rob 08-12). So "DH has no State combo default and CAD
+  ignores form initialValue" is MOOT -- I raised it, he closed it. Never re-raise.
 - **GUI ONLY -- Rob never runs commands.** Translate console names to buttons. **Form review is his
   MANUAL gate** -- 2k `[INFO] not reviewed` is steady state; never prompt.
 
 ## STATE
 
-**ENFORCED 0F/0W except:** LA_LEMS + CA_CONTRA_COSTA (above); MD_METERS carries
-`[FLAG:validate-imgind-20b-l30]`, clears at its OWN rebuild. **EXPECT ON EVERY PROVIDER'S ENFORCE, not
-the one you tested:** `[FAIL] Repo audit` = LA/MD/OH STATUS score drift from the 08-07 `validate.ps1`
-change -- **LA + MD only now; OH's cleared at its v2.4 rebuild.** Syncing them = back-door mass
-rebuild (8c). **All 8 tenant-tested providers are at full plan coverage; nothing is PARTIAL.**
+**ENFORCED 0F/0W except:** LA_LEMS + CA_CONTRA_COSTA (above); **all 19 non-FL providers now carry
+`[FLAG:ncic-image-default-y-everywhere]`**, each clearing at its OWN rebuild; MD also carries
+`[FLAG:validate-imgind-20b-l30]`. **EXPECT ON EVERY PROVIDER'S ENFORCE, not the one you tested:**
+`[FAIL] Repo audit` = LA + MD STATUS score drift from the 08-07 `validate.ps1` change; syncing them =
+back-door mass rebuild (8c). All 8 tenant-tested providers are at full plan coverage; none PARTIAL.
 
-Invariants: devdoc-UNBUILT 2 (LA) | wiring closure 1/10 (TN RQ05) | audit_metadata 20/20 | portability
-280 cells 0 unportable | fidelity fixture 116br 0/0 | registry currency 0 stale | PS-5.1 parse 110/0.
-The decision-trail hook + `git log -n 40` hold the reasoning; do NOT re-derive.
+Invariants: devdoc-UNBUILT 2 (LA) | wiring 1/10 (TN RQ05) | audit_metadata 20/20 | portability 280
+cells 0 unportable | fidelity fixture 116br 0/0 | registry 0 stale | PS-5.1 110/0. **TRIAGE EVERY FUZZ
+SURVIVOR FRESH** (`usx-tooling` 5/8d). **Residual, NOT owed** (`git log`): `VEHICLE_BODY_STYLE|NJ_NIBRS`
+HYPOTHESIS | fidelity advisory 11 UNDER / 40 OVER | `audit_devdoc_optionals`+`audit_log_content` FLAKE
+under parallel load. The decision-trail hook + `git log -n 40` hold the reasoning; do NOT re-derive.
 
-## OPEN DECISIONS -- Rob's call
+## RULES I HAVE BROKEN -- READ BEFORE BUILDING (cases: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c)
 
-**TRIAGE EVERY FUZZ SURVIVOR FRESH** -- old closures name specific seeds only. **A STALE MUTATION
-LOOKS LIKE A BLIND GATE**: 08-12 `az-state-prefill-routes` "SURVIVED" because it INHERITED a prefill
-my build change removed; a mutation must CREATE the whole defect. composite-`Name` = genuine no-op.
-**Residual, NOT owed** (detail in `git log`): `VEHICLE_BODY_STYLE|NJ_NIBRS` HYPOTHESIS | fidelity
-advisory 11 UNDER / 40 OVER | `audit_devdoc_optionals`+`audit_log_content` FLAKE under parallel load.
-
-## RULES I HAVE BROKEN -- READ BEFORE BUILDING
-
-Cases live in the skills: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c, `usx-test-iterate`.
-- **A RECORD IS A CLAIM -- READ THE ARTIFACT. Worst repeat offender.** 08-10 HI: BUILD_NOTES called
-  the Attention `'X'` the gate-feeder; I stopped at the note instead of asking whether that version
-  could support it. Rob overruled me; the wire proved him right 9/9. **Exit 0 is not evidence a gate
-  spoke -- grep its VERDICT line, print the DENOMINATOR.** 08-12: I filtered a build for
-  `RESULTS:|FAIL`, a ParserError matched neither, and I read 3 cycles of stale-JSON gate output.
-- **A GREEN GATE IS NOT COVERAGE OF THE QUESTION YOU ASKED.** 08-10 AZ: fidelity said 0 OVER while 4
-  fields were over-permitted, because two variants shared a keyRef. Ask what the gate COMPARES.
-- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED**; check if ALREADY ADJUDICATED first (registry
-  + `git log`). **DON'T RE-IMPLEMENT A PARSER (std 4.4)**; **NEVER cite another provider as authority**
-  (only CC->CA_CLETS, `<BASE>_<VARIANT>`->`<BASE>`); aim a mutation at the gate OWNING the class.
-- **A finding across MANY providers is usually YOUR PROBE** -- 08-12 a State sweep flagged 65 rows on
-  15 providers; the real answer was 1. **`@()` BEFORE `[0]`** -- a 1-element `Where-Object` result is a
-  STRING and `[0]` gives its FIRST CHARACTER, which made every lookup key `Person|R` and every row
-  read "(blank)". A shared-tool change reddening ANOTHER provider gets a FLAG, never a fix (8c).
-  MUTATE -> restore -> RE-STAMP -> verify. `.Replace()` no-ops on CRLF.
-- **REPLACE, never append** -- gate caught me TEN+ times. **Cut an OLD line per new one.**
+- **A RECORD IS A CLAIM -- READ THE ARTIFACT. Worst repeat offender.** **Exit 0 is not evidence a gate
+  spoke -- grep its VERDICT line, print the DENOMINATOR.** 08-12, three confident EMPTY answers: a
+  ParserError matched neither `RESULTS:` nor `FAIL` (3 cycles of stale JSON); a probe typed
+  `QUERYINPUTDATAMAP` (real: `...MAPPING`) -> 0 configs; `Get-ProviderRootJson` needs BOTH
+  `-Provider` AND `-ProvDir` -> 0 providers.
+- **VERIFY WITH A DIFFERENT PATTERN THAN YOU EDITED WITH.** 08-12 my N->Y sweep and its residual check
+  shared one over-strict regex, so a site written `;   value = 'N'` survived and the check said 0 left.
+- **A GREEN GATE IS NOT COVERAGE OF THE QUESTION YOU ASKED.** Ask what it COMPARES: fidelity said
+  `0 OVER-PERMITTED` on FL while FBQ carries an undefined `ImageIndicator` -- `$formOnly` whitelist.
+- **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED**; check ALREADY ADJUDICATED first (registry +
+  `git log`). **DON'T RE-IMPLEMENT A PARSER (4.4)**; **NEVER cite another provider as authority** (only
+  CC->CA_CLETS, `<BASE>_<VARIANT>`->`<BASE>`); aim a mutation at the gate OWNING the class.
+- **A finding across MANY providers is usually YOUR PROBE** (a State sweep flagged 65; truth was 1).
+  **`@()` BEFORE `[0]`.** A shared-tool change reddening ANOTHER provider gets a FLAG, never a fix
+  (8c). MUTATE -> restore -> RE-STAMP -> verify. `.Replace()` no-ops on CRLF.
+- **REPLACE, never append** -- gate caught me TEN+ times, incl. 8 rounds today. **Rewrapping does not
+  reduce the line count -- DELETE a block.**
