@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
   Source: AZ_AZDPS_v3.10.json
-  Generated: 2026-08-12 11:59
+  Generated: 2026-08-12 13:14
 ================================================================
 LAYOUT SUMMARY
 ==============
@@ -30,16 +30,15 @@ LAYOUT DETAIL
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
   [default]
     CARD "CARD_VEH"
-      ROW ROW_VEH_1 [6 3 3]
+      ROW ROW_VEH_1 [3 3 3 3]
         LicensePlateNumber (Text | maxLen=10)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
-      ROW ROW_VEH_2 [6 3 3]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+      ROW ROW_VEH_2 [5 4 3]
         VehicleIdentificationNumber (Text | maxLen=20)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
-      ROW ROW_VEH_3 [4]
-        RegistrationState (Dropdown | attributeTypeId=STATE)
       ROW ROW_VEH_BADGE [12]
         dexStateUserId (Text | default=X)
 
@@ -86,14 +85,13 @@ LAYOUT DETAIL
   name=ENTITY_Firearm | entity=Firearm | qidm=
   [default]
     CARD "CARD_GUN"
-      ROW ROW_GUN_1 [6]
+      ROW ROW_GUN_1 [8 4]
         serialNumber (Text | maxLen=11)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_GUN_2 [4 4 4]
         GunMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
         GunModel (Text | maxLen=11)
         GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
-      ROW ROW_GUN_3 [4]
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
       ROW ROW_GUN_BADGE [12]
         dexStateUserId (Text | default=X)
 
@@ -101,11 +99,10 @@ LAYOUT DETAIL
   name=ENTITY_Article | entity=Article | qidm=
   [default]
     CARD "CARD_ART"
-      ROW ROW_ART_1 [4 8]
+      ROW ROW_ART_1 [4 5 3]
         ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
         ArticleSerialNumber (Text | maxLen=11)
-      ROW ROW_ART_2 [4]
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_ART_BADGE [12]
         dexStateUserId (Text | default=X)
 
@@ -118,7 +115,7 @@ LAYOUT DETAIL
         BoatHullIdNumber (Text | maxLen=20)
       ROW ROW_BOA_2 [6 6]
         RegistrationState (Dropdown | attributeTypeId=STATE)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_BOA_BADGE [12]
         dexStateUserId (Text | default=X)
 

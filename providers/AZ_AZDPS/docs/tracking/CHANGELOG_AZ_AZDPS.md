@@ -59,10 +59,62 @@ GATE FIXED IN THE SAME PASS, because the gate should have caught this: verify_bu
   "[WARN] Hidden field RegistrationStateDH not on approved-exception list".  
 PORTFOLIO SWEEP: AZ was the ONLY provider hiding a real State field. All 20 checked; the remaining  
   hits are dexStateUserId, which is the badge field and legitimately hidden.  
-GATES: validator 68P/0F/0W; PHASE 1 steps 1-6b clean; fuzz 8/8 CAUGHT 0 SURVIVED (v3.9 had 1);  
-  gate efficacy 9/9; audit_layout_flow 12 -> 0 PASS; PS 5.1 parse 110/0.  
-OWED: RE-IMPORT + full re-sweep. The bump archived v3.9's 55 logs. Expect the plan to GAIN a DH  
-  out-of-state test now that State is officer-settable -- a coverage gain, same class as NJ's AK tests.  
+STATE CONVENTION ADOPTED (Rob 2026-08-12: "we want consistency  make the change").  
+  MEASURED FIRST, and the measurement REVERSED my assumption: 17 of 20 providers label State  
+  'State (leave blank for <ST>)' with NO initialValue. Only AZ, NJ and TX used bare 'State' + a  
+  home default, so the portfolio standard is the OTHER one -- I had been calling AZ's form the norm.  
+  Label and default are COUPLED: "leave blank for AZ" is only true if blank really means AZ.  
+  APPLIED:  
+    Vehicle    'State (leave blank for AZ)', default DROPPED  (State is any[]-only on ACVR/ACVRV)  
+    Person DL  'State (leave blank for AZ)', default DROPPED  (any[]-only on ACWL/DQN/DQ)  
+    Boat       'State (leave blank for AZ)', already no default -- UNCHANGED  
+    Person DH  'State (required)', default DROPPED -- see below  
+  DH IS THE ONE EXCEPTION AND IT IS PRINCIPLED: State is set[]-MANDATORY on both KQ combos, so  
+    blank means the query CANNOT FIRE and "leave blank for AZ" would be a lie. FL_FCIC is the only  
+    other provider with a mandatory DH State and it uses exactly 'State (required)' with no  
+    default -- adopted verbatim so the two agree rather than inventing a third spelling.  
+  WIRE DELTA, STATED PLAINLY: in-state Vehicle/DL queries no longer auto-send <State>AZ</State>.  
+    Metadata places State in <Any> on those variants, so both forms are valid, and it is what the  
+    other 17 providers already do. Verified safe: audit_prefill_shadow 18 ordered pairs 0 FAIL,  
+    query trace 0 prefill-dead / 0 shadow, requirement fidelity 15 branches 0 under / 0 over.  
+  A CAD CONCERN I RAISED AND ROB CLOSED -- recorded so nobody chases it again: I flagged that no  
+    combo carries a defaults[] entry for State and CAD ignores form initialValue, so a  
+    CAD-originated DH could not satisfy its mandatory State. Rob 2026-08-12: "driver history is not  
+    currently supported from cad." So there is NO CAD path to DH and the gap is moot. NOT a defect,  
+    NOT owed. Do not re-raise it, and do not add a State combo default to DH to "fix" it.  
+ROB'S SECOND LAYOUT ROUND (2026-08-12) + THREE QUESTIONS ANSWERED FROM THE AUTHORITIES.  
+  LAYOUT applied: Vehicle -- State moved onto the plate row, widths tightened [6 3 3]->[3 3 3 3]  
+    and the VIN row [6 3 3]->[5 4 3] (FL's exact Vehicle rows); ROW_VEH_3 retired.  
+    Firearm -- Stolen Check moved to row 1 beside Serial at [8 4]; ROW_GUN_3 retired.  
+    Article -- Type + Serial + Stolen Check all on row 1 at [4 5 3]; ROW_ART_2 retired.  
+    Boat -- no layout change requested; unchanged. Card rows 26 -> 21.  
+  *** Q1 AND Q3 BELOW WERE ANSWERED, THEN Q3 WAS OVERTURNED BY ROB THE SAME DAY. READ THE  
+  CORRECTION AT THE END OF THIS BLOCK -- the "blank is right" answer for Stolen Check was WRONG. ***  
+  Q1 "can or should we use a default for ncic image?" -- NO, AND THE BLANK IS LOAD-BEARING.  
+    ImageIndicator is set[]-MANDATORY on DQPN and DQP (the two licence-PHOTO paths) while both  
+    Requestor and dexStateUserId are hidden AND prefilled, i.e. always present. Give ImageIndicator  
+    a default and DQPN's VARIABLE requirement collapses to [NameLast, NameFirst] -- IDENTICAL to  
+    DQN's set[] -- and DQPN is ordered ahead of DQN, so DQN (the plain name search) dies. That is  
+    BUILD_RULES 24, the class that killed 35 combos across 6 providers. Blank is what keeps the  
+    photo path OPT-IN: officer selects Y/N -> DQPN/DQP; leaves it alone -> ACWL/DQN/DQ.  
+    NOTE the portfolio rule needs this caveat: CLAUDE.md's "ImageIndicator needs initialValue"  
+    holds where the field is any[]-only (FL/NY/HI). On AZ it is a set[] DISCRIMINATOR, so the  
+    generic rule would break routing here.  
+  Q2 "on dh state required is blank. is it required for in state? if not the label is wrong."  
+    IT IS REQUIRED FOR IN-STATE TOO, so 'State (required)' is CORRECT. RegistrationStateDH sits in  
+    set[] on BOTH KQ combinations and there is no in-state variant that omits it -- metadata defines  
+    ONE DriverHistoryQuery transaction with no in/out fork, so State is always sent and its VALUE  
+    picks the destination. An in-state DH therefore needs an explicit AZ selection.  
+    OPEN, ROB'S CALL: we could instead default it to AZ and label it bare 'State' (safe -- no combo  
+    needs State absent, 0 NOT_EXISTS gates), which buys one-click in-state at the cost of diverging  
+    from FL, the only other provider with a mandatory DH State. Not done unilaterally.  
+  Q3 "firearm stolen check blank? same question as state on dh?" -- NO, DIFFERENT CASE, and blank is  
+    right. relatedHitSearchIndicator is any[] OPTIONAL on ACQG / ACQA / all four Boat combos. It is  
+    genuinely optional, so it needs no default and must NOT read "required". Same answer for  
+    Article and Boat. The distinction that matters: ImageIndicator and StateDH are set[] (mandatory,  
+    and blank has consequences); Stolen Check is any[] (blank simply means not asked).  
+  VERIFIED after the moves: layout flow 0 findings, prefill-shadow 18 pairs 0 FAIL, combo  
+    reachability 13 checked ALL reachable, validator 68P/0F/0W.  
 
 ## v3.9 -- 2026-08-10 -- DEX-1284 label conformance -- ONE label, measured not assumed
 

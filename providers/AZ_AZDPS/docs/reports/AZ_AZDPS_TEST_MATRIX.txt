@@ -9,10 +9,9 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 8 fields):
   CARD_VEH (VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN):
-    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: RegistrationState [Sel STATE]
-    ROW 4: dexStateUserId [Inp X]
+    ROW 3: dexStateUserId [Inp X]
 
 Person (2 cards, 23 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN "OR" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO):
@@ -30,21 +29,19 @@ Person (2 cards, 23 fields):
 
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
-    serialNumber [Inp 11]
-    GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunModel [Inp 11], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
-    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
-    dexStateUserId [Inp X]
+    ROW 1: serialNumber [Inp 11], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: GunMake [Sel NCIC_FIREARM_MAKE/NCIC], GunModel [Inp 11], GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
+    ROW 3: dexStateUserId [Inp X]
 
 Article (1 card, 4 fields):
   CARD_ART (ARTICLE SEARCH BY TYPE + SERIAL NUMBER):
-    ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleSerialNumber [Inp 11]
-    relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ArticleSerialNumber [Inp 11], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     dexStateUserId [Inp X]
 
 Boat (1 card, 5 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID):
     ROW 1: RegistrationNumber [Inp 8], BoatHullIdNumber [Inp 20]
-    ROW 2: RegistrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    ROW 2: RegistrationState [Sel STATE], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 3: dexStateUserId [Inp X]
 
 QIDM SUMMARY (6 QIDMs, 15 combos)

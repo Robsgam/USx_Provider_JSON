@@ -78,6 +78,93 @@ v3.10  2026-08-12  Cosmetic/layout pass -- 12 layout findings -> 0, AND a hidden
       CAD-originated DH could not satisfy its mandatory State. Rob 2026-08-12: "driver history is not
       currently supported from cad." So there is NO CAD path to DH and the gap is moot. NOT a defect,
       NOT owed. Do not re-raise it, and do not add a State combo default to DH to "fix" it.
+  ROB'S SECOND LAYOUT ROUND (2026-08-12) + THREE QUESTIONS ANSWERED FROM THE AUTHORITIES.
+    LAYOUT applied: Vehicle -- State moved onto the plate row, widths tightened [6 3 3]->[3 3 3 3]
+      and the VIN row [6 3 3]->[5 4 3] (FL's exact Vehicle rows); ROW_VEH_3 retired.
+      Firearm -- Stolen Check moved to row 1 beside Serial at [8 4]; ROW_GUN_3 retired.
+      Article -- Type + Serial + Stolen Check all on row 1 at [4 5 3]; ROW_ART_2 retired.
+      Boat -- no layout change requested; unchanged. Card rows 26 -> 21.
+    *** Q1 AND Q3 BELOW WERE ANSWERED, THEN Q3 WAS OVERTURNED BY ROB THE SAME DAY. READ THE
+    CORRECTION AT THE END OF THIS BLOCK -- the "blank is right" answer for Stolen Check was WRONG. ***
+    Q1 "can or should we use a default for ncic image?" -- NO, AND THE BLANK IS LOAD-BEARING.
+      ImageIndicator is set[]-MANDATORY on DQPN and DQP (the two licence-PHOTO paths) while both
+      Requestor and dexStateUserId are hidden AND prefilled, i.e. always present. Give ImageIndicator
+      a default and DQPN's VARIABLE requirement collapses to [NameLast, NameFirst] -- IDENTICAL to
+      DQN's set[] -- and DQPN is ordered ahead of DQN, so DQN (the plain name search) dies. That is
+      BUILD_RULES 24, the class that killed 35 combos across 6 providers. Blank is what keeps the
+      photo path OPT-IN: officer selects Y/N -> DQPN/DQP; leaves it alone -> ACWL/DQN/DQ.
+      NOTE the portfolio rule needs this caveat: CLAUDE.md's "ImageIndicator needs initialValue"
+      holds where the field is any[]-only (FL/NY/HI). On AZ it is a set[] DISCRIMINATOR, so the
+      generic rule would break routing here.
+    Q2 "on dh state required is blank. is it required for in state? if not the label is wrong."
+      IT IS REQUIRED FOR IN-STATE TOO, so 'State (required)' is CORRECT. RegistrationStateDH sits in
+      set[] on BOTH KQ combinations and there is no in-state variant that omits it -- metadata defines
+      ONE DriverHistoryQuery transaction with no in/out fork, so State is always sent and its VALUE
+      picks the destination. An in-state DH therefore needs an explicit AZ selection.
+      OPEN, ROB'S CALL: we could instead default it to AZ and label it bare 'State' (safe -- no combo
+      needs State absent, 0 NOT_EXISTS gates), which buys one-click in-state at the cost of diverging
+      from FL, the only other provider with a mandatory DH State. Not done unilaterally.
+    Q3 "firearm stolen check blank? same question as state on dh?" -- NO, DIFFERENT CASE, and blank is
+      right. relatedHitSearchIndicator is any[] OPTIONAL on ACQG / ACQA / all four Boat combos. It is
+      genuinely optional, so it needs no default and must NOT read "required". Same answer for
+      Article and Boat. The distinction that matters: ImageIndicator and StateDH are set[] (mandatory,
+      and blank has consequences); Stolen Check is any[] (blank simply means not asked).
+    VERIFIED after the moves: layout flow 0 findings, prefill-shadow 18 pairs 0 FAIL, combo
+      reachability 13 checked ALL reachable, validator 68P/0F/0W.
+
+    *** CORRECTION -- Q3 OVERTURNED BY ROB, SAME DAY. My answer inverted his standing rule. ***
+    Rob 2026-08-12: "if the stolen check is an any it makes sense to use a default of yes to get the
+      most out of every query. ncic image should be ruled the same IF IT DOES NOT EFFECT ROUTING.
+      previoulsy i stated to use defaults everywhere where it made sense and didn't ruin in state
+      default routing ... i feel like this is a big regression."
+    HE IS RIGHT ABOUT STOLEN CHECK. I had reasoned "any[] means optional, so blank is correct" and
+      stopped there. That is backwards: any[] means it CANNOT hurt routing, which is precisely the
+      condition under which a default SHOULD be set -- a defaulted Stolen Check returns stolen-hit
+      data on every query instead of only when someone remembers to tick it. Optional is an argument
+      FOR the default, not against it.
+    MEASURED ACROSS THE 8 TESTED PROVIDERS -- and AZ was in the minority: HI (Article/Boat/Firearm),
+      NY (Article/Firearm) and TX (Article/Boat/Firearm) all default their stolen-hit indicator to
+      'Y'. AZ, FL and IL left it blank. So this was NOT a matter of taste and AZ was simply wrong.
+    APPLIED: relatedHitSearchIndicator initialValue='Y' on Firearm, Article and Boat (any[] on all
+      four Boat combos too). Verified after: prefill-shadow 18 pairs 0 FAIL, combo reachability 13
+      checked ALL REACHABLE, validator 68P/0F/0W -- no routing moved, exactly as any[] implies.
+    AND THE CAD TWIN, which audit_cad caught me omitting: a form initialValue alone is HALF a
+      default, because CAD ignores form initialValue entirely. Added
+      defaults[] { field='RelatedHitSearchIndicator'; value='Y' } to all SIX carrying combinations
+      (ACQG, ACQA, ACQB, ACQBH, BQ, BQH). audit_cad now 67 PASS / 0 FAIL / 0 WARN. Without it,
+      officer-driven queries would carry the stolen check and CAD-driven ones silently would not --
+      the same class as the original BadgeNumber defect this script's own loop exists to prevent.
+    THREE SELF-INFLICTED ERRORS GETTING THERE, all mine, recorded because each was avoidable:
+      (a) Put defaults at COMBINATION level first. It serialised fine and audit_cad correctly could
+          not see it -- the platform contract is requirements.defaults, one level in.
+      (b) Then inserted a SECOND defaults key into blocks that already had one, which is a HARD
+          PowerShell parse error ("Duplicate keys 'defaults' are not allowed in hash literals").
+      (c) WORST: I did not notice the build was failing for three cycles, because I was filtering
+          build output for 'RESULTS:|FAIL' and a ParserError matches neither -- so every gate I ran
+          was reading the PREVIOUS JSON and reporting the same stale FAILs. The missing RESULTS line
+          was the tell and I read past it. A step that did not run is NOT a pass; check the build
+          SUCCEEDED before believing anything downstream of it.
+    NCIC IMAGE IS THE EXCEPTION AND IT WAS TESTED, NOT ARGUED. Rob's rule carries its own caveat
+      ("if it does not effect routing"), and on AZ it does. Setting initialValue='Y' and rebuilding
+      produced, immediately:
+        [FAIL] 'DQPN' SHADOWS 'DQN' only because of prefill(s): dexStateUserId, ImageIndicator, Requestor
+        [FAIL] 'DQP'  SHADOWS 'DQ'  only because of prefill(s): (same three)
+        [FAIL] DEAD COMBO: DriverLicenseQuery/DQN  +  DriverLicenseQuery/DQ
+      ImageIndicator is set[]-MANDATORY on DQPN/DQP while badge and Requestor are hidden AND
+      prefilled, so the third prefill collapses DQPN to [NameLast,NameFirst] (= DQN) and DQP to
+      [OperatorLicenseNumber] (= DQ). Both plain searches die. Reverted; blank stands.
+    NOT A REGRESSION IN THE ARTIFACT, BUT A REGRESSION IN MY REASONING: AZ's Stolen Check was blank
+      at v3.9 and every version before it, so the cosmetic pass did not break it. What was new was me
+      DEFENDING the blank as correct when asked. The artifact was stale; the answer was the defect.
+    STILL OPEN, PORTFOLIO-WIDE (Rob's call -- both are tenant-verified, so a fix is a version bump
+      plus a full re-sweep, and 8c says flag rather than fix another provider mid-stream):
+        FL_FCIC -- stolen check BLANK on Article and Firearm (both any[]). Its BOAT one is set[] and
+          therefore CORRECTLY blank (it is the QB stolen-routing discriminator) -- do not "fix" that.
+        IL_LEADS_OFML -- stolen check BLANK on Boat, Firearm, Person and Vehicle (all any[]).
+        NJ carries no stolen-hit field at all; CA_CLETS carries no ImageIndicator by design.
+      ImageIndicator itself is conformant everywhere it is any[]-only: Person='Y', others='N' on
+      FL/IL/NJ/NY/TX. AZ is the only set[] case.
+
   GATE EFFICACY CAUGHT ITSELF, and the finding was a STALE MUTATION not a blind gate: dropping the
     prefill made 'az-state-prefill-routes' report SURVIVED, because that mutation only added State to
     DQ's set[] and INHERITED the initialValue from the build. State in set[] with no prefill is a

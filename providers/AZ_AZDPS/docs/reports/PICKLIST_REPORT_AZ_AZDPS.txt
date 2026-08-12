@@ -1,7 +1,7 @@
 ======================================================================
   PICKLIST / DROPDOWN REPORT: AZ_AZDPS_v3.10
   Source: AZ_AZDPS_v3.10.json
-  Generated: 2026-08-12 11:59
+  Generated: 2026-08-12 13:14
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -10,13 +10,13 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
   Entity: Article
     ArticleTypeCode [Article Type]
       Config: codeTypeCategory=NCIC_ARTICLE_TYPE, codeTypeSource=CA_CLETS
-    relatedHitSearchIndicator [Stolen Check]
+    relatedHitSearchIndicator [Stolen Check] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Boat
     RegistrationState [State (leave blank for AZ)]
       Config: attributeTypeId=STATE
-    relatedHitSearchIndicator [Stolen Check]
+    relatedHitSearchIndicator [Stolen Check] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Firearm
@@ -24,7 +24,7 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: codeTypeCategory=NCIC_FIREARM_CALIBER, codeTypeSource=NCIC
     GunMake [Make]
       Config: codeTypeCategory=NCIC_FIREARM_MAKE, codeTypeSource=NCIC
-    relatedHitSearchIndicator [Stolen Check]
+    relatedHitSearchIndicator [Stolen Check] (default=Y)
       Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
 
   Entity: Person

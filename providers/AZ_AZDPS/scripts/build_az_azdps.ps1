@@ -564,6 +564,9 @@ $gunQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('dexStateUserId','serialNumber')
                 any = @('GunCaliber','GunMake','GunModel','relatedHitSearchIndicator')
+                # v3.10 CAD twin for the Stolen Check form default (audit_cad CHECK 6): CAD ignores form
+                # initialValue, so without this a CAD-originated query carries no stolen check at all.
+                defaults = @( [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
             }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'ACQG'
@@ -596,6 +599,9 @@ $artQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('dexStateUserId','ArticleTypeCode','ArticleSerialNumber')
                 any = @('relatedHitSearchIndicator')
+                # v3.10 CAD twin for the Stolen Check form default (audit_cad CHECK 6): CAD ignores form
+                # initialValue, so without this a CAD-originated query carries no stolen check at all.
+                defaults = @( [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
             }
             primaryFieldReference = 'ArticleTypeCode'
             keyReference          = 'ACQA'
@@ -631,6 +637,9 @@ $boatQuery = [PSCustomObject]@{
                 # hull is present (ACQBH fires alone). Hull removed from any[] per CHECK 14.
                 set = @('dexStateUserId','RegistrationNumber')
                 any = @('relatedHitSearchIndicator')
+                # v3.10 CAD twin for the Stolen Check form default (audit_cad CHECK 6): CAD ignores form
+                # initialValue, so without this a CAD-originated query carries no stolen check at all.
+                defaults = @( [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 # v3.7: State default REMOVED. This combo is gated RegistrationState NOT_EXISTS and State is
                 # no longer in its any[], so the default could never be applied -- audit_wiring_closure
                 # class E (inert default). A default on a field the combo gates ABSENT is self-defeating.
@@ -671,6 +680,9 @@ $boatQuery = [PSCustomObject]@{
                 # when the combo fires is dead config (verify_build rejects gate-XOR-companion).
                 set = @('dexStateUserId','BoatHullIdNumber')
                 any = @('RegistrationNumber','relatedHitSearchIndicator')
+                # v3.10 CAD twin for the Stolen Check form default (audit_cad CHECK 6): CAD ignores form
+                # initialValue, so without this a CAD-originated query carries no stolen check at all.
+                defaults = @( [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('dexStateUserId'); operator = 'EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
@@ -686,7 +698,7 @@ $boatQuery = [PSCustomObject]@{
                 # combo OUT when a hull is present (BQH fires alone). Hull removed from any[].
                 set = @('RegistrationNumber')
                 any = @('dexStateUserId','RegistrationState','relatedHitSearchIndicator')
-                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
+                defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } , [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
@@ -704,6 +716,9 @@ $boatQuery = [PSCustomObject]@{
                 # of a metadata-permitted, devdoc-listed optional from the winner's payload.
                 set = @('BoatHullIdNumber')
                 any = @('RegistrationNumber','dexStateUserId','RegistrationState','relatedHitSearchIndicator')
+                # v3.10 CAD twin for the Stolen Check form default (audit_cad CHECK 6): CAD ignores form
+                # initialValue, so without this a CAD-originated query carries no stolen check at all.
+                defaults = @( [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }
                 )
@@ -737,34 +752,32 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH'
         title = 'VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN'
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
+            # v3.10 (Rob 2026-08-12: "on veh put state on top line and tighenten up the filed sizes"):
+            # State joins the plate row and the widths tighten to [3 3 3 3]. State is any[]-only on
+            # both Vehicle combos so it is shared context, not a discriminator -- putting it on the
+            # top line is safe and it is where FL/NY carry it.
+            @{ id = 'ROW_VEH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'LicPlate_Input';  node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'PlateType_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'PlateYear_Input'; node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State (leave blank for AZ)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
+            # v3.10: tightened [6 3 3] -> [5 4 3], which is FL_FCIC's Vehicle VIN row exactly.
+            @{ id = 'ROW_VEH_2'; cols = @('5','4','3'); fields = @(
                 @{ id = 'VIN_Input';       node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_2' }
                 # LABEL-OVERRIDE: VehicleMakeCode -- bare per DEX-1284 lean pass (any[] optional VIN qualifier)
                 @{ id = 'Make_Veh_Input';  node = Sel 'VehicleMakeCode' 'Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 # LABEL-OVERRIDE: vehicleYear -- bare per DEX-1284 lean pass (any[] optional VIN qualifier)
                 @{ id = 'Year_Veh_Input';  node = Inp 'vehicleYear' 'Year' '4' 'ROW_VEH_2' }
             )}
-            # LABEL-OVERRIDE: RegistrationState -- bare "State" (NJ pattern); initialValue=AZ kept, officer-editable for OOS, not an in/out routing toggle
-            # v3.10 LAYOUT-OVERRIDE (L6): shared-context row carries ONE field, so it cannot both
-            # sum to 12 and avoid a 12-wide dropdown (L5). Narrowed 6 -> 4 and left partial:
-            # a left-aligned third-width dropdown is what NY ships. Recorded, not silently ignored.
-            # v3.10 STATE CONVENTION (Rob 2026-08-12: "we want consistency"): adopted the portfolio
-            # standard, which was MEASURED not assumed -- 17 of 20 providers label State
-            # 'State (leave blank for <ST>)' with NO initialValue; only AZ, NJ and TX used bare
-            # 'State' + a home default. The label and the default are COUPLED: "leave blank for AZ"
-            # is only true if blank actually means AZ, so the hint requires dropping the default.
-            # Safe here: State is any[]-ONLY on both Vehicle combos (ACVR/ACVRV), so it routes
-            # nothing and its absence simply means it is not transmitted -- exactly what the other
-            # 17 providers do. WIRE DELTA, stated plainly: an in-state Vehicle query no longer
-            # auto-sends <State>AZ</State>; metadata has State in <Any> so both forms are valid.
-            @{ id = 'ROW_VEH_3'; cols = @('4'); fields = @(
-                @{ id = 'State_Veh_Input'; node = Sel 'RegistrationState' 'State (leave blank for AZ)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
-            )}
+            # v3.10 STATE CONVENTION (Rob: "we want consistency"): portfolio standard, MEASURED not
+            # assumed -- 17 of 20 providers label State 'State (leave blank for <ST>)' with NO
+            # initialValue; only AZ, NJ and TX used bare 'State' + a home default. Label and default
+            # are COUPLED: "leave blank for AZ" is only true if blank really means AZ.
+            # Safe: State is any[]-ONLY on both Vehicle combos (ACVR/ACVRV), so it routes nothing.
+            # WIRE DELTA, stated plainly: an in-state Vehicle query no longer auto-sends
+            # <State>AZ</State>; metadata has State in <Any> so both forms are valid.
+            # ROW_VEH_3 RETIRED at v3.10 -- State moved to the plate row per Rob's layout request.
             @{ id = 'ROW_VEH_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_Veh'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_VEH_BADGE' @{ initialValue = 'X' } }
             )}
@@ -801,6 +814,27 @@ $perLayout = MakeLayouts @(
                 # v3.10: portfolio State convention (17 of 20) -- hint + NO default. any[]-only on
                 # all three DL combos (ACWL/DQN/DQ), so it routes nothing.
                 @{ id = 'State_Per_Input'; node = Sel 'RegistrationState' 'State (leave blank for AZ)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
+                # NCIC IMAGE STAYS BLANK ON AZ, AND IT IS THE ONE ROUTING EXCEPTION -- MEASURED, NOT
+                # ARGUED. Rob 2026-08-12: "ncic image should be ruled the same IF IT DOES NOT EFFECT
+                # ROUTING ... use defaults everywhere where it made sense and didn't ruin in state
+                # default routing". On AZ it DOES affect routing, so the caveat excludes it. Tested by
+                # setting initialValue='Y' and rebuilding -- both gates FAILED immediately:
+                #   [FAIL] 'DQPN' SHADOWS 'DQN' only because of prefill(s): dexStateUserId,
+                #          ImageIndicator, Requestor
+                #   [FAIL] 'DQP'  SHADOWS 'DQ'  only because of prefill(s): (same three)
+                #   [FAIL] DEAD COMBO: DriverLicenseQuery/DQN   +   DriverLicenseQuery/DQ
+                # WHY: ImageIndicator is set[]-MANDATORY on DQPN/DQP while dexStateUserId and
+                # Requestor are hidden AND prefilled, so adding the third prefill collapses DQPN's
+                # VARIABLE requirement to [NameLast, NameFirst] -- identical to DQN's set[] -- and
+                # DQP's to [OperatorLicenseNumber], identical to DQ's. DQPN/DQP are ordered first, so
+                # the plain name search and the plain OLN search both die. That is BUILD_RULES 24.
+                # THE TRADE, stated: blank costs one extra click to request a photo (the officer picks
+                # Y/N, which is what makes DQPN/DQP fire at all -- proven on 4 v3.9 tenant logs).
+                # A default would cost the two most common DL searches. Blank is correct.
+                # NOTE the portfolio rule needs this caveat: CLAUDE.md's "ImageIndicator needs an
+                # initialValue" holds where the field is any[]-only, which is true on FL/IL/NJ/NY/TX
+                # (all Person='Y', other entities='N'). AZ is the only provider where it sits in
+                # set[] as the photo discriminator, and there BUILD_RULES 24 outranks it.
                 @{ id = 'ImageInd_Per_Sel'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_PER_DL_1' }
             )}
             # v3.10 (L8): First BEFORE Last, portfolio convention. The wire is UNAFFECTED -- the
@@ -958,8 +992,13 @@ $faLayout = MakeLayouts @(
             # v3.10 (L5 + L3): Serial Number was alone on a 12-column row at maxLen=11, and the hidden
             # badge row sat BETWEEN it and the make/model/caliber group, splitting fields that belong
             # together. Serial now leads its own group at [6] and the badge row moved to the bottom.
-            @{ id = 'ROW_GUN_1'; cols = @('6'); fields = @(
+            # v3.10 (Rob: "alos move stolen cehck to top line"): Serial + Stolen Check share row 1 at
+            # [8 4]. Stolen Check stays BLANK by design -- relatedHitSearchIndicator is any[] OPTIONAL
+            # on ACQG, so unlike ImageIndicator (set[]) it needs no default and must not read
+            # "required". LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284.
+            @{ id = 'ROW_GUN_1'; cols = @('8','4'); fields = @(
                 @{ id = 'Serial_FA_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
+                @{ id = 'RelHit_FA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 # LABEL-OVERRIDE: GunMake -- bare per DEX-1284 lean pass (any[] optional)
@@ -969,10 +1008,7 @@ $faLayout = MakeLayouts @(
                 # LABEL-OVERRIDE: GunCaliber -- bare per DEX-1284 lean pass (any[] optional)
                 @{ id = 'Cal_FA_Input';    node = Sel 'GunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
             )}
-            # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
-            @{ id = 'ROW_GUN_3'; cols = @('4'); fields = @(
-                @{ id = 'RelHit_FA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_GUN_3' }
-            )}
+            # ROW_GUN_3 RETIRED at v3.10 -- Stolen Check moved to row 1.
             # v3.10 (L3): hidden rows LAST. Was row 2 of 4, splitting serial from make/model/caliber.
             @{ id = 'ROW_GUN_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_FA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_GUN_BADGE' @{ initialValue = 'X' } }
@@ -995,15 +1031,14 @@ $artLayout = MakeLayouts @(
         id    = 'CARD_ART'
         title = 'ARTICLE SEARCH BY TYPE + SERIAL NUMBER'
         rows  = @(
-            # v3.10 (L5): [5 7] -> [4 8]. Both fields are mandatory in ACQA's set[], so they stay
-            # together on row 1; the dropdown no longer takes an odd 5/12 slice.
-            @{ id = 'ROW_ART_1'; cols = @('4','8'); fields = @(
+            # v3.10 (Rob: "article all 3 on top line"): Type + Serial + Stolen Check on one row at
+            # [4 5 3]. Type and Serial are BOTH mandatory in ACQA's set[]; Stolen Check is any[]
+            # OPTIONAL and stays BLANK by design -- no default, and it must not read "required".
+            # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
+            @{ id = 'ROW_ART_1'; cols = @('4','5','3'); fields = @(
                 @{ id = 'Type_ART_Input';   node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
                 @{ id = 'Serial_ART_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '11' 'ROW_ART_1' }
-            )}
-            # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
-            @{ id = 'ROW_ART_2'; cols = @('4'); fields = @(
-                @{ id = 'RelHit_ART_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_2' }
+                @{ id = 'RelHit_ART_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_1' }
             )}
             # v3.10 (L3): hidden rows LAST. Was row 2 of 3, between the identifiers and Stolen Check.
             @{ id = 'ROW_ART_BADGE'; cols = @('12'); hidden = $true; fields = @(
@@ -1045,7 +1080,7 @@ $boaLayout = MakeLayouts @(
                 # carry State in <Any> (the Nlets out-of-state path). Blank => in-state, filled => OOS.
                 @{ id = 'State_BOA_Input';  node = Sel 'RegistrationState' 'State (leave blank for AZ)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
                 # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284 (any[] optional)
-                @{ id = 'RelHit_BOA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
+                @{ id = 'RelHit_BOA_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
             @{ id = 'ROW_BOA_BADGE'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'dexStateUserId_BOA'; node = InpH 'dexStateUserId' 'Badge (auto)' $null 'ROW_BOA_BADGE' @{ initialValue = 'X' } }
