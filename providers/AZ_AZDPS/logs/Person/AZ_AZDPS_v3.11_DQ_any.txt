@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: AZ_AZDPS Person DriverLicenseQuery
 Combo: DQ_any (DQ_any (auto))
-Date: 2026-08-12 14:23:34
+Date: 2026-08-12 14:30:18
 Result: PASS
 JSON Version: 3.11
 Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia","Requestor":"X","dexStateUserId":"X"}
+{"OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia","RegistrationStateDH":"Arizona","Requestor":"X","dexStateUserId":"X"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZVJWTGBAD0KCA74S7M9MJ1A">
+    <api:Transaction id="01KZVKF9XKXK0B71GBKWC3S8A1">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZVJWTGBAD0KCA74S7M9MJ1A</Id>
+            <Id>01KZVKF9XKXK0B71GBKWC3S8A1</Id>
             <State>GA</State>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
@@ -72,12 +72,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZVJWTGBAD0KCA74S7M9MJ1A
+  Id                             01KZVKF9XKXK0B71GBKWC3S8A1
   State                          GA
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01KZVJWTGBAD0KCA74S7M9MJ1A). kind=any; anyField=; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZVKF9XKXK0B71GBKWC3S8A1). kind=any; anyField=; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

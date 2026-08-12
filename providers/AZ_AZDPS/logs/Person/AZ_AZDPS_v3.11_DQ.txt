@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: AZ_AZDPS Person DriverLicenseQuery
 Combo: DQ (DQ (auto))
-Date: 2026-08-12 14:23:35
+Date: 2026-08-12 14:30:18
 Result: PASS
 JSON Version: 3.11
 Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"OperatorLicenseNumber":"D999888777","Requestor":"X","dexStateUserId":"X"}
+{"OperatorLicenseNumber":"D999888777","RegistrationStateDH":"Arizona","Requestor":"X","dexStateUserId":"X"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZVJWK8K71XQ20JBX5594CXK">
+    <api:Transaction id="01KZVKF690CXW8QEWZFTSGV0X5">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZVJWK8K71XQ20JBX5594CXK</Id>
+            <Id>01KZVKF690CXW8QEWZFTSGV0X5</Id>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
           </Request>
         </Transaction>
@@ -70,11 +70,11 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZVJWK8K71XQ20JBX5594CXK
+  Id                             01KZVKF690CXW8QEWZFTSGV0X5
   OperatorLicenseNumber          D999888777
 
 NOTES
 -----
-Automated capture (txId 01KZVJWK8K71XQ20JBX5594CXK). kind=combo; anyField=; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZVKF690CXW8QEWZFTSGV0X5). kind=combo; anyField=; expectedKeyRef=DQ; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

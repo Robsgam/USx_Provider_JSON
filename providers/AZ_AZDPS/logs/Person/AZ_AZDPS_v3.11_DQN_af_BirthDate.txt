@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: AZ_AZDPS Person DriverLicenseQuery
 Combo: DQN_af_BirthDate (DQN_af_BirthDate (auto))
-Date: 2026-08-12 14:23:36
+Date: 2026-08-12 14:30:20
 Result: PASS
 JSON Version: 3.11
 Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","Requestor":"X","dexStateUserId":"X"}
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","RegistrationStateDH":"Arizona","Requestor":"X","dexStateUserId":"X"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZVJW8DX7YZZ5AZ2R7BV7M6B">
+    <api:Transaction id="01KZVKEZ9P57MXGP3AAYXH9H6Y">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,7 +36,7 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZVJW8DX7YZZ5AZ2R7BV7M6B</Id>
+            <Id>01KZVKEZ9P57MXGP3AAYXH9H6Y</Id>
             <BadgeNumber>MK43RS</BadgeNumber>
             <BirthDate>19900115</BirthDate>
             <Name>DOE, JOHN</Name>
@@ -74,13 +74,13 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZVJW8DX7YZZ5AZ2R7BV7M6B
+  Id                             01KZVKEZ9P57MXGP3AAYXH9H6Y
   BadgeNumber                    MK43RS
   BirthDate                      19900115
   Name                           DOE, JOHN
 
 NOTES
 -----
-Automated capture (txId 01KZVJW8DX7YZZ5AZ2R7BV7M6B). kind=any-field; anyField=BirthDate; expectedKeyRef=DQN; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZVKEZ9P57MXGP3AAYXH9H6Y). kind=any-field; anyField=BirthDate; expectedKeyRef=DQN; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

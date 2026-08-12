@@ -136,14 +136,14 @@ KNOWN LIMITATIONS (4):
   Combos: KQ (OLN), KQH (Name+DOB+Sex)
   autoSelect: true (co-fires with DL)
 
-  KQ -- OLN (OperatorLicenseNumberDH) + StateDH [PENDING]
+  KQ -- OLN (OperatorLicenseNumberDH) + StateDH [CONFIRMED]
     set: StateDH, OperatorLicenseNumberDH
     any: Attention, BirthDateDH, NameFirstDH, NameLastDH, NameMiddleDH,
          NameSuffixDH, PurposeCode, SexCodeDH
     keyReference: KQ
     StateDH: hidden InpH initialValue='AZ' (plain text, no NCIC conversion)
 
-  KQH -- Name + DOB + Sex (DH-suffix) + StateDH [PENDING]
+  KQH -- Name + DOB + Sex (DH-suffix) + StateDH [CONFIRMED]
     set: StateDH, NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH
     any: Attention, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, PurposeCode
     keyReference: KQH (invented)

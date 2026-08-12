@@ -1,7 +1,7 @@
 ﻿================================================================
-TEST LOG: AZ_AZDPS Person DriverLicenseQuery
-Combo: DQP_guardrail_vs_DQPN (DQP_guardrail_vs_DQPN (auto))
-Date: 2026-08-12 14:30:10
+TEST LOG: AZ_AZDPS Person DriverHistoryQuery
+Combo: KQ_af_purposeCodeDH (KQ_af_purposeCodeDH (auto))
+Date: 2026-08-12 14:30:13
 Result: PASS
 JSON Version: 3.11
 Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","NameFirst":"JOHN","NameLast":"DOE","OperatorLicenseNumber":"D999888777","RegistrationStateDH":"Arizona","Requestor":"X","dexStateUserId":"X"}
+{"OperatorLicenseNumberDH":"D999888777","RegistrationStateDH":"New Jersey","Requestor":"X","dexStateUserId":"X","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZVKGRWDZA019YFBK4RNKGGJ">
+    <api:Transaction id="01KZVKG8YH658FSFD9ZNC00VQW">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,12 +35,12 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZVKGRWDZA019YFBK4RNKGGJ</Id>
-            <ImageIndicator>N</ImageIndicator>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01KZVKG8YH658FSFD9ZNC00VQW</Id>
+            <State>NJ</State>
+            <Attention>SGAMBELLONE R</Attention>
             <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
-            <Requestor>SGAMBELLONE R</Requestor>
-            <BadgeNumber>MK43RS</BadgeNumber>
+            <PurposeCode>C</PurposeCode>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -54,19 +54,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "dlNumber":  "D999888777",
-                         "lastName":  "DOE",
-                         "firstName":  "JOHN"
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -75,14 +63,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZVKGRWDZA019YFBK4RNKGGJ
-  ImageIndicator                 N
+  Id                             01KZVKG8YH658FSFD9ZNC00VQW
+  State                          NJ
+  Attention                      SGAMBELLONE R
   OperatorLicenseNumber          D999888777
-  Requestor                      SGAMBELLONE R
-  BadgeNumber                    MK43RS
+  PurposeCode                    C
 
 NOTES
 -----
-Automated capture (txId 01KZVKGRWDZA019YFBK4RNKGGJ). kind=guardrail; anyField=; expectedKeyRef=DQP; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01KZVKG8YH658FSFD9ZNC00VQW). kind=any-field; anyField=purposeCodeDH; expectedKeyRef=KQ; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
