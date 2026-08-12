@@ -180,7 +180,25 @@ The operator-license-number field (`OperatorLicenseNumber` + DH variant) is labe
 Every image-toggle field (`ImageIndicator` + DH variant) is labeled exactly **"NCIC Image"** on every provider — not "NCIC Image - if available"/"Image (optional)"/"Image". **Future retrofit** — applied to each provider on its revisit turn (NY_NYSPIN_EJUSTICE v4.12 first), not a one-shot sweep. `verify_build.ps1` CHECK 15 Rule 3 accepts bare "NCIC Image" via its `$canonicalBareLabels` allowlist, so it needs no `(optional)` qualifier and no LABEL-OVERRIDE. Companion lean-label convention: strip inline helpers and let the **card title** carry the query paths (State keeps its routing hint; stolen-hit toggles → bare "Stolen Check"). See BUILD_RULES.txt Section 11.
 
 ### ImageIndicator
-Three requirements (all must be met): QIDM attribute `size=1`, FormSelect `initialValue='Y'` (or 'N' for vehicle), field listed in set[] or any[].
+Three requirements (all must be met): QIDM attribute `size=1`, FormSelect `initialValue='Y'`, field listed in set[] or any[].
+
+**`initialValue='Y'` ON EVERY ENTITY — rule changed 2026-08-12 (Rob).** This line used to read "'Y'
+(or 'N' for vehicle)", and `audit_cross_provider` enforced `'N'` on Vehicle, so FL_FCIC v7.21 — the
+first build to follow the new rule — was reported as the defect. Rob's ruling: *"ncic image should
+default to y everywhere ... this should not generate a warn when its the proper way to do this.
+whatever is triggering the warning needs to be fixed."* The gate was encoding the old convention and
+was changed to expect `'Y'` on Vehicle, with **both safety guards kept** (they had to be hoisted out
+of the Person block first, or Vehicle would have gained a wrong-but-quiet check):
+- **In a `set[]` and NOT prefilled → PASS.** The field is a routing DISCRIMINATOR; a prefill collapses
+  its combo onto a plainer sibling (AZ_AZDPS v3.7 killed DQN/DQ/BQ/BQH exactly that way). **This is why
+  "everywhere" is not mechanical** — AZ_AZDPS has ImageIndicator in 2 `set[]`s and LA_LEMS in 1 `set[]`
+  + 2 conditions, so those two need a ruling, not a flip.
+- **Prefilled AND gated `NOT_EXISTS` → WARN** (BUILD_RULES 20b, permanently dead branch).
+- Pair the form `initialValue` with a matching combo `defaults[]` on every carrying combo: CAD ignores
+  form `initialValue`, so a form-only flip leaves CAD-originated queries still sending the old value.
+
+Rollout: FL_FCIC v7.21 first; the other 19 carry `[FLAG:ncic-image-default-y-everywhere]` and take it
+at their OWN rebuild (rule 8c). Until then they WARN here — that is correct signal, not noise.
 
 ---
 

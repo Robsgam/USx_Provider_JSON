@@ -120,8 +120,11 @@ function Get-FixHint([string]$warnMsg) {
     if ($warnMsg -match "ImageIndicator.*initialValue=''.*expected 'Y'") {
         return "Set ImageIndicator initialValue='Y' on Person QIF FormSelect"
     }
-    if ($warnMsg -match "ImageIndicator.*initialValue=''.*expected 'N'") {
-        return "Set ImageIndicator initialValue='N' on Vehicle QIF FormSelect"
+    # RULE CHANGED 2026-08-12 (Rob): NCIC Image defaults 'Y' on EVERY entity, Vehicle included, so the
+    # old "expected 'N'" advice is gone. Matches any current value (typically 'N' on a provider that has
+    # not yet taken [FLAG:ncic-image-default-y-everywhere]), not just an empty one.
+    if ($warnMsg -match "Vehicle ImageIndicator.*expected 'Y'") {
+        return "Set ImageIndicator initialValue='Y' on the Vehicle QIF FormSelect AND add/flip the matching combo defaults[] on every carrying combo (CAD ignores form initialValue) -- clears [FLAG:ncic-image-default-y-everywhere]. FIRST verify ImageIndicator is in NO combination's set[] and no NOT_EXISTS condition on this provider; if it is, it is a routing discriminator and a prefill would kill combos (BUILD_RULES 24/20b) -- that needs Rob's ruling, not a flip."
     }
     # State routing
     if ($warnMsg -match "State field.*initialValue.*changes combo routing.*LIMITATION #30") {

@@ -648,11 +648,33 @@ SECTION 9 -- IMAGEINDICATOR
 
   Type: FormSelect with codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC.
 
-  Defaults by entity:
-    Person queries:    initialValue = 'Y'
-    Firearm queries:   initialValue = 'Y'
-    Vehicle queries:   initialValue = 'N' (or omit -- check per query)
-    Article/Boat:      initialValue = 'N' (if field exists in metadata)
+  Defaults by entity -- RULE CHANGED 2026-08-12 (Rob): 'Y' ON EVERY ENTITY.
+    Person / Vehicle / Firearm / Article / Boat:  initialValue = 'Y'
+      + a matching combo defaults[] on every carrying combo (CAD ignores form initialValue).
+
+  This table previously said Vehicle='N' and Article/Boat='N', and audit_cross_provider ENFORCED 'N'
+  on Vehicle -- so FL_FCIC v7.21, the first build to follow the new rule, was reported as the defect.
+  Rob 2026-08-12: "ncic image should default to y everywhere ... this should not generate a warn when
+  its the proper way to do this. whatever is triggering the warning needs to be fixed." The gate was
+  changed to expect 'Y' on Vehicle; both of its safety guards were KEPT (see the two exceptions below).
+
+  WHY THE OLD 'N' WAS NEVER A SAFETY RULE -- worth knowing before anyone "restores" it. Per the
+  2026-06-15 finding immediately below, FCIC's own metadata says ImageIndicator "If blank, default
+  value shall be 'N'", so the entity defaults of 'N' were REDUNDANT-BUT-HARMLESS, not protective.
+  Nothing on record says 'Y' on a non-person entity is rejected or costly. What 'Y' actually RETURNS
+  on Vehicle/Article/Boat is UNVERIFIED either way -- 'Y' on Person is documented as functional (it
+  requests the driver photo); no committed log establishes the non-person case. That is a concrete
+  observable for the next tenant sweep: does a Vehicle query with ImageIndicator=Y come back with an
+  image, with nothing extra, or with an error?
+
+  TWO EXCEPTIONS -- 'Y' IS NOT MECHANICAL:
+    - ImageIndicator in a combination's set[] -> it is a ROUTING DISCRIMINATOR and must stay
+      UNPREFILLED; a prefill collapses that combo onto a plainer sibling (AZ_AZDPS v3.7 killed
+      DQN/DQ/BQ/BQH exactly that way). AZ_AZDPS has it in 2 set[]s TODAY.
+    - ImageIndicator gated NOT_EXISTS anywhere -> a prefill makes that branch permanently dead
+      (BUILD_RULES 20b). LA_LEMS has 1 set[] + 2 such conditions TODAY.
+    Both providers need a ruling, not a flip. Measure with the per-provider set[]/condition count
+    before changing any provider; 0/0 means the flip cannot move routing.
 
   BLANK -> N (provider default) and "cannot uniformly blank" -- finding 2026-06-15
   (FL_FCIC v5.0 live testing; FCIC metadata: ImageIndicator "If blank, default value
@@ -744,8 +766,11 @@ SECTION 11 -- INITIALVALUE AND DEFAULTS
                                                      =STATE; for RMS only
   RegistrationStateNY (InpH)     '<state code>'      Hidden; for outbound XML;
                                                      in QIDM
-  ImageIndicator (Person)        'Y'                 Person/Firearm queries
-  ImageIndicator (Vehicle)       'N'                 Vehicle queries
+  ImageIndicator (ALL entities)  'Y'                 Rule changed 2026-08-12 (Rob):
+                                                     'Y' everywhere, was 'N' off-Person.
+                                                     EXCEPT where it sits in a set[] or
+                                                     is gated NOT_EXISTS -- see the
+                                                     ImageIndicator section above.
   LicensePlateTypeCode           'PC'                Passenger Car (most common)
   LicensePlateYear               '2026'              Update yearly; all providers
   VehicleYear                    '2026'              FormInput; update yearly

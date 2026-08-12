@@ -322,41 +322,46 @@ foreach ($prov in $validProviders) {
     # $prov.Json, NOT $json -- the per-provider parse lives on the loop object. Written as $json
     # first, which is UNDEFINED at this scope, so the loop never ran and the flag stayed $false with
     # no error to show why. Silent-wrong, not broken.
-    $personImg = @($fields | Where-Object { $_.Entity -eq 'Person' -and $_.FieldId -match '^[Ii]mageIndicator$' })
-    if ($personImg.Count -gt 0) {
-        $iv = $null
-        try { $iv = $personImg[0].Props.initialValue } catch { }
-        $imgNotExistsGate = $false
-        foreach ($b in $prov.Json.bundles) {
-            foreach ($c in $b.configurations) {
-                if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
-                foreach ($cm in @($c.combinations)) {
-                    foreach ($cd in @($cm.requirements.conditions)) {
-                        if ("$($cd.operator)" -ne 'NOT_EXISTS') { continue }
-                        foreach ($f in @($cd.field)) {
-                            if ("$f" -match '^[Ii]mageIndicator') { $imgNotExistsGate = $true }
-                        }
+    # HOISTED 2026-08-12 (both were computed INSIDE the Person block). Both flags are provider-wide, and
+    # the Vehicle check below now needs them too -- expecting 'Y' on Vehicle without these two guards
+    # would have dropped the BUILD_RULES 20b dead-branch protection for Vehicle, i.e. traded one wrong
+    # verdict for a blind spot. Left inside the Person block they were simply out of scope down there,
+    # which PowerShell reports as $null rather than as an error.
+    $imgInSet = $false
+    foreach ($b in $prov.Json.bundles) {
+        foreach ($c in $b.configurations) {
+            if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+            foreach ($cm in @($c.combinations)) {
+                foreach ($f in @($cm.requirements.set)) {
+                    if ("$f" -match '^[Ii]mageIndicator') { $imgInSet = $true }
+                }
+            }
+        }
+    }
+    $imgNotExistsGate = $false
+    foreach ($b in $prov.Json.bundles) {
+        foreach ($c in $b.configurations) {
+            if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
+            foreach ($cm in @($c.combinations)) {
+                foreach ($cd in @($cm.requirements.conditions)) {
+                    if ("$($cd.operator)" -ne 'NOT_EXISTS') { continue }
+                    foreach ($f in @($cd.field)) {
+                        if ("$f" -match '^[Ii]mageIndicator') { $imgNotExistsGate = $true }
                     }
                 }
             }
         }
+    }
+    $personImg = @($fields | Where-Object { $_.Entity -eq 'Person' -and $_.FieldId -match '^[Ii]mageIndicator$' })
+    if ($personImg.Count -gt 0) {
+        $iv = $null
+        try { $iv = $personImg[0].Props.initialValue } catch { }
         # THE SAME RULE LIVES IN validate.ps1 AND HERE, and fixing one is not fixing it -- that has now
         # cost two round trips in one session. Three cases, mirroring validate.ps1 exactly:
         #   in a set[] and NOT prefilled  -> PASS (it is a DISCRIMINATOR; a prefill collapses its combo
         #     onto a plainer sibling -- AZ_AZDPS v3.7 killed DQN/DQ/BQ/BQH that way)
         #   prefilled AND gated NOT_EXISTS -> WARN (BUILD_RULES 20b, permanently dead branch)
         #   neither in a set[] nor prefilled -> WARN (original rule: a toggle that never serializes)
-        $imgInSet = $false
-        foreach ($b in $prov.Json.bundles) {
-            foreach ($c in $b.configurations) {
-                if ($c.type -ne 'QUERYINPUTDATAMAPPING') { continue }
-                foreach ($cm in @($c.combinations)) {
-                    foreach ($f in @($cm.requirements.set)) {
-                        if ("$f" -match '^[Ii]mageIndicator') { $imgInSet = $true }
-                    }
-                }
-            }
-        }
         if ($imgInSet -and -not $iv) {
             Pass "Person ImageIndicator has no prefill -- CORRECT: it is a set[] DISCRIMINATOR; a prefill would collapse its combo onto a plainer sibling"
         } elseif ($iv -and $imgNotExistsGate) {
@@ -373,15 +378,28 @@ foreach ($prov in $validProviders) {
         }
     }
 
-    # Vehicle ImageIndicator: initialValue must be 'N'
+    # Vehicle ImageIndicator: initialValue must be 'Y' -- SAME AS PERSON since 2026-08-12.
+    # RULE CHANGED BY ROB, 2026-08-12: "ncic image should default to y everywhere ... this should not
+    # generate a warn when its the proper way to do this. whatever is triggering the warning needs to
+    # be fixed." It expected 'N' here from the beginning, which is why FL_FCIC v7.21 -- the first build
+    # to follow the new rule -- was reported as the defect. THE GATE WAS ENCODING THE OLD CONVENTION.
+    # Note this is a DELIBERATE, DIRECTED convention change and not a silenced finding: the check still
+    # fires, it just fires on the opposite value, and the two guards below are UNCHANGED, so everything
+    # it could actually catch before it can still catch. Expect the 19 not-yet-flipped providers to WARN
+    # here until each takes [FLAG:ncic-image-default-y-everywhere] at its own rebuild (rule 8c) -- that
+    # WARN is now correct signal, not noise.
     $vehImg = @($fields | Where-Object { $_.Entity -eq 'Vehicle' -and $_.FieldId -match '^[Ii]mageIndicator$' })
     if ($vehImg.Count -gt 0) {
         $iv = $null
         try { $iv = $vehImg[0].Props.initialValue } catch { }
-        if ($iv -eq 'N') {
-            Pass "Vehicle ImageIndicator initialValue='N'"
+        if ($imgInSet -and -not $iv) {
+            Pass "Vehicle ImageIndicator has no prefill -- CORRECT: it is a set[] DISCRIMINATOR; a prefill would collapse its combo onto a plainer sibling"
+        } elseif ($iv -and $imgNotExistsGate) {
+            Warn "Vehicle ImageIndicator initialValue='$iv' AND a combo gates on ImageIndicator NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b)"
+        } elseif ($iv -eq 'Y') {
+            Pass "Vehicle ImageIndicator initialValue='Y'"
         } else {
-            Warn "Vehicle ImageIndicator initialValue='$iv' (expected 'N')"
+            Warn "Vehicle ImageIndicator initialValue='$iv' (expected 'Y' -- rule changed 2026-08-12; NCIC Image defaults Y on every entity)"
         }
     } else {
         $vehFields = @($fields | Where-Object { $_.Entity -eq 'Vehicle' })

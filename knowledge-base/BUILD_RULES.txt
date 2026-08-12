@@ -681,7 +681,12 @@ See also:
     VehicleIdentificationNumber  FormInput, maxLength=20
     VehicleMakeCode         FormSelect (attributeTypeId=VEHICLE_MAKE, codeTypeProvider=NCIC). NEVER FormInput. Dropdown confirmed working on all tenants (NJ, FL, CA_CLETS, TX live-tested 2026-05-22).
     VehicleYear             FormInput, initialValue=current year
-    ImageIndicator          FormSelect, initialValue='N' (vehicle default)
+    ImageIndicator          FormSelect, initialValue='Y' -- RULE CHANGED 2026-08-12 (Rob): NCIC Image
+                            defaults 'Y' on EVERY entity, Vehicle included (was 'N' here). Pair it with
+                            a combo defaults[] on every carrying combo -- CAD ignores form initialValue.
+                            EXCEPT where ImageIndicator sits in a combination's set[] or is gated
+                            NOT_EXISTS: it is then a routing discriminator and must stay unprefilled
+                            (BUILD_RULES 24 / 20b). See FIELD_REFERENCE.txt ImageIndicator section.
 
   ---- PERSON ----
 
