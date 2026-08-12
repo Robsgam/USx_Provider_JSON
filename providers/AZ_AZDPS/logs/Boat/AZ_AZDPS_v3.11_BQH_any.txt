@@ -1,0 +1,78 @@
+﻿================================================================
+TEST LOG: AZ_AZDPS Boat BoatQuery
+Combo: BQH_any (BQH_any (auto))
+Date: 2026-08-12 14:32:52
+Result: PASS
+JSON Version: 3.11
+Entity Fingerprint: a4b83cadf700a2b82d832bb1cdd591a4626422512b424ba3559ebca098dc6e14
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","RegistrationNumber":"FL1234AB","RegistrationState":"Georgia","dexStateUserId":"X","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZVKYG8K5E6ENCAT4X3BTT9A">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KZVKYG8K5E6ENCAT4X3BTT9A</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <State>GA</State>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+            <BadgeNumber>MK43RS</BadgeNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZVKYG8K5E6ENCAT4X3BTT9A
+  RelatedHitSearchIndicator      N
+  BoatHullIdNumber               FL1234AB56H7
+  State                          GA
+  RegistrationNumber             FL1234AB
+  BadgeNumber                    MK43RS
+
+NOTES
+-----
+Automated capture (txId 01KZVKYG8K5E6ENCAT4X3BTT9A). kind=any; anyField=; expectedKeyRef=BQH; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

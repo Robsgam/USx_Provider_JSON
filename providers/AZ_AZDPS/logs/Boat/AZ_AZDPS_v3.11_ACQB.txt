@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: AZ_AZDPS Boat BoatQuery
+Combo: ACQB (ACQB (auto))
+Date: 2026-08-12 14:33:01
+Result: PASS
+JSON Version: 3.11
+Entity Fingerprint: a4b83cadf700a2b82d832bb1cdd591a4626422512b424ba3559ebca098dc6e14
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"RegistrationNumber":"FL1234AB","dexStateUserId":"X","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZVKXJZBNZ2FDBEXVSAFTX0F">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01KZVKXJZBNZ2FDBEXVSAFTX0F</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+            <BadgeNumber>MK43RS</BadgeNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZVKXJZBNZ2FDBEXVSAFTX0F
+  RelatedHitSearchIndicator      Y
+  RegistrationNumber             FL1234AB
+  BadgeNumber                    MK43RS
+
+NOTES
+-----
+Automated capture (txId 01KZVKXJZBNZ2FDBEXVSAFTX0F). kind=combo; anyField=; expectedKeyRef=ACQB; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
