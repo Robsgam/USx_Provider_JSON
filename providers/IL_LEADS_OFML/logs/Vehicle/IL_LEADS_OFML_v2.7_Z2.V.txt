@@ -1,0 +1,86 @@
+﻿================================================================
+TEST LOG: IL_LEADS_OFML Vehicle VehicleRegistrationQuery
+Combo: Z2.V (Z2.V (auto))
+Date: 2026-08-13 13:34:32
+Result: PASS
+JSON Version: 2.7
+Entity Fingerprint: ee51ba022de5a5b185cbe3b94337e9cf9cf4e133173cbf2ee6aa920267aa8297
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZY2T9AYW9H49BKF6D9ZQSEP">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01KZY2T9AYW9H49BKF6D9ZQSEP</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>Y</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZY2T9AYW9H49BKF6D9ZQSEP
+  RelatedHitSearchIndicator      Y
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 Y
+
+NOTES
+-----
+Automated capture (txId 01KZY2T9AYW9H49BKF6D9ZQSEP). kind=combo; anyField=; expectedKeyRef=Z2.V; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
