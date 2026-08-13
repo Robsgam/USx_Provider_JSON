@@ -76,6 +76,21 @@ MANUAL gate -- never prompt.** Awaiting: AZ v3.11, **FL v7.23 (RELEASE LINE, ALL
 
 ## ON HOLD / DO NOT RE-RAISE
 
+- **HI PlateType default on a CAD VIN check -- HELD 2026-08-13, "may be a cad side fix" (Rob). DO
+  NOT ADD THE DEFAULT.** Observed during HDLE Foundation CAD testing: a CAD VIN query "did not pick
+  up the plate type default". Wire read from `automation/captures/2026-08-13_145142_*.json` --
+  `VIN + ImageIndicator=N + VehicleTypeCode=1`, no State, no plate, so **M55S fired (in-state VIN)
+  and the query was CORRECT**; both defaults arrived via combo `defaults[]`, which is the CAD path
+  working. There is no PlateType default to pick up: HI sets `initialValue=''` deliberately because
+  `LicensePlateTypeCode` is the ROUTING DISCRIMINATOR (`RQ` gated EXISTS vs `M55L` gated
+  NOT_EXISTS) -- defaulting it makes it always-present and kills HI's in-state plate search
+  outright (BUILD_RULES 24). Second independent reason: it is in no VIN combo's `set[]`/`any[]`, so
+  it could never serialize on a VIN query anyway.
+  **The only repo-side item is a KB carve-out, also HELD:** `feedback_plate_defaults` says flatly
+  "all providers: PlateType=PC, PlateYear=current year", which HI correctly violates and which
+  would walk a future rebuild straight into the defect. Needs "never where the field is a routing
+  discriminator". Do not apply either change until Rob rules on the CAD side.
+
 - **CA_CONTRA_COSTA** -- BLOCKED (08-02): `audit_devdoc_combinations` compares ZERO devdoc combos, which is a FAIL. The gate got stricter; CC did not get worse.
 - **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect LA's
   `[WARN] Cross-provider` on EVERY provider's enforce.** Its VehReg is the SAME CLASS as AZ's DH bug
