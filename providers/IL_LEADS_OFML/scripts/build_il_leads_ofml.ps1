@@ -30,7 +30,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_il_leads_ofml_mc.ps1 [-Version X.X]
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.4'
+$Version     = '2.5'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\IL_LEADS_OFML_v${Version}.json"
@@ -399,10 +399,19 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DL'
         title = 'DRIVER LICENSE SEARCH BY OLN, "OR" NAME'
         rows  = @(
-            @{ id = 'ROW_PER_1'; cols = @('6','3','3'); fields = @(
+            # v2.5 (Rob 2026-08-13, "stolen check on per needs to go on top line"): Stolen Check
+            # moved up from its own ROW_PER_4 into the top row, and ROW_PER_4 retired. Widths go
+            # 6/3/3 -> 6/2/2/2: the OLN identifier keeps its width and the three context selects
+            # (State, NCIC Image, Stolen Check) share the rest EQUALLY so they read as one group.
+            # That preserves the shape of NJ_NJCJIS ROW_PER_1 (the only 0-finding provider), which
+            # is 6/3/3 OLN + State + NCIC Image -- identifier wide, context narrow. Neither clean
+            # reference (NJ, OH_LEADS) has a 4-control top row, so this extends their pattern
+            # rather than inventing one. Still sums to 12 (L6).
+            @{ id = 'ROW_PER_1'; cols = @('6','2','2','2'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_1' }
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for IL)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator'    'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
             @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
@@ -413,9 +422,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
                 @{ id = 'RaceCode_Input';  node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
             )}
-            @{ id = 'ROW_PER_4'; cols = @('4'); fields = @(
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_4' }
-            )}
+            # ROW_PER_4 retired at v2.5 -- it held only Stolen Check, which now sits in ROW_PER_1.
         )
     }
 )

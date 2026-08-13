@@ -1,12 +1,12 @@
 ================================================================
   Build Report: IL_LEADS_OFML
-  Source: IL_LEADS_OFML_v2.4.json
-  Generated: 2026-08-13 11:27
+  Source: IL_LEADS_OFML_v2.5.json
+  Generated: 2026-08-13 12:49
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== IL_LEADS_OFML_v2.4.json ===
+=== IL_LEADS_OFML_v2.5.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=1 fields=3
@@ -46,10 +46,11 @@ LAYOUT DETAIL
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER_DL"
-      ROW ROW_PER_1 [6 3 3]
+      ROW ROW_PER_1 [6 2 2 2]
         OperatorLicenseNumber (Text | maxLen=20)
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_PER_2 [6 6]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
@@ -57,8 +58,6 @@ LAYOUT DETAIL
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-      ROW ROW_PER_4 [4]
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

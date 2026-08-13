@@ -3,6 +3,29 @@ IL_LEADS_OFML -- Build Notes
 Provider: IL_LEADS_OFML
 State: Illinois
 Network: LEADS (Law Enforcement Agencies Data System)
+v2.5  2026-08-13  COSMETIC: Person Stolen Check moves to the top row. Zero wire change.
+  WHY: Rob 2026-08-13, verbatim -- "cosmetic  stolen check on per needs to go on top line".
+  CHANGED (layout only -- no QIDM, no combination, no default value, no label touched):
+      ROW_PER_1  cols 6/3/3 -> 6/2/2/2, gains relatedHitSearchIndicator
+      ROW_PER_4  retired -- it held only Stolen Check, alone on a 4-column row
+  WIDTHS, and why these: the OLN identifier keeps 6 and the three context selects (State,
+    NCIC Image, Stolen Check) share the remaining 6 EQUALLY so they read as one group. That
+    preserves the shape of NJ_NJCJIS ROW_PER_1 -- 6/3/3 OLN + State + NCIC Image -- which is the
+    only 0-finding provider in audit_layout_flow and therefore the layout standard. Checked
+    OH_LEADS too; neither clean reference has a 4-control top row, so this EXTENDS their pattern
+    (identifier wide, context narrow, row sums to 12) rather than inventing a new one.
+  TIMING, deliberate: taken NOW, mid-sweep, rather than after. A cosmetic bump archives the whole
+    test package either way, so doing it after the 41-test sweep would have cost all 41 logs
+    instead of the 14 Vehicle logs captured at v2.4. Re-test cost is never grounds to DEFER a fix
+    (Rob 2026-08-11), but when a bump is happening regardless the cheaper moment is still the
+    right one.
+  COST: the 14 v2.4 Vehicle logs (ALL-PASS, ingested 2026-08-13) are archived. Sweep restarts at
+    T1 for all 41 tests on v2.5.
+  NOT FIXED, reported instead -- audit_layout_flow [L9] on ROW_PER_3: 'raceCode' feeds the RMS
+    query ONLY (it is in NO CommSys combination) yet shares a row with the mandatory identifier
+    BirthDate, so it reads as though it queries the state. Pre-existing, unrelated to this change,
+    and outside what Rob asked for. Needs his call, not a silent fix.
+
 v2.4  2026-08-13  NCIC Image defaults to 'Y' on every entity that carries the control
   WHY: Rob 2026-08-12 -- "ncic image should default to y everywhere". IL carried
     [FLAG:ncic-image-default-y-everywhere], which blocked enforce PHASE 1 until taken. FL_FCIC
