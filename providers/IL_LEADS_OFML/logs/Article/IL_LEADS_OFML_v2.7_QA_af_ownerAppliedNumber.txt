@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: IL_LEADS_OFML Article ArticleSingleQuery
+Combo: QA_af_ownerAppliedNumber (QA_af_ownerAppliedNumber (auto))
+Date: 2026-08-13 13:36:50
+Result: PASS
+JSON Version: 2.7
+Entity Fingerprint: 181fd28602cf76a9f3d2241359313b2af2f6e7b89139a810e6fb18a5a74d7c5f
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"articleTypeCode":"BBICYCL","ownerAppliedNumber":"OAN999","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZY34RVEGVZND3A7SZ7S06KX">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01KZY34RVEGVZND3A7SZ7S06KX</Id>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <OwnerAppliedNumber>OAN999</OwnerAppliedNumber>
+            <ArticleSerialNumber>GUN12345</ArticleSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZY34RVEGVZND3A7SZ7S06KX
+  ArticleTypeCode                BBICYCL
+  OwnerAppliedNumber             OAN999
+  ArticleSerialNumber            GUN12345
+
+NOTES
+-----
+Automated capture (txId 01KZY34RVEGVZND3A7SZ7S06KX). kind=any-field; anyField=ownerAppliedNumber; expectedKeyRef=QA; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
