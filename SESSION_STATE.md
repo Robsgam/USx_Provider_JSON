@@ -33,11 +33,13 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**FL_FCIC v7.23 TENANT-VERIFIED 2026-08-12 -- ALL-PASS 110/110** (Veh 20 / Per 21 / Gun 15 / Art 16 /
-Boat 38), four log gates 110/110, submitted-vs-captured reconciled per entity. **All three contested
-decisions WIRE-PROVEN:** Boat Stolen Check 'Y' rides 24 QB wires (18 Y / 6 N toggle / **0 absent**); the
-BQ-ahead-of-QB reorder RECOVERED `BQBoatHullIdNumber` + `BQRegistrationNumber` (both fired, where the
-prefill had shadowed them dead); `<State>NJ</State>` on **7/7** DH wires, **0** FL.
+**NEXT: NOTHING IS MID-FLIGHT. FL_FCIC IS DONE.** Repo clean+pushed, no watcher running, no stranded
+captures. Pick up with **(a)** IL_LEADS_OFML v2.3 -- re-import + 41-test sweep, the ONLY owed sweep;
+**(b)** the 3 held Jira drafts, ON EXPLICIT APPROVAL ONLY; **(c)** the two open tool decisions below.
+**FL_FCIC v7.23 TENANT-VERIFIED -- ALL-PASS 110/110** (Veh 20/Per 21/Gun 15/Art 16/Boat 38), 4 log gates
+110/110. **Three contested decisions WIRE-PROVEN:** Boat Stolen Check 'Y' on 24 QB wires (18Y/6N/**0
+absent**); BQ-ahead-of-QB RECOVERED `BQBoatHullIdNumber`+`BQRegistrationNumber`; `<State>NJ</State>` 7/7
+DH wires, **0** FL.
 
 **⛔ LIMITATION #40 -- THE WIRE IS A UNION ACROSS EVERY MATCHING COMBINATION, not the firing combo's
 field list. LIVE-PROVEN, 38/38 Boat logs, 0 mispredicted.** Proof: `FBQDecalNumber_af_BoatHullIdNumber`
@@ -45,22 +47,17 @@ carries `DecalNumber` (in NO QB combo, so FBQ{Decal} fired -- 2i was RIGHT) yet 
 `RelatedHitSearchIndicator`, which it does not define; they ride because the fill also satisfies
 QB{Hull}. Control: decal-alone matches no QB combo and carries neither, though the form still holds
 `ImageIndicator=Y` -- MATCH-driven, not "the form value is always sent".
-**THIS CORRECTS WHAT I WROTE EARLIER TODAY.** I recorded the `$formOnly` whitelist (ImageIndicator,
-RegistrationState) as a plain gate hole. #40 says it looks like an EMPIRICAL WORKAROUND for this
-behaviour -- `audit_requirement_fidelity` models the FIRING combo only and structurally cannot express
-a union. **Do NOT narrow that whitelist without reading #40 first.** Removing a field from the firing
-combo is also not automatically a fix: v7.23 stripped `ImageIndicator` from all 4 FBQ combos (correct
-per both authorities) and 5 of 8 FBQ wires still carry it.
+**CORRECTS WHAT I WROTE EARLIER TODAY:** I logged the `$formOnly` whitelist (ImageIndicator,
+RegistrationState) as a gate hole. #40 says it is an EMPIRICAL WORKAROUND -- `audit_requirement_fidelity`
+models the FIRING combo only and cannot express a union. **Do NOT narrow it without reading #40.** Nor
+is removing a field from the firing combo a guaranteed fix: v7.23 stripped `ImageIndicator` from all 4
+FBQ combos (correct per both authorities) and 5 of 8 FBQ wires still carry it.
 **WITHDRAWN -- the `audit_devdoc_optionals` "re-route hole" DOES NOT EXIST.** I reported it, Rob said
 fix it, the code refuted it: the DROPPED check runs FIRST and `continue`s, and its pool is a UNION over
 co-matching combos -- which #40 proves is what the wire does. My mutation removed `Requestor` from ONE
 combo and survived CORRECTLY. **LAW 2:** strip it from ALL 12 Boat lists -> those fills FAIL. Catalogued
 `fl-drop-optional-everywhere`, efficacy **13/13**. **DO NOT "FIX" IT** -- reasoning in the tool header.
 
-**⛔ MESSAGE KEYS ARE NEVER SENT** -- the wire carries `<MessageType>` + FIELDS (Rob). `FBQ`/`QB`/`BQ`
-are three `<Combination>`s of ONE `<Transaction name="BoatQuery">`. Off this I swept 20 JSONs for
-keyRefs matching each devdoc's `Data-Mined Transactions: NCIC (QA,QB,QG,QV,QW)` line and reported
-**10 providers building them -- 100% FALSE**. **READ THE WIRE BEFORE SWEEPING 20 PROVIDERS.**
 **NCIC IMAGE RULE (Rob): 'Y' on EVERY entity** -- he ruled the GATE wrong, not the build.
 `audit_cross_provider` now expects 'Y' on Vehicle (guards HOISTED out of the Person block first, else
 Vehicle got a silently dead guard; LAW-2 proven 3 ways). CLAUDE.md + FIELD_REFERENCE + BUILD_RULES 684 +
@@ -79,8 +76,7 @@ MANUAL gate -- never prompt.** Awaiting: AZ v3.11, **FL v7.23 (RELEASE LINE, ALL
 
 ## ON HOLD / DO NOT RE-RAISE
 
-- **CA_CONTRA_COSTA** -- BLOCKED (08-02): `audit_devdoc_combinations` compares ZERO devdoc combos, and
-  zero-comparison is a FAIL. The gate got stricter; CC did not get worse.
+- **CA_CONTRA_COSTA** -- BLOCKED (08-02): `audit_devdoc_combinations` compares ZERO devdoc combos, which is a FAIL. The gate got stricter; CC did not get worse.
 - **LA_LEMS -- PARKED (08-04).** Real BUILD_RULES 20b WARN; do NOT silence. **Expect LA's
   `[WARN] Cross-provider` on EVERY provider's enforce.** Its VehReg is the SAME CLASS as AZ's DH bug
   (both combos `(In/Out)`, State in `set[]`, control BLANK -> Send gated). NOT FIXED; Rob's call.
@@ -96,9 +92,9 @@ MANUAL gate -- never prompt.** Awaiting: AZ v3.11, **FL v7.23 (RELEASE LINE, ALL
 back-door mass rebuild (8c). All 8 tenant-tested providers are at full plan coverage; none PARTIAL.
 
 Invariants: devdoc-UNBUILT 2 (LA) | wiring 1/10 (TN RQ05) | audit_metadata 20/20 | portability 280 cells
-0 unportable | fidelity 116br 0/0 | registry 0 stale | PS-5.1 110/0. **TRIAGE EVERY FUZZ SURVIVOR FRESH**
-(`usx-tooling` 5/8d). **Residual, NOT owed** (`git log`): `VEHICLE_BODY_STYLE|NJ_NIBRS` HYPOTHESIS |
-fidelity advisory 11 UNDER / 40 OVER | `audit_devdoc_optionals`+`audit_log_content` parallel-load FLAKE.
+0 unportable | fidelity 116br 0/0 | registry 0 stale | PS-5.1 110/0 | gate efficacy 13/13. **TRIAGE EVERY
+FUZZ SURVIVOR FRESH.** **Residual, NOT owed** (`git log`): `VEHICLE_BODY_STYLE|NJ_NIBRS` HYPOTHESIS |
+fidelity advisory 11 UNDER / 40 OVER | `audit_devdoc_optionals` parallel-load FLAKE.
 
 ## RULES I HAVE BROKEN -- READ BEFORE BUILDING (cases: `usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c)
 
@@ -113,8 +109,12 @@ fidelity advisory 11 UNDER / 40 OVER | `audit_devdoc_optionals`+`audit_log_conte
 - **CITE THE ARTIFACT LINE OR SAY YOU HAVEN'T CHECKED**; check ALREADY ADJUDICATED first (registry +
   `git log`). **DON'T RE-IMPLEMENT A PARSER (4.4)**; **NEVER cite another provider as authority** (only
   CC->CA_CLETS, `<BASE>_<VARIANT>`->`<BASE>`); aim a mutation at the gate OWNING the class.
+- **MESSAGE KEYS ARE NEVER SENT** -- wire = `<MessageType>` + FIELDS; `FBQ`/`QB`/`BQ` are
+  `<Combination>`s of ONE `<Transaction>`. I swept 20 JSONs against each devdoc's `Data-Mined
+  Transactions: NCIC (QA,QB,QG,QV,QW)` line and reported **10 providers building them -- 100% FALSE**.
+  **READ THE WIRE BEFORE SWEEPING 20 PROVIDERS.**
 - **A finding across MANY providers is usually YOUR PROBE** (a State sweep flagged 65; truth was 1).
   **`@()` BEFORE `[0]`.** A shared-tool change reddening ANOTHER provider gets a FLAG, never a fix
   (8c). MUTATE -> restore -> RE-STAMP -> verify. `.Replace()` no-ops on CRLF.
-- **REPLACE, never append** -- gate caught me TEN+ times, incl. 8 rounds today. **Rewrapping does not
-  reduce the line count -- DELETE a block.**
+- **REPLACE, never append** -- the gate caught me 10+ times, 12 rounds today alone. **REWRAPPING NEVER
+  REDUCES THE COUNT. Delete a whole block, then re-run the gate BEFORE committing.**
