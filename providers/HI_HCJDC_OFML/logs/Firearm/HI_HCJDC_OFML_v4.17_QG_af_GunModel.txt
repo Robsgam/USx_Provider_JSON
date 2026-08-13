@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: HI_HCJDC_OFML Firearm GunQuery
+Combo: QG_af_GunModel (QG_af_GunModel (auto))
+Date: 2026-08-13 16:28:52
+Result: PASS
+JSON Version: 4.17
+Entity Fingerprint: a9cdf13fa17579d59b064450919fe65078868f894015424ff2cd04789e327e9b
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"GunModel":"TEST","relatedSearchHitIndicator":"Y","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZYCZKJZHEKSTRNT9EQ59AF4">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01KZYCZKJZHEKSTRNT9EQ59AF4</Id>
+            <RelatedSearchHitIndicator>Y</RelatedSearchHitIndicator>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunModel>TEST</GunModel>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01KZYCZKJZHEKSTRNT9EQ59AF4
+  RelatedSearchHitIndicator      Y
+  GunSerialNumber                GUN12345
+  GunModel                       TEST
+
+NOTES
+-----
+Automated capture (txId 01KZYCZKJZHEKSTRNT9EQ59AF4). kind=any-field; anyField=GunModel; expectedKeyRef=QG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
