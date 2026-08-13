@@ -1,0 +1,84 @@
+﻿================================================================
+TEST LOG: IL_LEADS_OFML Person DriverLicenseQuery
+Combo: Z2.O_af_relatedHitSearchIndicator (Z2.O_af_relatedHitSearchIndicator (auto))
+Date: 2026-08-13 13:35:47
+Result: PASS
+JSON Version: 2.7
+Entity Fingerprint: 355d8110dadaba1d97f188a27114d1ea1bec44e9a47e0f0c26d5f9b7b2903a98
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","OperatorLicenseNumber":"D999888777","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01KZY32F377J1HDJG78Y2AZNDS">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01KZY32F377J1HDJG78Y2AZNDS</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01KZY32F377J1HDJG78Y2AZNDS
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 Y
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01KZY32F377J1HDJG78Y2AZNDS). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=Z2.O; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
