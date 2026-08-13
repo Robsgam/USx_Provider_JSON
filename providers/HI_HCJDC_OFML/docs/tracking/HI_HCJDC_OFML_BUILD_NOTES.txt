@@ -3,6 +3,48 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.16  2026-08-13  NCIC hit-block response handling -- +24 QRDM attributes. ZERO request change.
+  WHY: Rob 2026-08-13 -- "we cannot be discarding infomation like hit warnings regadles of
+    ccntent". A LIVE capture from HDLE Foundation (tx 01KZY7M48VXBWV1CBRJ6PDVEA7) returned an NCIC
+    WantedPerson record on a DriverLicenseQuery, and 23 of its 35 elements mapped NOWHERE --
+    MessageKey "WANTED PERSON - CAUTION", CautionMedicalCondition "00 - ARMED AND DANGEROUS",
+    ExtraditionLimitation, NCICNumber, FBINumber, WarrantDate, 30 AKAs. The officer saw a hit with
+    every reason it was dangerous stripped out.
+  FOUND WHILE SCOPING, WORSE THAN THE ORIGINAL REPORT: the generated QRDM maps Hit as a SCALAR
+    (Hit -> hit), but the live response makes it a CONTAINER --
+    <Hit><Banner>NCIC WANTED PERSON</Banner><Detected>1</Detected></Hit>. So the banner itself had
+    nothing pointing at it. simulate_response did not catch it because its synthetic corpus also
+    models <Hit>Y</Hit> as a scalar -- the tool agreed with the bug.
+  CHANGED: 24 attributes appended to HI_HCJDC_OFML_Results in three tiers -- safety
+    (Hit.Banner, Hit.Detected, MessageKey, CautionMedicalCondition, ExtraditionLimitation,
+    MessageData, Class), identity (NCIC/FBI/SID numbers, WarrantDate, OffenseCode, ORI + case
+    number, AlsoKnownAs x2), descriptive (skin/SMT/misc/POB/DNA/validation/FreeText/ResponseType).
+  PASS-THROUGH ONLY, NO CODE-MAPPING HANDLERS -- deliberate. The live record carries
+    EyeColorCode 'BR0' with a DIGIT ZERO (the Illinois ORI writes 0 for O throughout: J0HN,
+    JER0ME, R0BB), so an attribute-mapping lookup would miss and BLANK the field. Raw beats blank
+    when the content is a caution flag.
+  MessageData IS THE SAFETY NET: the structured elements expose only AlsoKnownAs/AlsoKnownAs2 while
+    the real record held 30 AKAs and 8 alias DOBs in text alone. Mapping it shows what we have not
+    modelled -- which is what "regardless of content" requires.
+  ResponseType IS THE SUPPRESSION DISCRIMINATOR: one DL query returns FOUR blocks (2x SWITCH_ACK
+    transport acks, NCIC, ADLA); without it one query renders as four results.
+  HI-ONLY ON PURPOSE. Build-CommsysQrdm is shared by all 20 providers and every one carries the
+    identical 67-attribute DL-shaped map -- so does engineering's hand-built Lafayette LA_LEMS JSON
+    (0 of 21 mapped). That symmetry says product-level gap, not HI omission. A shared-module fix
+    would move 20 providers at once INCLUDING a live production tenant (CA_CLETS at Mariposa).
+    Promote to Build-CommsysQrdm only after the rendering is confirmed on HI's own test tenant.
+  ADDITIVE ONLY -- PROVEN ON A REPLICA BEFORE BUILDING, not asserted: all 5 QIFs, all 6 QIDMs,
+    AUTH, QMF and the entire RMS bundle canonically IDENTICAL; all 67 original QRDM attributes
+    survive byte-identical; 12 combinations before and after with 0 differences. The wire XML is
+    unchanged -- only what we keep from the reply moves.
+  COST: archives 46 ALL-PASS logs, full re-sweep, HDLE Foundation re-import. The sweep emits
+    byte-identical wire XML to v4.15; it re-runs for ATTRIBUTION, not because the request moved.
+  CANNOT BE VERIFIED FROM THE REPO: QRDM output resolves platform-side into the RMS UI and never
+    appears in captured wire, and simulate_response is synthetic-only with no wanted-person block.
+    Confirm by eye on HI's test tenant with a query that returns a real hit, and confirm the dotted
+    Hit.Banner syntax there -- dotted paths are proven on the RMS side (AZ uses
+    eyeColorAttrDetail.displayValue) but not yet on a CommSys XML response.
+
 v4.15  2026-08-10  DEX-1283: remove the Attention 'X' prefill -- HI was the last provider carrying it
   CHANGED: Three sites, all for one field. (1) The hidden DH gate-feeder
     InpH 'Attention' loses initialValue='X'. (2) KQ combo defaults[] loses

@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.15 -- entity forms",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.16 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- 1 card (v4.14, collapsed from SEARCH OPTIONS + PLATE + VIN): Plate, Type/Year, VIN/Year, then Type/State/NCIC Image. OOS-first routing: bare plate-\u003eM55L, +Plate Type+Year-\u003eRQ; bare VIN-\u003eM55S, +State-\u003eRQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.",
@@ -5353,7 +5353,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.15",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.16",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -6191,6 +6191,174 @@
                                                                                               "Weight"
                                                                                           ],
                                                                           "targetField":  "Weight"
+                                                                      },
+                                                                      {
+                                                                          "name":  "HitBanner",
+                                                                          "sourceField":  [
+                                                                                              "Hit.Banner"
+                                                                                          ],
+                                                                          "targetField":  "HitBanner"
+                                                                      },
+                                                                      {
+                                                                          "name":  "HitDetected",
+                                                                          "sourceField":  [
+                                                                                              "Hit.Detected"
+                                                                                          ],
+                                                                          "targetField":  "HitDetected"
+                                                                      },
+                                                                      {
+                                                                          "name":  "MessageKey",
+                                                                          "sourceField":  [
+                                                                                              "MessageKey"
+                                                                                          ],
+                                                                          "targetField":  "MessageKey"
+                                                                      },
+                                                                      {
+                                                                          "name":  "CautionMedicalCondition",
+                                                                          "sourceField":  [
+                                                                                              "CautionMedicalCondition"
+                                                                                          ],
+                                                                          "targetField":  "CautionMedicalCondition"
+                                                                      },
+                                                                      {
+                                                                          "name":  "ExtraditionLimitation",
+                                                                          "sourceField":  [
+                                                                                              "ExtraditionLimitation"
+                                                                                          ],
+                                                                          "targetField":  "ExtraditionLimitation"
+                                                                      },
+                                                                      {
+                                                                          "name":  "MessageData",
+                                                                          "sourceField":  [
+                                                                                              "MessageData"
+                                                                                          ],
+                                                                          "targetField":  "MessageData"
+                                                                      },
+                                                                      {
+                                                                          "name":  "Class",
+                                                                          "sourceField":  [
+                                                                                              "Class"
+                                                                                          ],
+                                                                          "targetField":  "Class"
+                                                                      },
+                                                                      {
+                                                                          "name":  "NCICNumber",
+                                                                          "sourceField":  [
+                                                                                              "NCICNumber"
+                                                                                          ],
+                                                                          "targetField":  "NCICNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "FBINumber",
+                                                                          "sourceField":  [
+                                                                                              "FBINumber"
+                                                                                          ],
+                                                                          "targetField":  "FBINumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "StateIdNumber",
+                                                                          "sourceField":  [
+                                                                                              "StateIdNumber"
+                                                                                          ],
+                                                                          "targetField":  "StateIdNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "WarrantDate",
+                                                                          "sourceField":  [
+                                                                                              "WarrantDate"
+                                                                                          ],
+                                                                          "targetField":  "WarrantDate"
+                                                                      },
+                                                                      {
+                                                                          "name":  "OffenseCode",
+                                                                          "sourceField":  [
+                                                                                              "OffenseCode"
+                                                                                          ],
+                                                                          "targetField":  "OffenseCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "OriginatingAgencyIdentifier",
+                                                                          "sourceField":  [
+                                                                                              "OriginatingAgencyIdentifier"
+                                                                                          ],
+                                                                          "targetField":  "OriginatingAgencyIdentifier"
+                                                                      },
+                                                                      {
+                                                                          "name":  "OriginatingAgencyCaseNumber",
+                                                                          "sourceField":  [
+                                                                                              "OriginatingAgencyCaseNumber"
+                                                                                          ],
+                                                                          "targetField":  "OriginatingAgencyCaseNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "AlsoKnownAs",
+                                                                          "sourceField":  [
+                                                                                              "AlsoKnownAs"
+                                                                                          ],
+                                                                          "targetField":  "AlsoKnownAs"
+                                                                      },
+                                                                      {
+                                                                          "name":  "AlsoKnownAs2",
+                                                                          "sourceField":  [
+                                                                                              "AlsoKnownAs2"
+                                                                                          ],
+                                                                          "targetField":  "AlsoKnownAs2"
+                                                                      },
+                                                                      {
+                                                                          "name":  "SkinColorCode",
+                                                                          "sourceField":  [
+                                                                                              "SkinColorCode"
+                                                                                          ],
+                                                                          "targetField":  "SkinColorCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "ScarsMarksTattoosCode",
+                                                                          "sourceField":  [
+                                                                                              "ScarsMarksTattoosCode"
+                                                                                          ],
+                                                                          "targetField":  "ScarsMarksTattoosCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "MiscellaneousNumber",
+                                                                          "sourceField":  [
+                                                                                              "MiscellaneousNumber"
+                                                                                          ],
+                                                                          "targetField":  "MiscellaneousNumber"
+                                                                      },
+                                                                      {
+                                                                          "name":  "BirthPlaceCode",
+                                                                          "sourceField":  [
+                                                                                              "BirthPlaceCode"
+                                                                                          ],
+                                                                          "targetField":  "BirthPlaceCode"
+                                                                      },
+                                                                      {
+                                                                          "name":  "DNAIndicator",
+                                                                          "sourceField":  [
+                                                                                              "DNAIndicator"
+                                                                                          ],
+                                                                          "targetField":  "DNAIndicator"
+                                                                      },
+                                                                      {
+                                                                          "name":  "ValidationDate",
+                                                                          "sourceField":  [
+                                                                                              "ValidationDate"
+                                                                                          ],
+                                                                          "targetField":  "ValidationDate"
+                                                                      },
+                                                                      {
+                                                                          "name":  "FreeText",
+                                                                          "sourceField":  [
+                                                                                              "FreeText"
+                                                                                          ],
+                                                                          "targetField":  "FreeText"
+                                                                      },
+                                                                      {
+                                                                          "name":  "ResponseType",
+                                                                          "sourceField":  [
+                                                                                              "ResponseType"
+                                                                                          ],
+                                                                          "targetField":  "ResponseType"
                                                                       }
                                                                   ],
                                                    "combinations":  [
@@ -7131,7 +7299,7 @@
                         "provider":  "HI_HCJDC_OFML"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.15 -- RMS bundle",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.16 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

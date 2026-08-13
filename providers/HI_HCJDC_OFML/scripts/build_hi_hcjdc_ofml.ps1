@@ -217,7 +217,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.15",
+    [string]$Version = "4.16",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -265,6 +265,83 @@ if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 $auth = Build-Auth -ProviderName 'HI_HCJDC_OFML'
 
 $results = Build-ProviderQrdm -ProviderName 'HI_HCJDC_OFML'
+
+# ---------------------------------------------------------------------
+# v4.16 -- NCIC HIT BLOCK RESPONSE HANDLING (Rob 2026-08-13: "we cannot be
+# discarding infomation like hit warnings regadles of ccntent")
+#
+# WHY. A HI DriverLicenseQuery auto-fires an NCIC person search alongside the
+# state DL inquiry. A LIVE capture from HDLE Foundation (2026-08-13, tx
+# 01KZY7M48VXBWV1CBRJ6PDVEA7) returned a WantedPerson record -- and 23 of its
+# 35 elements were mapped NOWHERE, including MessageKey "WANTED PERSON -
+# CAUTION", CautionMedicalCondition "00 - ARMED AND DANGEROUS",
+# ExtraditionLimitation, the NCIC and FBI numbers and the warrant. The officer
+# was shown a hit stripped of every reason it was dangerous.
+#
+# WORSE, AND FOUND WHILE SCOPING: the generated QRDM maps Hit as a SCALAR
+# (Hit -> hit). The live response makes it a CONTAINER --
+# <Hit><Banner>NCIC WANTED PERSON</Banner><Detected>1</Detected></Hit> -- so
+# the banner itself had nothing pointing at it. simulate_response never caught
+# this because its synthetic corpus models <Hit>Y</Hit> as a scalar too.
+#
+# SCOPE IS DELIBERATELY HI-ONLY. Build-CommsysQrdm is shared by all 20
+# providers and every one of them has the identical 67-attribute DL-shaped map
+# -- so does engineering's hand-built Lafayette JSON, which maps 0 of 21 too.
+# That symmetry says this is a product-level gap, not an HI omission, and a fix
+# in the shared module would move 20 providers at once INCLUDING a live
+# production tenant (CA_CLETS at Mariposa). Appending here keeps the blast
+# radius at one provider until the rendering is confirmed on HI's own test
+# tenant. If it renders, promote to Build-CommsysQrdm as a separate change.
+#
+# PASS-THROUGH ONLY, NO CODE-MAPPING HANDLERS -- on purpose. The live record
+# carries EyeColorCode 'BR0' with a DIGIT ZERO (the originating Illinois ORI
+# writes 0 for O throughout: J0HN, JER0ME, R0BB). A CommsysResultAttributeMapping
+# lookup would miss and blank the field. Raw beats blank when the content is a
+# caution flag.
+#
+# MessageData IS THE SAFETY NET and is why it is in the safety tier: the
+# structured elements expose only AlsoKnownAs/AlsoKnownAs2, while the real
+# record carried 30 AKAs and 8 alias DOBs in text alone. Mapping MessageData
+# shows everything we have not modelled -- "regardless of content".
+#
+# ResponseType is the SUPPRESSION discriminator: a DL query returns four blocks
+# (2x SWITCH_ACK transport acks, NCIC, ADLA), and without it one query renders
+# as four results.
+#
+# ADDITIVE ONLY -- proven on a replica before building: all 5 QIFs, all 6 QIDMs,
+# AUTH, QMF and the whole RMS bundle canonically IDENTICAL; all 67 original
+# QRDM attributes survive byte-identical; 12 combinations before and after with
+# 0 differences. The wire is unchanged; only what we keep from the reply moves.
+$hitBlockAttrs = @(
+    # -- safety tier: never discardable
+    [PSCustomObject]@{ name = 'HitBanner';               sourceField = @('Hit.Banner');    targetField = 'HitBanner' }
+    [PSCustomObject]@{ name = 'HitDetected';             sourceField = @('Hit.Detected');  targetField = 'HitDetected' }
+    [PSCustomObject]@{ name = 'MessageKey';              sourceField = @('MessageKey');              targetField = 'MessageKey' }
+    [PSCustomObject]@{ name = 'CautionMedicalCondition'; sourceField = @('CautionMedicalCondition'); targetField = 'CautionMedicalCondition' }
+    [PSCustomObject]@{ name = 'ExtraditionLimitation';   sourceField = @('ExtraditionLimitation');   targetField = 'ExtraditionLimitation' }
+    [PSCustomObject]@{ name = 'MessageData';             sourceField = @('MessageData');             targetField = 'MessageData' }
+    [PSCustomObject]@{ name = 'Class';                   sourceField = @('Class');                   targetField = 'Class' }
+    # -- record identity
+    [PSCustomObject]@{ name = 'NCICNumber';                  sourceField = @('NCICNumber');                  targetField = 'NCICNumber' }
+    [PSCustomObject]@{ name = 'FBINumber';                   sourceField = @('FBINumber');                   targetField = 'FBINumber' }
+    [PSCustomObject]@{ name = 'StateIdNumber';               sourceField = @('StateIdNumber');               targetField = 'StateIdNumber' }
+    [PSCustomObject]@{ name = 'WarrantDate';                 sourceField = @('WarrantDate');                 targetField = 'WarrantDate' }
+    [PSCustomObject]@{ name = 'OffenseCode';                 sourceField = @('OffenseCode');                 targetField = 'OffenseCode' }
+    [PSCustomObject]@{ name = 'OriginatingAgencyIdentifier'; sourceField = @('OriginatingAgencyIdentifier'); targetField = 'OriginatingAgencyIdentifier' }
+    [PSCustomObject]@{ name = 'OriginatingAgencyCaseNumber'; sourceField = @('OriginatingAgencyCaseNumber'); targetField = 'OriginatingAgencyCaseNumber' }
+    [PSCustomObject]@{ name = 'AlsoKnownAs';                 sourceField = @('AlsoKnownAs');                 targetField = 'AlsoKnownAs' }
+    [PSCustomObject]@{ name = 'AlsoKnownAs2';                sourceField = @('AlsoKnownAs2');                targetField = 'AlsoKnownAs2' }
+    # -- descriptive
+    [PSCustomObject]@{ name = 'SkinColorCode';         sourceField = @('SkinColorCode');         targetField = 'SkinColorCode' }
+    [PSCustomObject]@{ name = 'ScarsMarksTattoosCode'; sourceField = @('ScarsMarksTattoosCode'); targetField = 'ScarsMarksTattoosCode' }
+    [PSCustomObject]@{ name = 'MiscellaneousNumber';   sourceField = @('MiscellaneousNumber');   targetField = 'MiscellaneousNumber' }
+    [PSCustomObject]@{ name = 'BirthPlaceCode';        sourceField = @('BirthPlaceCode');        targetField = 'BirthPlaceCode' }
+    [PSCustomObject]@{ name = 'DNAIndicator';          sourceField = @('DNAIndicator');          targetField = 'DNAIndicator' }
+    [PSCustomObject]@{ name = 'ValidationDate';        sourceField = @('ValidationDate');        targetField = 'ValidationDate' }
+    [PSCustomObject]@{ name = 'FreeText';              sourceField = @('FreeText');              targetField = 'FreeText' }
+    [PSCustomObject]@{ name = 'ResponseType';          sourceField = @('ResponseType');          targetField = 'ResponseType' }
+)
+$results.attributes = @($results.attributes) + $hitBlockAttrs
 
 $qmf = Build-Qmf -ProviderName 'HI_HCJDC_OFML'
 
