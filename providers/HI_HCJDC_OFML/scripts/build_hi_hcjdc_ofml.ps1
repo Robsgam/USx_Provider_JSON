@@ -217,7 +217,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.17",
+    [string]$Version = "4.18",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -334,6 +334,18 @@ $hitBlockAttrs = @(
     # -- descriptive
     [PSCustomObject]@{ name = 'SkinColorCode';         sourceField = @('SkinColorCode');         targetField = 'SkinColorCode' }
     [PSCustomObject]@{ name = 'ScarsMarksTattoosCode'; sourceField = @('ScarsMarksTattoosCode'); targetField = 'ScarsMarksTattoosCode' }
+    # v4.18 -- THE LIVE RESPONSE CARRIES BOTH SPELLINGS. The HDLE WantedPerson block sends
+    # <ScarMarkTattooCode>SC R EYE</ScarMarkTattooCode> AND
+    # <ScarsMarksTattoosCode>SC R EYE</ScarsMarksTattoosCode> -- same value, two element names.
+    # v4.16 mapped only the plural, so a response sending ONLY the singular would have gone dark
+    # again on exactly the field we had just fixed. Found by diffing every element in the captured
+    # block against the built QRDM rather than trusting the earlier 23-field list, which had been
+    # assembled by eye and silently collapsed the two spellings into one.
+    # DELIBERATELY ITS OWN targetField, not a second attribute writing 'ScarsMarksTattoosCode':
+    # two attributes targeting one field is the duplicate-targetField defect class (verify_build
+    # CHECK 15 -- which value lands is undefined). Showing the value twice is harmless; letting the
+    # platform pick nondeterministically is not.
+    [PSCustomObject]@{ name = 'ScarMarkTattooCode';  sourceField = @('ScarMarkTattooCode');  targetField = 'ScarMarkTattooCode' }
     [PSCustomObject]@{ name = 'MiscellaneousNumber';   sourceField = @('MiscellaneousNumber');   targetField = 'MiscellaneousNumber' }
     [PSCustomObject]@{ name = 'BirthPlaceCode';        sourceField = @('BirthPlaceCode');        targetField = 'BirthPlaceCode' }
     [PSCustomObject]@{ name = 'DNAIndicator';          sourceField = @('DNAIndicator');          targetField = 'DNAIndicator' }

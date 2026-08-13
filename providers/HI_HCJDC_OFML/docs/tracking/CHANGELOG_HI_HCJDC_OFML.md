@@ -2,9 +2,30 @@
 
 Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.17** | Generated: 2026-08-13
+Current: **v4.18** | Generated: 2026-08-13
 
 ---
+
+## v4.18 -- 2026-08-13 -- +1 QRDM attribute: ScarMarkTattooCode (the SECOND spelling). Response-only.
+
+WHY: the live HDLE WantedPerson block sends the scars/marks/tattoos value under TWO element  
+  names -- <ScarMarkTattooCode>SC R EYE</ScarMarkTattooCode> AND  
+  <ScarsMarksTattoosCode>SC R EYE</ScarsMarksTattoosCode>. v4.16 mapped only the plural, so a  
+  response carrying only the SINGULAR would have gone dark on precisely the field we had just  
+  fixed. One spelling of a field is not the field.  
+HOW IT WAS FOUND, and the method is the point: I re-derived the coverage by enumerating EVERY  
+  element literally present in the captured block (44) and diffing against the built QRDM,  
+  instead of re-using the 23-item drop list I had assembled by eye. That earlier list had  
+  silently collapsed the two spellings into one entry. v4.17 was 37/44; it is now 38/44.  
+THE REMAINING 6 ARE ENVELOPE PLUMBING and are correctly ignored: CurrentDataBlock, IntTransId,  
+  MessageType, QueryState, Request, SendToUser. They describe the transport, not the record.  
+ITS OWN targetField, NOT a second attribute writing 'ScarsMarksTattoosCode'. Two attributes  
+  targeting one field is the duplicate-targetField defect class (verify_build CHECK 15) where  
+  which value lands is undefined. Rendering the value twice is harmless; a nondeterministic  
+  field is not. Also not folded into one attribute with two sourceFields: multi-sourceField  
+  without a rule has no defined behaviour I can verify from the repo, and Name only does it WITH  
+  FormatStringRuleHandler.  
+ADDITIVE ONLY, same guarantee as v4.16: no query, no entity, nothing removed, wire unchanged.  
 
 ## v4.17 -- 2026-08-13 -- NCIC Image defaults to 'Y' -- takes [FLAG:ncic-image-default-y-everywhere]
 
