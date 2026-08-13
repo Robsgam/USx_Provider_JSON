@@ -45,6 +45,33 @@
     return false;
   }
 
+  // ── PANEL ON/OFF, per tenant, persistent ───────────────────────────────────────────────────
+  // Separate from ARM on purpose, because they answer different questions:
+  //   UI OFF  = "don't show me this here"   (cosmetic; scripts still loaded, nothing can fire)
+  //   DISARMED= "don't let anything act here" (the safety; survives the panel being visible)
+  // A tenant can be visible-and-disarmed, hidden-and-armed, etc. Turning the panel off never
+  // arms anything, and arming never forces the panel on.
+  const uiOffKey = () => '__usx_ui_off_' + location.hostname;
+  function isUiOff() { try { return localStorage.getItem(uiOffKey()) === '1'; } catch (e) { return false; } }
+  function setUiOff(v) { try { v ? localStorage.setItem(uiOffKey(), '1') : localStorage.removeItem(uiOffKey()); } catch (e) {} }
+
+  // The launcher is the way BACK. Without it, turning the panel off would be irreversible short of
+  // clearing site data -- which is how a "hide" button becomes a support call.
+  function mountLauncher() {
+    if (document.getElementById('usx-launcher')) return;
+    const armed = isArmed();
+    const d = el('div', 'position:fixed;z-index:2147483647;top:12px;left:12px;width:26px;height:26px;'
+      + 'border-radius:50%;background:' + (armed ? '#2a8a55' : '#333') + ';color:#eee;'
+      + 'font:700 11px/26px system-ui;text-align:center;cursor:pointer;opacity:.75;'
+      + 'box-shadow:0 2px 8px rgba(0,0,0,.45);user-select:none');
+    d.id = 'usx-launcher';
+    d.textContent = 'Ux';
+    d.title = 'USx panel is OFF for ' + location.hostname + (armed ? ' (tenant is ARMED)' : '') + ' — click to show';
+    d.onclick = () => { setUiOff(false); d.remove(); tick(); };
+    if (document.body) document.body.appendChild(d);
+  }
+  function unmountLauncher() { const d = document.getElementById('usx-launcher'); if (d) d.remove(); }
+
   // Header block: hostname, tenant class, provider, and the arm toggle. Built for every panel kind.
   function buildArmBlock(p) {
     const testT = isTestTenant();
@@ -116,7 +143,14 @@
     p.style.cssText = 'position:fixed;z-index:2147483647;top:12px;left:12px;background:#141414;color:#eee;font:12px/1.4 system-ui;padding:9px 11px;border-radius:9px;box-shadow:0 6px 22px rgba(0,0,0,.5);width:230px;opacity:.94';
     const head = el('div', 'display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px');
     head.appendChild(el('span', null, kind === 'dex' ? 'USx Capture — dex-log' : 'USx Driver'));
-    const hide = el('span', 'cursor:pointer;color:#888', '✕'); hide.title = 'hide'; hide.onclick = () => p.remove();
+    // ✕ = turn the panel OFF for this tenant, and MAKE IT STICK. Until v0.5.1 this called
+    // p.remove() only, and tick() re-appended the panel on its next 1s pass -- so the close
+    // button visibly did nothing. Now it persists a per-host flag and drops a small launcher dot
+    // so the panel can always be brought back (Rob 2026-08-13: "can we make the extension
+    // toggleable?").
+    const hide = el('span', 'cursor:pointer;color:#888;font-weight:700;padding:0 2px', '✕');
+    hide.title = 'turn the USx panel off for ' + location.hostname;
+    hide.onclick = () => { setUiOff(true); p.remove(); mountLauncher(); };
     head.appendChild(hide); p.appendChild(head);
     buildArmBlock(p);
 
@@ -288,7 +322,11 @@
     const isSearch = location.hash.includes('universal-search');
     const want = isDex ? 'dex' : (isSearch ? 'search' : null);
     let p = document.getElementById('usx-panel');
-    if (!want) { if (p) p.remove(); return; }
+    if (!want) { if (p) p.remove(); unmountLauncher(); return; }
+    // Panel switched off for this tenant: show only the launcher dot. This check must come BEFORE
+    // the re-append below -- that append is what silently defeated the old ✕ button.
+    if (isUiOff()) { if (p) p.remove(); mountLauncher(); return; }
+    unmountLauncher();
     if (p && p.dataset.kind !== want) { p.remove(); p = null; }
     if (!p && document.body) document.body.appendChild(build(want));
     if (want === 'dex') {

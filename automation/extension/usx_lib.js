@@ -322,5 +322,5 @@
   window.__usxLib = { sleep, q, fillText, selectReactSelect, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost, isProviderTestTenant, providerOverrideKey };
   // Build tag: bump on every extension change so console pastes identify the loaded build
   // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
-  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-08-13b (manifest 0.5.1 -- wildcard hosts + in-panel ARM switch, no browser dialogs)');
+  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-08-13c (manifest 0.5.2 -- panel ON/OFF per tenant + launcher dot; ARM unchanged)');
 })();

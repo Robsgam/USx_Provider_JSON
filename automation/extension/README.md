@@ -136,3 +136,22 @@ indistinguishable from a test-tenant log and would break the IMPORT_LEDGER deriv
 Chrome as a real V8 parser, and prove the probe can fail with a deliberate `function broken( {`
 control first. Read a dedicated `<title>` verdict — a first attempt grepped `--dump-dom` for
 `PARSE_FAIL` and matched the literal string inside its own injected script, so every file "failed".
+### v0.5.2 — the panel is toggleable, and the ✕ actually worked for the first time
+
+`✕` used to call `p.remove()` and nothing else. `tick()` runs every 1000 ms and re-appends the
+panel whenever it is absent, so the close button visibly did nothing — the panel was back within a
+second. Fixed: `✕` now persists a per-host flag (`__usx_ui_off_<host>`), `tick()` checks it BEFORE
+the re-append, and a small **`Ux` launcher dot** takes the panel's place so it can always be
+brought back. Without that dot, turning the panel off would have been irreversible short of
+clearing site data — which is how a hide button becomes a support call.
+
+**ON/OFF and ARM are deliberately independent**, because they answer different questions:
+
+| | means | scope |
+|---|---|---|
+| **UI OFF** (`✕` / `Ux` dot) | "don't show me this here" — cosmetic only | per hostname |
+| **DISARMED** (ARM switch) | "don't let anything act here" — the safety | per hostname |
+
+A tenant can be visible-and-disarmed or hidden-and-armed. Turning the panel off never arms
+anything; arming never forces the panel on. The launcher dot turns green when the tenant is armed,
+so a hidden-but-armed tenant is still visible at a glance rather than being a silent trap.
