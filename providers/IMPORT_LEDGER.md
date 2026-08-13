@@ -1,14 +1,20 @@
 # USx JSON Import Ledger
 
 **Single source of truth for which JSON version is installed in which tenant.**
-No production environments exist yet — everything below is import/test or customer staging.
+**⚠ PRODUCTION EXISTS AS OF 2026-08-13 — CA_CLETS v2.24 IS LIVE AT MARIPOSA.** This line used to
+read *"No production environments exist yet — everything below is import/test or customer
+staging."* That is no longer true, and it is the single most consequential fact on this page: a
+defect in a live provider reaches officers, not testers. Any change to a provider with a LIVE row
+below is a coordinated re-import, not a repo action.
 
-There are two tenant classes, tracked two different ways:
+There are THREE tenant classes (a live/production class was added 2026-08-13; the two-class model
+below predates it and did not contemplate production), tracked three different ways:
 
 | Class | What it is | How its version is tracked |
 |---|---|---|
 | **USx Provider Tenant** | One per provider. The import/live-test tenant. The **driver capture tool is locked to these tenants only.** | **Self-verifying from logs** — the newest version with non-archived logs in `providers/<P>/logs/<Entity>/` IS the version installed on that provider's USx test tenant (you can only capture logs against the tenant the tool is pointed at). No manual entry needed; compute it. |
 | **Foundation Tenant** | Customer staging (e.g. Newark, Balcones Heights). The capture tool **cannot** reach these. | **Manual** — recorded here only from an actual import report (never from an "update X" instruction). This section is the durable home that memory used to hold. |
+| **LIVE / Production Tenant** | A customer site in real service. Added 2026-08-13 with Mariposa (CA_CLETS). Recorded in section B, tagged **LIVE**. | **Manual**, same rule as Foundation — an actual import report only. **The difference is not how it is tracked but what it costs to be wrong:** a Foundation tenant is staging, a LIVE tenant is officers. Treat a LIVE version as frozen; do not bump a provider that has a LIVE row without saying so explicitly and getting the re-import coordinated. |
 
 > **Derivation rule (USx Provider Tenants):** `logs at version X = proof X is installed on that provider's USx test tenant.` Recompute the column below anytime with `tools/portfolio_status.ps1` (its log-derived USx-tenant-test column) or the one-liner at the bottom of this file. Do NOT hand-maintain it — logs are the truth.
 
@@ -49,7 +55,8 @@ recorded tenant URL — that is a gap in this ledger, not evidence a tenant does
 | Miami Springs Foundation | FL_FCIC | v7.23 | 2026-08-13 | current — v7.18→v7.23, imported by Rob after the v7.23 re-sweep (110/110 ALL-PASS). Picks up v7.19–v7.22 Stolen Check + NCIC Image defaulting to `Y` on all entities, BQ ordered ahead of QB (recovers 2 out-of-state Boat paths), and the v7.23 FBQ `ImageIndicator` over-permit removal |
 | North Miami Foundation | FL_FCIC | v7.23 | 2026-08-13 | current — v7.18→v7.23, same import pass as Miami Springs |
 | Balcones Heights TX Foundation | TX_TLETS | v4.18 | 2026-08-03 | current — v4.12→v4.18, imported by Rob after the v4.18 re-sweep (89/89 ALL-PASS). Picks up v4.13 dead-RQ removal, v4.14 all-7-Vehicle-combos-reachable (prefills out), v4.15/v4.16 UI, v4.17 QV shadow removal, v4.18 17 dropped optionals |
-| Mariposa Foundation | CA_CLETS | v2.24 | 2026-08-13 | current — imported by Rob, reported same day. **Version INFERRED, not reported:** he said "the ca clets json"; v2.24 is the only CA_CLETS JSON in the repo and the one published to DEX-976 + the catalog on 2026-08-06, so v2.24 is the only thing it can be — correct this row if it was something else. His report also said "and test tenants", which is NOT yet resolved to a named tenant: CA_CLETS's own USx provider tenant is log-derived (90 logs at v2.24) and needs no manual row, so either that was what he meant or there is a Mariposa test tenant still to record. Ask before adding a second row — inventing one would be fabricating an import |
+| Mariposa Foundation | CA_CLETS | v2.24 | 2026-08-13 | imported by Rob, reported same day. CA_CLETS's first Foundation tenant. **Version INFERRED:** he said "the ca clets json"; v2.24 is the only CA_CLETS JSON in the repo and the one published to DEX-976 + the catalog on 2026-08-06 — correct if it was something else |
+| Mariposa **LIVE** | CA_CLETS | v2.24 | 2026-08-13 | **⚠ FIRST PRODUCTION INSTALL IN THE PORTFOLIO.** Rob, 2026-08-13, correcting his own earlier note: *"ca clets was importsed to mariposa foundation and live tenants  2 diffrent tenants"* — Foundation and LIVE are two separate tenants, and the row above is only one of them. This is a **THIRD tenant class** that the two-class taxonomy at the top of this file did not contemplate, and it invalidated the standing line "No production environments exist yet". **Exact tenant name/URL NOT reported — this row says "Mariposa LIVE" because that is what was said, not because it is the tenant's name.** Fill it in when known. Version inferred the same way as the row above. **What changes because it is production:** v2.24 is frozen in the strongest sense — real officers are running real CJIS queries against it, so any future CA_CLETS bump is a coordinated live re-import, not a repo action. See the WARNING under section B |
 | Lafayette Parish | LA_LEMS | **NOT OURS — hand-built by engineering** | in service as of 2026-08-13 | **The only tenant in this ledger running a JSON this repo did not build.** Copy held at `providers/LA_LEMS/source/Lafayette Parish LA_LEMS 8.13.2026.json` (Rob, 2026-08-13) as the reference to diff against if Lafayette reports a problem. Our `LA_LEMS_v3.0` is NOT installed anywhere. See the comparison in §B.1 below before answering any Lafayette question |
 
 ### B.1 Lafayette Parish LA_LEMS — the hand-built engineering JSON, and how it differs from ours
@@ -113,6 +120,7 @@ confirmation, never inferred from a version bump.
 | NY_NYSPIN_EJUSTICE | v4.23 | DEX-969, 2026-08-07 | 2026-08-07 | after the DEX-1284 closure (69/69 ALL-PASS). Supersedes the v4.19 publish of 2026-08-03. No Foundation tenant carries NY, so there is no section B row to match |
 | NJ_NJCJIS | v4.15 | DEX-988, 2026-08-03 | 2026-08-03 | after the 36/36 ALL-PASS re-sweep; same pass as the Newark Foundation import |
 | CA_CLETS | v2.24 | DEX-976, 2026-08-06 | 2026-08-06 | after the DEX-1283 fix (90/90 ALL-PASS re-sweep). No Foundation tenant carries CA_CLETS |
+| IL_LEADS_OFML | v2.7 | DEX-984, 2026-08-13 | 2026-08-13 | Rob's confirmation 2026-08-13: v2.7 JSON attached to DEX-984 and posted to the catalog, in the same pass as the v2.7 release line (comment 795242, EDITED IN PLACE from v2.2 → v2.7). Follows the 41/41 ALL-PASS sweep that closed the portfolio's last owed test package. Supersedes the v2.2 publish of 2026-08-10 |
 | HI_HCJDC_OFML | v4.15 | DEX-1257, 2026-08-10 | 2026-08-10 | Rob's confirmation 2026-08-10: v4.15 JSON attached to DEX-1257 and the catalog updated, in the same pass as the v4.15 changelog + release line (comment 795241). Follows the 46/46 ALL-PASS re-sweep that settled DEX-1283 on the wire (9/9 DH `<Attention>` resolved with no prefill, no default). Supersedes the v4.14 publish of 2026-08-04. No Foundation tenant carries HI |
 | HI_HCJDC_OFML | v4.14 | DEX-1257, 2026-08-04 | 2026-08-04 | after the 46/46 ALL-PASS re-sweep. **No version bump** — v4.14 was already published; re-published as the re-verified artifact. Last of the original six |
 | IL_LEADS_OFML | v2.2 | DEX-984, 2026-08-10 | 2026-08-10 | Rob's confirmation 2026-08-10. First publish for this provider — DEX-984 had zero comments and zero attachments before today. Follows the 41/41 ALL-PASS first-ever tenant sweep (v2.2) and the DEX-1284 convention pass + card collapse. No Foundation tenant carries IL, so there is no section B row to match |

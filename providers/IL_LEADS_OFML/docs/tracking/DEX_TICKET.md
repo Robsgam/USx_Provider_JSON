@@ -28,6 +28,26 @@ never Rob's own manual notes, never a third party's.
 > **TENANT INFO STAYS OFF THIS TICKET (Rob, 2026-08-03):** no attachment note, no catalog post, no
 > Foundation import line. Those belong in `providers/IMPORT_LEDGER.md` sections B and C.
 >
+
+**Current: v2.7 — TENANT-VERIFIED 2026-08-13, ALL-PASS 41/41** (Vehicle 14 / Person 10 / Boat 9 /
+Firearm 5 / Article 3), four log gates 41/41, inflation 0/0/0/0, enforce 41 PASS / 0 IL-scoped
+FAIL-or-WARN, 9 combos all reachable. This closed the portfolio's LAST owed tenant sweep.
+
+**Posted:** only TWO comments are live on DEX-984 —
+- `795041` — version-history anchor (v1.0 → v2.2)
+- `795242` — **THE LIVE RELEASE LINE.** Created 2026-08-10 as v2.2; edited IN PLACE to **v2.7** on
+  2026-08-13. Never post a sibling; edit this one. Original v2.2 body captured before the edit.
+
+**Owed to the ticket: NOTHING.** v2.7 release line posted; JSON attached and catalog updated
+2026-08-13 (recorded in `IMPORT_LEDGER.md` section C, not here).
+
+**FORMAT CHANGED 2026-08-13 — the comment is now FOUR sections**, not six (Rob: the six-section
+shape was "way too many details"). "Known limits" and "Documented skips" are no longer posted.
+Consequence for THIS ticket, stated because the edit was irreversible: the three documented
+non-builds that used to be visible in comment 795242 (Article devdoc #2, Boat `State2`–`State5`,
+Boat `RegistrationState` staying optional) are no longer on the ticket. They remain recorded in
+`IL_LEADS_OFML_ACCEPTED_DIVERGENCES.txt`, which owns and gates them.
+
 > **JIRA UPDATES ARE HELD** (2026-07-31, Rob) until the process and results are fully trusted, and
 > every post is DRAFT-AND-WAIT for explicit approval — establishing that once on another provider
 > did not authorize it here.

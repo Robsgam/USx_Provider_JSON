@@ -3,6 +3,31 @@ IL_LEADS_OFML -- Build Notes
 Provider: IL_LEADS_OFML
 State: Illinois
 Network: LEADS (Law Enforcement Agencies Data System)
+v2.7  TENANT-VERIFIED 2026-08-13 -- ALL-PASS 41/41
+  SWEEP: Vehicle 14 / Person 10 / Boat 9 / Firearm 5 / Article 3 = 41 PASS / 0 FAIL / 0 PENDING.
+    Four log gates 41/41 (6c content, 6d metadata, 2i attribution, plan completeness 5/5).
+    audit_log_inflation 0/0/0/0. enforce 41 PASS / 0 IL-scoped FAIL-or-WARN.
+    This closed the portfolio's LAST owed tenant sweep; IL is the 8th of 20 ALL-PASS.
+  VERSION PROVEN, not assumed -- the build moved three times mid-sweep (v2.4->v2.7), so which
+    version the tenant held was a live risk. Vehicle's entity fingerprint is IDENTICAL across
+    v2.4-v2.7 (only Person ever moved), so a Vehicle run could not discriminate. PERSON was the
+    discriminator: no Person form snapshot carries raceCode, proving the tenant form has the Race
+    control removed (v2.6+). Corroborated by the inflation gate -- 41 logs compared against
+    current fingerprints, 0 drift.
+  KNOWN GAP, RECORDED HERE BECAUSE THE JIRA COMMENT NO LONGER HAS A HOME FOR IT (the format went
+    to four sections on 2026-08-13, dropping "Known limits"):
+      firearmMake IS DRIVEN BY NO TEST. It sits in QG's any[], the IL devdoc lists GunQuery #1 as
+      "GunSerialNumber, [GunCaliber, GunMake, ImageIndicator, ...]", and metadata defines GunMake
+      on QG -- yet no test in the 41-test plan fills it, not even QG_any, which fills every other
+      QG optional. Nothing fails; the sweep reads 41/41 green while that devdoc optional has ZERO
+      wire evidence. Known class: a field with no resolver test-value is silently never driven.
+      NOT a build defect -- the field is correctly wired. Fix is a TEST_VALUE_OVERRIDES entry
+      (IL's captured picklist holds 300 makes, so a valid value exists), making it 42 tests.
+      Sharp edge worth keeping: firearmMake is the exact field il-drop-devdoc-optional mutates to
+      prove audit_devdoc_optionals can fail -- so the GATE is protected while the TEST is not.
+  PUBLISHED 2026-08-13: release line posted (DEX-984 comment 795242, edited in place v2.2->v2.7),
+    JSON attached to the ticket, catalog updated. Recorded in IMPORT_LEDGER section C.
+
 v2.7  2026-08-13  COSMETIC: Person ROW_PER_1 widths 6/2/2/2 -> 3/3/3/3. Zero wire change.
   WHY: Rob 2026-08-13 -- "on personn  shortne theoln field  the label is squsiehed  oln has a much
     smaller max size thent he field appears".
