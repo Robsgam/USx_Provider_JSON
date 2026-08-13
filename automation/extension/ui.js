@@ -27,12 +27,21 @@
   function isArmed() { try { return localStorage.getItem(armKey()) === '1'; } catch (e) { return false; } }
   function setArmed(v) { try { v ? localStorage.setItem(armKey(), '1') : localStorage.removeItem(armKey()); } catch (e) {} }
   const isTestTenant = () => (window.__usxLib && window.__usxLib.isProviderTestTenant) ? window.__usxLib.isProviderTestTenant() : false;
+  // NO BROWSER DIALOGS. The first version of this used alert()/confirm(), and that made the
+  // safety control unusable: Chrome shows "Prevent this page from creating additional dialogs"
+  // after a few alerts, and once ticked confirm() returns FALSE silently -- so the arm button
+  // did nothing, with the panel still reading DISARMED and no way to turn it on (Rob,
+  // 2026-08-13: "the tool says disarmed and there was no way to turn the extenion on or off").
+  // A control whose only feedback path can be switched off by the browser is not a control.
+  // Everything now renders IN the panel.
+  function flash(msg, color) {
+    const s = document.getElementById('usx-arm-msg');
+    if (s) { s.style.color = color || '#f77'; s.textContent = msg; }
+    else console.log('%c[USx-UI]', 'color:#fa0;font-weight:bold', msg);
+  }
   function requireArmed() {
     if (isArmed()) return true;
-    alert('DISARMED on ' + location.hostname + '.\n\n'
-        + 'Flip the switch at the top of the USx panel to arm this tenant first.\n\n'
-        + (isTestTenant() ? '' : 'NOTE: this is NOT a provider test tenant. It is Foundation or LIVE — '
-            + 'driving queries or capturing here affects a customer site.'));
+    flash('DISARMED — click the switch above to arm this tenant first.', '#f77');
     return false;
   }
 
@@ -66,22 +75,38 @@
     }
     wrap.appendChild(provRow);
 
-    const t = el('button', BTN + ';margin-top:6px');
+    // The switch. Big, unmissable, and NO browser dialog anywhere in its path.
+    const t = el('button', 'display:block;margin:8px 0 0;width:100%;padding:9px;border:0;border-radius:6px;color:#fff;cursor:pointer;font:700 13px system-ui');
+    const msg = el('div', 'font:10px/1.3 system-ui;margin-top:4px;min-height:13px;color:#f77'); msg.id = 'usx-arm-msg';
+    let pendingConfirm = false;
     function paint() {
       const on = isArmed();
-      t.textContent = on ? '🔓 ARMED — click to disarm' : '🔒 DISARMED — click to arm';
-      t.style.background = on ? '#a33' : '#444';
+      if (pendingConfirm) {
+        t.textContent = '⚠ CLICK AGAIN TO ARM';
+        t.style.background = '#c60';
+      } else {
+        t.textContent = on ? 'ARMED ✓  (click to disarm)' : 'DISARMED  (click to ARM)';
+        t.style.background = on ? '#2a8a55' : '#666';
+      }
     }
     t.onclick = () => {
-      if (!isArmed() && !isTestTenant()) {
-        if (!confirm('Arm the driver/capture on ' + location.hostname + '?\n\n'
-          + 'This is NOT a provider test tenant — it is Foundation or LIVE. Queries you run here '
-          + 'hit a customer site.\n\nOnly arm if you intend to act on this tenant.')) return;
+      if (isArmed()) { setArmed(false); pendingConfirm = false; msg.textContent = ''; paint(); return; }
+      // Arming a customer site takes two clicks -- an IN-PANEL confirm, not a browser confirm().
+      if (!isTestTenant() && !pendingConfirm) {
+        pendingConfirm = true;
+        msg.style.color = '#fc0';
+        msg.textContent = 'NOT a test tenant. Queries here hit a customer site. Click again to confirm.';
+        paint();
+        setTimeout(() => { if (pendingConfirm) { pendingConfirm = false; msg.textContent = ''; paint(); } }, 6000);
+        return;
       }
-      setArmed(!isArmed()); paint();
+      setArmed(true); pendingConfirm = false;
+      msg.style.color = '#7c7'; msg.textContent = 'Armed for ' + location.hostname;
+      paint();
     };
     paint();
     wrap.appendChild(t);
+    wrap.appendChild(msg);
     p.appendChild(wrap);
   }
 
@@ -206,17 +231,17 @@
       const run = el('button', BTN, '▶ Run Plan');
       run.onclick = async () => { if (!requireArmed()) return;
         const plan = window.__usxLoadedPlan;
-        if (!plan) { alert('Load a TEST_PLAN JSON file first (📂 button above).'); return; }
-        if (typeof window.__usxRunPlan !== 'function') { alert('__usxRunPlan not found — make sure the extension loaded on this page (reload).'); return; }
+        if (!plan) { flash('Load a TEST_PLAN JSON file first (📂 button above).'); return; }
+        if (typeof window.__usxRunPlan !== 'function') { flash('__usxRunPlan not found — make sure the extension loaded on this page (reload).'); return; }
         const entity = (document.getElementById('usx-ent').value || '').trim();
         const tests = (plan.tests || []).filter(t => (t.kind === 'combo' || t.kind === 'any' || t.kind === 'any-field' || t.kind === 'guardrail') && (!entity || t.entity === entity));
-        if (!tests.length) { alert('No submittable tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
+        if (!tests.length) { flash('No submittable tests found for entity "' + entity + '". Check the entity name (case-sensitive, e.g. Vehicle).'); return; }
         // Wrong-form guard: an entity run on the WRONG rendered form burns every test
         // ("Firearm" ran on the Article form, all six NOT submitted, 2026-07-02). Probe the
         // entity's first fill field before starting.
         const firstFill = tests.map(t => Array.isArray(t.fills) ? t.fills[0] : t.fills).find(f => f && f.fieldId);
         if (firstFill && !document.querySelector('#' + CSS.escape(firstFill.fieldId))) {
-          alert('The ' + (entity || 'selected') + ' form is not on screen (field "' + firstFill.fieldId + '" not found). Click the ' + entity + ' entity tab first, then Run Plan.');
+          flash('The ' + (entity || 'selected') + ' form is not on screen (field "' + firstFill.fieldId + '" not found). Click the ' + entity + ' entity tab first, then Run Plan.');
           return;
         }
         runStatus.style.color = '#fa0'; runStatus.textContent = `Running ${tests.length} tests for ${entity || 'all'}…`;
@@ -237,7 +262,7 @@
       const scopeStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px');
       scopeBtn.onclick = async () => { if (!requireArmed()) return;
         const entity = (document.getElementById('usx-ent').value || '').trim();
-        if (!entity) { alert('Load the plan first (entity list comes from it), render the entity form, then click.'); return; }
+        if (!entity) { flash('Load the plan first (entity list comes from it), render the entity form, then click.'); return; }
         scopeStatus.textContent = `scoping ${entity}…`;
         try {
           if (!window.__usxLoadedScope) {

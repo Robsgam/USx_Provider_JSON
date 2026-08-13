@@ -1,23 +1,10 @@
 {
   "manifest_version": 3,
   "name": "USx Tenant Testing -- Driver + Capture",
-  "version": "0.5.0",
-  "description": "Drives the universal-search query form and captures dex-log request XML on any Mark43 tenant, feeding the post_test pipeline. In-browser; no cert needed. ARMED PER TENANT -- the on-screen switch is the safety, see ui.js.",
+  "version": "0.5.1",
+  "description": "Drives the universal-search query form and captures dex-log request XML on any Mark43 tenant, feeding the post_test pipeline. In-browser; no cert needed. DISARMED PER TENANT by default -- the on-screen ARM switch is the safety. See README.md.",
   "permissions": ["downloads"],
   "background": { "service_worker": "background.js" },
-  "_comment_hosts": [
-    "v0.5.0 (2026-08-13, Rob: 'open up access to all tenants with the tail end of the url'):",
-    "the eight enumerated usx-*.mark43.com hosts were replaced by a single wildcard so a new",
-    "tenant needs no manifest edit -- HDLE Foundation (hdle-foundation.mark43.com) does not fit",
-    "the usx- naming pattern and was simply never matched, which is why nothing loaded there.",
-    "",
-    "READ THIS BEFORE WIDENING IT FURTHER. The manifest allowlist WAS the safety mechanism: the",
-    "extension could only ever act on the eight provider test tenants. A wildcard removes that,",
-    "and it did so on the same day PRODUCTION started existing (CA_CLETS went live at Mariposa,",
-    "2026-08-13) -- so this now injects into live sites where real officers run real CJIS queries.",
-    "The replacement safety is the ARM SWITCH in ui.js: disarmed by default, per-hostname, and",
-    "every action button refuses while disarmed. Do not remove it, and do not default it to on."
-  ],
   "content_scripts": [
     {
       "matches": ["https://*.mark43.com/rms/*"],

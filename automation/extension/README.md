@@ -81,3 +81,58 @@ applies — capture one entity at a time in that mode.)
 - Hardcoded to `usx-nj-njcjis.mark43.com` (widen `matches` for other tenants).
 - One test at a time (driver stashes context in localStorage; capture reads it).
 - Driver submits real queries — run it only against the test tenant with test data.
+
+---
+
+## v0.5.1 — wildcard hosts + the ARM switch (2026-08-13)
+
+### Why the host list became a wildcard
+Until v0.4.0 the manifest enumerated eight `usx-*.mark43.com` hosts. `hdle-foundation.mark43.com`
+does not fit that naming pattern, so **no content script ever matched it** — which is why the panel
+never appeared on HDLE. Now: one pattern, `https://*.mark43.com/rms/*`.
+
+**Chrome match patterns cannot match a URL fragment.** `*.mark43.com/rms/#/admin/dex-log` would
+match NOTHING — the hash is invisible to match patterns. The page kind is detected at runtime by
+`ui.js tick()` reading `location.hash`. Do not try to put the hash in the manifest.
+
+**Do not put prose in `manifest.json`.** v0.5.0 carried a `_comment_hosts` array and Chrome flagged
+it as an unrecognized manifest key on load. JSON has no comments; rationale lives here.
+
+### The ARM switch is the safety, and it replaced one
+The manifest allowlist WAS the safety: the extension physically could not act outside the eight
+provider test tenants. The wildcard removed that guarantee **on the same day production started
+existing** — CA_CLETS went live at Mariposa, 2026-08-13 — so these scripts now load on customer
+sites where real officers run real CJIS queries.
+
+- **DISARMED by default**, stored per hostname (`__usx_armed_<host>`), never global.
+- `requireArmed()` gates **all eight** action handlers: Fetch results, Fetch custom range,
+  click-capture start/stop, Capture open popup, Load plan, Run Plan, Scope picklists.
+  Styling alone would not stop a click — the gate is in the handler.
+- The panel header names the hostname and whether it is a provider TEST tenant. Anything else is
+  labelled **"NOT a test tenant — Foundation or LIVE (customer site)"** in red and needs a
+  two-click in-panel confirm to arm.
+
+### NO BROWSER DIALOGS — this is a hard rule, learned the hard way
+v0.5.0 used `alert()`/`confirm()`. Chrome offers **"Prevent this page from creating additional
+dialogs"** after a few alerts, and once ticked `confirm()` returns `false` silently. The result:
+the panel read DISARMED, the switch did nothing, and there was no way to turn the extension on
+(Rob, 2026-08-13: *"the tool says disarmed and there was no way to turn the extenion on or off"*).
+
+**A control whose only feedback path can be switched off by the browser is not a control.**
+Everything renders in-panel now via `flash()` writing to `#usx-arm-msg` — the arm confirm, and the
+five Run Plan / Scope validation messages that had the same flaw (a suppressed validation dialog
+looks exactly like "the button did nothing"). `alert(`/`confirm(`/`prompt(` count in `ui.js`: **0**.
+
+### Provider resolution on a non-`usx-` tenant
+`providerFromHost()` derives the provider from `usx-<name>`. A Foundation/live host carries no
+provider name, so the panel shows a text field to set an override, stored per hostname. Unset, it
+returns `UNKNOWN` **deliberately** — a Foundation capture filed into `providers/<P>/logs/` would be
+indistinguishable from a test-tenant log and would break the IMPORT_LEDGER derivation rule
+("logs at version X = proof X is installed on that provider's USx TEST tenant"). That is
+`audit_log_inflation` attack B by construction.
+
+### Verifying a change to these scripts
+`node` is not installed on this machine, so `node --check` is a **vacuous pass**. Use headless
+Chrome as a real V8 parser, and prove the probe can fail with a deliberate `function broken( {`
+control first. Read a dedicated `<title>` verdict — a first attempt grepped `--dump-dom` for
+`PARSE_FAIL` and matched the literal string inside its own injected script, so every file "failed".
