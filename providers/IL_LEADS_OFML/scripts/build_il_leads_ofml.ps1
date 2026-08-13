@@ -30,7 +30,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_il_leads_ofml_mc.ps1 [-Version X.X]
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.6'
+$Version     = '2.7'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\IL_LEADS_OFML_v${Version}.json"
@@ -407,7 +407,17 @@ $perLayout = MakeLayouts @(
             # is 6/3/3 OLN + State + NCIC Image -- identifier wide, context narrow. Neither clean
             # reference (NJ, OH_LEADS) has a 4-control top row, so this extends their pattern
             # rather than inventing one. Still sums to 12 (L6).
-            @{ id = 'ROW_PER_1'; cols = @('6','2','2','2'); fields = @(
+            # v2.7 (Rob 2026-08-13): "shorten the oln field  the label is squished  oln has a much
+            # smaller max size then the field appears". 6/2/2/2 -> 3/3/3/3.
+            # NOT a capacity defect -- checked before changing anything: IL metadata declares
+            # OperatorLicenseNumber maxLength="20" (7 occurrences, all 20) and the control declares
+            # exactly 20, so the cap is correct and audit_metadata is right to be silent. What was
+            # wrong is WIDTH: usx-cosmetic says width tracks EXPECTED INPUT, not maxLength, and an
+            # IL OLN is ~12 characters, so half the row oversold it. The knock-on was the real
+            # complaint -- giving OLN 6 left only 2 columns each for State / NCIC Image / Stolen
+            # Check, and "State (leave blank for IL)" cannot render in 2. Equal quarters give the
+            # three selects 50% more width and still sum to 12 (L6).
+            @{ id = 'ROW_PER_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_1' }
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for IL)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator'    'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }

@@ -3,6 +3,24 @@ IL_LEADS_OFML -- Build Notes
 Provider: IL_LEADS_OFML
 State: Illinois
 Network: LEADS (Law Enforcement Agencies Data System)
+v2.7  2026-08-13  COSMETIC: Person ROW_PER_1 widths 6/2/2/2 -> 3/3/3/3. Zero wire change.
+  WHY: Rob 2026-08-13 -- "on personn  shortne theoln field  the label is squsiehed  oln has a much
+    smaller max size thent he field appears".
+  CHECKED FIRST -- THIS IS NOT A CAPACITY DEFECT. IL metadata declares
+    <Field name="OperatorLicenseNumber" ... maxLength="20"> (7 occurrences in the XML, every one
+    20) and the built control declares maxLength 20. They agree exactly, so there is no
+    QIF-exceeds-XML problem and audit_metadata is correct to stay silent. Worth stating because
+    the CA_SAN_LUIS_OBISPO case (QIF 20 > XML 17, "server may reject") looks identical from the
+    form and IS a real defect -- the metadata is what separates them.
+  WHAT WAS ACTUALLY WRONG: width. usx-cosmetic's rule is that width tracks EXPECTED INPUT, not
+    maxLength; an IL OLN runs ~12 characters, so 6 of 12 columns oversold it. The knock-on is what
+    Rob actually saw: with OLN at 6, the three context selects had only 2 columns each and
+    "State (leave blank for IL)" cannot render in 2 columns. Equal quarters give those selects 50%
+    more width. Still sums to 12 (L6).
+  COST: the 14 Vehicle logs captured at v2.6 are archived. Vehicle's entity fingerprint is
+    UNCHANGED by this edit (only Person moves), but block-by-version is deliberate policy -- every
+    bump retests all five entities -- so they re-run. 41 automated tests.
+
 v2.6  2026-08-13  Race control REMOVED from Person + Build-RmsBundle -SkipRace. No CommSys change.
   WHY: Rob 2026-08-13 -- "if race is not needed anywhere for commsys then remove it". It is not.
   MEASURED FIRST, all three directions, before touching anything:
