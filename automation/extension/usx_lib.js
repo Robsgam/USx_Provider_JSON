@@ -293,13 +293,34 @@
 
   // Derive the provider folder name from the tenant hostname: usx-nj-njcjis -> NJ_NJCJIS,
   // usx-fl-fcic -> FL_FCIC. Lets one extension serve every USx tenant.
+  //
+  // v0.5.0: the manifest went to a *.mark43.com wildcard, so this now meets hostnames that carry
+  // NO provider name at all -- hdle-foundation.mark43.com is a Foundation tenant running
+  // HI_HCJDC_OFML, and nothing in the host says so. Two additions, in priority order:
+  //   1. An explicit override the operator sets in the panel, stored per hostname. This is the
+  //      only correct answer for a Foundation/live tenant: the mapping is knowledge, not text.
+  //   2. Otherwise the usx- derivation, unchanged.
+  // Still 'UNKNOWN' when neither applies -- deliberately, because 'UNKNOWN' fails loudly in the
+  // plan fetch and the capture filename rather than guessing a provider and filing a Foundation
+  // capture into some provider's logs/. That would break the ledger's derivation rule
+  // ("logs at version X = proof X is installed on that provider's USx TEST tenant") and would be
+  // indistinguishable from a real test log -- audit_log_inflation attack B, by construction.
+  function providerOverrideKey() { return '__usx_provider_' + location.hostname; }
   function providerFromHost() {
+    try {
+      const ov = (localStorage.getItem(providerOverrideKey()) || '').trim();
+      if (ov) return ov.toUpperCase().replace(/-/g, '_');
+    } catch (e) { /* localStorage can throw in odd embeddings; fall through */ }
     const m = location.hostname.match(/usx-([a-z0-9-]+)\.mark43/i);
     return m ? m[1].toUpperCase().replace(/-/g, '_') : 'UNKNOWN';
   }
+  // A provider TEST tenant is the only class the capture pipeline is designed around. Anything
+  // else (Foundation, live) is flagged in the panel so a capture is never taken from a customer
+  // site by reflex.
+  function isProviderTestTenant() { return /usx-[a-z0-9-]+\.mark43/i.test(location.hostname); }
 
-  window.__usxLib = { sleep, q, fillText, selectReactSelect, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost };
+  window.__usxLib = { sleep, q, fillText, selectReactSelect, fillField, clickSend, extractConnectCicXml, triggerDownload, providerFromHost, isProviderTestTenant, providerOverrideKey };
   // Build tag: bump on every extension change so console pastes identify the loaded build
   // (version skew burned attempt 4: a stale build still had the parked Run ALL button).
-  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-08-07a (manifest 0.4.0 -- IL_LEADS_OFML host added)');
+  console.log('%c[USx]', 'color:#0a0;font-weight:bold', 'usx_lib loaded. BUILD 2026-08-13a (manifest 0.5.0 -- *.mark43.com wildcard + per-tenant ARM switch, disarmed by default)');
 })();

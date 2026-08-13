@@ -55,6 +55,7 @@ recorded tenant URL — that is a gap in this ledger, not evidence a tenant does
 | Miami Springs Foundation | FL_FCIC | v7.23 | 2026-08-13 | current — v7.18→v7.23, imported by Rob after the v7.23 re-sweep (110/110 ALL-PASS). Picks up v7.19–v7.22 Stolen Check + NCIC Image defaulting to `Y` on all entities, BQ ordered ahead of QB (recovers 2 out-of-state Boat paths), and the v7.23 FBQ `ImageIndicator` over-permit removal |
 | North Miami Foundation | FL_FCIC | v7.23 | 2026-08-13 | current — v7.18→v7.23, same import pass as Miami Springs |
 | Balcones Heights TX Foundation | TX_TLETS | v4.18 | 2026-08-03 | current — v4.12→v4.18, imported by Rob after the v4.18 re-sweep (89/89 ALL-PASS). Picks up v4.13 dead-RQ removal, v4.14 all-7-Vehicle-combos-reachable (prefills out), v4.15/v4.16 UI, v4.17 QV shadow removal, v4.18 17 dropped optionals |
+| HDLE Foundation | HI_HCJDC_OFML | v4.15 | 2026-08-13 | HI_HCJDC_OFML's first Foundation tenant. **The only row in this table VERIFIED FROM THE TENANT ITSELF rather than from a verbal report** — Rob exported the installed config (`HDLE USx 8.13.26.json`) and it was compared against the repo build with `_json_canonical`: all 5 entity forms identical, all 6 QIDMs identical (44 combination/attribute signature lines, same keyRefs, same ORDER, same set[]/any[]/defaults[]/conditions[]), entire RMS bundle identical, and after normalising explicit nulls EVERY configuration in EVERY bundle hashes identically. Version read from the bundle descriptions: ENTITIES and provider bundle both say `v4.15`. See the verification note below |
 | Mariposa Foundation | CA_CLETS | v2.24 | 2026-08-13 | imported by Rob, reported same day. CA_CLETS's first Foundation tenant. **Version INFERRED:** he said "the ca clets json"; v2.24 is the only CA_CLETS JSON in the repo and the one published to DEX-976 + the catalog on 2026-08-06 — correct if it was something else |
 | Mariposa **LIVE** | CA_CLETS | v2.24 | 2026-08-13 | **⚠ FIRST PRODUCTION INSTALL IN THE PORTFOLIO.** Rob, 2026-08-13, correcting his own earlier note: *"ca clets was importsed to mariposa foundation and live tenants  2 diffrent tenants"* — Foundation and LIVE are two separate tenants, and the row above is only one of them. This is a **THIRD tenant class** that the two-class taxonomy at the top of this file did not contemplate, and it invalidated the standing line "No production environments exist yet". **Exact tenant name/URL NOT reported — this row says "Mariposa LIVE" because that is what was said, not because it is the tenant's name.** Fill it in when known. Version inferred the same way as the row above. **What changes because it is production:** v2.24 is frozen in the strongest sense — real officers are running real CJIS queries against it, so any future CA_CLETS bump is a coordinated live re-import, not a repo action. See the WARNING under section B |
 | Lafayette Parish | LA_LEMS | **NOT OURS — hand-built by engineering** | in service as of 2026-08-13 | **The only tenant in this ledger running a JSON this repo did not build.** Copy held at `providers/LA_LEMS/source/Lafayette Parish LA_LEMS 8.13.2026.json` (Rob, 2026-08-13) as the reference to diff against if Lafayette reports a problem. Our `LA_LEMS_v3.0` is NOT installed anywhere. See the comparison in §B.1 below before answering any Lafayette question |
@@ -103,6 +104,37 @@ difference list below is the candidate set.
    I expect does not run", that gap is the first place to look — not a defect in our build.
 
 Regenerate any of the above with a JSON diff; nothing here is hand-maintained state.
+
+### B.2 VERIFYING A FOUNDATION / LIVE INSTALL FROM A TENANT EXPORT (method, proven 2026-08-13)
+
+The class table says the capture tool **cannot** reach Foundation or LIVE tenants, so their versions
+are "manual, from an import report" — i.e. somebody's word. That is not the only option, and the
+HDLE row above is the proof. **A tenant config EXPORT can be compared to the repo build directly**,
+which turns a reported version into a verified one.
+
+The method, in the order that matters:
+
+1. **Read the version from the bundle `description`.** That is where the build stamps it
+   (`Provider configuration for <PROVIDER> v<X.Y>`), and it is what enforce CHECK 3i reads. There is
+   no top-level `version` field by design — the platform rejects a dotted string as `java.lang.Integer`.
+2. **Do NOT compare bytes or file size.** The HDLE export is 232 KB against the repo's 936 KB and is
+   the SAME CONFIG — our builds are written with very wide indentation. Size proves nothing.
+3. **Compare canonically** with `tools/_json_canonical.ps1` (`ConvertTo-Canonical` + `Get-Sha256Hex`),
+   per configuration, so a difference is located rather than merely detected. Reuse it; do not
+   hand-roll a comparison (LAW 4).
+4. **Normalise two known round-trip artifacts before concluding anything differs:**
+   - **Explicit nulls.** The platform materialises omitted keys as `null` on export — HDLE carried 53
+     `: null` against our 35, every one of them a `"conditions": null` on a combination that simply
+     has no conditions. Semantically identical.
+   - **JSON key order.** HDLE's ENTITIES `order` object lists `CAD_DISPATCH, FIRST_RESPONDER, default`
+     where we write `default, CAD_DISPATCH, FIRST_RESPONDER`. Same three arrays, same contents. Key
+     order in a JSON object is not semantic.
+
+**⚠ THE RMS BUNDLE LOSES ITS VERSION ON ROUND-TRIP.** Our RMS description reads
+`Provider configuration for <PROVIDER> v<X.Y> -- RMS bundle`; the HDLE export reads plain
+`Provider configuration for RMS`. The platform overwrites it. So **never version-check an export off
+the RMS bundle** — read ENTITIES or the provider bundle. This is the one difference that could be
+mistaken for a real config drift, and it is not one.
 
 ## C. Published JSON — Jira ticket + Confluence catalog (MANUAL, from Rob's confirmation)
 

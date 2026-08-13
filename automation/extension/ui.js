@@ -12,6 +12,79 @@
   const BTN = 'display:block;margin:4px 0;width:100%;padding:6px;border:0;border-radius:5px;color:#fff;cursor:pointer;font:12px system-ui;background:#2a8a55';
   const BLU = 'background:#3a66c0'; const RED = 'background:#a33';
 
+  // ── ARM SWITCH (v0.5.0) ────────────────────────────────────────────────────────────────────
+  // WHY THIS EXISTS. Until v0.4.0 the manifest enumerated eight usx-*.mark43.com hosts, so the
+  // extension COULD NOT act anywhere else -- the allowlist was the safety. v0.5.0 widened to
+  // *.mark43.com (Rob: "open up access to all tenants with the tail end of the url") on the same
+  // day production started existing: CA_CLETS went live at Mariposa 2026-08-13. So this script now
+  // loads on customer sites where real officers run real CJIS queries, and something has to stop
+  // a reflex click from driving 41 test queries into one.
+  //
+  // The rule: DISARMED BY DEFAULT, per hostname, and every action refuses while disarmed. The
+  // switch is not decoration -- requireArmed() gates the handlers, so disabling the styling alone
+  // would not be enough to fire anything.
+  const armKey = () => '__usx_armed_' + location.hostname;
+  function isArmed() { try { return localStorage.getItem(armKey()) === '1'; } catch (e) { return false; } }
+  function setArmed(v) { try { v ? localStorage.setItem(armKey(), '1') : localStorage.removeItem(armKey()); } catch (e) {} }
+  const isTestTenant = () => (window.__usxLib && window.__usxLib.isProviderTestTenant) ? window.__usxLib.isProviderTestTenant() : false;
+  function requireArmed() {
+    if (isArmed()) return true;
+    alert('DISARMED on ' + location.hostname + '.\n\n'
+        + 'Flip the switch at the top of the USx panel to arm this tenant first.\n\n'
+        + (isTestTenant() ? '' : 'NOTE: this is NOT a provider test tenant. It is Foundation or LIVE — '
+            + 'driving queries or capturing here affects a customer site.'));
+    return false;
+  }
+
+  // Header block: hostname, tenant class, provider, and the arm toggle. Built for every panel kind.
+  function buildArmBlock(p) {
+    const testT = isTestTenant();
+    const wrap = el('div', 'margin:0 0 8px;padding:6px;border-radius:6px;background:' + (testT ? '#1c2a1c' : '#3a1f1f') + ';border:1px solid ' + (testT ? '#2a8a55' : '#a33'));
+    wrap.appendChild(el('div', 'font:11px/1.3 system-ui;color:#ccc;word-break:break-all', location.hostname));
+    wrap.appendChild(el('div', 'font:10px system-ui;color:' + (testT ? '#7c7' : '#f99') + ';margin-top:2px',
+      testT ? 'provider TEST tenant' : '⚠ NOT a test tenant — Foundation or LIVE (customer site)'));
+
+    // Provider line. On a non-usx host nothing in the hostname names the provider, so the operator
+    // sets it; it persists per hostname and is what the plan fetch and capture filenames use.
+    const provRow = el('div', 'margin-top:4px');
+    const provNow = () => (window.__usxLib ? window.__usxLib.providerFromHost() : 'UNKNOWN');
+    const provLbl = el('div', 'font:10px system-ui;color:#9cf', 'provider: ' + provNow());
+    provRow.appendChild(provLbl);
+    if (!testT) {
+      const pi = el('input', 'width:100%;margin-top:3px;padding:3px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px;font:11px system-ui');
+      pi.placeholder = 'provider for this tenant, e.g. HI_HCJDC_OFML';
+      try { pi.value = localStorage.getItem(window.__usxLib.providerOverrideKey()) || ''; } catch (e) {}
+      pi.onchange = () => {
+        try {
+          const v = pi.value.trim();
+          if (v) localStorage.setItem(window.__usxLib.providerOverrideKey(), v);
+          else localStorage.removeItem(window.__usxLib.providerOverrideKey());
+        } catch (e) {}
+        provLbl.textContent = 'provider: ' + provNow();
+      };
+      provRow.appendChild(pi);
+    }
+    wrap.appendChild(provRow);
+
+    const t = el('button', BTN + ';margin-top:6px');
+    function paint() {
+      const on = isArmed();
+      t.textContent = on ? '🔓 ARMED — click to disarm' : '🔒 DISARMED — click to arm';
+      t.style.background = on ? '#a33' : '#444';
+    }
+    t.onclick = () => {
+      if (!isArmed() && !isTestTenant()) {
+        if (!confirm('Arm the driver/capture on ' + location.hostname + '?\n\n'
+          + 'This is NOT a provider test tenant — it is Foundation or LIVE. Queries you run here '
+          + 'hit a customer site.\n\nOnly arm if you intend to act on this tenant.')) return;
+      }
+      setArmed(!isArmed()); paint();
+    };
+    paint();
+    wrap.appendChild(t);
+    p.appendChild(wrap);
+  }
+
   function build(kind) {
     const p = el('div');
     p.id = 'usx-panel'; p.dataset.kind = kind;
@@ -20,6 +93,7 @@
     head.appendChild(el('span', null, kind === 'dex' ? 'USx Capture — dex-log' : 'USx Driver'));
     const hide = el('span', 'cursor:pointer;color:#888', '✕'); hide.title = 'hide'; hide.onclick = () => p.remove();
     head.appendChild(hide); p.appendChild(head);
+    buildArmBlock(p);
 
     if (kind === 'dex') {
       // Two plain-language status lines.
@@ -28,7 +102,7 @@
 
       // PRIMARY action — the normal post-Run-Plan loop (scope to today + the queued batch).
       const fetchBatch = el('button', BTN, '⚡ Fetch results');
-      fetchBatch.onclick = () => {
+      fetchBatch.onclick = () => { if (!requireArmed()) return;
         let n = 0; try { n = JSON.parse(localStorage.getItem('__usx_batch') || '[]').length; } catch(e) {}
         const today = new Date().toISOString().slice(0,10);
         // maxPages 10: every query creates TWO rows (ConnectCic + RMS), so a 47-test run
@@ -50,7 +124,7 @@
       bulkWrap.appendChild(document.createTextNode('pages ')); bulkWrap.appendChild(pages); bulkWrap.appendChild(since);
       more.appendChild(bulkWrap);
       const bulk = el('button', BTN + ';' + BLU, 'Fetch custom range');
-      bulk.onclick = () => { const o = { maxPages: parseInt(document.getElementById('usx-pages').value) || 1 }; const s = document.getElementById('usx-since').value.trim(); if (s) o.since = s; window.__usxBulkFetch(o); };
+      bulk.onclick = () => { if (!requireArmed()) return; const o = { maxPages: parseInt(document.getElementById('usx-pages').value) || 1 }; const s = document.getElementById('usx-since').value.trim(); if (s) o.since = s; window.__usxBulkFetch(o); };
       more.appendChild(bulk);
 
       more.appendChild(el('div', 'border-top:1px solid #333;margin:8px 0 4px'));
@@ -61,10 +135,10 @@
       const raw = el('input'); raw.type = 'checkbox'; raw.id = 'usx-raw'; raw.checked = true;
       rawWrap.appendChild(raw); rawWrap.appendChild(document.createTextNode(' Recover existing entries too')); more.appendChild(rawWrap);
       const w = el('button', BTN + ';' + BLU, '▶ Start click-capture'); w.id = 'usx-watch';
-      w.onclick = () => { if (window.__usxWatchTimer) { window.__usxCaptureWatchStop(); } else { window.__usxCaptureWatch(document.getElementById('usx-raw').checked); } };
+      w.onclick = () => { if (!requireArmed()) return; if (window.__usxWatchTimer) { window.__usxCaptureWatchStop(); } else { window.__usxCaptureWatch(document.getElementById('usx-raw').checked); } };
       more.appendChild(w);
-      const s = el('button', BTN + ';' + BLU, '⬇ Stop & download'); s.onclick = () => window.__usxCaptureWatchStop(); more.appendChild(s);
-      const o = el('button', BTN + ';' + BLU, 'Capture open popup'); o.onclick = () => window.__usxCaptureOpen(); more.appendChild(o);
+      const s = el('button', BTN + ';' + BLU, '⬇ Stop & download'); s.onclick = () => { if (!requireArmed()) return; window.__usxCaptureWatchStop(); }; more.appendChild(s);
+      const o = el('button', BTN + ';' + BLU, 'Capture open popup'); o.onclick = () => { if (!requireArmed()) return; window.__usxCaptureOpen(); }; more.appendChild(o);
       more.appendChild(el('div', 'color:#999;font-size:11px;margin:4px 0', 'Turn on, then click each row\'s "View request and return". Page through freely.'));
 
       more.appendChild(el('div', 'border-top:1px solid #333;margin:8px 0 4px'));
@@ -93,7 +167,7 @@
       // derived from the tenant hostname, so one button works on every tenant.
       const prov = window.__usxLib ? window.__usxLib.providerFromHost() : 'UNKNOWN';
       const repoBtn = el('button', BTN, '⟳ Load plan from repo');
-      repoBtn.onclick = async () => {
+      repoBtn.onclick = async () => { if (!requireArmed()) return;
         planStatus.style.color = '#fa0'; planStatus.textContent = `fetching plan for ${prov}…`;
         try {
           const r = await fetch(`http://localhost:8477/plan/${prov}`);
@@ -130,7 +204,7 @@
       const ent = el('select', 'width:100%;margin:4px 0;padding:5px;box-sizing:border-box;background:#222;color:#eee;border:1px solid #555;border-radius:4px'); ent.id = 'usx-ent'; const entPlaceholder = document.createElement('option'); entPlaceholder.value = ''; entPlaceholder.textContent = '— load plan first —'; entPlaceholder.disabled = true; entPlaceholder.selected = true; ent.appendChild(entPlaceholder); p.appendChild(ent);
       const runStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px'); runStatus.id = 'usx-run-status'; p.appendChild(runStatus);
       const run = el('button', BTN, '▶ Run Plan');
-      run.onclick = async () => {
+      run.onclick = async () => { if (!requireArmed()) return;
         const plan = window.__usxLoadedPlan;
         if (!plan) { alert('Load a TEST_PLAN JSON file first (📂 button above).'); return; }
         if (typeof window.__usxRunPlan !== 'function') { alert('__usxRunPlan not found — make sure the extension loaded on this page (reload).'); return; }
@@ -161,7 +235,7 @@
       // options (render the entity form, pick it in the dropdown above, click).
       const scopeBtn = el('button', BTN + ';' + BLU, '🔍 Scope picklists (current entity)');
       const scopeStatus = el('div', 'font:11px system-ui;color:#fa0;margin:2px 0;min-height:14px');
-      scopeBtn.onclick = async () => {
+      scopeBtn.onclick = async () => { if (!requireArmed()) return;
         const entity = (document.getElementById('usx-ent').value || '').trim();
         if (!entity) { alert('Load the plan first (entity list comes from it), render the entity form, then click.'); return; }
         scopeStatus.textContent = `scoping ${entity}…`;
