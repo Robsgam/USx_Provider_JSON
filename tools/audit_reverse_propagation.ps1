@@ -35,11 +35,46 @@ function Good($msg) { OutColor "    [ OK ] $msg" Green }
 # fixId -> @(providers) for structured [FLAG:id]; unstructured lines kept per provider.
 $pendingByFix = @{}
 $unstructured = @{}   # provider -> @(lines)
+# INERT FLAGS -- a flag whose text is present but sits on a '#' comment line, so enforce.ps1 L207
+# skips it and the provider passes PHASE 1 while believing itself flagged. Detected here because
+# NOTHING else could see it: the flag LOOKS present to a human reading the file and is invisible to
+# the gate. Live-caught 2026-08-13 on CA_CLETS, where flag_pending_fix appended
+# [FLAG:ncic-image-default-y-everywhere] onto a file whose last line had no trailing newline,
+# gluing it into a comment. The appender is fixed (Add-LineSafely), but that does not FIND damage
+# already done -- this does, and it distinguishes an inert flag from a deliberately RETIRED one
+# (which carries a '# RETIRED <date>' marker on the preceding line).
+$inertFlags = @()     # @{Provider; FixId; Line}
 $provDirs = @(Get-ChildItem $providersDir -Directory)
 foreach ($pd in $provDirs) {
     $prov = $pd.Name
     $pending = Find-DocsPath $pd.FullName 'tracking' 'PENDING_UPDATES.txt'
     if (-not (Test-Path $pending)) { continue }
+    # THE TEST IS POSITIONAL, NOT VOCABULARY. A first attempt excluded comment lines containing
+    # RETIRED/WITHDRAWN and reported 15 "inert" flags across 8 providers -- every one a deliberate
+    # '# [FLAG:x] RESOLVED at v2.2 ...' closure record. Fifteen findings across eight providers is
+    # the signature of a bad probe, not a portfolio defect, and no keyword list survives contact
+    # with prose (RESOLVED / CLEARED / NOT APPLICABLE / "claimed ...").
+    # The GLUED bug has a structural signature instead: the append lands mid-line, so the flag has
+    # PROSE BEFORE IT ('...no CAD field supplies.[FLAG:ncic-image...]'), whereas every deliberate
+    # record opens its comment with the token ('# [FLAG:x]  RESOLVED ...'). So: a '#' line whose
+    # [FLAG: is preceded by anything other than the leading '#' and whitespace is glued.
+    foreach ($ln in @(Get-Content $pending)) {
+        $t = $ln.TrimStart()
+        if (-not $t.StartsWith('#')) { continue }
+        if ($ln -notmatch '\[FLAG:([^\]]+)\]') { continue }
+        $fid  = $Matches[1].Trim()
+        # Two glue shapes, both caught:
+        #   prose-before   '#  ...supplies.[FLAG:x]'  -> body does not start with the token
+        #   bare-hash glue '#[FLAG:x]'                -> glued onto a lone '#' (the header's last
+        #                                                line), with NO space after the hash.
+        # Every deliberate record -- written by this tool or by hand -- is '# [FLAG:x] ...' WITH a
+        # space. Found because the LAW 2 injection landed on a bare '#' and slipped through the
+        # first version of this check.
+        $body = $t.TrimStart('#').TrimStart()
+        $spacedRecord = $t -match '^#\s+\[FLAG:'
+        if ($body.StartsWith('[FLAG:') -and $spacedRecord) { continue }   # deliberate record
+        $inertFlags += [pscustomobject]@{ Provider = $prov; FixId = $fid; Line = $ln.Trim() }
+    }
     $lines = Get-Content $pending | Where-Object { $_.Trim() -and -not $_.TrimStart().StartsWith('#') }
     foreach ($ln in $lines) {
         if ($ln -match '\[FLAG:([^\]]+)\]') {
@@ -127,9 +162,25 @@ if ($unstructured.Count -gt 0) {
 }
 if ($gaps -eq 0 -and $unstructured.Count -eq 0) { Good "no gaps -- every pending flag is logged and structured" }
 
+# ── INERT FLAGS ────────────────────────────────────────────────────────────────────────────────
+# A flag the gate cannot see. This is NOT informational like the rest of this report: an inert flag
+# is a provider that believes itself blocked and is not, so it can be tenant-tested and shipped
+# with the fix still owed. It reads as done from the board and as pending from the file.
+Out ""
+if ($inertFlags.Count -gt 0) {
+    foreach ($f in $inertFlags) {
+        Warn "INERT FLAG -- $($f.Provider) carries [FLAG:$($f.FixId)] on a COMMENT line: enforce cannot see it"
+        Info "    fix: move it to its own line, or retire it properly --"
+        Info "    tools\flag_pending_fix.ps1 -Retire -FixId $($f.FixId) -Providers $($f.Provider) -Description '<what was done>'"
+    }
+} else {
+    Good "no inert flags -- every flag present in a PENDING_UPDATES file is on a line enforce can see"
+}
+
 Out ""
 Out "================================================================"
 Out "  Fixes pending: $($pendingByFix.Count) structured + $($unstructured.Keys.Count) provider(s) with legacy lines"
+Out "  Inert flags: $($inertFlags.Count)   (scanned $($provDirs.Count) provider PENDING_UPDATES files)"
 Out "  (informational -- enforce.ps1 PHASE 1 is the gate)"
 Out "================================================================"
 

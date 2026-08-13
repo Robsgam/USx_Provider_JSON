@@ -31,7 +31,8 @@ param(
     # Comma/array list of provider folder names, or the keyword 'all'.
     [Parameter(Mandatory)][string[]]$Providers,
     # Origin provider (where the fix was made) -- skipped from targets + recorded in the ledger.
-    [string]$Origin,
+    [switch]$Retire,          # retire an existing flag instead of writing one (comments it out, keeps the record)
+  [string]$Origin,
     # Flag date stamp (defaults to today). Overridable for reproducible runs/tests.
     [string]$Date,
     [switch]$DryRun,
@@ -69,12 +70,34 @@ $unknown = @($targets | Where-Object { $allProvNames -notcontains $_ })
 if ($unknown) { throw "flag_pending_fix: unknown provider(s): $($unknown -join ', ')" }
 
 $flagLine = "[FLAG:$FixId] $Description (flagged $Date)"
+# THE HEADER USED TO CLAIM "Clear by running the build script (it removes this file on successful
+# build)". THAT WAS FALSE and cost real time on 2026-08-13: IL_LEADS_OFML v2.4 and HI_HCJDC_OFML
+# v4.17 both completed a full pipeline run and BOTH left their flag live, because nothing anywhere
+# retires a flag -- this tool wrote them and no code path ever removed one. Sixteen providers still
+# carry one. The header now tells the truth and names the retirement command.
 $header = @(
     "# PENDING_UPDATES.txt -- <PROVIDER>",
     "# Lines without a leading '#' block enforce.ps1 and prevent testing.",
-    "# Clear by running the build script (it removes this file on successful build).",
+    "# A flag is NOT cleared by building. Retire it explicitly once the fix is in the JSON:",
+    "#   tools\flag_pending_fix.ps1 -Retire -FixId <id> -Providers <P> -Description '<what was done>'",
     "#"
 )
+
+# ── NEWLINE-SAFE APPEND ────────────────────────────────────────────────────────────────────────
+# Add-Content appends a trailing newline AFTER its value but does NOT guarantee the file already
+# ENDED with one. Append to a file whose last line has no terminator and the flag is GLUED onto
+# that line -- and since these files end in '#' comment prose, the flag becomes part of a COMMENT.
+# enforce.ps1 L207 skips lines starting with '#', so the provider reports no unresolved items and
+# PASSES PHASE 1 while believing itself flagged. That is exactly what happened to CA_CLETS with
+# [FLAG:ncic-image-default-y-everywhere]: silently exempt, invisible, found only by a hand sweep.
+# A flag that cannot block is worse than no flag -- it is a false record of pending work.
+function Add-LineSafely {
+    param([string]$Path, [string]$Line)
+    $raw = if (Test-Path $Path) { [IO.File]::ReadAllText($Path) } else { '' }
+    if ($raw.Length -gt 0 -and $raw[-1] -ne "`n") { $raw += "`r`n" }
+    $raw += $Line + "`r`n"
+    [IO.File]::WriteAllText($Path, $raw, (New-Object System.Text.UTF8Encoding($false)))
+}
 
 Out ""
 Out "================================================================"
@@ -82,6 +105,50 @@ Out "  FLAG PENDING FIX: [$FixId]"
 Out "  $Description"
 Out "  Origin: $(if ($Origin) { $Origin } else { '(unspecified)' })   Targets: $($targets.Count)$(if ($DryRun) { '   [DRY RUN]' })"
 Out "================================================================"
+
+# ── RETIRE MODE ────────────────────────────────────────────────────────────────────────────────
+# The missing half of the lifecycle. Flags were WRITTEN by this tool and retired by nobody, so
+# every provider that took a fix had to be edited by hand -- twice on 2026-08-13 alone, and 16
+# providers still owe it. Retiring COMMENTS THE LINE OUT rather than deleting it: the record of
+# what was owed and why it closed is the point, and a bare deletion loses it (same reasoning as
+# the accepted-divergence registry). Requires -Description so the reason is recorded, not implied.
+if ($Retire) {
+    $retired = 0; $notFound = 0; $inertFixed = 0
+    foreach ($prov in ($targets | Sort-Object)) {
+        $provDir = Join-Path $providersDir $prov
+        $pendingPath = Find-DocsPath $provDir 'tracking' 'PENDING_UPDATES.txt'
+        if (-not (Test-Path $pendingPath)) { Skip "$prov -- no PENDING_UPDATES.txt"; $notFound++; continue }
+
+        $lines = @(Get-Content $pendingPath)
+        $pat   = "\[FLAG:$([regex]::Escape($FixId))\]"
+        # A flag can be LIVE (own line) or INERT (glued into a '#' comment by the pre-fix appender).
+        # Retire handles BOTH -- an inert one still has to be recorded as closed, or the next sweep
+        # re-discovers it and cannot tell whether the work was done.
+        $hitLive  = @($lines | Where-Object { $_ -match $pat -and -not $_.TrimStart().StartsWith('#') })
+        $hitInert = @($lines | Where-Object { $_ -match $pat -and $_.TrimStart().StartsWith('#') })
+        if (-not $hitLive -and -not $hitInert) { Skip "$prov -- does not carry [FLAG:$FixId]"; $notFound++; continue }
+        if (-not $hitLive -and $hitInert) { Info "$prov -- flag was INERT (already commented); recording retirement anyway"; $inertFixed++ }
+
+        if ($DryRun) { Info "$prov -- would retire [FLAG:$FixId] ($($hitLive.Count) live, $($hitInert.Count) inert)"; $retired++; continue }
+
+        $out = foreach ($ln in $lines) {
+            if ($ln -match $pat -and -not $ln.TrimStart().StartsWith('#')) { "# RETIRED $Date -- $Description" ; "# $ln" }
+            else { $ln }
+        }
+        [IO.File]::WriteAllText($pendingPath, (($out -join "`r`n") + "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
+
+        # PROVE IT: re-read and confirm enforce can no longer see the flag. A retirement that did
+        # not actually silence the gate is the same false record in the other direction.
+        $stillLive = @(Get-Content $pendingPath | Where-Object { $_ -match $pat -and -not $_.TrimStart().StartsWith('#') })
+        if ($stillLive) { Fail "$prov -- retirement FAILED, flag still live"; }
+        else { Pass "$prov -- [FLAG:$FixId] retired (comment retained for the record)"; $retired++ }
+    }
+    Out ""
+    Out "  RETIRED: $retired    not carrying it: $notFound    were already inert: $inertFixed"
+    Out "================================================================"
+    if ($OutFile) { $script:outputLines -join "`r`n" | Set-Content -Path $OutFile -Encoding UTF8 }
+    exit 0
+}
 
 $flagged = 0; $already = 0
 foreach ($prov in ($targets | Sort-Object)) {
@@ -110,7 +177,7 @@ foreach ($prov in ($targets | Sort-Object)) {
         Set-Content -Path $writePath -Value $content -Encoding UTF8
         $pendingPath = $writePath
     } else {
-        Add-Content -Path $pendingPath -Value $flagLine -Encoding UTF8
+        Add-LineSafely -Path $pendingPath -Line $flagLine
     }
     Pass "$prov -- flagged ($((Split-Path $pendingPath -Parent) -replace [regex]::Escape($repo),'.'))"
     $flagged++
