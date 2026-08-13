@@ -6,7 +6,22 @@
 # IL-SPECIFIC:
 #   No CaRequestPurposeCode
 #   No DriverHistoryQuery (not in IL metadata)
-#   ImageIndicator: Vehicle=N, Person=Y, Firearm=Y, Boat=Y
+#   ImageIndicator: 'Y' on EVERY entity that has the control -- Vehicle=Y, Person=Y, Firearm=Y,
+#     Boat=Y (v2.4, Rob 2026-08-12 "ncic image should default to y everywhere"). Set in BOTH the
+#     form initialValue AND every carrying combo's defaults[], because CAD ignores form
+#     initialValue and a form-only flip leaves CAD-originated queries still asking 'N'.
+#     ARTICLE HAS NO CONTROL AND MUST NOT GAIN ONE: IL metadata defines ImageIndicator on
+#     BoatQuery/DriverLicenseQuery/GunQuery/VehicleRegistrationQuery (and the unbuilt WMPI/QWX
+#     transactions) but NOT on ArticleSingleQuery, so adding it there would OVER-PERMIT.
+#     Safe here -- ImageIndicator sits in any[] on all 8 carrying combos and in 0 set[] and 0
+#     conditions, so no prefill can move routing (BUILD_RULES 24). Contrast AZ_AZDPS (2 set[]s)
+#     and LA_LEMS (1 set[] + 2 conditions), which need a ruling rather than a flip.
+#     TX_TLETS T6 gate cleared: the IL devdoc has no "must be filled if ImageIndicator = Y"
+#     conditional -- it carries no conditional-requirement wording at all, and every devdoc
+#     mention of ImageIndicator is inside optional brackets.
+#     NOTE the line this replaced claimed "Vehicle=N, Person=Y, Firearm=Y, Boat=Y" and was WRONG
+#     about two of the four -- the code set Firearm=N and Boat=N. Comments drift; the emitted JSON
+#     was the authority for the v2.4 measurement.
 #   Date format: MMddyyyy (CommsysParseDateRuleHandler arguments=['yyyy-MM-dd','MMddyyyy'])
 #   State initialValue=IL (safe for this provider)
 #   CDCName in AUTH
@@ -15,7 +30,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_il_leads_ofml_mc.ps1 [-Version X.X]
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.3'
+$Version     = '2.4'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\IL_LEADS_OFML_v${Version}.json"
@@ -72,7 +87,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('LicensePlateNumber'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear','relatedHitSearchIndicator','RegistrationState')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -83,7 +98,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('VehicleIdentificationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator','VehicleMakeCode','vehicleYear','RegistrationState')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -94,7 +109,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('LicensePlateNumber'); any = @('ImageIndicator','LicensePlateTypeCode','LicensePlateYear','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -188,7 +203,7 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('serialNumber'); any = @('gunCaliber','firearmMake','ImageIndicator','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
             }
             primaryFieldReference = 'GunSerialNumber'
             keyReference          = 'QG'
@@ -251,7 +266,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator','RegistrationState')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'BQ.H'
@@ -260,7 +275,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator','RegistrationState')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'RegistrationNumber'
@@ -334,7 +349,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for IL)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
-                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_1' }
+                @{ id = 'ImageIndicator_Input';       node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_2' }
@@ -427,7 +442,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'SerialNumber_Input';   node = Inp 'serialNumber'   'Serial Number' '20' 'ROW_GUN_1' }
                 @{ id = 'FirearmMake_Input';     node = Sel 'firearmMake'    'Make' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_1' }
+                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_1' }
             )}
             @{ id = 'ROW_GUN_2'; cols = @('4','4'); fields = @(
                 @{ id = 'GunCaliber_Input'; node = Sel 'gunCaliber' 'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
@@ -501,7 +516,7 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for IL)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4'); fields = @(
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
             )}
         )

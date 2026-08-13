@@ -2,14 +2,68 @@
 
 Auto-generated from `IL_LEADS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-12
+Current: **v2.4** | Generated: 2026-08-13
 
 ---
 
-## v2.3 -- 2026-08-12 -- Pipeline rebuild
+## v2.4 -- 2026-08-13 -- NCIC Image defaults to 'Y' on every entity that carries the control
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+WHY: Rob 2026-08-12 -- "ncic image should default to y everywhere". IL carried  
+  [FLAG:ncic-image-default-y-everywhere], which blocked enforce PHASE 1 until taken. FL_FCIC  
+  v7.21 took it first; each remaining provider takes it at its OWN rebuild (reverse-propagation  
+  rule 8c), and this is IL's.  
+MEASURED BEFORE APPLYING, because the flag says "everywhere" is NOT mechanical:  
+  ImageIndicator is in any[] on all 8 carrying combos and in 0 set[] and 0 conditions, so no  
+  prefill can move routing (BUILD_RULES 24). Independently corroborated by fuzz_gate_efficacy,  
+  whose prefill-field mutation on Vehicle ImageIndicator SURVIVED -- i.e. routing-neutral, which  
+  is the correct-survivor case. Contrast AZ_AZDPS (2 set[]s) and LA_LEMS (1 set[] + 2  
+  conditions), where the same flip WOULD hide combos and needs Rob's ruling instead.  
+  TX_TLETS T6 gate cleared: the IL devdoc carries no "must be filled if X = Y" wording at all,  
+  and every devdoc mention of ImageIndicator sits inside optional brackets.  
+**CHANGED**, form + CAD twin together (a form initialValue alone is HALF a default -- CAD ignores
+  form initialValue, so a CAD-originated query would still ask for 'N'):  
+    Vehicle  form 'N'->'Y' + defaults[] 'N'->'Y' on Z2.P, Z2.V, Z5  
+    Firearm  form 'N'->'Y' + defaults[] 'N'->'Y' on QG  
+    Boat     form 'N'->'Y' + defaults[] 'N'->'Y' on BQ.H, BQ.R  
+    Person   already 'Y' on both form and Z2.N/Z2.O -- untouched  
+ARTICLE DELIBERATELY EXCLUDED, and this is the part "everywhere" hides: IL metadata defines  
+  ImageIndicator on BoatQuery / DriverLicenseQuery / GunQuery / VehicleRegistrationQuery (plus  
+  the unbuilt WMPI + IlLeadsWantedQWX transactions) but NOT on ArticleSingleQuery. There is no  
+  Article control and adding one would OVER-PERMIT against field authority. So "every entity"  
+  means FOUR here, not five. Same adjudication that made the flag a no-op on CA_CLETS.  
+ALSO FIXED: the header comment claimed "ImageIndicator: Vehicle=N, Person=Y, Firearm=Y, Boat=Y"  
+  and was wrong on two of four -- the code set Firearm=N and Boat=N. The emitted JSON, not the  
+  comment, was used for the measurement above.  
+COST: none beyond the rebuild. v2.3 was never imported and never tested (0 logs; the tenant is  
+  on v2.2, whose 41 logs are archived), so this bump archives nothing. The re-import + full  
+  re-sweep already owed at v2.3 simply carries to v2.4.  
+
+## v2.3 -- 2026-08-12 -- Stolen Check defaults to 'Y' on all four entities that carry it
+
+WHY: Rob 2026-08-12 -- "if the stolen check is an any it makes sense to use a default of yes to get  
+  the most out of every query ... previoulsy i stated to use defaults everywhere where it made sense  
+  and didn't ruin in state default routing." IL was one of two providers not following that rule.  
+MEASURED FIRST, across the 8 tenant-tested providers: HI, NY and TX all default their stolen-hit  
+  indicator to 'Y' and carry the matching combo defaults[]; only IL and FL left it blank. IL was the  
+  widest gap of the two -- FOUR entities affected.  
+**CHANGED**, form + CAD twin together (a form initialValue alone is HALF a default: CAD ignores form
+  initialValue, so a CAD-originated query would carry no stolen check at all):  
+    Vehicle  form 'Y' + defaults[] on Z2.P, Z2.V, Z5  
+    Person   form 'Y' + defaults[] on Z2.N, Z2.O  
+    Firearm  form 'Y' + defaults[] on QG  
+    Boat     form 'Y' + defaults[] on BQ.H, BQ.R  
+  SAFE ON ALL FOUR: relatedHitSearchIndicator is any[]-ONLY on every one of those eight  
+  combinations, so it cannot shadow a path. Note the discriminator on IL's Vehicle is  
+  RegistrationState (Z2.P State EXISTS vs Z5 State NOT_EXISTS) and that is untouched -- the stolen  
+  check is not a routing field here, which is exactly why the default is allowed.  
+VERIFIED after: validator 61P/0F/0W, prefill-shadow 5 pairs 0 FAIL, combo reachability 7 checked  
+  ALL reachable, audit_cad 60P/0F/0W.  
+COST: the bump archived the v2.2 package (41 logs). Re-import + full re-sweep owed. IL had also been  
+  awaiting a re-import at v2.2 already (the tenant was on v2.1), so this folds into that.  
+(The generic "CHANGED: Rebuilt via pipeline.ps1 / REASON: Scheduled rebuild" stub that pipeline  
+ stamps was removed here on 2026-08-13. It sat BELOW the real entry above and made  
+ audit_buildnotes_fidelity read v2.3 as a no-op while the JSON had genuinely changed -- IL was  
+ the last provider in the portfolio still carrying one. The detail above is the true record.)  
 
 ## v2.2 -- 2026-08-07 -- Cosmetic pass -- Rob's direct review of the rendered v2.1 form (label/order ONLY)
 

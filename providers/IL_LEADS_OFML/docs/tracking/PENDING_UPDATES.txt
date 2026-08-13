@@ -2,4 +2,16 @@
 # Lines without a leading '#' block enforce.ps1 and prevent testing.
 # Clear by running the build script (it removes this file on successful build).
 #
-[FLAG:ncic-image-default-y-everywhere] NCIC Image (ImageIndicator) should default to 'Y' on EVERY entity, not just Person -- Rob 2026-08-12: 'ncic image should default to y everywhere'. Applied on FL_FCIC v7.21 (form initialValue AND the combo defaults[] CAD twin, since CAD ignores form initialValue). BEFORE APPLYING, MEASURE THIS PROVIDER: the flip is only safe where ImageIndicator is in NO combination's set[] and in no condition -- on AZ_AZDPS it is in 2 set[]s and on LA_LEMS in 1 set[] + 2 conditions, so a prefill there would hide combos (BUILD_RULES 24) and those two need Rob's ruling rather than a mechanical flip. Also clear the TX_TLETS T6 gate: confirm the devdoc has no 'must be filled if ImageIndicator = Y' conditional. Portfolio baseline measured 2026-08-12: 20/20 providers used Person='Y' and Vehicle/Firearm/Article/Boat='N', so FL is currently the only conformant-to-Rob provider and the rest are owed. (flagged 2026-08-12)
+# [FLAG:ncic-image-default-y-everywhere]  TAKEN at v2.4, 2026-08-13. Cleared by hand -- line 3
+#   above says "the build script removes this file on successful build" and it DOES NOT; the v2.4
+#   pipeline run completed and left the flag live. That is a real gap in the reverse-propagation
+#   mechanism (flag_pending_fix writes the flag, nothing retires it), and it is the second defect
+#   found in that mechanism today -- the first being the missing-newline append that made
+#   CA_CLETS's copy of THIS flag inert by gluing it onto a '#' comment.
+#   WHAT WAS DONE: ImageIndicator now defaults to 'Y' on all four entities that carry the control,
+#   in BOTH the form initialValue and every carrying combo's defaults[] (8 combos: Z2.P, Z2.V, Z5,
+#   Z2.N, Z2.O, QG, BQ.H, BQ.R) -- verified from the emitted v2.4 JSON, not the build script.
+#   ARTICLE has no control and must not gain one: IL metadata does not define ImageIndicator on
+#   ArticleSingleQuery, so "every entity" is FOUR here. Safe to prefill: the field is any[]-only on
+#   all 8 combos, 0 set[], 0 conditions. TX_TLETS T6 gate cleared -- the IL devdoc carries no
+#   conditional-requirement wording at all. Full reasoning in the v2.4 BUILD_NOTES entry.
