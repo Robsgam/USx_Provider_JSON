@@ -389,6 +389,23 @@ $MUTS = @(
   # absent from #1's brackets, so there is no optional subset to test. Aiming it at 2q was my error;
   # the honest fix was a new class, not a wider 2q. Class J baseline: 100 EXISTS conditions examined
   # portfolio-wide, 1 pre-existing hit (TN_TIES RQ05).
+  # PROMOTED FROM A FUZZ SURVIVOR, 2026-08-13. fuzz_gate_efficacy (seed 558203) reported
+  # 'set-to-any @ DriverLicenseQuery[0] NameLast' SURVIVED. Triaged REAL: control and mutant BOTH
+  # scored 9 branches compared / 0 UNDER / 0 OVER, so the gate looked and could not see it. Cause:
+  # audit_requirement_fidelity resolves set[]/any[] through the QIDM attribute map, and every name
+  # component maps onto the single targetField 'Name' -- so [NameLast,NameFirst] and [NameFirst] are
+  # byte-identical after resolution. Distinct from il-fidelity-demote-mandatory, which demotes a
+  # SCALAR field (articleTypeCode) and was always caught; only a COMPOSITE hides this way.
+  # Fixed by the composite-completeness check in audit_requirement_fidelity; this mutation is what
+  # stops it silently regressing. Portfolio impact of the fix when added: 421 branches compared
+  # before and after, 0 providers drifted, so it introduced no false positives.
+  @{ Id='il-fidelity-composite-incomplete'; OnlyProvider='IL_LEADS_OFML'
+     Desc='NameLast demoted from Z2.N set[] to any[] though metadata Z2{Name} puts Name in <Set> with no looser variant and no <Choice>. The DL name search could then fire on DOB + first name alone, and FormatStringRuleHandler would put a surname-less ", JOHN" on the wire. Invisible to field-granularity comparison because the sibling component NameFirst still resolves to targetField Name.'
+     Gate='audit_requirement_fidelity.ps1'; Args={ @('-Path',$workJson) }
+     Mut={ param($j) $c=Get-Cfg $j '*_DriverLicenseQuery'; $cm=Get-Combo $c 'Z2.N'
+           $cm.requirements.set=@(@($cm.requirements.set) | Where-Object { $_ -ne 'NameLast' })
+           $cm.requirements.any=@(@($cm.requirements.any)+'NameLast') } }
+
   @{ Id='il-guardrail-wire-leak'; OnlyProvider='IL_LEADS_OFML'
      Desc='RegistrationState removed from Z2.P any[] while its "RegistrationState EXISTS" routing condition is left in place -- the field decides which query fires and then does not ride the wire, so an out-of-state plate query goes out with no destination state. Per-COMBINATION defect: sibling combos still carry State, so every per-provider and form-level check reads it as wired.'
      Gate='audit_wiring_closure.ps1'; Args={ @('-Path',$workJson) }

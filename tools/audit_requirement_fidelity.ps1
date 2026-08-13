@@ -47,6 +47,26 @@
   VERDICTS
     UNDER-REQUIRED  metadata says MANDATORY, we built it optional or absent  -> can send an
                     incomplete request. This is the defect class that motivated the tool.
+                    Includes COMPOSITE INCOMPLETE (added 2026-08-13): metadata 'Name' is one field
+                    but the form splits it into Last/First/Middle/Suffix, and set[]/any[] are
+                    resolved through the QIDM attribute map before comparison -- so EVERY component
+                    collapses to targetField 'Name' and [NameLast,NameFirst] is indistinguishable
+                    from [NameFirst]. A surname demoted to any[] therefore read as fully satisfied.
+                    Now the surname component must itself be in set[] wherever metadata mandates
+                    Name. Found by triaging a fuzz survivor (IL_LEADS_OFML Z2.N): control and mutant
+                    both scored 9 branches / 0 UNDER / 0 OVER, i.e. the gate LOOKED and was blind.
+                    Deliberately conservative -- the core component is identified by matching 'last'
+                    in the canonicalised sourceField (VehNameLast, OwnerLastName, nameLastCCH all
+                    match), and if no component looks like a surname the check is SKIPPED rather
+                    than guessed. It fires only where metadata MANDATES Name, which is what keeps
+                    TX_TLETS_CCH's QH.SID/QH.FBI/QR.SID/QR.FBI clean -- there the identifier is the
+                    SID/FBI number and the name parts legitimately ride in any[]. A standalone scan
+                    lacking that guard raised those four as findings; the guard is why this check
+                    lives here and not in a sweep script.
+                    Regression-measured on adoption: 421 branches compared across 20 providers
+                    before AND after, 0 providers drifted, 0 new findings -- the fix introduced no
+                    false positives and no live defect of this class exists in the portfolio.
+                    Proven able to fail by mutation 'il-fidelity-composite-incomplete'.
     OVER-PERMITTED  we allow a field the metadata branch does not define at all -> can send a field
                     the branch rejects (LIMITATION #1 family, per-branch scope).
     Both are [WARN], never [FAIL]: a build may legitimately tighten or split a branch, and only Rob
@@ -344,10 +364,29 @@ foreach ($d in $dirs) {
                 return $f      # unmapped -> leave as-is; Canon/alias still apply downstream
             }
 
+            # COMPOSITE CORE COMPONENT. Resolve-ToTarget maps EVERY name component onto the single
+            # targetField 'Name', so after resolution [NameLast, NameFirst] and [NameFirst] are
+            # INDISTINGUISHABLE -- both read as 'Name' present. That is the granularity hole that let
+            # a demotion of NameLast out of set[] go completely unreported (IL_LEADS_OFML Z2.N,
+            # triaged 2026-08-13 from a fuzz survivor: control and mutant both scored 9 branches
+            # compared / 0 UNDER / 0 OVER, so the gate LOOKED and could not see it). The wire effect
+            # is real: FormatStringRuleHandler would emit ', JOHN' for a name search with no surname.
+            # Identify the core by NAME, never by position -- providers spell it VehNameLast,
+            # OwnerLastName, nameLastCCH, NameLastDH. If no component looks like a surname we skip the
+            # check entirely rather than guess (this check must UNDER-report, never invent findings).
+            $nameCore = $null
+            foreach ($at in @($c.attributes)) {
+                if ("$($at.targetField)" -ne 'Name') { continue }
+                if (@($at.sourceField).Count -le 1) { continue }
+                foreach ($sf in @($at.sourceField)) { if ((Canon $sf) -match 'last') { $nameCore = "$sf"; break } }
+                if ($nameCore) { break }
+            }
             foreach ($cm in $c.combinations) {
                 $built[$q] += [pscustomobject]@{ KeyRef = "$($cm.keyReference)"
                                                  Set = @($cm.requirements.set | Where-Object { $_ } | ForEach-Object { Resolve-ToTarget $_ })
-                                                 Any = @($cm.requirements.any | Where-Object { $_ } | ForEach-Object { Resolve-ToTarget $_ }) }
+                                                 Any = @($cm.requirements.any | Where-Object { $_ } | ForEach-Object { Resolve-ToTarget $_ })
+                                                 SetRaw = @($cm.requirements.set | Where-Object { $_ })
+                                                 NameCore = $nameCore }
             }
         }
     }
@@ -485,7 +524,25 @@ foreach ($d in $dirs) {
         $under = @()
         for ($i = 0; $i -lt $mSetC.Count; $i++) {
             $w = $mSetC[$i]
-            if (Test-Has $bSetC $w) { continue }
+            if (Test-Has $bSetC $w) {
+                # COMPOSITE COMPLETENESS. Test-Has is deliberately permissive AND bidirectional --
+                # any name component satisfies metadata 'Name', which is correct for OVER-PERMITTED
+                # (built 'nameMiddle' vs metadata 'Name' must NOT be a finding) and is why it must not
+                # simply be tightened. But in THIS direction it means a mandatory composite counts as
+                # satisfied while its surname sits in any[] or is gone. Only fires when metadata
+                # MANDATES Name -- so TX_TLETS_CCH's QH.SID / QH.FBI / QR.SID / QR.FBI, where the
+                # identifier is the SID/FBI number and the name components legitimately ride in any[],
+                # are untouched. A standalone scan without that guard raised those four as findings;
+                # the guard is the whole reason this check belongs in here and not in a sweep script.
+                if ($w -eq 'name' -and $b0.NameCore) {
+                    $coreCanon = Canon $b0.NameCore
+                    $setRawC = @($b0.SetRaw | ForEach-Object { Canon $_ })
+                    if ($setRawC -notcontains $coreCanon) {
+                        $under += "$($m.Set[$i]) (composite incomplete: '$($b0.NameCore)' not in set[] -- a partial name would go on the wire)"
+                    }
+                }
+                continue
+            }
             if ($shN -gt 1 -and (Test-Has $bAnyC $w) -and (Test-Has $shAny $w)) { $pNote++; continue }   # shared combo AND some sibling branch genuinely lists this field as OPTIONAL -> riding it in any[] serves both. Requiring $shAny is what keeps this from excusing a real demotion.
             # A DELIBERATE demotion, recorded with rule 'demoted-to-any', is a decision -- not an
             # omission. Before this, UNDER-REQUIRED had NO registry path at all, so NJ's documented
@@ -600,6 +657,20 @@ foreach ($d in $dirs) {
 Out-Line ''
 Out-Line ('-' * 80)
 Out-Line "  TOTALS: $totMatched branch(es) compared / $totUnder UNDER-REQUIRED / $totOver OVER-PERMITTED / $totClaim UNSATISFIED-CLAIM"
+# VACUOUS PASS IS A FAILURE (ENGINEERING_STANDARD 4.3 -- distinguish 'found nothing' from 'never
+# looked'). This tool printed its denominator honestly and then reported [PASS] anyway on ZERO
+# branches, so a run that compared nothing was indistinguishable from a clean one. Reachable by
+# pointing -Path at a file whose name does not resolve to a provider: on 2026-08-13 a BYTE-IDENTICAL
+# copy of IL_LEADS_OFML renamed to *.BYTECOPY.json scored '0 branches compared' and PASSED, and that
+# false signal cost three wrong conclusions in a row -- including a fabricated 'portfolio-wide
+# harness defect' in fuzz_gate_efficacy, which was innocent (it preserves the leaf name). Measured
+# before adding: all 20 providers compare 9-45 branches, so this reddens nobody today.
+if ($totMatched -eq 0) {
+    Out-Line '  [FAIL] 0 branches compared -- this run is NOT evidence of fidelity. Check that -Path' 'Red'
+    Out-Line '         names a resolvable provider JSON (<PROVIDER>[_vX.Y].json) with source/ beside it.' 'Red'
+    if ($OutFile) { $lines | Out-File -FilePath $OutFile -Encoding utf8 }
+    exit 1
+}
 Out-Line '  UNDER-REQUIRED = we can send an INCOMPLETE request the metadata calls invalid.'
 Out-Line '  OVER-PERMITTED = we can send a field this branch does not define.'
 Out-Line '  Advisory: only Rob rules on combination semantics. Never auto-tighten a set[] --'
