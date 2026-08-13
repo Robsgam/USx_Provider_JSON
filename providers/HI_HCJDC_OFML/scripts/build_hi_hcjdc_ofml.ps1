@@ -217,7 +217,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.16",
+    [string]$Version = "4.17",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -398,7 +398,7 @@ $vehRegQuery = [PSCustomObject]@{
         # NOT_EXISTS: bare plate (no Plate Type) -> M55L; Plate+Type -> RQ. Mutually exclusive,
         # both reachable (mirrors FL v7.0 / CA v2.11 OOS-gate symmetry).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'EXISTS' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ'
             state                 = 'Out'
@@ -414,7 +414,7 @@ $vehRegQuery = [PSCustomObject]@{
         #      and VIN, Plate wins: RQV exits the union pool so VIN/vehicleYear do NOT bleed into
         #      RQ's XML. (v3.6 all-fields stress test finding)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','RegistrationState'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','RegistrationState'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'RQV'
             state                 = 'Out'
@@ -425,7 +425,7 @@ $vehRegQuery = [PSCustomObject]@{
         # OOS plate query (RQ), M55L exits the union pool so VehicleTypeCode does NOT bleed
         # into RQ's XML (live T4 finding: extra fields unknown risk on production CommSys).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'VehicleTypeCode'; value = '1' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','LicensePlateNumber'); any = @('ImageIndicator','RegistrationState'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'VehicleTypeCode'; value = '1' }); conditions = @([PSCustomObject]@{ field = @('LicensePlateTypeCode'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'M55L'
             state                 = 'In'
@@ -442,7 +442,7 @@ $vehRegQuery = [PSCustomObject]@{
         #      VIN) would both satisfy; without this condition VIN bleeds into the plate XML.
         #      With both conditions: M55S fires ONLY for bare VIN (no State, no Plate). (v3.6)
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }, [PSCustomObject]@{ field = 'VehicleTypeCode'; value = '1' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('vehicleTypeCode','VehicleIdentificationNumber'); any = @('ImageIndicator','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'VehicleTypeCode'; value = '1' }); conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' },[PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = 'M55S'
             state                 = 'In'
@@ -808,7 +808,7 @@ $vehLayout = MakeLayouts @(
             @{ id = 'ROW_VEH_4'; cols = @('4','4','4'); fields = @(
                 @{ id = 'vehicleTypeCode_Input';   node = Sel 'vehicleTypeCode' 'Vehicle Type' @{ codeTypeCategory = 'VEHICLE_TYPE'; codeTypeSource = 'HI_NIBRS'; initialValue = '1' } 'ROW_VEH_4' }
                 @{ id = 'registrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for Hawaii)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_4' }
-                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_4' }
+                @{ id = 'imageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_4' }
             )}
         )
     }

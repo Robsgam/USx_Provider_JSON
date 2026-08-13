@@ -3,6 +3,29 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.17  2026-08-13  NCIC Image defaults to 'Y' -- takes [FLAG:ncic-image-default-y-everywhere]
+  WHY NOW, and this is a correction of my own call: I built v4.16 without taking the flag, on the
+    grounds that Rob had approved "only adding response handling". He pushed back -- "why not
+    address this now?" -- and he was right. The bump had ALREADY happened: v4.16 archived 46 logs,
+    a re-sweep and an HDLE re-import were already owed. Taking the flag here costs NOTHING extra,
+    while deferring buys a SECOND bump, archive, sweep and re-import for a five-site change. That
+    is the same reasoning I had applied to IL_LEADS_OFML v2.5 hours earlier and failed to apply
+    here. The error was not holding scope -- it was not OFFERING the option.
+  MEASURED BEFORE APPLYING, as the flag demands:
+    - ImageIndicator is any[]-ONLY on all four VehReg combos: 0 set[], 0 conditions. Routing risk
+      ZERO, so no prefill can hide a combination (BUILD_RULES 24).
+    - Only ONE control exists on this provider -- ENTITY_Vehicle. Person, Firearm, Article and
+      Boat have NO ImageIndicator control and no combo carrying it, so "everywhere" means VEHICLE
+      here. Adding controls to the other four would OVER-PERMIT, the same adjudication that made
+      the flag a no-op on CA_CLETS and excluded Article on IL.
+    - TX_TLETS T6 gate CLEAR: HI's devdoc contains no "must be filled if X = Y" wording at all.
+  CHANGED, form + CAD twin together (a form initialValue alone is HALF a default -- CAD ignores
+    form initialValue): Vehicle form 'N'->'Y', and defaults[] 'N'->'Y' on RQ, RQV, M55L, M55S.
+    Five sites. Verified with a DIFFERENT pattern than the edit used: zero ImageIndicator sites
+    remain on 'N'.
+  SCOPE: this is a REQUEST-side change (form default + combo defaults), unlike v4.16 which was
+    response-only. Combination set[]/any[]/conditions are still untouched; only default VALUES move.
+
 v4.16  2026-08-13  NCIC hit-block response handling -- +24 QRDM attributes. ZERO request change.
   WHY: Rob 2026-08-13 -- "we cannot be discarding infomation like hit warnings regadles of
     ccntent". A LIVE capture from HDLE Foundation (tx 01KZY7M48VXBWV1CBRJ6PDVEA7) returned an NCIC

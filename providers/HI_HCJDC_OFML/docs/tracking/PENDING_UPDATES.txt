@@ -4,4 +4,20 @@
 #  * 2 QV PREFILL-DEAD -- registered metadata-shadow-autofired. HI builds NO QV combo (RQ/RQV/
 #    M55L/M55S only) and QV is the platform-auto-fired class ruled unbuilt on TX/FL/NJ.
 #    Do NOT remove the vehicleTypeCode prefill to chase them.
-[FLAG:ncic-image-default-y-everywhere] NCIC Image (ImageIndicator) should default to 'Y' on EVERY entity, not just Person -- Rob 2026-08-12: 'ncic image should default to y everywhere'. Applied on FL_FCIC v7.21 (form initialValue AND the combo defaults[] CAD twin, since CAD ignores form initialValue). BEFORE APPLYING, MEASURE THIS PROVIDER: the flip is only safe where ImageIndicator is in NO combination's set[] and in no condition -- on AZ_AZDPS it is in 2 set[]s and on LA_LEMS in 1 set[] + 2 conditions, so a prefill there would hide combos (BUILD_RULES 24) and those two need Rob's ruling rather than a mechanical flip. Also clear the TX_TLETS T6 gate: confirm the devdoc has no 'must be filled if ImageIndicator = Y' conditional. Portfolio baseline measured 2026-08-12: 20/20 providers used Person='Y' and Vehicle/Firearm/Article/Boat='N', so FL is currently the only conformant-to-Rob provider and the rest are owed. (flagged 2026-08-12)
+# [FLAG:ncic-image-default-y-everywhere]  TAKEN at v4.17, 2026-08-13.
+#   Cleared BY HAND -- line 3 of the template claims the build script removes this file on a
+#   successful build and it DOES NOT. The v4.17 pipeline completed and left the flag live, exactly
+#   as it did for IL_LEADS_OFML v2.4 the same day. flag_pending_fix.ps1 WRITES flags and nothing
+#   RETIRES them. That is the second defect in the reverse-propagation mechanism today; the first
+#   was a missing-newline append that glued CA_CLETS's copy of this same flag onto a '#' comment
+#   and made it INERT.
+#   WHAT WAS DONE: ImageIndicator now defaults to 'Y' in BOTH the form initialValue and every
+#   carrying combo's defaults[] -- Vehicle form + RQ, RQV, M55L, M55S. Five sites, verified from
+#   the emitted v4.17 JSON with a different pattern than the edit used (zero sites left on 'N').
+#   MEASURED FIRST: ImageIndicator is any[]-ONLY on all four combos -- 0 set[], 0 conditions -- so
+#   no prefill can hide a combination (BUILD_RULES 24). TX_TLETS T6 gate clear: HI's devdoc has no
+#   conditional-requirement wording at all.
+#   "EVERYWHERE" MEANS VEHICLE ON THIS PROVIDER. HI has exactly ONE ImageIndicator control and no
+#   Person/Firearm/Article/Boat combo carries the field. Adding controls there would OVER-PERMIT --
+#   same adjudication that made this flag a no-op on CA_CLETS and excluded Article on IL.
+#   Full reasoning in the v4.17 BUILD_NOTES entry.
