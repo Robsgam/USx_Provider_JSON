@@ -34,4 +34,28 @@
 #         metadata (field authority) requires more than the devdoc's optional brackets imply.
 #         Unfixable without emitting requests the metadata calls invalid.
 #   REG   VehicleRegistrationQuery #1 (FileCode/InfoCode): buildable, deferred on a product call --
-#         needs two code values an officer would not have and no CAD field supplies.[FLAG:ncic-image-default-y-everywhere] NCIC Image (ImageIndicator) should default to 'Y' on EVERY entity, not just Person -- Rob 2026-08-12: 'ncic image should default to y everywhere'. Applied on FL_FCIC v7.21 (form initialValue AND the combo defaults[] CAD twin, since CAD ignores form initialValue). BEFORE APPLYING, MEASURE THIS PROVIDER: the flip is only safe where ImageIndicator is in NO combination's set[] and in no condition -- on AZ_AZDPS it is in 2 set[]s and on LA_LEMS in 1 set[] + 2 conditions, so a prefill there would hide combos (BUILD_RULES 24) and those two need Rob's ruling rather than a mechanical flip. Also clear the TX_TLETS T6 gate: confirm the devdoc has no 'must be filled if ImageIndicator = Y' conditional. Portfolio baseline measured 2026-08-12: 20/20 providers used Person='Y' and Vehicle/Firearm/Article/Boat='N', so FL is currently the only conformant-to-Rob provider and the rest are owed. (flagged 2026-08-12)
+#         needs two code values an officer would not have and no CAD field supplies.
+#
+# [FLAG:ncic-image-default-y-everywhere]  WITHDRAWN 2026-08-13 -- NOT APPLICABLE to CA_CLETS.
+#   Rob's rule (2026-08-12) is that NCIC Image defaults to 'Y' on every entity. CA_CLETS has no
+#   such field to default, so there is nothing to apply and nothing owed:
+#     - 0 ImageIndicator form controls and 0 QIDM references in CA_CLETS_v2.24.json. Its single
+#       occurrence is a QUERYRESULTDATAMAPPING targetField (sourceField 'Image') -- a RESPONSE
+#       mapping every provider inherits from the shared Build-CommsysQrdm, not an input.
+#     - CA_CLETS.xml defines ImageIndicator in exactly 4 places, ALL inside
+#       CCHCriminalHistoryFQQuery and CCHCriminalHistoryIQQuery -- CCH transactions this provider
+#       does not build. None of its 6 devdoc-Basic queries define the field, so adding a control
+#       would OVER-PERMIT against field authority. Verified in the raw <Requirements>, the
+#       sanctioned raw-XML exception for this question.
+#   So this is NOT a deferral and NOT a skip -- there is no defect and no future work. Do not
+#   re-flag CA_CLETS for this rule, and do not "fix" it by adding an ImageIndicator control.
+#
+#   HOW IT GOT HERE, because the mechanism is the real defect: flag_pending_fix.ps1 appended
+#   without a leading newline onto a file whose last line was a '#' comment with no trailing
+#   newline, so the flag became part of that comment. enforce.ps1 L207 skips lines starting with
+#   '#', which means CA_CLETS reported NO unresolved items and PASSED PHASE 1 while every other
+#   flagged provider was blocked. The outcome was accidentally correct here; the mechanism is not.
+#   Found by the resume-sweep link/flag integrity check, not by any gate.
+#   The flag text's claim "Portfolio baseline measured 2026-08-12: 20/20 providers used Person='Y'
+#   and Vehicle/Firearm/Article/Boat='N'" is FALSE for the six CA providers, which carry no such
+#   control at all -- treat that sentence as unverified wherever else it appears.
