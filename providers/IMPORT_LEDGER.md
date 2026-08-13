@@ -49,6 +49,52 @@ recorded tenant URL — that is a gap in this ledger, not evidence a tenant does
 | Miami Springs Foundation | FL_FCIC | v7.18 | 2026-08-06 | current — v7.17→v7.18, imported by Rob after the DEX-1283 fix (Attention/Requestor 'X' default removed, 116/116 ALL-PASS) |
 | North Miami Foundation | FL_FCIC | v7.18 | 2026-08-06 | current — v7.17→v7.18, same import pass as Miami Springs |
 | Balcones Heights TX Foundation | TX_TLETS | v4.18 | 2026-08-03 | current — v4.12→v4.18, imported by Rob after the v4.18 re-sweep (89/89 ALL-PASS). Picks up v4.13 dead-RQ removal, v4.14 all-7-Vehicle-combos-reachable (prefills out), v4.15/v4.16 UI, v4.17 QV shadow removal, v4.18 17 dropped optionals |
+| Lafayette Parish | LA_LEMS | **NOT OURS — hand-built by engineering** | in service as of 2026-08-13 | **The only tenant in this ledger running a JSON this repo did not build.** Copy held at `providers/LA_LEMS/source/Lafayette Parish LA_LEMS 8.13.2026.json` (Rob, 2026-08-13) as the reference to diff against if Lafayette reports a problem. Our `LA_LEMS_v3.0` is NOT installed anywhere. See the comparison in §B.1 below before answering any Lafayette question |
+
+### B.1 Lafayette Parish LA_LEMS — the hand-built engineering JSON, and how it differs from ours
+
+Recorded 2026-08-13. Rob supplied the deployed file so we can answer Lafayette issue reports against
+what is **actually running there**, not against `LA_LEMS_v3.0`, which is installed on no tenant.
+Reference copy: `providers/LA_LEMS/source/Lafayette Parish LA_LEMS 8.13.2026.json` (150 KB).
+
+**Do not "fix" our build to match it, and do not treat it as authority.** It is a peer artifact
+built by another team from the same devdoc + metadata. Where the two disagree, the devdoc and the
+metadata XML decide — not this file. Its value is diagnostic: if Lafayette reports a symptom, the
+difference list below is the candidate set.
+
+| | Hand-built (deployed) | Ours (`LA_LEMS_v3.0`) |
+|---|---|---|
+| Top level | `{bundles[3], behaviors{}}` | `{bundles[3]}` — no `behaviors` |
+| Bundle order | **`LA_LEMS` → `ENTITIES` → `RMS`** | `ENTITIES` → `LA_LEMS` → `RMS` |
+| `queryLabel` | `LA_LEMS`, `LA_LEMS DL`, `LA_LEMS Driver History` | `Vehicle Registration`, `Driver License`, `Driver History`, … |
+| `keyReference` style | concatenated field names (`OperatorLicenseNumberRegistrationStateAttention`) | metadata transaction keyRefs (`DP`, `DQ`, `QWA`, `QWDN`, `KQName`, `QG`, `QA`, `QB`, `BQ`) |
+| DL combos | 2 | **4** (QWDN / QWA / DP / DQ) |
+| Veh / DH / Boat / Gun / Article combos | 2 / 2 / 2 / 1 / 1 | 2 / 2 / 2 / 1 / 1 |
+| DH `Attention` | **wired** — attribute `Attention` ← `Attention`, rule `CommsysGetLastNameFirstNameInitialRuleHandler`, in both combos' `any[]` | **absent from the DH QIDM entirely** |
+| DH field isolation | shared pool (`NameLast`, `BirthDate`, …) | DH-suffixed (`NameLastDH`, `BirthDateDH`, …) |
+| Boat QIF name | `ENTTIY_Boat` (transposed typo) | `ENTITY_Boat` |
+
+**Four things worth knowing before you use this file:**
+
+1. **It answers our 2 open LA_LEMS enforce FAILs.** `audit_devdoc_combinations` reports
+   `DriverHistoryQuery #1` and `#2` as devdoc-listed but UNBUILT because mandatory `Attention` is
+   wired nowhere in that query. The deployed JSON wires it exactly the way our own Automated
+   Attention standard does (AP #27 feeder pattern, same handler we already run on our LA DL). That
+   makes it a worked precedent for the fix — **evidence the shape is accepted in production, not
+   authority that it is correct.** Still adjudicate against LA's metadata per `usx-adjudicate`.
+2. **`behaviors` is real and in production.** `{"ParallelQuery": {function: parallelQueryHandler,
+   isEnabled: false}}` — the top-level block documented in
+   `knowledge-base/UNIVERSAL_SEARCH_HANDLERS.txt` that **no repo build emits**. Disabled here, so
+   this is not evidence it does anything; it is evidence the platform accepts the key.
+3. **ENTITIES is NOT first, and it is deployed. HYPOTHESIS, do not act on it.** CLAUDE.md states
+   ENTITIES must be first or forms do not render (confirmed AZ v2.0). Either that rule is narrower
+   than written, or Lafayette has a rendering fault nobody has reported. **Do not reorder any
+   provider's bundles on the strength of this file.** Discriminating evidence would be a Lafayette
+   user confirming the forms render.
+4. **Its DL coverage is thinner than ours** (2 combos vs 4). If Lafayette reports "a driver search
+   I expect does not run", that gap is the first place to look — not a defect in our build.
+
+Regenerate any of the above with a JSON diff; nothing here is hand-maintained state.
 
 ## C. Published JSON — Jira ticket + Confluence catalog (MANUAL, from Rob's confirmation)
 
