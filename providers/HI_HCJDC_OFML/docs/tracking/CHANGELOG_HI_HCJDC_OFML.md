@@ -2,7 +2,7 @@
 
 Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.15** | Generated: 2026-08-10
+Current: **v4.15** | Generated: 2026-08-13
 
 ---
 

@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: LA_LEMS
   Source: LA_LEMS_v3.0.json
-  Generated: 2026-08-07 11:03
+  Generated: 2026-08-13 09:04
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-07 11:03
+ Generated: 2026-08-13 09:04
 ============================================================
 
 ============================================================
@@ -104,8 +104,8 @@ METADATA AUDIT
   BoatQuery:
   [PASS]   keyRef QB: set field 'BoatHullIdNumber' present
   [PASS]   keyRef QB: any field 'Attention' present
-  [NOTE]   keyRef BQ: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
-  [NOTE]   keyRef QB: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
+  [PASS]   keyRef BQ: any field 'State' covered by BQ
+  [PASS]   keyRef QB: any field 'Attention' covered by QB
   [PASS]   keyRef BQ: set field 'RegistrationNumber' present
   [PASS]   keyRef BQ: any field 'State' present
   DriverHistoryQuery:
@@ -127,12 +127,14 @@ METADATA AUDIT
   [PASS]   keyRef QWDN: set field 'SexCode' present
   [PASS]   keyRef QWDN: any field 'State' present
   [PASS]   keyRef QWDN: any field 'Attention' present
-  [NOTE]   keyRef QWDN: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
+  [PASS]   keyRef QWDN: any field 'State' covered by QWDN
+  [PASS]   keyRef QWDN: any field 'Attention' covered by QWDN
   [PASS]   keyRef QWA: set field 'BirthDate' present
   [PASS]   keyRef QWA: set field 'Name' present
   [PASS]   keyRef QWA: set field 'SexCode' present
   [PASS]   keyRef QWA: any field 'Attention' present
-  [NOTE]   keyRef DQ: not built -- ACCEPTED per registry (see docs ACCEPTED_DIVERGENCES)
+  [PASS]   keyRef DQ: any field 'Attention' covered by DQ
+  [PASS]   keyRef DQ: any field 'State' covered by DQ
   [PASS]   keyRef DQ: set field 'OperatorLicenseNumber' present
   [PASS]   keyRef DQ: any field 'State' present
   GunQuery:
@@ -201,6 +203,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 118 PASS / 0 FAIL / 0 WARN
+Total: 124 PASS / 0 FAIL / 0 WARN
 ============================================================
 
