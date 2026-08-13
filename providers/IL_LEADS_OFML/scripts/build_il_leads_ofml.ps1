@@ -30,7 +30,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_il_leads_ofml_mc.ps1 [-Version X.X]
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.5'
+$Version     = '2.6'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\IL_LEADS_OFML_v${Version}.json"
@@ -417,10 +417,22 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_2' }
             )}
-            @{ id = 'ROW_PER_3'; cols = @('4','4','4'); fields = @(
+            # v2.6 (Rob 2026-08-13, "if race is not needed anywhere for commsys then remove it"):
+            # the Race control is REMOVED and Build-RmsBundle now takes -SkipRace.
+            # WHY BOTH, and why removing the control alone would have been a defect: raceCode was
+            # in ZERO CommSys attributes, set[]s and any[]s -- but it WAS live in RMS (attribute
+            # raceAttrIds<-raceCode, plus raceCode in the any[] of all four RMS Person Search
+            # combos). Dropping just the control would leave those sourcing a fieldId no control
+            # emits -- an orphan attribute, audit_wiring_closure class B. -SkipRace is the
+            # established pattern for exactly this (TX_TLETS, TX_TLETS_CCH, LA_LEMS, MD_METERS).
+            # NOT a candidate for wiring to CommSys instead: IL metadata defines RaceCode on NONE
+            # of the five built transactions, so adding it to a combo any[] would OVER-PERMIT.
+            # COST, accepted by Rob: RMS person search loses race as a narrowing field.
+            # Also resolves audit_layout_flow [L9] -- an RMS-only field sat beside the mandatory
+            # BirthDate identifier and read as though it queried the state.
+            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth' 'ROW_PER_3' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
-                @{ id = 'RaceCode_Input';  node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
             )}
             # ROW_PER_4 retired at v2.5 -- it held only Stolen Check, which now sits in ROW_PER_1.
         )
@@ -544,7 +556,7 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personFo
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
 # =====================================================================
-$rmsBundle = Build-RmsBundle -PascalCaseUsxFields
+$rmsBundle = Build-RmsBundle -PascalCaseUsxFields -SkipRace
 # =====================================================================
 # WRITE OUTPUT
 # =====================================================================

@@ -1,14 +1,14 @@
 ================================================================
   Build Report: IL_LEADS_OFML
-  Source: IL_LEADS_OFML_v2.5.json
-  Generated: 2026-08-13 12:49
+  Source: IL_LEADS_OFML_v2.6.json
+  Generated: 2026-08-13 13:02
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- IL_LEADS_OFML_v2.5.json
+  CommSys Query Simulator -- IL_LEADS_OFML_v2.6.json
 ================================================================
 
 --- QIDM: IL_LEADS_OFML_VehicleRegistrationQuery [Vehicle] ---
@@ -123,34 +123,34 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: RMS Person Search query [Person] ---
-    Query: Person  |  Attrs: 7  |  Combos: 4
+    Query: Person  |  Attrs: 6  |  Combos: 4
 
     [FIRES first-match] firstNameLastNameDriversLicenseNumber
       set: [OperatorLicenseNumber, NameFirst, NameLast]
-      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
-      {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] firstNameLastNameDateOfBirth
       set: [NameFirst, NameLast, BirthDate]
-      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
-      {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] firstNameLastName
       set: [NameFirst, NameLast]
-      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
-      {"elasticQuery":{"firstName":"John","lastName":"Doe","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     [FIRES shadowed -- first match above wins] driversLicenseNumber
       set: [OperatorLicenseNumber]
-      any: [raceCode, SexCode, RegistrationState] -> matched: [raceCode, SexCode, RegistrationState]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
       -- RMS elastic payload (combo-scoped) --
-      {"elasticQuery":{"dlNumber":"D123456789","raceAttrIds":"W","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+      {"elasticQuery":{"dlNumber":"D123456789","sexAttrId":"M","registrationStateAttrId":"NJ"}}
 
     >> PLATFORM FIRES: firstNameLastNameDriversLicenseNumber (first matching combo)
-    >> UNION POOL (platform serializes): firstName=John, lastName=Doe, dlNumber=D123456789, dateOfBirth=1990-01-15, raceAttrIds=W, sexAttrId=M, registrationStateAttrId=NJ
+    >> UNION POOL (platform serializes): firstName=John, lastName=Doe, dlNumber=D123456789, dateOfBirth=1990-01-15, sexAttrId=M, registrationStateAttrId=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

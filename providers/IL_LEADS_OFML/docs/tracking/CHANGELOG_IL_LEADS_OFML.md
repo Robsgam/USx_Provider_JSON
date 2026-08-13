@@ -2,9 +2,35 @@
 
 Auto-generated from `IL_LEADS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.5** | Generated: 2026-08-13
+Current: **v2.6** | Generated: 2026-08-13
 
 ---
+
+## v2.6 -- 2026-08-13 -- Race control REMOVED from Person + Build-RmsBundle -SkipRace. No CommSys change.
+
+WHY: Rob 2026-08-13 -- "if race is not needed anywhere for commsys then remove it". It is not.  
+MEASURED FIRST, all three directions, before touching anything:  
+  1. CommSys  raceCode appears in ZERO attributes, ZERO set[] and ZERO any[] across all 6 QIDMs.  
+  2. Metadata IL_LEADS_OFML.xml defines RaceCode in the <Requirements> of NONE of the five  
+     built transactions (DL / VehReg / Gun / Article / Boat -- 0 occurrences each). So wiring it  
+     INTO a combo any[] was never an option: that would OVER-PERMIT against field authority.  
+     This is the opposite conclusion to a dropped-optional finding, and the metadata is what  
+     distinguishes them -- same symptom, opposite fix.  
+  3. RMS      raceCode WAS live: attribute raceAttrIds<-raceCode, plus raceCode in the any[] of  
+     all four RMS Person Search combos (firstNameLastName, ...DateOfBirth, ...DriversLicenseNumber,  
+     driversLicenseNumber).  
+**CHANGED**, both halves together:
+    ROW_PER_3         cols 4/4/4 -> 6/6, RaceCode_Input removed (DOB + Sex remain)  
+    Build-RmsBundle   -PascalCaseUsxFields -> -PascalCaseUsxFields -SkipRace  
+REMOVING THE CONTROL ALONE WOULD HAVE BEEN A NEW DEFECT, not a fix: the RMS attribute and four  
+  RMS combos would have gone on sourcing a fieldId that no control emits -- an orphan attribute,  
+  audit_wiring_closure class B, and unfillable any[] entries. -SkipRace is the established  
+  pattern for exactly this and is already used by TX_TLETS, TX_TLETS_CCH, LA_LEMS and MD_METERS.  
+COST, stated to Rob before applying and accepted: RMS person search loses race as a narrowing  
+  field. The alternative offered was keeping the control and moving it off the identifier row.  
+ALSO RESOLVES audit_layout_flow [L9]: an RMS-only field sat beside the mandatory BirthDate  
+  identifier and read as though it queried the state. Reported at v2.5, fixed here.  
+COST: v2.5 was never imported and never tested (0 logs), so this bump archives nothing.  
 
 ## v2.5 -- 2026-08-13 -- COSMETIC: Person Stolen Check moves to the top row. Zero wire change.
 

@@ -1,14 +1,14 @@
 ================================================================
   Build Report: IL_LEADS_OFML
-  Source: IL_LEADS_OFML_v2.5.json
-  Generated: 2026-08-13 12:49
+  Source: IL_LEADS_OFML_v2.6.json
+  Generated: 2026-08-13 13:02
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: IL_LEADS_OFML_v2.5
+ POST-BUILD VERIFICATION: IL_LEADS_OFML_v2.6
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -23,7 +23,6 @@ POST-BUILD VERIFICATION
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
   [INFO] CommSys-only: 13 [ImageIndicator, LicensePlateTypeCode, LicensePlateYear, relatedHitSearchIndicator, VehicleMakeCode, vehicleYear, gunCaliber, firearmMake, serialNumber, articleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
-  [INFO] RMS-only (expected for RMS-specific fields): 1
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -38,7 +37,7 @@ POST-BUILD VERIFICATION
   [PASS] All 3 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (21) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (21) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -62,7 +61,7 @@ POST-BUILD VERIFICATION
   [INFO] Field 'gunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'firearmMake' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'ownerAppliedNumber' (any[]-only) label='Owner Applied Number' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional article qualifier))
-  [PASS] All form field labels have required routing hint qualifiers (25 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (24 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
