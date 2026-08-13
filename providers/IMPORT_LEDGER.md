@@ -46,8 +46,8 @@ recorded tenant URL — that is a gap in this ledger, not evidence a tenant does
 |---|---|---|---|---|
 | Newark Foundation | NJ_NJCJIS | v4.15 | 2026-08-03 | current — v4.14→v4.15, imported by Rob after the v4.15 re-sweep (36/36 ALL-PASS). Picks up the Boat QBN `RegistrationNumber` fix: a hull search now transmits the reg number instead of silently dropping it (devdoc BoatQuery #1) — wire-proven in that sweep |
 | Bert Anzini USx test tenant | NJ_NJCJIS | v4.9 | 2026-07-20 | **frozen on purpose** — CAD-config test only, any valid JSON suffices; do not flag drift |
-| Miami Springs Foundation | FL_FCIC | v7.18 | 2026-08-06 | current — v7.17→v7.18, imported by Rob after the DEX-1283 fix (Attention/Requestor 'X' default removed, 116/116 ALL-PASS) |
-| North Miami Foundation | FL_FCIC | v7.18 | 2026-08-06 | current — v7.17→v7.18, same import pass as Miami Springs |
+| Miami Springs Foundation | FL_FCIC | v7.23 | 2026-08-13 | current — v7.18→v7.23, imported by Rob after the v7.23 re-sweep (110/110 ALL-PASS). Picks up v7.19–v7.22 Stolen Check + NCIC Image defaulting to `Y` on all entities, BQ ordered ahead of QB (recovers 2 out-of-state Boat paths), and the v7.23 FBQ `ImageIndicator` over-permit removal |
+| North Miami Foundation | FL_FCIC | v7.23 | 2026-08-13 | current — v7.18→v7.23, same import pass as Miami Springs |
 | Balcones Heights TX Foundation | TX_TLETS | v4.18 | 2026-08-03 | current — v4.12→v4.18, imported by Rob after the v4.18 re-sweep (89/89 ALL-PASS). Picks up v4.13 dead-RQ removal, v4.14 all-7-Vehicle-combos-reachable (prefills out), v4.15/v4.16 UI, v4.17 QV shadow removal, v4.18 17 dropped optionals |
 | Lafayette Parish | LA_LEMS | **NOT OURS — hand-built by engineering** | in service as of 2026-08-13 | **The only tenant in this ledger running a JSON this repo did not build.** Copy held at `providers/LA_LEMS/source/Lafayette Parish LA_LEMS 8.13.2026.json` (Rob, 2026-08-13) as the reference to diff against if Lafayette reports a problem. Our `LA_LEMS_v3.0` is NOT installed anywhere. See the comparison in §B.1 below before answering any Lafayette question |
 
@@ -107,7 +107,7 @@ confirmation, never inferred from a version bump.
 
 | Provider | Version | Attached to ticket | Posted to catalog | Notes |
 |---|---|---|---|---|
-| FL_FCIC | v7.18 | DEX-971, 2026-08-06 | 2026-08-06 | after the DEX-1283 fix (116/116 ALL-PASS); same pass as the Miami Springs + North Miami imports |
+| FL_FCIC | v7.23 | DEX-971, 2026-08-13 | 2026-08-13 | after the v7.23 re-sweep (110/110 ALL-PASS); same pass as the Miami Springs + North Miami imports. Release line is DEX-971 comment 790815, EDITED IN PLACE from v7.18 → v7.23 (no sibling comment). Supersedes the v7.18 publish of 2026-08-06 |
 | TX_TLETS | v4.18 | DEX-967, 2026-08-03 | 2026-08-03 | after the 89/89 ALL-PASS re-sweep; same pass as the Balcones Heights import |
 | NY_NYSPIN_EJUSTICE | v4.23 | DEX-969, 2026-08-07 | 2026-08-07 | after the DEX-1284 closure (69/69 ALL-PASS). Supersedes the v4.19 publish of 2026-08-03. No Foundation tenant carries NY, so there is no section B row to match |
 | NJ_NJCJIS | v4.15 | DEX-988, 2026-08-03 | 2026-08-03 | after the 36/36 ALL-PASS re-sweep; same pass as the Newark Foundation import |

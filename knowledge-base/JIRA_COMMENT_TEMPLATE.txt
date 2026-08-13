@@ -27,9 +27,11 @@ all of which this template is designed to prevent:
      Worse, a *latest* comment can be wrong: DEX-967 (TX) claimed 89/89 at v4.18 while
      the provider was v4.19 with 92 logs.
 
-  3. OMISSION READ AS COVERAGE. Sections were simply left out when inconvenient. The
+  3. OMISSION READ AS COVERAGE. Sections were simply left out when inconvenient, and the
      absence of a "known limits" statement made several comments imply more verification
-     than the logs supported. Hence Section 5 below is MANDATORY.
+     than the logs supported. The fix for that is NOT a caveats section -- see the
+     2026-08-13 ruling below -- it is that the sections which remain are fixed, so a
+     reader can tell at a glance that nothing was dropped.
 
 TWO STANDING CONSTRAINTS
 ------------------------
@@ -74,23 +76,24 @@ validator <n>P/0F/0W · four log gates <n>/<n> (content, metadata, attribution, 
 completeness <e>/5) · inflation 0/0/0/0 · enforce <n> PASS / 0 provider-scoped
 FAIL-or-WARN · <c> combos, all reachable
 
-**5. Known limits**
-<what this evidence does NOT establish. Or "None.">
-
-**6. Documented skips**
-<devdoc-Basic queries not built, each with its authority. Or "None — all <n>
-devdoc-Basic queries built.">
-
 **RELEASE LINE — <vX.Y> is verified and ready.**
    (or "**NOT YET TENANT-TESTED** — <n> tests owed.")
 --------------------------------------------------------------------------------
 
 RULES THAT TRAVEL WITH THE TEMPLATE
 -----------------------------------
-  * SECTION 5 IS MANDATORY AND MUST NOT BE PADDED. It is where caveats live -- e.g.
-    "the CAD defaults[] path is verified by inspection only; no form-driven log
-    exercises it". Writing "None" is legitimate; omitting the section is not, because
-    omission is what previously let a comment read as broader than its evidence.
+  * FOUR SECTIONS, AND ONLY FOUR (Rob, 2026-08-13: the six-section shape was "way too
+    many details"). The former Section 5 "Known limits" and Section 6 "Documented skips"
+    are REMOVED from the ticket comment. Do NOT re-add them, and do not reintroduce them
+    under another heading.
+    WHERE THAT CONTENT LIVES INSTEAD -- it is recorded, not discarded:
+      known limits / caveats      knowledge-base/PLATFORM_CONSTRAINTS.txt (APs + LIMITATIONs)
+      documented skips            providers/<P>/docs/tracking/<P>_ACCEPTED_DIVERGENCES.txt
+                                  (gated by audit_metadata / audit_devdoc_combinations)
+    The reason this is safe: both were being RESTATED on the ticket from repo files that
+    already own them and are gated there. The reason to stay alert: a caveat that exists
+    ONLY in a comment is now lost, so anything genuinely new must be written to the repo
+    file FIRST -- the ticket is a release announcement, not a system of record.
   * SECTION 4 IS FIXED TEXT. Same fields, same order, every time. That is what makes a
     superseded count obvious at a glance instead of buried in prose.
   * NO TENANT DETAIL ANYWHERE (Rob, 2026-08-03). No host, no attachment note, no catalog
