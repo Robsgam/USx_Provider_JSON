@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
-Combo: RQLicensePlateNumber (RQLicensePlateNumber (auto))
-Date: 2026-08-14 13:17:27
+Combo: VINVehicleIdentificationNumber_guardrail_vs_RQVehicleIdentificationNumber (VINVehicleIdentificationNumber_guardrail_vs_RQVehicleIdentificationNumber (auto))
+Date: 2026-08-14 13:17:18
 Result: PASS
 JSON Version: 4.20
 Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026"}
+{"VehicleIdentificationNumber":"1HGCM82633A123456","financialResponsibilityType":"Y"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M00M9VPBHW2Y1K5GGMEGB9Z0">
+    <api:Transaction id="01M00MANW2MA9NCN9HDJ6FK2W0">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -36,10 +36,9 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
-            <Id>01M00M9VPBHW2Y1K5GGMEGB9Z0</Id>
-            <LicensePlateYear>2026</LicensePlateYear>
-            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <Id>01M00MANW2MA9NCN9HDJ6FK2W0</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -57,7 +56,7 @@ Request:
 {
     "elasticQuery":  {
                          "vehicle":  {
-                                         "tag":  "TEST123"
+                                         "vinNumber":  "1HGCM82633A123456"
                                      }
                      },
     "from":  0,
@@ -74,13 +73,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MKRS$#
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01M00M9VPBHW2Y1K5GGMEGB9Z0
-  LicensePlateYear               2026
-  LicensePlateTypeCode           PC
-  LicensePlateNumber             TEST123
+  Id                             01M00MANW2MA9NCN9HDJ6FK2W0
+  VehicleIdentificationNumber    1HGCM82633A123456
+  FinancialResponsibilityType    Y
 
 NOTES
 -----
-Automated capture (txId 01M00M9VPBHW2Y1K5GGMEGB9Z0). kind=combo; anyField=; expectedKeyRef=RQLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M00MANW2MA9NCN9HDJ6FK2W0). kind=guardrail; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
