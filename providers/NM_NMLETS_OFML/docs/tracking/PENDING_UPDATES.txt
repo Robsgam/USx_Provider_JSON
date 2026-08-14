@@ -3,7 +3,7 @@
 # Created 2026-08-01. Everything below is COMMENTED, so it does NOT block enforce -- these are open
 # decisions and a standing finding, not owed rebuild work.
 #
-# ═══ OPEN DECISION FOR ROB -- DriverLicenseQuery: metadata and devdoc DIRECTLY CONFLICT ═══
+# â•â•â• OPEN DECISION FOR ROB -- DriverLicenseQuery: metadata and devdoc DIRECTLY CONFLICT â•â•â•
 #   METADATA (keyRef QUERY, DriverLicenseQuery):
 #       Set[ Choice[ OperatorLicenseNumber / Set[SexCode, BirthDate, Name] ],
 #            PurposeCode,          <- MANDATORY (outer Set, OUTSIDE the Choice)
@@ -27,7 +27,7 @@
 #   NOT DECIDED HERE. There is no wire evidence either way -- NM has never been USx-tenant-tested.
 #   Same class as the AZ_AZDPS DriverLicenseQuery scope inversion.
 #
-# ═══ WHY THIS IS NOT IN THE ACCEPTED-DIVERGENCE REGISTRY ═══
+# â•â•â• WHY THIS IS NOT IN THE ACCEPTED-DIVERGENCE REGISTRY â•â•â•
 #   I tried to register it (rule demoted-to-any) under both the built keyRefs and the metadata keyRef.
 #   NEITHER SUPPRESSED IT, AND THE TOOL IS RIGHT TO REFUSE. audit_requirement_fidelity line ~479:
 #       if ($demoted.ContainsKey(...) -and (Test-Has $bAnyC $w)) { ...skip... }
@@ -41,7 +41,7 @@
 #   The 6 ineffective rows I added were REMOVED rather than left: a registry row that looks like a
 #   registration but suppresses nothing is clutter that reads like coverage.
 #
-# ═══ STILL OPEN, not blocking ═══
+# â•â•â• STILL OPEN, not blocking â•â•â•
 #   Never USx-tenant-tested. v2.1 owes a full 5-entity sweep from T1.
 #   audit_requirement_fidelity: 14 branches / 4 UNDER-REQUIRED / 0 OVER-PERMITTED -- all four are the
 #     PurposeCode/Attention conflict above, i.e. ONE decision, not four defects.
@@ -49,4 +49,5 @@
 #   build_phase1 random fuzz: 2 unaimed survivors to triage (drop-conditions @
 #     VehicleRegistrationQuery[3]; select-to-input @ ENTITY_Person RaceCodeDH_Input).
 #   ENFORCED 36 PASS / 0 FAIL / 0 WARN as of 2026-08-01.
-[FLAG:ncic-image-default-y-everywhere] NCIC Image (ImageIndicator) should default to 'Y' on EVERY entity, not just Person -- Rob 2026-08-12: 'ncic image should default to y everywhere'. Applied on FL_FCIC v7.21 (form initialValue AND the combo defaults[] CAD twin, since CAD ignores form initialValue). BEFORE APPLYING, MEASURE THIS PROVIDER: the flip is only safe where ImageIndicator is in NO combination's set[] and in no condition -- on AZ_AZDPS it is in 2 set[]s and on LA_LEMS in 1 set[] + 2 conditions, so a prefill there would hide combos (BUILD_RULES 24) and those two need Rob's ruling rather than a mechanical flip. Also clear the TX_TLETS T6 gate: confirm the devdoc has no 'must be filled if ImageIndicator = Y' conditional. Portfolio baseline measured 2026-08-12: 20/20 providers used Person='Y' and Vehicle/Firearm/Article/Boat='N', so FL is currently the only conformant-to-Rob provider and the rest are owed. (flagged 2026-08-12)
+# RETIRED 2026-08-14 -- ALREADY CONFORMANT -- no change needed. This provider has exactly ONE ImageIndicator control (Person) and it already carries initialValue=Y, so Y-on-every-entity is satisfied: there is no other entity carrying the field. Adding controls elsewhere would OVER-PERMIT (same adjudication as HI v4.17 Vehicle-only / IL v2.4 excluding Article). Verified from the emitted JSON. Zero JSON change, zero version bump.
+# [FLAG:ncic-image-default-y-everywhere] NCIC Image (ImageIndicator) should default to 'Y' on EVERY entity, not just Person -- Rob 2026-08-12: 'ncic image should default to y everywhere'. Applied on FL_FCIC v7.21 (form initialValue AND the combo defaults[] CAD twin, since CAD ignores form initialValue). BEFORE APPLYING, MEASURE THIS PROVIDER: the flip is only safe where ImageIndicator is in NO combination's set[] and in no condition -- on AZ_AZDPS it is in 2 set[]s and on LA_LEMS in 1 set[] + 2 conditions, so a prefill there would hide combos (BUILD_RULES 24) and those two need Rob's ruling rather than a mechanical flip. Also clear the TX_TLETS T6 gate: confirm the devdoc has no 'must be filled if ImageIndicator = Y' conditional. Portfolio baseline measured 2026-08-12: 20/20 providers used Person='Y' and Vehicle/Firearm/Article/Boat='N', so FL is currently the only conformant-to-Rob provider and the rest are owed. (flagged 2026-08-12)

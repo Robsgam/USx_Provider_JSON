@@ -197,8 +197,32 @@ of the Person block first, or Vehicle would have gained a wrong-but-quiet check)
 - Pair the form `initialValue` with a matching combo `defaults[]` on every carrying combo: CAD ignores
   form `initialValue`, so a form-only flip leaves CAD-originated queries still sending the old value.
 
-Rollout: FL_FCIC v7.21 first; the other 19 carry `[FLAG:ncic-image-default-y-everywhere]` and take it
-at their OWN rebuild (rule 8c). Until then they WARN here — that is correct signal, not noise.
+Rollout: FL_FCIC v7.21 first, then IL_LEADS_OFML v2.4 and HI_HCJDC_OFML v4.17, each at its OWN
+rebuild (rule 8c). Remaining flag-carriers WARN here — that is correct signal, not noise.
+
+**"EVERYWHERE" IS 14 PROVIDERS, NOT 20 — measured 2026-08-14, and the flag was flagged to `all`
+mechanically before anyone counted.** Of 20 providers, **6 build NO `ImageIndicator` control at all**
+(CA_CLETS + CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY — verified
+absent from every QUERYINPUTFORM *and* every QIDM), so the rule is NOT-APPLICABLE there; adding
+controls to satisfy it would OVER-PERMIT, the same adjudication that scoped HI to Vehicle-only and
+excluded IL's Article. A further **3 have exactly one Person control already at `'Y'`**
+(NM_NMLETS_OFML, OR_LEDS, TN_TIES) and are therefore already conformant — there is no second entity
+to set. **All 9 retired 2026-08-14 with Rob's approval, plus AZ_AZDPS** (below), taking live flags
+16 → 7 with zero JSON change, zero version bump and zero test package archived.
+
+**AZ_AZDPS IS RULED OUT AND IT WAS MEASURED, NOT ARGUED.** `ImageIndicator` sits in **2 `set[]`s**
+there (`DQPN`/`DQP`, the licence-photo paths) while `Requestor` and `dexStateUserId` are both hidden
+AND prefilled. v3.10 injected `'Y'` and rebuilt: `DQPN` collapsed to `[NameLast,NameFirst]` (= `DQN`)
+and `DQP` to `[OperatorLicenseNumber]` (= `DQ`), killing **both plain searches** — BUILD_RULES 24.
+Rob's rule carries its own caveat (*"if it does not effect routing"*) and on AZ it does, so the blank
+is load-bearing: it is what keeps the photo path OPT-IN.
+
+**Genuinely still owed — 7:** LA_LEMS needs a **ruling** (1 `set[]` + 2 conditions, already `'Y'` on
+its only control), and 6 carry real `'N'` values to flip at their own rebuild — MD_METERS (2),
+NJ_NJCJIS (4), NY_NYSPIN_EJUSTICE (3), OH_LEADS (2), TX_TLETS (3), TX_TLETS_CCH (3). Those six are a
+**wire change** (the combo `defaults[]` twin is required, since CAD ignores form `initialValue`), so
+each is a version bump plus a full re-sweep — and NJ/NY/TX are tenant-verified, so three ALL-PASS
+packages get archived.
 
 ---
 

@@ -113,7 +113,12 @@ Out "================================================================"
 # what was owed and why it closed is the point, and a bare deletion loses it (same reasoning as
 # the accepted-divergence registry). Requires -Description so the reason is recorded, not implied.
 if ($Retire) {
-    $retired = 0; $notFound = 0; $inertFixed = 0
+    # $changed counts providers where a LIVE flag was actually commented out THIS RUN. $retired
+    # counts providers now in a retired state, which includes ones that already were -- so only
+    # $changed may drive a ledger write. Separating them 2026-08-14: an already-inert flag was
+    # incrementing $retired, so a second -Retire run reported "RETIRED: 1" having changed nothing
+    # and appended a DUPLICATE ledger row, contradicting this tool's own idempotency claim.
+    $retired = 0; $notFound = 0; $inertFixed = 0; $changed = 0
     foreach ($prov in ($targets | Sort-Object)) {
         $provDir = Join-Path $providersDir $prov
         $pendingPath = Find-DocsPath $provDir 'tracking' 'PENDING_UPDATES.txt'
@@ -141,8 +146,49 @@ if ($Retire) {
         # not actually silence the gate is the same false record in the other direction.
         $stillLive = @(Get-Content $pendingPath | Where-Object { $_ -match $pat -and -not $_.TrimStart().StartsWith('#') })
         if ($stillLive) { Fail "$prov -- retirement FAILED, flag still live"; }
-        else { Pass "$prov -- [FLAG:$FixId] retired (comment retained for the record)"; $retired++ }
+        else {
+            if ($hitLive.Count -gt 0) {
+                Pass "$prov -- [FLAG:$FixId] retired (comment retained for the record)"
+                $changed++
+            } else {
+                Info "$prov -- [FLAG:$FixId] was ALREADY retired; no change made"
+            }
+            $retired++
+        }
     }
+    # ── LEDGER: record the CLOSURE, not just the raise ──────────────────────────────────────────
+    # Added 2026-08-14 after retiring 9 providers off [FLAG:ncic-image-default-y-everywhere] and
+    # noticing REVERSE_PROPAGATION_LOG.md did not change at all. The raise path appends a row; this
+    # path wrote nothing, so the ledger recorded that a fix was OWED and never that it was CLOSED --
+    # and once the last provider drops off, audit_reverse_propagation reports
+    # "PROPAGATED -- no provider still carries the flag", which would read as "all 20 took the
+    # change" when 9 of them were retired as NOT-APPLICABLE or ALREADY-CONFORMANT instead. Those are
+    # different facts and the difference is the whole reason this ledger exists.
+    if (-not $DryRun -and $changed -gt 0) {
+        $ledgerPath = Join-Path $repo "REVERSE_PROPAGATION_LOG.md"
+        if (Test-Path $ledgerPath) {
+            $provList = ($targets | Sort-Object) -join ', '
+            $row = "| [FLAG:$FixId] | RETIRED on $changed provider(s) -- $Description | (retirement) | $provList | RETIRED $Date -- not a rebuild; recorded as closed |"
+            $raw = [IO.File]::ReadAllText($ledgerPath)
+            # Idempotent: an identical retirement row already present means this ran before.
+            # MUST be a literal .Contains(), NOT -like: the row opens with "[FLAG:<id>]" and '[' ']'
+            # are wildcard CHARACTER-CLASS metacharacters, so -like threw "the specified wildcard
+            # character pattern is not valid" and the append was skipped entirely -- the guard
+            # silently suppressed the very write it was meant to protect. Caught by a LAW 2 probe
+            # that checked the ledger actually GREW (it grew by 0 bytes), not just that no error
+            # surfaced. Same family as escaping a FixId for -match, which this file already does.
+            if ($raw.Contains($row)) {
+                Info "ledger already carries this retirement row -- not duplicated"
+            } else {
+                if ($raw.Length -gt 0 -and $raw[-1] -ne "`n") { $raw += "`r`n" }
+                [IO.File]::WriteAllText($ledgerPath, $raw + $row + "`r`n", (New-Object System.Text.UTF8Encoding($false)))
+                Pass "ledger row appended -- retirement recorded as a CLOSURE, distinct from a rebuild"
+            }
+        } else {
+            Fail "REVERSE_PROPAGATION_LOG.md absent -- retirement NOT recorded in the ledger"
+        }
+    }
+
     Out ""
     Out "  RETIRED: $retired    not carrying it: $notFound    were already inert: $inertFixed"
     Out "================================================================"

@@ -94,9 +94,12 @@ dialogs (Chrome's "prevent additional dialogs" silently killed `confirm()`). Pan
 
 ## STATE
 
-**0F/0W except** LA_LEMS + CA_CONTRA_COSTA, and **18 providers still carry
-`[FLAG:ncic-image-default-y-everywhere]`**, each clearing at its OWN rebuild (8c). FL took it at
-v7.21, IL at v2.4; **CA_CLETS WITHDRAWN as not-applicable** (no ImageIndicator control at all).
+**0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` is 16 -> 7**
+(9 retired 2026-08-14, Rob-approved, ZERO JSON change): **6 of 20 build NO ImageIndicator control at
+all** so the rule is N/A, 3 more already have their only (Person) control at `'Y'`, and **AZ is RULED
+OUT -- MEASURED**: `'Y'` kills `DQN`+`DQP` (2 `set[]`s, BUILD_RULES 24). Taken at FL v7.21 / IL v2.4 /
+HI v4.17. **Owed: LA_LEMS needs a RULING; 6 carry real `'N'`s** (MD 2, NJ 4, NY 3, OH 2, TX 3,
+TX_CCH 3) -- a WIRE change, so bump + full re-sweep each, at their own rebuild (8c).
 **Expect on EVERY provider's enforce:** `[FAIL] Repo audit` = LA + MD STATUS drift; syncing them is
 a back-door mass rebuild.
 
