@@ -33,24 +33,21 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**NOTHING MID-FLIGHT.** **TWO owed Jira release lines, not four** (`audit_lifecycle` stage 5, all 8
-verified against the LIVE tickets): **HI_HCJDC_OFML** v4.16-v4.18 (posted at v4.15/795241) and
-**AZ_AZDPS** the ENTIRE history (nothing ever posted). DRAFT AND WAIT, separately. **6 of 8 are
-lifecycle-COMPLETE.** Then **(b)** the officer-guide rewrite, **(c)** the fidelity over-permit blind
-spot. **TX v4.19 catalog question CLOSED** (Rob 2026-08-14: catalog is v4.19) -- section C was stale,
-not a real gap; TX is now aligned on every axis. **6 of 8 lifecycle-COMPLETE.**
+**NOTHING MID-FLIGHT. 8/20 ALL-PASS, 538 logs, NO PROVIDER OWES A SWEEP.** 7 of 8 are
+lifecycle-COMPLETE (release line EDITED IN PLACE + JSON attached + catalog + ledger).
+**ONE owed Jira release line: AZ_AZDPS -- the ENTIRE history, nothing ever posted.** DRAFT AND WAIT.
+Then **(b)** the HI one-hit verification query (see PRODUCTION below -- highest value outstanding),
+**(c)** the officer-guide rewrite, **(d)** the fidelity over-permit blind spot.
 
-**8/20 ALL-PASS, 538 logs. NO PROVIDER OWES A SWEEP** -- HI v4.18 closed the last (46/46, three
-bumps in one sweep). FL v7.23 and IL v2.7 are lifecycle-COMPLETE: release line posted (EDITED IN
-PLACE -- FL 790815, IL 795242), JSON attached, catalog updated, ledger recorded. **HI v4.18 is
-tenant-verified and ledger-recorded but NOT lifecycle-complete -- the Jira half is owed.**
-
-**⚠ PRODUCTION EXISTS (2026-08-13): CA_CLETS v2.24 IS LIVE AT MARIPOSA.** `IMPORT_LEDGER.md` has a
-third tenant class now. A LIVE version is frozen -- a bump is a coordinated re-import, not a repo
-action. **CA_CLETS is one of the providers the NCIC-image rollout would otherwise reach.** Also:
-**HDLE Foundation runs HI v4.15 and is now BEHIND v4.18** (verified from a tenant export -- method
-in ledger B.2). The gap loses NCIC hit-block content on a real hit; CAD is being tested against that
-tenant, so a re-import is a coordination, not a repo action. Mariposa Foundation = CA_CLETS v2.24.
+**⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS v2.24 at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
+A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **They are in
+OPPOSITE states, both deliberate:** Mariposa is on the CURRENT version; **HDLE is deliberately HELD
+at v4.15** (repo/catalog/ticket are v4.18) until the hit block is verified -- so the published
+artifact is intentionally AHEAD of the tenant. **Consequence: HDLE production discards NCIC hit
+content today**, which is why the one-hit verification query is the highest-value test outstanding.
+HDLE Foundation is held at v4.15 for the same reason. Mariposa Foundation = v2.24.
+**Neither LIVE row was discoverable from the repo** -- the capture tool cannot reach these tenants,
+so ASK at every import; HDLE LIVE was missed for a day because "foundation and live" read as one.
 
 **JIRA IS NOW FOUR SECTIONS** (Rob: six was "way too many details"). "Known limits"/"Documented
 skips" are NOT posted -- they live in `PLATFORM_CONSTRAINTS.txt` / `<P>_ACCEPTED_DIVERGENCES.txt`,
