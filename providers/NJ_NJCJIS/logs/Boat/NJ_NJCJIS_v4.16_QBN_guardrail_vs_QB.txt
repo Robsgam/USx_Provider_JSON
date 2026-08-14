@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: NJ_NJCJIS Boat BoatQuery
+Combo: QBN_guardrail_vs_QB (QBN_guardrail_vs_QB (auto))
+Date: 2026-08-14 12:52:58
+Result: PASS
+JSON Version: 4.16
+Entity Fingerprint: ac183883727586891cf593777f43d496fa282ec4d84009ad90d6ffd156e15f55
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7","ImageIndicator":"Y","RegistrationNumber":"FL1234AB"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M00K1DQMVM72HH4XY11Z3F4D">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M00K1DQMVM72HH4XY11Z3F4D</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+            <ImageIndicator>Y</ImageIndicator>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M00K1DQMVM72HH4XY11Z3F4D
+  BoatHullIdNumber               FL1234AB56H7
+  ImageIndicator                 Y
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01M00K1DQMVM72HH4XY11Z3F4D). kind=guardrail; anyField=; expectedKeyRef=QBN; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

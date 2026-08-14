@@ -119,7 +119,7 @@ USER-APPROVED SKIPS:
   Note: No State field on Boat entity
   guardrail: Registration combo gated on BoatHullIdNumber NOT_EXISTS (hull wins)
 
-  QBN -- Hull ID search [PENDING]
+  QBN -- Hull ID search [CONFIRMED]
     set: boatHullIdNumber
     any: imageIndicator
     keyReference: QBN
@@ -127,7 +127,7 @@ USER-APPROVED SKIPS:
     T17 (2026-06-29 v4.7): any[] -- Image=Y serializes on QBN.
     T20 (2026-06-29 v4.7): Guardrail Hull>Reg -- Hull=REG367393 + Reg=FL1234AB56H7 co-filled. QBN fires, RegistrationNumber absent from XML. Hull wins confirmed.
 
-  QB -- Registration Number search [PENDING]
+  QB -- Registration Number search [CONFIRMED]
     set: registrationNumber
     any: imageIndicator
     keyReference: QB
