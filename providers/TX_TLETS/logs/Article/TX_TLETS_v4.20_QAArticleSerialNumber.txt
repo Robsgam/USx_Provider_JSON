@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: TX_TLETS Article ArticleSingleQuery
+Combo: QAArticleSerialNumber (QAArticleSerialNumber (auto))
+Date: 2026-08-14 13:22:08
+Result: PASS
+JSON Version: 4.20
+Entity Fingerprint: 19c07fda0b225c09fea4bba12837c63f9a1e9b947a3abbda0e990aea410c6587
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ArticleSerialNumber":"ART99999","ArticleTypeCode":"BBICYCL","ImageIndicator":"Y","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M00MNDCD49ZGFPB5X60AC0G2">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01M00MNDCD49ZGFPB5X60AC0G2</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01M00MNDCD49ZGFPB5X60AC0G2
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 Y
+  ArticleTypeCode                BBICYCL
+  ArticleSerialNumber            ART99999
+
+NOTES
+-----
+Automated capture (txId 01M00MNDCD49ZGFPB5X60AC0G2). kind=combo; anyField=; expectedKeyRef=QAArticleSerialNumber; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
