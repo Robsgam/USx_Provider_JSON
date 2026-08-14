@@ -15,7 +15,7 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      said WHEN CREATED. It was edited in place to v4.19 on 2026-08-11 and the live comment now reads
      "TX_TLETS v4.19 -- TENANT-VERIFIED ... RELEASE LINE -- v4.19 is verified and ready". Verified
      against Jira, not this file. A "comment N = version X" history line is stale by construction. -->
-POSTED: v4.19 comment 790861 2026-08-11
+POSTED: v4.20 comment 790861 2026-08-14
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals
