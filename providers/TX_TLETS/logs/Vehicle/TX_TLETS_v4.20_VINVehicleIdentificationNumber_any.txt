@@ -1,0 +1,95 @@
+﻿================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: VINVehicleIdentificationNumber_any (VINVehicleIdentificationNumber_any (auto))
+Date: 2026-08-14 13:14:53
+Result: PASS
+JSON Version: 4.20
+Entity Fingerprint: bbbcb3d3c8e231b1803a2371b819e40e3ce0b7c46044bca12b84d05e26067a27
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","VehicleMakeCode":"FORD","financialResponsibilityType":"Y","regionId":"0001","vehicleYear":"2023"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M00M7YBWYM944NQAT8N9E9PG">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
+            <Id>01M00M7YBWYM944NQAT8N9E9PG</Id>
+            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
+            <State>GA</State>
+            <VehicleYear>2023</VehicleYear>
+            <RegionId>0001</RegionId>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69509555361
+                                                                      ],
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01M00M7YBWYM944NQAT8N9E9PG
+  VehicleMakeCode                CNST_FORD
+  VehicleIdentificationNumber    1HGCM82633A123456
+  FinancialResponsibilityType    Y
+  State                          GA
+  VehicleYear                    2023
+  RegionId                       0001
+
+NOTES
+-----
+Automated capture (txId 01M00M7YBWYM944NQAT8N9E9PG). kind=any; anyField=; expectedKeyRef=VINVehicleIdentificationNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
