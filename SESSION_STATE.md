@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-13 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-14 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -17,7 +17,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.11 | ALL-PASS (50 logs) |
 | CA_CLETS | v2.24 | ALL-PASS (90 logs) |
 | FL_FCIC | v7.23 | ALL-PASS (110 logs) |
-| HI_HCJDC_OFML | v4.18 | NEVER-TESTED -- 46 test(s) owed |
+| HI_HCJDC_OFML | v4.18 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.7 | ALL-PASS (41 logs) |
 | NJ_NJCJIS | v4.15 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.23 | ALL-PASS (69 logs) |
@@ -34,18 +34,21 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 ## NEXT PHYSICAL ACTION
 
 **NOTHING MID-FLIGHT.** A capture watcher is running in the background (stop it or let the session
-end). Pick up with **(a)** the fidelity over-permit blind spot, **(b)** the officer-guide rewrite,
-**(c)** AZ v3.11's held Jira draft (EXPLICIT APPROVAL ONLY).
+end). Pick up with **(a)** HI v4.18's held Jira release line (DEX-1257, v4.16-v4.18 -- DRAFT AND
+WAIT), **(b)** the officer-guide rewrite, **(c)** the fidelity over-permit blind spot, **(d)** AZ
+v3.11's held Jira draft (EXPLICIT APPROVAL ONLY).
 
-**8/20 ALL-PASS, 538 logs. NO PROVIDER OWES A SWEEP** -- IL v2.7 closed the last (41/41). FL v7.23
-and IL v2.7 are lifecycle-COMPLETE: release line posted (EDITED IN PLACE -- FL 790815, IL 795242),
-JSON attached, catalog updated, ledger recorded.
+**8/20 ALL-PASS, 538 logs. NO PROVIDER OWES A SWEEP** -- HI v4.18 closed the last (46/46, three
+bumps in one sweep). FL v7.23 and IL v2.7 are lifecycle-COMPLETE: release line posted (EDITED IN
+PLACE -- FL 790815, IL 795242), JSON attached, catalog updated, ledger recorded. **HI v4.18 is
+tenant-verified and ledger-recorded but NOT lifecycle-complete -- the Jira half is owed.**
 
 **⚠ PRODUCTION EXISTS (2026-08-13): CA_CLETS v2.24 IS LIVE AT MARIPOSA.** `IMPORT_LEDGER.md` has a
 third tenant class now. A LIVE version is frozen -- a bump is a coordinated re-import, not a repo
 action. **CA_CLETS is one of the providers the NCIC-image rollout would otherwise reach.** Also:
-HDLE Foundation runs HI v4.15 (VERIFIED from a tenant export -- method in ledger B.2), Mariposa
-Foundation runs CA_CLETS v2.24.
+**HDLE Foundation runs HI v4.15 and is now BEHIND v4.18** (verified from a tenant export -- method
+in ledger B.2). The gap loses NCIC hit-block content on a real hit; CAD is being tested against that
+tenant, so a re-import is a coordination, not a repo action. Mariposa Foundation = CA_CLETS v2.24.
 
 **JIRA IS NOW FOUR SECTIONS** (Rob: six was "way too many details"). "Known limits"/"Documented
 skips" are NOT posted -- they live in `PLATFORM_CONSTRAINTS.txt` / `<P>_ACCEPTED_DIVERGENCES.txt`,
@@ -62,15 +65,17 @@ dialogs (Chrome's "prevent additional dialogs" silently killed `confirm()`). Pan
 - **`audit_requirement_fidelity` over-permit blind spot.** `vehicleYear` added to IL `Z2.P any[]`
   (metadata does not define it there) goes unreported -- control and mutant both 9 branches / 0 OVER.
   Reproduced with a control. Suspect `$shPool` inheriting the sibling VIN branch; not confirmed.
-- **Flag mechanism, two defects:** `flag_pending_fix` appends with no leading newline (glued
-  CA_CLETS's flag onto a `#` comment = INERT), and nothing RETIRES a flag despite the file claiming
-  the build script does.
+- **HI's NCIC hit block is CONFIG-PRESENT, NOT RENDERING-VERIFIED.** v4.16-v4.18 added 25 QRDM
+  attributes so wanted/missing-person hit content stops being discarded; the 46/46 sweep proves the
+  request unchanged and proves nothing about the response, because no test query returned a real
+  hit. Needs ONE deliberate hit query viewed in the RMS UI (HI's own tenant, not HDLE), which also
+  settles whether the dotted `Hit.Banner` syntax resolves. **This is a product-level gap, not HI's:**
+  all 20 providers AND engineering's independently hand-built Lafayette JSON map 0 of 21 such fields.
 - **`firearmMake` driven by no test** on IL -- 41/41 green, zero wire evidence. Fix =
   `TEST_VALUE_OVERRIDES`. Recorded in IL BUILD_NOTES.
 - **Officer guides are content-poor, not stale** (all 20 regenerate current). HI's says "pick a row"
   when the PLATFORM picks by field content, and never names the discriminator -- which on HI differs
   per path: plate routes on **Plate Type**, VIN on **State**. Rewrite requested; shape not agreed.
-- **160 re-stamped report files** uncommitted (date stamps + manifest hashes only).
 
 ## ON HOLD / DO NOT RE-RAISE
 
