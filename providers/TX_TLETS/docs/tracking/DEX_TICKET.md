@@ -3,6 +3,13 @@
 **Active ticket:** [DEX-967 — \[TX - TLETS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-967)
 Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
 
+<!-- STAGE-5 MARKERS. Machine-read by tools\audit_lifecycle.ps1. One line per release, written ONLY
+     when the post has been approved and actually made. The Jira comment id is the point: it is the
+     one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
+     mention. Never write one in advance and never let a sync tool generate one.
+     v4.19 is NOT here because it is NOT posted -- the absence IS the record. -->
+POSTED: v4.18 comment 790861 2026-08-03
+
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals
 across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the

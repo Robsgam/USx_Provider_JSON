@@ -1132,7 +1132,7 @@ if (-not (Test-Path $lcTool)) {
             Info "$($pd.Name) -- $($lcGaps.Count) lifecycle-tail gap(s), advisory: tools\audit_lifecycle.ps1 -Provider $($pd.Name)"
             $lcGaps | Select-Object -First 4 | ForEach-Object { Out "       $($_.Trim())" }
         } else {
-            Pass "$($pd.Name) -- lifecycle tail recorded (Jira names the version; ledger accounts for it)"
+            Pass "$($pd.Name) -- lifecycle tail recorded (Jira POSTED marker for the version, or not yet due; ledger accounts for it)"
         }
     }
 }

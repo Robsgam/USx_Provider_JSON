@@ -1176,9 +1176,32 @@ TOOLS
     Usage: .\audit_defect_classes.ps1 [-Providers <list>] [-All] [-Class C1,C2] [-OutFile <path>]
   tools/audit_lifecycle.ps1
     THE LIFECYCLE TAIL (enforce PHASE 2r, ADVISORY) -- stages 5 and 6, which had NO gate at all:
-    STAGE 5 is the Jira entry (docs/tracking/DEX_TICKET.md must name the CURRENT version) and
+    STAGE 5 is the Jira entry (docs/tracking/DEX_TICKET.md must carry a structured
+    `POSTED: v<X.Y> comment <id> <YYYY-MM-DD>` marker for the CURRENT version) and
     STAGE 6 is the import record (providers/IMPORT_LEDGER.md must ACCOUNT for the current version --
     either an install record or an explicit not-yet-imported line).
+    STAGE 5 IS SCOPED TO TENANT-VERIFIED PROVIDERS (State='ALL-PASS' via the shared _test_status_lib
+    classifier, so it cannot disagree with portfolio_status): nothing is owed to a ticket for a
+    version that has not passed stage 4. Baseline 2026-08-14: 8 compared, 12 not yet due,
+    4 PASS (FL/IL/NJ/NY) / 4 GAP (TX v4.18-vs-v4.19, CA_CLETS v2.23-vs-v2.24,
+    HI v4.15-vs-v4.18, AZ never posted).
+    ** WHY A MARKER AND NOT A VERSION MENTION (rewritten 2026-08-14 -- this check was VACUOUS) **
+    It used to be `(Get-Content DEX_TICKET.md -Raw) -match "v$ver"`, a substring match over the whole
+    file. Every DEX_TICKET.md carries a `**Current: v4.19 -- tenant-verified...**` line, so the
+    version was ALWAYS mentioned and the check COULD NOT FAIL for any provider whose pointer file was
+    current. It reported 7 of 8 tenant-verified providers PASS while THREE were behind on the real
+    ticket; Rob found it by reading the tickets while the board showed green (ENGINEERING_STANDARD
+    4.3). THE ASYMMETRY WITH STAGE 6, and why only stage 5 changed: stage 6's authority IS the
+    ledger, so text in it literally is the record; stage 5's authority is JIRA, which this tool
+    cannot reach, so the file is a CLAIM about an external system -- and a claim that restates the
+    repo's own version number is no evidence. The marker carries the one thing the repo cannot derive
+    from itself: the comment ID. NOT fixable by a tighter regex -- "the version must appear on a line
+    naming a comment" was rejected because NJ_NJCJIS's record reads "Closed by comment 795856 at full
+    plan coverage" and names no version, so it would have false-GAPped the most finished provider in
+    the portfolio (if a check fires on the provider you derived it from, the check is wrong).
+    LAW 2, all three branches proven by injection on FL_FCIC: marker removed -> GAP; marker removed
+    but the version still mentioned (EXACTLY the old vacuous pass) -> GAP; marker naming a stale
+    version -> GAP that reports WHICH version was last posted, which is the actionable half.
     Origin (Rob 2026-07-30: "all gates need to operate from initial build/rebuild all the way to
     posting the jira entry and logging where jsons are imported"): coverage stopped at "the JSON is
     correct and tested". A version could be built, tested, documented and pushed with no Jira comment

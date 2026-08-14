@@ -3,6 +3,12 @@
 **Active ticket:** [DEX-984](https://mark43.atlassian.net/browse/DEX-984)
 Project: DEX (CJIS/USx/DEx Implementation)
 
+<!-- STAGE-5 MARKERS. Machine-read by tools\audit_lifecycle.ps1. One line per release, written ONLY
+     when the post has been approved and actually made. The Jira comment id is the point: it is the
+     one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
+     mention. Never write one in advance and never let a sync tool generate one. -->
+POSTED: v2.7 comment 795242 2026-08-13
+
 Ticket number supplied by Rob 2026-08-07. **This file did not exist before that**, and its absence
 was briefly reported as "IL has no Jira ticket" — an inference from the silence of
 `knowledge-base/JIRA_REFERENCE.txt` and this missing file, not a verified fact. The lesson is the

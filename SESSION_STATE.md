@@ -34,9 +34,11 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 ## NEXT PHYSICAL ACTION
 
 **NOTHING MID-FLIGHT.** A capture watcher is running in the background (stop it or let the session
-end). Pick up with **(a)** HI v4.18's held Jira release line (DEX-1257, v4.16-v4.18 -- DRAFT AND
-WAIT), **(b)** the officer-guide rewrite, **(c)** the fidelity over-permit blind spot, **(d)** AZ
-v3.11's held Jira draft (EXPLICIT APPROVAL ONLY).
+end). **NEXT, AGREED: the FOUR owed Jira release lines** (`audit_lifecycle` names them, stage 5) --
+**TX_TLETS** v4.19 (posted at v4.18/790861) · **CA_CLETS** v2.24 (v2.23/791400) · **HI_HCJDC_OFML**
+v4.16-v4.18 (v4.15/795241) · **AZ_AZDPS** the ENTIRE history (nothing ever posted). DRAFT AND WAIT,
+each one separately. Then **(b)** the officer-guide rewrite, **(c)** the fidelity over-permit blind
+spot. **FL/IL/NJ/NY are lifecycle-COMPLETE -- verified against the TICKETS, not the repo files.**
 
 **8/20 ALL-PASS, 538 logs. NO PROVIDER OWES A SWEEP** -- HI v4.18 closed the last (46/46, three
 bumps in one sweep). FL v7.23 and IL v2.7 are lifecycle-COMPLETE: release line posted (EDITED IN
