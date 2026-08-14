@@ -1,8 +1,8 @@
-﻿NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
+NY_NYSPIN_EJUSTICE -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ===============================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-06
-JSON version: v4.23
+Last updated: 2026-08-14
+JSON version: v4.24
 Validator: 75 PASS / 0 FAIL / 0 WARN / 0 LIM
 Simulation: 16/16 combos FIRE
 Prior live test: All 13 original combos CONFIRMED (2026-04-24, v1.0)
@@ -37,14 +37,14 @@ v2.1 changes from v2.0:
   Choice-set: metadata RVEH has Choice(in-state plate / OOS plate+type+year+state).
     OOS option built as RVEHOUT with State in set[] (LIMITATION #36). See QIDM_REFERENCE.
 
-  RVIN -- VIN + State (OOS / NCIC/Nlets) [CONFIRMED]
+  RVIN -- VIN + State (OOS / NCIC/Nlets) [PENDING]
     set: vehicleIdentificationNumber, registrationState
     any: imageIndicator, vehicleMakeCode, vehicleYear
     defaults: ImageIndicator=N
     keyReference: RVIN
     Fires when: VIN + State both filled
 
-  RVEHOUT -- Plate + State (OOS / Nlets) [CONFIRMED]
+  RVEHOUT -- Plate + State (OOS / Nlets) [PENDING]
     set: licensePlateNumber, registrationState
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
     conditions: RegistrationState EXISTS  (v4.15 -- OOS gate; distinct from in-state RVEH)
@@ -52,7 +52,7 @@ v2.1 changes from v2.0:
     keyReference: RVEHOUT (invented; provider routes by content per NY v1.19)
     Fires when: Plate + State both filled.
 
-  RVEH -- Plate, in-state (NY DMV) [CONFIRMED]
+  RVEH -- Plate, in-state (NY DMV) [PENDING]
     set: licensePlateNumber
     any: imageIndicator, licensePlateTypeCode, licensePlateYear
     conditions: RegistrationState NOT_EXISTS  (v4.15 -- NY in-state gate; State removed from any[]
@@ -61,7 +61,7 @@ v2.1 changes from v2.0:
     keyReference: RVEH
     Fires when: Plate filled, State blank
 
-  RCAR -- VIN only (NY DMV, no state) [CONFIRMED]
+  RCAR -- VIN only (NY DMV, no state) [PENDING]
     set: vehicleIdentificationNumber
     any: imageIndicator
     conditions: LicensePlateNumber NOT_EXISTS (Plate>VIN), RegistrationState NOT_EXISTS (v4.15 NY gate)
@@ -85,7 +85,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=Y
   CAD defaults: ImageIndicator=Y on DLICN and DLIC
 
-  DLICN -- Name + DOB [CONFIRMED]
+  DLICN -- Name + DOB [PENDING]
     set: birthDate, nameLast, nameFirst, sexCode
     any: imageIndicator, registrationState, nameMiddle, nameSuffix
     defaults: ImageIndicator=Y
@@ -93,7 +93,7 @@ v2.1 changes from v2.0:
     Name format: FormatStringRuleHandler "LAST, FIRST MIDDLE SUFFIX"
     Date format: CommsysParseDateRuleHandler yyyy-MM-dd -> MMddyyyy
 
-  DLIC -- OLN [CONFIRMED]
+  DLIC -- OLN [PENDING]
     set: operatorLicenseNumber
     any: imageIndicator, registrationState
     defaults: ImageIndicator=Y
@@ -120,27 +120,27 @@ v2.1 changes from v2.0:
     CommsysGetLastNameFirstNameInitialRuleHandler -> officer identity). Handler confirmed working.
   See LIMITATION #36 (Choice-set OOS combos)
 
-  DALHOUT -- Name + DOB + OOS fields [CONFIRMED]
+  DALHOUT -- Name + DOB + OOS fields [PENDING]
     set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH, purposeCodeDH, requestorDH, registrationState
     any: imageIndicator, nameMiddleDH, nameSuffixDH
     defaults: ImageIndicator=Y
     keyReference: DALHOUT
     Fires when: all name fields + purposeCodeDH + requestorDH + State filled
 
-  DALH -- Name + DOB (in-state) [CONFIRMED]
+  DALH -- Name + DOB (in-state) [PENDING]
     set: birthDateDH, nameLastDH, nameFirstDH, sexCodeDH
     any: imageIndicator, registrationState, nameMiddleDH, nameSuffixDH, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
     keyReference: DALH
 
-  DALLOUT -- OLN + OOS fields [CONFIRMED]
+  DALLOUT -- OLN + OOS fields [PENDING]
     set: operatorLicenseNumberDH, purposeCodeDH, requestorDH, registrationState
     any: imageIndicator
     defaults: ImageIndicator=Y
     keyReference: DALLOUT
     Fires when: OLN + purposeCodeDH + requestorDH + State all filled
 
-  DALL -- OLN (in-state) [CONFIRMED]
+  DALL -- OLN (in-state) [PENDING]
     set: operatorLicenseNumberDH
     any: imageIndicator, registrationState, purposeCodeDH, requestorDH
     defaults: ImageIndicator=Y
@@ -158,7 +158,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
   CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on GINQ
 
-  GINQ -- Serial Number [CONFIRMED]
+  GINQ -- Serial Number [PENDING]
     set: gunSerialNumber
     any: imageIndicator, gunMake, gunCaliber, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
@@ -174,7 +174,7 @@ v2.1 changes from v2.0:
   Defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
   CAD defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y on AINQ
 
-  AINQ -- Serial + ArticleType [CONFIRMED]
+  AINQ -- Serial + ArticleType [PENDING]
     set: articleSerialNumber, articleTypeCode
     any: imageIndicator, relatedHitSearchIndicator
     defaults: ImageIndicator=N, RelatedHitSearchIndicator=Y
@@ -196,28 +196,28 @@ v2.1 changes from v2.0:
   CAD defaults: ImageIndicator=N on all 4 combos
   LIMITATION #30 applies (no State default)
 
-  BVEH -- Registration Number + State OOS [CONFIRMED]
+  BVEH -- Registration Number + State OOS [PENDING]
     set: registrationNumber, registrationState
     any: imageIndicator
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg), RegistrationState EXISTS (OOS gate)
     defaults: ImageIndicator=N
     keyReference: BVEH
 
-  BVIN -- Hull ID + State OOS [CONFIRMED]
+  BVIN -- Hull ID + State OOS [PENDING]
     set: boatHullIdNumber, registrationState
     any: imageIndicator
     conditions: RegistrationState EXISTS  (v4.15 -- OOS gate)
     defaults: ImageIndicator=N
     keyReference: BVIN
 
-  RVEH -- Registration Number, NY (no state) [CONFIRMED]
+  RVEH -- Registration Number, NY (no state) [PENDING]
     set: registrationNumber
     any: imageIndicator
     conditions: BoatHullIdNumber NOT_EXISTS (Hull>Reg), RegistrationState NOT_EXISTS (v4.15 NY gate)
     defaults: ImageIndicator=N
     keyReference: RVEH  (shared keyRef name with Vehicle RVEH -- platform routes by targetEntity)
 
-  RCAR -- Hull ID, NY (no state) [CONFIRMED]
+  RCAR -- Hull ID, NY (no state) [PENDING]
     set: boatHullIdNumber
     any: imageIndicator
     conditions: RegistrationState NOT_EXISTS  (v4.15 -- NY gate)

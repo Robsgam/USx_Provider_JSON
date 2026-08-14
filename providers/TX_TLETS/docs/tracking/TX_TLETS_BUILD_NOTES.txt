@@ -4,6 +4,41 @@ Provider: TX_TLETS
 State: Texas
 Network: TLETS (Texas Law Enforcement Telecommunications System)
 --------------------------------------------------------------------------------
+v4.20  2026-08-14  NCIC Image defaults to 'Y' on Firearm/Article/Boat (WIRE CHANGE)
+  CHANGED: ImageIndicator initialValue 'N' -> 'Y' on the three entities still at 'N', in BOTH halves
+    of the default: the form FormSelect initialValue (Firearm ROW_GUN_2, Article ROW_ART_2, Boat
+    ROW_BOA_2 -- 3 authored sites, x3 layout variants) AND the combo defaults[] twin on all 10
+    carrying combinations (QGGunSerialNumber, QGNCICNumber, QAArticleSerialNumber, QANCICNumber,
+    BQRegistrationNumber, BQBoatHullIdNumber, QBRegistrationNumber, QBBoatHullIdNumber,
+    QBNCICNumber -- plus Vehicle, which TX does not carry an ImageIndicator control for). Person was
+    already 'Y' and is untouched. Takes [FLAG:ncic-image-default-y-everywhere]. Lockstep: TX_TLETS_CCH
+    v1.16 applies the identical change the same day and bumps its BASE-SYNC marker to v4.20.
+  REASON: Rob 2026-08-12, "ncic image should default to y everywhere". BOTH halves are required --
+    CAD ignores form initialValue, so a form-only flip leaves CAD-originated queries on 'N'.
+  THIS IS A WIRE CHANGE. ImageIndicator rides in any[] on all 10 combos, so the value IS transmitted
+    and N->Y changes what NCIC is asked for. Hence the bump and the full 92-log re-sweep. The gain is
+    response-side: with 'N' NCIC returned no image, so a hit came back without a photo and nothing
+    errored -- a silent under-ask invisible to every request-side gate.
+  *** THE TX_TLETS T6 GATE -- CHECKED FIRST, AND THIS IS THE PROVIDER THAT GATE EXISTS FOR. ***
+    TX's devdoc DOES carry conditional wording: lines 129-130, "Must be filled if ImageIndicator = Y",
+    against EmailAddress and ReasonCode. That is exactly the class that produced the T6 rule (a
+    default silently making another field mandatory). SCOPE RESOLVED BY LOCATING THE OWNING HEADING:
+    the nearest query heading at or above line 129 is DriverHistoryQuery (line 62), so the conditional
+    belongs to DH -- which is on PERSON, was ALREADY at 'Y' before this change, and already
+    auto-populates both ReasonCode and EmailAddress through hidden gate-feeders. This change touches
+    Firearm/Article/Boat only, none of which has a conditional. So the flip is clear of T6, but ONLY
+    because of where the conditional sits -- read the heading, never the bare grep hit.
+  ALSO MEASURED SAFE: ImageIndicator is in ZERO set[]s and ZERO conditions on TX (counted from the
+    emitted v4.19 JSON), so no prefill can shadow a combination (BUILD_RULES 24) and there is no
+    NOT_EXISTS-gated branch to kill (20b). Contrast AZ_AZDPS, where this flip is RULED OUT because
+    ImageIndicator sits in 2 set[]s and 'Y' kills DQN + DQP. All 10 combos already carried a
+    defaults[] entry, so this edits values and adds no keys.
+  NO COLLISION on this provider: every initialValue='N' and every defaults value='N' in the build
+    script was already ImageIndicator's. Verified after: 0 sites left at 'N',
+    RelatedHitSearchIndicator still 'Y' at all its sites. (NJ_NJCJIS v4.16 was NOT like this --
+    RandomRequest shares both spellings there and a careless replace-all would have downgraded every
+    vehicle query to a random record. Check per provider.)
+
 v4.19  2026-08-06  DEX-1283: removed unneeded X default on Attention/EmailAddress
   CHANGED: Removed initialValue='X' from the Attention (DH) and EmailAddress (DL+DH) hidden
     gate-feeders, and the matching combo defaults[] entries ($imgDefs EmailAddress; $imgDefsDH

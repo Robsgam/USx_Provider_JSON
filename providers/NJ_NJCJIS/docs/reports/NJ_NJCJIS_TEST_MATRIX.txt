@@ -1,6 +1,6 @@
-NJ_NJCJIS v4.15 -- TEST MATRIX
+NJ_NJCJIS v4.16 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-12
+Generated: 2026-08-14
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -11,7 +11,7 @@ Vehicle (1 card, 7 fields):
   CARD_VEH (VEHICLE REGISTRATION SEARCH BY LICENSE PLATE, "OR" VIN):
     ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20]
-    ROW 3: RegistrationState [Sel STATE, NJ], RandomRequest [Sel YES_NO_UNKNOWN/NCIC, N], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 3: RegistrationState [Sel STATE, NJ], RandomRequest [Sel YES_NO_UNKNOWN/NCIC, N], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Person (1 card, 7 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
@@ -22,15 +22,15 @@ Person (1 card, 7 fields):
 Firearm (1 card, 5 fields):
   CARD_GUN (NCIC FIREARM QUERY):
     ROW 1: serialNumber [Inp 11], GunMake [Sel NCIC_FIREARM_MAKE/NJ_NIBRS]
-    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NJ_NIBRS], GunModel [Inp 20], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NJ_NIBRS], GunModel [Inp 20], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 3 fields):
   CARD_ART (NCIC ARTICLE QUERY):
-    ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 3 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID):
-    RegistrationNumber [Inp 20], BoatHullIdNumber [Inp 20], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    RegistrationNumber [Inp 20], BoatHullIdNumber [Inp 20], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (5 QIDMs, 8 combos)
 ----------------------------------------
@@ -122,4 +122,4 @@ COMBO COVERAGE (8/8):
   ArticleSingleQuery: 1/1 -- T18(Serial)
   BoatQuery: 2/2 -- T6(N), T8(Reg)
 
-IMPORT FILE: NJ_NJCJIS_v4.15.json
+IMPORT FILE: NJ_NJCJIS_v4.16.json

@@ -2,9 +2,41 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.23** | Generated: 2026-08-13
+Current: **v4.24** | Generated: 2026-08-14
 
 ---
+
+## v4.24 -- 2026-08-14 -- NCIC Image defaults to 'Y' on Vehicle/Article/Boat (WIRE CHANGE)
+
+**CHANGED:** ImageIndicator initialValue 'N' -> 'Y' on the three entities still at 'N', in BOTH halves
+  of the default: the form FormSelect initialValue (Vehicle ROW_VEH_3, Article ROW_ART_2, Boat  
+  ROW_BOA_1B -- 3 authored sites, x3 layout variants) AND the combo defaults[] twin on all 9  
+  carrying combinations (Vehicle RVIN/RVEHOUT/RVEH/RCAR, Article AINQ, Boat BVEH/BVIN/RVEH/RCAR).  
+  Person was already 'Y' on BOTH its controls (ImageIndicator + the DH-suffixed ImageIndicatorDH)  
+  and is untouched. Takes [FLAG:ncic-image-default-y-everywhere].  
+**REASON:** Rob 2026-08-12, "ncic image should default to y everywhere". BOTH halves are required --
+  CAD ignores form initialValue, so a form-only flip leaves CAD-originated queries on 'N'.  
+THIS IS A WIRE CHANGE. ImageIndicator rides in any[] on all 9 combos, so the value IS transmitted  
+  and N->Y changes what NCIC is asked for. Hence the bump and the full 69-log re-sweep. The gain is  
+  response-side: with 'N' NCIC returns no image, so a hit came back without a photo and nothing  
+  errored -- a silent under-ask no request-side gate can see.  
+MEASURED SAFE BEFORE FLIPPING:  
+  * ImageIndicator is in ZERO set[]s and ZERO conditions on NY (counted from the emitted v4.23  
+    JSON), so no prefill can shadow a combination (BUILD_RULES 24) and there is no NOT_EXISTS-gated  
+    branch to kill (BUILD_RULES 20b). Contrast AZ_AZDPS, where this flip is RULED OUT.  
+  * NY's devdoc carries NO "must be filled if ImageIndicator = Y" conditional wording (grepped).  
+    TX/TX_CCH do, but theirs is scoped to DriverHistoryQuery, which this change does not touch.  
+  * All 9 combos already carried a defaults[] entry, so this edits values and adds no keys.  
+  * NO COLLISION on this provider: every initialValue='N' and every defaults value='N' in the build  
+    script was already ImageIndicator's, so the replace was unambiguous. Verified after: 0 sites  
+    left at 'N', 15 defaults + 4 form controls now 'Y', and RelatedHitSearchIndicator still 'Y' at  
+    both sites. (NJ_NJCJIS v4.16 was NOT like this -- there RandomRequest shares both spellings and  
+    a careless replace-all would have switched every vehicle query to a random record. Check per  
+    provider; do not carry NJ's or NY's conclusion across.)  
+DH NOTE, checked because it looks wrong and is not: the four DH combos carry ImageIndicatorDH in  
+  any[] while their defaults[] name plain 'ImageIndicator'. That is correct -- any[] holds  
+  sourceFields (form fieldIds) and defaults[].field holds the QIDM ATTRIBUTE/targetField name, which  
+  is 'ImageIndicator' for both controls. Not an inert default; audit_wiring_closure agrees.  
 
 ## v4.23 -- 2026-08-06 -- DEX-1284 CLOSED -- item 3 (home-state strip) LIVE-PROVEN. ALL-PASS 69/69.
 

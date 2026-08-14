@@ -1,6 +1,6 @@
-TX_TLETS v4.19 -- TEST MATRIX
+TX_TLETS v4.20 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-13
+Generated: 2026-08-14
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -32,17 +32,17 @@ Person (2 cards, 24 fields):
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER):
     ROW 1: serialNumber [Inp 20], NCICNumber [Inp 10], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 5 fields):
   CARD_ART (ARTICLE SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER):
     ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 6 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID, "OR" NCIC NUMBER):
     ROW 1: RegistrationNumber [Inp 11], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE]
-    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (6 QIDMs, 19 combos)
 ----------------------------------------
@@ -216,4 +216,4 @@ COMBO COVERAGE (19/19):
   ArticleSingleQuery: 2/2 -- T46(Serial), T48(NCIC)
   BoatQuery: 5/5 -- T28(BQ+Hull), T30(QB+Hull), T32(BQ+Reg), T34(QB+Reg), T36(QB+NCIC)
 
-IMPORT FILE: TX_TLETS_v4.19.json
+IMPORT FILE: TX_TLETS_v4.20.json

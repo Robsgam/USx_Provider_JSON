@@ -111,7 +111,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.15"
+    [string]$Version = "4.16"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -185,7 +185,7 @@ $vehRegQuery = [PSCustomObject]@{
                 any      = @('RandomRequest','RegistrationState','LicensePlateTypeCode','ImageIndicator','LicensePlateYear')
                 defaults = @(
                     [PSCustomObject]@{ field = 'RandomRequest';        value = 'N' }
-                    [PSCustomObject]@{ field = 'ImageIndicator';       value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator';       value = 'Y' }
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
                     [PSCustomObject]@{ field = 'State';                value = 'NJ' }
@@ -201,7 +201,7 @@ $vehRegQuery = [PSCustomObject]@{
                 any      = @('RandomRequest','RegistrationState','ImageIndicator')
                 defaults = @(
                     [PSCustomObject]@{ field = 'RandomRequest';  value = 'N' }
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                     [PSCustomObject]@{ field = 'State';          value = 'NJ' }
                 )
                 conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' })
@@ -315,7 +315,7 @@ $gunQuery = [PSCustomObject]@{
                 set      = @('serialNumber')
                 any      = @('GunCaliber','GunMake','GunModel','ImageIndicator')
                 defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                 )
             }
             primaryFieldReference = 'GunSerialNumber'
@@ -349,7 +349,7 @@ $artQuery = [PSCustomObject]@{
                 set      = @('ArticleSerialNumber','ArticleTypeCode')
                 any      = @('ImageIndicator')
                 defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                 )
             }
             primaryFieldReference = 'ArticleSerialNumber'
@@ -387,7 +387,7 @@ $boatQuery = [PSCustomObject]@{
                 set      = @('RegistrationNumber')
                 any      = @('ImageIndicator')
                 defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                 )
                 # Hull>Reg guardrail: Hull ID (HIN) is the unique permanent identifier; Reg# is
                 # reassignable. When a Hull is entered this Reg combo exits the union pool so Reg#
@@ -413,7 +413,7 @@ $boatQuery = [PSCustomObject]@{
                 # devdoc-optional-unreachable by checking only the per-branch any[]; Rob corrected it.
                 any      = @('ImageIndicator','RegistrationNumber')
                 defaults = @(
-                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' }
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                 )
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -474,7 +474,7 @@ $vehLayout = MakeLayouts @(
                 # hint is load-bearing. Same fieldId covers the Person card's State too.
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_VEH_3' }
                 @{ id = 'RandomRequest_Input';     node = Sel 'RandomRequest' 'Random Request (N = full record; Y = random)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_3' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_3' }
             )}
         )
     }
@@ -540,7 +540,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'GunCaliber_Input';      node = Sel 'GunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NJ_NIBRS' } 'ROW_GUN_2' }
                 @{ id = 'GunModel_Input';        node = Inp 'GunModel'   'Model (optional)'   '20' 'ROW_GUN_2' }
-                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_GUN_2' }
+                @{ id = 'ImageIndicator_Input';  node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_GUN_2' }
             )}
         )
     }
@@ -565,7 +565,7 @@ $artLayout = MakeLayouts @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type (required)' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
-                @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_1' }
+                @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_1' }
             )}
         )
     }
@@ -590,7 +590,7 @@ $boaLayout = MakeLayouts @(
             @{ id = 'ROW_BOA_1'; cols = @('5','5','2'); fields = @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '20' 'ROW_BOA_1' }
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
-                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_1' }
+                @{ id = 'ImageIndicator_Input';     node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_1' }
             )}
         )
     }

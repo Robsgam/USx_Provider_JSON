@@ -2,9 +2,28 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.15** | Generated: 2026-08-13
+Current: **v1.16** | Generated: 2026-08-14
 
 ---
+
+## v1.16 -- 2026-08-14 -- Lockstep w/ TX_TLETS v4.20: NCIC Image defaults to 'Y' on Firearm/Article/Boat
+
+**CHANGED:** identical to the base. ImageIndicator initialValue 'N' -> 'Y' on Firearm (ROW_GUN_2),
+  Article (ROW_ART_2) and Boat (ROW_BOA_2), plus the combo defaults[] twin on all 10 carrying  
+  base-6 combinations. BASE-SYNC marker bumped TX_TLETS v4.19 -> v4.20. The 8 CCH transactions  
+  (AQ/AR/FQ/IQ/QH/QR/QWI/ZR) carry no ImageIndicator field and are untouched.  
+**REASON:** base<->variant LOCKSTEP is mandatory (CLAUDE.md "Provider Variants"): a variant inherits the
+  base's QIDMs, so any base change must propagate in the SAME pass or audit_variant_sync flags the  
+  drift. Rob 2026-08-12, "ncic image should default to y everywhere". Both halves of the default  
+  required because CAD ignores form initialValue.  
+WIRE CHANGE, same as the base -- ImageIndicator is in any[] on all 10 combos so the value is  
+  transmitted. NO RE-SWEEP OWED: TX_TLETS_CCH has never been USx-tenant-tested (0 logs at any  
+  version), so there is no test package to archive. The base owes the 92-log re-sweep.  
+T6 GATE: CCH shares TX's devdoc, whose "Must be filled if ImageIndicator = Y" conditional (lines  
+  129-130, EmailAddress + ReasonCode) belongs to DriverHistoryQuery -- Person, already 'Y', both  
+  fields auto-populated by hidden gate-feeders. Firearm/Article/Boat carry no conditional. Clear.  
+MEASURED SAFE: ImageIndicator in 0 set[]s and 0 conditions; no collision in the build script (every  
+  'N' site was ImageIndicator's); RelatedHitSearchIndicator still 'Y' afterwards.  
 
 ## v1.15 -- 2026-08-06 -- Lockstep w/ TX_TLETS v4.19 (DEX-1283): removed unneeded X default
 

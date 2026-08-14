@@ -2,9 +2,44 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.14** | Generated: 2026-08-12
+Current: **v4.16** | Generated: 2026-08-14
 
 ---
+
+## v4.16 -- 2026-08-14 -- NCIC Image defaults to 'Y' on Vehicle/Firearm/Article/Boat (WIRE CHANGE)
+
+**CHANGED:** ImageIndicator initialValue 'N' -> 'Y' on the four entities that were still 'N', in BOTH
+  halves of the default: the form FormSelect initialValue (Vehicle ROW_VEH_3, Firearm ROW_GUN_2,  
+  Article ROW_ART_1, Boat ROW_BOA_1 -- 4 authored sites, x3 layout variants = 12 emitted controls)  
+  AND the combo defaults[] twin on all 6 carrying combinations (RANDFULL, RANDFULLN, QG, QA, QB,  
+  QBN). Person (FULL/FULLN) was already 'Y' and is untouched. Takes  
+  [FLAG:ncic-image-default-y-everywhere].  
+**REASON:** Rob 2026-08-12, "ncic image should default to y everywhere". BOTH HALVES ARE REQUIRED --
+  CAD ignores form initialValue entirely, so a form-only flip would leave CAD-originated queries  
+  still sending 'N' while officer-driven ones sent 'Y'. That split is the same class as the  
+  original BadgeNumber defect.  
+THIS IS A WIRE CHANGE, NOT COSMETIC. ImageIndicator rides in any[] on all 6 combos, so the value IS  
+  transmitted; N->Y changes what NCIC is asked for. Hence the version bump and the full re-sweep of  
+  all 40 logs. What it buys is response-side: with 'N' NCIC returns no image, so an officer got a  
+  hit with no photo and nothing errored -- a silent under-ask, invisible to every request-side gate.  
+MEASURED SAFE BEFORE FLIPPING, not assumed:  
+  * ImageIndicator is in ZERO set[]s and ZERO conditions on NJ (counted from the emitted v4.15  
+    JSON). So no prefill can shadow a combination (BUILD_RULES 24) and there is no  
+    NOT_EXISTS-gated branch to kill (BUILD_RULES 20b). Contrast AZ_AZDPS, where the same flip is  
+    RULED OUT because ImageIndicator sits in 2 set[]s and 'Y' kills DQN + DQP.  
+  * TX_TLETS T6 gate clear: NJ's devdoc carries NO "must be filled if ImageIndicator = Y"  
+    conditional wording anywhere (grepped). TX/TX_CCH DO carry one, but it is scoped to  
+    DriverHistoryQuery -- a query this change does not touch on any provider.  
+  * All 6 combos already carried a defaults[] entry for the field, so this edits values and adds  
+    no new keys.  
+A COLLISION I NEARLY CAUSED AND CAUGHT BY CHECKING FIRST -- worth reading before the next provider  
+  takes this flag. RandomRequest ALSO uses initialValue = 'N' (line 476) and value = 'N' (lines 187,  
+  203) in this very script, so a replace-all on "initialValue = 'N'" or "value = 'N'" would have  
+  flipped RandomRequest to 'Y' as well. NJ's own field label spells out the consequence: "Random  
+  Request (N = full record; Y = random)" -- i.e. it would have silently downgraded every vehicle  
+  query from a full record to a random one. Every pattern used here is anchored on the fieldId  
+  ("field = 'ImageIndicator'", "Sel 'ImageIndicator' 'NCIC Image'"), and RandomRequest was  
+  re-verified at 'N' on all 3 sites afterwards.  
 
 ## v4.14 -- 2026-07-30 -- Layout review -- Vehicle 1-card collapse + Boat title (direct Rob feedback, NO functional change)
 

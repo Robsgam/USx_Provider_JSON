@@ -1,6 +1,6 @@
-TX_TLETS_CCH v1.15 -- TEST MATRIX
+TX_TLETS_CCH v1.16 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-13
+Generated: 2026-08-14
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -45,17 +45,17 @@ Person (5 cards, 56 fields):
 Firearm (1 card, 6 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER):
     ROW 1: serialNumber [Inp 20], NCICNumber [Inp 10], GunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: GunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Article (1 card, 5 fields):
   CARD_ART (ARTICLE SEARCH BY SERIAL NUMBER, "OR" NCIC NUMBER):
     ROW 1: ArticleSerialNumber [Inp 20], ArticleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
-    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 Boat (1 card, 6 fields):
   CARD_BOA (BOAT SEARCH BY REGISTRATION NUMBER, "OR" HULL ID, "OR" NCIC NUMBER):
     ROW 1: RegistrationNumber [Inp 11], BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE]
-    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NCICNumber [Inp 10], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (14 QIDMs, 35 combos)
 ----------------------------------------
@@ -279,4 +279,4 @@ COMBO COVERAGE (35/35):
   CCHCriminalHistoryQWIQuery: 3/3 -- T18(QW+I.DOB co-fire), T19(QW+I.MISC co-fire), T20(QW+I.SSN co-fire)
   CCHCriminalHistoryZRQuery: 2/2 -- T21(ZR.FBI+ZR.FBI co-fire), T22(ZR.SID+ZR.SID co-fire)
 
-IMPORT FILE: TX_TLETS_CCH_v1.15.json
+IMPORT FILE: TX_TLETS_CCH_v1.16.json
