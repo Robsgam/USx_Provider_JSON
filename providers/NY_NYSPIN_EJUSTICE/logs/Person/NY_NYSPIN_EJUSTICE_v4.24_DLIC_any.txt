@@ -1,0 +1,85 @@
+﻿================================================================
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverLicenseQuery
+Combo: DLIC_any (DLIC_any (auto))
+Date: 2026-08-14 13:55:49
+Result: PASS
+JSON Version: 4.24
+Entity Fingerprint: d186f47a5fbfb6cdb51f87736699b2dd69c3f0f88be2f86d6d8af3e4e895b683
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","ImageIndicatorDH":"Y","OperatorLicenseNumber":"D999888777","RegistrationState":"Georgia","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M00P7SBH3NW1BWE54NEA7B31">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M00P7SBH3NW1BWE54NEA7B31</Id>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "dlNumber":  "D999888777",
+                         "registrationStateAttrId":  "69509801326"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MK43RS
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01M00P7SBH3NW1BWE54NEA7B31
+  ImageIndicator                 N
+  State                          GA
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01M00P7SBH3NW1BWE54NEA7B31). kind=any; anyField=; expectedKeyRef=DLIC; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
