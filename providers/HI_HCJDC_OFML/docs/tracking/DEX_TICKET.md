@@ -8,7 +8,7 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status (2026-08-04): In Progress
      one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
      mention. Never write one in advance and never let a sync tool generate one.
      v4.16-v4.18 are NOT here because they are NOT posted -- the absence IS the record. -->
-POSTED: v4.15 comment 795241 2026-08-10
+POSTED: v4.18 comment 795241 2026-08-14
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals

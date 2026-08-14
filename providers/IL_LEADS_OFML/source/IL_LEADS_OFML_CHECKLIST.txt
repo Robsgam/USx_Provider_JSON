@@ -1,0 +1,85 @@
+ConnectCICTM Transaction Workflow Engine (TWE)
+
+         Install & Configuration Checklist for Illinois (LEADS)
+
+# Task                                                                        Status
+
+1. ConnectCIC Software Configuration Requirements. This install-
+
+specific information must be obtained by the site from the Illinois CJIS
+
+organization (LEADS) and is necessary to configure ConnectCIC's
+
+connectivity to the LEADS message switch. This following information
+
+is configured in the "State Settings" section of ConnectCICConfig.exe
+
+Tool:
+
+ IP Address and Port Number. This is the IP Address or
+
+        Hostname and Port for the site to connect to the message
+
+        switch and is inputted in the State Host Address and State Port
+
+        fields.
+
+ Connection Name. This name defines the specific connection
+
+        to LEADS 2000 and is provided to a site by LEADS. The name
+
+        is used by LEADS to identify the connection and must be
+
+        identical on both ends of the connection so the site must use
+
+        what LEADS requires. This name should be configured in the
+
+        ConnectionName field found in the "Other State Settings" drop
+
+        down list.
+
+ CDC Name. This is a value assigned by the State for an
+
+        agency. If only one agency is using LEADS through this site,
+
+        this CDCName can be configured in the CDCName field found
+
+        in the "Other State Settings" drop down list. If more than one
+
+        agency is using this LEADS connection, this field (maximum 11
+
+        characters) must be provided by the vendor (either sent in the
+
+        <Authentication>/<CDCName> or configured in the device alias
+
+        table). ConnectCIC must have this information to include in
+
+        each message transaction sent to LEADS.
+
+2. Vendor Interface Requirements. The following are the LEADS
+       required fields that a vendor must submit to ConnectCIC TWE in every
+       API request transaction:
+             Mnemonic ­ The application assigned mnemonic for a device
+                should be placed in the <Authentication>/<Mnemonic> field in
+                the ConnectCIC header. ConnectCic for this interface has a
+                maximum limit of 6 characters.
+             ORI ­ The LEADS-provided ORI for a device (or for the site)
+                should be placed in the <Authentication>/<ORI> field in the
+                ConnectCIC header.
+             User Name ­ The application assigned User Name should be
+                placed in the <Authentication>/<UserName> field in the
+
+                     Copyright 2022 CommSys Incorporated
+                ConnectCIC header, maximum 12 characters.
+3. Security Requirements. LEADS requires vendor's employees who
+
+       will be exposed to CJIS data to be fingerprinted for background checks
+       at a sponsor site (i.e. first site in state). CommSys has already been
+       fingerprinted for Illinois.
+4. Certification Requirements. LEADS currently does not require
+       vendors to certify their interface prior to installing at a site.
+5. Logon Requirements. LEADS currently does not require vendors to
+       support logon transactions.
+
+                                                                  Copyright 2022 CommSys Incorporated
+
