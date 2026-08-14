@@ -37,8 +37,8 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 verified against the LIVE tickets): **HI_HCJDC_OFML** v4.16-v4.18 (posted at v4.15/795241) and
 **AZ_AZDPS** the ENTIRE history (nothing ever posted). DRAFT AND WAIT, separately. **6 of 8 are
 lifecycle-COMPLETE.** Then **(b)** the officer-guide rewrite, **(c)** the fidelity over-permit blind
-spot. ⚠️ **ONE OPEN QUESTION FOR ROB: is the TX v4.19 JSON attached to DEX-967 and in the catalog?**
-Ledger section C still records TX at **v4.18** (2026-08-03) while Balcones Heights now runs v4.19.
+spot. **TX v4.19 catalog question CLOSED** (Rob 2026-08-14: catalog is v4.19) -- section C was stale,
+not a real gap; TX is now aligned on every axis. **6 of 8 lifecycle-COMPLETE.**
 
 **8/20 ALL-PASS, 538 logs. NO PROVIDER OWES A SWEEP** -- HI v4.18 closed the last (46/46, three
 bumps in one sweep). FL v7.23 and IL v2.7 are lifecycle-COMPLETE: release line posted (EDITED IN
