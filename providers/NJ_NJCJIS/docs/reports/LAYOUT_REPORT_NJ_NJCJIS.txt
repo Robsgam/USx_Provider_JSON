@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS_v4.15.json
-  Generated: 2026-08-02 21:49
+  Source: NJ_NJCJIS_v4.16.json
+  Generated: 2026-08-14 13:00
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== NJ_NJCJIS_v4.15.json ===
+=== NJ_NJCJIS_v4.16.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=3
   Person | entity=Person | qidm= | cards=1 fields=3
@@ -38,7 +38,7 @@ LAYOUT DETAIL
       ROW ROW_VEH_3 [4 4 4]
         RegistrationState (Dropdown | attributeTypeId=STATE | default=NJ)
         RandomRequest (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
@@ -65,7 +65,7 @@ LAYOUT DETAIL
       ROW ROW_GUN_2 [4 4 4]
         GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NJ_NIBRS)
         GunModel (Text | maxLen=20)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
@@ -74,7 +74,7 @@ LAYOUT DETAIL
       ROW ROW_ART_1 [4 4 4]
         ArticleSerialNumber (Text | maxLen=20)
         ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Boat ===
   name=ENTITY_Boat | entity=Boat | qidm=
@@ -83,7 +83,7 @@ LAYOUT DETAIL
       ROW ROW_BOA_1 [5 5 2]
         RegistrationNumber (Text | maxLen=20)
         BoatHullIdNumber (Text | maxLen=20)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=N)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === RMS QIDMs ===
   RMS Person Search query
