@@ -6,8 +6,16 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
 <!-- STAGE-5 MARKERS. Machine-read by tools\audit_lifecycle.ps1. One line per release, written ONLY
      when the post has been approved and actually made. The Jira comment id is the point: it is the
      one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
-     mention. Never write one in advance and never let a sync tool generate one. -->
-POSTED: v4.15 comment 795856 2026-08-11
+     mention. Never write one in advance and never let a sync tool generate one.
+     UPDATED IN PLACE, NOT APPENDED, and this is the rule not a shortcut: comment 795856 was EDITED
+     from the v4.15 release line to the v4.16 one on 2026-08-14, so the old "POSTED: v4.15 comment
+     795856" line became FALSE the moment the edit landed -- that comment no longer says v4.15. A
+     comment id carries exactly ONE version at a time, so two markers naming the same id with
+     different versions would contradict each other. Append a NEW marker line only for a NEW comment
+     id; update the existing line when its comment is edited in place. The date is the EDIT date.
+     Pre-edit body captured verbatim in DEX_TICKET_ARCHIVE.md -- an edit is IRREVERSIBLE and there is
+     no delete-comment tool. -->
+POSTED: v4.16 comment 795856 2026-08-14
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals
