@@ -55,6 +55,17 @@
   of Rob's approval having been given. Multiple markers may accumulate (one per release); the most
   recent one naming the current version is what satisfies the gate, and the others stay as history.
 
+  ** UPDATE THE MARKER ON EVERY IN-PLACE EDIT, NOT ONLY ON A NEW COMMENT (learned 2026-08-14). **
+  The posting rule is ONE COMMENT PER RELEASE, EDITED IN PLACE -- so the version a given comment id
+  carries is MUTABLE, and the marker's date is the EDIT date, not the creation date. This bit
+  immediately and twice on the same day: the first backfill of TX_TLETS and CA_CLETS was taken from
+  their DEX_TICKET history lines ("comment 790861 -- v4.13-v4.18 ... (2026-08-03)"), which faithfully
+  record what those comments said WHEN CREATED. Both had since been edited in place -- 790861 to
+  v4.19 and 791400 to v2.24 -- so the gate was told two providers owed posts that were already made,
+  and it reported the GAP confidently. A "comment N = version X" record is STALE BY CONSTRUCTION
+  under edit-in-place; only the live comment body is authoritative. Verify against Jira before
+  writing or trusting a marker.
+
   LAW 2 PROOF (2026-08-14, by injection on FL_FCIC, all three branches):
     marker removed                                    -> GAP
     marker removed BUT the version still mentioned    -> GAP   <-- the exact old vacuous PASS

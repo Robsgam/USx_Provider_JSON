@@ -33,12 +33,12 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**NOTHING MID-FLIGHT.** A capture watcher is running in the background (stop it or let the session
-end). **NEXT, AGREED: the FOUR owed Jira release lines** (`audit_lifecycle` names them, stage 5) --
-**TX_TLETS** v4.19 (posted at v4.18/790861) · **CA_CLETS** v2.24 (v2.23/791400) · **HI_HCJDC_OFML**
-v4.16-v4.18 (v4.15/795241) · **AZ_AZDPS** the ENTIRE history (nothing ever posted). DRAFT AND WAIT,
-each one separately. Then **(b)** the officer-guide rewrite, **(c)** the fidelity over-permit blind
-spot. **FL/IL/NJ/NY are lifecycle-COMPLETE -- verified against the TICKETS, not the repo files.**
+**NOTHING MID-FLIGHT.** **TWO owed Jira release lines, not four** (`audit_lifecycle` stage 5, all 8
+verified against the LIVE tickets): **HI_HCJDC_OFML** v4.16-v4.18 (posted at v4.15/795241) and
+**AZ_AZDPS** the ENTIRE history (nothing ever posted). DRAFT AND WAIT, separately. **6 of 8 are
+lifecycle-COMPLETE.** Then **(b)** the officer-guide rewrite, **(c)** the fidelity over-permit blind
+spot. ⚠️ **ONE OPEN QUESTION FOR ROB: is the TX v4.19 JSON attached to DEX-967 and in the catalog?**
+Ledger section C still records TX at **v4.18** (2026-08-03) while Balcones Heights now runs v4.19.
 
 **8/20 ALL-PASS, 538 logs. NO PROVIDER OWES A SWEEP** -- HI v4.18 closed the last (46/46, three
 bumps in one sweep). FL v7.23 and IL v2.7 are lifecycle-COMPLETE: release line posted (EDITED IN

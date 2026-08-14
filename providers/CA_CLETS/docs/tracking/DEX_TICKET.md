@@ -7,8 +7,14 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      when the post has been approved and actually made. The Jira comment id is the point: it is the
      one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
      mention. Never write one in advance and never let a sync tool generate one.
-     v2.24 is NOT here because it is NOT posted -- the absence IS the record. -->
-POSTED: v2.23 comment 791400 2026-08-04
+     THE VERSION A COMMENT CARRIES IS MUTABLE. Under the edit-in-place rule the SAME comment id is
+     rewritten to a newer version, so this marker must be updated on every in-place EDIT, not only
+     when a new comment is created -- and the date is the EDIT date, not the creation date.
+     Corrected 2026-08-14: this first read "v2.23 ... 2026-08-04", backfilled from the history line
+     below, which records what 791400 said WHEN CREATED. The live comment reads "CA_CLETS v2.24 --
+     TENANT-VERIFIED ... Extended in place from v2.23 to v2.24 ... RELEASE LINE -- v2.24 is verified
+     and ready". Verified against Jira, not this file. -->
+POSTED: v2.24 comment 791400 2026-08-11
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals
