@@ -7,7 +7,7 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      when the post has been approved and actually made. The Jira comment id is the point: it is the
      one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
      mention. Never write one in advance and never let a sync tool generate one. -->
-POSTED: v4.23 comment 794205 2026-08-07
+POSTED: v4.24 comment 794205 2026-08-14
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals
