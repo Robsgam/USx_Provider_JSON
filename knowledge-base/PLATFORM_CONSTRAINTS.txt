@@ -1020,3 +1020,69 @@ LIMITATION #40: THE WIRE IS A UNION ACROSS EVERY MATCHING COMBINATION, NOT THE
   on any provider, fill a combination whose siblings define an extra optional it does not, and
   check whether the sibling's field rides. Until run, treat #40 as proven for FL_FCIC BoatQuery
   and STRONGLY INDICATED elsewhere.
+
+LIMITATION #41: THE "LEAVE BLANK FOR <HOME STATE>" IN/OUT SPLIT ASSUMES A HUMAN IS
+  FILLING THE FORM. IT HAS NO DEFENCE AGAINST A POPULATED HOME STATE.
+  STATUS: OBSERVED IN A CUSTOMER TENANT, SOURCE NOT YET ISOLATED -- PAUSED 2026-08-15
+  pending CommSys. Do NOT act on this entry until the two tests below are run.
+
+  THE OBSERVATION. A CA_CLETS request captured at Mariposa FOUNDATION:
+    <Request><MessageType>VehicleRegistrationQuery</MessageType>
+      <LicensePlateYear>2026</LicensePlateYear><State>CA</State>
+      <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+      <LicensePlateNumber>SAM123</LicensePlateNumber>
+      <CaRequestPurposeCode>C</CaRequestPurposeCode></Request>
+  Those five fields satisfy NLTS.RQ.P (set[] = purposeCode, LicensePlateNumber,
+  LicensePlateTypeCode, LicensePlateYear, RegistrationState) -- the NLETS INTERSTATE combo.
+  The in-state combo IA.QV sits at position [5] and needs only purposeCode + plate. So a
+  CALIFORNIA plate was routed to the interstate transaction on a California system.
+
+  THE BUILD IS NOT AT FAULT -- checked in all four places it could have been:
+    * all 9 RegistrationState controls initialValue=BLANK, in default AND CAD_DISPATCH AND
+      FIRST_RESPONDER variants, on Vehicle/Person/Boat
+    * NO combination anywhere in the JSON carries a State default
+    * NO attribute rule injects State
+    * the label already reads "State (leave blank for CA)", matching AZ/HI/NY/FL
+    * our own 90 form-driven logs: in-state combos (IA.QV/IA.QVK/IN.VP) emit NO <State> at
+      all; only the OOS combos carry one, and only ever GA (17) or NJ (4)
+  So the CA came from OUTSIDE the configuration: the officer, or CAD auto-populating the
+  vehicle's registration state from the dispatch record. NOT YET DISTINGUISHED.
+
+  WHY IT IS A LIMITATION AND NOT A CA_CLETS BUG. The convention "blank = in-state" is how
+  17+ of 20 providers implement in/out routing. It is a UI convention, and a UI convention
+  can only bind the actor that reads the UI. CAD does not read labels -- it fills fields from
+  the event. If CAD is the source, then EVERY CAD-originated in-state query on EVERY provider
+  using this split routes to the interstate transaction, and no label, hint or card title can
+  prevent it. That is a design assumption failing outside its stated domain, not a defect in
+  any one build.
+
+  THE MECHANISM THAT DOES WORK, already in production on a sibling: deployed CA_eSUN carries
+    { "name":"State", "rule":{"function":"IgnoreUserValueRuleHandler","arguments":["CA"]},
+      "sourceField":["RegistrationState"], "targetField":"State" }
+  on VehicleRegistrationQuery, DriverLicenseQuery, DriverHistoryQuery AND BoatQuery. It strips
+  the home state WHATEVER SUPPLIES IT -- officer, CAD or platform -- which is the only layer
+  that works when the officer is not in the loop. See UNIVERSAL_SEARCH_HANDLERS.txt section 4.
+
+  DO NOT APPLY IT YET, for two reasons:
+    1. The PRIOR question is whether NLTS.RQ.P + State=CA is actually invalid to CLETS. If the
+       state accepts it, there is nothing to fix. Only CommSys can answer that.
+    2. CA_CLETS v2.24 is LIVE at Mariposa. A wire change there is a coordinated re-import, not
+       a repo action.
+
+  THE TWO TESTS THAT SETTLE THE SOURCE, neither run:
+    1. Form-driven, State explicitly set to CA -> reproduces the misroute if NLTS.RQ.P fires.
+       Provable on the CA_CLETS provider tenant. Only shows an officer CAN misroute.
+    2. CAD-originated with the State box untouched, from an event carrying a CA vehicle -> if
+       <State>CA</State> still appears, CAD is the source and the convention is unsalvageable.
+       Needs Mariposa Foundation (real CAD data). THIS IS THE ONE THAT MATTERS.
+
+  THE COVERAGE GAP THAT HID IT, and it is portfolio-wide: NO TEST ANYWHERE FILLS THE HOME
+  STATE. Plans use blank for in-state and a FOREIGN state (GA/NJ) for out-of-state, so the
+  "home state explicitly populated" case is never exercised on any provider. Same family as
+  IL's untested firearmMake and AZ's untested middle/suffix -- a value no test drives is
+  invisible, and every gate stays green.
+
+  CAPTURE WARNING: if Foundation captures are taken, they must NOT be ingested into
+  providers/<P>/logs/. IMPORT_LEDGER's derivation rule is "logs at version X = proof X is
+  installed on that provider's USx TEST tenant"; Foundation logs would silently corrupt the
+  install column that portfolio_status computes.
