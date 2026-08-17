@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
+Combo: IN.VP_af_addressCity (IN.VP_af_addressCity (auto))
+Date: 2026-08-17 13:28:05
+Result: PASS
+JSON Version: 2.26
+Entity Fingerprint: 043697fdbbe3f5092d68ff0b27a1e89aca112f8b385282e837b5a8a86a1aac30
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","NameFirst":"JOHN","NameLast":"DOE","addressCity":"RENO","purposeCode":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M08C3BS0T1PF1N3S0ME2GDZP">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M08C3BS0T1PF1N3S0ME2GDZP</Id>
+            <AddressCity>RENO</AddressCity>
+            <Name>DOE, JOHN</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M08C3BS0T1PF1N3S0ME2GDZP
+  AddressCity                    RENO
+  Name                           DOE, JOHN
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M08C3BS0T1PF1N3S0ME2GDZP). kind=any-field; anyField=addressCity; expectedKeyRef=IN.VP; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
