@@ -1,4 +1,4 @@
-CA_CLETS -- Supported Query Validation Report
+﻿CA_CLETS -- Supported Query Validation Report
 ===============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-08-17
@@ -36,17 +36,17 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
   5 live combos (2 NLTS OOS, 2 IA in-state, 1 IN name) + 13 DELETED (IV.4*/IL.A1 conditions
   plate-type routing, v2.5 poisoned-array, server routes via IA.QV instead)
 
-  NLTS.RQ.P -- OOS Plate query (Nlets) [PENDING]
+  NLTS.RQ.P -- OOS Plate query (Nlets) [CONFIRMED]
     set: PurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState
     any: VehicleMakeCode, VehicleYear
     keyReference: NLTS.RQ.P
 
-  NLTS.RQ.V -- OOS VIN query (Nlets) [PENDING]
+  NLTS.RQ.V -- OOS VIN query (Nlets) [CONFIRMED]
     set: PurposeCode, VehicleIdentificationNumber, RegistrationState
     any: VehicleMakeCode, VehicleYear
     keyReference: NLTS.RQ.V
 
-  IA.QV -- In-state Plate query (catchall) [PENDING]
+  IA.QV -- In-state Plate query (catchall) [CONFIRMED]
     set: PurposeCode, LicensePlateNumber
     any: RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, VehicleYear
     defaults: LicensePlateTypeCode=PC, LicensePlateYear=2026
@@ -54,12 +54,12 @@ NOTE (tool artifact -- 98% shown, actual 100%): audit_test_coverage.ps1 shows 39
 
   IA.QV_guardrail -- Plate>VIN: Plate+VIN co-entry (no State) -> only IA.QV fires, VIN absent from XML [PENDING]
 
-  IA.QVK -- In-state VIN query [PENDING]
+  IA.QVK -- In-state VIN query [CONFIRMED]
     set: PurposeCode, VehicleIdentificationNumber
     any: VehicleMakeCode, RegistrationState
     keyReference: IA.QVK
 
-  IN.VP -- Owner Name query (cross-entity) [PENDING]
+  IN.VP -- Owner Name query (cross-entity) [CONFIRMED]
     set: PurposeCode, NameLast, NameFirst
     any: AddressCity, AddressStreetNumber
     keyReference: IN.VP
