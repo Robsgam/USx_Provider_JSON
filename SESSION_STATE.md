@@ -15,7 +15,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | Provider | Ver | State |
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
-| CA_CLETS | v2.25 | NEVER-TESTED -- 90 test(s) owed |
+| CA_CLETS | v2.25 | ALL-PASS (109 logs) |
 | FL_FCIC | v7.23 | ALL-PASS (110 logs) |
 | HI_HCJDC_OFML | v4.18 | ALL-PASS (46 logs) |
 | IL_LEADS_OFML | v2.7 | PARTIAL -- 1 plan test(s) owed (41 captured) |
@@ -33,21 +33,22 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**CA_CLETS v2.25 -- RE-IMPORT AT MARIPOSA, THEN ONE QUERY TO CONFIRM `<DeviceId>` ARRIVES
-POPULATED.** That single request is the only thing that closes a PRODUCTION FAILURE. The CA devdoc
-puts the agency-assigned CLETS Terminal Identifier in `<Authentication>/<DeviceId>`, required
-wherever mnemonic pooling is used (Mariposa is); without it ConnectCIC silently falls back to the
-server IP and the state sees the wrong terminal. Added to **all six** CA providers via
-`Build-Auth -IncludeDeviceId` (opt-in, so the 14 non-CA are untouched -- verified). **If `<DeviceId>`
-arrives EMPTY the value must be set on the tenant's device-registration record -- a tenant config
-action, NOT a JSON one, and NOT grounds to revert.** CA_CLETS's 90 logs are archived; it owes a full
-re-sweep and is the ONLY one of the six that does (the other five were never tenant-tested).
+**CA_CLETS v2.25 IS TENANT-VERIFIED -- ALL-PASS 5/5, 109/109, and BOTH fixes are WIRE-PROVEN.**
+`<Authentication>/<DeviceId>` populated on **109 of 109** logs, so the platform fills it and NO
+device-registration action was needed; and middle name + suffix reach `<Name>` on **all five** paths
+(VehReg/DL/DH/Gun/Boat each emit all four shapes: `DOE, JOHN A JR` / `JOHN JR` / `JOHN A` / `JOHN`).
+**NEXT: RE-IMPORT v2.25 AT MARIPOSA -- Foundation then LIVE. The tenant is on v2.24 and that IS the
+open production failure.** One thing to read there: whether `<DeviceId>` carries the CLETS-assigned
+Terminal Identifier or merely the workstation name -- it resolves to the tenant placeholder `MK43RS`
+here, while Mariposa's `api:Source` carries `LAPTOP47EQ3RSJ`. If it is the workstation name that is a
+device-registration CONFIG follow-up, NOT a JSON change and NOT grounds to revert.
 
 **Then: 70 name components 14 providers cannot accept** -- `audit_name_components.ps1` (new
 2026-08-17, NOT in enforce yet; it would redden 14 of 20). Metadata declares request `Name` with
 First/Last/**Middle/Suffix**; middle+suffix have no control. Rob's order: **FL_FCIC (6) ·
 NJ_NJCJIS (2) · IL_LEADS_OFML (2) -- going live soon** (CA_CLETS's 10 landed in v2.25, folded in so
-it cost no second archive). Wire-PROVEN, AZ 10 captures: `DOE, JOHN A JR`. Then AZ's Jira line.
+it cost no second archive). **IL also owes 1 Firearm plan test** -- `firearmMake` is valued now, so
+its plan grew by one and it reads PARTIAL until that single capture lands. Then AZ's Jira line.
 
 **⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
 A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa is now
@@ -61,10 +62,9 @@ so ASK at every import; HDLE LIVE was missed for a day because "foundation and l
 **JIRA: 4 sections, one comment per RELEASE, EDIT IN PLACE, DRAFT AND WAIT every time.** Full rules
 in `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`. Capture the pre-edit body first (`DEX_TICKET_ARCHIVE.md`).
 
-**EXTENSION v0.5.2**: manifest `https://*.mark43.com/rms/*`; **the allowlist WAS the safety, the ARM
-switch replaced it** -- disarmed per host, 8 `requireArmed()` gates, ZERO browser dialogs. Match
-patterns CANNOT match a URL hash. **`__usxCaptureBatch()` returns ONLY the last `__usxRunPlan`** --
-two runs back-to-back silently loses the first (cost 3 entity runs on 08-14); run -> capture -> run.
+**EXTENSION v0.5.2**: manifest `https://*.mark43.com/rms/*`; the ARM switch replaced the allowlist --
+per-host, 8 `requireArmed()` gates, no dialogs. Match patterns CANNOT match a URL hash. **⚡ Fetch
+results returns ONLY the last ▶ Run Plan; Chrome may save a SECOND file -- always ingest/analyse ALL.**
 
 ## OPEN FINDINGS -- confirmed, unfixed
 
@@ -72,9 +72,9 @@ two runs back-to-back silently loses the first (cost 3 entity runs on 08-14); ru
   NLETS** (Mariposa Foundation CA_CLETS: `State=CA` satisfied `NLTS.RQ.P`, not `IA.QV`). Our config
   is provably clean; evidence, both unrun tests and the DO-NOT-APPLY-YET reasoning are in
   `PLATFORM_CONSTRAINTS.txt` #41. **Read it before touching any State field.**
-- **`audit_requirement_fidelity` over-permit blind spot.** `vehicleYear` added to IL `Z2.P any[]`
-  (metadata does not define it there) goes unreported -- control and mutant both 9 branches / 0 OVER.
-  Reproduced with a control. Suspect `$shPool` inheriting the sibling VIN branch; not confirmed.
+- **`audit_requirement_fidelity` over-permit blind spot.** `vehicleYear` in IL `Z2.P any[]` (metadata
+  does not define it there) goes unreported -- control and mutant both 9 branches / 0 OVER. Suspect
+  `$shPool` inheriting the sibling VIN branch; not confirmed.
 - **HI's NCIC hit block is CONFIG-PRESENT, NOT RENDERING-VERIFIED.** v4.16-v4.18 added 25 QRDM
   attributes; the 46/46 sweep proves the REQUEST unchanged and nothing about the response -- no test
   returned a real hit. Needs ONE deliberate hit query in HI's own tenant (not HDLE); also settles the

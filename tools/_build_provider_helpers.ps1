@@ -31,13 +31,20 @@ function Build-Auth {
         #    the workstation (LAPTOP47EQ3RSJ at Mariposa) where the test tenant carries MK43RS.
         #    Today that identity reaches the ROUTING header only and never <Authentication>.
         #
-        # [LIKELY, NOT CERTAIN] -- and say so rather than claim it: that the platform populates
-        # DeviceId from the device-registration record cannot be PROVEN from this repo, because
-        # no committed wire has ever carried the element. What IS certain is that the element
-        # can never appear without this attribute, so this is a necessary step either way. The
-        # confirming evidence is one request after import: if <DeviceId> appears but EMPTY, the
-        # value must be set on the tenant's device registration (a config action, not a JSON
-        # one) -- that is a tenant-side finding, not a reason to revert this.
+        # *** CONFIRMED ON THE WIRE 2026-08-17 -- the platform DOES populate it. *** CA_CLETS
+        # v2.25 in its USx provider tenant, 23 of 23 Vehicle captures:
+        #   <Authentication><UserName>MK43RS</UserName><DeviceId>MK43RS</DeviceId>
+        #                   <ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication>
+        # 23 populated / 0 empty / 0 absent. NO tenant-side device-registration action is needed to
+        # make the element appear with a value. This entry was written as [LIKELY, NOT CERTAIN]
+        # hours earlier and is recorded here as upgraded rather than quietly rewritten, because the
+        # distinction is the point: the element can never appear without this attribute (certain),
+        # while where the platform SOURCES the value was not knowable from the repo (it took a wire).
+        # In a provider tenant the value is the placeholder MK43RS -- identical to UserName and
+        # api:Source. STILL WORTH READING at a real agency: whether it resolves to the CLETS-assigned
+        # Terminal Identifier or merely to the workstation name (Mariposa's api:Source carries
+        # LAPTOP47EQ3RSJ). If it is the workstation name, that is a tenant-config follow-up on the
+        # device-registration record -- a tenant finding, never a reason to revert this attribute.
         #
         # It rides in the AUTH combination's any[], never set[], because the devdoc scopes it to
         # "only when mnemonic pooling is used" -- a set[] entry would make every non-pooling

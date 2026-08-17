@@ -62,11 +62,18 @@ Current: **v2.25** | Generated: 2026-08-17
   audit_devdoc_combinations have nothing to compare. The requirement lives in devdoc PROSE in the  
   Routing/Configuration preamble, which no gate parses -- audit_supported_queries reads only  
   "Basic Queries Supported".  
-VERIFY AFTER IMPORT: if <DeviceId> arrives EMPTY, the Terminal Identifier must be set on the  
-  tenant's device-registration record -- a tenant config action, not a JSON one. That is a tenant  
-  finding, not grounds to revert. Until one request is seen carrying a populated <DeviceId>, this  
-  fix is NECESSARY-BUT-UNCONFIRMED: the element can never appear without it, but that the  
-  platform sources the value from device registration is not provable from this repo.  
+*** CONFIRMED ON THE WIRE 2026-08-17, same day -- the [LIKELY] is now [CERTAIN]. *** The CA_CLETS  
+  USx provider tenant, v2.25, 23 of 23 Vehicle captures:  
+    <Authentication><UserName>MK43RS</UserName><DeviceId>MK43RS</DeviceId>  
+                    <ORI>MK1234567</ORI><Mnemonic>MK1234567</Mnemonic></Authentication>  
+  23 populated / 0 present-but-empty / 0 absent. So the PLATFORM populates DeviceId with no  
+  tenant-side device-registration action required -- the open question this version carried is  
+  closed. In this tenant it resolves to the placeholder MK43RS (the same value as UserName and  
+  api:Source); at Mariposa it should resolve to the real terminal, since that tenant's api:Source  
+  carries LAPTOP47EQ3RSJ where this one carries MK43RS. The one thing still worth reading on the  
+  Mariposa re-import is whether the value is the CLETS-assigned Terminal Identifier rather than  
+  the workstation name -- if it is the workstation name, THAT is the tenant-config follow-up, and  
+  it is a tenant finding, not grounds to revert.  
 COST: CA_CLETS was the only tenant-verified provider of the six -- 90 ALL-PASS logs archived to  
   logs/<Entity>/_archive_pre_v2.25/, 27 SQVR markers back to [PENDING], all 5 entities restart  
   from T1. It is also LIVE at Mariposa, so this is a coordinated re-import, not a repo action.  
