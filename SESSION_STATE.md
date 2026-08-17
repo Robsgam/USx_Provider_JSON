@@ -16,7 +16,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
 | CA_CLETS | v2.26 | ALL-PASS (111 logs) |
-| FL_FCIC | v7.24 | NEVER-TESTED -- 118 test(s) owed |
+| FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
 | IL_LEADS_OFML | v2.8 | NEVER-TESTED -- 44 test(s) owed |
 | NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
@@ -33,12 +33,16 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**THREE SWEEPS OWED: `FL_FCIC v7.24` (118) · `IL_LEADS_OFML v2.8` (44) ·
-`OR_LEDS v2.3`.** DONE 08-17: **CA_CLETS v2.26** (111/111 -- `<CaRequestPurposeCode>C` +
-`<PurposeCode>I` in ONE request, impossible before) and **HI_HCJDC_OFML v4.20** (50/50 -- 0 malformed
-`<Name>`, 0 on KQN, all four shapes on KQ/DQ). Import queue: `tools\report_import_owed.ps1`.
-**FL and OR are RESTORATIONS** — v7.17/v2.2 deleted middle/suffix as "dead"; the fix was to WIRE
+**TWO SWEEPS OWED: `IL_LEADS_OFML v2.8` (44) · `OR_LEDS v2.3`.** DONE 08-17:
+**FL_FCIC v7.24** (118/118, all 4 log gates green), **CA_CLETS v2.26** (111/111 --
+`<CaRequestPurposeCode>C` + `<PurposeCode>I` in ONE request, impossible before) and
+**HI_HCJDC_OFML v4.20** (50/50 -- 0 malformed `<Name>`, 0 on KQN, all four shapes on KQ/DQ).
+Import queue: `tools\report_import_owed.ps1`. **FL owes Jira (last post v7.23, comment 790815) + a
+ledger line.** **OR is a RESTORATION** — v2.2 deleted middle/suffix as "dead"; the fix was to WIRE
 them, and Rob reversed that call on 08-17.
+**⚡ Fetch results ONLY returns the LAST ▶ Run Plan, and it can miss the run's TAIL** — FL Firearm
+fetched 11 of 15 (T59-T62 absent, dex-log rows had not rendered). Fetch after EVERY entity, ~10s
+after "plan run complete", and DIFF the plan against the logs before calling an entity done.
 **C3 IS STILL UNSETTLED and HI can no longer settle it.** The v4.19 sweep could not decide whether
 `any[]` membership is REQUIRED for a composite `sourceField` to reach the wire, because v4.18 never
 had a test that FILLED middle/suffix (frozen resolver) -- so there is no v4.18 wire to compare. What
