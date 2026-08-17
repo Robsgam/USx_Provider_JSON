@@ -1752,6 +1752,41 @@ audit_wiring_closure.ps1 -- FORM <-> QIDM closure. Does every control reach the 
   prefilled control on CA_SAN_LUIS_OBISPO turned out to be in no combination's any[] -- its value
   discarded on every query -- while every existing gate reported that provider green.
 
+audit_name_components.ps1 -- METADATA COMPONENT -> FORM CONTROL coverage. The authority->built
+  direction at COMPONENT granularity, and the twin of audit_devdoc_combinations that nobody built.
+  Every other gate enumerates the JSON and is therefore closed under what we built, so a
+  metadata-defined name component with NO CONTROL produces nothing to audit: no control, no orphan
+  attribute, and no test (the plan is generated FROM the JSON). It cannot be found by looking harder
+  at what exists -- only the metadata can say a control is MISSING.
+  Added 2026-08-17. Cost of not having it: 15 of 20 providers ship no middle-name and no suffix
+  control while their own metadata declares request Name with four components (First/Last/Middle/
+  Suffix) on the queries we built -- all 15 at 0 FAIL / 0 WARN, four of them (NJ/FL/IL/CA_CLETS)
+  tenant-verified ALL-PASS. And 6 of those controls were DELETED on 2026-08-02 after
+  audit_wiring_closure correctly reported them unwired: that gate walks JSON->JSON, so it can say a
+  control is USELESS but never that one is MISSING, and its answer was misread as "should not exist".
+  Capability is wire-PROVEN: AZ_AZDPS v3.11, 10 captures, FormatStringRuleHandler emits
+  "DOE, JOHN A JR" and degrades cleanly to "DOE, JOHN JR" (no double space, no stray comma).
+  DO NOT "SIMPLIFY" THE SCOPE TO A NAME WHITELIST. First+Last+Middle+Suffix is a GENERIC TYPE
+  SIGNATURE the metadata stamps on 100+ non-person fields (ChemicalName, SchoolName,
+  AddressStreetName, BoatName, EnhancedNameSearchIndicator; SupervisorName even carries
+  Day+Month+Year), and component-count is never control-count in general -- Day+Month+Year
+  composites (BirthDate and 200+ siblings) map to exactly ONE FormDate control. Filtering to
+  composites REFERENCED BY A BUILT TRANSACTION'S COMBINATIONS leaves exactly one field, 'Name',
+  with zero noise across 125 built transactions, so the scope is derived and self-extends.
+  Resolves the control through the attribute's own sourceField, never a token search of the form:
+  Person carries TWO name pools (DL + DH-suffixed) on the SAME entity, and an entity-wide token
+  match reported HI's DriverLicenseQuery against 'nameMiddleDH' -- the wrong card.
+  C1 no-control and C2 not-composed BLOCK. C3 not-in-pool (composed, but the fieldId is in no
+  combination set[]/any[]) is [NOTE] ONLY, because its impact is UNPROVEN: audit_wiring_closure's
+  class A requires "no attribute sources it AND no combo references it", so it deliberately treats
+  attribute-sourcing as reaching the wire and calls HI_HCJDC_OFML closed. Neither position has a
+  committed log. Settle it with ONE HI Driver License query filling middle + suffix -- HI is the
+  only provider that isolates the variable (controls composed, zero any[]).
+  0 components compared is a [FAIL], not a vacuous PASS.
+  Baseline 2026-08-17: 20 compared / 216 components / 80 C1 / 0 C2 / 4 C3; clean on AZ, NY, TX,
+  TX_CCH. Scope is broader than Person -- CA_CLETS also owes it on Vehicle/Firearm/Boat owner-name
+  searches.
+
 SKILL usx-adjudicate -- deciding what to DO about a finding (fix / register / dismiss / fix-the-gate).
   Added 2026-08-02 after ten adjudications in one day, two of them wrong on the first attempt.
   The wording of a finding carries almost no information: the same sentence was a real dropped value
