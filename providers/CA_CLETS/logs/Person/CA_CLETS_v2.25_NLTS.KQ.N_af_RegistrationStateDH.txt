@@ -1,0 +1,82 @@
+﻿================================================================
+TEST LOG: CA_CLETS Person DriverHistoryQuery
+Combo: NLTS.KQ.N_af_RegistrationStateDH (NLTS.KQ.N_af_RegistrationStateDH (auto))
+Date: 2026-08-17 11:23:20
+Result: PASS
+JSON Version: 2.25
+Entity Fingerprint: 4fc49eb1d31b155fee42ad9dba8c2c3116f5c037d6b96ae19b8e5c0a21b3b694
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","NameFirstDH":"JOHN","NameLastDH":"DOE","RegistrationStateDH":"New Jersey","SexCodeDH":"Male","purposeCode":"C","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M084XT2XMGVA5GPK4QE7PXGA">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M084XT2XMGVA5GPK4QE7PXGA</Id>
+            <State>NJ</State>
+            <Attention>SGAMBELLONE R</Attention>
+            <SexCode>M</SexCode>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M084XT2XMGVA5GPK4QE7PXGA
+  State                          NJ
+  Attention                      SGAMBELLONE R
+  SexCode                        M
+  CaRequestPurposeCode           C
+  BirthDate                      19900115
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01M084XT2XMGVA5GPK4QE7PXGA). kind=any-field; anyField=RegistrationStateDH; expectedKeyRef=NLTS.KQ.N; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

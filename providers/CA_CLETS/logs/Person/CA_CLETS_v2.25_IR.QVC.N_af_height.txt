@@ -1,0 +1,90 @@
+﻿================================================================
+TEST LOG: CA_CLETS Person DriverLicenseQuery
+Combo: IR.QVC.N_af_height (IR.QVC.N_af_height (auto))
+Date: 2026-08-17 11:23:54
+Result: PASS
+JSON Version: 2.25
+Entity Fingerprint: 4fc49eb1d31b155fee42ad9dba8c2c3116f5c037d6b96ae19b8e5c0a21b3b694
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"NameFirst":"JOHN","NameLast":"DOE","SexCode":"Male","height":"509","purposeCode":"C","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M084TCST8VN4RRGGH42HP1TP">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M084TCST8VN4RRGGH42HP1TP</Id>
+            <Height>509</Height>
+            <SexCode>M</SexCode>
+            <Name>DOE, JOHN</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "sexAttrId":  "69586249083"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M084TCST8VN4RRGGH42HP1TP
+  Height                         509
+  SexCode                        M
+  Name                           DOE, JOHN
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M084TCST8VN4RRGGH42HP1TP). kind=any-field; anyField=height; expectedKeyRef=IR.QVC.N; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
