@@ -3,6 +3,48 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.20  2026-08-17  FIX v4.19's OVER-PERMIT: name parts removed from the OLN DH combo (KQN)
+  CHANGED: Split the shared DH any[] list in two. `$dhAnyCommon` (RegistrationStateDH, purposeCodeDH,
+    Attention) goes to BOTH DH combos; `$dhAnyName` adds nameMiddleDH + nameSuffixDH and goes to the
+    NAME combo (KQ) ONLY. KQN's any[] no longer carries the name parts.
+  REASON: *** v4.19, SHIPPED EARLIER THE SAME DAY, PUT THE NAME PARTS IN BOTH DH COMBOS AND THAT
+    REACHED THE WIRE AS A MALFORMED NAME. *** DriverHistoryQuery has two combinations and only one is
+    a name search:
+        KQ  set=[SexCodeDH,BirthDateDH,NameLastDH,NameFirstDH] -> metadata KQ{Name},
+            Set=[SexCode,BirthDate,Name]
+        KQN set=[OperatorLicenseNumberDH]                      -> metadata KQ{OperatorLicenseNumber},
+            Set=[OperatorLicenseNumber], Any=[Attention,PurposeCode,State]
+    The OLN variant defines NO Name field AT ALL -- not in Set, not even in Any. v4.19 added the two
+    components to the SHARED $dhAny, so KQN inherited them, and an OLN-only DH query with a middle
+    initial typed in composed a name out of whatever was present. The v4.19 tenant sweep captured it
+    on three real wires:
+        KQN  <Name>A JR</Name>      <Name>JR</Name>      <Name>A</Name>
+    A driver-history query carrying a "name" with no surname and no first name.
+  *** THE GATE CAUGHT THIS AND I DID NOT RUN IT. *** audit_requirement_fidelity reported it exactly:
+    "[WARN] DriverHistoryQuery / KQ -> built 'KQN' OVER-PERMITTED: Name; Name", 2 OVER-PERMITTED on
+    14 branches compared -- right combo, right field, right direction. After building v4.19 I ran the
+    validator, audit_name_components and the package reset, but NOT fidelity. This is the THIRD time
+    in one day a gate fired and went unread (firearmMake's trust warning on IL; TN_TIES's 22 trust
+    issues including three mandatory set[] fields with no test value; now this). The gates are not the
+    weak link -- reading them is. After a build, run the fidelity gate before the sweep, not after.
+  VERIFIED: audit_requirement_fidelity 2 OVER -> 0 OVER with the denominator UNCHANGED at 14 branches
+    compared (a suppression would have dropped the count instead). audit_name_components still 8
+    components / 0 findings, so the v4.19 capability fix is intact. validator 65P/0F/0W.
+  WHAT v4.19 GOT RIGHT AND THIS KEEPS: the KQ name search and the DL DQ search now genuinely emit all
+    four name components -- the v4.19 sweep captured <Name>DOE, JOHN A JR</Name>, DOE, JOHN JR and
+    DOE, JOHN A on both DQ and KQ, which no HI log had ever carried before.
+  *** C3 IS STILL NOT SETTLED, AND I WILL NOT CLAIM IT IS. *** The v4.19 sweep was supposed to decide
+    whether any[] membership is REQUIRED for a composite sourceField to reach the wire (HI was the
+    only provider isolating the variable: controls present, composed, zero any[]). It cannot: v4.18
+    never had a test that FILLED middle or suffix -- the resolver had them frozen to null until
+    2026-08-17 -- so there is no v4.18 wire to compare against. What is proven is only that the
+    current shape (control + sourceField + any[]) works. audit_wiring_closure's class A may still be
+    too narrow; deciding that needs a deliberate probe on a provider still in the composed-but-not-in-
+    any[] state, and after this fix HI is no longer one.
+  COST: 16 v4.19 Vehicle logs + 20 v4.19 Person logs archived; all 5 entities restart from T1. The 3
+    malformed-name Person logs are archived with them -- they are the EVIDENCE for this entry, not a
+    regression to carry forward. HDLE LIVE unaffected (deliberately held at v4.15).
+
 v4.19  2026-08-17  middle name + suffix reach the wire (any[] wiring) + MI label capacity fix
   CHANGED: Wired the metadata-defined middle-name and suffix components of the composite `Name`
     field so they reach the wire: added the two form controls per name path, appended them to that

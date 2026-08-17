@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
-  Source: HI_HCJDC_OFML_v4.19.json
-  Generated: 2026-08-17 11:50
+  Source: HI_HCJDC_OFML_v4.20.json
+  Generated: 2026-08-17 14:17
 ================================================================
 QUERY SIMULATION
 ================
@@ -9,7 +9,7 @@ QUERY SIMULATION
   Seeded form defaults (3): Article.relatedSearchHitIndicator=Y, Boat.relatedSearchHitIndicator=Y, Firearm.relatedSearchHitIndicator=Y
 
 ================================================================
-  CommSys Query Simulator -- HI_HCJDC_OFML_v4.19.json
+  CommSys Query Simulator -- HI_HCJDC_OFML_v4.20.json
 ================================================================
 
 --- QIDM: HI_HCJDC_OFML_VehicleRegistrationQuery [Vehicle] ---
@@ -63,20 +63,19 @@ QUERY SIMULATION
 
     [FIRES first-match] KQN
       set: [OperatorLicenseNumberDH]
-      any: [RegistrationStateDH, purposeCodeDH, Attention, nameMiddleDH, nameSuffixDH] -> matched: [RegistrationStateDH, purposeCodeDH, Attention, nameMiddleDH]
+      any: [RegistrationStateDH, purposeCodeDH, Attention] -> matched: [RegistrationStateDH, purposeCodeDH, Attention]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>KQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <Attention>DOE J</Attention>
-        <Name>Doe, John A</Name>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <PurposeCode>C</PurposeCode>
         <State>FL</State>
       </Transaction>
 
     >> PLATFORM FIRES: KQN (first matching combo)
-    >> UNION POOL (platform serializes): Attention=DOE J, Name=Doe, John A, OperatorLicenseNumber=D123456789, PurposeCode=C, State=FL
+    >> UNION POOL (platform serializes): Attention=DOE J, OperatorLicenseNumber=D123456789, PurposeCode=C, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

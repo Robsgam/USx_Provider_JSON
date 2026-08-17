@@ -247,7 +247,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.19",
+    [string]$Version = "4.20",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -633,7 +633,20 @@ if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
 # v4.19: nameMiddleDH/nameSuffixDH added to BOTH branches -- the DH card has its own field pool, so
 # the DL entries above do not cover it. Added to both arms deliberately: the diagnostic arm exists to
 # isolate the Attention handler, and dropping the name parts from it would change a second variable.
-$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'dochandler') { @('RegistrationStateDH','purposeCodeDH','nameMiddleDH','nameSuffixDH') } else { @('RegistrationStateDH','purposeCodeDH','Attention','nameMiddleDH','nameSuffixDH') }
+# v4.20 FIX -- v4.19 PUT THE NAME PARTS IN BOTH DH COMBOS AND THAT WAS AN OVER-PERMIT THAT REACHED
+# THE WIRE. There are two DriverHistoryQuery combinations and only ONE of them is a name search:
+#     KQ  set=[SexCodeDH,BirthDateDH,NameLastDH,NameFirstDH]  -> metadata KQ{Name}, Set=[SexCode,BirthDate,Name]
+#     KQN set=[OperatorLicenseNumberDH]                       -> metadata KQ{OperatorLicenseNumber},
+#                                                                Set=[OperatorLicenseNumber], Any=[Attention,PurposeCode,State]
+# The OLN variant defines NO Name field AT ALL -- not in Set, not in Any. v4.19 added
+# nameMiddleDH/nameSuffixDH to the SHARED $dhAny, so KQN inherited them, and an OLN-only DH query with
+# a middle initial typed in composed a name out of the leftovers: the v4.19 sweep captured
+# <Name>A JR</Name>, <Name>JR</Name> and <Name>A</Name> on KQN -- a name with no surname and no first
+# name. audit_requirement_fidelity DID catch it ("DriverHistoryQuery / KQ -> built 'KQN'
+# OVER-PERMITTED: Name; Name", 2 OVER on 14 branches); it was not run after the v4.19 build.
+# So the list is now SPLIT: shared context stays shared, name parts go ONLY to the name combo.
+$dhAnyCommon = if ($AttnDiagnostic -and $AttnMode -eq 'dochandler') { @('RegistrationStateDH','purposeCodeDH') } else { @('RegistrationStateDH','purposeCodeDH','Attention') }
+$dhAnyName   = $dhAnyCommon + @('nameMiddleDH','nameSuffixDH')   # KQ (name search) ONLY
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         $attnAttr
@@ -661,14 +674,14 @@ $dhQuery = [PSCustomObject]@{
         # Name/Sex/DOB do not bleed onto the DriverHistoryQuery wire. Mirrors the v3.7 DL-side
         # guardrail (DQ/QW). conditions[].field = sourceField (DH-suffix, PascalCase).
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH'); any = $dhAnyName; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'KQ'
             state                 = 'In/Out'
         }
         # KQN: OLN path -- 1 set[]. DH-suffix. State+PurposeCode optional.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = $dhAny; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
+            requirements          = [PSCustomObject]@{ set = @('OperatorLicenseNumberDH'); any = $dhAnyCommon; defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' }) }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQN'
             state                 = 'In/Out'

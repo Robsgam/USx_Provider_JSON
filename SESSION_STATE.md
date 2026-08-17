@@ -17,7 +17,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
 | CA_CLETS | v2.26 | ALL-PASS (111 logs) |
 | FL_FCIC | v7.24 | NEVER-TESTED -- 118 test(s) owed |
-| HI_HCJDC_OFML | v4.19 | NEVER-TESTED -- 52 test(s) owed |
+| HI_HCJDC_OFML | v4.20 | NEVER-TESTED -- 50 test(s) owed |
 | IL_LEADS_OFML | v2.8 | NEVER-TESTED -- 44 test(s) owed |
 | NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.24 | ALL-PASS (69 logs) |
@@ -33,15 +33,17 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**FOUR SWEEPS OWED: `FL_FCIC v7.24` (118) · `HI_HCJDC_OFML v4.19` (52) · `IL_LEADS_OFML v2.8` (44) ·
+**FOUR SWEEPS OWED: `FL_FCIC v7.24` (118) · `HI_HCJDC_OFML v4.20` (50) · `IL_LEADS_OFML v2.8` (44) ·
 `OR_LEDS v2.3`.** CA_CLETS v2.26 is DONE -- ALL-PASS 5/5, 111/111, both purpose codes wire-proven
 (`<CaRequestPurposeCode>C` + `<PurposeCode>I` in ONE request, impossible before v2.26).
 Run `tools\report_import_owed.ps1` for the import queue.
 **FL and OR are RESTORATIONS** — v7.17/v2.2 deleted middle/suffix as "dead"; the fix was to WIRE
 them, and Rob reversed that call on 08-17.
-**HI's sweep also settles C3**: v4.18 had the name parts composed but in no `any[]`, which
-`audit_wiring_closure` calls CLOSED. If `<Name>` now carries them where 46 v4.18 logs never could,
-`any[]` membership is load-bearing and C3 becomes BLOCKING.
+**C3 IS STILL UNSETTLED and HI can no longer settle it.** The v4.19 sweep could not decide whether
+`any[]` membership is REQUIRED for a composite `sourceField` to reach the wire, because v4.18 never
+had a test that FILLED middle/suffix (frozen resolver) -- so there is no v4.18 wire to compare. What
+is proven is only that control + sourceField + any[] works. Deciding it needs a deliberate probe on a
+provider still composed-but-not-in-any[]; after v4.20 HI is not one.
 **⚠ IF A FIX IS FOLDED INTO AN ALREADY-BUILT VERSION, REGENERATE THE PLAN BY HAND** (`-Path`, not
 `-Provider`) — the version does not move, so `reset_test_package` skips it and the plan describes the
 OLD JSON. Count the fills BEFORE running. **Still owed after these: 60 name components / 11 providers.**
@@ -56,8 +58,8 @@ today.** HDLE Foundation held at v4.15 for the same reason; Mariposa Foundation 
 **Neither LIVE row was discoverable from the repo** -- the capture tool cannot reach these tenants,
 so ASK at every import; HDLE LIVE was missed for a day because "foundation and live" read as one.
 
-**JIRA: 4 sections, one per RELEASE, EDIT IN PLACE, DRAFT AND WAIT, archive the pre-edit body first.**
-Full rules: `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`.
+**JIRA (RULE REVERSED 08-17): 4 sections, one NEW comment per RELEASE -- do NOT edit the previous one.**
+Name the superseded comment id in Section 1. DRAFT AND WAIT. Rules: `JIRA_COMMENT_TEMPLATE.txt`.
 
 **EXTENSION v0.5.2**: manifest `https://*.mark43.com/rms/*`; the ARM switch replaced the allowlist --
 per-host, 8 `requireArmed()` gates, no dialogs. Match patterns CANNOT match a URL hash. **⚡ Fetch
