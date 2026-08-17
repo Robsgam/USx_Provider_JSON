@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: FL_FCIC Boat BoatQuery
+Combo: QBCoastGuardDocumentNumber_af_relatedHitSearchIndicator (QBCoastGuardDocumentNumber_af_relatedHitSearchIndicator (auto))
+Date: 2026-08-17 15:14:24
+Result: PASS
+JSON Version: 7.24
+Entity Fingerprint: 220cb4a6d4ca03a85224a34af9af604a290796755b38d85698c52905076aec24
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","coastGuardDocumentNumber":"CG123456","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43LEO</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M08J0NGND4KE1DG6MKATF7N1">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43LEO</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M08J0NGND4KE1DG6MKATF7N1</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <Requestor>SGAMBELLONE R</Requestor>
+            <CoastGuardDocumentNumber>CG123456</CoastGuardDocumentNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43LEO
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01M08J0NGND4KE1DG6MKATF7N1
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 Y
+  Requestor                      SGAMBELLONE R
+  CoastGuardDocumentNumber       CG123456
+
+NOTES
+-----
+Automated capture (txId 01M08J0NGND4KE1DG6MKATF7N1). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=QBCoastGuardDocumentNumber; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
