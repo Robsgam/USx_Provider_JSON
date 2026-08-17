@@ -7971,6 +7971,14 @@
                                                                           "targetField":  "Mnemonic"
                                                                       },
                                                                       {
+                                                                          "description":  "Agency-assigned CLETS Terminal Identifier (mnemonic pooling)",
+                                                                          "name":  "DeviceId",
+                                                                          "sourceField":  [
+                                                                                              "DeviceId"
+                                                                                          ],
+                                                                          "targetField":  "DeviceId"
+                                                                      },
+                                                                      {
                                                                           "description":  "dexUserStateid from RMS profile",
                                                                           "name":  "UserName",
                                                                           "rule":  {
@@ -7994,7 +8002,8 @@
                                                                                                              "Mnemonic"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "dexStateUserId"
+                                                                                                             "dexStateUserId",
+                                                                                                             "DeviceId"
                                                                                                          ]
                                                                                              }
                                                                         }
@@ -10454,7 +10463,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_VENTURA_COUNTY v2.3 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for CA_VENTURA_COUNTY v2.4 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "CA_VENTURA_COUNTY",
                         "type":  "BUNDLE",
                         "provider":  "CA_VENTURA_COUNTY"

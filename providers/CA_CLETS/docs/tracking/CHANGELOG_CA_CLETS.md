@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.24** | Generated: 2026-08-13
+Current: **v2.25** | Generated: 2026-08-17
 
 ---
+
+## v2.25 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.24 -- 2026-08-06 -- DEX-1283: removed unneeded X default on Attention
 

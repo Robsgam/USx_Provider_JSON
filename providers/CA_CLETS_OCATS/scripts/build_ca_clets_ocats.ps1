@@ -1,4 +1,10 @@
 # build_ca_clets_ocats.ps1  -- CA_CLETS_OCATS (galvanized v2.0, single-JSON native PascalCase)
+# v2.4 (2026-08-17, CA-FAMILY HEADER FIX): added <Authentication>/<DeviceId> via Build-Auth
+#   -IncludeDeviceId. CA devdoc: the agency-assigned CLETS Terminal Identifier belongs in that
+#   header field, required wherever CLETS mnemonic pooling is used (else ConnectCIC falls back to
+#   the server IP). Found because CA_CLETS was FAILING AT MARIPOSA (LIVE) without it; Rob ruled it
+#   required on ALL SIX CA providers. Rides in AUTH any[], never set[] (pooling-only per devdoc).
+#   No form control needed -- DeviceId is in validate.ps1's $systemSourceFields with ORI/Mnemonic.
 # MC variant: PascalCase fieldIds, no Patch 8 (CAD rename).
 # Phase 2 multi-card. Cross-entity combos (VP name on Vehicle).
 # CAD_DISPATCH + FIRST_RESPONDER context cards.
@@ -6,7 +12,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_ocats_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.3'
+$Version  = '2.4'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -33,7 +39,7 @@ if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 # BUNDLE 1: CA_CLETS_OCATS PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-$auth = Build-Auth -ProviderName 'CA_CLETS_OCATS'
+$auth = Build-Auth -ProviderName 'CA_CLETS_OCATS' -IncludeDeviceId
 
 $results = Build-ProviderQrdm -ProviderName 'CA_CLETS_OCATS'
 

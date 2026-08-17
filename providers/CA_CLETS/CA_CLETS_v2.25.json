@@ -6612,6 +6612,14 @@
                                                                           "targetField":  "Mnemonic"
                                                                       },
                                                                       {
+                                                                          "description":  "Agency-assigned CLETS Terminal Identifier (mnemonic pooling)",
+                                                                          "name":  "DeviceId",
+                                                                          "sourceField":  [
+                                                                                              "DeviceId"
+                                                                                          ],
+                                                                          "targetField":  "DeviceId"
+                                                                      },
+                                                                      {
                                                                           "description":  "dexUserStateid from RMS profile",
                                                                           "name":  "UserName",
                                                                           "rule":  {
@@ -6635,7 +6643,8 @@
                                                                                                              "Mnemonic"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "dexStateUserId"
+                                                                                                             "dexStateUserId",
+                                                                                                             "DeviceId"
                                                                                                          ]
                                                                                              }
                                                                         }
@@ -9073,7 +9082,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS v2.24 MC -- 6 QIDMs, 25 combos, 100% metadata coverage",
+                        "description":  "Provider configuration for CA_CLETS v2.25 MC -- 6 QIDMs, 25 combos, 100% metadata coverage",
                         "name":  "CA_CLETS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS"

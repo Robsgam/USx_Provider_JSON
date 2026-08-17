@@ -2,11 +2,64 @@ function Build-Auth {
     param(
         [Parameter(Mandatory)][string]$ProviderName,
         [array]$ExtraAttributes,
-        [array]$ExtraAny
+        [array]$ExtraAny,
+        # ------------------------------------------------------------------------------------
+        # -IncludeDeviceId : emit <Authentication>/<DeviceId> in the ConnectCIC header.
+        #
+        # REQUIRED ON EVERY CA PROVIDER (Rob, 2026-08-17). CA_CLETS was FAILING AT MARIPOSA
+        # (LIVE) for want of it. The CA devdoc, "Routing and Configuration Information":
+        #   "The agency assigned Terminal Identifier should be placed in the
+        #    <Authentication>/<DeviceId> field in the ConnectCIC header. This field is
+        #    required only when CLETS mnemonic pooling is used. If this field is not
+        #    provided, the IP Address of the ConnectCIC server on the state network is used."
+        # Mariposa uses mnemonic pooling, so the fallback-to-server-IP is not acceptable there.
+        #
+        # WHY THIS IS THE RIGHT LEVER, measured not assumed:
+        #  - The <Authentication> block mirrors this config's attributes ONE CHILD PER
+        #    ATTRIBUTE. A captured CA_CLETS v2.24 wire carries exactly UserName + ORI +
+        #    Mnemonic and nothing else -- the three attributes below. So a fourth attribute
+        #    with targetField='DeviceId' is what makes the element appear at all.
+        #  - DeviceId is NOT in any provider's metadata XML: it is a HEADER field, not a
+        #    per-transaction field, so there is no <Requirements> entry to satisfy and
+        #    audit_metadata has no opinion on it.
+        #  - It IS already in validate.ps1's $systemSourceFields, alongside ORI / Mnemonic /
+        #    dexStateUserId -- the platform-supplied class that needs no form control. Verified
+        #    on CA_CLETS: ORI, Mnemonic and dexStateUserId have ZERO form controls and still
+        #    arrive with real values (MK1234567 in the provider tenant, CA0220000 / MOU0 at
+        #    Mariposa). DeviceId is the same class of value.
+        #  - The platform demonstrably HOLDS a device identity: production api:Source carries
+        #    the workstation (LAPTOP47EQ3RSJ at Mariposa) where the test tenant carries MK43RS.
+        #    Today that identity reaches the ROUTING header only and never <Authentication>.
+        #
+        # [LIKELY, NOT CERTAIN] -- and say so rather than claim it: that the platform populates
+        # DeviceId from the device-registration record cannot be PROVEN from this repo, because
+        # no committed wire has ever carried the element. What IS certain is that the element
+        # can never appear without this attribute, so this is a necessary step either way. The
+        # confirming evidence is one request after import: if <DeviceId> appears but EMPTY, the
+        # value must be set on the tenant's device registration (a config action, not a JSON
+        # one) -- that is a tenant-side finding, not a reason to revert this.
+        #
+        # It rides in the AUTH combination's any[], never set[], because the devdoc scopes it to
+        # "only when mnemonic pooling is used" -- a set[] entry would make every non-pooling
+        # agency's authentication unsatisfiable.
+        #
+        # OPT-IN ON PURPOSE (usx-tooling 8c): flipping it on for all 20 providers from a shared
+        # module would be a back-door mass change to 14 providers whose devdocs do not ask for
+        # it. Each CA build script passes it explicitly.
+        # ------------------------------------------------------------------------------------
+        [switch]$IncludeDeviceId
     )
     $attrs = [System.Collections.Generic.List[object]]::new()
     $attrs.Add([PSCustomObject]@{ name = 'ORI';      size = 12; sourceField = @('ORI');      targetField = 'ORI' })
     $attrs.Add([PSCustomObject]@{ name = 'Mnemonic'; size = 25; sourceField = @('mnemonic'); targetField = 'Mnemonic' })
+    if ($IncludeDeviceId) {
+        $attrs.Add([PSCustomObject]@{
+            description = 'Agency-assigned CLETS Terminal Identifier (mnemonic pooling)'
+            name        = 'DeviceId'
+            sourceField = @('DeviceId')
+            targetField = 'DeviceId'
+        })
+    }
     $attrs.Add([PSCustomObject]@{
         description = 'dexUserStateid from RMS profile'
         name        = 'UserName'
@@ -18,6 +71,7 @@ function Build-Auth {
 
     $anyFields = [System.Collections.Generic.List[string]]::new()
     $anyFields.Add('dexStateUserId')
+    if ($IncludeDeviceId) { $anyFields.Add('DeviceId') }
     if ($ExtraAny) { foreach ($f in $ExtraAny) { $anyFields.Add($f) } }
 
     $displayName = ($ProviderName -replace '_',' ').Trim()

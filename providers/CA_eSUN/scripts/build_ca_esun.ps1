@@ -1,4 +1,10 @@
 # build_ca_esun.ps1  -- CA_eSUN (galvanized v2.0, single-JSON native PascalCase)
+# v2.3 (2026-08-17, CA-FAMILY HEADER FIX): added <Authentication>/<DeviceId> via Build-Auth
+#   -IncludeDeviceId. CA devdoc: the agency-assigned CLETS Terminal Identifier belongs in that
+#   header field, required wherever CLETS mnemonic pooling is used (else ConnectCIC falls back to
+#   the server IP). Found because CA_CLETS was FAILING AT MARIPOSA (LIVE) without it; Rob ruled it
+#   required on ALL SIX CA providers. Rides in AUTH any[], never set[] (pooling-only per devdoc).
+#   No form control needed -- DeviceId is in validate.ps1's $systemSourceFields with ORI/Mnemonic.
 # Consolidated legacy BASE+MC -> one versioned JSON. Native PascalCase USx CAD fieldIds
 # (Build-RmsBundle -PascalCaseUsxFields). Phase 2 multi-card. Cross-entity combos (VP.N/VP.D, QGH).
 # DH uses DH-suffix fieldIds (OperatorLicenseNumberDH, NameFirstDH, etc.) + queriesToDeselect.
@@ -8,7 +14,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.2'
+$Version  = '2.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_eSUN_v${Version}.json"
@@ -36,7 +42,7 @@ if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 # BUNDLE 1: CA_eSUN PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-$auth = Build-Auth -ProviderName 'CA_eSUN'
+$auth = Build-Auth -ProviderName 'CA_eSUN' -IncludeDeviceId
 
 $results = Build-ProviderQrdm -ProviderName 'CA_eSUN'
 

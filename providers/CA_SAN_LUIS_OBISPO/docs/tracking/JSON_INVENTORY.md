@@ -22,6 +22,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.4 (2026-08-17)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_SAN_LUIS_OBISPO_v2.4.json | v2.4 | Current | 67P/0F/0W/0LIM. |
 ## v2.3 (2026-08-02)
 
 | File | Version | Status | Notes |

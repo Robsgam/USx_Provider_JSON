@@ -1,4 +1,10 @@
 # build_ca_san_luis_obispo.ps1  -- CA_SAN_LUIS_OBISPO (galvanized v2.0)
+# v2.4 (2026-08-17, CA-FAMILY HEADER FIX): added <Authentication>/<DeviceId> via Build-Auth
+#   -IncludeDeviceId. CA devdoc: the agency-assigned CLETS Terminal Identifier belongs in that
+#   header field, required wherever CLETS mnemonic pooling is used (else ConnectCIC falls back to
+#   the server IP). Found because CA_CLETS was FAILING AT MARIPOSA (LIVE) without it; Rob ruled it
+#   required on ALL SIX CA providers. Rides in AUTH any[], never set[] (pooling-only per devdoc).
+#   No form control needed -- DeviceId is in validate.ps1's $systemSourceFields with ORI/Mnemonic.
 # Single-JSON PascalCase build (consolidated from the legacy BASE+MC dual scripts 2026-07-23).
 # Native PascalCase USx CAD fieldIds (was camelCase MC); Build-RmsBundle -PascalCaseUsxFields.
 # Multi-card. NO cross-entity combos (SLO has no VP/QGH/BQ.N in metadata).
@@ -16,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '2.3'
+    [string]$Version = '2.4'
 )
 
 $ErrorActionPreference = "Stop"
@@ -46,7 +52,7 @@ if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 # BUNDLE 1: CA_SAN_LUIS_OBISPO PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-$auth = Build-Auth -ProviderName 'CA_SAN_LUIS_OBISPO'
+$auth = Build-Auth -ProviderName 'CA_SAN_LUIS_OBISPO' -IncludeDeviceId
 
 # QUERYRESULTDATAMAPPING (from KB specs)
 $results = Build-ProviderQrdm -ProviderName 'CA_SAN_LUIS_OBISPO'

@@ -5445,6 +5445,14 @@
                                                                           "targetField":  "Mnemonic"
                                                                       },
                                                                       {
+                                                                          "description":  "Agency-assigned CLETS Terminal Identifier (mnemonic pooling)",
+                                                                          "name":  "DeviceId",
+                                                                          "sourceField":  [
+                                                                                              "DeviceId"
+                                                                                          ],
+                                                                          "targetField":  "DeviceId"
+                                                                      },
+                                                                      {
                                                                           "description":  "dexUserStateid from RMS profile",
                                                                           "name":  "UserName",
                                                                           "rule":  {
@@ -5468,7 +5476,8 @@
                                                                                                              "Mnemonic"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "dexStateUserId"
+                                                                                                             "dexStateUserId",
+                                                                                                             "DeviceId"
                                                                                                          ]
                                                                                              }
                                                                         }
@@ -7280,7 +7289,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_SAN_LUIS_OBISPO v2.3 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
+                        "description":  "Provider configuration for CA_SAN_LUIS_OBISPO v2.4 MC -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 2 Person QIDMs",
                         "name":  "CA_SAN_LUIS_OBISPO",
                         "type":  "BUNDLE",
                         "provider":  "CA_SAN_LUIS_OBISPO"

@@ -1,4 +1,21 @@
 # build_ca_clets.ps1  -- CA_CLETS
+# v2.25 (2026-08-17, PRODUCTION FAILURE FIX -- Mariposa LIVE): added <Authentication>/<DeviceId>
+#   to the ConnectCIC header via Build-Auth -IncludeDeviceId. The CA devdoc, "Routing and
+#   Configuration Information": "The agency assigned Terminal Identifier should be placed in the
+#   <Authentication>/<DeviceId> field ... required only when CLETS mnemonic pooling is used. If
+#   this field is not provided, the IP Address of the ConnectCIC server on the state network is
+#   used." Mariposa uses mnemonic pooling, so the server-IP fallback is not acceptable and the
+#   query fails there. v2.24's captured wire carried ONLY UserName + ORI + Mnemonic -- the
+#   <Authentication> block mirrors the AUTH config's attributes one child per attribute, so the
+#   element could not appear without a fourth attribute. Rides in the AUTH combination's any[],
+#   never set[], because the devdoc scopes it to pooling agencies only -- a set[] entry would
+#   make a non-pooling agency's authentication unsatisfiable. DeviceId needs no form control: it
+#   is already in validate.ps1's $systemSourceFields with ORI/Mnemonic/dexStateUserId, all three
+#   of which have ZERO controls on this provider and still arrive with real values. Required on
+#   ALL SIX CA providers (Rob); each passes the switch explicitly rather than the shared module
+#   flipping it for the 14 non-CA providers.
+#   VERIFY AFTER IMPORT: if <DeviceId> appears EMPTY, the Terminal Identifier must be set on the
+#   tenant's device-registration record -- a tenant config action, not a JSON one.
 # v2.24 (DEX-1283): removed initialValue='X' from the Attention (DH) hidden gate-feeder, and the
 #   matching combo defaults[] entries on NLTS.KQ.N/NLTS.KQ.O. sourceField stays non-empty and
 #   Attention stays in both combos' any[] -- those two remain required (ConnectCic rejects an
@@ -134,7 +151,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.24"
+    [string]$Version = "2.25"
 )
 
 $ErrorActionPreference = "Stop"
@@ -161,7 +178,7 @@ $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 # BUNDLE 1: CA_CLETS PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-$auth = Build-Auth -ProviderName 'CA_CLETS'
+$auth = Build-Auth -ProviderName 'CA_CLETS' -IncludeDeviceId
 
 $results = Build-ProviderQrdm -ProviderName 'CA_CLETS'
 

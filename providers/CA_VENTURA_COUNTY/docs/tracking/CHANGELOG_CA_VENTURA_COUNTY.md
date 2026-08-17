@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_VENTURA_COUNTY_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-13
+Current: **v2.4** | Generated: 2026-08-17
 
 ---
+
+## v2.4 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.3 -- 2026-08-01 -- Removed an over-permit INTRODUCED at v2.2, caught by an ADVISORY gate (5e73a120)
 

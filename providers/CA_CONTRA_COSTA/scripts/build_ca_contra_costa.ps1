@@ -1,4 +1,10 @@
 # build_ca_contra_costa.ps1  -- CA_CONTRA_COSTA (SPECIAL CASE: CA_CLETS copy + CC JAWS)
+# v2.3 (2026-08-17, CA-FAMILY HEADER FIX): added <Authentication>/<DeviceId> via Build-Auth
+#   -IncludeDeviceId. CA devdoc: the agency-assigned CLETS Terminal Identifier belongs in that
+#   header field, required wherever CLETS mnemonic pooling is used (else ConnectCIC falls back to
+#   the server IP). Found because CA_CLETS was FAILING AT MARIPOSA (LIVE) without it; Rob ruled it
+#   required on ALL SIX CA providers. Rides in AUTH any[], never set[] (pooling-only per devdoc).
+#   No form control needed -- DeviceId is in validate.ps1's $systemSourceFields with ORI/Mnemonic.
 # Cloned from build_ca_clets.ps1. Builds the 6 CA_CLETS basic-supported families as CC's framework.
 # CC's own JAWS transactions + CLETSPersonSuperQuery live in the merged metadata (source/CA_CONTRA_COSTA.xml
 # = CA_CLETS.xml + CC JAWS) but are NOT built here (CC "Expanded", not "Basic" -- backfill if devdoc changes).
@@ -71,7 +77,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.2"
+    [string]$Version = "2.3"
 )
 
 $ErrorActionPreference = "Stop"
@@ -98,7 +104,7 @@ $DATE     = (Get-Date -Format 'yyyy-MM-dd')
 # BUNDLE 1: CA_CLETS PROVIDER (PascalCase sourceField / combo refs)
 # =====================================================================
 
-$auth = Build-Auth -ProviderName 'CA_CONTRA_COSTA'
+$auth = Build-Auth -ProviderName 'CA_CONTRA_COSTA' -IncludeDeviceId
 
 $results = Build-ProviderQrdm -ProviderName 'CA_CONTRA_COSTA'
 

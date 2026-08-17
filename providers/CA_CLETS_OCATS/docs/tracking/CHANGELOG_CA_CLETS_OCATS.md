@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_CLETS_OCATS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-13
+Current: **v2.4** | Generated: 2026-08-17
 
 ---
+
+## v2.4 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.3 -- 2026-08-02 -- Wire ArticleCategory; fix an Authorization size read from the wrong transaction (5f010dd5)
 
