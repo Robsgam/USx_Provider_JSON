@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.24.json
-  Generated: 2026-08-06 15:46
+  Source: CA_CLETS_v2.25.json
+  Generated: 2026-08-17 11:05
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_v2.24.json
+  CommSys Query Simulator -- CA_CLETS_v2.25.json
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
@@ -33,7 +33,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IN.VP
       set: [purposeCode, NameLast, NameFirst]
-      any: [addressCity, addressStreetNumber] -> matched: [addressCity, addressStreetNumber]
+      any: [addressCity, addressStreetNumber, nameMiddle, nameSuffix] -> matched: [addressCity, addressStreetNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -106,6 +106,7 @@ QUERY SIMULATION
 
     [FIRES first-match] IG.QGH.A
       set: [purposeCode, NameLast, NameFirst, age]
+      any: [nameMiddle, nameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -117,6 +118,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IG.QGH.B
       set: [purposeCode, NameLast, NameFirst, BirthDate]
+      any: [nameMiddle, nameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -182,6 +184,7 @@ QUERY SIMULATION
 
     [FIRES first-match] NLTS.BQ.N
       set: [purposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+      any: [nameMiddle, nameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->

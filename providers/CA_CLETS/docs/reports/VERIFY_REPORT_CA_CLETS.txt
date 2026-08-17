@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS
   Source: CA_CLETS_v2.25.json
-  Generated: 2026-08-17 10:51
+  Generated: 2026-08-17 11:05
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 31 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, RegistrationStateDH, Attention, GunCaliber, GunMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 35 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, nameMiddle, nameSuffix, VehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, SexCodeDH, RegistrationStateDH, Attention, GunCaliber, GunMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -39,7 +39,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (40) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (44) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -59,22 +59,28 @@ POST-BUILD VERIFICATION
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional; card title carries the paths))
   [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'addressCity' (any[]-only) label='City' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement))
   [INFO] Field 'addressStreetNumber' (any[]-only) label='Street Number' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement))
+  [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare 'Middle Name' (any[] optional); metadata Name declares 4 components)
+  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' (any[] optional))
   [INFO] Field 'addressCounty' (any[]-only) label='County' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
   [INFO] Field 'height' (any[]-only) label='Height' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
   [INFO] Field 'raceCode' (any[]-only) label='Race' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional DL refinement))
+  [INFO] Field 'nameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted (bare 'Middle Name' (any[] optional); metadata Name declares 4 components)
+  [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' (any[] optional))
   [INFO] Field 'GunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
   [INFO] Field 'GunMake' (any[]-only) label='Make' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
   [INFO] Field 'gunTypeCode' (any[]-only) label='Type' -- manual label override accepted (v2.13 cosmetic pass, any[]-only optional field, Rob-directed bare label)
   [INFO] Field 'articleBrand' (any[]-only) label='Brand' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'ArticleTypeCode' (any[]-only) label='Article Type' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'articleCategory' (any[]-only) label='Category' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
-  [PASS] All form field labels have required routing hint qualifiers (43 fields scanned) (7 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (47 fields scanned) (9 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

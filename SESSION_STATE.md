@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-14 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-17 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -14,11 +14,11 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 
 | Provider | Ver | State |
 |---|---|---|
-| AZ_AZDPS | v3.11 | ALL-PASS (50 logs) |
-| CA_CLETS | v2.24 | ALL-PASS (90 logs) |
+| AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
+| CA_CLETS | v2.25 | NEVER-TESTED -- 90 test(s) owed |
 | FL_FCIC | v7.23 | ALL-PASS (110 logs) |
 | HI_HCJDC_OFML | v4.18 | ALL-PASS (46 logs) |
-| IL_LEADS_OFML | v2.7 | ALL-PASS (41 logs) |
+| IL_LEADS_OFML | v2.7 | PARTIAL -- 1 plan test(s) owed (41 captured) |
 | NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.24 | ALL-PASS (69 logs) |
 | TX_TLETS | v4.20 | ALL-PASS (92 logs) |
@@ -33,19 +33,28 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**NOTHING MID-FLIGHT. 8/20 ALL-PASS, 538 logs, NO PROVIDER OWES A SWEEP.** 7 of 8 are
-lifecycle-COMPLETE (release line EDITED IN PLACE + JSON attached + catalog + ledger).
-**ONE owed Jira release line: AZ_AZDPS -- the ENTIRE history, nothing ever posted.** DRAFT AND WAIT.
-Then **(b)** the HI one-hit verification query (see PRODUCTION below -- highest value outstanding),
-**(c)** the officer-guide rewrite, **(d)** the fidelity over-permit blind spot.
+**CA_CLETS v2.25 -- RE-IMPORT AT MARIPOSA, THEN ONE QUERY TO CONFIRM `<DeviceId>` ARRIVES
+POPULATED.** That single request is the only thing that closes a PRODUCTION FAILURE. The CA devdoc
+puts the agency-assigned CLETS Terminal Identifier in `<Authentication>/<DeviceId>`, required
+wherever mnemonic pooling is used (Mariposa is); without it ConnectCIC silently falls back to the
+server IP and the state sees the wrong terminal. Added to **all six** CA providers via
+`Build-Auth -IncludeDeviceId` (opt-in, so the 14 non-CA are untouched -- verified). **If `<DeviceId>`
+arrives EMPTY the value must be set on the tenant's device-registration record -- a tenant config
+action, NOT a JSON one, and NOT grounds to revert.** CA_CLETS's 90 logs are archived; it owes a full
+re-sweep and is the ONLY one of the six that does (the other five were never tenant-tested).
 
-**⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS v2.24 at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
-A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **They are in
-OPPOSITE states, both deliberate:** Mariposa is on the CURRENT version; **HDLE is deliberately HELD
-at v4.15** (repo/catalog/ticket are v4.18) until the hit block is verified -- so the published
-artifact is intentionally AHEAD of the tenant. **Consequence: HDLE production discards NCIC hit
-content today**, which is why the one-hit verification query is the highest-value test outstanding.
-HDLE Foundation is held at v4.15 for the same reason. Mariposa Foundation = v2.24.
+**Then: 70 name components 14 providers cannot accept** -- `audit_name_components.ps1` (new
+2026-08-17, NOT in enforce yet; it would redden 14 of 20). Metadata declares request `Name` with
+First/Last/**Middle/Suffix**; middle+suffix have no control. Rob's order: **FL_FCIC (6) ·
+NJ_NJCJIS (2) · IL_LEADS_OFML (2) -- going live soon** (CA_CLETS's 10 landed in v2.25, folded in so
+it cost no second archive). Wire-PROVEN, AZ 10 captures: `DOE, JOHN A JR`. Then AZ's Jira line.
+
+**⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
+A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa is now
+BEHIND (tenant v2.24, repo v2.25) and that is the open production action above.** **HDLE is
+deliberately HELD at v4.15** (repo/catalog/ticket v4.18) until the hit block is verified, so there
+the artifact is intentionally AHEAD. **Consequence: HDLE production discards NCIC hit content
+today.** HDLE Foundation held at v4.15 for the same reason; Mariposa Foundation also owes v2.25.
 **Neither LIVE row was discoverable from the repo** -- the capture tool cannot reach these tenants,
 so ASK at every import; HDLE LIVE was missed for a day because "foundation and live" read as one.
 
@@ -59,33 +68,26 @@ two runs back-to-back silently loses the first (cost 3 entity runs on 08-14); ru
 
 ## OPEN FINDINGS -- confirmed, unfixed
 
-- **⏸ PAUSED 2026-08-15 PENDING COMMSYS -- LIMITATION #41: a populated HOME state routes a local
-  plate to NLETS.** Seen on a Mariposa **Foundation** CA_CLETS request (`State=CA` + plate satisfied
-  the interstate `NLTS.RQ.P`, not in-state `IA.QV`). **Our config is provably clean** -- full evidence,
-  both unrun tests, the CA_eSUN handler that fixes it, and the DO-NOT-APPLY-YET reasoning are in
-  `knowledge-base/PLATFORM_CONSTRAINTS.txt` LIMITATION #41. **Read that before touching any State
-  field.** CA_CLETS is LIVE at Mariposa, so nothing changes without CommSys first.
+- **⏸ PAUSED PENDING COMMSYS -- LIMITATION #41: a populated HOME state routes a local plate to
+  NLETS** (Mariposa Foundation CA_CLETS: `State=CA` satisfied `NLTS.RQ.P`, not `IA.QV`). Our config
+  is provably clean; evidence, both unrun tests and the DO-NOT-APPLY-YET reasoning are in
+  `PLATFORM_CONSTRAINTS.txt` #41. **Read it before touching any State field.**
 - **`audit_requirement_fidelity` over-permit blind spot.** `vehicleYear` added to IL `Z2.P any[]`
   (metadata does not define it there) goes unreported -- control and mutant both 9 branches / 0 OVER.
   Reproduced with a control. Suspect `$shPool` inheriting the sibling VIN branch; not confirmed.
 - **HI's NCIC hit block is CONFIG-PRESENT, NOT RENDERING-VERIFIED.** v4.16-v4.18 added 25 QRDM
-  attributes so wanted/missing-person hit content stops being discarded; the 46/46 sweep proves the
-  request unchanged and proves nothing about the response, because no test query returned a real
-  hit. Needs ONE deliberate hit query viewed in the RMS UI (HI's own tenant, not HDLE), which also
-  settles whether the dotted `Hit.Banner` syntax resolves. **This is a product-level gap, not HI's:**
-  all 20 providers AND engineering's independently hand-built Lafayette JSON map 0 of 21 such fields.
-- **`firearmMake` driven by no test** on IL -- 41/41 green, zero wire evidence. Fix =
-  `TEST_VALUE_OVERRIDES`. Recorded in IL BUILD_NOTES.
+  attributes; the 46/46 sweep proves the REQUEST unchanged and nothing about the response -- no test
+  returned a real hit. Needs ONE deliberate hit query in HI's own tenant (not HDLE); also settles the
+  dotted `Hit.Banner` syntax. **Product-level gap:** all 20 providers AND engineering's hand-built
+  Lafayette JSON map 0 of 21 such fields.
 - **Officer guides are content-poor, not stale** (all 20 regenerate current). HI's says "pick a row"
-  when the PLATFORM picks by field content, and never names the discriminator -- which on HI differs
-  per path: plate routes on **Plate Type**, VIN on **State**. Rewrite requested; shape not agreed.
+  when the PLATFORM picks by field content, and never names the discriminator. Rewrite requested.
 
 ## ON HOLD / DO NOT RE-RAISE
 
 - **HI PlateType default on a CAD VIN check -- HELD, "may be a cad side fix". DO NOT ADD IT.** Wire
-  shows M55S fired correctly. `LicensePlateTypeCode initialValue=''` is DELIBERATE -- it is the
-  routing discriminator (`RQ` EXISTS vs `M55L` NOT_EXISTS) and defaulting it kills the in-state
-  plate search (BUILD_RULES 24). KB carve-out to `feedback_plate_defaults` also held.
+  shows M55S fired correctly; `LicensePlateTypeCode initialValue=''` is the routing discriminator and
+  defaulting it kills the in-state plate search (BUILD_RULES 24). KB carve-out also held.
 - **CA_CONTRA_COSTA** BLOCKED: `audit_devdoc_combinations` compares ZERO devdoc combos.
   **LA_LEMS PARKED**: real BUILD_RULES 20b WARN, do NOT silence. Rob's call.
 - **DH IS NOT SUPPORTED FROM CAD** (Rob 08-12) -- relevant to LIMITATION #41: DH is out of scope for
@@ -96,13 +98,11 @@ two runs back-to-back silently loses the first (cost 3 entity runs on 08-14); ru
 ## STATE
 
 **0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` is 16 -> 2**
-(2026-08-14, Rob-approved): 10 retired with ZERO JSON change -- **6 of 20 build NO ImageIndicator
-control at all** so the rule is N/A, 3 have their only (Person) control already `'Y'`, and **AZ is
-RULED OUT -- MEASURED** (`'Y'` kills `DQN`+`DQP`, 2 `set[]`s, BUILD_RULES 24). TAKEN at FL v7.21 /
-IL v2.4 / HI v4.17 / **NJ v4.16 / NY v4.24 / TX v4.20 + CCH v1.16** (all wire-proven by ratio
-inversion). **Owed: MD_METERS + OH_LEADS only** -- Rob-held, a WIRE change so bump + re-sweep each.
+(Rob-approved): 10 retired with ZERO JSON change -- 6 build NO ImageIndicator control (rule N/A), 3
+already `'Y'`, and **AZ is RULED OUT -- MEASURED** (`'Y'` kills `DQN`+`DQP`, BUILD_RULES 24). **Owed:
+MD_METERS + OH_LEADS only** -- Rob-held, a WIRE change so bump + re-sweep each.
 **Expect on EVERY provider's enforce:** `[FAIL] Repo audit` = LA + MD STATUS drift; syncing them is
-a back-door mass rebuild.
+a back-door mass rebuild. **`[FLAG:nameparts-untested-unfrozen]` pending on HI/NY/TX/TX_CCH.**
 
 ## RULES I HAVE BROKEN -- READ FIRST (`usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c)
 

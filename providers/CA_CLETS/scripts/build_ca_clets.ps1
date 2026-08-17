@@ -201,8 +201,8 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'LicensePlateYear';             size = 4;  sourceField = @('LicensePlateYear');             targetField = 'LicensePlateYear' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 35; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size = 35; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber';  size = 30; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
@@ -260,7 +260,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','NameLast','NameFirst')
-                any      = @('addressCity','addressStreetNumber')
+                any      = @('addressCity','addressStreetNumber','nameMiddle','nameSuffix')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -355,8 +355,8 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'Height';                size = 3;  sourceField = @('height');                targetField = 'Height' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'RaceCode';              size = 1;  sourceField = @('raceCode');              targetField = 'RaceCode'; codeTypeProvider = 'NIBRS' }
@@ -365,7 +365,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
     )
     combinations = @(
-        # --- NLTS.DQ.N: OOS name search (most specific — name + state required + OLN>Name guardrail) ---
+        # --- NLTS.DQ.N: OOS name search (most specific â€” name + state required + OLN>Name guardrail) ---
         # v2.23: SexCode ADDED to any[]. Metadata NLTS.DQ{Name} variant 2 is
         #     Set[CaRequestPurposeCode, Name, State] Any[BirthDate, SexCode]
         # which is exactly the alternative this combo implements -- but SexCode was not carried AT
@@ -376,7 +376,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','NameLast','NameFirst','RegistrationState')
-                any        = @('BirthDate','SexCode')
+                any        = @('BirthDate','SexCode','nameMiddle','nameSuffix')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -416,7 +416,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','NameLast','NameFirst','SexCode')
-                any        = @('BirthDate','age','addressCounty','height','raceCode')
+                any        = @('BirthDate','age','addressCounty','height','raceCode','nameMiddle','nameSuffix')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode';           value = 'C' }
                 )
@@ -561,7 +561,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','NameLast','NameFirst')
-                any        = @('BirthDate')
+                any        = @('BirthDate','nameMiddle','nameSuffix')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -606,8 +606,8 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'CaRequestPurposeCode'; size = 1;  sourceField = @('purposeCodeDH'); targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLastDH','NameFirstDH'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size = 30; sourceField = @('NameLastDH','NameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
@@ -622,7 +622,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCodeDH','BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH')
-                any        = @('RegistrationStateDH','Attention')
+                any        = @('RegistrationStateDH','Attention','nameMiddleDH','nameSuffixDH')
                 # v2.24 (DEX-1283): removed defaults[] Attention='X' -- the hidden gate-feeder no
                 # longer carries a starting value (see ROW_PER_DH_ATTN below); a combo default was
                 # never required for the handler to run either.
@@ -682,8 +682,8 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'GunTypeCode';          size = 2;  sourceField = @('gunTypeCode');           targetField = 'GunTypeCode' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
     )
     combinations = @(
@@ -711,7 +711,7 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','NameLast','NameFirst','age')
-                any      = @()
+                any      = @('nameMiddle','nameSuffix')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -723,7 +723,7 @@ $gunQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','NameLast','NameFirst','BirthDate')
-                any      = @()
+                any      = @('nameMiddle','nameSuffix')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -823,8 +823,8 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'CaRequestPurposeCode';  size = 1;  sourceField = @('purposeCode');  targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OwnerAppliedNumber';    size = 20; sourceField = @('ownerAppliedNumber');    targetField = 'OwnerAppliedNumber' }
         [PSCustomObject]@{ name = 'RegistrationNumber';    size = 8;  sourceField = @('RegistrationNumber');    targetField = 'RegistrationNumber' }
@@ -835,7 +835,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCode','NameLast','NameFirst','BirthDate','RegistrationState')
-                any        = @()
+                any        = @('nameMiddle','nameSuffix')
                 defaults   = @(
                     [PSCustomObject]@{ field = 'purposeCode'; value = 'C' }
                 )
@@ -988,13 +988,19 @@ $vehLayout = MakeLayouts @(
                 # LABEL-OVERRIDE: vehicleYear -- bare per DEX-1284 lean pass (any[] optional)
                 @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year' '4' 'ROW_VEH_3' }
             )}
-            @{ id = 'ROW_VEH_4'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_VEH_4'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_4' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_4' }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional); metadata Name declares 4 components
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '20' 'ROW_VEH_4' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional)
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '4'  'ROW_VEH_4' }
+            )}
+            @{ id = 'ROW_VEH_4B'; cols = @('6','6'); fields = @(
                 # LABEL-OVERRIDE: addressCity -- bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement)
-                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City'          '13' 'ROW_VEH_4' }
+                @{ id = 'AddressCity_Input';         node = Inp 'addressCity'         'City'          '13' 'ROW_VEH_4B' }
                 # LABEL-OVERRIDE: addressStreetNumber -- bare per DEX-1284 lean pass (any[] optional, IN.VP name-path refinement)
-                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number' '3'  'ROW_VEH_4' }
+                @{ id = 'AddressStreetNumber_Input'; node = Inp 'addressStreetNumber' 'Street Number' '3'  'ROW_VEH_4B' }
             )}
         )
     }
@@ -1025,12 +1031,20 @@ $perLayout = MakeLayouts @(
                 @{ id = 'CriminalIdNumber_Input';     node = Inp 'criminalIdNumber'     'CII' '11' 'ROW_PER_DL_1' }
                 @{ id = 'SocialSecurityNumber_Input';  node = Inp 'socialSecurityNumber'  'SSN' '9'  'ROW_PER_DL_1' }
             )}
-            @{ id = 'ROW_PER_DL_2'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_DL_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional); metadata Name declares 4 components
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '20' 'ROW_PER_DL_2' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional)
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '4'  'ROW_PER_DL_2' }
+            )}
+            # L2: SexCode is MANDATORY in IR.QVC.N's set[] and BirthDate is the NLTS.DQ.N/IN.L1
+            # qualifier -- both lead the optional name parts above them.
+            @{ id = 'ROW_PER_DL_2B'; cols = @('6','6'); fields = @(
                 # LABEL-OVERRIDE: BirthDate -- bare per DEX-1284 lean pass (any[] optional on the DL name/OLN paths)
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_2' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_2' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_2B' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_2B' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('3','3','3','3'); fields = @(
                 # LABEL-OVERRIDE: age -- bare per DEX-1284 lean pass (any[] optional DL refinement)
@@ -1071,11 +1085,19 @@ $perLayout = MakeLayouts @(
                 @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
                 @{ id = 'PurposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
             )}
-            @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name' '30' 'ROW_PER_DH_2' }
                 @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_2' }
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth'                                   'ROW_PER_DH_2' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
+                # LABEL-OVERRIDE: nameMiddleDH -- bare 'Middle Name' (any[] optional); metadata Name declares 4 components
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name' '20' 'ROW_PER_DH_2' }
+                # LABEL-OVERRIDE: nameSuffixDH -- bare 'Suffix' (any[] optional)
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix'      '4'  'ROW_PER_DH_2' }
+            )}
+            # L2: DOB + Sex are MANDATORY in NLTS.KQ.N's set[]; they must not sit behind optional
+            # name parts, so they take their own row directly under the name group.
+            @{ id = 'ROW_PER_DH_2B'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth'                                   'ROW_PER_DH_2B' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2B' }
             )}
             @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); fields = @(
                 @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DH_ATTN' }
@@ -1107,12 +1129,20 @@ $faLayout = MakeLayouts @(
                 @{ id = 'GunCaliber_Input';  node = Sel 'GunCaliber'  'Caliber' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
                 @{ id = 'GunTypeCode_Input'; node = Sel 'gunTypeCode' 'Type'    @{ codeTypeCategory = 'NCIC_FIREARM_TYPE';    codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
-            @{ id = 'ROW_GUN_2'; cols = @('3','3','2','2','2'); fields = @(
+            @{ id = 'ROW_GUN_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_GUN_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_GUN_2' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'               'ROW_GUN_2' }
-                @{ id = 'Age_Input';       node = Inp 'age'       'Age' '2'                     'ROW_GUN_2' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_2' @{ initialValue = 'C' } }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional); metadata Name declares 4 components
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '20' 'ROW_GUN_2' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional)
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '4'  'ROW_GUN_2' }
+            )}
+            # L2: age and BirthDate are MANDATORY discriminators (IG.QGH.A / IG.QGH.B set[]) -- they
+            # follow the name group they qualify rather than sharing a row with optional name parts.
+            @{ id = 'ROW_GUN_2B'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'               'ROW_GUN_2B' }
+                @{ id = 'Age_Input';       node = Inp 'age'       'Age' '2'                     'ROW_GUN_2B' }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_2B' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -1174,12 +1204,16 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8'  'ROW_BOA_1' }
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_BOA_1' }
             )}
-            @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_BOA_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state)' '30' 'ROW_BOA_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state)'  '30' 'ROW_BOA_2' }
-                @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth' 'ROW_BOA_2' }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional); metadata Name declares 4 components
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '20' 'ROW_BOA_2' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional)
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '4'  'ROW_BOA_2' }
             )}
-            @{ id = 'ROW_BOA_3'; cols = @('6','4'); fields = @(
+            @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth' 'ROW_BOA_3' }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_3' }
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_BOA_3' @{ initialValue = 'C' } }
             )}

@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS
   Source: CA_CLETS_v2.25.json
-  Generated: 2026-08-17 10:51
+  Generated: 2026-08-17 11:05
 ================================================================
 CAD AUDIT
 =========
@@ -23,8 +23,8 @@ CAD AUDIT
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
     [INFO] birthDate: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] purposeCode: in QIF and CAD list
     [PASS] addressCity: in QIF and CAD list
@@ -34,8 +34,8 @@ CAD AUDIT
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [PASS] raceCode: in QIF and CAD list
@@ -64,6 +64,8 @@ CAD AUDIT
     [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameMiddleDH: in QIF, not in CAD list (provider-specific)
+    [INFO] nameSuffixDH: in QIF, not in CAD list (provider-specific)
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
@@ -75,8 +77,8 @@ CAD AUDIT
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] purposeCode: in QIF and CAD list
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -107,8 +109,8 @@ CAD AUDIT
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF and CAD list
+    [PASS] nameSuffix: in QIF and CAD list
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] purposeCode: in QIF and CAD list
     [INFO] relatedHitSearchIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -177,6 +179,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 93 PASS / 0 FAIL / 0 WARN / 54 INFO
+Total: 101 PASS / 0 FAIL / 0 WARN / 48 INFO
 
 

@@ -1,16 +1,16 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.24.json
-  Generated: 2026-08-06 15:46
+  Source: CA_CLETS_v2.25.json
+  Generated: 2026-08-17 11:05
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_v2.24
+TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_v2.25
 ============================================================
-Source: CA_CLETS_v2.24.json
+Source: CA_CLETS_v2.25.json
 Matrix: CA_CLETS_TEST_MATRIX.txt
-Generated: 2026-08-06
+Generated: 2026-08-17
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
@@ -22,13 +22,13 @@ ENTITY: PERSON (35 tests -- 2 cards, 11 combos)
   T2  Person     [PASS] any[] fields verified: age
   T3  Person     [PASS] (structural check)
   T4  Person     [PASS] (structural check)
-  T5  Person     [PASS] any[] fields verified: BirthDate
+  T5  Person     [PASS] any[] fields verified: BirthDate, nameMiddle, nameSuffix
   T6  Person     [PASS] (structural check)
   T7  Person     [PASS] (structural check)
   T8  Person     [PASS] any[] fields verified: age
   T9  Person     [PASS] (structural check)
   T10  Person     [PASS] (structural check)
-  T11  Person     [PASS] any[] fields verified: BirthDate
+  T11  Person     [PASS] any[] fields verified: BirthDate, nameMiddle, nameSuffix
   T12  Person     [PASS] (structural check)
   T13  Person     [PASS] any[] fields verified: age
   T14  Person     [PASS] (structural check)
@@ -36,7 +36,7 @@ ENTITY: PERSON (35 tests -- 2 cards, 11 combos)
   T16  Person     [PASS] (structural check)
   T17  Person     [PASS] any[] fields verified: RegistrationStateDH, Attention
   T18  Person     [PASS] (structural check)
-  T19  Person     [PASS] any[] fields verified: RegistrationStateDH, Attention
+  T19  Person     [PASS] any[] fields verified: RegistrationStateDH, Attention, nameMiddleDH, nameSuffixDH
   T20  Person     [PASS] (structural check)
   T21  Person     [PASS] (structural check)
   T22  Person     [PASS] (structural check)
@@ -55,7 +55,7 @@ ENTITY: PERSON (35 tests -- 2 cards, 11 combos)
   T35  Person     [PASS] queriesToDeselect verified
 ENTITY: VEHICLE (14 tests -- 1 card, 5 combos)
   T36  Vehicle    [PASS] (structural check)
-  T37  Vehicle    [PASS] any[] fields verified: addressCity, addressStreetNumber
+  T37  Vehicle    [PASS] any[] fields verified: addressCity, addressStreetNumber, nameMiddle, nameSuffix
   T38  Vehicle    [PASS] (structural check)
   T39  Vehicle    [PASS] any[] fields verified: VehicleMakeCode
   T40  Vehicle    [PASS] (structural check)
@@ -68,28 +68,31 @@ ENTITY: VEHICLE (14 tests -- 1 card, 5 combos)
   T47  Vehicle    [PASS] (structural check)
   T48  Vehicle    [PASS] (structural check)
   T49  Vehicle    [PASS] (structural check)
-ENTITY: BOAT (10 tests -- 1 card, 6 combos)
+ENTITY: BOAT (11 tests -- 1 card, 6 combos)
   T50  Boat       [PASS] (structural check)
   T51  Boat       [PASS] (structural check)
   T52  Boat       [PASS] (structural check)
   T53  Boat       [PASS] (structural check)
-  T54  Boat       [PASS] (structural check)
+  T54  Boat       [PASS] any[] fields verified: nameMiddle, nameSuffix
   T55  Boat       [PASS] (structural check)
   T56  Boat       [PASS] (structural check)
   T57  Boat       [PASS] (structural check)
   T58  Boat       [PASS] (structural check)
   T59  Boat       [PASS] (structural check)
-ENTITY: FIREARM (4 tests -- 1 card, 3 combos)
-  T60  Firearm    [PASS] (structural check)
-  T61  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, gunTypeCode
-  T62  Firearm    [PASS] (structural check)
+  T60  Boat       [PASS] (structural check)
+ENTITY: FIREARM (6 tests -- 1 card, 3 combos)
+  T61  Firearm    [PASS] (structural check)
+  T62  Firearm    [PASS] any[] fields verified: GunCaliber, GunMake, gunTypeCode
   T63  Firearm    [PASS] (structural check)
+  T64  Firearm    [PASS] any[] fields verified: nameMiddle, nameSuffix
+  T65  Firearm    [PASS] (structural check)
+  T66  Firearm    [PASS] any[] fields verified: nameMiddle, nameSuffix
 ENTITY: ARTICLE (4 tests -- 1 card, 2 combos)
-  T64  Article    [PASS] (structural check)
-  T65  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
-  T66  Article    [PASS] (structural check)
-  T67  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T67  Article    [PASS] (structural check)
+  T68  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
+  T69  Article    [PASS] (structural check)
+  T70  Article    [PASS] any[] fields verified: articleBrand, ArticleTypeCode, articleCategory
 
-SUMMARY: 67/67 PASS, 0 FAIL
+SUMMARY: 70/70 PASS, 0 FAIL
 
 

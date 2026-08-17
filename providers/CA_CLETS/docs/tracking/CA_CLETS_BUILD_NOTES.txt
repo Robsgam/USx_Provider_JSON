@@ -1,9 +1,72 @@
 CA_CLETS -- Build Notes
 ========================
 
-v2.25  2026-08-17  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v2.25  2026-08-17  <Authentication>/<DeviceId> (Mariposa LIVE failure) + middle name / suffix wired
+  CHANGED (2 of 2) -- MIDDLE NAME + SUFFIX now reach the wire on all five name paths.
+    Ten metadata-defined components the officer previously could not enter, found by the new
+    audit_name_components.ps1 gate: VehicleRegistrationQuery (IN.VP owner search),
+    DriverLicenseQuery, DriverHistoryQuery, GunQuery and BoatQuery. Per path: a nameMiddle /
+    nameSuffix control (nameMiddleDH / nameSuffixDH on the DH card), the two components appended to
+    that query's composite Name sourceField, and both added to every name-search combination's
+    any[] -- IN.VP, NLTS.DQ.N, IR.QVC.N, IN.L1, NLTS.KQ.N, IG.QGH.A, IG.QGH.B, NLTS.BQ.N.
+    Follows the WIRE-PROVEN AZ_AZDPS shape (control + sourceField + any[]); camelCase fieldIds to
+    match HI_HCJDC_OFML and AZ's DL pool -- middle/suffix are not CAD tokens.
+    SEPARATORS: FormatStringRuleHandler arguments went @(', ') -> @(', ',' ',' '). AP #15 requires
+    fields-1 separators, so 4 sourceFields need 3. The validator caught this immediately (5 FAILs,
+    one per QIDM) -- the sourceField extension and the separator list are COUPLED and changing one
+    without the other emits a malformed composite. This is what produces LAST, FIRST MIDDLE SUFFIX.
+    LAYOUT: each name row became cols @('4','4','2','2') holding all four parts (rule L8), with the
+    qualifiers moved to a new sibling row -- ROW_VEH_4B (city/street), ROW_PER_DL_2B (DOB/Sex),
+    ROW_PER_DH_2B (DOB/Sex), ROW_GUN_2B (DOB/Age/PurposeCode). Boat's DOB moved into ROW_BOA_3,
+    which also took that row from 10 to 12 columns (a pre-existing L6 gap). Mandatory qualifiers
+    lead the optional name parts (L2). No routing change: no set[] was touched, and every addition
+    is any[]-only.
+    WHY IT WAS MISSING: metadata declares request Name with FOUR components (First/Last/Middle/
+    Suffix) on every built query here, but no gate compared metadata COMPONENTS to form controls --
+    every other gate enumerates the JSON and is closed under what we built. Capability is
+    wire-proven: AZ_AZDPS v3.11, 10 captures, <Name>DOE, JOHN A JR</Name>, degrading cleanly to
+    DOE, JOHN JR when the middle name is absent.
+    ROLLED INTO THIS VERSION ON PURPOSE (Rob: "make sure all ca clets fixes roll into this one") --
+    v2.25 had already archived the test package for the DeviceId fix and is not yet imported
+    anywhere, so folding this in costs nothing extra instead of a second bump and a second archive.
+  CHANGED (1 of 2): Added a fourth AUTHENTICATION attribute (name/sourceField/targetField 'DeviceId')
+    via the new Build-Auth -IncludeDeviceId switch, and added 'DeviceId' to the AUTH combination's
+    any[]. AUTH is now set=[ORI,Mnemonic] any=[dexStateUserId,DeviceId]. No form control, no
+    metadata change, no QIDM change, no layout change, no routing change.
+  REASON: The CA devdoc, "Routing and Configuration Information": "The agency assigned Terminal
+    Identifier should be placed in the <Authentication>/<DeviceId> field in the ConnectCIC header.
+    This field is required only when CLETS mnemonic pooling is used. If this field is not provided,
+    the IP Address of the ConnectCIC server on the state network is used." CA_CLETS was FAILING AT
+    MARIPOSA (LIVE), which uses mnemonic pooling -- so the silent fallback to the ConnectCIC
+    server's IP was in force and the state saw the wrong terminal. Rob ruled the field required on
+    ALL SIX CA providers; the other five were done in the same pass.
+    MEASURED, NOT ASSUMED: the <Authentication> block mirrors this config's attributes ONE CHILD
+    PER ATTRIBUTE. A captured v2.24 wire carried exactly UserName + ORI + Mnemonic and nothing
+    else, so the element could not appear without a fourth attribute.
+    ANY[] NOT SET[]: the devdoc scopes DeviceId to pooling agencies only; a set[] entry would make
+    authentication unsatisfiable for a non-pooling agency.
+    NO CONTROL NEEDED: DeviceId is already in validate.ps1's $systemSourceFields beside ORI /
+    Mnemonic / dexStateUserId, and on this provider all three of those have ZERO form controls yet
+    still arrive with real values (MK1234567 in the provider tenant; CA0220000 / MOU0 at Mariposa).
+    The platform also demonstrably holds a device identity -- production api:Source carries the
+    workstation name (LAPTOP47EQ3RSJ) where the test tenant carries MK43RS -- but today that
+    identity reaches the ROUTING header only, never <Authentication>.
+    WHY NO GATE CAUGHT IT: DeviceId is in no provider's metadata XML at all (it is a ConnectCIC
+    HEADER field, not a per-transaction field), so audit_metadata, audit_requirement_fidelity and
+    audit_devdoc_combinations have nothing to compare. The requirement lives in devdoc PROSE in the
+    Routing/Configuration preamble, which no gate parses -- audit_supported_queries reads only
+    "Basic Queries Supported".
+  VERIFY AFTER IMPORT: if <DeviceId> arrives EMPTY, the Terminal Identifier must be set on the
+    tenant's device-registration record -- a tenant config action, not a JSON one. That is a tenant
+    finding, not grounds to revert. Until one request is seen carrying a populated <DeviceId>, this
+    fix is NECESSARY-BUT-UNCONFIRMED: the element can never appear without it, but that the
+    platform sources the value from device registration is not provable from this repo.
+  COST: CA_CLETS was the only tenant-verified provider of the six -- 90 ALL-PASS logs archived to
+    logs/<Entity>/_archive_pre_v2.25/, 27 SQVR markers back to [PENDING], all 5 entities restart
+    from T1. It is also LIVE at Mariposa, so this is a coordinated re-import, not a repo action.
+  STILL OWED ON THIS PROVIDER: nothing from audit_name_components (now 20 components examined,
+    0 findings). LIMITATION #41 (a populated home State routing a local plate to NLETS) remains
+    PAUSED pending CommSys -- unchanged by this version, and deliberately not touched here.
 
 v2.24  2026-08-06  DEX-1283: removed unneeded X default on Attention
   CHANGED: Removed initialValue='X' from the Attention (DH) hidden gate-feeder, and the matching
