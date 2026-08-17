@@ -14,7 +14,7 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      below, which records what 791400 said WHEN CREATED. The live comment reads "CA_CLETS v2.24 --
      TENANT-VERIFIED ... Extended in place from v2.23 to v2.24 ... RELEASE LINE -- v2.24 is verified
      and ready". Verified against Jira, not this file. -->
-POSTED: v2.24 comment 791400 2026-08-11
+POSTED: v2.25 comment 791400 2026-08-17
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals
@@ -49,8 +49,13 @@ never Rob's own manual notes, never a third party's.
 - 2026-08-04 — comment 791400: **v2.23 changelog + RELEASE LINE** — 90/90 ALL-PASS, four log gates
   green, enforce 43P/0F/0W, inflation 0/0/0/0, with all four wire fixes proven on the wire.
 
-**Current: v2.24 — tenant-verified, ALL-PASS 90/90** (Vehicle 23 / Person 41 / Firearm 7 /
-Article 10 / Boat 9), four log gates green, enforce 43 PASS / 0 FAIL / 0 WARN.
+**Current: v2.25 — tenant-verified, ALL-PASS 109/109** (Vehicle 25 / Person 49 / Firearm 13 /
+Article 10 / Boat 12), four log gates green, enforce 42 PASS / 0 provider-scoped FAIL-or-WARN.
+Release line 791400 EDITED IN PLACE to v2.25 on 2026-08-17; the pre-edit v2.24 body is captured in
+`DEX_TICKET_ARCHIVE.md`. That edit also dropped the old sections 5-6 (Known limits / Documented
+skips) per the 2026-08-13 four-section ruling -- each was verified as recorded in the repo first
+(14 ACCEPTED_DIVERGENCES rows name IV.4*, the purposeCode-prefill rationale and the CAD/Attention
+inspection-only note are both in BUILD_NOTES), so nothing existed only on the ticket.
 
 > ⚠️ **THE v2.22 RELEASE LINE ON THIS TICKET WAS GREEN AND WRONG.** Comment 787391 reports v2.22
 > ALL-PASS; it passed 90/90 on three of the four log gates while shipping a request the metadata
