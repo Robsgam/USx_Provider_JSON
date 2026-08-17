@@ -1,15 +1,15 @@
-================================================================
+﻿================================================================
   Build Report: IL_LEADS_OFML
-  Source: IL_LEADS_OFML_v2.7.json
-  Generated: 2026-08-13 13:27
+  Source: IL_LEADS_OFML_v2.8.json
+  Generated: 2026-08-17 11:51
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== IL_LEADS_OFML_v2.7.json ===
+=== IL_LEADS_OFML_v2.8.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
-  Person | entity=Person | qidm= | cards=1 fields=3
+  Person | entity=Person | qidm= | cards=1 fields=5
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -51,9 +51,11 @@ LAYOUT DETAIL
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-      ROW ROW_PER_2 [6 6]
+      ROW ROW_PER_2 [4 4 2 2]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
+        nameMiddle (Text | maxLen=30)
+        nameSuffix (Text | maxLen=10)
       ROW ROW_PER_3 [6 6]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)

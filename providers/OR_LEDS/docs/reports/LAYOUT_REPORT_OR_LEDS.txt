@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: OR_LEDS
-  Source: OR_LEDS_v2.2.json
-  Generated: 2026-08-02 21:50
+  Source: OR_LEDS_v2.3.json
+  Generated: 2026-08-17 11:52
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== OR_LEDS_v2.2.json ===
+=== OR_LEDS_v2.3.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=3 fields=4
-  Person | entity=Person | qidm= | cards=3 fields=3
+  Person | entity=Person | qidm= | cards=3 fields=5
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=3 fields=2
@@ -55,9 +55,11 @@ LAYOUT DETAIL
       ROW ROW_PER_OLN_1 [12]
         OperatorLicenseNumber (Text | maxLen=20)
     CARD "CARD_PER_NAME"
-      ROW ROW_PER_NAME_1 [6 6]
+      ROW ROW_PER_NAME_1 [4 4 2 2]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
+        nameMiddle (Text | maxLen=30)
+        nameSuffix (Text | maxLen=5)
       ROW ROW_PER_NAME_3 [4 4 4]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)

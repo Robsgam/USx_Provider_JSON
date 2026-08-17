@@ -2,9 +2,14 @@
 
 Auto-generated from `FL_FCIC_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v7.23** | Generated: 2026-08-12
+Current: **v7.24** | Generated: 2026-08-17
 
 ---
+
+## v7.24 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v7.23 -- 2026-08-12 -- ImageIndicator REMOVED from all 4 FBQ combos -- a real over-permit since v7.6
 

@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.2'
+$Version     = '2.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OR_LEDS_v${Version}.json"
@@ -135,8 +135,8 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
@@ -156,7 +156,7 @@ $dlQuery = [PSCustomObject]@{
         # now requires Sex. That is what this provider's metadata demands, not a build preference.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('BirthDate','NameLast','NameFirst','SexCode'); any = @('RegistrationState','ImageIndicator')
+                set = @('BirthDate','NameLast','NameFirst','SexCode'); any = @('RegistrationState','ImageIndicator','nameMiddle','nameSuffix')
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
@@ -392,9 +392,15 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_NAME'
         title = 'NAME SEARCH'
         rows  = @(
-            @{ id = 'ROW_PER_NAME_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_PER_NAME_1'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional). RESTORED v2.3;
+                # ROW_PER_NAME_2 was removed at v2.2 as dead controls, but OR metadata declares Name
+                # with four components -- the fix was to WIRE them, not delete them.
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_NAME_1' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional). RESTORED v2.3.
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '5'  'ROW_PER_NAME_1' }
             )}
             # v2.2: ROW_PER_NAME_2 REMOVED (Rob 2026-08-02) -- it held nameMiddle + nameSuffix, both
             # visible controls wired to nothing. The Name attribute sources only [NameLast, NameFirst],

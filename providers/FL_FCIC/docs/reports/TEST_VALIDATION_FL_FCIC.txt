@@ -1,16 +1,16 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.23.json
-  Generated: 2026-08-12 17:10
+  Source: FL_FCIC_v7.24.json
+  Generated: 2026-08-17 11:51
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC_v7.23
+TEST MATRIX <-> JSON CONSISTENCY -- FL_FCIC_v7.24
 ============================================================
-Source: FL_FCIC_v7.23.json
+Source: FL_FCIC_v7.24.json
 Matrix: FL_FCIC_TEST_MATRIX.txt
-Generated: 2026-08-12
+Generated: 2026-08-17
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
@@ -23,13 +23,13 @@ ENTITY: PERSON (18 tests -- 2 cards, 6 combos)
   T3  Person     [PASS] DriverLicenseQuery fires (DQOperatorLicenseNumber)
   T4  Person     [PASS] any[] fields verified: ImageIndicator
   T5  Person     [PASS] DriverLicenseQuery fires (FDQName)
-  T6  Person     [PASS] any[] fields verified: ImageIndicator
+  T6  Person     [PASS] any[] fields verified: ImageIndicator, nameMiddle, nameSuffix
   T7  Person     [PASS] DriverLicenseQuery fires (DQName)
-  T8  Person     [PASS] any[] fields verified: ImageIndicator
+  T8  Person     [PASS] any[] fields verified: ImageIndicator, nameMiddle, nameSuffix
   T9  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
   T10  Person     [PASS] any[] fields verified: purposeCodeDH, Attention, Requestor
   T11  Person     [PASS] DriverHistoryQuery fires (KQName)
-  T12  Person     [PASS] any[] fields verified: purposeCodeDH, Attention, Requestor
+  T12  Person     [PASS] any[] fields verified: purposeCodeDH, Attention, nameMiddleDH, nameSuffixDH
   T13  Person     [PASS] DriverLicenseQuery fires (DQName)
   T14  Person     [PASS] DriverLicenseQuery fires (FDQOperatorLicenseNumber)
   T15  Person     [PASS] DriverLicenseQuery fires (DQName)
@@ -66,7 +66,7 @@ ENTITY: BOAT (33 tests -- 1 card, 12 combos)
   T44  Boat       [PASS] BoatQuery fires (QBRegistrationNumber)
   T45  Boat       [PASS] any[] fields verified: ImageIndicator, Requestor
   T46  Boat       [PASS] BoatQuery fires (BQName)
-  T47  Boat       [PASS] any[] fields verified: Requestor
+  T47  Boat       [PASS] any[] fields verified: nameMiddle, nameSuffix, Requestor
   T48  Boat       [PASS] BoatQuery fires (FBQDecalNumber)
   T49  Boat       [PASS] any[] fields verified: Requestor
   T50  Boat       [PASS] BoatQuery fires (FBQTitleLienInformation)

@@ -1,16 +1,16 @@
-================================================================
+﻿================================================================
   Build Report: HI_HCJDC_OFML
-  Source: HI_HCJDC_OFML_v4.18.json
-  Generated: 2026-08-13 19:20
+  Source: HI_HCJDC_OFML_v4.19.json
+  Generated: 2026-08-17 11:50
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- HI_HCJDC_OFML_v4.18
+TEST MATRIX <-> JSON CONSISTENCY -- HI_HCJDC_OFML_v4.19
 ============================================================
-Source: HI_HCJDC_OFML_v4.18.json
+Source: HI_HCJDC_OFML_v4.19.json
 Matrix: HI_HCJDC_OFML_TEST_MATRIX.txt
-Generated: 2026-08-13
+Generated: 2026-08-17
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
@@ -21,11 +21,11 @@ ENTITY: PERSON (11 tests -- 2 cards, 4 combos)
   T1  Person     [PASS] DriverLicenseQuery fires (DQN)
   T2  Person     [PASS] any[] fields verified: RegistrationState
   T3  Person     [PASS] DriverLicenseQuery fires (DQ)
-  T4  Person     [PASS] any[] fields verified: RegistrationState
+  T4  Person     [PASS] any[] fields verified: RegistrationState, nameMiddle, nameSuffix
   T5  Person     [PASS] DriverHistoryQuery fires (KQN)
-  T6  Person     [PASS] any[] fields verified: RegistrationStateDH, purposeCodeDH, Attention
+  T6  Person     [PASS] any[] fields verified: RegistrationStateDH, purposeCodeDH, Attention, nameMiddleDH
   T7  Person     [PASS] DriverHistoryQuery fires (KQ)
-  T8  Person     [PASS] any[] fields verified: RegistrationStateDH, purposeCodeDH, Attention
+  T8  Person     [PASS] any[] fields verified: RegistrationStateDH, purposeCodeDH, Attention, nameMiddleDH
   T9  Person     [PASS] DriverLicenseQuery fires (DQN)
   T10  Person     [PASS] DriverHistoryQuery fires (KQN)
   T11  Person     [PASS] queriesToDeselect verified

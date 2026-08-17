@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.23.json
-  Generated: 2026-08-12 17:10
+  Source: FL_FCIC_v7.24.json
+  Generated: 2026-08-17 11:51
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- FL_FCIC_v7.23.json
+  CommSys Query Simulator -- FL_FCIC_v7.24.json
 ================================================================
 
 --- QIDM: FL_FCIC_VehicleRegistrationQuery [Vehicle] ---
@@ -201,7 +201,7 @@ QUERY SIMULATION
 
     [FIRES first-match] BQName
       set: [BirthDate, NameLast, NameFirst, RegistrationState]
-      any: [BoatHullIdNumber, RegistrationNumber, Requestor] -> matched: [BoatHullIdNumber, RegistrationNumber]
+      any: [BoatHullIdNumber, RegistrationNumber, nameMiddle, nameSuffix, Requestor] -> matched: [BoatHullIdNumber, RegistrationNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->

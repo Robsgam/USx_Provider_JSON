@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: FL_FCIC
-  Source: FL_FCIC_v7.23.json
-  Generated: 2026-08-12 17:10
+  Source: FL_FCIC_v7.24.json
+  Generated: 2026-08-17 11:51
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: FL_FCIC_v7.23
+ POST-BUILD VERIFICATION: FL_FCIC_v7.24
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 28 [decalNumber, ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, Requestor, vinSequenceNumber, Attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, RegistrationStateDH, GunMake, serialNumber, NCICNumber, processControlNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, coastGuardDocumentNumber, RegistrationNumber, titleLienInformation]
+  [INFO] CommSys-only: 32 [decalNumber, ImageIndicator, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, Requestor, vinSequenceNumber, nameMiddle, nameSuffix, Attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, RegistrationStateDH, GunMake, serialNumber, NCICNumber, processControlNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, coastGuardDocumentNumber, RegistrationNumber, titleLienInformation]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -47,7 +47,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (36) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (40) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -67,13 +67,19 @@ POST-BUILD VERIFICATION
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameMiddleDH' label='MI' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'vinSequenceNumber' (any[]-only) label='VIN Sequence Number' -- manual label override accepted (bare "VIN Sequence Number" per DEX-1284 lean pass (any[] optional, no default; card title carries the paths; matches VehicleMakeCode/vehicleYear on the row above))
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare "Vehicle Make" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX))
   [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare "Vehicle Year" per DEX-1284 lean pass (any[] optional VIN qualifier, no default; card title carries the paths; matches NY/TX))
+  [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare 'Middle Name' (any[] optional). RESTORED v7.24;)
+  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' (any[] optional). RESTORED v7.24.)
+  [INFO] Field 'nameMiddleDH' (any[]-only) label='MI' -- manual label override accepted (RESTORED v7.24 (removed at v7.17). Kept at maxLen=1)
+  [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' (any[] optional). NEW at v7.24: FL had)
   [INFO] Field 'GunMake' (any[]-only) label='Gun Make' -- manual label override accepted (bare "Gun Make" per DEX-1284 lean pass (any[] optional, no default; matches NY/TX))
-  [PASS] All form field labels have required routing hint qualifiers (39 fields scanned) (7 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (43 fields scanned) (9 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

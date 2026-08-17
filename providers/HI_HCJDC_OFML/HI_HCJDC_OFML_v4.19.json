@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.18 -- entity forms",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.19 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- 1 card (v4.14, collapsed from SEARCH OPTIONS + PLATE + VIN): Plate, Type/Year, VIN/Year, then Type/State/NCIC Image. OOS-first routing: bare plate-\u003eM55L, +Plate Type+Year-\u003eRQ; bare VIN-\u003eM55S, +State-\u003eRQV. OOS by adding fields, never clearing Vehicle Type. QV server-generated.",
@@ -1338,7 +1338,7 @@
                                                                                                            "displayName":  "Input",
                                                                                                            "props":  {
                                                                                                                          "fieldId":  "nameMiddle",
-                                                                                                                         "label":  "MI",
+                                                                                                                         "label":  "Middle Name",
                                                                                                                          "maxLength":  "30"
                                                                                                                      },
                                                                                                            "isCanvas":  false,
@@ -1612,7 +1612,7 @@
                                                                                                              "displayName":  "Input",
                                                                                                              "props":  {
                                                                                                                            "fieldId":  "nameMiddleDH",
-                                                                                                                           "label":  "MI",
+                                                                                                                           "label":  "Middle Name",
                                                                                                                            "maxLength":  "30"
                                                                                                                        },
                                                                                                              "isCanvas":  false,
@@ -1960,7 +1960,7 @@
                                                                                                                 "displayName":  "Input",
                                                                                                                 "props":  {
                                                                                                                               "fieldId":  "nameMiddle",
-                                                                                                                              "label":  "MI",
+                                                                                                                              "label":  "Middle Name",
                                                                                                                               "maxLength":  "30"
                                                                                                                           },
                                                                                                                 "isCanvas":  false,
@@ -2234,7 +2234,7 @@
                                                                                                                   "displayName":  "Input",
                                                                                                                   "props":  {
                                                                                                                                 "fieldId":  "nameMiddleDH",
-                                                                                                                                "label":  "MI",
+                                                                                                                                "label":  "Middle Name",
                                                                                                                                 "maxLength":  "30"
                                                                                                                             },
                                                                                                                   "isCanvas":  false,
@@ -2663,7 +2663,7 @@
                                                                                                                    "displayName":  "Input",
                                                                                                                    "props":  {
                                                                                                                                  "fieldId":  "nameMiddle",
-                                                                                                                                 "label":  "MI",
+                                                                                                                                 "label":  "Middle Name",
                                                                                                                                  "maxLength":  "30"
                                                                                                                              },
                                                                                                                    "isCanvas":  false,
@@ -2937,7 +2937,7 @@
                                                                                                                      "displayName":  "Input",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "nameMiddleDH",
-                                                                                                                                   "label":  "MI",
+                                                                                                                                   "label":  "Middle Name",
                                                                                                                                    "maxLength":  "30"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
@@ -5353,7 +5353,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.18",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.19",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -6877,7 +6877,9 @@
                                                                                                              "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState"
+                                                                                                             "RegistrationState",
+                                                                                                             "nameMiddle",
+                                                                                                             "nameSuffix"
                                                                                                          ],
                                                                                                  "conditions":  [
                                                                                                                     {
@@ -7011,7 +7013,9 @@
                                                                                                  "any":  [
                                                                                                              "RegistrationStateDH",
                                                                                                              "purposeCodeDH",
-                                                                                                             "Attention"
+                                                                                                             "Attention",
+                                                                                                             "nameMiddleDH",
+                                                                                                             "nameSuffixDH"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -7040,7 +7044,9 @@
                                                                                                  "any":  [
                                                                                                              "RegistrationStateDH",
                                                                                                              "purposeCodeDH",
-                                                                                                             "Attention"
+                                                                                                             "Attention",
+                                                                                                             "nameMiddleDH",
+                                                                                                             "nameSuffixDH"
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -7306,7 +7312,7 @@
                         "provider":  "HI_HCJDC_OFML"
                     },
                     {
-                        "description":  "Provider configuration for HI_HCJDC_OFML v4.18 -- RMS bundle",
+                        "description":  "Provider configuration for HI_HCJDC_OFML v4.19 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

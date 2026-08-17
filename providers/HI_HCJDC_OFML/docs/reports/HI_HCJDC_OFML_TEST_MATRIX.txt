@@ -1,6 +1,6 @@
-HI_HCJDC_OFML v4.18 -- TEST MATRIX
+HI_HCJDC_OFML v4.19 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-13
+Generated: 2026-08-17
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -68,15 +68,15 @@ ENTITY 1: PERSON (11 tests -- 2 cards, 4 combos)
               Expected: any[] fields present in XML output.
  3  Person      DQ+SexCode         SexCode=M, BirthDate=01/15/1990, Name... [    ]
               Expected: DriverLicenseQuery fires (DQ)
- 4  Person      DQ+SexCode         + RegistrationState             [    ]
+ 4  Person      DQ+SexCode         + RegistrationState, nameMiddle, nameSuffix [    ]
               Expected: any[] fields present in XML output.
  5  Person      KQ+N               OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQN)
- 6  Person      KQ+N               + RegistrationStateDH, purposeCodeDH, Attention [    ]
+ 6  Person      KQ+N               + RegistrationStateDH, purposeCodeDH, Attention, nameMiddleDH [    ]
               Expected: any[] fields present in XML output.
  7  Person      KQ+SexCodeDH       SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQ)
- 8  Person      KQ+SexCodeDH       + RegistrationStateDH, purposeCodeDH, Attention [    ]
+ 8  Person      KQ+SexCodeDH       + RegistrationStateDH, purposeCodeDH, Attention, nameMiddleDH [    ]
               Expected: any[] fields present in XML output.
  9  Person      Guardrail: DQN>DQ  OperatorLicenseNumber=D999888777, Sex... [    ]
               Expected: DriverLicenseQuery fires (DQN). SexCode+DOB+LastName+FirstName absent from XML.
@@ -158,4 +158,4 @@ COMBO COVERAGE (12/12):
   ArticleSingleQuery: 1/1 -- T31(Serial)
   BoatQuery: 2/2 -- T24(BQ+Reg), T26(QB+Hull)
 
-IMPORT FILE: HI_HCJDC_OFML_v4.18.json
+IMPORT FILE: HI_HCJDC_OFML_v4.19.json

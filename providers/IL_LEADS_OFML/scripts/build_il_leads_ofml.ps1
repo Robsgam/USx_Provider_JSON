@@ -30,7 +30,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_il_leads_ofml_mc.ps1 [-Version X.X]
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.7'
+$Version     = '2.8'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\IL_LEADS_OFML_v${Version}.json"
@@ -144,8 +144,8 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ImageIndicator'; size = 1; sourceField = @('ImageIndicator'); targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
+            size = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'RelatedHitSearchIndicator'; size = 1; sourceField = @('relatedHitSearchIndicator'); targetField = 'RelatedHitSearchIndicator' }
@@ -156,7 +156,7 @@ $dlQuery = [PSCustomObject]@{
         # Name+DOB
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('BirthDate','NameLast','NameFirst'); any = @('ImageIndicator','relatedHitSearchIndicator','SexCode')
+                set = @('BirthDate','NameLast','NameFirst'); any = @('ImageIndicator','relatedHitSearchIndicator','SexCode','nameMiddle','nameSuffix')
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'RelatedHitSearchIndicator'; value = 'Y' } )
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
@@ -423,9 +423,14 @@ $perLayout = MakeLayouts @(
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator'    'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
-            @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_PER_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_2' }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional). NEW v2.8: IL metadata
+                # declares request Name with four components; middle/suffix had no control at all.
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_2' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional).
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '10' 'ROW_PER_2' }
             )}
             # v2.6 (Rob 2026-08-13, "if race is not needed anywhere for commsys then remove it"):
             # the Race control is REMOVED and Build-RmsBundle now takes -SkipRace.

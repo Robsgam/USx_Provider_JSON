@@ -35,10 +35,10 @@ Status table instead (this table's Notes column is intentionally terse).
 | # | Provider | Version | BASE Score | MC Score | LIM | Notes |
 |---|---|---|---|---|---|---|
 | 1 | NJ_NJCJIS | v4.16 |  | 61P/0F/0W/0LIM | 0 | in-scope, single-JSON |
-| 2 | HI_HCJDC_OFML | v4.18 |  | 65P/0F/0W/0LIM | 0 | in-scope, single-JSON |
+| 2 | HI_HCJDC_OFML | v4.19 |  | 65P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 3 | NY_NYSPIN_EJUSTICE | v4.24 |  | 76P/0F/0W/0LIM | 0 | in-scope, single-JSON, BLOCKED v4.6 (full pass 2026-07-10) |
 | 4 | AZ_AZDPS | v3.11 |  | 68P/0F/0W/0LIM | 0 | v3.1 (2026-07-24) existence-gate identifier-priority guardrails added (were demotion-only in v3.0); single-JSON; NOT USx-tenant-tested |
-| 5 | FL_FCIC | v7.23 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
+| 5 | FL_FCIC | v7.24 |  | 91P/0F/0W/0LIM | 0 | in-scope, single-JSON |
 | 6 | TX_TLETS | v4.20 |  | 79P/0F/0W/0LIM | 0 | REBUILT v4.0, TESTED (2026-07-10), block-deferred pending EmailAddress handler |
 | 7 | LA_LEMS | v3.0 |  | 64P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 8 | CA_CLETS | v2.25 |  | 79P/0F/0W/0LIM | 0 | in-scope, single-JSON |
@@ -46,11 +46,11 @@ Status table instead (this table's Notes column is intentionally terse).
 | 10 | CA_CLETS_OCATS | v2.4 |  | 64P/0F/0W/0LIM | 1 | out of scope |
 | 11 | CA_eSUN | v2.3 |  | 72P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 12 | CA_SAN_LUIS_OBISPO | v2.4 |  | 67P/0F/0W/0LIM | 0 | out of scope |
-| 13 | IL_LEADS_OFML | v2.7 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 13 | IL_LEADS_OFML | v2.8 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 14 | MD_METERS | v2.0 |  | 69P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 15 | OH_LEADS | v2.4 |  | 80P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 16 | NM_NMLETS_OFML | v2.1 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 17 | OR_LEDS | v2.2 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 17 | OR_LEDS | v2.3 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 18 | TN_TIES | v2.1 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 19 | TX_TLETS_CCH | v1.16 |  | 112P/0F/0W/0LIM | 0 | base-6 re-synced to TX_TLETS v4.7 (email handler + FRT=E, QWName removed); lockstep restored; CCH stub, NOT USx-tenant-tested |
 | 20 | CA_CONTRA_COSTA | v2.3 |  | 79P/0F/0W/0LIM | 0 | framework build (CA_CLETS copy + merged metadata); JAWS expanded/unbuilt; NOT USx-tenant-tested |

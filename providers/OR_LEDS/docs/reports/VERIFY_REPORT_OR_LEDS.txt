@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OR_LEDS
-  Source: OR_LEDS_v2.2.json
-  Generated: 2026-08-13 09:05
+  Source: OR_LEDS_v2.3.json
+  Generated: 2026-08-17 11:52
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: OR_LEDS_v2.2
+ POST-BUILD VERIFICATION: OR_LEDS_v2.3
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 11 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, gunCaliber, gunMake, serialNumber, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 13 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, nameMiddle, nameSuffix, gunCaliber, gunMake, serialNumber, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [PASS] Cross-bundle fieldId consistency checked
 
@@ -38,7 +38,7 @@ POST-BUILD VERIFICATION
   [PASS] All 3 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (19) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (21) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -53,7 +53,9 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (23 fields scanned)
+  [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare 'Middle Name' (any[] optional). RESTORED v2.3;)
+  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' (any[] optional). RESTORED v2.3.)
+  [PASS] All form field labels have required routing hint qualifiers (25 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

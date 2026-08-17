@@ -2,9 +2,14 @@
 
 Auto-generated from `IL_LEADS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.7** | Generated: 2026-08-13
+Current: **v2.8** | Generated: 2026-08-17
 
 ---
+
+## v2.8 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.7 -- 2026-08-13 -- COSMETIC: Person ROW_PER_1 widths 6/2/2/2 -> 3/3/3/3. Zero wire change.
 

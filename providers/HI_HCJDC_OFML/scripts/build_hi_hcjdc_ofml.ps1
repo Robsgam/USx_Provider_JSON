@@ -1,4 +1,34 @@
-# build_hi_hcjdc_ofml.ps1  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
+# build_hi_hcjdc_ofml.ps1
+# v4.19 (2026-08-17, MIDDLE NAME + SUFFIX REACH THE WIRE): found by the new
+#   tools\audit_name_components.ps1. HI was the ONLY provider in the portfolio in this particular
+#   state, and it is the most misleading of the three failure modes: the controls EXIST and are
+#   visible, the composite Name attribute already listed all four components in its sourceField,
+#   and the FormatStringRuleHandler separators were already the correct fields-1 triple. The two
+#   components simply sat in NO combination's any[] -- so an officer could type a middle name and a
+#   suffix on both the DL and DH cards and neither value could reach the wire, and no test could
+#   drive them either.
+#   FIXED: nameMiddle/nameSuffix -> DQN's any[]; nameMiddleDH/nameSuffixDH -> $dhAny (BOTH arms, so
+#   the Attention-diagnostic build does not silently differ by a second variable).
+#
+#   *** THIS ALSO SETTLES AN OPEN QUESTION, AND THE ANSWER WAS NOT KNOWABLE FROM THE REPO. ***
+#   audit_wiring_closure reported HI CLOSED -- its class A requires "no attribute sources it AND no
+#   combo references it", so attribute-sourcing alone counted as reaching the wire. I claimed the
+#   opposite (that the controls were dead) with no committed log either way, so the new gate records
+#   it as C3 NOT-IN-POOL, a [NOTE] rather than a FAIL, under hypothesis quarantine. HI was the only
+#   provider isolating the variable. The upcoming sweep answers it: if <Name> now carries the middle
+#   name and suffix where v4.18's 46 logs never could, any[] membership was load-bearing and C3
+#   should become blocking; if v4.18 had already been emitting them, C3 is a non-finding. Read the
+#   result before promoting C3 -- do not assume this fix proves the diagnosis.
+#
+#   COSMETIC, AND IT REVERSES A DELIBERATE EARLIER DECISION -- said plainly rather than quietly
+#   overwritten: the v4.x label pass recorded below changed nameMiddle/nameMiddleDH from
+#   'Middle Name' to 'M.I.'. Both fields are maxLength=30, i.e. a full middle name, so 'MI' claims a
+#   single initial and misrepresents capacity -- layout rule L7. AZ_AZDPS made exactly this
+#   correction at v3.10 for the same reason (its field is maxLen=20). Reverted to 'Middle Name' with
+#   a LABEL-OVERRIDE tag on each. The operator has final say; if 'M.I.' is wanted back, cap the
+#   fields at 1 or record the override.
+#   Re-opens ALL 5 HI entities for re-test (46 logs archived). HDLE LIVE is unaffected -- it is
+#   deliberately held at v4.15 and this does not change that hold.  -- HI_HCJDC_OFML canonical build (single JSON, multi-card)
 # Builds HI_HCJDC_OFML.json from source\HI_HCJDC_OFML.xml + KB specs.
 # v4.14 (2026-07-28, layout review -- direct Rob feedback, layout-only, NO functional change):
 #   From the HI v4.13 rendered-form review (mirrors the FL v7.11/v7.12 + NJ v4.14 pass):
@@ -217,7 +247,7 @@
 # NAME FORMAT: "LAST, FIRST MIDDLE SUFFIX" (Last-first; args @(', ',' ',' '); v4.0 fix per ConnectCIC devdoc)
 
 param(
-    [string]$Version = "4.18",
+    [string]$Version = "4.19",
     # DIAGNOSTIC ONLY: emit a throwaway test JSON to diagnostics/ where the DH
     # Attention attribute has NO handler (plain passthrough) and the Attention
     # field is VISIBLE -- to test whether a typed Attention value reaches the wire
@@ -516,7 +546,10 @@ $dlQuery = [PSCustomObject]@{
         # Sex/DOB do not bleed onto the wire. conditions[].field = sourceField (PascalCase).
         # Mirrors the v3.6 plate-wins guardrail on the Vehicle side.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('RegistrationState'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
+            # v4.19: nameMiddle/nameSuffix added to any[]. The controls, the composite sourceField and
+            # the fields-1 separators were ALL already correct here -- the two components simply sat in
+            # no combination, so nothing carried them to the wire and no test could drive them.
+            requirements          = [PSCustomObject]@{ set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('RegistrationState','nameMiddle','nameSuffix'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'SexCode'
             keyReference          = 'DQ'
             state                 = 'In/Out'
@@ -597,7 +630,10 @@ if ($AttnDiagnostic -and $AttnMode -eq 'passthrough') {
 # emits the officer's profile name (e.g. "SGAMBELLONE R"). So Attention is in any[]
 # for production AND the passthrough/handler diagnostics; only the (dead, import-
 # rejected) dochandler sourceField=[] variant omits it.
-$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'dochandler') { @('RegistrationStateDH','purposeCodeDH') } else { @('RegistrationStateDH','purposeCodeDH','Attention') }
+# v4.19: nameMiddleDH/nameSuffixDH added to BOTH branches -- the DH card has its own field pool, so
+# the DL entries above do not cover it. Added to both arms deliberately: the diagnostic arm exists to
+# isolate the Attention handler, and dropping the name parts from it would change a second variable.
+$dhAny = if ($AttnDiagnostic -and $AttnMode -eq 'dochandler') { @('RegistrationStateDH','purposeCodeDH','nameMiddleDH','nameSuffixDH') } else { @('RegistrationStateDH','purposeCodeDH','Attention','nameMiddleDH','nameSuffixDH') }
 $dhQuery = [PSCustomObject]@{
     attributes = @(
         $attnAttr
@@ -885,7 +921,9 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DL2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'nameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL2' }
                 @{ id = 'nameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL2' }
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'  '30' 'ROW_PER_DL2' }
+                # LABEL-OVERRIDE: nameMiddle -- 'MI' meant middle INITIAL and misrepresented a maxLen=30 field (L7);
+                # same correction AZ_AZDPS made at v3.10. Bare label, any[]-optional.
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name'  '30' 'ROW_PER_DL2' }
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_DL2' }
             )}
             @{ id = 'ROW_PER_DL3'; cols = @('6','6'); fields = @(
@@ -916,7 +954,8 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name'  '30' 'ROW_PER_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH2' }
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'  '30' 'ROW_PER_DH2' }
+                # LABEL-OVERRIDE: nameMiddleDH -- 'MI' misrepresented a maxLen=30 field (L7). Bare label, any[]-optional.
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name'  '30' 'ROW_PER_DH2' }
                 @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DH2' }
             )}
             @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(

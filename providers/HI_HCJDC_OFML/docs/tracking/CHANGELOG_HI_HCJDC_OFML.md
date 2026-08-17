@@ -2,9 +2,14 @@
 
 Auto-generated from `HI_HCJDC_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.18** | Generated: 2026-08-13
+Current: **v4.19** | Generated: 2026-08-17
 
 ---
+
+## v4.19 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v4.18 -- 2026-08-13 -- +1 QRDM attribute: ScarMarkTattooCode (the SECOND spelling). Response-only.
 

@@ -250,7 +250,7 @@
 #                evidence 2026-06-12: full DL card over-sent all fields).
 
 param(
-    [string]$Version = "7.23"
+    [string]$Version = "7.24"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -412,8 +412,8 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{ name = 'ImageIndicator';        size = 1;  sourceField = @('ImageIndicator');        targetField = 'ImageIndicator' }
         [PSCustomObject]@{
-            name = 'Name'; size = 80; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            name = 'Name'; size = 80; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCode');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
@@ -423,7 +423,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDate','NameLast','NameFirst','SexCode')
-                any        = @('ImageIndicator')
+                any        = @('ImageIndicator','nameMiddle','nameSuffix')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');                 operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
@@ -448,7 +448,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDate','NameLast','NameFirst','SexCode','RegistrationState')
-                any        = @('ImageIndicator')
+                any        = @('ImageIndicator','nameMiddle','nameSuffix')
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
                 defaults   = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
@@ -509,8 +509,8 @@ $dhQuery = [PSCustomObject]@{
             rule = [PSCustomObject]@{ function = 'CommsysParseDateRuleHandler'; arguments = @('yyyy-MM-dd','yyyyMMdd') }
         }
         [PSCustomObject]@{
-            name = 'Name'; size = 30; sourceField = @('NameLastDH','NameFirstDH'); targetField = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            name = 'Name'; size = 30; sourceField = @('NameLastDH','NameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
         }
         # v5.1: attribute NAME made unique (OperatorLicenseNumberDH) so the KQName NOT_EXISTS
         # gate resolves to THIS field, not the DL QIDM's OperatorLicenseNumber. Conditions/
@@ -532,7 +532,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH','RegistrationStateDH')
-                any        = @('purposeCodeDH','Attention')
+                any        = @('purposeCodeDH','Attention','nameMiddleDH','nameSuffixDH')
                 # v7.18 (DEX-1283): removed the defaults[] Attention='X' entry -- the hidden
                 # gate-feeder no longer carries a starting value (see ROW_DH_ATTN below), and
                 # a combo default was never required for the handler to run either.
@@ -702,8 +702,8 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'DecalNumber';               size = 10; sourceField = @('decalNumber');               targetField = 'DecalNumber' }
         [PSCustomObject]@{ name = 'ImageIndicator';            size = 1;  sourceField = @('ImageIndicator');            targetField = 'ImageIndicator' }
         [PSCustomObject]@{
-            name = 'Name'; size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
+            name = 'Name'; size = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
         }
         [PSCustomObject]@{ name = 'NCICNumber';                size = 10; sourceField = @('NCICNumber');                targetField = 'NCICNumber' }
         [PSCustomObject]@{ name = 'ProcessControlNumber';      size = 10; sourceField = @('processControlNumber');      targetField = 'ProcessControlNumber' }
@@ -804,7 +804,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('BirthDate','NameLast','NameFirst','RegistrationState')
-                any        = @('BoatHullIdNumber','RegistrationNumber')
+                any        = @('BoatHullIdNumber','RegistrationNumber','nameMiddle','nameSuffix')
             }
             primaryFieldReference = 'Name'
             keyReference          = 'BQName'
@@ -920,7 +920,7 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
-# ─── v7.15: Requestor wired onto the five Basic queries that permit it ────────────────────────────
+# â”€â”€â”€ v7.15: Requestor wired onto the five Basic queries that permit it â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Rob's call 2026-08-02, accepting the re-sweep cost.
 # FL's OWN metadata defines Requestor (maxLength 30) and permits it as an OPTIONAL on every Basic
 # query except DriverLicense -- 29 combinations across ArticleSingleQuery (QA), BoatQuery (FBQ/QB/BQ),
@@ -959,7 +959,7 @@ foreach ($q in @($vehRegQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)) {
     }
 }
 
-# ─── v7.16: two more optionals FL's own authorities permit but nothing wired ──────────────────────
+# â”€â”€â”€ v7.16: two more optionals FL's own authorities permit but nothing wired â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Found by the SPEC-derived plan (devdoc+metadata, no vote from the JSON), which reported them
 # UNREACHABLE -- a devdoc field with no form control at all. Both authorities agree on both.
 #
@@ -1081,9 +1081,14 @@ $perLayout = MakeLayouts @(
             # [NameLast, NameFirst] -- so an officer's middle name or suffix was silently discarded
             # on DL, DH and Boat alike. Found by audit_wiring_closure. Removed rather than wired:
             # no wire behaviour changes, and the form stops implying a precision it never delivered.
-            @{ id = 'ROW_DL2'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_DL2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_DL2' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_DL2' }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional). RESTORED v7.24;
+                # removed at v7.17 as a dead control, but FL metadata declares Name with 4 components.
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_DL2' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional). RESTORED v7.24.
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '10' 'ROW_DL2' }
             )}
             @{ id = 'ROW_DL3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_DL3' }
@@ -1123,11 +1128,21 @@ $perLayout = MakeLayouts @(
             # `nameMiddleDH` appear zero times. audit_wiring_closure reports 0 dead controls.
             # So the dead-control class Rob flagged on AZ ("the middle and last are on the forms yet
             # the handler doesn't process them") DOES NOT EXIST on FL -- nothing to eliminate here.
-            @{ id = 'ROW_DH2'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_DH2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '30' 'ROW_DH2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_DH2' }
-                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth' 'ROW_DH2' }
-                @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH'    'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2' }
+                # LABEL-OVERRIDE: nameMiddleDH -- RESTORED v7.24 (removed at v7.17). Kept at maxLen=1
+                # with the 'MI' label, which is the ONE place 'MI' is honest under rule L7: the field
+                # really does take a single initial. Do not widen it without relabelling.
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '1'  'ROW_DH2' }
+                # LABEL-OVERRIDE: nameSuffixDH -- bare 'Suffix' (any[] optional). NEW at v7.24: FL had
+                # no DH suffix control even before v7.17, so this closes a gap the removal did not open.
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '10' 'ROW_DH2' }
+            )}
+            # L2: DOB + Sex are MANDATORY in the DH set[] -- they lead the optional name parts above.
+            @{ id = 'ROW_DH2B'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDateDH_Input';  node = Dt  'BirthDateDH'  'Date of Birth' 'ROW_DH2B' }
+                @{ id = 'SexCodeDH_Input';    node = Sel 'SexCodeDH'    'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_DH2B' }
             )}
             @{ id = 'ROW_DH_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_DH_REQ' }
@@ -1294,10 +1309,17 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'ProcessControlNumber_Input';     node = Inp 'processControlNumber' 'PCN' '10' 'ROW_BOA_3' }
             )}
             # v7.6: reordered First-before-Last, matching Person's v7.5 fix ("like the others").
-            @{ id = 'ROW_BOA_4'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_BOA_4'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name (out-of-state)' '30' 'ROW_BOA_4' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name (out-of-state)'  '30' 'ROW_BOA_4' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'DOB (out-of-state)' 'ROW_BOA_4' }
+                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional). RESTORED v7.24;
+                # removed at v7.17 as a dead control, but FL metadata declares Name with 4 components.
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_BOA_4' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional). RESTORED v7.24.
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '10' 'ROW_BOA_4' }
+            )}
+            @{ id = 'ROW_BOA_4B'; cols = @('12'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'DOB (out-of-state)' 'ROW_BOA_4B' }
             )}
             @{ id = 'ROW_BOA_REQ'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Requestor_Input'; node = InpH 'Requestor' 'Requestor (auto-populated from officer profile)' '30' 'ROW_BOA_REQ' }
@@ -1319,7 +1341,7 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($personForm, $vehicleFo
     -Description "Provider configuration for FL_FCIC v${Version} -- entity forms"
 
 # =====================================================================
-# BUNDLE 3: RMS (from KB specs — camelCase, registrationState, autoSelect)
+# BUNDLE 3: RMS (from KB specs â€” camelCase, registrationState, autoSelect)
 # =====================================================================
 $rmsBundle = Build-RmsBundle -PascalCaseUsxFields `
     -Description "Provider configuration for FL_FCIC v${Version} -- RMS bundle"

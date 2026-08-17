@@ -2,9 +2,14 @@
 
 Auto-generated from `OR_LEDS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.2** | Generated: 2026-08-13
+Current: **v2.3** | Generated: 2026-08-17
 
 ---
+
+## v2.3 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.2 -- 2026-08-02 -- Remove 3 dead officer controls (Rob 2026-08-02, commit 56b8b7ca)
 

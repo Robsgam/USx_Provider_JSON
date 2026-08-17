@@ -16,9 +16,9 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
 | CA_CLETS | v2.25 | ALL-PASS (109 logs) |
-| FL_FCIC | v7.23 | ALL-PASS (110 logs) |
-| HI_HCJDC_OFML | v4.18 | ALL-PASS (46 logs) |
-| IL_LEADS_OFML | v2.7 | PARTIAL -- 1 plan test(s) owed (41 captured) |
+| FL_FCIC | v7.24 | NEVER-TESTED -- 118 test(s) owed |
+| HI_HCJDC_OFML | v4.19 | NEVER-TESTED -- 52 test(s) owed |
+| IL_LEADS_OFML | v2.8 | NEVER-TESTED -- 44 test(s) owed |
 | NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.24 | ALL-PASS (69 logs) |
 | TX_TLETS | v4.20 | ALL-PASS (92 logs) |
@@ -33,22 +33,22 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**CA_CLETS v2.25 IS TENANT-VERIFIED -- ALL-PASS 5/5, 109/109, and BOTH fixes are WIRE-PROVEN.**
-`<Authentication>/<DeviceId>` populated on **109 of 109** logs, so the platform fills it and NO
-device-registration action was needed; and middle name + suffix reach `<Name>` on **all five** paths
-(VehReg/DL/DH/Gun/Boat each emit all four shapes: `DOE, JOHN A JR` / `JOHN JR` / `JOHN A` / `JOHN`).
-**NEXT: RE-IMPORT v2.25 AT MARIPOSA -- Foundation then LIVE. The tenant is on v2.24 and that IS the
-open production failure.** One thing to read there: whether `<DeviceId>` carries the CLETS-assigned
-Terminal Identifier or merely the workstation name -- it resolves to the tenant placeholder `MK43RS`
-here, while Mariposa's `api:Source` carries `LAPTOP47EQ3RSJ`. If it is the workstation name that is a
-device-registration CONFIG follow-up, NOT a JSON change and NOT grounds to revert.
-
-**Then: 70 name components 14 providers cannot accept** -- `audit_name_components.ps1` (new
-2026-08-17, NOT in enforce yet; it would redden 14 of 20). Metadata declares request `Name` with
-First/Last/**Middle/Suffix**; middle+suffix have no control. Rob's order: **FL_FCIC (6) ·
-NJ_NJCJIS (2) · IL_LEADS_OFML (2) -- going live soon** (CA_CLETS's 10 landed in v2.25, folded in so
-it cost no second archive). **IL also owes 1 Firearm plan test** -- `firearmMake` is valued now, so
-its plan grew by one and it reads PARTIAL until that single capture lands. Then AZ's Jira line.
+**THREE PROVIDERS AWAIT A TENANT SWEEP, all bumped today to wire middle name + suffix:**
+**FL_FCIC v7.24 (118 tests) · HI_HCJDC_OFML v4.19 (52) · IL_LEADS_OFML v2.8 (44)**, plus
+**OR_LEDS v2.3** (never tenant-tested). Metadata declares request `Name` with FOUR components
+(First/Last/**Middle/Suffix**); middle+suffix had no control, so the officer could not enter them.
+Wire-PROVEN on AZ and CA_CLETS: `DOE, JOHN A JR`, degrading cleanly to `DOE, JOHN JR`. FL and OR are
+RESTORATIONS -- v7.17/v2.2 deleted those controls as "dead"; the fix was to WIRE them, and Rob
+reversed that call on 08-17.
+**⚠ IF A FIX IS FOLDED INTO AN ALREADY-BUILT VERSION, REGENERATE THE PLAN BY HAND.** The version does
+not move, so `reset_test_package` correctly skips it and the plan silently describes the OLD JSON --
+this nearly made the CA_CLETS sweep prove nothing (0 of 90 tests filled middle/suffix). `-Path`, not
+`-Provider`. Count the fills BEFORE running, not after.
+**HI's sweep also settles C3**: v4.18 had the controls composed but in no `any[]`, and
+`audit_wiring_closure` calls that CLOSED. If `<Name>` now carries middle+suffix where 46 v4.18 logs
+never could, `any[]` membership is load-bearing and C3 should become BLOCKING.
+**Still owed after these: 60 components / 11 providers** -- CA_CONTRA 10 · CA_VENTURA 10 · CA_eSUN 8 ·
+OH 6 · OCATS 4 · CA_SLO 4 · LA 4 · MD 4 · NM 4 · TN 4 · NJ 2. Then AZ's owed Jira line.
 
 **⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
 A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa is now

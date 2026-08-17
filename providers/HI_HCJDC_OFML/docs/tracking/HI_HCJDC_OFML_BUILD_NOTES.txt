@@ -3,6 +3,45 @@ HI_HCJDC_OFML BUILD NOTES
 Started: 2026-04-28
 Metadata: HI_HCJDC_OFML.xml (System HCJDC_OFML v9) + HI_HCJDC_OFML.pdf
 Reference: HIDLE.json (hand-built HI production JSON)
+v4.19  2026-08-17  middle name + suffix reach the wire (any[] wiring) + MI label capacity fix
+  CHANGED: Wired the metadata-defined middle-name and suffix components of the composite `Name`
+    field so they reach the wire: added the two form controls per name path, appended them to that
+    query's composite Name sourceField, and added them to every name-search combination's any[].
+    FormatStringRuleHandler separators went @(', ') -> @(', ',' ',' ') -- AP #15 requires fields-1
+    separators, so four sourceFields need three. Name rows regrouped to carry all four parts, with
+    mandatory qualifiers moved to their own row beneath (layout rules L8/L2). No set[] was touched
+    and every addition is any[]-only, so NO ROUTING CHANGED.
+  REASON: Found by tools\audit_name_components.ps1 (new 2026-08-17) -- the authority->built gate at
+    COMPONENT granularity. This provider's own metadata declares request `Name` with FOUR components
+    (First/Last/Middle/Suffix) on the queries built here, but middle and suffix had no form control,
+    so the officer could not enter them at all. No existing gate could see it: every other gate
+    enumerates the JSON and is therefore closed under what we built, and because the test plan is
+    generated FROM the JSON, a missing control produces no test and so can never fail.
+    CAPABILITY IS WIRE-PROVEN, not theoretical: AZ_AZDPS v3.11 and CA_CLETS v2.25 (109/109 logs)
+    both emit <Name>DOE, JOHN A JR</Name> and degrade cleanly to "DOE, JOHN JR" when the middle name
+    is absent -- no double space, no stray comma.  HI WAS A DIFFERENT AND MORE MISLEADING FAILURE THAN THE OTHERS -- the only provider in this state.
+    The controls EXISTED and were visible, the composite Name attribute ALREADY listed all four
+    components, and the separators were ALREADY the correct triple. The two components simply sat in
+    NO combination's any[], so an officer could type them on both the DL and DH cards and neither
+    value could reach the wire. Fix: nameMiddle/nameSuffix -> DQN's any[]; nameMiddleDH/nameSuffixDH
+    -> $dhAny, BOTH arms (the Attention-diagnostic build must not differ by a second variable).
+  THIS ALSO SETTLES AN OPEN QUESTION THAT WAS NOT ANSWERABLE FROM THE REPO. audit_wiring_closure
+    reported HI CLOSED, because its class A requires "no attribute sources it AND no combo references
+    it" -- attribute-sourcing alone counted as reaching the wire. I claimed the opposite. Neither
+    position had a committed log, so audit_name_components records it as C3 NOT-IN-POOL, a [NOTE] and
+    not a FAIL, under hypothesis quarantine. HI was the ONLY provider isolating the variable. The
+    upcoming sweep decides it: if <Name> now carries middle+suffix where v4.18's 46 logs never could,
+    any[] membership was load-bearing and C3 should become BLOCKING. Read the result before promoting
+    it -- this fix landing does not by itself prove the diagnosis.
+  COSMETIC, AND IT REVERSES AN EARLIER DELIBERATE DECISION -- stated rather than quietly overwritten:
+    an earlier label pass changed nameMiddle/nameMiddleDH from 'Middle Name' to 'M.I.'/'MI'. Both
+    fields are maxLength=30, i.e. a full middle name, so 'MI' claims a single initial and
+    misrepresents capacity (rule L7). AZ_AZDPS made exactly this correction at v3.10. Reverted to
+    'Middle Name' with a LABEL-OVERRIDE tag on each. The operator has final say -- if 'M.I.' is
+    wanted back, cap the fields at 1 or record the override.
+  COST: all 5 entities re-open; 46 logs archived. HDLE LIVE is UNAFFECTED -- it is deliberately held
+    at v4.15 and this does not change that hold.
+
 v4.18  2026-08-13  +1 QRDM attribute: ScarMarkTattooCode (the SECOND spelling). Response-only.
   WHY: the live HDLE WantedPerson block sends the scars/marks/tattoos value under TWO element
     names -- <ScarMarkTattooCode>SC R EYE</ScarMarkTattooCode> AND
