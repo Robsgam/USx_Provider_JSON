@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: AZ_AZDPS Person DriverHistoryQuery
-Combo: KQH (KQH (auto))
-Date: 2026-08-17 10:20:24
+Combo: KQH_af_NameSuffixDH (KQH_af_NameSuffixDH (auto))
+Date: 2026-08-17 10:20:22
 Result: PASS
 JSON Version: 3.11
 Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDateDH":"1990-01-15","NameFirstDH":"JOHN","NameLastDH":"DOE","RegistrationStateDH":"New Jersey","Requestor":"X","SexCodeDH":"Male","dexStateUserId":"X"}
+{"BirthDateDH":"1990-01-15","NameFirstDH":"JOHN","NameLastDH":"DOE","NameSuffixDH":"JR","RegistrationStateDH":"New Jersey","Requestor":"X","SexCodeDH":"Male","dexStateUserId":"X"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M080Z5YR6YVRGQ1V3W1NZ3W1">
+    <api:Transaction id="01M080ZP841J0J0PAZ9217V9NE">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,12 +36,12 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01M080Z5YR6YVRGQ1V3W1NZ3W1</Id>
+            <Id>01M080ZP841J0J0PAZ9217V9NE</Id>
             <State>NJ</State>
             <Attention>SGAMBELLONE R</Attention>
             <SexCode>M</SexCode>
             <BirthDate>19900115</BirthDate>
-            <Name>DOE, JOHN</Name>
+            <Name>DOE, JOHN JR</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -64,15 +64,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M080Z5YR6YVRGQ1V3W1NZ3W1
+  Id                             01M080ZP841J0J0PAZ9217V9NE
   State                          NJ
   Attention                      SGAMBELLONE R
   SexCode                        M
   BirthDate                      19900115
-  Name                           DOE, JOHN
+  Name                           DOE, JOHN JR
 
 NOTES
 -----
-Automated capture (txId 01M080Z5YR6YVRGQ1V3W1NZ3W1). kind=combo; anyField=; expectedKeyRef=KQH; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M080ZP841J0J0PAZ9217V9NE). kind=any-field; anyField=NameSuffixDH; expectedKeyRef=KQH; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: AZ_AZDPS Person DriverLicenseQuery
 Combo: ACWL_any (ACWL_any (auto))
-Date: 2026-08-12 14:30:25
+Date: 2026-08-17 10:20:37
 Result: PASS
 JSON Version: 3.11
 Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","RegistrationStateDH":"Arizona","Requestor":"X","SexCode":"Male","dexStateUserId":"X"}
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","RegistrationStateDH":"Arizona","Requestor":"X","SexCode":"Male","dexStateUserId":"X","nameMiddle":"A","nameSuffix":"JR"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01KZVKE22WJ7ZHJTP6C43H09W5">
+    <api:Transaction id="01M080X5HQ0R1JS0D2B7W0T1ZM">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -36,12 +36,12 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>DriverLicenseQuery</MessageType>
-            <Id>01KZVKE22WJ7ZHJTP6C43H09W5</Id>
+            <Id>01M080X5HQ0R1JS0D2B7W0T1ZM</Id>
             <State>GA</State>
             <SexCode>M</SexCode>
             <BadgeNumber>MK43RS</BadgeNumber>
             <BirthDate>19900115</BirthDate>
-            <Name>DOE, JOHN</Name>
+            <Name>DOE, JOHN A JR</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -78,15 +78,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01KZVKE22WJ7ZHJTP6C43H09W5
+  Id                             01M080X5HQ0R1JS0D2B7W0T1ZM
   State                          GA
   SexCode                        M
   BadgeNumber                    MK43RS
   BirthDate                      19900115
-  Name                           DOE, JOHN
+  Name                           DOE, JOHN A JR
 
 NOTES
 -----
-Automated capture (txId 01KZVKE22WJ7ZHJTP6C43H09W5). kind=any; anyField=; expectedKeyRef=ACWL; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M080X5HQ0R1JS0D2B7W0T1ZM). kind=any; anyField=; expectedKeyRef=ACWL; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS

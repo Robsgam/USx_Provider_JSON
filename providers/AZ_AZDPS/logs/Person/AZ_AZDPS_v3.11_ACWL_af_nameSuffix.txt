@@ -1,7 +1,7 @@
 ﻿================================================================
-TEST LOG: AZ_AZDPS Person DriverHistoryQuery
-Combo: KQH (KQH (auto))
-Date: 2026-08-17 10:20:24
+TEST LOG: AZ_AZDPS Person DriverLicenseQuery
+Combo: ACWL_af_nameSuffix (ACWL_af_nameSuffix (auto))
+Date: 2026-08-17 10:20:38
 Result: PASS
 JSON Version: 3.11
 Entity Fingerprint: ae6fc6cf7654d89372edec68849c946fec49bbd63b3c07afdfe2e75d10a0f65c
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"BirthDateDH":"1990-01-15","NameFirstDH":"JOHN","NameLastDH":"DOE","RegistrationStateDH":"New Jersey","Requestor":"X","SexCodeDH":"Male","dexStateUserId":"X"}
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","RegistrationStateDH":"Arizona","Requestor":"X","SexCode":"Male","dexStateUserId":"X","nameSuffix":"JR"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M080Z5YR6YVRGQ1V3W1NZ3W1">
+    <api:Transaction id="01M080WWZ6HK965B5Z9X5P5HJ8">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -35,13 +35,12 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>DriverHistoryQuery</MessageType>
-            <Id>01M080Z5YR6YVRGQ1V3W1NZ3W1</Id>
-            <State>NJ</State>
-            <Attention>SGAMBELLONE R</Attention>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M080WWZ6HK965B5Z9X5P5HJ8</Id>
             <SexCode>M</SexCode>
+            <BadgeNumber>MK43RS</BadgeNumber>
             <BirthDate>19900115</BirthDate>
-            <Name>DOE, JOHN</Name>
+            <Name>DOE, JOHN JR</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -55,7 +54,20 @@ Not captured
 
 RMS QUERY
 ---------
-Not captured
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "sexAttrId":  "69585921178",
+                         "dateOfBirth":  "1990-01-15"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
 
 FIELD ANALYSIS
 --------------
@@ -64,15 +76,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M080Z5YR6YVRGQ1V3W1NZ3W1
-  State                          NJ
-  Attention                      SGAMBELLONE R
+  Id                             01M080WWZ6HK965B5Z9X5P5HJ8
   SexCode                        M
+  BadgeNumber                    MK43RS
   BirthDate                      19900115
-  Name                           DOE, JOHN
+  Name                           DOE, JOHN JR
 
 NOTES
 -----
-Automated capture (txId 01M080Z5YR6YVRGQ1V3W1NZ3W1). kind=combo; anyField=; expectedKeyRef=KQH; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M080WWZ6HK965B5Z9X5P5HJ8). kind=any-field; anyField=nameSuffix; expectedKeyRef=ACWL; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
