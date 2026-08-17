@@ -17,7 +17,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
 | CA_CLETS | v2.26 | ALL-PASS (111 logs) |
 | FL_FCIC | v7.24 | NEVER-TESTED -- 118 test(s) owed |
-| HI_HCJDC_OFML | v4.20 | NEVER-TESTED -- 50 test(s) owed |
+| HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
 | IL_LEADS_OFML | v2.8 | NEVER-TESTED -- 44 test(s) owed |
 | NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.24 | ALL-PASS (69 logs) |
@@ -33,10 +33,10 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**FOUR SWEEPS OWED: `FL_FCIC v7.24` (118) · `HI_HCJDC_OFML v4.20` (50) · `IL_LEADS_OFML v2.8` (44) ·
-`OR_LEDS v2.3`.** CA_CLETS v2.26 is DONE -- ALL-PASS 5/5, 111/111, both purpose codes wire-proven
-(`<CaRequestPurposeCode>C` + `<PurposeCode>I` in ONE request, impossible before v2.26).
-Run `tools\report_import_owed.ps1` for the import queue.
+**THREE SWEEPS OWED: `FL_FCIC v7.24` (118) · `IL_LEADS_OFML v2.8` (44) ·
+`OR_LEDS v2.3`.** DONE 08-17: **CA_CLETS v2.26** (111/111 -- `<CaRequestPurposeCode>C` +
+`<PurposeCode>I` in ONE request, impossible before) and **HI_HCJDC_OFML v4.20** (50/50 -- 0 malformed
+`<Name>`, 0 on KQN, all four shapes on KQ/DQ). Import queue: `tools\report_import_owed.ps1`.
 **FL and OR are RESTORATIONS** — v7.17/v2.2 deleted middle/suffix as "dead"; the fix was to WIRE
 them, and Rob reversed that call on 08-17.
 **C3 IS STILL UNSETTLED and HI can no longer settle it.** The v4.19 sweep could not decide whether
