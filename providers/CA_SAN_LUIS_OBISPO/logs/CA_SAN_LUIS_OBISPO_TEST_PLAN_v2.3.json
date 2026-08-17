@@ -3,7 +3,7 @@
     "version":  "2.3",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  53,
+    "testCount":  54,
     "formDefaults":  {
                          "Vehicle":  {
                                          "LicensePlateTypeCode":  "PC",
@@ -1001,6 +1001,26 @@
                       "expectedKeyRef":  "QGB",
                       "kind":  "any-field",
                       "tier":  "Full",
+                      "anyField":  "firearmMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  43,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGB",
+                      "expectedKeyRef":  "QGB",
+                      "kind":  "any-field",
+                      "tier":  "Full",
                       "anyField":  "gunTypeCode",
                       "fills":  [
                                     {
@@ -1014,7 +1034,7 @@
                                 ]
                   },
                   {
-                      "n":  43,
+                      "n":  44,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QGB",
@@ -1031,13 +1051,17 @@
                                         "value":  "11"
                                     },
                                     {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
                                         "fieldId":  "gunTypeCode",
                                         "value":  "H"
                                     }
                                 ]
                   },
                   {
-                      "n":  44,
+                      "n":  45,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1050,7 +1074,7 @@
                                 }
                   },
                   {
-                      "n":  45,
+                      "n":  46,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1070,7 +1094,7 @@
                                 ]
                   },
                   {
-                      "n":  46,
+                      "n":  47,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1090,7 +1114,7 @@
                                 ]
                   },
                   {
-                      "n":  47,
+                      "n":  48,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1110,7 +1134,7 @@
                                 ]
                   },
                   {
-                      "n":  48,
+                      "n":  49,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1137,7 +1161,7 @@
                                 ]
                   },
                   {
-                      "n":  49,
+                      "n":  50,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ",
@@ -1150,7 +1174,7 @@
                                 }
                   },
                   {
-                      "n":  50,
+                      "n":  51,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ",
@@ -1169,7 +1193,7 @@
                                 ]
                   },
                   {
-                      "n":  51,
+                      "n":  52,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QB",
@@ -1182,7 +1206,7 @@
                                 }
                   },
                   {
-                      "n":  52,
+                      "n":  53,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QB",
@@ -1201,7 +1225,7 @@
                                 ]
                   },
                   {
-                      "n":  53,
+                      "n":  54,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  null,

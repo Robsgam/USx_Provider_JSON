@@ -3,7 +3,7 @@
     "version":  "2.2",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  67,
+    "testCount":  68,
     "formDefaults":  {
                          "Vehicle":  {
                                          "caRequestPurposeCode":  "C",
@@ -1316,6 +1316,30 @@
                       "expectedKeyRef":  "QGB",
                       "kind":  "any-field",
                       "tier":  "Full",
+                      "anyField":  "firearmMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "caRequestPurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  54,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QGB",
+                      "expectedKeyRef":  "QGB",
+                      "kind":  "any-field",
+                      "tier":  "Full",
                       "anyField":  "gunTypeCode",
                       "fills":  [
                                     {
@@ -1333,7 +1357,7 @@
                                 ]
                   },
                   {
-                      "n":  54,
+                      "n":  55,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QGB",
@@ -1357,7 +1381,7 @@
                                 ]
                   },
                   {
-                      "n":  55,
+                      "n":  56,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QGB",
@@ -1378,6 +1402,10 @@
                                         "value":  "11"
                                     },
                                     {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
                                         "fieldId":  "gunTypeCode",
                                         "value":  "H"
                                     },
@@ -1386,26 +1414,6 @@
                                         "value":  "Y"
                                     }
                                 ]
-                  },
-                  {
-                      "n":  56,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  null,
-                      "expectedKeyRef":  "QGB",
-                      "kind":  "guardrail",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "serialNumber",
-                                        "value":  "GUN12345"
-                                    },
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    }
-                                ],
-                      "guardrailLoser":  "QGH.A"
                   },
                   {
                       "n":  57,
@@ -1425,10 +1433,30 @@
                                         "value":  "C"
                                     }
                                 ],
-                      "guardrailLoser":  "QGH.B"
+                      "guardrailLoser":  "QGH.A"
                   },
                   {
                       "n":  58,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  null,
+                      "expectedKeyRef":  "QGB",
+                      "kind":  "guardrail",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "caRequestPurposeCode",
+                                        "value":  "C"
+                                    }
+                                ],
+                      "guardrailLoser":  "QGH.B"
+                  },
+                  {
+                      "n":  59,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1447,7 +1475,7 @@
                                 ]
                   },
                   {
-                      "n":  59,
+                      "n":  60,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1471,7 +1499,7 @@
                                 ]
                   },
                   {
-                      "n":  60,
+                      "n":  61,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1495,7 +1523,7 @@
                                 ]
                   },
                   {
-                      "n":  61,
+                      "n":  62,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1519,7 +1547,7 @@
                                 ]
                   },
                   {
-                      "n":  62,
+                      "n":  63,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -1550,7 +1578,7 @@
                                 ]
                   },
                   {
-                      "n":  63,
+                      "n":  64,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.H",
@@ -1569,7 +1597,7 @@
                                 ]
                   },
                   {
-                      "n":  64,
+                      "n":  65,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.H",
@@ -1588,25 +1616,6 @@
                                     {
                                         "fieldId":  "RegistrationState",
                                         "value":  "GA"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  65,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "BQ.R",
-                      "expectedKeyRef":  "BQ.R",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "RegistrationNumber",
-                                        "value":  "FL1234AB"
                                     }
                                 ]
                   },
@@ -1616,6 +1625,25 @@
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.R",
                       "expectedKeyRef":  "BQ.R",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "caRequestPurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  67,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "BQ.R",
+                      "expectedKeyRef":  "BQ.R",
                       "kind":  "any",
                       "tier":  "Full",
                       "fills":  [
@@ -1634,7 +1662,7 @@
                                 ]
                   },
                   {
-                      "n":  67,
+                      "n":  68,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  null,

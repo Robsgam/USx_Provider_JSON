@@ -3,7 +3,7 @@
     "version":  "2.7",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  41,
+    "testCount":  42,
     "formDefaults":  {
                          "Vehicle":  {
                                          "ImageIndicator":  "Y",
@@ -626,6 +626,26 @@
                       "expectedKeyRef":  "QG",
                       "kind":  "any-field",
                       "tier":  "Full",
+                      "anyField":  "firearmMake",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "IMI"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "QG",
+                      "expectedKeyRef":  "QG",
+                      "kind":  "any-field",
+                      "tier":  "Full",
                       "anyField":  "ImageIndicator",
                       "fills":  [
                                     {
@@ -639,7 +659,7 @@
                                 ]
                   },
                   {
-                      "n":  28,
+                      "n":  29,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -659,7 +679,7 @@
                                 ]
                   },
                   {
-                      "n":  29,
+                      "n":  30,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -676,6 +696,10 @@
                                         "value":  "11"
                                     },
                                     {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "IMI"
+                                    },
+                                    {
                                         "fieldId":  "ImageIndicator",
                                         "value":  "N"
                                     },
@@ -686,7 +710,7 @@
                                 ]
                   },
                   {
-                      "n":  30,
+                      "n":  31,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -705,7 +729,7 @@
                                 ]
                   },
                   {
-                      "n":  31,
+                      "n":  32,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -729,7 +753,7 @@
                                 ]
                   },
                   {
-                      "n":  32,
+                      "n":  33,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -752,7 +776,7 @@
                                 ]
                   },
                   {
-                      "n":  33,
+                      "n":  34,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.H",
@@ -765,7 +789,7 @@
                                 }
                   },
                   {
-                      "n":  34,
+                      "n":  35,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.H",
@@ -785,7 +809,7 @@
                                 ]
                   },
                   {
-                      "n":  35,
+                      "n":  36,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.H",
@@ -805,7 +829,7 @@
                                 ]
                   },
                   {
-                      "n":  36,
+                      "n":  37,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.H",
@@ -832,7 +856,7 @@
                                 ]
                   },
                   {
-                      "n":  37,
+                      "n":  38,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.R",
@@ -845,7 +869,7 @@
                                 }
                   },
                   {
-                      "n":  38,
+                      "n":  39,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.R",
@@ -865,7 +889,7 @@
                                 ]
                   },
                   {
-                      "n":  39,
+                      "n":  40,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.R",
@@ -885,7 +909,7 @@
                                 ]
                   },
                   {
-                      "n":  40,
+                      "n":  41,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "BQ.R",
@@ -912,7 +936,7 @@
                                 ]
                   },
                   {
-                      "n":  41,
+                      "n":  42,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  null,

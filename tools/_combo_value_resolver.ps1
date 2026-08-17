@@ -157,7 +157,18 @@ function Get-ComboTestValue {
         '(?i)^addressStreetNumber'         { return '123' }
         '(?i)^sexCode'                     { return 'M' }
         '(?i)^(gun)?serialNumber'          { return 'GUN12345' }
-        '(?i)^gunMake'                     { return 'IMI' }
+        # BOTH SPELLINGS. The portfolio is split 10/10 on this fieldId -- AZ/CA_CLETS/CA_CONTRA_COSTA/
+        # FL/HI/NJ/NY/TX/TX_CCH use 'GunMake' or 'gunMake', while CA_CLETS_OCATS/CA_eSUN/CA_SLO/
+        # CA_VENTURA/IL/LA/MD/NM/OH/TN use 'firearmMake'. '^gunMake' matched only the first group, so
+        # on the other TEN the resolver returned nothing and emit_test_plan SILENTLY DROPPED the field
+        # from the fills rather than failing -- which is how IL_LEADS_OFML shipped an ALL-PASS 41/41
+        # package whose 'QG_any' test (the one whose entire job is to fill EVERY optional) filled 3 of
+        # 4 and still reported PASS. Found 2026-08-17 by sweeping all 20 providers for any[] fields no
+        # plan test fills; firearmMake was 9 of the 34 hits. 'IMI' is live-proven selectable on this
+        # code type (NCIC_FIREARM_MAKE/NCIC) -- the driver picked "IMI - Desert Eagle..." on NJ and HI.
+        # THE REAL LESSON IS THE SILENT DROP, not the regex: a resolver that cannot value a field
+        # should refuse, not omit. Omission turns a coverage hole into a green test.
+        '(?i)^(gun|firearm)Make'           { return 'IMI' }
         '(?i)^gunCaliber'                  { return '11' }
         '(?i)^criminalIdNumber'            { return 'CII123456' }
         '(?i)^socialSecurityNumber'        { return '123456789' }
