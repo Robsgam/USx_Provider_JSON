@@ -363,14 +363,20 @@ Say "  Re-run the full test matrix from Test 1 (see ${Provider}_TEST_MATRIX.txt)
 # it is tempting to skip because the feature "obviously works".
 # Note the reset can run at an UNCHANGED version (a reopened entity is enough to trigger it), so
 # reaching this line does NOT imply a version bump -- the comparison is required, not decorative.
+#
+# *** EVERY LINE BELOW MUST CONTAIN THE LITERAL "IMPORT", AND THAT IS NOT COSMETIC. ***
+# A direct build reaches this script through _build_provider_helpers.ps1, which pipes this output
+# through a KEYWORD FILTER (`RESET|archived|reset |cleared|stamped|regenerated|WARN|IMPORT`) before
+# displaying it. The first version of this prompt was a bordered box whose lines matched none of
+# those keywords, so it was silently swallowed on the ONE path every provider is actually built
+# through -- the alert existed, fired correctly, and was invisible. Caught on its first real trigger
+# (CA_CLETS v2.25 -> v2.26). If you reword these lines, keep "IMPORT" in each one, or re-check the
+# filter in _build_provider_helpers.ps1.
 if ("$priorGlobal" -ne "$version") {
 Say ""
-Say "  ============================================================================" "Yellow"
-Say "  NEW VERSION BUILT: $Provider v$version (was v$priorGlobal) -- NEEDS IMPORTING." "Yellow"
-Say "  The JSON on disk is now AHEAD of every tenant. Nothing is verified until it" "Yellow"
-Say "  is imported and swept -- and a Foundation or LIVE tenant may need it too," "Yellow"
-Say "  which only a human can confirm (the capture tool cannot reach those)." "Yellow"
-Say "  Full queue across all providers:  tools\report_import_owed.ps1" "Yellow"
-Say "  ============================================================================" "Yellow"
+Say "  *** IMPORT NEEDED: $Provider v$version (was v$priorGlobal) -- the JSON on disk is now AHEAD of every tenant." "Yellow"
+Say "  *** IMPORT NEEDED: nothing is verified until it is imported and swept, and a Foundation or LIVE tenant may" "Yellow"
+Say "  *** IMPORT NEEDED: need it too -- only a human can confirm that (the capture tool cannot reach those)." "Yellow"
+Say "  *** IMPORT NEEDED: full queue across all providers ->  tools\report_import_owed.ps1" "Yellow"
 }
 exit 0

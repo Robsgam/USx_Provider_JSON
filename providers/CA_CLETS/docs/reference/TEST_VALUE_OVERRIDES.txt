@@ -1,0 +1,26 @@
+# TEST_VALUE_OVERRIDES.txt -- fieldId=value  OR  <Entity>.fieldId=value (entity-scoped wins)
+#
+# purposeCodeNletsDH -- MUST differ from the CA code's value, and this override is REQUIRED, not a
+# preference. DriverHistoryQuery emits TWO purpose-code elements:
+#     purposeCodeDH      -> <CaRequestPurposeCode>   the CA AB-1747 CLETS code   (metadata <Set>)
+#     purposeCodeNletsDH -> <PurposeCode>            the NLETS/CCH code          (metadata <Any>)
+# Before v2.26 BOTH were fed by purposeCodeDH, so they could never differ. Splitting them is the
+# whole point of that version -- and a sweep can only PROVE the split if the two fields carry
+# DIFFERENT values on at least one log.
+#
+# Left to itself the resolver fills both with 'C': _combo_value_resolver.ps1 matches
+# '(?i)^(caRequestPurposeCode|purposeCode)' UNANCHORED at the end, so 'purposeCodeNletsDH' matches
+# the 'purposeCode' branch and returns 'C'. That produces no trust warning (the field IS valued), so
+# nothing would flag it -- but every log would show C/C, which is audit_log_inflation attack D
+# (competing fields carrying the same value prove nothing) and makes the _af_ toggle test HOLLOW,
+# since feedback_toggle_tests_differ_from_default requires an _af_ fill to differ from the form
+# default.
+#
+# 'I' = Immigration Enforcement -- a LEGAL value, not an arbitrary marker: CA_CLETS.xml declares
+#   <ValueList name="CaRequestPurposeCode"> with exactly C (Criminal Justice), I (Immigration
+#   Enforcement), U (Title 8 s1325), and the devdoc (L31-32) lists the same three.
+#
+# The baseline DH tests leave this field unfilled, so they exercise the form/combo default 'C' and
+# prove the any[]+default choice left the wire unchanged. The _af_purposeCodeNletsDH test fills 'I'
+# and proves the two elements are independently settable. One sweep, both proofs.
+purposeCodeNletsDH=I

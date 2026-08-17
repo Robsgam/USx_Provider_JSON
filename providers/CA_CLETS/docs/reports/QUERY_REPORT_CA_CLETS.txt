@@ -1,14 +1,15 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.25.json
-  Generated: 2026-08-17 11:05
+  Source: CA_CLETS_v2.26.json
+  Generated: 2026-08-17 12:59
 ================================================================
 QUERY SIMULATION
 ================
 
+  Seeded form defaults (1): Person.purposeCodeNletsDH=C
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_v2.25.json
+  CommSys Query Simulator -- CA_CLETS_v2.26.json
 ================================================================
 
 --- QIDM: CA_CLETS_VehicleRegistrationQuery [Vehicle] ---
@@ -84,7 +85,7 @@ QUERY SIMULATION
 
     [FIRES first-match] NLTS.KQ.O
       set: [purposeCodeDH, OperatorLicenseNumberDH]
-      any: [RegistrationStateDH, Attention] -> matched: [RegistrationStateDH, Attention]
+      any: [RegistrationStateDH, Attention, purposeCodeNletsDH] -> matched: [RegistrationStateDH, Attention, purposeCodeNletsDH]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->

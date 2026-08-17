@@ -2,9 +2,14 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.25** | Generated: 2026-08-17
+Current: **v2.26** | Generated: 2026-08-17
 
 ---
+
+## v2.26 -- 2026-08-17 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.25 -- 2026-08-17 -- <Authentication>/<DeviceId> (Mariposa LIVE failure) + middle name / suffix wired
 

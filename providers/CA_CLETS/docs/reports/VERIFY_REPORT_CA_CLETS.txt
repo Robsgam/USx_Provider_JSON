@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.25.json
-  Generated: 2026-08-17 11:05
+  Source: CA_CLETS_v2.26.json
+  Generated: 2026-08-17 12:59
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS_v2.25
+ POST-BUILD VERIFICATION: CA_CLETS_v2.26
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 35 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, nameMiddle, nameSuffix, VehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, SexCodeDH, RegistrationStateDH, Attention, GunCaliber, GunMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 36 [addressCity, addressStreetNumber, purposeCode, LicensePlateTypeCode, LicensePlateYear, nameMiddle, nameSuffix, VehicleMakeCode, vehicleYear, addressCounty, age, criminalIdNumber, height, socialSecurityNumber, BirthDateDH, purposeCodeDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeNletsDH, SexCodeDH, RegistrationStateDH, Attention, GunCaliber, GunMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleSerialNumber, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -39,7 +39,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (44) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (45) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -56,7 +56,8 @@ POST-BUILD VERIFICATION
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'RegistrationStateDH' label='State (leave blank for CA)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'purposeCodeDH' label='CA Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'purposeCodeNletsDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'nameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -80,7 +81,7 @@ POST-BUILD VERIFICATION
   [INFO] Field 'articleBrand' (any[]-only) label='Brand' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'ArticleTypeCode' (any[]-only) label='Article Type' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'articleCategory' (any[]-only) label='Category' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
-  [PASS] All form field labels have required routing hint qualifiers (47 fields scanned) (9 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (48 fields scanned) (10 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

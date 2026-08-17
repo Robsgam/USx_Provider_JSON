@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: CA_CLETS
-  Source: CA_CLETS_v2.25.json
-  Generated: 2026-08-17 11:05
+  Source: CA_CLETS_v2.26.json
+  Generated: 2026-08-17 12:59
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== CA_CLETS_v2.25.json ===
+=== CA_CLETS_v2.26.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=11
-  Person | entity=Person | qidm= | cards=2 fields=18
+  Person | entity=Person | qidm= | cards=2 fields=19
   Firearm | entity=Firearm | qidm= | cards=1 fields=7
   Article | entity=Article | qidm= | cards=1 fields=5
   Boat | entity=Boat | qidm= | cards=1 fields=8
@@ -34,7 +34,7 @@ LAYOUT DETAIL
         LicensePlateNumber (Text | maxLen=10)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
-      ROW ROW_VEH_2 [6 4]
+      ROW ROW_VEH_2 [8 4]
         RegistrationState (Dropdown | attributeTypeId=STATE)
         purposeCode (Text | maxLen=1 | default=C)
       ROW ROW_VEH_3 [4 4 4]
@@ -71,14 +71,15 @@ LAYOUT DETAIL
         height (Text | maxLen=3)
         addressCounty (Text | maxLen=3)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-      ROW ROW_PER_DL_OPT [6 4]
+      ROW ROW_PER_DL_4 [8 4]
         RegistrationState (Dropdown | attributeTypeId=STATE)
         purposeCode (Text | maxLen=1 | default=C)
     CARD "CARD_PER_DH"
-      ROW ROW_PER_DH_1 [4 4 4]
+      ROW ROW_PER_DH_1 [3 3 3 3]
         OperatorLicenseNumberDH (Text | maxLen=20)
         RegistrationStateDH (Dropdown | attributeTypeId=STATE)
         purposeCodeDH (Text | maxLen=1 | default=C)
+        purposeCodeNletsDH (Text | maxLen=1 | default=C)
       ROW ROW_PER_DH_2 [4 4 2 2]
         NameFirstDH (Text | maxLen=30)
         NameLastDH (Text | maxLen=30)

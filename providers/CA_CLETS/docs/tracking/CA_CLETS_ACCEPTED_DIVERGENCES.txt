@@ -11,8 +11,23 @@
 # Format (pipe-delimited): query | keyRef | field | rule | reason | source | date
 #
 
-DriverHistoryQuery | NLTS.KQ.N | purposeCodeDH | promoted-to-set | purposeCodeDH in set[] ensures KQ query always includes purpose code; any[]/defaulted would silently omit it if CAD doesn't send it; combo default purposeCodeDH='C' handles CAD auto-populate | design-decision | 2026-06-26
-DriverHistoryQuery | NLTS.KQ.O | purposeCodeDH | promoted-to-set | purposeCodeDH in set[] ensures KQ query always includes purpose code; any[]/defaulted would silently omit it if CAD doesn't send it; combo default purposeCodeDH='C' handles CAD auto-populate | design-decision | 2026-06-26
+# RETIRED 2026-08-17 (v2.26): DriverHistoryQuery | NLTS.KQ.N + NLTS.KQ.O | purposeCodeDH | promoted-to-set
+# The two rows read:
+#   "purposeCodeDH in set[] ensures KQ query always includes purpose code; any[]/defaulted would
+#    silently omit it if CAD doesn't send it; combo default purposeCodeDH='C' handles CAD auto-populate"
+# THERE IS NO LONGER A DIVERGENCE TO ACCEPT, because the premise was an artefact of our own wiring.
+# DriverHistoryQuery emits TWO purpose-code elements and until v2.26 BOTH were fed by the single
+# purposeCodeDH control:
+#     purposeCodeDH -> <CaRequestPurposeCode>   metadata <Set>   MANDATORY
+#     purposeCodeDH -> <PurposeCode>            metadata <Any>   OPTIONAL
+# So one field was simultaneously in the right place for one element and the wrong place for the
+# other, and the registry row papered over the half that was wrong. v2.26 gave <PurposeCode> its own
+# control (purposeCodeNletsDH, in any[] with a 'C' default). Now each sits exactly where its own
+# metadata puts it: purposeCodeDH in set[] MATCHES <Set>, so it is no longer a divergence at all.
+# The original concern -- "any[]/defaulted would silently omit it if CAD doesn't send it" -- is still
+# handled, by the combo defaults[] twin on both KQ combos, so the wire is unchanged.
+# Verified after retiring these rows: audit_requirement_fidelity still 27 branches compared /
+# 0 UNDER-REQUIRED / 0 OVER-PERMITTED -- the denominator did NOT fall, so nothing went dark.
 
 # REMOVED 2026-07-21 (v2.15): DriverLicenseQuery | IR.QVC.N | APPSRequestIndicator | extra-field-in-json
 # This divergence's own reasoning was backwards -- "devdoc is sole authority for supported fields"

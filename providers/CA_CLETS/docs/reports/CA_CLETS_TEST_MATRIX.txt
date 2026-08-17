@@ -1,4 +1,4 @@
-CA_CLETS v2.25 -- TEST MATRIX
+CA_CLETS v2.26 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-17
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -15,7 +15,7 @@ Vehicle (1 card, 14 fields):
     ROW 4: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 20], nameSuffix [Inp 4]
     ROW 5: addressCity [Inp 13], addressStreetNumber [Inp 3]
 
-Person (2 cards, 25 fields):
+Person (2 cards, 26 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, CII, SSN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20], criminalIdNumber [Inp 11], socialSecurityNumber [Inp 9]
     ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 20], nameSuffix [Inp 4]
@@ -23,7 +23,7 @@ Person (2 cards, 25 fields):
     ROW 4: age [Inp 2], height [Inp 3], addressCounty [Inp 3], raceCode [Sel RACE]
     ROW 5: RegistrationState [Sel STATE], purposeCode [Inp C, 1]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, "OR" NAME):
-    ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp C, 1]
+    ROW 1: OperatorLicenseNumberDH [Inp 20], RegistrationStateDH [Sel STATE], purposeCodeDH [Inp C, 1], purposeCodeNletsDH [Inp C, 1]
     ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 20], nameSuffixDH [Inp 4]
     ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
     ROW 4: Attention [Inp 30]
@@ -99,7 +99,7 @@ ENTITY 1: PERSON (35 tests -- 2 cards, 11 combos)
               Expected: any[] fields present in XML output.
 16  Person      NLTS+.KQ.O         purposeCodeDH=C, OperatorLicenseNumbe... [    ]
               Expected: DriverHistoryQuery fires (NLTS.KQ.O)
-17  Person      NLTS+.KQ.O         + RegistrationStateDH, Attention [    ]
+17  Person      NLTS+.KQ.O         + RegistrationStateDH, Attention, purposeCodeNletsDH [    ]
               Expected: any[] fields present in XML output.
 18  Person      NLTS+.KQ.N         purposeCodeDH=C, BirthDateDH=01/15/19... [    ]
               Expected: DriverHistoryQuery fires (NLTS.KQ.N)
@@ -239,4 +239,4 @@ COMBO COVERAGE (27/27):
   ArticleSingleQuery: 2/2 -- T67(IP.QA.O), T69(IP.QA.S)
   BoatQuery: 6/6 -- T50(IA.QB.+IA.QB.O), T51(IA.QB.+IA.QB.H), T52(IA.QB.+IA.QB.R), T53(NLTS+.BQ.N), T55(NLTS+.BQ.H), T56(NLTS+.BQ.R)
 
-IMPORT FILE: CA_CLETS_v2.25.json
+IMPORT FILE: CA_CLETS_v2.26.json

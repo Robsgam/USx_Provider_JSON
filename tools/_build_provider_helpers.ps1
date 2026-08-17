@@ -297,7 +297,10 @@ function Write-ProviderJson {
             if (Test-Path $resetPath) {
                 try {
                     & powershell.exe -ExecutionPolicy Bypass -File $resetPath -Provider $provName -Force 2>&1 |
-                        Where-Object { $_ -match 'RESET|archived|reset |cleared|stamped|regenerated|WARN' } |
+                        # 'IMPORT' added 2026-08-17: reset_test_package's version-change import prompt
+                        # was being filtered out here, so the alert fired and was never displayed on
+                        # the direct-build path -- which is how every provider is actually built.
+                        Where-Object { $_ -match 'RESET|archived|reset |cleared|stamped|regenerated|WARN|IMPORT' } |
                         ForEach-Object { Write-Host "    $_" -ForegroundColor DarkGray }
                 } catch {
                     Write-Host "  [WARN] reset_test_package failed: $_" -ForegroundColor Red

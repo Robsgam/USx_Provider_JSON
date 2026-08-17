@@ -151,7 +151,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.25"
+    [string]$Version = "2.26"
 )
 
 $ErrorActionPreference = "Stop"
@@ -610,7 +610,12 @@ $dhQuery = [PSCustomObject]@{
             size = 30; sourceField = @('NameLastDH','NameFirstDH','nameMiddleDH','nameSuffixDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
-        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeDH'); targetField = 'PurposeCode' }
+        # v2.26: THIS IS A DIFFERENT WIRE FIELD FROM CaRequestPurposeCode ABOVE, and until now both
+        # were fed by the SAME control (purposeCodeDH), so an officer could never set them to
+        # different values. <CaRequestPurposeCode> is the CA AB-1747 CLETS code (metadata <Set>,
+        # mandatory); <PurposeCode> is the NLETS/CCH code (metadata <Any>, OPTIONAL on NLTS.KQ.N and
+        # NLTS.KQ.O). Now sourced from its own field.
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCodeNletsDH'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCodeDH'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationStateDH'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{
@@ -622,12 +627,18 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set        = @('purposeCodeDH','BirthDateDH','NameLastDH','NameFirstDH','SexCodeDH')
-                any        = @('RegistrationStateDH','Attention','nameMiddleDH','nameSuffixDH')
+                # v2.26: purposeCodeNletsDH added to any[] -- metadata puts <PurposeCode> in <Any> on
+                # this combo, so any[] is the CORRECT placement (purposeCodeDH stays in set[] because
+                # <CaRequestPurposeCode> is in <Set>). The defaults[] twin below keeps the wire
+                # IDENTICAL -- <PurposeCode>C</PurposeCode> still ships on every DH query -- and is
+                # required because CAD ignores form initialValues.
+                any        = @('RegistrationStateDH','Attention','nameMiddleDH','nameSuffixDH','purposeCodeNletsDH')
                 # v2.24 (DEX-1283): removed defaults[] Attention='X' -- the hidden gate-feeder no
                 # longer carries a starting value (see ROW_PER_DH_ATTN below); a combo default was
                 # never required for the handler to run either.
                 defaults   = @(
-                    [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
+                    [PSCustomObject]@{ field = 'purposeCodeDH';      value = 'C' }
+                    [PSCustomObject]@{ field = 'purposeCodeNletsDH'; value = 'C' }
                 )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
@@ -640,9 +651,11 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCodeDH','OperatorLicenseNumberDH')
-                any      = @('RegistrationStateDH','Attention')
+                # v2.26: see NLTS.KQ.N above -- same any[]+defaults[] treatment for the NLETS code.
+                any      = @('RegistrationStateDH','Attention','purposeCodeNletsDH')
                 defaults = @(
-                    [PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' }
+                    [PSCustomObject]@{ field = 'purposeCodeDH';      value = 'C' }
+                    [PSCustomObject]@{ field = 'purposeCodeNletsDH'; value = 'C' }
                 )
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -977,9 +990,9 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','4'); fields = @(
+            @{ id = 'ROW_VEH_2'; cols = @('8','4'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_2' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_VEH_2' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'CA Purpose Code' '1' 'ROW_VEH_2' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '30' 'ROW_VEH_3' }
@@ -1067,9 +1080,12 @@ $perLayout = MakeLayouts @(
             # (RegistrationStateDH) -- DriverHistoryQuery (NLTS.KQ, interstate/OOS) needs a
             # destination State, so State MUST appear on the DH card too (TX v4.12 pattern). The
             # v2.20 "DH uses no State" claim was WRONG -- the DH QIDM sources State; fixed v2.21.
-            @{ id = 'ROW_PER_DL_OPT'; cols = @('6','4'); fields = @(
-                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_OPT' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_DL_OPT' @{ initialValue = 'C' } }
+            # v2.26: row renamed ROW_PER_DL_OPT -> ROW_PER_DL_4. The old id asserted 'optional' about a
+            # field that is in EVERY DriverLicenseQuery combination's set[] and without which CLETS
+            # rejects the transaction outright. cols 6,4 (=10) -> 8,4 (=12), rule L6.
+            @{ id = 'ROW_PER_DL_4'; cols = @('8','4'); fields = @(
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_4' }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'CA Purpose Code' '1' 'ROW_PER_DL_4' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -1080,10 +1096,15 @@ $perLayout = MakeLayouts @(
             # v2.21: RegistrationStateDH added here -- DriverHistory is Nlets/interstate (OOS), so the
             # DH card needs its own destination State (the DH QIDM sources RegistrationStateDH). Mirrors
             # the DL card's State + the TX v4.12 both-cards pattern.
-            @{ id = 'ROW_PER_DH_1'; cols = @('4','4','4'); fields = @(
+            # v2.26: the DH card carries TWO purpose codes because DriverHistoryQuery emits TWO wire
+            # elements. They were both fed by purposeCodeDH, so they could never differ. Kept side by
+            # side so it reads as a pair; 4,4,4 -> 3,3,3,3.
+            @{ id = 'ROW_PER_DH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
                 @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DH_1' }
-                @{ id = 'PurposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCodeDH_Input';  node = Inp 'purposeCodeDH' 'CA Purpose Code' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
+                # -> wire <PurposeCode> (NLETS/CCH), metadata <Any> on NLTS.KQ.N/O. NOT the CA code.
+                @{ id = 'PurposeCodeNletsDH_Input'; node = Inp 'purposeCodeNletsDH' 'Purpose Code' '1' 'ROW_PER_DH_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name' '30' 'ROW_PER_DH_2' }
@@ -1142,7 +1163,7 @@ $faLayout = MakeLayouts @(
             @{ id = 'ROW_GUN_2B'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth'               'ROW_GUN_2B' }
                 @{ id = 'Age_Input';       node = Inp 'age'       'Age' '2'                     'ROW_GUN_2B' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_GUN_2B' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'CA Purpose Code' '1' 'ROW_GUN_2B' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -1168,7 +1189,7 @@ $artLayout = MakeLayouts @(
             @{ id = 'ROW_ART_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'OwnerAppliedNumber_Input'; node = Inp 'ownerAppliedNumber' 'Owner Applied Number' '20' 'ROW_ART_1' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'CA Purpose Code' '1' 'ROW_ART_1' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_ART_2'; cols = @('4','4','4'); fields = @(
                 # LABEL-OVERRIDE: ArticleTypeCode -- bare per DEX-1284 lean pass (any[] optional)
@@ -1215,7 +1236,7 @@ $boaLayout = MakeLayouts @(
             @{ id = 'ROW_BOA_3'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt 'BirthDate' 'Date of Birth' 'ROW_BOA_3' }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for CA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_3' }
-                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_BOA_3' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'CA Purpose Code' '1' 'ROW_BOA_3' @{ initialValue = 'C' } }
             )}
         )
     }

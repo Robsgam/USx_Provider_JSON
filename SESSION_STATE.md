@@ -15,7 +15,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | Provider | Ver | State |
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
-| CA_CLETS | v2.25 | ALL-PASS (109 logs) |
+| CA_CLETS | v2.26 | NEVER-TESTED -- 111 test(s) owed |
 | FL_FCIC | v7.24 | NEVER-TESTED -- 118 test(s) owed |
 | HI_HCJDC_OFML | v4.19 | NEVER-TESTED -- 52 test(s) owed |
 | IL_LEADS_OFML | v2.8 | NEVER-TESTED -- 44 test(s) owed |
@@ -33,34 +33,36 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**THREE PROVIDERS AWAIT A TENANT SWEEP, all bumped today to wire middle name + suffix:**
-**FL_FCIC v7.24 (118 tests) · HI_HCJDC_OFML v4.19 (52) · IL_LEADS_OFML v2.8 (44)**, plus
-**OR_LEDS v2.3** (never tenant-tested). Metadata declares request `Name` with FOUR components
-(First/Last/**Middle/Suffix**); middle+suffix had no control, so the officer could not enter them.
-Wire-PROVEN on AZ and CA_CLETS: `DOE, JOHN A JR`, degrading cleanly to `DOE, JOHN JR`. FL and OR are
-RESTORATIONS -- v7.17/v2.2 deleted those controls as "dead"; the fix was to WIRE them, and Rob
-reversed that call on 08-17.
-**⚠ IF A FIX IS FOLDED INTO AN ALREADY-BUILT VERSION, REGENERATE THE PLAN BY HAND.** The version does
-not move, so `reset_test_package` correctly skips it and the plan silently describes the OLD JSON --
-this nearly made the CA_CLETS sweep prove nothing (0 of 90 tests filled middle/suffix). `-Path`, not
-`-Provider`. Count the fills BEFORE running, not after.
-**HI's sweep also settles C3**: v4.18 had the controls composed but in no `any[]`, and
-`audit_wiring_closure` calls that CLOSED. If `<Name>` now carries middle+suffix where 46 v4.18 logs
-never could, `any[]` membership is load-bearing and C3 should become BLOCKING.
-**Still owed after these: 60 components / 11 providers** -- CA_CONTRA 10 · CA_VENTURA 10 · CA_eSUN 8 ·
-OH 6 · OCATS 4 · CA_SLO 4 · LA 4 · MD 4 · NM 4 · TN 4 · NJ 2. Then AZ's owed Jira line.
+**FIVE SWEEPS OWED, all bumped 2026-08-17: `CA_CLETS v2.26` (111) · `FL_FCIC v7.24` (118) ·
+`HI_HCJDC_OFML v4.19` (52) · `IL_LEADS_OFML v2.8` (44) · `OR_LEDS v2.3`.** Run
+`tools\report_import_owed.ps1` for the import queue (15 provider-tenant imports owed).
+**CA_CLETS v2.26** = 'CA Purpose Code' label on all 6 cards + a SPLIT of the DH double-mapped purpose
+code: `purposeCodeDH`->`<CaRequestPurposeCode>` (set[]), NEW `purposeCodeNletsDH`->`<PurposeCode>`
+(any[]+default, wire unchanged). They fed the SAME control, so they could never differ. **Its sweep
+must show `<CaRequestPurposeCode>C</CaRequestPurposeCode>` + `<PurposeCode>I</PurposeCode>` together**
+— that is what the new `TEST_VALUE_OVERRIDES.txt` (`purposeCodeNletsDH=I`) exists to make provable;
+left alone the resolver fills both `'C'` and the log proves nothing (inflation attack D).
+**FL and OR are RESTORATIONS** — v7.17/v2.2 deleted middle/suffix as "dead"; the fix was to WIRE
+them, and Rob reversed that call on 08-17.
+**HI's sweep also settles C3**: v4.18 had the name parts composed but in no `any[]`, which
+`audit_wiring_closure` calls CLOSED. If `<Name>` now carries them where 46 v4.18 logs never could,
+`any[]` membership is load-bearing and C3 becomes BLOCKING.
+**⚠ IF A FIX IS FOLDED INTO AN ALREADY-BUILT VERSION, REGENERATE THE PLAN BY HAND** (`-Path`, not
+`-Provider`) — the version does not move, so `reset_test_package` skips it and the plan describes the
+OLD JSON. Count the fills BEFORE running. **Still owed after these: 60 name components / 11 providers.**
 
 **⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
-A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa is now
-BEHIND (tenant v2.24, repo v2.25) and that is the open production action above.** **HDLE is
+A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa was
+re-imported to v2.25 on 08-17 (Foundation AND LIVE) and the repo has since moved to v2.26, so it is
+behind again -- a SECOND production re-import in one day is Rob's call, not a repo action.** **HDLE is
 deliberately HELD at v4.15** (repo/catalog/ticket v4.18) until the hit block is verified, so there
 the artifact is intentionally AHEAD. **Consequence: HDLE production discards NCIC hit content
 today.** HDLE Foundation held at v4.15 for the same reason; Mariposa Foundation also owes v2.25.
 **Neither LIVE row was discoverable from the repo** -- the capture tool cannot reach these tenants,
 so ASK at every import; HDLE LIVE was missed for a day because "foundation and live" read as one.
 
-**JIRA: 4 sections, one comment per RELEASE, EDIT IN PLACE, DRAFT AND WAIT every time.** Full rules
-in `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`. Capture the pre-edit body first (`DEX_TICKET_ARCHIVE.md`).
+**JIRA: 4 sections, one per RELEASE, EDIT IN PLACE, DRAFT AND WAIT, archive the pre-edit body first.**
+Full rules: `knowledge-base/JIRA_COMMENT_TEMPLATE.txt`.
 
 **EXTENSION v0.5.2**: manifest `https://*.mark43.com/rms/*`; the ARM switch replaced the allowlist --
 per-host, 8 `requireArmed()` gates, no dialogs. Match patterns CANNOT match a URL hash. **⚡ Fetch
@@ -72,16 +74,16 @@ results returns ONLY the last ▶ Run Plan; Chrome may save a SECOND file -- alw
   NLETS** (Mariposa Foundation CA_CLETS: `State=CA` satisfied `NLTS.RQ.P`, not `IA.QV`). Our config
   is provably clean; evidence, both unrun tests and the DO-NOT-APPLY-YET reasoning are in
   `PLATFORM_CONSTRAINTS.txt` #41. **Read it before touching any State field.**
-- **`audit_requirement_fidelity` over-permit blind spot.** `vehicleYear` in IL `Z2.P any[]` (metadata
-  does not define it there) goes unreported -- control and mutant both 9 branches / 0 OVER. Suspect
-  `$shPool` inheriting the sibling VIN branch; not confirmed.
+- **`audit_requirement_fidelity` over-permit blind spot:** `vehicleYear` injected into IL `Z2.P any[]`
+  goes unreported (control + mutant both 9 branches / 0 OVER). Suspect `$shPool` inheriting the
+  sibling VIN branch.
 - **HI's NCIC hit block is CONFIG-PRESENT, NOT RENDERING-VERIFIED.** v4.16-v4.18 added 25 QRDM
   attributes; the 46/46 sweep proves the REQUEST unchanged and nothing about the response -- no test
   returned a real hit. Needs ONE deliberate hit query in HI's own tenant (not HDLE); also settles the
   dotted `Hit.Banner` syntax. **Product-level gap:** all 20 providers AND engineering's hand-built
   Lafayette JSON map 0 of 21 such fields.
-- **Officer guides are content-poor, not stale** (all 20 regenerate current). HI's says "pick a row"
-  when the PLATFORM picks by field content, and never names the discriminator. Rewrite requested.
+- **Officer guides are content-poor, not stale.** HI's says "pick a row" when the PLATFORM picks by
+  field content and never names the discriminator. Rewrite requested; shape not agreed.
 
 ## ON HOLD / DO NOT RE-RAISE
 
@@ -90,17 +92,14 @@ results returns ONLY the last ▶ Run Plan; Chrome may save a SECOND file -- alw
   defaulting it kills the in-state plate search (BUILD_RULES 24). KB carve-out also held.
 - **CA_CONTRA_COSTA** BLOCKED: `audit_devdoc_combinations` compares ZERO devdoc combos.
   **LA_LEMS PARKED**: real BUILD_RULES 20b WARN, do NOT silence. Rob's call.
-- **DH IS NOT SUPPORTED FROM CAD** (Rob 08-12) -- relevant to LIMITATION #41: DH is out of scope for
-  the CAD-fills-State question. **`audit_devdoc_optionals` "re-route hole" DOES NOT EXIST** (withdrawn).
-- **LIMITATION #40: the wire is a UNION across every MATCHING combination.** LIVE-PROVEN 38/38.
-  Do not narrow fidelity's `$formOnly` without reading it.
+- **DH IS NOT SUPPORTED FROM CAD** (Rob 08-12), so it is out of scope for LIMITATION #41's CAD-fills-State question. **`audit_devdoc_optionals` re-route hole DOES NOT EXIST** (withdrawn).
+- **LIMITATION #40: the wire is a UNION across every MATCHING combination** (LIVE-PROVEN 38/38) -- do
+  not narrow fidelity's `$formOnly` without reading it. **CA_CLETS purpose-code dropdown: CLOSED (#39).**
 
 ## STATE
 
-**0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` is 16 -> 2**
-(Rob-approved): 10 retired with ZERO JSON change -- 6 build NO ImageIndicator control (rule N/A), 3
-already `'Y'`, and **AZ is RULED OUT -- MEASURED** (`'Y'` kills `DQN`+`DQP`, BUILD_RULES 24). **Owed:
-MD_METERS + OH_LEADS only** -- Rob-held, a WIRE change so bump + re-sweep each.
+**0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` 16 -> 2, owed on
+MD_METERS + OH_LEADS ONLY** (Rob-held; a WIRE change, so bump + re-sweep each. AZ is RULED OUT -- MEASURED).
 **Expect on EVERY provider's enforce:** `[FAIL] Repo audit` = LA + MD STATUS drift; syncing them is
 a back-door mass rebuild. **`[FLAG:nameparts-untested-unfrozen]` pending on HI/NY/TX/TX_CCH.**
 
