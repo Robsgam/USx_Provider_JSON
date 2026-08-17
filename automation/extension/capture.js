@@ -766,10 +766,56 @@
       const ids = new Set(loadSeenIds()); dropped.forEach((id) => ids.add(id)); saveSeenIds(Array.from(ids));
       console.log('%c[USx-BULK]', 'color:#fa0', `${dropped.length} pre-run backlog row(s) dropped (older than this run's first submission).`);
     }
+    // ---------------------------------------------------------------------------------------
+    // SHORTFALL HANDLING (added 2026-08-17). THREE defects lived in the four lines that used to
+    // be here, and every one of them presented as a clean success:
+    //
+    //  (1) THE MANIFEST WAS CLEARED UNCONDITIONALLY, even when most of it was never captured.
+    //      FL_FCIC, 2026-08-17: Article (16) and Firearm (15) ran back to back so the batch held
+    //      31; the fetch fired while Firearm was still submitting, captured 16, and then DELETED
+    //      ALL 31 manifest entries. Firearm's 15 labels were destroyed -- the next fetch had
+    //      nothing left to label and downloaded "[]", and the only recovery was re-running all
+    //      15 tests in the tenant. Now only entries that actually PAIRED are consumed; unpaired
+    //      ones are written back so the NEXT fetch can still label their rows. Re-fetch, not re-run.
+    //  (2) AN EMPTY RESULT STILL DOWNLOADED A FILE -- a 2-byte "[]" that watch_captures skips as
+    //      empty, so the ingest said nothing whatsoever and the export read as "lost". Refuse to
+    //      write it, and say why.
+    //  (3) THE SUMMARY READ AS SUCCESS. "+16 new, 16 total" is perfectly true and tells you
+    //      nothing about the 15 you asked for. A partial capture is INDISTINGUISHABLE from a
+    //      complete one downstream, so it has to be loud HERE, and it has to name what is
+    //      missing -- the operator's next move differs (re-fetch vs re-run).
+    // ---------------------------------------------------------------------------------------
+    const unpairedIdx = batch.map((b, k) => k).filter((k) => !usedM.has(k));
+    const missing = unpairedIdx.map((k) => batch[k]);
+
+    if (!out.length) {
+      // Manifest deliberately LEFT INTACT: with nothing captured there is nothing to consume,
+      // and discarding it here is exactly how FL lost Firearm's labels.
+      console.warn('%c[USx-BULK]', 'color:#c00;font-weight:bold',
+        `NOTHING CAPTURED -- no file downloaded (an empty export is worse than none: the watcher skips it silently). ` +
+        `${batch.length} manifest entr${batch.length === 1 ? 'y' : 'ies'} kept for the next fetch. ` +
+        `Likely causes: the run has not finished submitting, the rows are not in /queries/search yet, or every row was already captured.`);
+      return null;
+    }
+
     L.triggerDownload('usx_captured_batch_labeled.json', out);
     markSeenAndClear(out);
-    try { localStorage.removeItem('__usx_batch'); } catch (e) {}   // manifest consumed by this download
-    console.log('%c[USx-BULK]', 'color:#fa0;font-weight:bold', `done. +${added} new, ${out.length} total -> downloaded usx_captured_batch_labeled.json (store + manifest cleared; ids kept for dedup)`);
+    // Consume ONLY what paired. Unpaired manifest entries survive to be labelled next fetch.
+    try {
+      if (missing.length) localStorage.setItem('__usx_batch', JSON.stringify(missing));
+      else localStorage.removeItem('__usx_batch');
+    } catch (e) {}
+
+    if (missing.length) {
+      const names = missing.map((b) => `${b.entity || '?'}/${b.combo || b.query || '?'}`);
+      console.warn('%c[USx-BULK]', 'color:#c00;font-weight:bold',
+        `PARTIAL CAPTURE: ${added} captured, ${missing.length} of ${batch.length} manifest entr${batch.length === 1 ? 'y' : 'ies'} NOT captured. ` +
+        `Those ${missing.length} are KEPT in the manifest -- press Fetch results again in a few seconds and they should pair. ` +
+        `Re-run the plan ONLY if a second fetch still misses them.`, names);
+    } else {
+      console.log('%c[USx-BULK]', 'color:#0a0;font-weight:bold',
+        `done. +${added} new, ${out.length} total, ALL ${batch.length} manifest entries captured -> usx_captured_batch_labeled.json (store + manifest cleared; ids kept for dedup)`);
+    }
     return out;
   };
 
