@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: CA_CLETS Vehicle VehicleRegistrationQuery
-Combo: IA.QV_af_vehicleYear (IA.QV_af_vehicleYear (auto))
-Date: 2026-08-17 11:18:12
+Combo: IN.VP_af_nameMiddle (IN.VP_af_nameMiddle (auto))
+Date: 2026-08-17 11:18:24
 Result: PASS
 JSON Version: 2.25
 Entity Fingerprint: b86600235039d8c63b0e0b4aca443541911df22a0e73854c9a4d76943ff99e4b
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","purposeCode":"C","vehicleYear":"2023"}
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","NameFirst":"JOHN","NameLast":"DOE","nameMiddle":"A","purposeCode":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M084Q46RGDVEGRBYAW752DD5">
+    <api:Transaction id="01M084NVD24KJACF3J85HVE93H">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MK43RS</Id>
@@ -37,11 +37,8 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01M084Q46RGDVEGRBYAW752DD5</Id>
-            <LicensePlateYear>2026</LicensePlateYear>
-            <VehicleYear>2023</VehicleYear>
-            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <Id>01M084NVD24KJACF3J85HVE93H</Id>
+            <Name>DOE, JOHN A</Name>
             <CaRequestPurposeCode>C</CaRequestPurposeCode>
           </Request>
         </Transaction>
@@ -56,19 +53,7 @@ Not captured
 
 RMS QUERY
 ---------
-Request:
-{
-    "elasticQuery":  {
-                         "vehicle":  {
-                                         "tag":  "TEST123"
-                                     }
-                     },
-    "from":  0,
-    "size":  50
-}
-
-Response:
-No results were created
+Not captured
 
 FIELD ANALYSIS
 --------------
@@ -78,15 +63,12 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   DeviceId                       MK43RS
   ORI                            MK1234567
   Mnemonic                       MK1234567
-  Id                             01M084Q46RGDVEGRBYAW752DD5
-  LicensePlateYear               2026
-  VehicleYear                    2023
-  LicensePlateTypeCode           PC
-  LicensePlateNumber             TEST123
+  Id                             01M084NVD24KJACF3J85HVE93H
+  Name                           DOE, JOHN A
   CaRequestPurposeCode           C
 
 NOTES
 -----
-Automated capture (txId 01M084Q46RGDVEGRBYAW752DD5). kind=any-field; anyField=vehicleYear; expectedKeyRef=IA.QV; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M084NVD24KJACF3J85HVE93H). kind=any-field; anyField=nameMiddle; expectedKeyRef=IN.VP; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
