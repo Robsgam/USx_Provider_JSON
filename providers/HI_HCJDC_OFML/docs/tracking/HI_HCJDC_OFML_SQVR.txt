@@ -272,7 +272,7 @@ Architecture notes:
   Combos: QA
   Optional fields: RelatedSearchHitIndicator (default=Y)
 
-  QA -- Serial + ArticleType [PENDING]
+  QA -- Serial + ArticleType [CONFIRMED]
     set: SerialNumber, ArticleTypeCode
     any: (empty)
     keyReference: QA
@@ -286,13 +286,13 @@ Architecture notes:
   Combos: BQ (Registration), QB (Stolen/Hull)
   Optional fields: RelatedSearchHitIndicator (default=Y)
 
-  BQ -- Registration Number [PENDING]
+  BQ -- Registration Number [CONFIRMED]
     set: RegistrationNumber
     any: RegistrationState (-> State XML attr), RelatedSearchHitIndicator (default=Y)
     keyReference: BQ
     any[] CONFIRMED live T22 v4.0: State=GA + RelatedSearchHitIndicator=Y in wire.
 
-  QB -- Hull ID [PENDING]
+  QB -- Hull ID [CONFIRMED]
     set: HullIdentificationNumber
     any: (empty)
     keyReference: QB
