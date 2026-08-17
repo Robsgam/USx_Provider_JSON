@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: HI_HCJDC_OFML
   Source: HI_HCJDC_OFML_v4.20.json
-  Generated: 2026-08-17 14:17
+  Generated: 2026-08-17 16:48
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -65,11 +65,11 @@ POST-BUILD VERIFICATION
   [INFO] Field 'BirthDateDH' label='Date of Birth (required with Name)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex (required with Name)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted ('MI' meant middle INITIAL and misrepresented a maxLen=30 field (L7);)
-  [WARN] Field 'nameSuffix' (any[]-only) label='Suffix' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' is the CANONICAL label (BUILD_RULES Section 11 /)
   [INFO] Field 'nameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted ('MI' misrepresented a maxLen=30 field (L7). Bare label, any[]-optional.)
-  [WARN] Field 'nameSuffixDH' (any[]-only) label='Suffix' has no routing qualifier -- add '(optional)' or context hint (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' per the canonical label rule, same as the DL twin above.)
   [INFO] Field 'relatedSearchHitIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted (canonical bare "Stolen Check" per DEX-1284 lean pass (any[] optional w/ default Y; matches NY/TX/FL). Covers Firearm/Article/Boat uses.)
-  [INFO] 2 field(s) need label hint fixes
+  [PASS] All form field labels have required routing hint qualifiers (37 fields scanned) (9 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
@@ -83,7 +83,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION PASSED (with warnings): 15 PASS / 2 WARN / 0 FAIL
+ VERIFICATION PASSED: 16 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

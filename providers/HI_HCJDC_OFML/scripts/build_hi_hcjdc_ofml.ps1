@@ -937,6 +937,10 @@ $perLayout = MakeLayouts @(
                 # LABEL-OVERRIDE: nameMiddle -- 'MI' meant middle INITIAL and misrepresented a maxLen=30 field (L7);
                 # same correction AZ_AZDPS made at v3.10. Bare label, any[]-optional.
                 @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name'  '30' 'ROW_PER_DL2' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' is the CANONICAL label (BUILD_RULES Section 11 /
+                # usx-cosmetic Step 3b fixed verbiage), so it takes no '(optional)' qualifier. Every other
+                # provider carrying a suffix control records this same override (AZ, CA_CLETS, FL, IL, NY, OR,
+                # TX, TX_CCH -- 8 of them); HI was the sole outlier, missed when v4.20 added the controls.
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_DL2' }
             )}
             @{ id = 'ROW_PER_DL3'; cols = @('6','6'); fields = @(
@@ -969,6 +973,7 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH2' }
                 # LABEL-OVERRIDE: nameMiddleDH -- 'MI' misrepresented a maxLen=30 field (L7). Bare label, any[]-optional.
                 @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name'  '30' 'ROW_PER_DH2' }
+                # LABEL-OVERRIDE: nameSuffixDH -- bare 'Suffix' per the canonical label rule, same as the DL twin above.
                 @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DH2' }
             )}
             @{ id = 'ROW_PER_DH3'; cols = @('6','6'); fields = @(
