@@ -3,15 +3,45 @@
 **Active ticket:** [DEX-974 — \[AZ - AZDPS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-974)
 Project: DEX (CJIS/USx/DEx Implementation) · Status (verified 2026-08-10): In Progress · Unassigned
 
-POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
-move** -- never post a correction as a sibling comment. That is what produced contradictory totals
-across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
-provider was at 92). Format is FIXED for every provider and every update -- see
-knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
-plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
-so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
-irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
-never Rob's own manual notes, never a third party's.
+<!-- STAGE-5 MARKERS. Machine-read by tools\audit_lifecycle.ps1. One line per release, written ONLY
+     when the post has been approved and actually made. The Jira comment id is the point: it is the
+     one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
+     mention. Never write one in advance and never let a sync tool generate one. -->
+POSTED: v3.11 comment 800100 2026-08-17
+
+**FIRST AUTOMATION COMMENTS EVER ON DEX-974, both posted 2026-08-17** after Rob's approval. Until
+that day this ticket carried NO release statement for ANY version -- the entire v1.0 → v3.11 history
+was unposted while the provider sat tenant-verified.
+- **800100** — the v3.11 RELEASE LINE (ALL-PASS 58/58). This is current state.
+- **800101** — the VERSION HISTORY ANCHOR (v1.0 → v3.11, wire-affecting changes marked). Not a
+  release statement; it points at 800100 for current state.
+- Posted release-first so the anchor could carry 800100's real id with **no edit to either comment**.
+
+⚠️ **776896 IS NOT OURS.** DEX-974's only other comment is Leo Hisoire's FB-6040 roadmap note
+(2026-07-10). Never edit, stub or count it. Authorship is judged by the 🤖 attribution line, NEVER by
+displayName -- the automation posts under Rob's account, so its own comments also read
+"Rob Sgambellone".
+
+POSTING RULE (**REVERSED 2026-08-17 BY ROB** -- supersedes the 2026-08-11 edit-in-place rule that
+used to be quoted here): **POST A NEW COMMENT PER RELEASE. Do NOT edit the previous release line.**
+Verbatim: *"post as a new comment and leave the other comments there. we can't keep erasing the
+previous posts everytime."* Why the reversal is right even though the old rule addressed a real
+defect (DEX-969 carried NINE mutually exclusive totals; DEX-967's newest comment claimed 89/89 while
+the provider was at 92): **there is NO delete-comment tool and an edit is IRREVERSIBLE**, so
+edit-in-place silently destroyed the record of every prior release, and its only mitigation was
+remembering to archive the body by hand BEFORE the irreversible action -- a rule whose safety
+depends on that is not safe.
+
+What replaces the old protection: every new release comment MUST, in Section 1, name the comment id
+it SUPERSEDES and state that the old one is retained as history, not current. AZ's 800100 says
+"initial post" because there was genuinely nothing before it.
+
+Format is FIXED for every provider and every update -- see knowledge-base/JIRA_COMMENT_TEMPLATE.txt
+(**FOUR** numbered sections since Rob's 2026-08-13 ruling that six was "way too many details"; an
+empty section reads "None" rather than being dropped; plus the separate HISTORY-ANCHOR shape for the
+one initial dump). Stubbing an obsolete comment is now for CLEANUP PASSES ONLY, never part of the
+normal release flow. Only automation-authored (🤖) comments may be edited: never Rob's own manual
+notes, never a third party's.
 
 > **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-974`
 > (cloudId `5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c`). The equivalent file on HI_HCJDC_OFML lied once
