@@ -1,0 +1,89 @@
+﻿================================================================
+TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
+Combo: RQV_af_ImageIndicator (RQV_af_ImageIndicator (auto))
+Date: 2026-08-17 14:12:11
+Result: PASS
+JSON Version: 4.19
+Entity Fingerprint: 4acbc0995292f02bbbae3fb5839ef2b0d813ab595bd4c9b78486df97b6e9cff4
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleTypeCode":"1"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MARK43ID</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M08ENMG0QQ0DD5R1VHRYDDKY">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MARK43ID</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>CA1234567</ORI>
+            <Mnemonic>CA1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M08ENMG0QQ0DD5R1VHRYDDKY</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>N</ImageIndicator>
+            <State>GA</State>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69510726097
+                                                                      ],
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MARK43ID
+  UserName                       MK43RS
+  ORI                            CA1234567
+  Mnemonic                       CA1234567
+  Id                             01M08ENMG0QQ0DD5R1VHRYDDKY
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
+  State                          GA
+
+NOTES
+-----
+Automated capture (txId 01M08ENMG0QQ0DD5R1VHRYDDKY). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RQV; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
