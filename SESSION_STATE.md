@@ -15,7 +15,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | Provider | Ver | State |
 |---|---|---|
 | AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
-| CA_CLETS | v2.26 | NEVER-TESTED -- 111 test(s) owed |
+| CA_CLETS | v2.26 | ALL-PASS (111 logs) |
 | FL_FCIC | v7.24 | NEVER-TESTED -- 118 test(s) owed |
 | HI_HCJDC_OFML | v4.19 | NEVER-TESTED -- 52 test(s) owed |
 | IL_LEADS_OFML | v2.8 | NEVER-TESTED -- 44 test(s) owed |
@@ -33,15 +33,10 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**FIVE SWEEPS OWED, all bumped 2026-08-17: `CA_CLETS v2.26` (111) · `FL_FCIC v7.24` (118) ·
-`HI_HCJDC_OFML v4.19` (52) · `IL_LEADS_OFML v2.8` (44) · `OR_LEDS v2.3`.** Run
-`tools\report_import_owed.ps1` for the import queue (15 provider-tenant imports owed).
-**CA_CLETS v2.26** = 'CA Purpose Code' label on all 6 cards + a SPLIT of the DH double-mapped purpose
-code: `purposeCodeDH`->`<CaRequestPurposeCode>` (set[]), NEW `purposeCodeNletsDH`->`<PurposeCode>`
-(any[]+default, wire unchanged). They fed the SAME control, so they could never differ. **Its sweep
-must show `<CaRequestPurposeCode>C</CaRequestPurposeCode>` + `<PurposeCode>I</PurposeCode>` together**
-— that is what the new `TEST_VALUE_OVERRIDES.txt` (`purposeCodeNletsDH=I`) exists to make provable;
-left alone the resolver fills both `'C'` and the log proves nothing (inflation attack D).
+**FOUR SWEEPS OWED: `FL_FCIC v7.24` (118) · `HI_HCJDC_OFML v4.19` (52) · `IL_LEADS_OFML v2.8` (44) ·
+`OR_LEDS v2.3`.** CA_CLETS v2.26 is DONE -- ALL-PASS 5/5, 111/111, both purpose codes wire-proven
+(`<CaRequestPurposeCode>C` + `<PurposeCode>I` in ONE request, impossible before v2.26).
+Run `tools\report_import_owed.ps1` for the import queue.
 **FL and OR are RESTORATIONS** — v7.17/v2.2 deleted middle/suffix as "dead"; the fix was to WIRE
 them, and Rob reversed that call on 08-17.
 **HI's sweep also settles C3**: v4.18 had the name parts composed but in no `any[]`, which

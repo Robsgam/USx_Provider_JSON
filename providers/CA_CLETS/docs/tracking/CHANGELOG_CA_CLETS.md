@@ -6,10 +6,81 @@ Current: **v2.26** | Generated: 2026-08-17
 
 ---
 
-## v2.26 -- 2026-08-17 -- Pipeline rebuild
+## v2.26 -- 2026-08-17 -- "CA Purpose Code" on every card + SPLIT the DH double-mapped purpose code
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED** (1) LABEL: 'Purpose Code' -> 'CA Purpose Code' on all six CA controls (Vehicle, Person DL,
+  Person DH, Firearm, Article, Boat). Bare label, no LABEL-OVERRIDE needed -- BUILD_RULES:975  
+  exempts purpose code from the any[]-hint rule and the field is set[]-mandatory, so CHECK 15  
+  never fires on it.  
+**CHANGED** (2) THE REAL DEFECT -- ONE CONTROL WAS FEEDING TWO DIFFERENT WIRE ELEMENTS.
+  DriverHistoryQuery emits BOTH of these, and until now both were sourced from purposeCodeDH:  
+      purposeCodeDH -> <CaRequestPurposeCode>   the CA AB-1747 CLETS code   metadata <Set>  (Set=2)  
+      purposeCodeDH -> <PurposeCode>            the NLETS/CCH code          metadata <Any>  (Any=2)  
+  Two different fields wanted by two different systems, driven by one box, so an officer could  
+  never set them to different values. NEW control purposeCodeNletsDH (label 'Purpose Code',  
+  maxLen 1, initialValue 'C') now feeds <PurposeCode>; purposeCodeDH keeps <CaRequestPurposeCode>.  
+  Added to any[] of NLTS.KQ.N + NLTS.KQ.O with a defaults[] twin = 'C' on each.  
+  ANY[] IS THE METADATA-CORRECT PLACEMENT and the defaults[] twin keeps the WIRE IDENTICAL --  
+  <PurposeCode>C</PurposeCode> still ships on every DH query. The twin is required because CAD  
+  ignores form initialValues.  
+  NAMING: 'Nlets' is read off the keyRefs, not inferred -- both carrying combos are NLTS.KQ.*.  
+  Deliberately NOT named 'PurposeCodeDH': that differs from the existing purposeCodeDH only by  
+  CASE, and the gates canonicalise case-insensitively, so it would have collided silently.  
+**CHANGED** (3) LAYOUT, both rule L6 (visible rows must sum to 12):
+  ROW_VEH_2 cols 6,4 (=10) -> 8,4. ROW_PER_DL_OPT -> renamed ROW_PER_DL_4, cols 6,4 -> 8,4.  
+  The old row id asserted "optional" about a field in EVERY DriverLicenseQuery combination's set[]  
+  and without which CLETS rejects the transaction outright. ROW_PER_DH_1 4,4,4 -> 3,3,3,3 to seat  
+  the two purpose codes side by side so they read as a pair.  
+**REASON:** Rob, 2026-08-17: "on all cards the form must have a fieldscalled CA Purpose Code. for the
+  cards that have a second purpose code, you will need to create a new field so both fields are  
+  visible ... we need to retest accordingly."  
+  The CA devdoc (L28-31) is unusually strict: purpose code is "mandatory for all transactions",  
+  "any transaction which does not supply a valid Purpose Code value will be rejected by CLETS", and  
+  "ConnectCIC does not default the value of field; it must be provided by the partner  
+  implementation as a user selectable field." A single label of "Purpose Code" hid WHICH of the two  
+  codes an officer was setting, and on DH there was no way to set them independently at all.  
+SCOPE CHECKED AGAINST BOTH AUTHORITIES -- only DriverHistoryQuery has a second purpose code, and  
+  building one on DL would have been an OVER-PERMIT (a field that transaction does not define):  
+      DriverLicenseQuery    CaRequestPurposeCode only        Set=8 / Any=0  
+      DriverHistoryQuery    CaRequestPurposeCode + PurposeCode  Set=2 / Any=2  
+      VehReg / Gun / Article / Boat   CaRequestPurposeCode only  
+  Rob suggested "driver and dh have it"; the devdoc agrees with the metadata instead -- every  
+  PurposeCode mention (L159/L161/L181) sits inside the DriverHistoryQuery section (L131-182) and  
+  the DriverLicenseQuery section (L183-263) has ZERO. Not built on DL.  
+DROPDOWN: NOT CHANGED, and this is now settled rather than assumed. attributeTypeId  
+  'DEX_INQUIRY_PURPOSE_CODE' renders ZERO options, live-proven on TWO tenants -- FL 2026-05-01  
+  (where Sex and State dropdowns populated on the SAME form, isolating the fault to this one code  
+  table) and NY 2026-08-06 (LIMITATION #39). Even Lafayette's production LA_LEMS export, the one  
+  artifact that appears to use it, has that FormSelect "hidden": true, so it never renders options  
+  either -- it proves the platform ACCEPTS the key, nothing more. Stays a FormInput. The three  
+  legal values live in CA_CLETS.xml <ValueList> lines 4-8: C Criminal Justice, I Immigration  
+  Enforcement, U Title 8 s1325.  
+RETIRED A DIVERGENCE, because the split removed its premise: the two  
+  "DriverHistoryQuery | NLTS.KQ.* | purposeCodeDH | promoted-to-set" rows existed only because one  
+  field sat in the right place for <CaRequestPurposeCode> and the wrong place for <PurposeCode>.  
+  Each now sits exactly where its own metadata puts it. Verified the denominator did NOT fall after  
+  retiring them: audit_requirement_fidelity still 27 branches / 0 UNDER / 0 OVER.  
+TEST PLAN -- CA_CLETS'S FIRST TEST_VALUE_OVERRIDES.txt, AND IT IS REQUIRED, NOT A PREFERENCE.  
+  _combo_value_resolver.ps1:221 matches '(?i)^(caRequestPurposeCode|purposeCode)' UNANCHORED at the  
+  end, so purposeCodeNletsDH auto-resolves to 'C'. That raises NO trust warning (the field IS  
+  valued) -- and would have made every log show C/C, which is audit_log_inflation attack D  
+  (competing fields carrying the same value prove nothing) and a HOLLOW _af_ toggle test. Override  
+  purposeCodeNletsDH=I ('I' being a legal ValueList value). Result: baseline DH tests exercise the  
+  default and prove the wire unchanged; the _af_ test carries C + I and proves the two elements are  
+  independently settable. Plan 109 -> 111 tests, 4 filling purposeCodeNletsDH=I, 0 hollow toggles.  
+ADJUDICATED, NOT FIXED -- 2 remaining audit_layout_flow L2 findings (Firearm IG.QGB, Person  
+  IR.QVC.N) say a MANDATORY purposeCode sits after optional fields and "an officer can fill  
+  everything visible above it and still fail". That is a FALSE POSITIVE here: the field is  
+  PREFILLED 'C', so it cannot be missed. Hoisting it above the plate/OLN would put a never-touched  
+  field ahead of the primary identifier and make the officer walk worse, so position is unchanged.  
+  Layout findings still dropped 4 -> 2 because both L6 column violations are closed.  
+NO ROUTING CHANGE: not one set[] was touched; every addition is any[]-only. Verified -- wiring  
+  closure 0 breaks across all ten classes, 27 combinations all reachable, name components still  
+  20 examined / 0 findings (today's v2.25 fix not regressed), validator 79P/0F/0W.  
+COST: 109 ALL-PASS logs archived to logs/<Entity>/_archive_pre_v2.26/; all 5 entities restart from  
+  T1. CA_CLETS is LIVE at Mariposa and was re-imported to v2.25 EARLIER THE SAME DAY, so v2.26 is a  
+  SECOND coordinated production re-import -- Foundation and LIVE both need it, and that is Rob's  
+  call, not a repo action.  
 
 ## v2.25 -- 2026-08-17 -- <Authentication>/<DeviceId> (Mariposa LIVE failure) + middle name / suffix wired
 
