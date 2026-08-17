@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: FL_FCIC Firearm GunQuery
-Combo: QGGunSerialNumber (QGGunSerialNumber (auto))
-Date: 2026-08-17 15:44:54
+Combo: QGProcessControlNumber_any (QGProcessControlNumber_any (auto))
+Date: 2026-08-17 15:44:44
 Result: PASS
 JSON Version: 7.24
 Entity Fingerprint: 95af1d35233aeddbe2562b89eec1e30a3b48b39123f58ab0b24e4f4c340b9da7
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"Y","relatedHitSearchIndicator":"Y","serialNumber":"GUN12345"}
+{"GunMake":"IMI","ImageIndicator":"N","processControlNumber":"0000012345","relatedHitSearchIndicator":"N"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M08M04E6XFHP1HNNRSAQYMVK">
+    <api:Transaction id="01M08M1Q8A0EX3NYNT2PVB8S5G">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MARK43LEO</Id>
@@ -36,11 +36,12 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>GunQuery</MessageType>
-            <Id>01M08M04E6XFHP1HNNRSAQYMVK</Id>
-            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
-            <ImageIndicator>Y</ImageIndicator>
-            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <Id>01M08M1Q8A0EX3NYNT2PVB8S5G</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>N</ImageIndicator>
+            <GunMake>IMI</GunMake>
             <Requestor>SGAMBELLONE R</Requestor>
+            <ProcessControlNumber>0000012345</ProcessControlNumber>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -63,14 +64,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01M08M04E6XFHP1HNNRSAQYMVK
-  RelatedHitSearchIndicator      Y
-  ImageIndicator                 Y
-  GunSerialNumber                GUN12345
+  Id                             01M08M1Q8A0EX3NYNT2PVB8S5G
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 N
+  GunMake                        IMI
   Requestor                      SGAMBELLONE R
+  ProcessControlNumber           0000012345
 
 NOTES
 -----
-Automated capture (txId 01M08M04E6XFHP1HNNRSAQYMVK). kind=combo; anyField=; expectedKeyRef=QGGunSerialNumber; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M08M1Q8A0EX3NYNT2PVB8S5G). kind=any; anyField=; expectedKeyRef=QGProcessControlNumber; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
