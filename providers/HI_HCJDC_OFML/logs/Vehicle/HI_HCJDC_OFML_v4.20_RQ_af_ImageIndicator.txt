@@ -1,8 +1,8 @@
 ﻿================================================================
 TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
 Combo: RQ_af_ImageIndicator (RQ_af_ImageIndicator (auto))
-Date: 2026-08-17 14:35:32
-Result: FAIL
+Date: 2026-08-17 14:39:57
+Result: PASS
 JSON Version: 4.20
 Entity Fingerprint: 4acbc0995292f02bbbae3fb5839ef2b0d813ab595bd4c9b78486df97b6e9cff4
 Tier: Full
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026"}
+{"ImageIndicator":"N","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","vehicleTypeCode":"1"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M08FGCJJQKJAAWKA4KVHWSSF">
+    <api:Transaction id="01M08G2GB8XJY51JF3XDBPDDC2">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MARK43ID</Id>
@@ -36,10 +36,10 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01M08FGCJJQKJAAWKA4KVHWSSF</Id>
+            <Id>01M08G2GB8XJY51JF3XDBPDDC2</Id>
             <ImageIndicator>N</ImageIndicator>
             <LicensePlateYear>2026</LicensePlateYear>
-            <Requestor>SGAMBELLONE R</Requestor>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
             <LicensePlateNumber>TEST123</LicensePlateNumber>
           </Request>
         </Transaction>
@@ -75,14 +75,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01M08FGCJJQKJAAWKA4KVHWSSF
+  Id                             01M08G2GB8XJY51JF3XDBPDDC2
   ImageIndicator                 N
   LicensePlateYear               2026
-  Requestor                      SGAMBELLONE R
+  LicensePlateTypeCode           PC
   LicensePlateNumber             TEST123
 
 NOTES
 -----
-Automated capture (txId 01M08FGCJJQKJAAWKA4KVHWSSF). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RQ; firedMessageType=VehicleRegistrationQuery. routing=MISMATCH (wire missing an identifier of expected combo RQ)
+Automated capture (txId 01M08G2GB8XJY51JF3XDBPDDC2). kind=any-field; anyField=ImageIndicator; expectedKeyRef=RQ; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
-RESULT: FAIL
+RESULT: PASS

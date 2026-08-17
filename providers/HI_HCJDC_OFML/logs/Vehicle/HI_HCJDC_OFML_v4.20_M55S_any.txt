@@ -1,7 +1,7 @@
 ﻿================================================================
 TEST LOG: HI_HCJDC_OFML Vehicle VehicleRegistrationQuery
-Combo: RQ (RQ (auto))
-Date: 2026-08-17 14:39:58
+Combo: M55S_any (M55S_any (auto))
+Date: 2026-08-17 14:39:48
 Result: PASS
 JSON Version: 4.20
 Entity Fingerprint: 4acbc0995292f02bbbae3fb5839ef2b0d813ab595bd4c9b78486df97b6e9cff4
@@ -10,7 +10,7 @@ Tier: Full
 
 QUERY STRING
 ------------
-{"ImageIndicator":"Y","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","vehicleTypeCode":"1"}
+{"ImageIndicator":"N","VehicleIdentificationNumber":"1HGCM82633A123456","vehicleTypeCode":"1","vehicleYear":"2023"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M08G2BX9BKAR7EGMGJE050MD">
+    <api:Transaction id="01M08G40RD48FZC3J8W12J6QJW">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>MARK43ID</Id>
@@ -36,11 +36,11 @@ COMMSYS XML
         <Transaction>
           <Request>
             <MessageType>VehicleRegistrationQuery</MessageType>
-            <Id>01M08G2BX9BKAR7EGMGJE050MD</Id>
-            <ImageIndicator>Y</ImageIndicator>
-            <LicensePlateYear>2026</LicensePlateYear>
-            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-            <LicensePlateNumber>TEST123</LicensePlateNumber>
+            <Id>01M08G40RD48FZC3J8W12J6QJW</Id>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>N</ImageIndicator>
+            <VehicleYear>2023</VehicleYear>
+            <VehicleTypeCode>1</VehicleTypeCode>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -58,7 +58,7 @@ Request:
 {
     "elasticQuery":  {
                          "vehicle":  {
-                                         "tag":  "TEST123"
+                                         "vinNumber":  "1HGCM82633A123456"
                                      }
                      },
     "from":  0,
@@ -75,14 +75,14 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            CA1234567
   Mnemonic                       CA1234567
-  Id                             01M08G2BX9BKAR7EGMGJE050MD
-  ImageIndicator                 Y
-  LicensePlateYear               2026
-  LicensePlateTypeCode           PC
-  LicensePlateNumber             TEST123
+  Id                             01M08G40RD48FZC3J8W12J6QJW
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
+  VehicleYear                    2023
+  VehicleTypeCode                1
 
 NOTES
 -----
-Automated capture (txId 01M08G2BX9BKAR7EGMGJE050MD). kind=combo; anyField=; expectedKeyRef=RQ; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M08G40RD48FZC3J8W12J6QJW). kind=any; anyField=; expectedKeyRef=M55S; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
