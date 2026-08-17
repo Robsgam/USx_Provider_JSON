@@ -53,12 +53,12 @@ provider still composed-but-not-in-any[]; after v4.20 HI is not one.
 OLD JSON. Count the fills BEFORE running. **Still owed after these: 60 name components / 11 providers.**
 
 **⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
-A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa was
-re-imported to v2.25 on 08-17 (Foundation AND LIVE) and the repo has since moved to v2.26, so it is
-behind again -- a SECOND production re-import in one day is Rob's call, not a repo action.** **HDLE is
-deliberately HELD at v4.15** (repo/catalog/ticket v4.18) until the hit block is verified, so there
-the artifact is intentionally AHEAD. **Consequence: HDLE production discards NCIC hit content
-today.** HDLE Foundation held at v4.15 for the same reason; Mariposa Foundation also owes v2.25.
+A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa
+Foundation AND LIVE are BOTH CURRENT at v2.26** (08-17). **HDLE is deliberately HELD at v4.15**
+(repo/catalog/ticket v4.20) until the hit block is verified, so there the artifact is intentionally
+AHEAD. **Consequence: HDLE production discards NCIC hit content today.** HDLE Foundation held at
+v4.15 for the same reason. Authority is `report_import_owed.ps1`, NOT this file -- on 08-17 this
+paragraph still claimed Mariposa owed v2.26 after the ledger had recorded it.
 **Neither LIVE row was discoverable from the repo** -- the capture tool cannot reach these tenants,
 so ASK at every import; HDLE LIVE was missed for a day because "foundation and live" read as one.
 
