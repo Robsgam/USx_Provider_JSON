@@ -339,4 +339,38 @@ if ($planRegenerated) {
     Say "    [WARN] could not regenerate TEST_PLAN (no active JSON found at $activeJson)" "Yellow"
 }
 Say "  Re-run the full test matrix from Test 1 (see ${Provider}_TEST_MATRIX.txt)" "Gray"
+
+# ------------------------------------------------------------------------------------------------
+# IMPORT PROMPT. Added 2026-08-17 -- Rob: "you need to alert when a new version is built to prompt
+# for import   iver lost track of all the things you are fixing."
+#
+# THIS IS THE RIGHT PLACE FOR IT and the reason is worth stating: this block only runs when the
+# version ACTUALLY CHANGED (that is the whole trigger for a package reset), so the alert cannot
+# fire spuriously on a rebuild-at-same-version and cannot be forgotten on a real bump. Putting it
+# in build_report or enforce would fire on every run and be tuned out within a day.
+#
+# On 2026-08-17 TEN provider versions were bumped in one session and nothing ever said "these now
+# need importing" -- every individual gate was green while the queue was invisible. A repo can be
+# entirely correct and still be useless to whoever has to install it.
+#
+# Deliberately NOT a gate: printing only, exit code untouched. Owing an import is a normal state.
+#
+# *** GATED ON $priorGlobal -ne $version, AND THAT GUARD IS THE WHOLE POINT. ***
+# The first version of this block sat at the unconditional tail and fired on EVERY run, including
+# -Force resets and same-version reruns where nothing new was built. That is not an alert, it is
+# noise, and it would have been tuned out inside a day -- so it FAILED the negative half of LAW 2
+# even though it passed the positive half. Caught by testing the no-change case, which is the test
+# it is tempting to skip because the feature "obviously works".
+# Note the reset can run at an UNCHANGED version (a reopened entity is enough to trigger it), so
+# reaching this line does NOT imply a version bump -- the comparison is required, not decorative.
+if ("$priorGlobal" -ne "$version") {
+Say ""
+Say "  ============================================================================" "Yellow"
+Say "  NEW VERSION BUILT: $Provider v$version (was v$priorGlobal) -- NEEDS IMPORTING." "Yellow"
+Say "  The JSON on disk is now AHEAD of every tenant. Nothing is verified until it" "Yellow"
+Say "  is imported and swept -- and a Foundation or LIVE tenant may need it too," "Yellow"
+Say "  which only a human can confirm (the capture tool cannot reach those)." "Yellow"
+Say "  Full queue across all providers:  tools\report_import_owed.ps1" "Yellow"
+Say "  ============================================================================" "Yellow"
+}
 exit 0

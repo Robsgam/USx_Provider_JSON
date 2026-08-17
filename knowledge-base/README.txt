@@ -1752,6 +1752,43 @@ audit_wiring_closure.ps1 -- FORM <-> QIDM closure. Does every control reach the 
   prefilled control on CA_SAN_LUIS_OBISPO turned out to be in no combination's any[] -- its value
   discarded on every query -- while every existing gate reported that provider green.
 
+report_import_owed.ps1 -- THE IMPORT QUEUE. Which built versions are waiting to be installed, across
+  all providers at once. Added 2026-08-17 after TEN provider versions were bumped in a single session
+  and nothing ever said they needed importing -- Rob: "you need to alert when a new version is built
+  to prompt for import   iver lost track of all the things you are fixing."
+  THE GAP WAS STRUCTURAL, NOT FORGETFULNESS. Every other gate is scoped to ONE provider and answers
+  "is this build correct?". audit_lifecycle stage 6 is the closest thing and is per-provider,
+  advisory, and satisfied by an explicit "not imported yet" ledger line -- so it goes quiet exactly
+  when a queue is piling up. Nothing in the repo looked across providers and asked "what is built but
+  not installed anywhere?". A repo can be entirely correct and still be useless to whoever has to
+  install it.
+  KEEPS THE THREE TENANT CLASSES APART (IMPORT_LEDGER.md defines them) and that is the whole value:
+    USx Provider Tenant -- log-DERIVED, self-verifying (the capture tool is locked to these).
+    Foundation          -- manual; only known because someone reported an import.
+    LIVE / Production   -- manual, and a bump is a COORDINATED re-import, never a repo action. A LIVE
+                           row may be DELIBERATELY HELD BEHIND (HDLE is), so "behind" is not
+                           automatically drift -- the report prints the ledger's own note and marks
+                           such rows "NOT owed" rather than guessing.
+  ALWAYS EXITS 0 -- it is a REPORT, not a gate. Owing an import is a normal state; making it blocking
+  would train everyone to skip it.
+  -Since UNDER-REPORTS AND SAYS SO IN ITS OWN OUTPUT: it detects bumps via git RENAME detection, so a
+  version swap recorded as add+delete is invisible. Measured 2026-08-17: it found 8 of 10 real bumps
+  and silently omitted CA_CONTRA_COSTA and CA_eSUN. Run with NO arguments for the authoritative
+  queue -- that path compares versions directly and cannot miss one.
+  AUTO-FIRES from reset_test_package.ps1, gated on $priorGlobal -ne $version. That guard is
+  load-bearing: the first version printed unconditionally (fired on -Force and same-version reruns),
+  which is noise rather than an alert and would have been ignored within a day. Note the reset can
+  legitimately run at an UNCHANGED version -- a reopened entity is enough to trigger it -- so
+  reaching the tail does NOT imply a version bump.
+  TWO BUGS FOUND WHILE BUILDING IT, both of which made it lie: (1) @($null).Count IS 1, so wrapping a
+  missing hashtable key in @() produced a phantom "Foundation '': v vs repo vX.Y" line for all 12
+  providers with no ledger row -- it looked like a ledger-parsing bug and was not (probing the ledger
+  for empty-tenant rows returned nothing). (2) a bare --since=YYYY-MM-DD yields ZERO git lines while
+  --since='YYYY-MM-DD 00:00' yields 310, so the report announced "no provider version changed" while
+  ten had -- a false NEGATIVE, the worst outcome for a prompt.
+  Baseline 2026-08-17: 20 examined / 15 provider-tenant imports owed / 3 Foundation behind / 0 LIVE
+  behind / 2 deliberately held.
+
 audit_name_components.ps1 -- METADATA COMPONENT -> FORM CONTROL coverage. The authority->built
   direction at COMPONENT granularity, and the twin of audit_devdoc_combinations that nobody built.
   Every other gate enumerates the JSON and is therefore closed under what we built, so a
