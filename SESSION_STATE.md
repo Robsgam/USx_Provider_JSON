@@ -18,7 +18,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | CA_CLETS | v2.26 | ALL-PASS (111 logs) |
 | FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
-| IL_LEADS_OFML | v2.8 | NEVER-TESTED -- 44 test(s) owed |
+| IL_LEADS_OFML | v2.8 | ALL-PASS (44 logs) |
 | NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
 | NY_NYSPIN_EJUSTICE | v4.24 | ALL-PASS (69 logs) |
 | TX_TLETS | v4.20 | ALL-PASS (92 logs) |
@@ -33,16 +33,16 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**TWO SWEEPS OWED: `IL_LEADS_OFML v2.8` (44) · `OR_LEDS v2.3`.** DONE 08-17:
-**FL_FCIC v7.24** (118/118, all 4 log gates green), **CA_CLETS v2.26** (111/111 --
-`<CaRequestPurposeCode>C` + `<PurposeCode>I` in ONE request, impossible before) and
-**HI_HCJDC_OFML v4.20** (50/50 -- 0 malformed `<Name>`, 0 on KQN, all four shapes on KQ/DQ).
-Import queue: `tools\report_import_owed.ps1`. **FL owes Jira (last post v7.23, comment 790815) + a
-ledger line.** **OR is a RESTORATION** — v2.2 deleted middle/suffix as "dead"; the fix was to WIRE
-them, and Rob reversed that call on 08-17.
-**⚡ Fetch results ONLY returns the LAST ▶ Run Plan, and it can miss the run's TAIL** — FL Firearm
-fetched 11 of 15 (T59-T62 absent, dex-log rows had not rendered). Fetch after EVERY entity, ~10s
-after "plan run complete", and DIFF the plan against the logs before calling an entity done.
+**ONE SWEEP OWED: `OR_LEDS v2.3`** — the last middle/suffix RESTORATION (v2.2 deleted them as
+"dead"; the fix was to WIRE them, Rob reversed that call 08-17). DONE 08-17, all lifecycle-closed:
+**IL_LEADS_OFML v2.8** (44/44, comment 800073), **FL_FCIC v7.24** (118/118, comment 800053),
+**CA_CLETS v2.26** (111/111 -- `<CaRequestPurposeCode>C` + `<PurposeCode>I` in ONE request,
+impossible before), **HI_HCJDC_OFML v4.20** (50/50). Import queue: `tools\report_import_owed.ps1`.
+**⚠ A PARTIAL CAPTURE READS EXACTLY LIKE A COMPLETE ONE — DIFF PLANNED vs LOGGED AFTER EVERY ENTITY.**
+⚡ Fetch samples dex-log ONCE, so unrendered TAIL rows are silently absent while the ingest prints
+"N PASS / 0 FAIL / 0 unmatched", every number true (FL Firearm: 11 of 15, T59-T62). It DOES read
+RETAINED rows — one IL fetch swept Article+Boat plus 6 older Firearm rows — so back-to-back runs are
+safe; only the tail is not. **FIX OWED:** poll to the driver's submitted-count, then FAIL if short.
 **C3 IS STILL UNSETTLED and HI can no longer settle it.** The v4.19 sweep could not decide whether
 `any[]` membership is REQUIRED for a composite `sourceField` to reach the wire, because v4.18 never
 had a test that FILLED middle/suffix (frozen resolver) -- so there is no v4.18 wire to compare. What
@@ -66,8 +66,8 @@ so ASK at every import; HDLE LIVE was missed for a day because "foundation and l
 Name the superseded comment id in Section 1. DRAFT AND WAIT. Rules: `JIRA_COMMENT_TEMPLATE.txt`.
 
 **EXTENSION v0.5.2**: manifest `https://*.mark43.com/rms/*`; the ARM switch replaced the allowlist --
-per-host, 8 `requireArmed()` gates, no dialogs. Match patterns CANNOT match a URL hash. **⚡ Fetch
-results returns ONLY the last ▶ Run Plan; Chrome may save a SECOND file -- always ingest/analyse ALL.**
+per-host, 8 `requireArmed()` gates, no dialogs. Match patterns CANNOT match a URL hash. **Chrome may
+save a SECOND file (`... (1).json`) -- always ingest/analyse ALL.** Capture caveat: see above.
 
 ## OPEN FINDINGS -- confirmed, unfixed
 

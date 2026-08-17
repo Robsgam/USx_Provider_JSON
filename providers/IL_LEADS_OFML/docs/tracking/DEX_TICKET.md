@@ -8,21 +8,33 @@ Project: DEX (CJIS/USx/DEx Implementation)
      one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
      mention. Never write one in advance and never let a sync tool generate one. -->
 POSTED: v2.7 comment 795242 2026-08-13
+POSTED: v2.8 comment 800073 2026-08-17
 
 Ticket number supplied by Rob 2026-08-07. **This file did not exist before that**, and its absence
 was briefly reported as "IL has no Jira ticket" — an inference from the silence of
 `knowledge-base/JIRA_REFERENCE.txt` and this missing file, not a verified fact. The lesson is the
 standing one: absence of a record is not evidence of absence.
 
-POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
-move** -- never post a correction as a sibling comment. That is what produced contradictory totals
-across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
-provider was at 92). Format is FIXED for every provider and every update -- see
-knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
-plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
-so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
-irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
-never Rob's own manual notes, never a third party's.
+POSTING RULE (**REVERSED 2026-08-17 BY ROB** -- supersedes the 2026-08-11 edit-in-place rule that
+used to be quoted here): **POST A NEW COMMENT PER RELEASE. Do NOT edit the previous release line.**
+Verbatim: *"post as a new comment and leave the other comments there. we can't keep erasing the
+previous posts everytime."* Why the reversal is right even though the old rule addressed a real
+defect (DEX-969 carried NINE mutually exclusive totals; DEX-967's newest comment claimed 89/89 while
+the provider was at 92): **there is NO delete-comment tool and an edit is IRREVERSIBLE**, so
+edit-in-place silently destroyed the record of every prior release, and its only mitigation was
+remembering to archive the body by hand BEFORE the irreversible action -- a rule whose safety
+depends on that is not safe. On this very ticket, 795242 was overwritten v2.2 -> v2.7 under it.
+
+What replaces the old protection: every new release comment MUST, in Section 1, name the comment id
+it SUPERSEDES and state that the old one is retained as history, not current. v2.8's comment 800073
+does this for 795242, which is left in place and unedited.
+
+Format is FIXED for every provider and every update -- see knowledge-base/JIRA_COMMENT_TEMPLATE.txt
+(**FOUR** numbered sections since Rob's 2026-08-13 ruling that six was "way too many details"; an
+empty section reads "None" rather than being dropped; plus the separate HISTORY-ANCHOR shape for the
+one initial dump). Stubbing an obsolete comment is now for CLEANUP PASSES ONLY, never part of the
+normal release flow. Only automation-authored (🤖) comments may be edited: never Rob's own manual
+notes, never a third party's.
 
 > **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-984`
 > (fields: comment) before asserting what is or is not owed.
