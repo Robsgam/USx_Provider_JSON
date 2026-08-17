@@ -33,11 +33,43 @@ all of which this template is designed to prevent:
      2026-08-13 ruling below -- it is that the sections which remain are fixed, so a
      reader can tell at a glance that nothing was dropped.
 
-TWO STANDING CONSTRAINTS
-------------------------
+*** RULE REVERSED 2026-08-17 BY ROB -- READ THIS BEFORE THE SECTION BELOW. ***
+  Rob: "post as a new comment and leave the other comments there. we can't keep erasing
+  the previous posts everytime."
+
+  SO: ONE NEW COMMENT PER RELEASE. Do NOT edit the previous release line. Leave it in place.
+
+  WHY THE REVERSAL IS RIGHT, even though the old rule was written for a real defect: there
+  is NO delete-comment tool and an edit is IRREVERSIBLE, so "edit in place" quietly
+  destroyed the record of every prior release. Each new release overwrote the last one's
+  evidence -- counts, reasoning, what was proven on the wire -- and the only mitigation was
+  remembering to archive the body to DEX_TICKET_ARCHIVE.md by hand first. A rule whose
+  safety depends on a manual step performed before an irreversible action is not safe.
+  On CA_CLETS alone, 791400 was overwritten from v2.23 -> v2.24 -> v2.25 before this.
+
+  WHAT STILL HAS TO BE HANDLED, because the old rule existed for a reason (see the
+  CONTRADICTION section above -- this ticket once carried TEN mutually exclusive log
+  counts): a reader scanning the thread must be able to tell which comment is current.
+  So every new release comment MUST, in Section 1:
+      - name the comment id it supersedes, and
+      - say that the superseded one is RETAINED AS HISTORY, not current.
+  Example, comment 799898 (CA_CLETS v2.26):
+      "Supersedes comment 791400 (the v2.25 release line), which is retained above as
+       history -- read this comment for current state."
+  That keeps the audit trail AND keeps the current state unambiguous, which is what both
+  versions of the rule were actually trying to achieve.
+
+  Stubbing an obsolete comment (the SUPERSEDED STUB at the bottom of this file) is now for
+  CLEANUP PASSES ONLY -- e.g. the 2026-08-11 consolidation of 17 duplicate comments. It is
+  NOT part of the normal release flow any more. Do not stub a prior release line just
+  because a newer release exists.
+
+SUPERSEDED CONSTRAINT (kept for context -- do NOT follow the first bullet)
+-------------------------------------------------------------------------
   * ONE COMMENT PER RELEASE, AND EDIT IT IF THE NUMBERS MOVE. Never post a correction as
     a sibling comment -- that is exactly how the sequences above were created. A release
     comment is a living record until the next release supersedes it.
+    ^^^ REVERSED 2026-08-17, see above. Post new; leave the old one alone.
   * THERE IS NO DELETE-COMMENT TOOL. `addCommentToJiraIssue` takes an optional `commentId`
     and EDITS IN PLACE; nothing in the toolchain can remove a comment. So a superseded
     comment is rewritten to the stub at the bottom of this file, never deleted, and any

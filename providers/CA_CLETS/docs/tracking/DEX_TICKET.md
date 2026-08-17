@@ -15,9 +15,20 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      TENANT-VERIFIED ... Extended in place from v2.23 to v2.24 ... RELEASE LINE -- v2.24 is verified
      and ready". Verified against Jira, not this file. -->
 POSTED: v2.25 comment 791400 2026-08-17
+POSTED: v2.26 comment 799898 2026-08-17
 
-POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
-move** -- never post a correction as a sibling comment. That is what produced contradictory totals
+POSTING RULE (**REVERSED 2026-08-17 by Rob**): **ONE NEW COMMENT PER RELEASE. Do NOT edit the previous
+release line -- leave it in place.** Rob: *"post as a new comment and leave the other comments there. we
+can't keep erasing the previous posts everytime."* The 08-11 edit-in-place rule was written against a
+real defect (this ticket once carried TEN contradictory log counts) but its cost was worse: there is no
+delete-comment tool and an edit is IRREVERSIBLE, so every release silently destroyed the previous
+release's evidence -- 791400 was overwritten v2.23 -> v2.24 -> v2.25 before this. A rule whose safety
+depends on remembering a manual archive step before an irreversible action is not safe.
+**WHAT REPLACES THE PROTECTION:** every new release comment must name the comment id it SUPERSEDES and
+state that the old one is retained as history (see 799898). That keeps the audit trail and still leaves
+current state unambiguous. Stubbing is now for cleanup passes only, not the normal release flow.
+Superseded wording, kept for context: "ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
+move -- never post a correction as a sibling comment." That is what produced contradictory totals
 across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
 provider was at 92). Format is FIXED for every provider and every update -- see
 knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
