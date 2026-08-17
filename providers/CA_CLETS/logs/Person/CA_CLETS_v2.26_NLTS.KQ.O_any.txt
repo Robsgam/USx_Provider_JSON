@@ -1,0 +1,80 @@
+﻿================================================================
+TEST LOG: CA_CLETS Person DriverHistoryQuery
+Combo: NLTS.KQ.O_any (NLTS.KQ.O_any (auto))
+Date: 2026-08-17 13:33:07
+Result: PASS
+JSON Version: 2.26
+Entity Fingerprint: 652f4b44d183e01dd6537826cdf6b283cc2f2b4a57513286a0a7707115094e57
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"OperatorLicenseNumberDH":"D999888777","RegistrationStateDH":"New Jersey","purposeCode":"C","purposeCodeDH":"C","purposeCodeNletsDH":"I"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M08CDFWPC8R0BRXT4WJZBWJB">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M08CDFWPC8R0BRXT4WJZBWJB</Id>
+            <State>NJ</State>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <PurposeCode>I</PurposeCode>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M08CDFWPC8R0BRXT4WJZBWJB
+  State                          NJ
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  PurposeCode                    I
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M08CDFWPC8R0BRXT4WJZBWJB). kind=any; anyField=; expectedKeyRef=NLTS.KQ.O; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
