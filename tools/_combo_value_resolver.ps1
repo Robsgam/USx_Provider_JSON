@@ -95,8 +95,9 @@ function Get-ComboTestValue {
         if ($FieldId -match '(?i)^licensePlateTypeCode') { if ($FieldDefault) { return $FieldDefault }; return 'PC' }
         if ($FieldId -match '(?i)^licensePlateYear') { if ($FieldDefault) { return $FieldDefault }; return (Get-Date).Year.ToString() }
         if ($FieldId -match '(?i)^imageIndicator') { if ($FieldDefault) { return $FieldDefault }; return 'N' }
-        if ($FieldId -match '(?i)^nameMiddle') { return '' }
-        if ($FieldId -match '(?i)^nameSuffix') { return '' }
+        # UN-FROZEN 2026-08-17 -- see the block comment on the non-matrix branch below.
+        if ($FieldId -match '(?i)^nameMiddle') { return 'A' }
+        if ($FieldId -match '(?i)^nameSuffix') { return 'JR' }
         if ($FieldId -match '(?i)^birthDate') { return '01/15/1990' }
         if ($FieldId -match '(?i)^dexStateUserId') { return 'BADGE' }
     } else {
@@ -105,8 +106,35 @@ function Get-ComboTestValue {
         if ($FieldId -match '(?i)^licensePlateTypeCode') { return 'PC' }
         if ($FieldId -match '(?i)^licensePlateYear') { return (Get-Date).Year.ToString() }
         if ($FieldId -match '(?i)^imageIndicator') { return 'N' }
-        if ($FieldId -match '(?i)^nameMiddle') { return $null }
-        if ($FieldId -match '(?i)^nameSuffix') { return $null }
+        # ── UN-FROZEN 2026-08-17. These returned $null (and '' on the matrix branch) since the two
+        # callers were merged into this resolver, under the "pre-existing, independently-verified
+        # behavior" note above -- i.e. LEGACY FROZEN VERBATIM, never a decision that middle name and
+        # suffix should go untested. The consequence was that NO test on ANY provider ever filled
+        # them, so across 538 logs every single <Name> reads "DOE, JOHN" and the question "does
+        # FormatStringRuleHandler emit components 3 and 4?" was UNANSWERABLE BY CONSTRUCTION.
+        #
+        # WHY IT MATTERS, and why the answer is not "delete the fields": the provider METADATA defines
+        # Name as type="Name" with FOUR components -- First, Last, Middle, Suffix -- on every provider
+        # examined (FL 107 instances, TX 98, OR 50, IL 25, AZ 4, NJ 1). Middle and suffix are
+        # metadata-defined CAPABILITY. On 2026-08-02 FL_FCIC and OR_LEDS had these controls DELETED on
+        # my recommendation because audit_wiring_closure showed them in no combination's set[]/any[];
+        # that gate answered "is it wired?" and I read it as "should it exist?". Metadata answers the
+        # second question and the correct fix was to WIRE them. Recorded so the removal is not cited
+        # as precedent.
+        #
+        # THE DISCRIMINATING TEST these values exist to run: AZ_AZDPS is already correctly wired
+        # (controls + 4-field composite + present in the combos' any[]) and has NO Foundation or LIVE
+        # tenant, so it is the zero-downstream-risk place to settle it. One Person query:
+        #     <Name>DOE, JOHN A JR</Name>  -> the handler DOES emit all four; HI_HCJDC_OFML is simply
+        #                                     under-wired (any[]=0) and should be wired, and the 15
+        #                                     providers with no controls are partial implementations
+        #     <Name>DOE, JOHN</Name>       -> the handler drops components 3-4; that is a PLATFORM
+        #                                     limitation to record and raise, and no any[] wiring
+        #                                     anywhere can deliver the metadata-defined capability
+        # 'A' fits nameMiddle (maxLen 20) and 'JR' fits nameSuffix (maxLen 4) on AZ; check per
+        # provider before regenerating anyone else's plan.
+        if ($FieldId -match '(?i)^nameMiddle') { return 'A' }
+        if ($FieldId -match '(?i)^nameSuffix') { return 'JR' }
         if ($FieldId -match '(?i)^birthDate') { return '1990-01-15' }
         if ($FieldId -match '(?i)^randomRequest') { return 'N' }
         if ($FieldId -match '(?i)^gunModel') { return 'TEST' }

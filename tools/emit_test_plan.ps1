@@ -166,9 +166,21 @@ function Get-TestValue([string]$fid, [bool]$isOOS) {
 $script:PlatformFed = @{}
 
 # Fields that Get-TestValue INTENTIONALLY leaves empty (not a mapping gap): in-state State
-# (leave blank = home), optional name parts, and auto-populated hidden Attention. Everything
-# else returning $null is a genuine unmapped field -> the combo would fire under-filled. Track loud.
-$script:KnownEmpty = '(?i)^(registrationState|state|nameMiddle|nameSuffix|nameMiddleDH|nameSuffixDH|attention)$'
+# (leave blank = home) and the auto-populated hidden Attention. Everything else returning $null is a
+# genuine unmapped field -> the combo would fire under-filled. Track loud.
+#
+# nameMiddle/nameSuffix/nameMiddleDH/nameSuffixDH REMOVED FROM THIS ALLOWLIST 2026-08-17. They sat
+# here for months, which is the THIRD and most damaging layer of the same silence: the resolver
+# returned $null, THIS LINE suppressed the warning about it, and the plan then omitted the field --
+# so a test named "_any", whose entire job is to fill every optional, filled a subset and reported
+# PASS. Contrast firearmMake, which was NOT on this list: for that one the gate DID fire, on every
+# single plan regeneration, and the warning was simply never read. Two different failures --
+# a suppressed gate and an unread one -- and the suppressed one is worse, because no amount of
+# attention would have surfaced it.
+# THE FIELDS ARE METADATA-DEFINED: provider metadata declares Name as type="Name" with FOUR
+# components (First, Last, Middle, Suffix) on every provider examined. "Optional name parts" was
+# never a reason to leave them untested; it was a reason to test them as optionals.
+$script:KnownEmpty = '(?i)^(registrationState|state|attention)$'
 $script:Unresolved = New-Object System.Collections.Generic.List[string]
 function Note-IfUnresolved([string]$ctx, [string]$fid, $val) {
     if (($null -eq $val -or $val -eq '') -and $fid -notmatch $script:KnownEmpty) {
