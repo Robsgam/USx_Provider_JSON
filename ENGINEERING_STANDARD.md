@@ -127,6 +127,30 @@ All of the following, simultaneously, with no exceptions granted by narrative:
 
 Anything less is in progress, and must be reported as in progress.
 
+### 5.1 The portfolio metric — what "95%" means (Rob's ruling, 2026-08-18)
+
+Section 5 defines finished for ONE provider. The portfolio number is simply the count of providers
+that meet it:
+
+> **95% = 19 of 20 providers LIFECYCLE-COMPLETE** (all 6 stages of §2 green).
+> **Measured 2026-08-18: 6 of 20 = 30%.**
+
+**Why this definition and not the obvious alternative.** The tempting metric is the gate pass-rate —
+`enforce`'s own `PASS / (PASS+FAIL+WARN)`. On 2026-08-18 that read **614/641 = 96%**, i.e. *already
+met*, while **12 of 20 providers had never been imported to a tenant and therefore had never had a
+single query proven on the wire.** A metric that reports 96% in that state is not measuring delivery;
+it is measuring how much of the board is green, which is the thing LAW 2 exists to distrust. The
+build dimension has been at ~95% for weeks and it was never the constraint.
+
+**What this definition makes visible, which is its whole point:** the binding constraint is **stage 4**,
+and stage 4 cannot be reached without stage 6 first — a provider that is not imported can never be
+tenant-tested. So the queue in `report_import_owed.ps1` *is* the roadmap to 95%, and advisory
+conformity residue (layout, name components, BUILD_NOTES, suppressions) — however large the counts
+look — moves this number by exactly zero until a provider is imported and swept.
+
+**Do not restate this number from memory.** Derive it: `portfolio_status.ps1` for stage 4,
+`audit_lifecycle.ps1` for stages 5–6, `report_import_owed.ps1` for the queue.
+
 ---
 
 ## 6. Deferred work, with the data preserved

@@ -1168,6 +1168,47 @@ if (-not (Test-Path $rfTool)) {
     }
 }
 
+#  PHASE 2w: Layout Flow -- is the form a projection of its combinations? (ADVISORY)
+# ---------------------------------------------------------------------------------
+#  The cosmetic/usability direction no other phase measures. 2c checks label TEXT, 2t checks that a
+#  control REACHES the wire; neither asks whether the form's SHAPE -- card count, field order,
+#  widths, grouping -- follows the query paths the officer actually drives.
+#  WHY IT IS WIRED HERE AND WHY IT IS ADVISORY, NOT BLOCKING: the gate existed and worked since
+#  2026-08-11, but NOTHING RAN IT, so its findings only surfaced when someone thought to ask. That
+#  is how the L7 'MI' labels sat on NY / TX / TX_TLETS_CCH from 2026-07-27 to 2026-08-18 -- a label
+#  reading "middle INITIAL" on a maxLen 30-35 field -- while every board read green. A gate nobody
+#  runs is indistinguishable from a gate that does not exist.
+#  It is Info-not-Warn because Rob explicitly held it out of the production pipeline ("lets test
+#  before we put any of this in the the production pipeline") until the portfolio converges and the
+#  residue is all recorded overrides. It has not converged: 94 findings across 18 of 20 providers as
+#  of 2026-08-18, so blocking would redden 18 providers at once and trigger a back-door mass
+#  rebuild against one-provider-at-a-time. VISIBLE now, BLOCKING when the residue is overrides only.
+SectionHeader "PHASE 2w: Layout Flow -- form shape vs combinations (advisory)"
+$lfTool = Join-Path $toolDir "audit_layout_flow.ps1"
+if (-not (Test-Path $lfTool)) {
+    Info "audit_layout_flow.ps1 not found -- layout flow NOT checked"
+} else {
+    foreach ($pd in $providers) {
+        $lfOut = & powershell -ExecutionPolicy Bypass -File $lfTool -Provider $pd.Name 2>&1 | Out-String
+        $lfLines = $lfOut -split "`n"
+        $lfF   = @($lfLines | Where-Object { $_ -match '^\s*\[L\d+\s' })
+        # Match per LINE, not against the whole blob: `'compared:\s*(.+)$'` over a multi-line string
+        # cannot match a mid-string line ($ anchors at end-of-string without (?m)), so it reported
+        # "reached no verdict" for NJ_NJCJIS -- the one provider the tool actually PASSes clean.
+        $lfCmp = ''
+        foreach ($ln in $lfLines) { if ($ln -match '^\s*compared:\s*(.+?)\s*$') { $lfCmp = $Matches[1]; break } }
+        if ($lfF.Count -gt 0) {
+            Info "$($pd.Name) -- $($lfF.Count) layout-flow finding(s), advisory: tools\audit_layout_flow.ps1 -Provider $($pd.Name)"
+            $lfF | Select-Object -First 4 | ForEach-Object { Out "       $($_.Trim())" }
+        } elseif ($lfCmp) {
+            Pass "$($pd.Name) -- layout flow clean ($lfCmp)"
+        } else {
+            # A run that compared nothing is not a pass -- ENGINEERING_STANDARD 4.3.
+            Warn "$($pd.Name) -- audit_layout_flow reached no verdict (0 compared); layout flow NOT checked"
+        }
+    }
+}
+
 SectionHeader "PHASE 3: Doc Version Sync"
 
 # Check 3j prerequisite -- reported ONCE, not per provider.
