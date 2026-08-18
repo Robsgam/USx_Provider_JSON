@@ -897,10 +897,26 @@ Write-ProviderJson -BundleObject $output -OutPath $OUT `
     -Label "Built NY_NYSPIN_EJUSTICE v${Version}" `
     -Version $Version
 
-# Clear the rebuild-pending flags -- this build's version bump + reset_test_package regenerated
-# the plan via the fixed emit_test_plan.ps1 (form-defaults namespace fix, flagged 2026-08-05), so
-# the deferred condition is now satisfied. Migrated docs/tracking/ location.
-$pendingPath = Join-Path $PSScriptRoot "..\docs\tracking\PENDING_UPDATES.txt"
-if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
+# PENDING_UPDATES.txt IS NO LONGER TOUCHED BY THIS BUILD -- removed 2026-08-18, and the removal
+# fixed an active data-loss bug, not a style problem.
+# It used to do:
+#     $pendingPath = Join-Path $PSScriptRoot "..\docs\tracking\PENDING_UPDATES.txt"
+#     if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
+# THREE THINGS WRONG WITH THAT:
+#  1. It deleted the WHOLE FILE, not the one flag the build satisfied -- so any OTHER live flag, and
+#     every retirement note recorded in it, went with it.
+#  2. IT CONTRADICTS THE FILE'S OWN HEADER, which reads "A flag is NOT cleared by building. Retire it
+#     explicitly once the fix is in the JSON: tools\flag_pending_fix.ps1 -Retire". Retirement COMMENTS
+#     a flag out precisely so the record survives; this deleted the record.
+#  3. WORST: enforce PHASE 2f runs audit_reproducible, which EXECUTES THIS BUILD SCRIPT (auto-on for a
+#     single -Provider run). So `enforce -Provider NY_NYSPIN_EJUSTICE` -- a read-only gate -- silently
+#     deleted this file every time it ran. Reproduced deliberately: restore the file, run enforce, file
+#     gone, and not moved (searched the whole repo).
+# COST, MEASURED: my own commit 767996c4 destroyed TX_TLETS_CCH's PENDING_UPDATES.txt during its v1.17
+# lockstep rebuild, taking the [FLAG:nameparts-untested-unfrozen] record with it -- and I then reported
+# CCH as "the only remaining carrier" of that flag while its record no longer existed. Recovered from
+# git during the 2026-08-18 loose-end sweep. AZ_AZDPS, FL_FCIC and TX_TLETS still carry the same block.
+# Retirement is flag_pending_fix.ps1 -Retire, which also appends a closure row to
+# REVERSE_PROPAGATION_LOG.md -- something a Remove-Item never did.
 
 # =====================================================================

@@ -845,10 +845,24 @@ Write-ProviderJson -BundleObject $output -OutPath $OUT `
 # Clear the rebuild-pending flags -- this build's version bump + reset_test_package regenerated
 # the plan via the fixed emit_test_plan.ps1 ($script:PlatformFed presence + form-defaults
 # namespace fixes, flagged 2026-08-05), so both flags' deferred condition is now satisfied.
-# Migrated docs/tracking/ location (build_tx_tlets.ps1's own clear code still points at the
-# pre-migration flat docs/ path -- stale there, harmless since Test-Path just skips it).
-$pendingPath = Join-Path $PSScriptRoot "..\docs\tracking\PENDING_UPDATES.txt"
-if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
+# PENDING_UPDATES.txt IS NO LONGER TOUCHED BY THIS BUILD -- removed 2026-08-18. It used to do:
+#     $pendingPath = Join-Path $PSScriptRoot "..\docs\tracking\PENDING_UPDATES.txt"
+#     if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
+# and unlike its siblings that path was CORRECT, so it actually fired. It deleted the WHOLE FILE rather
+# than the flag the build satisfied, which contradicts the file's own header ("A flag is NOT cleared by
+# building. Retire it explicitly ... flag_pending_fix.ps1 -Retire" -- retirement COMMENTS a flag out so
+# the record survives). Worse, enforce PHASE 2f runs audit_reproducible, which EXECUTES this script, so
+# a read-only gate silently destroyed the file.
+# THIS PROVIDER IS THE PROVEN CASUALTY: commit 767996c4 (the v1.17 lockstep rebuild) deleted this file
+# and took the [FLAG:nameparts-untested-unfrozen] record with it -- and CCH was then reported as "the
+# only remaining carrier" of that flag while its record no longer existed. Recovered from git during
+# the 2026-08-18 loose-end sweep; the flag is live again and correctly still owed, since CCH has never
+# been tenant-tested.
+# The old comment here even NOTED that build_tx_tlets.ps1's twin pointed at the stale pre-migration
+# flat docs/ path and called that "harmless" -- which was true only by accident. The lesson is that a
+# path-typo was the only thing preventing data loss on three more providers.
+# FL_FCIC and TX_TLETS still carry the same block aimed at the stale flat path: dead today, a
+# data-loss bug the moment somebody "corrects" the path.
 
 Write-Host ""
 Write-Host "Build complete. TX_TLETS_CCH v${Version} -- 14 QIDMs (6 base + 8 CCH), Person CCH cards CCH-suffixed."

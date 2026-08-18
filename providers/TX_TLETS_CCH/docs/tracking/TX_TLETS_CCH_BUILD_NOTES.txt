@@ -2,9 +2,34 @@
   BUILD NOTES: TX_TLETS_CCH
   Created: 2026-06-09
 ================================================================
-v1.17  2026-08-18  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v1.17  2026-08-18  LOCKSTEP with TX_TLETS v4.21 -- layout convergence, NO wire change
+  CHANGED: Mandatory variant rebuild (BASE-SYNC marker v4.20 -> v4.21). The same three
+    audit_layout_flow fixes the base took, applied to the shared base-6 half:
+      (1)+(2) L7 LABEL-CAPACITY -- 'nameMiddle' and 'nameMiddleDH' were labelled 'MI', which means
+        middle INITIAL, on maxLen=30 controls that accept a full middle name. Now 'Middle Name' with a
+        LABEL-OVERRIDE comment, matching AZ_AZDPS v3.10 and HI_HCJDC_OFML v4.20.
+      (3) L3 HIDDEN-MID-CARD -- the hidden Attention gate-feeder row (ROW_PER_DHA) was row 1 of
+        CARD_PER_DH, ABOVE all visible content, while this provider's OWN DL card already places its
+        hidden EmailAddress feeder last. Moved to the last row. Row position carries no wire meaning --
+        the handler is fed by any[] membership, not by ordering.
+      (4) NOT CHANGED, recorded as a LAYOUT-OVERRIDE at ROW_PER_L1: L2 SET-BELOW-ANY reports optional
+        'messageKey' above mandatory 'NameLast' for CPLName. DEX-1283 #4 (Rob-approved) asked for
+        "OLN pairs with CPL/DWI/RDL on the top line", and OLN on that row IS mandatory for DQOLN.
+  REASON: Base+variant are ONE logical provider kept in lockstep (CLAUDE.md "Provider Variants") -- any
+    change to the base's shared half must propagate in the same pass, and audit_variant_sync gates the
+    BASE-SYNC marker. Confirms PASS: "TX_TLETS_CCH -- base-6 in lockstep with TX_TLETS v4.21".
+  NO WIRE CHANGE. Labels and row order only. Verified: validator 112P/0F/0W unchanged; combination
+    requirements BYTE-IDENTICAL to v1.16 (proven by diffing every combo's sorted set[]/any[] across the
+    two emitted JSONs -- 41 vs 41, no difference), which is what establishes that the CCH transactions
+    were untouched; devdoc combinations 40 compared / 0 unbuilt; requirement fidelity 36 branches with
+    4 OVER-PERMITTED that are PRE-EXISTING, not introduced here (same byte-identical-requirements proof).
+  STILL NEVER TENANT-TESTED. TX_TLETS_CCH is on no tenant and has 0 logs at any version, so nothing was
+    archived and nothing re-runs. It carries the last live [FLAG:nameparts-untested-unfrozen] in the
+    portfolio (HI/TX/NY all retired on wire evidence); retire it only once its own Person logs exist.
+  THIS ENTRY WAS A STUB UNTIL THE 2026-08-18 LOOSE-END SWEEP. The base got a full v4.21 BUILD_NOTES the
+    same day and the variant got pipeline's "Scheduled rebuild" default -- caught by
+    audit_buildnotes_fidelity, which compares the entry against the actual JSON diff. Worth naming: a
+    lockstep rebuild is exactly where a variant's records get forgotten, because attention is on the base.
 
 
 INHERITED APPROVED SKIP -- CLOSED (recorded 2026-08-11, not a defect here or on the base)

@@ -790,10 +790,22 @@ Write-ProviderJson -BundleObject $output -OutPath $OUT `
     -Label "Built TX_TLETS v${Version}" `
     -Version $Version
 
-# Clear the rebuild-pending flags -- this build incorporates the shared-module fixes
-# (VehicleMakeName QRDM RND-62365 + ParseCommsysName args). Presence is verified post-build.
-$pendingPath = Join-Path $PSScriptRoot "..\docs\PENDING_UPDATES.txt"
-if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
+# PENDING_UPDATES.txt IS NO LONGER TOUCHED BY THIS BUILD -- removed 2026-08-18. It used to do:
+#     $pendingPath = Join-Path $PSScriptRoot "..\docs\PENDING_UPDATES.txt"
+#     if (Test-Path $pendingPath) { Remove-Item $pendingPath -Force }
+# THAT WAS DEAD CODE THAT WAS ONE TYPO AWAY FROM DESTROYING DATA. The path is the PRE-MIGRATION flat
+# docs/ location; this provider migrated to docs/tracking/ long ago, so Test-Path always failed and the
+# Remove-Item never ran. Anyone "fixing" the stale path would have armed it.
+# WHY THAT MATTERS -- the armed version is proven destructive: NY_NYSPIN_EJUSTICE and TX_TLETS_CCH
+# carried the same block aimed at the CORRECT docs/tracking/ path, and it deleted the WHOLE
+# PENDING_UPDATES.txt (not the flag the build satisfied) every time the script ran. Since enforce
+# PHASE 2f runs audit_reproducible, which EXECUTES the build script, `enforce -Provider <P>` -- a
+# read-only gate -- silently destroyed the file. Commit 767996c4 lost TX_TLETS_CCH's
+# [FLAG:nameparts-untested-unfrozen] record exactly this way; recovered from git 2026-08-18.
+# It also contradicted the file's own header: "A flag is NOT cleared by building. Retire it explicitly
+# ... flag_pending_fix.ps1 -Retire" -- retirement COMMENTS a flag out so the record survives, and it
+# appends a closure row to REVERSE_PROPAGATION_LOG.md, which a Remove-Item never did.
+# FL_FCIC still carries the same stale-path block and should be neutralised at its own next rebuild.
 
 Write-Host ""
 Write-Host "Build complete. 7 cards, 19 CommSys combos, 6 QIDMs."
