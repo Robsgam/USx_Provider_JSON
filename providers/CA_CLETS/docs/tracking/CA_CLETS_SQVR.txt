@@ -4,6 +4,16 @@ LABELS PROVISIONAL -- refine wording during manual form use; not a graded test c
 Last updated: 2026-08-17
 JSON version: v2.26
 Validator: 79 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Total combos: 27 CommSys (6 QIDMs) + RMS co-fires
+  ADDED 2026-08-18 SO THE GATE CAN ACTUALLY CHECK THIS FILE. audit_sqvr_integrity CHECK 2 compares a
+  stated combo/QIDM total against the emitted JSON -- and this SQVR asserted no total, so CHECK 2
+  reported "DID NOT RUN ... nothing was compared" while the file still read as PASS overall. An
+  assertion nobody makes cannot be wrong, which is precisely why it is worth making: HI_HCJDC_OFML's
+  SQVR claimed 17 combos against a JSON holding 12, through nine version bumps, and only a stated
+  total exposed it. Counted from the emitted JSON via audit_test_coverage.ps1 ("Total combos
+  (CommSys): 27"), NOT from audit_combo_reachability's "N checked", which reports what it COMPARED and
+  runs lower. If a future rebuild changes the combo count this line MUST move with it -- that is the
+  point of it existing.
 Live test: COMPLETE + INTEGRITY-CERTIFIED -- v2.12 zero-error pass 2026-07-02: 93/93
   submitted+captured, 0 label corrections, 0 unmatched, content audit 87/87, wire XML
   identical to prior verified pass, enforce 26P/0F/0W. Logs are a verified faithful record

@@ -1,8 +1,28 @@
 IL_LEADS_OFML SUPPORTED QUERY VALIDATION REPORT
 ===================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-17
+Last updated: 2026-08-18
 JSON version: v2.8
+Validator: 61 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Total combos: 9 CommSys (5 QIDMs)
+  ADDED 2026-08-18 SO THE GATE CAN ACTUALLY CHECK THIS FILE. audit_sqvr_integrity CHECK 2 compares a
+  stated combo/QIDM total against the emitted JSON, and this SQVR asserted no total, so CHECK 2
+  reported "DID NOT RUN ... nothing was compared" while the file still read as PASS overall. An
+  assertion nobody makes cannot be wrong -- and that is exactly how HI_HCJDC_OFML's SQVR carried
+  "17 combos" against a JSON holding 12 for nine version bumps. Counted from the emitted JSON via
+  audit_test_coverage.ps1 ("Total combos (CommSys): 9"), NOT from audit_combo_reachability's
+  "N checked" (which reports what it COMPARED and runs lower -- IL shows 7 there). If a rebuild
+  changes the combo count this line MUST move with it.
+
+*** THE TWO SECTIONS BELOW ARE UNFILLED TEMPLATE PLACEHOLDERS ON A TENANT-VERIFIED PROVIDER. ***
+  Recorded 2026-08-18, deliberately left visible rather than quietly deleted. IL_LEADS_OFML is
+  ALL-PASS 5/5 at 44/44 logs with enforce exiting 0, and its SQVR still says "populate after build".
+  That matters because the SQVR is what a TESTER READS to decide what to test -- so this provider
+  currently offers a tester nothing, while every automated gate reports it green. The authoritative
+  substitutes until it is written: tools\audit_test_coverage.ps1 -Path <json> for combo-vs-log
+  coverage, and logs\IL_LEADS_OFML_TEST_PLAN_v2.8.json for the per-combo test list.
+  NOT populated in this pass because Rob's instruction was scoped to the SQVR TOTALS; filling the
+  query-path table is a separate piece of work and is owed at IL's own next turn.
 
 QUERIES (pending metadata review)
 ==================================
