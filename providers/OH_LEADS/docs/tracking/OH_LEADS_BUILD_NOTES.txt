@@ -3,6 +3,88 @@ OH_LEADS -- Build Notes
 Provider: OH_LEADS
 State: Ohio
 Network: LEADS (Law Enforcement Automated Data System)
+v2.5  2026-08-18  NCIC Image defaults to Y on ALL entities -- the Rob-held flag closed at zero cost
+  CHANGED: ImageIndicator flipped 'N' -> 'Y' on Article and Boat, in BOTH places the rule requires --
+    the form initialValue (ROW_ART_3, ROW_BOA_2) and the combo defaults[] CAD twin on all four
+    carrying combos (Article QA.S/QA.N, Boat QB.H/QB.R). Person was already 'Y'. Emitted JSON now
+    reads 9 of 9 form controls at 'Y' and 5 of 5 combo defaults at 'Y'.
+  REASON: [FLAG:ncic-image-default-y-everywhere] -- Rob 2026-08-12, "ncic image should default to y
+    everywhere". THE DEFAULTS[] TWIN IS NOT OPTIONAL: CAD ignores the form initialValue, so a
+    form-only flip would leave every CAD-originated Article/Boat query still sending 'N'.
+
+  ALL THREE OF THE FLAG'S OWN PRECONDITIONS WERE MEASURED, NOT ASSUMED. The flag says explicitly
+  "BEFORE APPLYING, MEASURE THIS PROVIDER", because the same flip is WRONG on two providers:
+    (1) ImageIndicator is in NO combination's set[] and in NO condition here -- it rides in any[] on
+        exactly 5 combos (DQ.O, QA.S, QA.N, QB.H, QB.R). So BUILD_RULES 24 does not bite: a prefill
+        can only shadow a combo when the prefilled field is a routing DISCRIMINATOR in a set[].
+        Contrast AZ_AZDPS (2 set[]s -- v3.10 proved the flip collapses DQPN->DQN and DQP->DQ, killing
+        both plain searches) and LA_LEMS (1 set[] + 2 conditions). Those two need Rob's ruling; OH
+        needed only a measurement. VERIFIED AFTER THE REBUILD, not just predicted: audit_query_trace
+        reports 25 built / 0 prefill-dead / 0 shadow, and combo reachability is clean.
+    (2) The TX_TLETS T6 gate is CLEAR. OH_LEADS' devdoc contains no "must be filled if" / "required
+        if" conditional anywhere, and ImageIndicator appears only as a BRACKETED OPTIONAL in every
+        Article combination (#1 ArticleSerialNumber+ArticleTypeCode, #2 NCICNumber) and every Boat
+        combination (#1 hull, #2 NCICNumber, #3 RegistrationNumber). Nothing becomes mandatory at 'Y'.
+    (3) BUILD_RULES 20b does not apply -- OH gates no combo on ImageIndicator NOT_EXISTS.
+
+  WHY NOW, AND WHY THIS IS THE CHEAPEST POINT IN THE PORTFOLIO TO DO IT: this is a WIRE change, which
+  is exactly why the flag was held on the six remaining carriers -- on a tenant-verified provider it
+  archives the whole test package and owes a full re-sweep of Rob's hands-on time. OH_LEADS costs
+  NONE of that: never USx-tenant-tested, no current-version logs, and IMPORT_LEDGER records v2.4 as
+  never installed on any tenant. Deferring it would have bought a second rebuild for zero benefit.
+  CLAUDE.md's count of "OH_LEADS (2)" was RIGHT and worth stating, because the raw grep says 6: there
+  are 9 ImageIndicator controls = 3 entities x 3 layout variants (default/CAD_DISPATCH/FIRST_RESPONDER),
+  so 6 controls at 'N' was 2 ENTITIES at 'N'. Counting controls instead of entities would have made
+  the doc look wrong when it was not.
+
+  ONE ADVISORY WARN REMAINS, AND IT IS A GATE ARTEFACT -- VERIFIED, NOT ASSUMED, AND DELIBERATELY
+  NOT SUPPRESSED:
+    audit_requirement_fidelity reports "DriverLicenseQuery / BMVIMS -> built 'DQ.O' UNDER-REQUIRED:
+    SocialSecurityNumber (ABSENT)", and audit_query_trace reports the same item as "[MISSING] BMVIMS
+    set[SocialSecurityNumber]". They are ONE underlying thing, and the build is correct.
+    READ FROM THE RAW XML <Requirements> PER <Combination> -- the one sanctioned raw-XML exception:
+      DQ{OperatorLicenseNumber}    (line 5098) = Set[OperatorLicenseNumber], Any[ImageIndicator, State]
+                                                 -- SSN APPEARS NOWHERE IN IT. This is what DQ.O builds.
+      BMVIMS{SocialSecurityNumber} (line 5428) = Set[SocialSecurityNumber], Any[ReasonCode, Requestor,
+                                                 UserName] -- a DIFFERENT transaction variant.
+    BMVIMS is "Image Query by Operator License Number" and we build it under ImageQuery; OH's own
+    SUPPORTED_QUERIES extract records that "keyRef BMVIMS is shared with DriverLicenseQuery". So this
+    is the BUILD_RULES 13 keyRef-collision class (key by (query, keyRef), never a bare name) surfacing
+    in a gate's branch MAPPING: the gate force-mapped an unbuilt variant onto the nearest OLN-primary
+    built combo and then reported the mismatch as a defect in that combo.
+    AND IT IS OUT OF DEVDOC-BASIC SCOPE ANYWAY. The devdoc's ImageQuery section lists exactly ONE
+    combination -- "1. (In/Out) OperatorLicenseNumber, [ReasonCode, Requestor, UserName]" -- with
+    OperatorLicenseNumber marked M and NO SocialSecurityNumber field anywhere in its table. A metadata
+    combination with no devdoc counterpart is not a gap in either direction. OH builds no SSN control
+    at all (Build-RmsBundle is called here without -KeepSsn).
+    WHY NO REGISTRY ROW WAS WRITTEN, having tried one: any unbuilt-class rule naming keyRef 'BMVIMS'
+    suppresses the comparison of the combo we DO build under that keyRef. Measured: registering it
+    dropped branches-compared 24 -> 22 while the finding count went to 0, and the tool itself emitted
+    "[NOTE] REGISTRY OVER-SUPPRESSION RISK: ... names a combo that IS BUILT (in ImageQuery)". The row
+    was reverted and branches confirmed back at 24. A registration that costs coverage and buys
+    nothing is worse than none -- so this stays VISIBLE as an advisory WARN with the evidence here.
+    PRE-EXISTING PORTFOLIO RESIDUE, NOT INTRODUCED BY v2.5: the measured baseline is 421 branches /
+    11 UNDER / 34 OVER across all 20 providers (unchanged, and matching CLAUDE.md), with findings on
+    8 of them. The 6-provider regression fixture is intact at 0/0 (116 branches). Fixing the gate's
+    mapping would move 8 providers' numbers at once, so it is a portfolio decision
+    (ENGINEERING_STANDARD 4.5 -- SWEEP is Rob's direction only), NOT part of OH's rebuild.
+    ALSO NOTED, PRE-EXISTING AND NOT FIXED HERE: the registry's existing row
+    "DriverHistoryQuery | BMVIMS | OperatorLicenseNumber | dropped-combo" trips the same
+    OVER-SUPPRESSION NOTE for the same reason. It cannot simply be re-keyed: audit_query_trace matches
+    the registry on the BARE metadata keyRef string (that is why the QV/QV.P alias row exists in
+    PENDING_UPDATES), while audit_requirement_fidelity's prefix bridge over-suppresses on that same
+    string. The two gates want opposite spellings, so this is a genuine tooling conflict to be fixed
+    in the gates, not a row-spelling problem to churn.
+
+  FUZZ NOTE: the earlier "set-to-any @ DriverLicenseQuery[2] NameFirst" survivor did NOT recur at
+  seed 962590 (8/8 caught). It is the documented composite-Name granularity limit -- the mutation
+  leaves NameLast in set[], which is exactly what fidelity's surname guard checks -- so it is a
+  correct survivor, and a survivor is a CANDIDATE, not a verdict.
+
+  Validator: see STATUS.txt for the recorded score. enforce -Provider OH_LEADS exits 0.
+  STILL OWED: never USx-tenant-tested -- v2.5 owes a full 5-entity sweep from T1, and a first import.
+
+
 v2.4  2026-08-10  CARD COLLAPSE 14 -> 6 + ImageQuery BUILT (the two items v2.3 left open)
   Both were flagged at v2.3 as "Rob's call". His call was: do them. So they are done, in one version.
 

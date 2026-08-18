@@ -1,6 +1,6 @@
-OH_LEADS v2.4 -- TEST MATRIX
+OH_LEADS v2.5 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-13
+Generated: 2026-08-18
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -41,14 +41,14 @@ Article (1 card, 5 fields):
 OR BY NCIC NUMBER):
     ROW 1: serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     ROW 2: NCICNumber [Inp 9]
-    ROW 3: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    ROW 3: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Boat (1 card, 5 fields):
   CARD_BOA (BOAT SEARCH BY HULL ID, 
 OR BY REGISTRATION NUMBER (Hull wins if both are entered) 
 (leave State blank for OH)):
     ROW 1: BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8]
-    ROW 2: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
+    ROW 2: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 QIDM SUMMARY (7 QIDMs, 22 combos)
 ----------------------------------------
@@ -212,4 +212,4 @@ COMBO COVERAGE (22/22):
   ArticleSingleQuery: 2/2 -- T49(.S), T51(.N)
   BoatQuery: 4/4 -- T37(BQ+.R), T39(BQ+.H), T41(QB+.R), T43(QB+.H)
 
-IMPORT FILE: OH_LEADS_v2.4.json
+IMPORT FILE: OH_LEADS_v2.5.json

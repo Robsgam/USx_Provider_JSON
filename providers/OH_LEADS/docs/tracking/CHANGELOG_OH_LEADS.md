@@ -2,9 +2,19 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-13
+Current: **v2.5** | Generated: 2026-08-18
 
 ---
+
+## v2.5 -- 2026-08-18 -- NCIC Image defaults to Y on ALL entities -- the Rob-held flag closed at zero cost
+
+**CHANGED:** ImageIndicator flipped 'N' -> 'Y' on Article and Boat, in BOTH places the rule requires --
+  the form initialValue (ROW_ART_3, ROW_BOA_2) and the combo defaults[] CAD twin on all four  
+  carrying combos (Article QA.S/QA.N, Boat QB.H/QB.R). Person was already 'Y'. Emitted JSON now  
+  reads 9 of 9 form controls at 'Y' and 5 of 5 combo defaults at 'Y'.  
+**REASON:** [FLAG:ncic-image-default-y-everywhere] -- Rob 2026-08-12, "ncic image should default to y
+  everywhere". THE DEFAULTS[] TWIN IS NOT OPTIONAL: CAD ignores the form initialValue, so a  
+  form-only flip would leave every CAD-originated Article/Boat query still sending 'N'.  
 
 ## v2.4 -- 2026-08-10 -- CARD COLLAPSE 14 -> 6 + ImageQuery BUILT (the two items v2.3 left open)
 

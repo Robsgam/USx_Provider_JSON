@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.4'
+$Version     = '2.5'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -491,7 +491,7 @@ $artQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('articleTypeCode','serialNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'ArticleSerialNumber'
             keyReference          = 'QA.S'
@@ -501,7 +501,7 @@ $artQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('NCICNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('serialNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'NCICNumber'
@@ -547,7 +547,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('BoatHullIdNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'BoatHullIdNumber'
@@ -571,7 +571,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('RegistrationNumber'); any = @('ImageIndicator','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('BoatHullIdNumber');  operator = 'NOT_EXISTS' }
@@ -774,7 +774,7 @@ $artLayout = MakeLayouts @(
                 @{ id = 'NCICNumber_Input'; node = Inp 'NCICNumber' 'NCIC Number' '9' 'ROW_ART_2' }
             )}
             @{ id = 'ROW_ART_3'; cols = @('6','6'); fields = @(
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_ART_3' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_ART_3' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_ART_3' }
             )}
         )
@@ -807,7 +807,7 @@ $boaLayout = MakeLayouts @(
             )}
             @{ id = 'ROW_BOA_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_2' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_BOA_2' }
             )}
         )
