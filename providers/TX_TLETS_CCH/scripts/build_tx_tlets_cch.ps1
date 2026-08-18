@@ -1,5 +1,11 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH (version comes from $Version below -- said v1.10 while emitting v1.14, corrected 2026-08-02)
-# BASE-SYNC: TX_TLETS v4.20   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.21   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# v1.17 (LOCKSTEP w/ TX_TLETS v4.21 -- COSMETIC, NO wire change): mandatory variant rebuild. Same three
+#   audit_layout_flow fixes as the base: 'nameMiddle'/'nameMiddleDH' relabelled 'MI' -> 'Middle Name'
+#   (L7 -- 'MI' means middle INITIAL on maxLen=30 controls), and the hidden Attention row moved from
+#   row 1 of CARD_PER_DH to last (L3 -- the DL card already put its hidden feeder last, so the two
+#   cards on one form disagreed). L2 messageKey-above-NameLast recorded as a LAYOUT-OVERRIDE, not
+#   changed: DEX-1283 #4 asked for that pairing. BASE-SYNC marker bumped v4.20 -> v4.21.
 # v1.15 (lockstep w/ TX_TLETS v4.19, DEX-1283): removed initialValue='X' from the Attention +
 #   EmailAddress hidden gate-feeders (DL + DH) and the matching combo defaults[] entries -- same
 #   fix as TX_TLETS v4.19, see that build script's header for the full evidence trail
@@ -97,7 +103,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.16"
+    [string]$Version = "1.17"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -597,6 +603,10 @@ $perLayout = MakeLayouts @(
             # previously lumped onto the OLN row (6/3/3); moved to their own ROW_PER_N2.
             # DEX-1283 #4 (lockstep w/ TX_TLETS v4.15): OLN + CPL/DWI/RDL on the top line, name
             # split First+Last / MI+Suffix so no row is uneven in CAD.
+            # LAYOUT-OVERRIDE (L2 SET-BELOW-ANY, ACCEPTED -- do NOT "fix"): audit_layout_flow reports
+            # optional 'messageKey' above mandatory 'NameLast' for CPLName. DEX-1283 #4 (Rob-approved)
+            # asked for "OLN pairs with CPL/DWI/RDL on the top line", and OLN on that row IS mandatory
+            # for DQOLN. Same override as TX_TLETS v4.21; recorded so it is not re-litigated.
             @{ id = 'ROW_PER_L1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_L1' }
                 @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'CPL/DWI/RDL (optional)' '3' 'ROW_PER_L1' }
@@ -606,7 +616,10 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '30' 'ROW_PER_N1' }
             )}
             @{ id = 'ROW_PER_N1B'; cols = @('6','6'); fields = @(
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '30' 'ROW_PER_N1B' }
+                # LABEL-OVERRIDE: nameMiddle -- 'MI' meant middle INITIAL and misrepresented a maxLen=30
+                # field (L7). BASE-SYNC with TX_TLETS v4.21; same correction AZ v3.10 / HI v4.20 made.
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_N1B' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' is the CANONICAL label (BUILD_RULES Section 11).
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1B' }
             )}
             # DOB + Sex on their own row (moved off ROW_PER_L1 2026-07-27), matching DH's ROW_PER_DHN2.
@@ -630,12 +643,6 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
-            # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler.
-            # Hidden gate-feeder (InpH initialValue='X') makes 'Attention' visible to the platform
-            # so the handler's sourceField resolves and the value enters the serialization pool.
-            @{ id = 'ROW_PER_DHA'; cols = @('12'); fields = @(
-                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' }
-            )}
             # "(DH...)" qualifier dropped from every label (TX_TLETS main v4.3 convention, mirrors
             # FL/NY/HI) -- the card's own "DRIVER HISTORY" title disambiguates it from "DRIVER LICENSE".
             # v4.16/v1.12 (DEX-1283 #4, Rob): DH now MIRRORS the DL card exactly -- OLN paired on a
@@ -651,7 +658,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_PER_DHN1' }
             )}
             @{ id = 'ROW_PER_DHN1B'; cols = @('6','6'); fields = @(
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '30' 'ROW_PER_DHN1B' }
+                # LABEL-OVERRIDE: nameMiddleDH -- 'MI' misrepresented a maxLen=30 field (L7); same as the DL twin.
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name' '30' 'ROW_PER_DHN1B' }
+                # LABEL-OVERRIDE: nameSuffixDH -- bare 'Suffix' per the canonical label rule.
                 @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DHN1B' }
             )}
             @{ id = 'ROW_PER_DHN2'; cols = @('6','6'); fields = @(
@@ -664,6 +673,14 @@ $perLayout = MakeLayouts @(
                 @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_DH_OPT' }
                 @{ id = 'ImageIndicatorDH_Input';    node = Sel 'ImageIndicatorDH' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DH_OPT' }
                 @{ id = 'reasonCodeDH_Input';        node = Inp 'reasonCodeDH' 'Reason Code' '1' 'ROW_PER_DH_OPT' @{ initialValue = 'C' } }
+            )}
+            # Attention auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler; the hidden control
+            # makes it resolvable so the sourceField enters the serialization pool. MOVED TO LAST ROW to
+            # match TX_TLETS v4.21 (L3 HIDDEN-MID-CARD) -- it was row 1 of 6, above all visible content,
+            # while the DL card already put its hidden EmailAddress feeder last. Row order carries no wire
+            # meaning: the handler is fed by any[] membership, not by position.
+            @{ id = 'ROW_PER_DHA'; cols = @('12'); fields = @(
+                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' }
             )}
         )
     }

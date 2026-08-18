@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.20.json
-  Generated: 2026-08-14 13:29
+  Source: TX_TLETS_v4.21.json
+  Generated: 2026-08-18 10:07
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== TX_TLETS_v4.20.json ===
+=== TX_TLETS_v4.21.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=7
   Person | entity=Person | qidm= | cards=2 fields=16
@@ -67,8 +67,6 @@ LAYOUT DETAIL
       ROW ROW_PER_DL_OE [12]
         emailAddress (Text | maxLen=80)
     CARD "CARD_PER_DH"
-      ROW ROW_PER_DHA [12]
-        Attention (Text | maxLen=30)
       ROW ROW_PER_DHL1 [6 6]
         OperatorLicenseNumberDH (Text | maxLen=20)
         purposeCodeDH (Text | maxLen=1 | default=C)
@@ -85,6 +83,8 @@ LAYOUT DETAIL
         RegistrationStateDH (Dropdown | attributeTypeId=STATE | default=TX)
         ImageIndicatorDH (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
         reasonCodeDH (Text | maxLen=1 | default=C)
+      ROW ROW_PER_DHA [12]
+        Attention (Text | maxLen=30)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

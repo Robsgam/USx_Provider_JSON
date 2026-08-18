@@ -2,9 +2,14 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.20** | Generated: 2026-08-14
+Current: **v4.21** | Generated: 2026-08-18
 
 ---
+
+## v4.21 -- 2026-08-18 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v4.20 -- 2026-08-14 -- NCIC Image defaults to 'Y' on Firearm/Article/Boat (WIRE CHANGE)
 

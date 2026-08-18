@@ -1,5 +1,17 @@
 # build_tx_tlets.ps1  -- TX_TLETS   (current version comes from $Version below; do NOT restate it
 #   here -- this line read "v4.7" until 2026-08-02 while the build emitted v4.18, eleven adrift)
+# v4.21 (COSMETIC / layout convergence -- NO wire change): three audit_layout_flow findings fixed,
+#   one recorded as an accepted override. (1)+(2) L7: 'nameMiddle' and 'nameMiddleDH' were labelled
+#   'MI' -- middle INITIAL -- on maxLen=30 controls that accept a full middle name; now 'Middle Name',
+#   matching AZ_AZDPS v3.10 and HI_HCJDC_OFML v4.20. (3) L3: the hidden Attention row was row 1 of 6
+#   in CARD_PER_DH, above ALL visible content, while this provider's OWN DL card already puts its
+#   hidden EmailAddress feeder last -- two cards on one form disagreeing is exactly the divergence the
+#   gate exists to catch; moved to last. (4) L2 messageKey-above-NameLast: NOT changed, recorded as a
+#   LAYOUT-OVERRIDE at ROW_PER_L1 -- DEX-1283 #4 asked for that pairing.
+#   WHY THIS SAT FOR THREE WEEKS: the labels shipped 2026-07-27 and audit_layout_flow has flagged them
+#   since 2026-08-11, but nothing ever RAN it. Wired into enforce as PHASE 2w (advisory) on 2026-08-18,
+#   which is what surfaced them. Sequencing was Rob's call: TX already owed 6 Person tests, so fixing
+#   first costs ONE 98-test sweep instead of 6 tests now plus a 98-test re-sweep later.
 # v4.19 (DEX-1283): removed initialValue='X' from the Attention + EmailAddress hidden gate-feeders
 #   (DL + DH cards) and the matching combo defaults[] entries (Attention/EmailAddress on
 #   $imgDefsDH; EmailAddress on $imgDefs) -- both mechanisms existed on the belief that the QIDM
@@ -197,7 +209,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.20"
+    [string]$Version = "4.21"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -595,6 +607,14 @@ $perLayout = MakeLayouts @(
             # First+Last / MI+Suffix so no row is uneven in CAD. messageKey relabelled from the bare
             # 'Message Key' -- the ticket asked for the value list only, and the '(' qualifier now
             # satisfies verify_build CHECK 15 natively (its LABEL-OVERRIDE is no longer needed).
+            # LAYOUT-OVERRIDE (L2 SET-BELOW-ANY, ACCEPTED -- do NOT "fix" this, it is a ticketed layout):
+            # audit_layout_flow reports that 'messageKey' (optional in CPLName's any[]) sits ABOVE
+            # 'NameLast' (mandatory in CPLName's set[]), and the L2 rule says mandatory fields lead.
+            # It is correct about the geometry and wrong about the remedy here: DEX-1283 #4 (Leo CAD
+            # review, Rob-approved) explicitly asked for "OLN pairs with CPL/DWI/RDL on the top line",
+            # and moving messageKey down would undo that. The officer is not misled in practice -- OLN
+            # on the same row IS mandatory for DQOLN, so the top row leads with a required identifier.
+            # The OPERATOR has final say on a cosmetic finding; recorded here so it is not re-litigated.
             @{ id = 'ROW_PER_L1'; cols = @('6','6'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_L1' }
                 @{ id = 'messageKey_Input'; node = Inp 'messageKey' 'CPL/DWI/RDL (optional)' '3' 'ROW_PER_L1' }
@@ -604,7 +624,13 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '30' 'ROW_PER_N1' }
             )}
             @{ id = 'ROW_PER_N1B'; cols = @('6','6'); fields = @(
-                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '30' 'ROW_PER_N1B' }
+                # LABEL-OVERRIDE: nameMiddle -- 'MI' meant middle INITIAL and misrepresented a maxLen=30
+                # field (L7); same correction AZ_AZDPS made at v3.10 and HI_HCJDC_OFML at v4.20. The wrong
+                # label shipped here from 2026-07-27 to 2026-08-18 because audit_layout_flow existed but
+                # nothing ran it -- now enforce PHASE 2w. Bare label, any[]-optional.
+                @{ id = 'nameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_N1B' }
+                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' is the CANONICAL label (BUILD_RULES Section 11),
+                # so it takes no '(optional)' qualifier, same as every other suffix-carrying provider.
                 @{ id = 'nameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '30' 'ROW_PER_N1B' }
             )}
             # DOB + Sex on their own row (moved off ROW_PER_L1 2026-07-27), matching DH's ROW_PER_DHN2.
@@ -629,12 +655,6 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DH'
         title = 'DRIVER HISTORY SEARCH BY OLN, "OR" NAME'
         rows  = @(
-            # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler.
-            # Hidden gate-feeder (InpH initialValue='X') makes 'Attention' visible to the platform
-            # so the handler's sourceField resolves and the value enters the serialization pool.
-            @{ id = 'ROW_PER_DHA'; cols = @('12'); fields = @(
-                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' }
-            )}
             # "(DH)" qualifier dropped from every label (Rob-confirmed 2026-07-17, mirrors
             # FL_FCIC/NY_NYSPIN_EJUSTICE/HI_HCJDC_OFML) -- the card's own "DRIVER HISTORY" title
             # already disambiguates it from "DRIVER LICENSE"; labels now match DL's phrasing.
@@ -651,7 +671,9 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '30' 'ROW_PER_DHN1' }
             )}
             @{ id = 'ROW_PER_DHN1B'; cols = @('6','6'); fields = @(
-                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'     '30' 'ROW_PER_DHN1B' }
+                # LABEL-OVERRIDE: nameMiddleDH -- 'MI' misrepresented a maxLen=30 field (L7); same as the DL twin.
+                @{ id = 'nameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name' '30' 'ROW_PER_DHN1B' }
+                # LABEL-OVERRIDE: nameSuffixDH -- bare 'Suffix' per the canonical label rule, same as the DL twin.
                 @{ id = 'nameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '30' 'ROW_PER_DHN1B' }
             )}
             @{ id = 'ROW_PER_DHN2'; cols = @('6','6'); fields = @(
@@ -666,6 +688,17 @@ $perLayout = MakeLayouts @(
                 @{ id = 'RegistrationStateDH_Input'; node = Sel 'RegistrationStateDH' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'TX' } 'ROW_PER_DH_OPT' }
                 @{ id = 'ImageIndicatorDH_Input';    node = Sel 'ImageIndicatorDH' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DH_OPT' }
                 @{ id = 'reasonCodeDH_Input';        node = Inp 'reasonCodeDH' 'Reason Code' '1' 'ROW_PER_DH_OPT' @{ initialValue = 'C' } }
+            )}
+            # Attention is auto-populated via CommsysGetLastNameFirstNameInitialRuleHandler; the hidden
+            # control makes 'Attention' resolvable so the handler's sourceField enters the serialization
+            # pool. LIVE-PROVEN: <Attention>SGAMBELLONE R</Attention> on the v4.20 KQ wires.
+            # MOVED TO LAST ROW at v4.21 (L3 HIDDEN-MID-CARD): it was row 1 of 6, ABOVE all visible
+            # content, while this provider's OWN DL card already puts its hidden EmailAddress feeder last
+            # (ROW_PER_DL_OE). Two cards on one form with opposite hidden-row placement is the divergence
+            # audit_layout_flow exists to catch. Row position carries no wire meaning -- the handler is fed
+            # by any[] membership, not by ordering (HI_HCJDC_OFML v4.15 retired the initialValue='X' myth).
+            @{ id = 'ROW_PER_DHA'; cols = @('12'); fields = @(
+                @{ id = 'Attention_Hidden'; node = InpH 'Attention' 'Attention (auto-populated from officer profile)' '30' 'ROW_PER_DHA' }
             )}
         )
     }

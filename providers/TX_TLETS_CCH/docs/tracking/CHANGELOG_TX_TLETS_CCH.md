@@ -2,16 +2,36 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.16** | Generated: 2026-08-14
+Current: **v1.17** | Generated: 2026-08-18
 
 ---
+
+## v1.17 -- 2026-08-18 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v1.16 -- 2026-08-14 -- Lockstep w/ TX_TLETS v4.20: NCIC Image defaults to 'Y' on Firearm/Article/Boat
 
 **CHANGED:** identical to the base. ImageIndicator initialValue 'N' -> 'Y' on Firearm (ROW_GUN_2),
   Article (ROW_ART_2) and Boat (ROW_BOA_2), plus the combo defaults[] twin on all 10 carrying  
-  base-6 combinations. BASE-SYNC marker bumped TX_TLETS v4.19 -> v4.20. The 8 CCH transactions  
-  (AQ/AR/FQ/IQ/QH/QR/QWI/ZR) carry no ImageIndicator field and are untouched.  
+  base-6 combinations. BASE-SYNC marker bumped TX_TLETS v4.19 -> v4.20.  
+*** CORRECTION TO MY OWN FIRST DRAFT OF THIS ENTRY, which said "the 8 CCH transactions carry no  
+  ImageIndicator field and are untouched." THAT IS FALSE. QWI carries a CCH-suffixed  
+  `imageIndicatorCCH` on 3 combinations (QWI.DOB, QWI.MISC, QWI.SSN), it HAS a real  
+  officer-fillable form control (3 emitted, one per layout variant), and it has NO initialValue and  
+  NO combo defaults[] entry -- i.e. it is exactly the blank-image-indicator state this flag exists  
+  to correct, on a field the flag's wording never contemplated.  
+  DELIBERATELY NOT FLIPPED IN THIS PASS, recorded rather than silently skipped: it is a CCH field on  
+  a CCH transaction, Rob's rule was scoped to the base-6 NCIC Image control, and CCH is its own  
+  adjudication (CCH response QRDM is explicitly out of scope repo-wide). OWED: decide at CCH's own  
+  next turn whether `imageIndicatorCCH` should default to 'Y' + gain a defaults[] twin. Cost is  
+  near-zero -- TX_TLETS_CCH has never been tenant-tested, so there is no package to archive.  
+  HOW I NEARLY MISSED IT, worth the line: my probe searched the raw JSON for  
+  `"fieldId":"imageIndicatorCCH"` and found ZERO, which read as an orphan attribute -- but the  
+  emitted JSON is PRETTY-PRINTED, so the real text is `"fieldId": "imageIndicatorCCH"` WITH A SPACE.  
+  audit_wiring_closure was right (0 orphans) and I was about to report it wrong. Validate the probe  
+  before believing a finding that contradicts a gate. ***  
 **REASON:** base<->variant LOCKSTEP is mandatory (CLAUDE.md "Provider Variants"): a variant inherits the
   base's QIDMs, so any base change must propagate in the SAME pass or audit_variant_sync flags the  
   drift. Rob 2026-08-12, "ncic image should default to y everywhere". Both halves of the default  

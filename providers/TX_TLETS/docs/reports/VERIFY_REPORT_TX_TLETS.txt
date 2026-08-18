@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.20.json
-  Generated: 2026-08-14 13:29
+  Source: TX_TLETS_v4.21.json
+  Generated: 2026-08-18 10:07
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: TX_TLETS_v4.20
+ POST-BUILD VERIFICATION: TX_TLETS_v4.21
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -60,7 +60,7 @@ POST-BUILD VERIFICATION
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'nameMiddleDH' label='MI' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'nameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -70,11 +70,11 @@ POST-BUILD VERIFICATION
   [INFO] Field 'regionId' (any[]-only) label='Region ID' -- manual label override accepted (any[]-only optional combination field. KEPT after the QV combo)
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Vehicle Make' -- manual label override accepted (bare "Vehicle Make" per lean pass (any[] optional))
   [INFO] Field 'vehicleYear' (any[]-only) label='Vehicle Year' -- manual label override accepted (bare "Vehicle Year" per lean pass (any[] optional))
-  [INFO] Field 'nameMiddle' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per lean pass (any[] optional))
-  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per lean pass (any[] optional))
+  [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted ('MI' meant middle INITIAL and misrepresented a maxLen=30)
+  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' is the CANONICAL label (BUILD_RULES Section 11),)
   [INFO] Field 'reasonCode' (any[]-only) label='Reason Code' -- manual label override accepted (merely-defaulted (initialValue=C), officer-editable bare label (Rob v4.3/v4.4).)
-  [INFO] Field 'nameMiddleDH' (any[]-only) label='MI' -- manual label override accepted (bare "MI" per lean pass (any[] optional))
-  [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per lean pass (any[] optional))
+  [INFO] Field 'nameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted ('MI' misrepresented a maxLen=30 field (L7); same as the DL twin.)
+  [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' per the canonical label rule, same as the DL twin.)
   [INFO] Field 'reasonCodeDH' (any[]-only) label='Reason Code' -- manual label override accepted (DH copy of reasonCode, same bare "Reason Code".)
   [INFO] Field 'RegistrationStateDH' (any[]-only) label='State' -- manual label override accepted (DH copy of RegistrationState, bare "State", TX default via initialValue.)
   [INFO] Field 'GunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare "Caliber" per lean pass (any[] optional))
