@@ -1086,3 +1086,50 @@ LIMITATION #41: THE "LEAVE BLANK FOR <HOME STATE>" IN/OUT SPLIT ASSUMES A HUMAN 
   providers/<P>/logs/. IMPORT_LEDGER's derivation rule is "logs at version X = proof X is
   installed on that provider's USx TEST tenant"; Foundation logs would silently corrupt the
   install column that portfolio_status computes.
+
+================================================================================
+LIMITATION #42: A QIDM ATTRIBUTE'S `size` IS NOT A TRUNCATING CAP -- AN OVER-LENGTH
+                COMPOSITE REACHES THE WIRE INTACT. WHETHER THE STATE REJECTS IT IS
+                *** UNVERIFIABLE IN A USx PROVIDER TENANT *** (canned responses).
+================================================================================
+Recorded 2026-08-18 during the TX_TLETS v4.21 sweep.
+
+WHAT IS PROVEN (one wire, directly measured -- not inferred from another provider):
+  TX_TLETS DriverLicenseQuery declares its Name attribute size=30. All four form
+  controls (NameLast/NameFirst/nameMiddle/nameSuffix, and the DH twins) allow
+  maxLength=30 EACH, so FormatStringRuleHandler can compose ~123 characters.
+  An ad-hoc query with NameLast=JOHNATHANWILLIAM + NameFirst=ABCDEFGHIJKLMNOPQRSTUVWXYZABCD
+  put this on the wire:
+    <Name>JOHNATHANWILLIAM,ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</Name>   = 47 CHARACTERS
+  => `size` did NOT truncate. The GOOD news is that the dangerous failure mode did not
+     occur: silent truncation to 30 would have queried a DIFFERENT name than the officer
+     typed, and returned a plausible wrong answer. It does not do that.
+  => The 2025 TCIC/TLETS manual states "Names containing more than 30 characters is not
+     supported by TLETS", so this request exceeds the documented limit.
+
+WHAT CANNOT BE TESTED HERE, AND WHY -- READ THIS BEFORE PROPOSING A TEST:
+  *** USx PROVIDER TENANTS ARE NOT LIVE. THE RESPONSES ARE CANNED. *** (Rob, 2026-08-18.)
+  So no query run in a provider tenant can tell you what the STATE did with a request.
+  Every wire-REQUEST claim in this repo is testable there; every state-BEHAVIOUR claim is
+  not. Only two tenants are LIVE at all -- CA_CLETS at Mariposa and HI_HCJDC_OFML at HDLE
+  -- and TX_TLETS has neither, so this question is closed to us for TX specifically.
+  I proposed "run one long-name query and read the response" before accounting for this;
+  the request half was obtainable and the response half never was.
+
+DISPOSITION: HYPOTHESIS -- QUARANTINED. Do NOT add a length guard, lower any form
+  maxLength, or bump a version off this entry. Lowering the per-field caps to force a
+  <=30 composite would truncate LEGITIMATE long names, which is a certain defect traded
+  for a speculative one.
+  Discriminating test, for whenever a TX (or any) provider reaches a LIVE tenant: submit a
+  >30-character composite and record whether the state errors, silently no-matches, or
+  accepts. Until then this is a documented unknown, not owed work.
+  Officer-impact note (independent of the state's behaviour): the form gives NO feedback
+  that a composite has exceeded the documented limit. If a live test ever shows a hard
+  rejection, the fix is a visible form-level guard, not silent trimming.
+
+PORTFOLIO SCOPE -- DELIBERATELY NOT CLAIMED: the `size`-does-not-truncate behaviour is
+  platform-level and directly measured, so it is stated as fact. The 30-character LIMIT is
+  TX/TLETS-specific and comes from the TLETS manual; do NOT assume another provider's cap
+  or another provider's tolerance. Read that provider's own state manual. (Same day, a
+  cross-provider majority nearly drove a wrong "fix" to TX's Name separator -- see
+  FIELD_REFERENCE.txt "SEPARATOR: THE PROVIDER'S OWN STATE MANUAL OVERRIDES".)
