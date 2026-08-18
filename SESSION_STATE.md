@@ -37,8 +37,8 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 (layout convergence, wire `DOE,JOHN A JR`, Jira 800608); NY 75/75 (6 new Person tests, wire
 `DOE, JOHN A JR`, Jira 800806 correcting 794205's premature 69/69 claim). Name-parts flag RETIRED on
 both. **LA_LEMS v3.1 also now exits 0** -- DP/DQ re-split on State, 20b WARN resolved not silenced.
-**NEXT: `OR_LEDS v2.3`** (last middle/suffix RESTORATION) **then OH_LEADS.** Still owed: 60 name
-components / 11 providers -- all on NEVER-TESTED providers, the 8 tenant-tested ones are CLEAN.
+**OH_LEADS v2.5 DONE** -- NCIC Image closed at ZERO cost (never-tested/never-imported), so that flag is
+MD_METERS ONLY. **NEXT: `OR_LEDS v2.3`.** Still owed: 60 name components / 11 NEVER-TESTED providers.
 **SEPARATOR IS PER-PROVIDER, NOT A CONVENTION:** TX emits `DOE,JOHN` (no space, TCIC/TLETS Part 1
 p125); NY emits `DOE, JOHN` (NCIC form). They MUST differ. See ENGINEERING_STANDARD 4.5.
 **THE SWEEP LOOP NOW SELF-REPORTS:** `watch_captures` prints `report_sweep_ledger` (planned/logged/owed
@@ -93,8 +93,8 @@ Name the superseded comment id in Section 1. DRAFT AND WAIT. Rules: `JIRA_COMMEN
 
 ## STATE
 
-**0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` 16 -> 2, owed on
-MD_METERS + OH_LEADS ONLY** (Rob-held; a WIRE change, so bump + re-sweep each. AZ is RULED OUT -- MEASURED).
+**0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` 16 -> 1, MD_METERS
+ONLY** -- OH_LEADS v2.5 closed it (Rob-held elsewhere: a WIRE change = bump + re-sweep. AZ RULED OUT, MEASURED).
 **LA + MD STATUS DRIFT IS RESOLVED (08-18, Rob-approved doc sync): repo audit 352 PASS / 0 FAIL, and
 enforce can reach exit 0 again -- it had been blocking ALL 20.** LA's STATUS now shows its real score.
 **`[FLAG:nameparts-untested-unfrozen]` now TX_TLETS_CCH ONLY** (HI/TX/NY retired on wire evidence).
