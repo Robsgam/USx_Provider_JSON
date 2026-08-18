@@ -2,9 +2,23 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.6** | Generated: 2026-08-18
+Current: **v2.7** | Generated: 2026-08-18
 
 ---
+
+## v2.7 -- 2026-08-18 -- Operator's form pass -- name components, Stolen Check default, NCIC Image on the top line
+
+**CHANGED** (all five at Rob's direction, 2026-08-18, before the first test sweep):
+  1. NAME COMPONENTS: Middle Name + Suffix added to ALL THREE name pools -- Vehicle owner  
+     (OwnerMiddleName / OwnerNameSuffix), Person DL (nameMiddle / nameSuffix) and Person DH  
+     (nameMiddleDH / nameSuffixDH), each appended to its OWN composite in canonical order  
+     @(Last, First, Middle, Suffix).  
+  2. VEHICLE LABELS: "Owner First Name" / "Owner Last Name" -> "First Name" / "Last Name".  
+     "Owner SSN" KEPT as-is -- the instruction was first and last only, and SSN still needs the  
+     qualifier because it is the OWNER's SSN on a vehicle form.  
+  3. STOLEN CHECK now defaults 'Y' (was blank) on Firearm, Article and Boat.  
+  4. PERSON DL: NCIC Image moved UP onto the top line beside OLN / First / Last.  
+  5. ARTICLE: NCIC Number no longer sits alone on a full-width row.  
 
 ## v2.6 -- 2026-08-18 -- ImageQuery REMOVED by directive -- APPROVED SKIP, before testing starts
 

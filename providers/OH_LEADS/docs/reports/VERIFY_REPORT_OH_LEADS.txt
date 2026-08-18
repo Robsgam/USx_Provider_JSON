@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.6.json
-  Generated: 2026-08-18 16:34
+  Source: OH_LEADS_v2.7.json
+  Generated: 2026-08-18 17:31
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: OH_LEADS_v2.6
+ POST-BUILD VERIFICATION: OH_LEADS_v2.7
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 25 [AddressCounty, DealerPlateType, LicensePlateTypeCode, LicensePlateYear, OwnerLastName, OwnerFirstName, OwnerSocialSecurityNumber, VehicleMakeCode, vehicleYear, ImageIndicator, attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, gunCaliber, firearmMake, serialNumber, relatedHitSearchIndicator, articleTypeCode, NCICNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 31 [AddressCounty, DealerPlateType, LicensePlateTypeCode, LicensePlateYear, OwnerLastName, OwnerFirstName, OwnerMiddleName, OwnerNameSuffix, OwnerSocialSecurityNumber, VehicleMakeCode, vehicleYear, ImageIndicator, nameMiddle, nameSuffix, attention, BirthDateDH, NameLastDH, NameFirstDH, nameMiddleDH, nameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, gunCaliber, firearmMake, serialNumber, relatedHitSearchIndicator, articleTypeCode, NCICNumber, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -59,6 +59,8 @@ POST-BUILD VERIFICATION
   [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'nameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
@@ -66,7 +68,7 @@ POST-BUILD VERIFICATION
   [INFO] Field 'firearmMake' (any[]-only) label='Make' -- manual label override accepted (bare "Make" per DEX-1284 lean pass (any[] optional gun qualifier))
   [INFO] Field 'gunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare "Caliber" per DEX-1284 lean pass (any[] optional gun qualifier))
   [INFO] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted ("Stolen Check" per DEX-1284, canonical on FL/HI/IL/NY/TX (any[] optional))
-  [PASS] All form field labels have required routing hint qualifiers (36 fields scanned) (6 DH field(s) untagged -- advisory only, see Info above)
+  [PASS] All form field labels have required routing hint qualifiers (42 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

@@ -3,6 +3,112 @@ OH_LEADS -- Build Notes
 Provider: OH_LEADS
 State: Ohio
 Network: LEADS (Law Enforcement Automated Data System)
+v2.7  2026-08-18  Operator's form pass -- name components, Stolen Check default, NCIC Image on the top line
+  CHANGED (all five at Rob's direction, 2026-08-18, before the first test sweep):
+    1. NAME COMPONENTS: Middle Name + Suffix added to ALL THREE name pools -- Vehicle owner
+       (OwnerMiddleName / OwnerNameSuffix), Person DL (nameMiddle / nameSuffix) and Person DH
+       (nameMiddleDH / nameSuffixDH), each appended to its OWN composite in canonical order
+       @(Last, First, Middle, Suffix).
+    2. VEHICLE LABELS: "Owner First Name" / "Owner Last Name" -> "First Name" / "Last Name".
+       "Owner SSN" KEPT as-is -- the instruction was first and last only, and SSN still needs the
+       qualifier because it is the OWNER's SSN on a vehicle form.
+    3. STOLEN CHECK now defaults 'Y' (was blank) on Firearm, Article and Boat.
+    4. PERSON DL: NCIC Image moved UP onto the top line beside OLN / First / Last.
+    5. ARTICLE: NCIC Number no longer sits alone on a full-width row.
+
+  WHY THE NAME WORK WAS OWED, AND IT WAS MEASURED NOT GUESSED. audit_name_components reported
+  6 C1 NO-CONTROL findings -- Name.Middle and Name.Suffix on VehicleRegistrationQuery,
+  DriverLicenseQuery and DriverHistoryQuery -- i.e. the metadata declares request Name with four
+  components on every query we build and the officer could enter only two. OH was one of the 15
+  providers in that portfolio-wide gap. After this build: C1 6 -> 0, gate PASSES, 12 components
+  examined. THREE SEPARATE POOLS, NOT ONE: Person carries TWO name pools on the SAME entity (DL and
+  the DH-suffixed pool) and Vehicle carries the owner pool, so each composite had to be extended
+  through ITS OWN sourceField -- resolving a control by token search across the form is exactly the
+  mistake that once matched HI's DL against nameMiddleDH.
+
+  *** THE BUILD FAILED FIRST, AND THE GATE WAS RIGHT: AP #15. *** FormatStringRuleHandler requires
+  arguments = sourceFields - 1, so going from 2 components to 4 needs THREE separators, not one.
+  validate.ps1 blocked all three QIDMs ("1 arguments but 4 sourceFields"). Fixed by extending
+  arguments @(', ') -> @(', ', ' ', ' '), which composes LAST, FIRST MIDDLE SUFFIX. OH's first
+  separator is ', ' (NCIC form) and that is UNCHANGED -- the separator is PER-PROVIDER (TX emits
+  DOE,JOHN with no space per TCIC/TLETS Part 1 p125; NY and OH emit DOE, JOHN), so it must never be
+  "normalised" to a portfolio majority. The 3-argument shape is wire-PROVEN on AZ_AZDPS v3.11
+  (10 captures: DOE, JOHN A JR, degrading cleanly to DOE, JOHN JR with no double space).
+  SIZES CAME FROM THE AUTHORITY: OH's metadata declares NO size on any Name component (all four
+  read size=""), so the portfolio convention was used -- Middle 30 (matching First/Last) and
+  Suffix 5. Labelled "Middle Name", NOT "MI": L7 requires the label to match capacity, and an "MI"
+  label on a 30-char field is precisely the defect that sat on NY/TX/TX_CCH from 07-27 to 08-18.
+
+  STOLEN CHECK: MEASURED SAFE BEFORE FLIPPING, same discipline as the NCIC Image flag at v2.5.
+  relatedHitSearchIndicator rides in any[] on exactly 5 combos (QG, QA.S, QA.N, QB.H, QB.R) and is
+  in NO set[] and NO condition on this provider, so BUILD_RULES 24 does not bite -- a prefill can
+  only shadow a combo when the prefilled field is a routing DISCRIMINATOR in a set[]. NOT
+  GENERALISABLE: FL_FCIC routes its Boat stolen check THROUGH relatedHitSearchIndicator in set[],
+  so the same flip there would kill a combo. Measure per provider.
+  Done in BOTH required places -- form initialValue on all 3 controls AND the combo defaults[] twin
+  on all 5 carrying combos, because CAD ignores form initialValue. QG had no defaults key at all
+  and got one. Verified from the emitted JSON: 5 of 5 combos carry relatedHitSearchIndicator='Y'.
+  The tenant dropdown was confirmed to offer 2 options (Y/N) in the same session's picklist capture,
+  so 'Y' is genuinely selectable rather than assumed.
+
+  NCIC IMAGE IS COMPLETE ON THIS PROVIDER AND "EVERYWHERE" HAS A CEILING. Asked whether we use it
+  everywhere: the metadata defines ImageIndicator on exactly FIVE combinations -- ArticleSingleQuery
+  QA x2, BoatQuery QB x2 and DriverLicenseQuery DQ{OperatorLicenseNumber} -- and those are exactly
+  the five we build. Vehicle, Driver History and Firearm define it NOWHERE, so adding controls there
+  would OVER-PERMIT (a new defect), which is the same adjudication that scoped HI to Vehicle-only
+  and excluded IL's Article. So Vehicle/DH/Firearm having no NCIC Image control is CORRECT and is
+  not a gap to close later.
+
+  LAYOUT: every visible row now sums to 12, which is why the Article change was folded in.
+    Vehicle  ROW_3 [3/3/3/3] First,Last,Middle,Suffix   ROW_4 [3/3/3/3] Owner SSN,County,Dealer,State
+    Person DL ROW_1 [3/3/3/3] OLN,First,Last,NCIC Image  ROW_2 [4/4/4] Middle,Suffix,DOB
+              ROW_3 [6/6] Sex,State
+    Person DH ROW_1 [3/3/3/3] OLN,First,Last,Middle      ROW_2 [3/3/3/3] Suffix,DOB,Sex,Purpose
+              hidden Attention row stays LAST
+    Article  ROW_2 [4/4/4] NCIC Number,NCIC Image,Stolen Check  (was NCIC Number alone at [12] --
+             audit_layout_flow L5 WASTED-WIDTH, since maxLen=9 cannot use 12 columns)
+  audit_layout_flow: 1 finding -> 0. OH_LEADS is now only the SECOND provider to come out clean on
+  that gate (NJ_NJCJIS was the only one), out of 20.
+
+  ALSO FIXED -- A DEFECT v2.6 INTRODUCED AND I MISSED. The Driver License card title still read
+  "-- tick DRIVER PHOTO for a photo-only request" after ImageQuery was removed at v2.6, so the form
+  told the officer to tick a checkbox that no longer exists. Removed. The lesson: deleting a QIDM is
+  not finished until every TITLE and DESCRIPTION that advertised it is re-read; the gates all passed
+  v2.6 because no gate compares card prose against the built query list.
+
+  THE THREE FUZZ SURVIVORS AT seed 238851 ARE ALL CORRECT SURVIVORS, TRIAGED NOT WAVED THROUGH:
+    prefill-field nameMiddle and nameMiddleDH -- both are in NO set[] and NO any[], so a prefill
+      cannot change which combo fires. (They are C3 NOT-IN-POOL, below.)
+    swap-order VehicleRegistrationQuery[1] -- ATDP set[Plate,PlateType,DealerPlateType] and
+      RQ.P set[State,Plate,PlateType,PlateYear]: neither set[] is a subset of the other AND they are
+      MUTUALLY EXCLUSIVE by condition (ATDP needs DealerPlateType EXISTS, RQ.P needs it NOT_EXISTS),
+      so they can never both match and order cannot matter.
+
+  C3 NOT-IN-POOL x6 IS DELIBERATE, AND audit_wiring_closure AGREES. The six new components are
+  composed into their Name attribute but sit in no combination's set[]/any[]; the value reaches the
+  wire through the composite, which is why wiring_closure reports 0 breaks across all TEN classes
+  (a class-A dead control needs NO attribute sourcing it AND no combo referencing it). This is the
+  same position HI_HCJDC_OFML holds and the gate's own header calls the impact UNPROVEN -- settle it
+  with one live query filling middle+suffix, which OH's first sweep will now do. They are NOT added
+  to any[] on speculation: metadata mandates Name, and the officer must still supply first+last, so
+  middle/suffix are refinements rather than independent search keys.
+
+  PICKLISTS CAPTURED THIS SESSION (one-time-per-provider, before testing): all 16 dropdowns across
+  5 entities, merged into docs/reference/TENANT_PICKLISTS.json. NO EMPTY DROPDOWNS -- notably
+  articleTypeCode returned 300 options, confirming NCIC_ARTICLE_TYPE must pair with CA_CLETS and not
+  NCIC (NCIC yields an empty list), and relatedHitSearchIndicator returned 2. The scope file had to
+  be REGENERATED first: the copy on disk was from 08-10 and predated v2.6/v2.7. Known cosmetic bug,
+  not fixed here: the merged file stamps version=2.4 while the scope it was captured from says v2.7.
+
+  PHASE 1: [1] all devdoc combinations accounted for - [2] optionals all route and transmit - [3] 21
+  combos most-specific-first - [4] 22 branches, 0 under / 0 over - [5] 24 built, 0 prefill-dead,
+  0 shadow, 1 missing (the approved ImageQuery skip) - [6] gate efficacy 8/8 killed - wiring closure
+  0/10 classes - layout flow 0. enforce -Provider OH_LEADS exits 0; the single remaining WARN is the
+  GLOBAL cross-provider "Vehicle ImageIndicator initialValue='N'", which belongs to MD_METERS.
+  STILL OWED: never imported, never tenant-tested -- v2.7 owes a first import to
+  usx-oh-leads.mark43.com and a full 5-entity sweep from T1.
+
+
 v2.6  2026-08-18  ImageQuery REMOVED by directive -- APPROVED SKIP, before testing starts
   CHANGED: The ImageQuery QIDM (OH_LEADS_ImageQuery) is gone. Emitted JSON now holds 6 CommSys
     QIDMs / 21 combos, zero occurrences of "ImageQuery", zero of the "Driver Photo" queryLabel,

@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.6.json
-  Generated: 2026-08-18 16:34
+  Source: OH_LEADS_v2.7.json
+  Generated: 2026-08-18 17:31
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== OH_LEADS_v2.6.json ===
+=== OH_LEADS_v2.7.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=1 fields=9
-  Person | entity=Person | qidm= | cards=2 fields=8
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=11
+  Person | entity=Person | qidm= | cards=2 fields=12
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=2
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -38,11 +38,13 @@ LAYOUT DETAIL
         VehicleIdentificationNumber (Text | maxLen=20)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
-      ROW ROW_VEH_3 [4 4 4]
+      ROW ROW_VEH_3 [3 3 3 3]
         OwnerFirstName (Text | maxLen=30)
         OwnerLastName (Text | maxLen=30)
+        OwnerMiddleName (Text | maxLen=30)
+        OwnerNameSuffix (Text | maxLen=5)
+      ROW ROW_VEH_4 [3 3 3 3]
         OwnerSocialSecurityNumber (Text | maxLen=9)
-      ROW ROW_VEH_4 [4 4 4]
         AddressCounty (Text | maxLen=4)
         DealerPlateType (Text | maxLen=1)
         RegistrationState (Dropdown | attributeTypeId=STATE)
@@ -51,22 +53,26 @@ LAYOUT DETAIL
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER_DL"
-      ROW ROW_PER_DL_1 [4 4 4]
+      ROW ROW_PER_DL_1 [3 3 3 3]
         OperatorLicenseNumber (Text | maxLen=20)
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
       ROW ROW_PER_DL_2 [4 4 4]
+        nameMiddle (Text | maxLen=30)
+        nameSuffix (Text | maxLen=5)
         BirthDate (FormDate)
+      ROW ROW_PER_DL_3 [6 6]
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-      ROW ROW_PER_DL_3 [4]
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
     CARD "CARD_PER_DH"
-      ROW ROW_PER_DH_1 [4 4 4]
+      ROW ROW_PER_DH_1 [3 3 3 3]
         OperatorLicenseNumberDH (Text | maxLen=20)
         NameFirstDH (Text | maxLen=30)
         NameLastDH (Text | maxLen=30)
-      ROW ROW_PER_DH_2 [4 4 4]
+        nameMiddleDH (Text | maxLen=30)
+      ROW ROW_PER_DH_2 [3 3 3 3]
+        nameSuffixDH (Text | maxLen=5)
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         purposeCodeDH (Text | maxLen=1)
@@ -82,7 +88,7 @@ LAYOUT DETAIL
         firearmMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
       ROW ROW_GUN_2 [6 6]
         gunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
@@ -91,11 +97,10 @@ LAYOUT DETAIL
       ROW ROW_ART_1 [6 6]
         serialNumber (Text | maxLen=20)
         articleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
-      ROW ROW_ART_2 [12]
+      ROW ROW_ART_2 [4 4 4]
         NCICNumber (Text | maxLen=9)
-      ROW ROW_ART_3 [6 6]
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === Boat ===
   name=ENTITY_Boat | entity=Boat | qidm=
@@ -107,7 +112,7 @@ LAYOUT DETAIL
       ROW ROW_BOA_2 [4 4 4]
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
 
 === RMS QIDMs ===
   RMS Person Search query
