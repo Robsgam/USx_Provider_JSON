@@ -159,6 +159,27 @@ They do, regularly, and the resolution is not always the same:
 | Metadata mandates a field the devdoc never mentions, and honouring it changes what the officer must type | **STOP — that is a product decision.** Record it; do not guess. NM's DL `PurposeCode`/`Attention` is exactly this. |
 | Metadata combination has no devdoc counterpart | **Out of Basic scope.** Never a gap in either direction. |
 
+### ROB'S RULING, 2026-08-18: "meta data wins over dev doc / built to the spec and ignore the running json"
+
+Two parts, and the second is the one that corrects an actual mistake:
+
+1. **METADATA WINS.** Where the two disagree, build to the metadata. The table above resolves the
+   shapes case by case; this is the default when a case is not listed. Do not average them, do not
+   split the difference, and do not build to the devdoc because it is easier to read.
+
+2. **A RUNNING/IN-SERVICE JSON IS NOT AN AUTHORITY. BUILD TO THE SPEC.** This is the trap. On
+   2026-08-18, adjudicating LA_LEMS's DriverHistoryQuery `Attention` (devdoc says MANDATORY, metadata
+   does not define the field at all), I cited `source/Lafayette Parish LA_LEMS 8.13.2026.json` -- the
+   hand-built config Lafayette actually runs -- as "decisive corroboration" that Attention is not
+   transmitted. **The conclusion happened to be right and the METHOD was wrong.** A shipped config is
+   evidence of what somebody built and what a provider tolerates; it is not evidence of what the spec
+   requires. It can be wrong and still work: that same file **UNDER-REQUIRES `PurposeCode`** (in
+   `any[]` where the metadata puts it in `<Set>`) and carries an **INERT `Attention` mapping with no
+   form control to feed it**. Cite it as *context*, never as authority, and never let it outvote the
+   XML.
+   Corollary: "the running system does X" is the same class of argument as "18 of 20 providers do X"
+   (`ENGINEERING_STANDARD` 4.5) -- both describe practice, neither establishes spec.
+
 ## Traps that have each cost real time
 
 - **`METADATA_REFERENCE.txt` cannot answer mandatory-vs-optional.** It emits one row per

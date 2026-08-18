@@ -57,7 +57,15 @@ v3.1  2026-08-18  DP/DQ re-discriminated on STATE -- the parked BUILD_RULES 20b 
     (any[] where metadata puts it in <Set>); we follow the metadata. Registered on the DEVDOC ITEM
     numbers, never a built keyRef, so no built combination's comparison is suppressed. Branches
     compared held at 12 before and after; LA over-broad suppressions 0.
-    OWED EXTERNALLY: raise with CommSys -- that same DH section INVERTS PurposeCode and State.
+    NOT OWED -- COMMSYS ASKS ARE ON HOLD (Rob 2026-08-18). The same DH section also INVERTS
+    PurposeCode and State (devdoc: State mandatory, [PurposeCode] optional; metadata: PurposeCode in
+    <Set>, State in <Any>). Recorded as a known devdoc error; do NOT raise it, and do NOT list it as
+    owed work. Metadata governs and the build already follows it, so nothing is blocked by the hold.
+    RULING APPLIED HERE (Rob 2026-08-18): "meta data wins over dev doc / built to the spec and ignore
+    the running json." The metadata alone decides this row. The in-service Lafayette JSON is CONTEXT,
+    NOT AUTHORITY -- it happens to agree on Attention, but it also under-requires PurposeCode, so a
+    shipped config shows what someone built and what a provider tolerates, never what the spec
+    requires. The registration reason was rewritten to rest on the metadata alone.
   ALSO REGISTERED: BoatQuery State dropped-optional, adjudicated MECHANICALLY by audit_optional_scope
     as REGISTER (State is not defined on the firing variant QB{BoatHullIdNumber}, so adding it would
     OVER-PERMIT; it is defined on the BQ variants, which is why the devdoc's flat list mentions it).
