@@ -78,6 +78,25 @@
   QUERY. Never across queries: RVEH/RVIN/RNAM each appear in MULTIPLE NY transactions with
   completely different requirement sets, and RNAM appears TWICE inside one transaction.
 
+  BUT THAT FALLBACK IS GATED BY IDENTIFIER AGREEMENT, NOT MERELY WEIGHTED BY IT (2026-08-18).
+  Highest-overlap-wins had no floor -- $bestScore starts at -999 -- so where every candidate scored
+  badly the WORST one was still assigned, and its unrelated set[] was then reported as UNDER-REQUIRED.
+  OH_LEADS: metadata BMVIMS{SocialSecurityNumber} paired to built DQ.O{OperatorLicenseNumber} at a
+  score of -24 and produced "DQ.O UNDER-REQUIRED: SocialSecurityNumber" -- a field DQ's own
+  <Requirements> never mentions. A candidate is now REJECTED when both sides declare a recognised
+  identifier and those identifiers do not intersect (two different search paths cannot be the same
+  branch). Unmatched alternatives are SKIPPED, which this file already intended -- existence is
+  audit_query_trace's question (2p), not fidelity's.
+  MEASURED ACROSS ALL 20 BEFORE COMMITTING: 421 -> 420 branches, UNDER 11 -> 10, OVER 34 -> 34, with
+  the 6-provider regression fixture unmoved at 116 branches / 0 UNDER / 0 OVER and 19 of 20 providers
+  byte-identical. The single branch removed is the false pairing above -- named, not merely counted.
+  The other 10 UNDER survive, so this narrowed no real finding. Both catalogued fidelity mutations
+  (nj-fidelity-demote-mandatory, nj-drop-metadata-mandatory) remain KILLED.
+  WHY NOT A REGISTRY ROW: BMVIMS is a keyRef SHARED across transactions (we build it under
+  ImageQuery), so every unbuilt-class row naming it also suppresses the combo we DO build under that
+  name -- measured at branches 24 -> 22 with the tool's own OVER-SUPPRESSION NOTE firing. The defect
+  was the pairing, and suppression would have hidden it while costing coverage.
+
   Usage: .\audit_requirement_fidelity.ps1 [-Provider <NAME>] [-OutFile <path>]
 #>
 
@@ -436,6 +455,7 @@ foreach ($d in $dirs) {
         $alts  = @($meta | Where-Object { $_.Query -eq $q -and -not (Test-RegisteredUnbuilt $_.Query $_.KeyRef @($_.Set)) } | Sort-Object { -(@($_.Set).Count) })
         foreach ($m in $alts) {
             $mS = @($m.Set | ForEach-Object { Canon $_ }); $mA = @($m.Any | ForEach-Object { Canon $_ })
+            $mIds = @($mS | Where-Object { $identifierFields -contains $_ })
             $best = $null; $bestScore = -999; $bestKey = $null
             $ci = -1
             # N:1 IS LEGAL, and forcing 1:1 was the bug. When metadata alternatives OUTNUMBER built
@@ -450,6 +470,34 @@ foreach ($d in $dirs) {
             foreach ($cd in @($built[$q])) {
                 $ci++
                 $cS = @($cd.Set | ForEach-Object { Canon $_ })
+                # IDENTIFIER AGREEMENT IS A GATE, NOT A WEIGHT -- and that omission WAS the bug.
+                # The scoring below already penalises identifier disagreement at -12 each way, and the
+                # comment above already states the rule ("a plate alternative can never pair to a VIN
+                # combo"). But $bestScore starts at -999 and NOTHING rejects a candidate, so when every
+                # candidate scores badly the WORST one still wins -- a weight cannot express "never".
+                # OH_LEADS 2026-08-18: metadata BMVIMS{SocialSecurityNumber} (Set[SocialSecurityNumber])
+                # scored -24 against built DQ.O (Set[OperatorLicenseNumber]) -- SSN absent -12, OLN
+                # foreign -12, no keyRef bonus -- and was assigned anyway because it was the only
+                # candidate in DriverLicenseQuery. The gate then reported "DQ.O UNDER-REQUIRED:
+                # SocialSecurityNumber" against a built combo whose metadata variant never mentions SSN.
+                # BMVIMS is a SHARED keyRef we build under ImageQuery (BUILD_RULES 13), so no registry
+                # row can retire it without also suppressing the combo we DO build under that name --
+                # measured: such a row dropped branches 24 -> 22 and the tool's own OVER-SUPPRESSION
+                # NOTE fired. The defect was never the registry; it was this pairing.
+                # SCOPED DELIBERATELY: reject ONLY when BOTH sides declare a recognised identifier and
+                # they do not intersect -- i.e. two genuinely different search paths. If the built combo
+                # declares no recognised identifier, the pairing is still allowed, so an unfamiliar
+                # identifier spelling can never silently cost a comparison. An alternative left with no
+                # candidate is SKIPPED, which is this file's documented intent ("belongs to
+                # audit_query_trace (2p), not here"), not a new suppression.
+                if ($mIds.Count -gt 0) {
+                    $cIds = @($cS | Where-Object { $identifierFields -contains $_ })
+                    if ($cIds.Count -gt 0) {
+                        $agree = $false
+                        foreach ($idf in $mIds) { if (Test-Has $cS $idf) { $agree = $true; break } }
+                        if (-not $agree) { continue }
+                    }
+                }
                 $score = 0
                 foreach ($w in $mS) {
                     $isId = $identifierFields -contains $w
