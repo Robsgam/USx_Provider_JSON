@@ -68,6 +68,15 @@ function Import-CaptureFile($path, $label) {
         if (-not $summary) { $summary = 'picklists merged (no summary line)' }
         return "PICKLISTS: $summary"
     }
+    # Read the provider OUT OF THE CAPTURE before importing -- import_captured_tests.ps1 archives
+    # (moves) the file, so after that point there is nothing left to read it from.
+    $capProvider = $null
+    try {
+        $capRaw = Get-Content $path -Raw
+        $capProvider = ([regex]::Matches($capRaw, '"provider"\s*:\s*"([^"]+)"') |
+                        ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique | Select-Object -First 1)
+    } catch { }
+
     Write-Host "[WATCH] importing $label..." -ForegroundColor Yellow
     # Content-based relabel pass: browser label pairing is unreliable when tests share
     # identifiers and differ only in optional fields; formState content is ground truth.
@@ -109,6 +118,27 @@ function Import-CaptureFile($path, $label) {
         }
     }
     Remove-Item $path -Force -ErrorAction SilentlyContinue
+
+    # THE SWEEP LEDGER -- planned vs logged vs owed, printed from the REPO, every single ingest.
+    # Added 2026-08-18 (Rob: "we need to fix this process") after a 98-test TX_TLETS sweep drove Boat
+    # and then never captured it: the fetch drained a manifest still holding the PREVIOUS entity, and
+    # capture.js announced "ALL 8 manifest entries captured" -- true, and no evidence at all that the
+    # 22 owed tests had landed. Four entities had already each cost several "did it land?" round trips.
+    # Printing it HERE is the whole point: this is the moment the operator is already looking, so the
+    # ledger arrives without anyone having to remember to ask for it. A step that must be remembered
+    # is a step that gets skipped (same reasoning as the CLAUDE.md sync above).
+    if ($capProvider) {
+        try {
+            & (Join-Path $PSScriptRoot 'report_sweep_ledger.ps1') -Provider $capProvider *>&1 |
+                ForEach-Object { Write-Host "$($_.ToString())" }
+        } catch {
+            Write-Host "[WATCH] sweep ledger unavailable: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        }
+    } else {
+        # Silence here would read exactly like "nothing owed", which is the failure this fixes.
+        Write-Host "[WATCH] no provider found in the capture -- SWEEP LEDGER NOT SHOWN (not the same as 'nothing owed')" -ForegroundColor DarkYellow
+    }
+
     return $summary
 }
 

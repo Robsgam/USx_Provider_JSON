@@ -567,10 +567,32 @@ TOOLS
     monitors ~/Downloads for usx_captured_batch_labeled*.json files dropped by the browser
     extension's __usxBulkFetch, runs relabel_batch.ps1 (content-based label correction),
     then import_captured_tests.ps1 on each new file.
+    Prints the SWEEP LEDGER (report_sweep_ledger.ps1) after EVERY ingest -- see below.
     Usage: .\tools\watch_captures.ps1            # auto-import + commit
            .\tools\watch_captures.ps1 -NoCommit  # import only, no git commit
            .\tools\watch_captures.ps1 -Once      # exit after first import (supervised mode:
                                                  # the supervisor reports the summary + re-arms)
+
+  tools/report_sweep_ledger.ps1
+    THE SWEEP LEDGER: planned vs logged vs owed, per entity, derived from the REPO (the active
+    JSON's version -> its test plan -> the current-version logs on disk). Auto-printed by
+    watch_captures.ps1 after every ingest.
+    WHY (2026-08-18, Rob: "we need to fix this process"): mid-sweep on TX_TLETS v4.21 the Boat
+    entity was driven -- 22 queries submitted -- and then never captured, because the fetch
+    drained a manifest that still held the previous entity. capture.js reported "done. +8 new,
+    ALL 8 manifest entries captured", which is TRUE and USELESS: it confirms it drained the
+    manifest and never checks the manifest held what you just ran. A success line that cannot
+    fail. Four earlier entities had each cost several "did it land?" round trips, and Boat was
+    only caught by hand-diffing the repo. The browser knows what it QUEUED; only the repo knows
+    what is ON DISK, and on-disk logs are what 6c/6d/2i, plan completeness and portfolio_status
+    all read.
+    Counts ONLY current-version logs (filters <PROVIDER>_v<ver>_*, skips _archive_) and takes its
+    entity list FROM THE PLAN, never a hardcoded five. Always exits 0 -- a report, not a gate --
+    but prints [NO-VERDICT] rather than a clean-looking zero when there is no active JSON or no
+    plan for the active version.
+    Usage: .\tools\report_sweep_ledger.ps1 -Provider TX_TLETS
+           .\tools\report_sweep_ledger.ps1 -All
+           .\tools\report_sweep_ledger.ps1 -Provider TX_TLETS -Quiet
 
   tools/relabel_batch.ps1
     Content-based batch relabeler, run by watch_captures.ps1 before every import. Browser
