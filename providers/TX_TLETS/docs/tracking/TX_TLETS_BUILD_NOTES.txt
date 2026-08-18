@@ -41,9 +41,23 @@ v4.21  2026-08-18  Layout convergence -- 3 audit_layout_flow findings fixed, 1 r
     about one provider's spec -- see knowledge-base/FIELD_REFERENCE.txt "SEPARATOR: THE PROVIDER'S OWN
     STATE MANUAL OVERRIDES", which previously carried a standing order to "normalize to comma-space at
     each provider's rebuild" that would have broken this build.
-  TESTED: ALL-PASS 5/5, 98/98 logs, 0 FAIL. Name components wire-proven for the first time on TX --
-    DOE,JOHN / DOE,JOHN A / DOE,JOHN JR / DOE,JOHN A JR, degrading cleanly with no double space.
-    Retires [FLAG:nameparts-untested-unfrozen].
+  TESTED: ALL-PASS 5/5, 96/96 logs, 0 FAIL (Vehicle 19 / Person 38 / Firearm 10 / Article 8 / Boat 21).
+    Name components wire-proven for the first time on TX -- DOE,JOHN / DOE,JOHN A / DOE,JOHN JR /
+    DOE,JOHN A JR, degrading cleanly with no double space. Retires [FLAG:nameparts-untested-unfrozen].
+  PLAN CORRECTED 98 -> 96 DURING THIS SWEEP, and the 2 removed tests were never coverage. Repairing
+    audit_log_inflation's clone check (it could never fail -- every wire carries a unique transaction
+    id, present BOTH as an <Id> element and an id="..." attribute, so no two logs ever hashed alike)
+    exposed two vacuous plan tests that emit_test_plan had been generating for every provider:
+      - Boat: the guardrails vs BQRegistrationNumber and vs QBRegistrationNumber were BYTE-IDENTICAL,
+        because both losers contribute only 'RegistrationNumber'. The existing disambiguation renamed
+        the FILES, which hid the duplication rather than removing it.
+      - Vehicle: the VIN guardrail's fill-set equalled the VINVehicleIdentificationNumber combo test's,
+        so it staged no identifier competition at all -- it just re-ran that combo.
+    emit_test_plan now drops both classes AND PRINTS EACH DROP (a cap nobody sees reads as coverage).
+    Their 2 orphan logs were deleted. Every one of the 19 CommSys combos is still covered; what went
+    away is a test that proved one thing twice and a test that proved nothing. Other providers keep
+    their current plans until their own next rebuild (rule 8c) -- 35 clone groups are outstanding
+    across NY/FL/NJ/HI/CA and are recorded in SESSION_STATE for triage there, not swept from here.
 
 v4.20  2026-08-14  NCIC Image defaults to 'Y' on Firearm/Article/Boat (WIRE CHANGE)
   CHANGED: ImageIndicator initialValue 'N' -> 'Y' on the three entities still at 'N', in BOTH halves

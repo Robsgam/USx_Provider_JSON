@@ -6,10 +6,61 @@ Current: **v4.21** | Generated: 2026-08-18
 
 ---
 
-## v4.21 -- 2026-08-18 -- Pipeline rebuild
+## v4.21 -- 2026-08-18 -- Layout convergence -- 3 audit_layout_flow findings fixed, 1 recorded (NO WIRE CHANGE)
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** (1)+(2) L7 LABEL-CAPACITY -- 'nameMiddle' and 'nameMiddleDH' were labelled 'MI', which
+  means middle INITIAL, on maxLen=30 controls that accept a full middle name. Relabelled  
+  'Middle Name' with a LABEL-OVERRIDE comment, matching AZ_AZDPS v3.10 and HI_HCJDC_OFML v4.20.  
+  (3) L3 HIDDEN-MID-CARD -- the hidden Attention gate-feeder row (ROW_PER_DHA) was row 1 of 6 in  
+  CARD_PER_DH, ABOVE all visible content, while this provider's OWN DL card already places its  
+  hidden EmailAddress feeder last (ROW_PER_DL_OE). Moved to the last row of the DH card. Row  
+  position carries no wire meaning -- the handler is fed by any[] membership, not by ordering  
+  (HI_HCJDC_OFML v4.15 retired the initialValue='X' gate-feeder myth).  
+  (4) NOT CHANGED, recorded as a LAYOUT-OVERRIDE at ROW_PER_L1: L2 SET-BELOW-ANY reports optional  
+  'messageKey' sitting above mandatory 'NameLast' for CPLName. DEX-1283 #4 (Leo CAD review,  
+  Rob-approved) explicitly asked for "OLN pairs with CPL/DWI/RDL on the top line", and OLN on that  
+  row IS mandatory for DQOLN. The gate is right about the geometry and wrong about the remedy.  
+  Lockstep: TX_TLETS_CCH v1.17 applies the same three fixes + the same override, BASE-SYNC -> v4.21.  
+**REASON:** audit_layout_flow has flagged the 'MI' labels since 2026-08-11 and the labels shipped
+  2026-07-27 -- but NOTHING EVER RAN IT, so the findings only surfaced when someone thought to ask.  
+  Wiring it into enforce as PHASE 2w (advisory) on 2026-08-18 is what exposed them. Sequencing was  
+  Rob's call: TX already owed 6 Person tests, so fixing FIRST cost ONE 98-test sweep instead of 6  
+  tests now plus a 98-test re-sweep later (104 tests, two releases).  
+NO WIRE CHANGE. Labels and row order only. Verified: validator 79P/0F/0W unchanged from v4.20;  
+  combo requirements byte-identical (proven by diffing v4.20 vs v4.21 set[]/any[] -- 41 vs 41 on  
+  the CCH variant, same method); requirement fidelity 19 branches / 0 UNDER / 0 OVER, which is  
+  TX's exact regression-fixture baseline; devdoc combinations 20 compared / 0 unbuilt.  
+ALSO ADJUDICATED, no change needed: the 14 conditional-constraint triggers that  
+  check_test_preconditions.ps1 raised the moment its PreToolUse hook was repaired (it had never  
+  executed). 12 of 14 are the gate applying a DriverHistoryQuery-scoped devdoc constraint to  
+  Article/Boat/DL/Gun combos -- "Must be filled if ImageIndicator = Y" occurs exactly TWICE in the  
+  whole TX devdoc and both sit under the DH heading. The 2 real ones (KQName/KQOLN) are LIVE-PROVEN  
+  satisfied: both carry defaults ReasonCode=C, and the wire shows <ReasonCode>C</ReasonCode> plus a  
+  real <EmailAddress> alongside <ImageIndicator>Y</ImageIndicator>.  
+AND: the Name separator was investigated and deliberately LEFT ALONE. TX emits <Name>DOE,JOHN A JR</Name>  
+  with NO space, where 18 of 20 providers use ', '. That is CORRECT here: the 2025 TCIC/TLETS manual,  
+  Part 1 p125 "Texas Driver License Search Criteria", requires "LASTNAME,FIRSTNAME". The ', ' form is  
+  the NCIC/TCIC format from Part 2 p88 (INTERPOL section). A cross-provider majority is not evidence  
+  about one provider's spec -- see knowledge-base/FIELD_REFERENCE.txt "SEPARATOR: THE PROVIDER'S OWN  
+  STATE MANUAL OVERRIDES", which previously carried a standing order to "normalize to comma-space at  
+  each provider's rebuild" that would have broken this build.  
+TESTED: ALL-PASS 5/5, 96/96 logs, 0 FAIL (Vehicle 19 / Person 38 / Firearm 10 / Article 8 / Boat 21).  
+  Name components wire-proven for the first time on TX -- DOE,JOHN / DOE,JOHN A / DOE,JOHN JR /  
+  DOE,JOHN A JR, degrading cleanly with no double space. Retires [FLAG:nameparts-untested-unfrozen].  
+PLAN CORRECTED 98 -> 96 DURING THIS SWEEP, and the 2 removed tests were never coverage. Repairing  
+  audit_log_inflation's clone check (it could never fail -- every wire carries a unique transaction  
+  id, present BOTH as an <Id> element and an id="..." attribute, so no two logs ever hashed alike)  
+  exposed two vacuous plan tests that emit_test_plan had been generating for every provider:  
+    - Boat: the guardrails vs BQRegistrationNumber and vs QBRegistrationNumber were BYTE-IDENTICAL,  
+      because both losers contribute only 'RegistrationNumber'. The existing disambiguation renamed  
+      the FILES, which hid the duplication rather than removing it.  
+    - Vehicle: the VIN guardrail's fill-set equalled the VINVehicleIdentificationNumber combo test's,  
+      so it staged no identifier competition at all -- it just re-ran that combo.  
+  emit_test_plan now drops both classes AND PRINTS EACH DROP (a cap nobody sees reads as coverage).  
+  Their 2 orphan logs were deleted. Every one of the 19 CommSys combos is still covered; what went  
+  away is a test that proved one thing twice and a test that proved nothing. Other providers keep  
+  their current plans until their own next rebuild (rule 8c) -- 35 clone groups are outstanding  
+  across NY/FL/NJ/HI/CA and are recorded in SESSION_STATE for triage there, not swept from here.  
 
 ## v4.20 -- 2026-08-14 -- NCIC Image defaults to 'Y' on Firearm/Article/Boat (WIRE CHANGE)
 

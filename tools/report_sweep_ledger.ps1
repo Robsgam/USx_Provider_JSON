@@ -117,7 +117,20 @@ foreach ($p in $targets) {
 
     Emit "  ------------------------------------------------------------" 'DarkGray'
     $tOwed = $tPlanned - $tLogged
-    if ($tOwed -gt 0) {
+    # A SURPLUS MUST NOT TOTAL TO "COMPLETE". Caught on its first real use, 2026-08-18: after the
+    # plan generator was fixed to drop two vacuous guardrails, TX_TLETS read 96 planned / 98 logged,
+    # so two rows said "MORE LOGS THAN PLAN TESTS -- investigate" while the TOTAL line still said
+    # "COMPLETE -- every plan test has a log". Both were literally true and the summary was the lie:
+    # a surplus means orphan logs (a plan test was renamed or removed and its log stayed behind), and
+    # nobody reading a green total goes looking for it. This is the same vacuous-success class this
+    # tool was written to kill, in the tool itself.
+    if ($tLogged -gt $tPlanned) {
+        Emit ("  {0,-24} {1,7} {2,7} {3,6}   *** {4} ORPHAN LOG(S) -- MORE LOGS THAN PLAN TESTS ***" -f 'TOTAL', $tPlanned, $tLogged, 0, ($tLogged - $tPlanned)) 'Red'
+        Emit "  A log with no plan test is not coverage: the plan changed and the log was left behind." 'Red'
+        Emit "  Delete the orphan(s) or restore the plan test -- do NOT read this as complete." 'Red'
+        $anyOwed = $true
+    }
+    elseif ($tOwed -gt 0) {
         Emit ("  {0,-24} {1,7} {2,7} {3,6}   *** {4} TEST(S) STILL OWED ***" -f 'TOTAL', $tPlanned, $tLogged, $tOwed, $tOwed) 'Yellow'
         $owedEnts = @()
         foreach ($e in $entities) {

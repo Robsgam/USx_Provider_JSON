@@ -519,6 +519,45 @@ foreach ($ent in $entities) {
         # silently overwrote one another's log before this existed, 2026-07-02). Leaving
         # guardrailLoser unset for non-colliding winners keeps existing filenames stable across
         # providers that don't hit this (Get-CmPlanLabel falls back to the undisambiguated name).
+        # ---- DROP GUARDRAILS THAT PROVE NOTHING (added 2026-08-18) ----------------------------
+        # A guardrail is defined by WHAT IS FILLED and WHAT FIRES -- not by which loser keyRef
+        # inspired it. Two failures were shipping as coverage until audit_log_inflation's clone
+        # check was repaired (it had never been able to fail, because every wire carries a unique
+        # transaction id, so no two logs ever hashed alike):
+        #   1. DUPLICATE guardrails. Two losers whose set[] fields are THE SAME produce an
+        #      identical fill-set. TX_TLETS Boat: BQRegistrationNumber and QBRegistrationNumber
+        #      both contribute only 'RegistrationNumber', so n97 and n98 were byte-identical tests
+        #      with different filenames. The $winnerCounts disambiguation below renames the FILES,
+        #      which hid the duplication instead of removing it.
+        #   2. VACUOUS guardrails. If the fill-set matches a plain combo test already emitted for
+        #      this entity, no identifier competition is staged at all -- the "guardrail" just
+        #      re-runs that combo. TX_TLETS Vehicle: the VIN guardrail's fills equalled the
+        #      VINVehicleIdentificationNumber combo test's fills.
+        # Both are coverage inflation: a test that proves one thing twice, or nothing.
+        # NOT SILENT -- every drop is reported, because a cap nobody sees reads as "covered".
+        $seenGuardSig = @{}
+        $comboSigs    = @{}
+        foreach ($t in $tests) {
+            if ("$($t.entity)" -ne $ent) { continue }
+            $sig = (@($t.fills | ForEach-Object { "$($_.fieldId)=$($_.value)" }) | Sort-Object) -join '|'
+            if ($sig) { $comboSigs[$sig] = "$($t.comboKeyRef)$(if($t.anyField){"_af_$($t.anyField)"})" }
+        }
+        $kept = New-Object System.Collections.Generic.List[object]
+        foreach ($g in $gCandidates) {
+            $sig = (@($g.fills | ForEach-Object { "$($_.fieldId)=$($_.value)" }) | Sort-Object) -join '|'
+            if ($seenGuardSig.ContainsKey($sig)) {
+                Write-Host "  [PLAN] $ent guardrail vs $($g.loserKr) DROPPED -- identical fill-set to the guardrail vs $($seenGuardSig[$sig]) (both losers contribute the same set[] fields, so it is the same test twice)" -ForegroundColor DarkYellow
+                continue
+            }
+            if ($comboSigs.ContainsKey($sig)) {
+                Write-Host "  [PLAN] $ent guardrail vs $($g.loserKr) DROPPED -- fill-set is identical to combo test '$($comboSigs[$sig])', so no identifier competition is staged" -ForegroundColor DarkYellow
+                continue
+            }
+            $seenGuardSig[$sig] = $g.loserKr
+            $kept.Add($g) | Out-Null
+        }
+        $gCandidates = $kept
+
         $winnerCounts = @{}
         foreach ($g in $gCandidates) { $winnerCounts[$g.simKr] = @($winnerCounts[$g.simKr]) + 1 }
         foreach ($g in $gCandidates) {
