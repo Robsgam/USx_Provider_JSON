@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: OH_LEADS Boat BoatQuery
+Combo: BQ.R_any (BQ.R_any (auto))
+Date: 2026-08-18 18:49:34
+Result: PASS
+JSON Version: 2.9
+Entity Fingerprint: 0ed21b923767f2e596b65986fecf8542186b1233001e49a16968d77aca5fb6d3
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","RegistrationNumber":"FL1234AB","RegistrationState":"Georgia","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0BGW1NPESQH8Q49STT2MCK1">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M0BGW1NPESQH8Q49STT2MCK1</Id>
+            <State>GA</State>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0BGW1NPESQH8Q49STT2MCK1
+  State                          GA
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01M0BGW1NPESQH8Q49STT2MCK1). kind=any; anyField=; expectedKeyRef=BQ.R; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

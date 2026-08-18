@@ -1,0 +1,70 @@
+﻿================================================================
+TEST LOG: OH_LEADS Vehicle VehicleRegistrationQuery
+Combo: RS_guardrail_vs_RN (RS_guardrail_vs_RN (auto))
+Date: 2026-08-18 18:49:48
+Result: PASS
+JSON Version: 2.9
+Entity Fingerprint: 8dfb57a7d47fa13601f74e0b5dfd9102792573a9d3aa3d6f4d8eb8254677d0c3
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","OwnerFirstName":"JOHN","OwnerLastName":"DOE","OwnerSocialSecurityNumber":"123456789"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0BGFEEDFF188SWSXJPTBXCA">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M0BGFEEDFF188SWSXJPTBXCA</Id>
+            <SocialSecurityNumber>123456789</SocialSecurityNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0BGFEEDFF188SWSXJPTBXCA
+  SocialSecurityNumber           123456789
+
+NOTES
+-----
+Automated capture (txId 01M0BGFEEDFF188SWSXJPTBXCA). kind=guardrail; anyField=; expectedKeyRef=RS; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
