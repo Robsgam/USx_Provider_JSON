@@ -59,6 +59,31 @@ foreach ($p in $Providers) {
         }
     } }
 
+    # ENVELOPE FIELD UNIVERSE (for attack C) -- DERIVED, not a hand-list.
+    # Envelope fields are emitted by the AUTHENTICATION / QUERYMESSAGEFORMAT config for EVERY
+    # transaction and are deliberately absent from any QIDM's attributes, so class C must not
+    # count them. This used to be a hardcoded literal list, and it went stale the moment a
+    # provider gained a new envelope field: CA_CLETS v2.25 added <Authentication>/<DeviceId>
+    # (Build-Auth -IncludeDeviceId, the Mariposa LIVE production-failure fix) and class C
+    # reported 111 orphans on 111 logs -- a gate at 100% false positives teaches everyone to
+    # ignore it. Deriving from the config self-extends to the next envelope field.
+    # The literal floor is XML SCAFFOLDING plus the QUERYMESSAGEFORMAT-emitted fields: QMF declares
+    # NO `attributes` (it carries handlerFunction/payloadParent instead), so <MessageType>/<MessageKey>
+    # cannot be derived and must stay listed. Keeping the FULL original list as a floor and UNIONing
+    # the derived set means this change can only ADD coverage, never remove it -- the first attempt
+    # replaced the list outright and drove class C from 111 orphans on 1 provider to every log on all
+    # 6, because `@($null).Count` is 1 and QMF's empty attributes read as populated.
+    $envelope = @{}
+    foreach ($e in @('transaction','request','header','lawenforcementtransaction','body','messagetype','messagekey',
+                     'session','id','authentication','username','ori','mnemonic','dexstateuserid','password','agency')) { $envelope[$e] = $true }
+    foreach ($b in $json.bundles) { foreach ($c in $b.configurations) {
+        if ($c.type -notin @('AUTHENTICATION','QUERYMESSAGEFORMAT')) { continue }
+        foreach ($a in @($c.attributes)) {
+            $tf = if ($a.targetField) { $a.targetField } else { $a.name }
+            if ($tf) { $envelope["$tf".ToLower()] = $true }
+        }
+    } }
+
     $logs = @(Get-ChildItem (Join-Path $d 'logs') -Recurse -Filter "*.txt" -File -EA SilentlyContinue |
               Where-Object { $_.FullName -notmatch '[\\/]_archive_' })
     if (-not $logs.Count) { $grand += [pscustomobject]@{P=$p;V=$ver;N=0;Clone='n/a';Fp='n/a';Orphan='n/a';Degen='n/a';Single='n/a'}; continue }
@@ -85,11 +110,11 @@ foreach ($p in $Providers) {
             foreach ($mm in [regex]::Matches($x, '<([A-Za-z][A-Za-z0-9]*)>')) {
                 $e = $mm.Groups[1].Value.ToLower()
                 # Envelope, not query payload. Excluding these is NOT weakening the attack: they are
-                # emitted by the AUTH config for every transaction and are deliberately absent from
-                # any QIDM's attributes, so counting them produced exactly 6 false hits per log
-                # (534/89, 654/109 ...) and buried whatever real orphan might exist.
-                if ($e -in @('transaction','request','header','lawenforcementtransaction','body','messagetype','messagekey',
-                             'session','id','authentication','username','ori','mnemonic','dexstateuserid','password','agency')) { continue }
+                # emitted by the AUTH/QMF config for every transaction and are deliberately absent
+                # from any QIDM's attributes, so counting them produced exactly 6 false hits per log
+                # (534/89, 654/109 ...) and buried whatever real orphan might exist. Now DERIVED
+                # from the provider's own AUTHENTICATION/QUERYMESSAGEFORMAT config -- see $envelope.
+                if ($envelope.ContainsKey($e)) { continue }
                 if (-not $tfByQuery[$q].ContainsKey($e)) { $orphan += "$lbl -> <$($mm.Groups[1].Value)> not a targetField of $q" }
             }
         }
