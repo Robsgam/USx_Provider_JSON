@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: LA_LEMS
-  Source: LA_LEMS_v3.0.json
-  Generated: 2026-08-13 09:04
+  Source: LA_LEMS_v3.1.json
+  Generated: 2026-08-18 12:29
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -25,7 +25,7 @@ VALIDATOR RESULTS
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
   [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 9 fieldIds
-  [WARN] QIF 'ENTITY_Person' ImageIndicator initialValue='Y' AND a combo gates on ImageIndicator NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b: never existence-gate a mandatorily-defaulted field)
+  [PASS] QIF 'ENTITY_Person' ImageIndicator default='Y' for Person
   [PASS] QIF 'ENTITY_Person' -> Person : 18 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 7 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 6 fieldIds
@@ -49,6 +49,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'LA_LEMS_BoatQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
   [PASS] RMS Vehicle QIDM 'RMS Vehicle search query' has RegistrationState in combo any[]
+  [PASS] QIDM 'LA_LEMS_DriverLicenseQuery' has In/Out combos but State is any[]-only -- a State prefill routes nothing (LIMITATION #30 N/A)
 
 === PHASE 4: AutoSelect & Cross-Reference ===
   [PASS] Article : 1 QIDMs, 1 QIF(s)
@@ -88,8 +89,8 @@ VALIDATOR RESULTS
   [PASS] QIDM 'LA_LEMS_BoatQuery' combo 'BQ': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 63 PASS / 0 FAIL / 1 WARN
+  RESULTS: 65 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
-  Review WARN items -- they may cause runtime issues.
+  Ready for import.
 

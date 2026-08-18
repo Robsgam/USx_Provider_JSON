@@ -1284,7 +1284,7 @@
                                                                                                                "displayName":  "Select",
                                                                                                                "props":  {
                                                                                                                              "fieldId":  "ImageIndicator",
-                                                                                                                             "label":  "Image (Y for photo; clear for no-photo DL)",
+                                                                                                                             "label":  "NCIC Image",
                                                                                                                              "initialValue":  "Y",
                                                                                                                              "codeTypeSource":  "NCIC",
                                                                                                                              "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -1917,7 +1917,7 @@
                                                                                                                     "displayName":  "Select",
                                                                                                                     "props":  {
                                                                                                                                   "fieldId":  "ImageIndicator",
-                                                                                                                                  "label":  "Image (Y for photo; clear for no-photo DL)",
+                                                                                                                                  "label":  "NCIC Image",
                                                                                                                                   "initialValue":  "Y",
                                                                                                                                   "codeTypeSource":  "NCIC",
                                                                                                                                   "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -2631,7 +2631,7 @@
                                                                                                                        "displayName":  "Select",
                                                                                                                        "props":  {
                                                                                                                                      "fieldId":  "ImageIndicator",
-                                                                                                                                     "label":  "Image (Y for photo; clear for no-photo DL)",
+                                                                                                                                     "label":  "NCIC Image",
                                                                                                                                      "initialValue":  "Y",
                                                                                                                                      "codeTypeSource":  "NCIC",
                                                                                                                                      "codeTypeCategory":  "YES_NO_UNKNOWN"
@@ -6809,7 +6809,6 @@
                                                                                                              "ImageIndicator"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState",
                                                                                                              "attention"
                                                                                                          ],
                                                                                                  "defaults":  [
@@ -6825,15 +6824,15 @@
                                                                                                  "conditions":  [
                                                                                                                     {
                                                                                                                         "field":  [
-                                                                                                                                      "ImageIndicator"
+                                                                                                                                      "RegistrationState"
                                                                                                                                   ],
-                                                                                                                        "operator":  "EXISTS"
+                                                                                                                        "operator":  "NOT_EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "DP",
-                                                                            "state":  "In/Out"
+                                                                            "state":  "In"
                                                                         },
                                                                         {
                                                                             "requirements":  {
@@ -6842,9 +6841,14 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "RegistrationState",
+                                                                                                             "ImageIndicator",
                                                                                                              "attention"
                                                                                                          ],
                                                                                                  "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  },
                                                                                                                   {
                                                                                                                       "field":  "Attention",
                                                                                                                       "value":  "X"
@@ -6853,18 +6857,18 @@
                                                                                                  "conditions":  [
                                                                                                                     {
                                                                                                                         "field":  [
-                                                                                                                                      "ImageIndicator"
+                                                                                                                                      "RegistrationState"
                                                                                                                                   ],
-                                                                                                                        "operator":  "NOT_EXISTS"
+                                                                                                                        "operator":  "EXISTS"
                                                                                                                     }
                                                                                                                 ]
                                                                                              },
                                                                             "primaryFieldReference":  "OperatorLicenseNumber",
                                                                             "keyReference":  "DQ",
-                                                                            "state":  "In/Out"
+                                                                            "state":  "Out"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- QWDN (name+race), QWA (name), DP (photo OLN), DQ (OLN). OLN\u003eName + raceCode isolation guardrails; DP/DQ ImageIndicator toggle. autoSelect + queriesToDeselect.",
+                                                   "description":  "DriverLicenseQuery -- QWDN (name+race), QWA (name), DP (in-state photo OLN), DQ (Nlets OLN). OLN\u003eName + raceCode isolation guardrails; DP/DQ split on RegistrationState EXISTS/NOT_EXISTS. autoSelect + queriesToDeselect.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "LA_LEMS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7246,7 +7250,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for LA_LEMS v3.0 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, Attention auto-handler feeder, DP/DQ toggle, identifier-priority guardrails",
+                        "description":  "Provider configuration for LA_LEMS v3.1 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, Attention auto-handler feeder, DP/DQ split on State (in-state photo vs Nlets), identifier-priority guardrails",
                         "name":  "LA_LEMS",
                         "type":  "BUNDLE",
                         "provider":  "LA_LEMS"

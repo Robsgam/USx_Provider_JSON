@@ -1,7 +1,7 @@
-LA_LEMS METADATA REFERENCE
+﻿LA_LEMS METADATA REFERENCE
 ===========================
-Generated: 2026-07-29
-Source: LA_LEMS.xml (metadata) + LA_LEMS_v3.0.json
+Generated: 2026-08-18
+Source: LA_LEMS.xml (metadata) + LA_LEMS_v3.1.json
 Metadata: 84 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -42,10 +42,6 @@ METADATA COMBINATIONS (4 total):
 BUILD COVERAGE (2 of 4 built):
   BUILT   QB             set[BoatHullIdNumber]
   BUILT   BQ             set[RegistrationNumber]
-  UNBUILT QB             BoatHullIdNumber
-  UNBUILT BQ             BoatHullIdNumber
-  UNBUILT QB             RegistrationNumber
-  UNBUILT BQ             RegistrationNumber
 
 ================================================================================
 3. DriverHistoryQuery (version 7)
@@ -102,10 +98,6 @@ BUILD COVERAGE (4 of 6 built):
   BUILT   QWA            set[SexCode, BirthDate, NameLast, NameFirst]
   BUILT   DP             set[OperatorLicenseNumber, ImageIndicator]
   BUILT   DQ             set[OperatorLicenseNumber]
-  UNBUILT QWDN           Name
-  UNBUILT QWDN           OperatorLicenseNumber
-  UNBUILT DQ             Name
-  UNBUILT DQ             OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 6)
@@ -165,19 +157,6 @@ BUILD SUMMARY
   VehicleRegistrationQuery                   2      2     0  100% (COMPLETE)
   ----------------------------------  --------  -----  ----  --------
   TOTAL                                   16     12     4  75%
-
-================================================================================
-UNBUILT METADATA COMBOS (8 combos in metadata, not in JSON)
-================================================================================
-
-  QB             BoatHullIdNumber         (BoatQuery)
-  BQ             BoatHullIdNumber         (BoatQuery)
-  QB             RegistrationNumber       (BoatQuery)
-  BQ             RegistrationNumber       (BoatQuery)
-  QWDN           Name                     (DriverLicenseQuery)
-  QWDN           OperatorLicenseNumber    (DriverLicenseQuery)
-  DQ             Name                     (DriverLicenseQuery)
-  DQ             OperatorLicenseNumber    (DriverLicenseQuery)
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (78 of 84 in metadata)

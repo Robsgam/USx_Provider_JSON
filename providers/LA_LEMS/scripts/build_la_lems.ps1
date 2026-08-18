@@ -13,11 +13,23 @@
 #     + defaults[] Attention='X' so the handler output serializes. 'attention' is the ONLY
 #     allowed hidden field. DriverHistoryQuery metadata has NO Attention field -> DH carries no
 #     Attention attribute/feeder (dropped from legacy, which orphaned it).
-#   DP/DQ routing toggle (DriverLicenseQuery): DP = photo DL (set OLN+ImageIndicator),
-#     DQ = plain DL by OLN (set OLN, ImageIndicator NOT_EXISTS). ImageIndicator form defaults to 'Y'
-#     (photo/DP is the default path); officer clears the Image dropdown to reach DQ (plain DL)
-#     (blank) -- it is the toggle: Image=Y -> DP (photo), Image blank -> DQ. Existence-only,
-#     poisoned-array-free, mutually exclusive, both reachable.
+#   DP/DQ SPLIT ON STATE (DriverLicenseQuery) -- CORRECTED v3.1, was an ImageIndicator toggle.
+#     The metadata names these two transactions outright: DP = "Driver License Photo Inquiry",
+#     DQ = "Nlets Driver License Query", and their <Requirements> agree --
+#       DP <Set> OLN, ImageIndicator  <Any> Attention                        (NO State field at all)
+#       DQ <Set> OLN                  <Any> State, State2..State5, ImageIndicator
+#     So DP is the IN-STATE photo inquiry and DQ is the OUT-OF-STATE Nlets query. The discriminator
+#     is RegistrationState (EXISTS -> DQ, NOT_EXISTS -> DP), the same in/out split used portfolio-wide,
+#     and RegistrationState carries NO initialValue here (LIMITATION #30) so both branches are live.
+#     THE OLD DESIGN WAS UNREACHABLE, NOT MERELY UNTIDY: both combos gated on ImageIndicator presence
+#     while the form prefills 'Y', so DP always won and DQ was PERMANENTLY DEAD -- the officer could
+#     never reach Nlets. That is the BUILD_RULES 20b validator WARN, and it was PARKED because both
+#     obvious fixes were worse than the warning. Reading the metadata dissolved the dilemma: the
+#     discriminator was never ImageIndicator. ImageIndicator is now routing-INERT, stays metadata-
+#     mandatory in DP's set[] with initialValue='Y' + the defaults[] twin, and Rob's "NCIC image
+#     defaults to Y everywhere" therefore applies to LA with NO carve-out.
+#     DP also no longer carries RegistrationState in any[] -- its variant defines no State field, so
+#     that was an OVER-PERMIT.
 #   Vehicle State REQUIRED (in set[] for both RQS combos per metadata) -- no in/out keyRef
 #     split, so State stays in set[], no initialValue. Person/Boat State is any[]-optional
 #     (blank=in-state LA, filled=OOS). LABEL-OVERRIDE on RegistrationState (required-in-set,
@@ -39,7 +51,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_la_lems.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '3.0'
+$Version     = '3.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\LA_LEMS_v${Version}.json"
@@ -190,33 +202,69 @@ $dlQuery = [PSCustomObject]@{
             keyReference          = 'QWA'
             state                 = 'In/Out'
         }
-        # DP -- photo DL (OLN+ImageIndicator both set)
+        # ---- DP vs DQ: RE-DISCRIMINATED ON STATE AT v3.1. THE OLD ImageIndicator TOGGLE WAS WRONG. ----
+        # The metadata says plainly what these two ARE, and it is not a photo/no-photo pair of one query:
+        #   <MessageKey name="DP" description="Driver License Photo Inquiry"/>
+        #   <MessageKey name="DQ" description="Nlets Driver License Query"/>
+        # and their own <Requirements> confirm it:
+        #   DP  <Set> OperatorLicenseNumber, ImageIndicator   <Any> Attention          -- NO State field AT ALL
+        #   DQ  <Set> OperatorLicenseNumber                   <Any> State, State2..State5, ImageIndicator
+        # So DP is the IN-STATE photo inquiry and DQ is the OUT-OF-STATE Nlets query with up to five
+        # destination states. The discriminator is STATE -- the same in/out split every other provider
+        # in this repo uses -- and ImageIndicator is not a router at all.
+        #
+        # WHAT THE OLD BUILD DID AND WHY IT COULD NEVER WORK: both combos were gated on ImageIndicator
+        # presence (DP EXISTS / DQ NOT_EXISTS) while the form prefills ImageIndicator='Y'. A prefilled
+        # field is ALWAYS present, so DP always won and DQ was PERMANENTLY DEAD -- the officer could
+        # never reach the Nlets path. That is the standing validator WARN (BUILD_RULES 20b), and the
+        # form label had to instruct "clear for no-photo DL" for a control that has only Y/N options
+        # and no blank, i.e. the design depended on an interaction the UI does not offer.
+        # THE WARN WAS RIGHT AND THE BUILD WAS WRONG. It was parked because both obvious fixes were
+        # worse than the warning: dropping initialValue changes what LA asks NCIC for, and deleting the
+        # NOT_EXISTS condition removes a discriminator. Reading the metadata dissolves the dilemma --
+        # the correct discriminator was never ImageIndicator.
+        #
+        # ALSO FIXED HERE: DP no longer carries RegistrationState in any[]. DP's metadata variant
+        # defines NO State field, so sending one was an OVER-PERMIT (usx-adjudicate: the FIRING
+        # combination's own <Requirements> decide, not the transaction's union).
+        # ImageIndicator keeps initialValue='Y' and the combo defaults[] twin: it stays metadata-
+        # mandatory in DP's set[] and is now routing-INERT, so Rob's "NCIC image defaults to Y
+        # everywhere" applies here with no carve-out. LA is no longer a second AZ_AZDPS.
+        # DP -- IN-STATE Driver License PHOTO inquiry (no State field in this variant)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('OperatorLicenseNumber','ImageIndicator'); any = @('RegistrationState','attention')
+                set = @('OperatorLicenseNumber','ImageIndicator'); any = @('attention')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                     [PSCustomObject]@{ field = 'Attention';      value = 'X' }
                 )
-                conditions = @([PSCustomObject]@{ field = @('ImageIndicator'); operator = 'EXISTS' })
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DP'
-            state                 = 'In/Out'
+            state                 = 'In'
         }
-        # DQ -- DL by OLN (no photo; ImageIndicator NOT_EXISTS -> distinguishes from DP)
+        # DQ -- OUT-OF-STATE Nlets Driver License query (destination state drives it)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('OperatorLicenseNumber'); any = @('RegistrationState','attention')
-                defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
-                conditions = @([PSCustomObject]@{ field = @('ImageIndicator'); operator = 'NOT_EXISTS' })
+                set = @('OperatorLicenseNumber'); any = @('RegistrationState','ImageIndicator','attention')
+                # ImageIndicator default is REQUIRED here, not optional tidiness: it is newly in this
+                # combo's any[] (metadata <Any>), and CAD ignores the form initialValue -- so without
+                # the defaults[] twin a CAD-originated Nlets query would send no image request while an
+                # officer-driven one sent 'Y'. audit_cad caught exactly this at v3.1 (v3.0 was 0 FAIL,
+                # so it was MY regression, introduced by widening DQ's any[]).
+                defaults = @(
+                    [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
+                    [PSCustomObject]@{ field = 'Attention';      value = 'X' }
+                )
+                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DQ'
-            state                 = 'In/Out'
+            state                 = 'Out'
         }
     )
-    description     = 'DriverLicenseQuery -- QWDN (name+race), QWA (name), DP (photo OLN), DQ (OLN). OLN>Name + raceCode isolation guardrails; DP/DQ ImageIndicator toggle. autoSelect + queriesToDeselect.'
+    description     = 'DriverLicenseQuery -- QWDN (name+race), QWA (name), DP (in-state photo OLN), DQ (Nlets OLN). OLN>Name + raceCode isolation guardrails; DP/DQ split on RegistrationState EXISTS/NOT_EXISTS. autoSelect + queriesToDeselect.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'LA_LEMS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -410,7 +458,7 @@ $boatQuery = [PSCustomObject]@{
 
 $laBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
-    description    = "Provider configuration for LA_LEMS v${Version} -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, Attention auto-handler feeder, DP/DQ toggle, identifier-priority guardrails"
+    description    = "Provider configuration for LA_LEMS v${Version} -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, Attention auto-handler feeder, DP/DQ split on State (in-state photo vs Nlets), identifier-priority guardrails"
     name           = 'LA_LEMS'
     type           = 'BUNDLE'
     provider       = 'LA_LEMS'
@@ -489,7 +537,12 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for LA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (Y for photo; clear for no-photo DL)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
+                # Label was 'Image (Y for photo; clear for no-photo DL)' -- it instructed the officer to
+                # CLEAR a control that is prefilled 'Y' and offers only Y/N with no blank option, i.e. it
+                # documented an interaction the UI does not provide. That wording existed only because
+                # ImageIndicator was (wrongly) the DP/DQ router; State does that job now, so the canonical
+                # bare label applies (CLAUDE.md: every image toggle reads exactly 'NCIC Image').
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
             )}
             @{ id = 'ROW_PER_OPT_HID'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Attention_Per_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_OPT_HID' @{ initialValue = 'X' } }

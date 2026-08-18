@@ -2,9 +2,14 @@
 
 Auto-generated from `LA_LEMS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.0** | Generated: 2026-08-18
+Current: **v3.1** | Generated: 2026-08-18
 
 ---
+
+## v3.1 -- 2026-08-18 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v3.0 -- 2026-07-23 -- v2.5 -> v3.0 methodology galvanization (commit 1fb723db)
 

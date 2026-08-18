@@ -1,20 +1,20 @@
 LA_LEMS -- STATUS
 =================
-Current: v3.0 | 63P/0F/1W/0LIM | Updated 2026-08-18
-  THE 1W IS PARKED ON PURPOSE -- DO NOT "FIX" IT AND DO NOT SILENCE IT. Rob's call.
-  "[WARN] QIF 'ENTITY_Person' ImageIndicator initialValue='Y' AND a combo gates on ImageIndicator
-   NOT_EXISTS -- that branch is permanently DEAD (BUILD_RULES 20b)."
-  It is a REAL finding, correctly reported, and it is held rather than resolved because the two
-  available "fixes" are both worse than the warning: dropping the initialValue changes what LA asks
-  NCIC for (a wire change on an unimported provider), and removing the NOT_EXISTS condition deletes
-  a routing discriminator this provider's metadata supplies. LA also has ImageIndicator in 1 set[]
-  plus 2 conditions, which is exactly why the portfolio-wide
-  [FLAG:ncic-image-default-y-everywhere] flip lists LA as needing a RULING rather than a flip
-  (AZ_AZDPS v3.7 killed four combos by making precisely that mechanical change).
-  RECORDED HERE 2026-08-18 because this line previously read 0W while the validator reported 1W --
-  a tracking doc asserting clean when it was not. Now that the 1W is visible, the reason has to be
-  visible beside it, or the next session "cleans it up" and re-introduces the defect. Resolve it at
-  LA's own rebuild, WITH a decision, never as a drive-by.
+LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
+Current: v3.1 | 65P/0F/0W/0LIM | Updated 2026-08-18
+  THE BUILD_RULES 20b WARN IS RESOLVED AT v3.1, NOT SILENCED -- 0W is now real.
+  It had been parked because both obvious fixes looked worse than the warning. Reading the metadata
+  dissolved that dilemma: the discriminator was never ImageIndicator. The MessageKey table names the
+  two transactions outright -- DP = "Driver License Photo Inquiry", DQ = "Nlets Driver License Query"
+  -- and their own <Requirements> agree (DP <Set> OLN+ImageIndicator, <Any> Attention, and NO State
+  field at all; DQ <Set> OLN, <Any> State..State5 + ImageIndicator). So DP/DQ is an IN-STATE vs
+  OUT-OF-STATE split and now routes on RegistrationState EXISTS/NOT_EXISTS, the same in/out pattern
+  used portfolio-wide. RegistrationState carries no initialValue here (LIMITATION #30), so BOTH
+  branches are live -- previously DQ was PERMANENTLY DEAD and the officer could never reach Nlets.
+  ImageIndicator is now routing-INERT and keeps initialValue='Y' plus the combo defaults[] twin, so
+  [FLAG:ncic-image-default-y-everywhere] applies to LA with NO carve-out -- LA is no longer a second
+  AZ_AZDPS. DP also stopped carrying RegistrationState in any[] (its variant defines no State field,
+  so that was an over-permit).
 Provider: LA_LEMS
 Methodology: Galvanized (single versioned JSON, native PascalCase USx CAD fields)
 USx tenant test: NOT STARTED -- all query paths PENDING
