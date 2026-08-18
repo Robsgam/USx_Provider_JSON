@@ -110,6 +110,55 @@ Violating these is how the four inert checkers above happened.
 
 ---
 
+## 4.5 Cross-provider scope — when to measure, when to ask, when to stop
+
+Rob, 2026-08-18: *"we need to put guardrails around your drift but respect the portfolio
+implications."* Both halves are real and they pull against each other, so this section names the line
+instead of leaving it to judgement in the moment.
+
+**The failure is NOT measuring other providers.** Measuring is what found 35 real clone groups, and
+measuring is what stopped a wrong "fix" to TX's Name separator. The two failures are (a) **wandering
+into another provider's files**, and (b) **inferring a verdict from a majority**.
+
+| Category | What it covers | Approval |
+|---|---|---|
+| **MEASURE** | Read-only cross-provider counting, comparing, grepping, `-All` on read-only gates. **MANDATORY after any shared-tool change** — the `usx-tooling` regression fixture cannot be satisfied any other way | **None. Always allowed.** Not measuring is its own defect: it is how a tool becomes provider-specific by accident |
+| **REPORT** | Recording what is owed elsewhere — a `flag_pending_fix` entry, a ledger line, a SESSION_STATE open finding | **None.** The output is a record, never a change |
+| **WRITE** | Any file write outside the provider in scope: an edit, a plan or report regeneration, a doc sync, a version bump | **Ask first, every time.** This is rule 8c of `usx-tooling` |
+| **SWEEP** | A change touching N providers at once; or reopening an item Rob has parked | **Rob's direction only.** Never inferred from "it would be tidy" |
+
+### The inference guardrail — the one that nearly shipped a defect
+
+> **A cross-provider majority is evidence about the PORTFOLIO, never about one provider's spec.**
+
+On 2026-08-18 a sweep showed 18 of 20 providers joining Last+First with `', '` while `TX_TLETS` and
+`TX_TLETS_CCH` used `','`. The count was accurate. The inference — that TX was defective — was wrong,
+and a wire change plus a 98-test re-sweep was about to be recommended. The 2025 TCIC/TLETS manual,
+Part 1 p125, requires `LASTNAME,FIRSTNAME` for a Texas DL search; the `', '` form is the NCIC/TCIC
+person-query format from Part 2 p88. **TX was right and the majority was irrelevant.**
+
+Worse, `knowledge-base/FIELD_REFERENCE.txt` carried a standing order to *"normalize to comma-space at
+each provider's rebuild"* — a queued instruction to break a correct build, which came from exactly this
+reasoning. It is now replaced with the two-systems rule.
+
+So: **a provider is convicted by ITS OWN authority — its devdoc, its metadata, its state manual — or
+not at all.** A majority tells you a provider is UNUSUAL, which is a reason to go read that provider's
+authority, and never a substitute for having read it.
+
+### Why "act at each provider's own rebuild" is the default, not laziness
+
+Deferring a known finding to the affected provider's next rebuild is the correct disposition, because
+a bump archives that provider's whole test package. The thing that makes deferral safe is that it is
+**RECORDED** — a flag, a ledger row, or a SESSION_STATE finding that a later session will see. An
+unrecorded deferral is indistinguishable from having missed it.
+
+**Mechanised:** `tools\audit_change_scope.ps1 -Provider <NAME>` reports which provider directories the
+working tree actually touches and FAILs when it is more than the one in scope (a `# BASE-SYNC` variant
+of that provider is auto-allowed, because lockstep is mandatory). Run it before committing. It
+distinguishes "nothing staged" from "scope clean" — silence is not a pass.
+
+---
+
 ## 5. What "finished" means for a provider
 
 All of the following, simultaneously, with no exceptions granted by narrative:

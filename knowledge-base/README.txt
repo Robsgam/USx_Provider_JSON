@@ -573,6 +573,24 @@ TOOLS
            .\tools\watch_captures.ps1 -Once      # exit after first import (supervised mode:
                                                  # the supervisor reports the summary + re-arms)
 
+  tools/audit_change_scope.ps1
+    WRITE-SCOPE GUARDRAIL: reports which provider directories the working tree (or a git ref)
+    actually touches, and FAILS when it is more than the provider in scope.
+    WHY (2026-08-18, Rob: "we need to put guardrails around your drift but respect the portfolio
+    implications"): one-provider-at-a-time kept being broken by ACCRETION rather than by decision --
+    a shared validate.ps1 change moved MD_METERS 69->70 and OH_LEADS 77->78, and their reports and
+    docs were regenerated "while I was there", which is a mass rebuild by the back door.
+    IT GUARDS *WRITE* SCOPE, NOT READ SCOPE. Measuring across providers is always allowed and is
+    MANDATORY after any shared-tool change -- see ENGINEERING_STANDARD.md 4.5, which also carries the
+    inference guardrail: a cross-provider MAJORITY is evidence about the portfolio, never about one
+    provider's spec (18-of-20 on the Name separator nearly drove a wrong "fix" to a CORRECT build).
+    A provider declaring `# BASE-SYNC: <scope>` is auto-allowed, because variant lockstep is
+    mandatory. tools/, knowledge-base/ and repo-root writes are reported as PORTFOLIO-WIDE rather
+    than flagged. An empty worktree reports "[NOTE] nothing staged", never "scope clean".
+    Usage: .\tools\audit_change_scope.ps1 -Provider TX_TLETS
+           .\tools\audit_change_scope.ps1 -Provider TX_TLETS -Allow OH_LEADS
+           .\tools\audit_change_scope.ps1 -Provider TX_TLETS -Ref HEAD~3
+
   tools/report_sweep_ledger.ps1
     THE SWEEP LEDGER: planned vs logged vs owed, per entity, derived from the REPO (the active
     JSON's version -> its test plan -> the current-version logs on disk). Auto-printed by
