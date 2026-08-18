@@ -31,11 +31,25 @@
   E. SINGLETON VALUE     an identifier value used across EVERY combo of a query means no test would
                          notice if routing collapsed to one combo (all fills look alike).
 #>
-param([string[]]$Providers = @('TX_TLETS','NY_NYSPIN_EJUSTICE','NJ_NJCJIS','FL_FCIC','HI_HCJDC_OFML','CA_CLETS'))
+#  DEFAULT SCOPE = ALL 20 PROVIDERS, DERIVED (fixed 2026-08-18). It used to be a HARDCODED SIX
+#  ('TX_TLETS','NY_NYSPIN_EJUSTICE','NJ_NJCJIS','FL_FCIC','HI_HCJDC_OFML','CA_CLETS'), which is how
+#  AZ_AZDPS and IL_LEADS_OFML -- both tenant-verified, 58 and 44 logs -- were NEVER ONCE checked for
+#  coverage inflation. Measured the moment the list was widened: AZ 4 clone groups, IL 1. They were
+#  not clean, they were unexamined, and the summary table gave no hint of it because a provider that
+#  is not in the list simply does not appear.
+#  This tool also takes -Providers rather than -Path, so audit_tool_portability (which sweeps the
+#  -Path gates) does not cover it either -- there was no second net. A provider-agnostic tool with a
+#  hardcoded provider list is the accident-shape usx-tooling Step 2 exists to catch.
+#  CALLER NOTE: `powershell -File` STRINGIFIES ARRAY ARGS, so `-Providers 'A','B'` arrives as one
+#  string and silently matches nothing. Pass one provider per invocation, or rely on the default.
+param([string[]]$Providers)
 
 $ErrorActionPreference = 'Continue'
-$repo = 'C:\Users\RobSgambellone\.local\bin\USx_Provider_JSON'
+$repo = Split-Path $PSScriptRoot -Parent   # was a hardcoded absolute path
 Set-Location $repo
+if (-not $Providers -or -not $Providers.Count) {
+    $Providers = @(Get-ChildItem (Join-Path $repo 'providers') -Directory | Select-Object -Expand Name | Sort-Object)
+}
 . "$repo\tools\_resolve_provider_json.ps1"
 . "$repo\tools\_json_canonical.ps1"
 
@@ -223,5 +237,27 @@ Write-Host ("  {0,-22} {1,-7} {2,-7} {3,-8} {4,-8} {5,-8} {6}" -f 'PROVIDER','VE
 foreach ($g in $grand) {
     $bad = ("$($g.Clone)$($g.Fp)$($g.Orphan)$($g.Degen)" -match '[1-9]')
     Write-Host ("  {0,-22} {1,-7} {2,-7} {3,-8} {4,-8} {5,-8} {6}" -f $g.P,$g.V,$g.N,$g.Clone,$g.Fp,$g.Orphan,$g.Degen) -ForegroundColor $(if($bad){'Red'}else{'Green'})
+}
+
+# PRINT THE DENOMINATOR. Without it this table cannot distinguish "nothing to find" from "nothing
+# examined" -- which is exactly how a hardcoded six-provider list hid AZ_AZDPS's 4 clone groups and
+# IL_LEADS_OFML's 1 for as long as this tool has existed. A provider with no current-version logs is
+# reported as SKIPPED, not silently omitted: an untested provider is not a clean one.
+$withLogs = @($grand | Where-Object { "$($_.N)" -match '^\d+$' -and [int]$_.N -gt 0 })
+$noLogs   = @($Providers | Where-Object { $n = $_; -not ($withLogs | Where-Object { $_.P -eq $n }) })
+$findings = @($withLogs | Where-Object { "$($_.Clone)$($_.Fp)$($_.Orphan)$($_.Degen)" -match '[1-9]' })
+Write-Host ('-' * 96) -ForegroundColor DarkGray
+Write-Host ("  EXAMINED: {0} provider(s) requested / {1} with logs / {2} SKIPPED (no logs -- NOT verified clean)" -f `
+            $Providers.Count, $withLogs.Count, $noLogs.Count) -ForegroundColor Gray
+# Coalesce the sum: Measure-Object over an EMPTY collection returns $null, which renders as a BLANK
+# number -- and a blank where a count belongs reads as "not applicable" rather than "zero compared".
+$logSum = 0
+if ($withLogs.Count) { $logSum = [int](($withLogs | Measure-Object -Property N -Sum).Sum) }
+Write-Host ("  LOGS COMPARED: {0}   PROVIDERS WITH FINDINGS: {1}" -f $logSum, $findings.Count) -ForegroundColor Gray
+if ($noLogs.Count) {
+    Write-Host ("  SKIPPED: " + (($noLogs | Sort-Object) -join ', ')) -ForegroundColor DarkYellow
+}
+if (-not $withLogs.Count) {
+    Write-Host "  [NO-VERDICT] not one provider had logs -- this run compared NOTHING. That is not a pass." -ForegroundColor Red
 }
 Write-Host ''
