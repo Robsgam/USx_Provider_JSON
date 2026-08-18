@@ -158,7 +158,17 @@ foreach ($d in $provDirs) {
     $ledgerRows = if ($tenantRows.ContainsKey($d.Name)) { @($tenantRows[$d.Name]) } else { @() }
     foreach ($r in $ledgerRows) {
         if ($r.Ver -eq $repo) { continue }
-        $isHeld = $r.Note -match '(?i)\bheld\b|deliberately BEHIND'
+        # HOLD LANGUAGE, WIDENED 2026-08-18 (Rob: "bert is a non issue  park it").
+        # The Bert Anzini row had ALREADY said "frozen on purpose -- CAD-config test only, any valid
+        # JSON suffices; do not flag drift" since 2026-07-20 -- about as explicit as an instruction
+        # gets -- but the pattern only matched 'held'/'deliberately BEHIND', so the tool asked about it
+        # on every run. A queue that keeps re-raising a settled decision is how a real item gets
+        # skimmed past, so recognising the ledger's own words is the fix, not editing the ledger to
+        # appease the regex.
+        # MEASURED BEFORE WIDENING: 'frozen on purpose|do not flag drift' matches EXACTLY ONE row in
+        # the whole ledger (Bert). No collateral suppression -- checked, not assumed, because a
+        # widened suppression pattern is the cheapest possible way to hide real drift.
+        $isHeld = $r.Note -match '(?i)\bheld\b|deliberately BEHIND|frozen on purpose|do not flag drift'
         $tag = if ($r.IsLive) { 'LIVE' } else { 'Foundation' }
         if ($isHeld) {
             [void]$flags.Add("$tag '$($r.Tenant)': v$($r.Ver) vs repo v$repo -- DELIBERATELY HELD, do not import without saying so")
