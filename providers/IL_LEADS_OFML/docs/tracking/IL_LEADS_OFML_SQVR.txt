@@ -14,20 +14,84 @@ Total combos: 9 CommSys (5 QIDMs)
   "N checked" (which reports what it COMPARED and runs lower -- IL shows 7 there). If a rebuild
   changes the combo count this line MUST move with it.
 
-*** THE TWO SECTIONS BELOW ARE UNFILLED TEMPLATE PLACEHOLDERS ON A TENANT-VERIFIED PROVIDER. ***
-  Recorded 2026-08-18, deliberately left visible rather than quietly deleted. IL_LEADS_OFML is
-  ALL-PASS 5/5 at 44/44 logs with enforce exiting 0, and its SQVR still says "populate after build".
-  That matters because the SQVR is what a TESTER READS to decide what to test -- so this provider
-  currently offers a tester nothing, while every automated gate reports it green. The authoritative
-  substitutes until it is written: tools\audit_test_coverage.ps1 -Path <json> for combo-vs-log
-  coverage, and logs\IL_LEADS_OFML_TEST_PLAN_v2.8.json for the per-combo test list.
-  NOT populated in this pass because Rob's instruction was scoped to the SQVR TOTALS; filling the
-  query-path table is a separate piece of work and is owed at IL's own next turn.
+POPULATED 2026-08-18. Both sections below had been unfilled template text ("populate after build") on
+  a provider that is ALL-PASS 5/5 at 44/44 with enforce exiting 0 -- every automated gate read green
+  while the human-facing document offered a tester nothing. Everything here is DERIVED, not recalled:
+  combos + set[]/any[]/conditions from the emitted IL_LEADS_OFML_v2.8.json, query scope from
+  docs/reference/IL_LEADS_OFML_SUPPORTED_QUERIES.txt (STATUS: CONFIRMED against the devdoc), and the
+  log counts by grouping logs/<Entity>/*.txt on their combo label and reading each RESULT line.
 
-QUERIES (pending metadata review)
-==================================
-  (populate from devdoc "Basic Queries Supported" after metadata review)
+QUERIES (devdoc "Basic Queries Supported" -- CONFIRMED, all 5 BUILT)
+====================================================================
+  The devdoc's Basic list is EXACTLY these five, in devdoc order. All five are built.
+    ArticleSingleQuery        -> Article   / QIDM label "Article"
+    BoatQuery                -> Boat      / QIDM label "Boat"
+    DriverLicenseQuery       -> Person    / QIDM label "Driver License"
+    GunQuery                 -> Firearm   / QIDM label "Firearm"
+    VehicleRegistrationQuery -> Vehicle   / QIDM label "Vehicle Registration"
+  NO DriverHistoryQuery on this provider -- it is not in the devdoc's Basic list. Do not read the
+  4-entity+Person shape as a missing DH card.
 
-QUERY PATHS
-===========
-  (populate after build -- one PENDING or CONFIRMED per combo)
+  DELIBERATELY NOT BUILT -- out of Basic scope, and NOT a coverage gap (no-combo-left-behind is
+  BASIC-scoped). Listed so a reader does not "discover" them as omissions:
+    Transactions Supported / CCH package : CCHCriminalHistoryQHQuery, CCHCriminalHistoryQR1Query
+                                           (belong to a future IL_LEADS_OFML_CCH variant)
+    Expanded Transaction Supported       : DriverLicenseByNameQuery, FirearmsOwnersIdQuery,
+                                           IlLeadsDriverAbstractQuery, IlLeadsHandicapPlacardQuery,
+                                           IlLeadsLeadsTypeQuery, IlLeadsSoundExQuery,
+                                           IlLeadsVehicleTitleQuery, IlLeadsWantedQWXQuery
+
+QUERY PATHS -- 9 combos, ALL CONFIRMED (44 logs, 44 PASS, 0 FAIL)
+==================================================================
+  "Fills" is what the officer types to reach the path; "Optional" rides in any[] and is transmitted
+  only when filled. "Routes when" is the existence gate that decides between sibling paths -- these
+  are existence-only by design (a value-comparison condition poisons the whole array).
+
+  VEHICLE -- VehicleRegistrationQuery                                        14 logs / 14 PASS
+  [CONFIRMED] Z5    plate, IN-STATE            Fills: LicensePlateNumber            7 logs
+              Optional: LicensePlateTypeCode, LicensePlateYear, ImageIndicator, relatedHitSearchIndicator
+              Routes when: RegistrationState NOT_EXISTS  (leave State blank for IL)
+  [CONFIRMED] Z2.P  plate, OUT-OF-STATE        Fills: LicensePlateNumber + State     1 log
+              Optional: LicensePlateTypeCode, LicensePlateYear, ImageIndicator, relatedHitSearchIndicator
+              Routes when: RegistrationState EXISTS
+              NOTE: thinnest coverage on the provider -- 1 log. Attribution-verified, but a re-sweep
+              should add the any[]-field variants here rather than to Z5, which already has 7.
+  [CONFIRMED] Z2.V  VIN                        Fills: VehicleIdentificationNumber    6 logs
+              Optional: VehicleMakeCode, vehicleYear, RegistrationState, ImageIndicator, relatedHitSearchIndicator
+              Routes when: LicensePlateNumber NOT_EXISTS   (plate beats VIN -- identifier priority)
+
+  PERSON -- DriverLicenseQuery                                               12 logs / 12 PASS
+  [CONFIRMED] Z2.O  by OLN                     Fills: OperatorLicenseNumber          5 logs
+              Optional: RegistrationState, ImageIndicator, relatedHitSearchIndicator
+              Routes when: (ungated -- OLN is the primary identifier)
+  [CONFIRMED] Z2.N  by name                    Fills: NameLast + NameFirst + BirthDate   7 logs
+              Optional: SexCode, nameMiddle, nameSuffix, ImageIndicator, relatedHitSearchIndicator
+              Routes when: OperatorLicenseNumber NOT_EXISTS  (OLN beats Name -- identifier priority)
+
+  FIREARM -- GunQuery                                                         6 logs /  6 PASS
+  [CONFIRMED] QG    by serial                  Fills: serialNumber                   6 logs
+              Optional: firearmMake, gunCaliber, ImageIndicator, relatedHitSearchIndicator
+              NOTE: the form fieldId is camelCase 'serialNumber', NOT the PascalCase USx token --
+              CAD injects the gun serial under that name, and matching it is what makes the
+              USx-query button populate the Firearm form from a CAD event.
+
+  ARTICLE -- ArticleSingleQuery                                               3 logs /  3 PASS
+  [CONFIRMED] QA    by serial + type           Fills: serialNumber + articleTypeCode  3 logs
+              Optional: ownerAppliedNumber
+              NOTE: articleTypeCode is MANDATORY here (in set[]), unlike most providers where the
+              type is optional -- an article serial alone will not fire this path.
+
+  BOAT -- BoatQuery                                                           9 logs /  9 PASS
+  [CONFIRMED] BQ.H  by hull                    Fills: BoatHullIdNumber               5 logs
+              Optional: RegistrationState, ImageIndicator, relatedHitSearchIndicator
+              Routes when: (ungated -- hull is the primary identifier)
+  [CONFIRMED] BQ.R  by registration            Fills: RegistrationNumber             4 logs
+              Optional: RegistrationState, ImageIndicator, relatedHitSearchIndicator
+              Routes when: BoatHullIdNumber NOT_EXISTS   (hull beats registration)
+
+  COVERAGE: 9 of 9 combos have at least one passing log; 44 logs, 44 PASS, 0 FAIL, 0 PENDING.
+  Verified by the four log gates at v2.8 -- content 44/44, metadata 44/44, attribution 44/44 (the
+  named combo is the one that actually fired), plan completeness ALL-PASS 5/5.
+  A LOG COUNT IS NOT EVIDENCE OF DISTINCTNESS: audit_log_inflation reports 1 clone group here, i.e.
+  two logs whose request is identical. It does not reduce combo coverage and clears when the plan is
+  next regenerated (the emit_test_plan vacuous-guardrail fix, 2026-08-18).
