@@ -21,7 +21,7 @@
 #     Owner search (RN/RS) is cross-entity (person fields on Vehicle) + lowest priority
 #     (Plate>VIN>SSN>Name). DealerPlateType routes ATDP.
 #   DriverLicenseQuery -- 4 built (DQ.O/DL OLN, DQ.N/DN Name); OLN>Name + State In/Out gates.
-#     ImageIndicator (Y) only on DQ.O (metadata-faithful). QWA + 2 BMVIMS deferred (non-basic).
+#     ImageIndicator (Y) on every entity that defines it (v2.5). QWA deferred (non-basic); ImageQuery REMOVED v2.6 by directive.
 #   DriverHistoryQuery -- KQ.N (Name+DOB+Sex), KQ.O (OLN). DH-suffix. BMVIMS(OLN) dropped
 #     (form-identical OLN shadow of KQ.O; devdoc folds it into the KQ OLN combo's optional
 #     ReasonCode). Attention auto-handler (CommsysGetLastNameFirstNameInitialRuleHandler) via
@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.5'
+$Version     = '2.6'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -309,7 +309,7 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In'
         }
     )
-    description     = 'DriverLicenseQuery -- DQ.O/DL (OLN), DQ.N/DN (Name). OLN>Name + State In/Out gates. ImageIndicator (Y) only on DQ.O.'
+    description     = 'DriverLicenseQuery -- DQ.O/DL (OLN), DQ.N/DN (Name). OLN>Name + State In/Out gates. ImageIndicator (Y) on DQ.O.'
     handlerFunction = 'CommsysTransactionRequestHandler'
     name            = 'OH_LEADS_DriverLicenseQuery'
     type            = 'QUERYINPUTDATAMAPPING'
@@ -386,65 +386,34 @@ $dhQuery = [PSCustomObject]@{
 }
 
 # =====================================================================
-# ImageQuery -- BMVIMS (OLN). NEW at v2.4: a devdoc-Basic query that had never been built.
+# ImageQuery -- REMOVED at v2.6 BY DIRECTIVE. Rob 2026-08-18: "the image query needs to go
+# away  be sure to remove it before we start".
 #
-# WHY IT IS BEING BUILT NOW. audit_supported_queries CHECK 0 reported "devdoc-Basic but NOT BUILT:
-# ImageQuery -- each must be a documented skip", and it was documented nowhere: not in
-# ACCEPTED_DIVERGENCES, not in BUILD_NOTES. Under no-combo-left-behind a devdoc-Basic query is built
-# or explicitly skipped with authority, and nothing here blocks building it:
-#   devdoc (line 248):  ImageQuery, "Possible Combinations 1. (In/Out) OperatorLicenseNumber,
-#                       [ReasonCode, Requestor, UserName]" -- OperatorLicenseNumber is M, rest O.
-#   metadata (v9):      ONE Combination keyReference="BMVIMS" primaryFieldReference=
-#                       "OperatorLicenseNumber", Requirements = Set[OperatorLicenseNumber]
-#                       Any[ReasonCode, Requestor, UserName]. Fields: OperatorLicenseNumber(20),
-#                       ReasonCode(1), Requestor(30), UserName(20).
-# Both authorities agree and the OLN control already exists on the DL card, so nothing new is needed
-# on the form. Built to the metadata EXACTLY: set[OperatorLicenseNumber], nothing else.
+# It was BUILT at v2.4 (also his call: audit_supported_queries CHECK 0 had reported it as a
+# devdoc-Basic query that was neither built nor documented as a skip). That reasoning is not
+# withdrawn -- it is SUPERSEDED. This is now an APPROVED SKIP with named authority, which is
+# exactly what CHECK 0 asks for; the same disposition FL_FCIC carries for ITS ImageQuery
+# ("ImageQuery = user-approved scope" in its registry, "APPROVED SKIP" in its BUILD_NOTES).
 #
-# autoSelect = $false ON PURPOSE. This is a standalone PHOTO transaction, not a refinement of the DL
-# search. With autoSelect=$true and set[OperatorLicenseNumber] it would co-fire on EVERY OLN entry,
-# so every routine licence check would also pull a photo -- unwanted traffic the officer never asked
-# for, and OH already has ImageIndicator on the DL card for the in-band image. $false renders it as a
-# named opt-in checkbox via queryLabel (the TX_TLETS_CCH pattern for officer-chosen transactions).
+# WHAT IT WAS: one combination, keyReference BMVIMS, primaryFieldReference OperatorLicenseNumber,
+# Set[OperatorLicenseNumber] and nothing else, autoSelect=$false so it rendered as a named opt-in
+# checkbox ("Driver Photo") rather than co-firing on every OLN entry.
 #
-# THE OPTIONAL TRIO IS DELIBERATELY NOT WIRED, and this is not a dropped optional:
-#   UserName  is the transaction-ENVELOPE user, already supplied by the AUTH config -- a form control
-#             for it would duplicate the envelope (the same class as the FL envelope-field finding
-#             where 55 "dropped optional" FAILs traced to one envelope field).
-#   Requestor and ReasonCode have NO control anywhere on OH today. With no control there is no
-#             officer input to discard, so nothing is silently dropped -- the devdoc-optional rule is
-#             about not throwing away what was typed. Adding them is a future refinement, not a gap.
+# NOTHING ELSE HAS TO COME OUT, and that is a property of how it was built, not luck: it carried
+# NO form controls of its own (it reused the Driver License card OLN), NO queriesToDeselect wiring
+# in either direction, and no card of its own. So this removal cannot orphan a control or strand a
+# deselect reference. The OLN control stays -- DriverLicenseQuery DQ.O needs it.
 #
-# keyRef BMVIMS is ALSO DriverLicenseQuery's keyRef. That is the metadata's own naming, and it is
-# legal: keyRefs collide across QIDMs (BUILD_RULES 13), which is exactly why every tool resolves
-# combos by (query, keyRef) and never by bare keyRef. Do not "fix" this to a synthetic name.
+# IN-BAND DRIVER IMAGES ARE UNAFFECTED. ImageIndicator still rides in DQ.O any[] at Y, so a
+# licence check still asks for the photo in the DriverLicenseQuery itself. What goes away is the
+# SEPARATE standalone photo transaction, not the image capability.
+#
+# SIDE EFFECT WORTH KNOWING: BMVIMS is no longer a BUILT keyRef anywhere on OH_LEADS. That
+# dissolves the registry conflict recorded in v2.5 BUILD_NOTES -- the row
+# "DriverHistoryQuery | BMVIMS | dropped-combo" was tripping audit_requirement_fidelity's
+# OVER-SUPPRESSION NOTE precisely BECAUSE BMVIMS named a combo we built here. With ImageQuery
+# gone there is no built BMVIMS to over-suppress. Do not "restore" ImageQuery to satisfy a gate.
 # =====================================================================
-$imgQuery = [PSCustomObject]@{
-    attributes = @(
-        [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
-    )
-    combinations = @(
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set = @('OperatorLicenseNumber'); any = @()
-                defaults = @()
-            }
-            primaryFieldReference = 'OperatorLicenseNumber'
-            keyReference          = 'BMVIMS'
-            state                 = 'In/Out'
-        }
-    )
-    description     = 'ImageQuery -- BMVIMS (OLN). Standalone driver-photo request, devdoc-Basic. autoSelect=$false so it is an officer opt-in and does not co-fire with every DriverLicenseQuery.'
-    handlerFunction = 'CommsysTransactionRequestHandler'
-    name            = 'OH_LEADS_ImageQuery'
-    type            = 'QUERYINPUTDATAMAPPING'
-    autoSelect      = $false
-    provider        = 'OH_LEADS'
-    providerType    = 'Commsys'
-    query           = 'ImageQuery'
-    queryLabel      = 'Driver Photo'
-    targetEntity    = 'Person'
-}
 
 # =====================================================================
 # GunQuery -- QG (serial required; caliber/make/relatedHit optional any[]).
@@ -594,7 +563,7 @@ $boatQuery = [PSCustomObject]@{
 }
 
 $ohBundle = [PSCustomObject]@{
-    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $imgQuery, $gunQuery, $artQuery, $boatQuery)
+    configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for OH_LEADS v${Version} -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, existence-only routing gates + identifier-priority guardrails"
     name           = 'OH_LEADS'
     type           = 'BUNDLE'
@@ -679,8 +648,9 @@ $vehicleForm = [PSCustomObject]@{
 # NCIC Image detached from the searches they qualify; the DL and DH paths each had their own box.
 # DH keeps its OWN card because the DH-suffix fieldIds are a separate field pool -- that is the
 # isolation mechanism, not a layout accident, so the two cards must NOT merge.
-# The DL card also serves the NEW ImageQuery (v2.4): it fires off the same OperatorLicenseNumber
-# control, so no extra field was added for it.
+# At v2.4 this card also served ImageQuery off the same OperatorLicenseNumber control; ImageQuery
+# was REMOVED at v2.6 by directive, and because it never had a control of its own the card is
+# unchanged by that removal (see the ImageQuery removal record above).
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
@@ -722,7 +692,7 @@ $perLayout = MakeLayouts @(
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- TWO cards (v2.4, collapsed from 5): Driver License (DQ.O/DL OLN, DQ.N/DN name, + ImageQuery BMVIMS photo-only) and Driver History (KQ.O OLN, KQ.N name) on its own DH-suffix field pool'
+    description  = 'Person queries -- TWO cards (collapsed from 5 at v2.4): Driver License (DQ.O/DL OLN, DQ.N/DN name) and Driver History (KQ.O OLN, KQ.N name) on its own DH-suffix field pool'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'

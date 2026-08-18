@@ -8,7 +8,18 @@ STATUS: CONFIRMED
 # Line 682 AOSOrionQuery begins the expanded "Transactions Supported" material, so Basic is
 # lines 22-681 and nothing at or past 682 (AOSOrion, the CBI* family, ...) is authorized here.
 #
-# ALL SEVEN BASIC QUERIES ARE NOW BUILT (v2.4). ImageQuery was the last one missing.
+# SIX OF THE SEVEN BASIC QUERIES ARE BUILT. ImageQuery is a USER-APPROVED SKIP, removed at v2.6
+# by directive (Rob 2026-08-18, "the image query needs to go away"). This line read "ALL SEVEN
+# BASIC QUERIES ARE NOW BUILT (v2.4)" and is corrected here rather than deleted, because the
+# history matters: ImageQuery WAS built at v2.4 precisely to satisfy CHECK 0, and the directive
+# supersedes that. The skip is documented in ACCEPTED_DIVERGENCES (ImageQuery | (devdoc #1) |
+# OperatorLicenseNumber | devdoc-combo-unbuilt) and in the v2.6 BUILD_NOTES entry, which is what
+# CHECK 0 asks for. THE ROW BELOW STAYS: this file is the DEVDOC ground truth, and ImageQuery IS
+# devdoc-supported. Deleting the row to silence audit_supported_queries CHECK 2 would falsify the
+# authority and weaken CHECK 0, which compares the BUILT queries against exactly this list. The
+# resulting "supported 'Driver Photo | OperatorLicenseNumber' has NO combo in JSON" WARN is
+# therefore CORRECT and EXPECTED -- it is the skip being visible, not a defect. enforce does not
+# escalate it (PHASE 2e passes; OH_LEADS enforce is 0 FAIL).
 #
 # WHAT CHANGED 2026-08-10, and why this file was PROVISIONAL until now:
 #   It read "DERIVED FROM JSON COMBOS, NOT YET CONFIRMED" -- a file generated FROM the JSON and then
@@ -19,7 +30,8 @@ STATUS: CONFIRMED
 #   Unlike AZ_AZDPS, no line here had to be REMOVED -- every entry that was here was real (22 PASS /
 #   0 FAIL / 0 WARN before the change). The defect was what the list did not contain.
 #
-#   ADDED: "Driver Photo | OperatorLicenseNumber" -- the newly built ImageQuery.
+#   ADDED: "Driver Photo | OperatorLicenseNumber" -- the ImageQuery built at v2.4 and REMOVED at
+#          v2.6 by directive. The row is retained as devdoc ground truth (see above).
 #     devdoc line 248:  "Possible Combinations 1. (In/Out) OperatorLicenseNumber,
 #                        [ReasonCode, Requestor, UserName]" (OLN mandatory, the rest optional)
 #     metadata v9:      ONE Combination keyReference="BMVIMS"

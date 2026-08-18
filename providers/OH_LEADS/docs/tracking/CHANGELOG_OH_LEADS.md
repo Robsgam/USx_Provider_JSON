@@ -2,9 +2,19 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.5** | Generated: 2026-08-18
+Current: **v2.6** | Generated: 2026-08-18
 
 ---
+
+## v2.6 -- 2026-08-18 -- ImageQuery REMOVED by directive -- APPROVED SKIP, before testing starts
+
+**CHANGED:** The ImageQuery QIDM (OH_LEADS_ImageQuery) is gone. Emitted JSON now holds 6 CommSys
+  QIDMs / 21 combos, zero occurrences of "ImageQuery", zero of the "Driver Photo" queryLabel,  
+  and NO live keyReference "BMVIMS" (the only surviving BMVIMS string is one descriptive  
+  sentence in the DriverHistoryQuery description, which is history, not wiring).  
+**REASON:** Rob 2026-08-18 -- "the image query needs to go away  be sure to remove it before we
+  start". Removed BEFORE the first import/test sweep so no captured log is ever attributable to  
+  a transaction we do not ship.  
 
 ## v2.5 -- 2026-08-18 -- NCIC Image defaults to Y on ALL entities -- the Rob-held flag closed at zero cost
 

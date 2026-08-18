@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.5.json
-  Generated: 2026-08-18 15:45
+  Source: OH_LEADS_v2.6.json
+  Generated: 2026-08-18 16:34
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-18 15:46
+ Generated: 2026-08-18 16:34
 ============================================================
 
 ============================================================
  METADATA AUDIT: OH_LEADS
 ============================================================
   XML: OH_LEADS.xml
-  JSON: OH_LEADS_v2.5.json
+  JSON: OH_LEADS_v2.6.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -23,7 +23,6 @@ METADATA AUDIT
   [PASS] DriverHistoryQuery: in XML and JSON
   [PASS] DriverLicenseQuery: in XML and JSON
   [PASS] GunQuery: in XML and JSON
-  [PASS] ImageQuery: in XML and JSON
   [PASS] VehicleRegistrationQuery: in XML and JSON
 
 --- CHECK 2: KeyReference Validation ---
@@ -35,7 +34,6 @@ METADATA AUDIT
   [PASS] DL: exists in XML DriverLicenseQuery
   [PASS] QWA: exists in XML DriverLicenseQuery
   [PASS] DN: exists in XML DriverLicenseQuery
-  [PASS] BMVIMS: exists in XML ImageQuery
   [PASS] QG: exists in XML GunQuery
 
 --- CHECK 3: Field Coverage ---
@@ -94,8 +92,7 @@ METADATA AUDIT
   [PASS]   GunSerialNumber: in XML and QIDM
   [PASS]   RelatedHitSearchIndicator: in XML and QIDM
   IdentityTheftQuery: (not built in JSON -- see CHECK 1)
-  ImageQuery:
-  [PASS]   OperatorLicenseNumber: in XML and QIDM
+  ImageQuery: (not built in JSON -- see CHECK 1)
   LoJackQuery: (not built in JSON -- see CHECK 1)
   OhLeadsEmergencyContactQuery: (not built in JSON -- see CHECK 1)
   OhLeadsWarrantByZIPQuery: (not built in JSON -- see CHECK 1)
@@ -169,8 +166,6 @@ METADATA AUDIT
   [PASS]   keyRef QG: any field 'GunMake' present
   [PASS]   keyRef QG: any field 'GunCaliber' present
   [PASS]   keyRef QG: any field 'RelatedHitSearchIndicator' present
-  ImageQuery:
-  [PASS]   keyRef BMVIMS: set field 'OperatorLicenseNumber' present
   VehicleRegistrationQuery:
   [PASS]   keyRef ATDP: set field 'LicensePlateNumber' present
   [PASS]   keyRef ATDP: set field 'LicensePlateTypeCode' present
@@ -213,8 +208,6 @@ METADATA AUDIT
   [PASS]   OperatorLicenseNumber: at least one combo built (e.g. DL)
   GunQuery: 1 metadata search paths
   [PASS]   GunSerialNumber: at least one combo built (e.g. QG)
-  ImageQuery: 1 metadata search paths
-  [PASS]   OperatorLicenseNumber: at least one combo built (e.g. BMVIMS)
   VehicleRegistrationQuery: 4 metadata search paths
   [PASS]   LicensePlateNumber: at least one combo built (e.g. ATDP)
   [PASS]   Name: at least one combo built (e.g. RN)
@@ -235,7 +228,6 @@ METADATA AUDIT
   [PASS] NameFirst: maxLength 30 matches XML (Name)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] serialNumber: maxLength 20 matches XML (GunSerialNumber)
-  [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] AddressCounty: maxLength 4 matches XML (AddressCounty)
   [PASS] DealerPlateType: maxLength 1 matches XML (DealerPlateType)
   [PASS] LicensePlateNumber: maxLength 10 matches XML (LicensePlateNumber)
@@ -250,6 +242,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 156 PASS / 0 FAIL / 0 WARN
+Total: 150 PASS / 0 FAIL / 0 WARN
 ============================================================
 

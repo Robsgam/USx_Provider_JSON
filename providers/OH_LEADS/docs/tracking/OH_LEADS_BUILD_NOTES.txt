@@ -3,6 +3,73 @@ OH_LEADS -- Build Notes
 Provider: OH_LEADS
 State: Ohio
 Network: LEADS (Law Enforcement Automated Data System)
+v2.6  2026-08-18  ImageQuery REMOVED by directive -- APPROVED SKIP, before testing starts
+  CHANGED: The ImageQuery QIDM (OH_LEADS_ImageQuery) is gone. Emitted JSON now holds 6 CommSys
+    QIDMs / 21 combos, zero occurrences of "ImageQuery", zero of the "Driver Photo" queryLabel,
+    and NO live keyReference "BMVIMS" (the only surviving BMVIMS string is one descriptive
+    sentence in the DriverHistoryQuery description, which is history, not wiring).
+  REASON: Rob 2026-08-18 -- "the image query needs to go away  be sure to remove it before we
+    start". Removed BEFORE the first import/test sweep so no captured log is ever attributable to
+    a transaction we do not ship.
+
+  IT WAS BUILT AT v2.4 FOR THE OPPOSITE REASON, AND THAT IS NOT A CONTRADICTION -- IT IS SUPERSEDED.
+  audit_supported_queries CHECK 0 had reported ImageQuery as devdoc-Basic yet neither built nor
+  documented as a skip, and no-combo-left-behind requires one or the other. v2.4 chose "build it".
+  The directive chooses "skip it", and the skip is now DOCUMENTED with named authority, which is
+  exactly what CHECK 0 asks for. Both states satisfy the gate; only one satisfies the operator.
+  Same disposition FL_FCIC has carried for ITS ImageQuery all along ("ImageQuery = user-approved
+  scope" in its registry, "APPROVED SKIP" in its BUILD_NOTES). DO NOT "restore" it to green a gate.
+
+  IN-BAND DRIVER PHOTOS ARE UNAFFECTED, and this is the distinction that matters operationally:
+  ImageIndicator still rides in DriverLicenseQuery DQ.O any[] at 'Y', so a licence check still asks
+  for the photo INSIDE the DL query. What was removed is the SEPARATE standalone photo transaction
+  (one combination, keyReference BMVIMS, Set[OperatorLicenseNumber] only, autoSelect=$false so it
+  rendered as a named opt-in "Driver Photo" checkbox), not the image capability.
+
+  THE REMOVAL COULD NOT ORPHAN ANYTHING, and that is a property of how v2.4 built it rather than
+  luck -- worth stating because it is why this is a 1-line bundle change and not a layout pass:
+    - it carried NO form controls of its own (it fired off the Driver License card's existing OLN),
+    - it had NO queriesToDeselect wiring in either direction,
+    - it had NO card of its own.
+  So nothing was left dangling. The OLN control stays -- DriverLicenseQuery DQ.O requires it, and
+  it is still present in all 3 layout variants. Verified from the emitted JSON, not the intent.
+
+  IT ALSO DISSOLVED A TOOLING CONFLICT THAT v2.5 HAD TO RECORD AS UNRESOLVED. v2.5 noted that the
+  registry row "DriverHistoryQuery | BMVIMS | dropped-combo" tripped audit_requirement_fidelity's
+  OVER-SUPPRESSION NOTE and could not be re-keyed, because audit_query_trace matches the registry
+  on the BARE metadata keyRef while fidelity's prefix bridge over-suppresses on that same string --
+  the two gates wanted opposite spellings. That NOTE fired precisely BECAUSE BMVIMS named a combo
+  we built here. With ImageQuery gone there is no built BMVIMS, so the NOTE is gone and fidelity
+  reports 22 branches / 0 UNDER / 0 OVER cleanly. The conflict was real; it is simply no longer
+  reachable on THIS provider. It will return on any provider that builds a shared keyRef.
+
+  THE ONE EXPECTED WARN, AND WHY IT IS NOT SILENCED: audit_supported_queries CHECK 2 reports
+  "supported 'Driver Photo | OperatorLicenseNumber' has NO combo in JSON (intentional skip?
+  document it)". That check has NO skip-marker mechanism -- any devdoc-supported query without a
+  combo warns unconditionally. The row could be deleted from
+  docs/reference/OH_LEADS_SUPPORTED_QUERIES.txt to make it disappear, and that was REJECTED: that
+  file is the DEVDOC ground truth, ImageQuery genuinely IS devdoc-supported, and CHECK 0 compares
+  the built queries against exactly that list -- so deleting the row would falsify the authority
+  and weaken the gate that motivated all of this. The WARN is the skip being VISIBLE. enforce does
+  not escalate it (PHASE 2e passes).
+  Registered: ImageQuery | (devdoc #1) | OperatorLicenseNumber | devdoc-combo-unbuilt.
+  Keyed on the DEVDOC ITEM, never a keyRef -- an unbuilt-class rule naming a keyRef suppresses any
+  combo built under that name, and BMVIMS is a keyRef the metadata SHARES across three
+  transactions. Nothing is built under it today; keying on the devdoc item keeps the row correct if
+  something ever is. Measured: 22 branches before AND after registering, no OVER-SUPPRESSION NOTE.
+  Also corrected the reference extract, which asserted "ALL SEVEN BASIC QUERIES ARE NOW BUILT".
+
+  PHASE 1 at v2.6: [1] devdoc combinations all accounted for - [2] optionals all route and transmit
+  - [3] 21 combos, most-specific-first respected - [4] 22 branches, 0 under / 0 over - [5] 24 built,
+  0 prefill-dead, 0 shadow, 1 missing (= this approved skip) - [6] gate efficacy 8/8 killed.
+  Fuzz: 1 survivor, "set-to-any @ DriverLicenseQuery[2] NameFirst" -- the documented composite-Name
+  granularity limit (the mutation leaves NameLast in set[], which is what fidelity's surname guard
+  checks), a CORRECT survivor and seed-dependent (it did not recur at seed 962590 on v2.5).
+  enforce -Provider OH_LEADS exits 0. Validator recorded in STATUS.txt.
+  STILL OWED: never USx-tenant-tested and never imported -- v2.6 owes a first import to
+  usx-oh-leads.mark43.com and then a full 5-entity sweep from T1.
+
+
 v2.5  2026-08-18  NCIC Image defaults to Y on ALL entities -- the Rob-held flag closed at zero cost
   CHANGED: ImageIndicator flipped 'N' -> 'Y' on Article and Boat, in BOTH places the rule requires --
     the form initialValue (ROW_ART_3, ROW_BOA_2) and the combo defaults[] CAD twin on all four

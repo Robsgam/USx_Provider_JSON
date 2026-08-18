@@ -1385,7 +1385,7 @@
                                                    "targetEntity":  "Vehicle"
                                                },
                                                {
-                                                   "description":  "Person queries -- TWO cards (v2.4, collapsed from 5): Driver License (DQ.O/DL OLN, DQ.N/DN name, + ImageQuery BMVIMS photo-only) and Driver History (KQ.O OLN, KQ.N name) on its own DH-suffix field pool",
+                                                   "description":  "Person queries -- TWO cards (collapsed from 5 at v2.4): Driver License (DQ.O/DL OLN, DQ.N/DN name) and Driver History (KQ.O OLN, KQ.N name) on its own DH-suffix field pool",
                                                    "label":  "Person",
                                                    "layout":  {
                                                                   "default":  {
@@ -7118,7 +7118,7 @@
                                                                             "state":  "In"
                                                                         }
                                                                     ],
-                                                   "description":  "DriverLicenseQuery -- DQ.O/DL (OLN), DQ.N/DN (Name). OLN\u003eName + State In/Out gates. ImageIndicator (Y) only on DQ.O.",
+                                                   "description":  "DriverLicenseQuery -- DQ.O/DL (OLN), DQ.N/DN (Name). OLN\u003eName + State In/Out gates. ImageIndicator (Y) on DQ.O.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "OH_LEADS_DriverLicenseQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7275,46 +7275,6 @@
                                                    "queriesToDeselect":  [
                                                                              "DriverLicenseQuery"
                                                                          ]
-                                               },
-                                               {
-                                                   "attributes":  [
-                                                                      {
-                                                                          "name":  "OperatorLicenseNumber",
-                                                                          "size":  20,
-                                                                          "sourceField":  [
-                                                                                              "OperatorLicenseNumber"
-                                                                                          ],
-                                                                          "targetField":  "OperatorLicenseNumber"
-                                                                      }
-                                                                  ],
-                                                   "combinations":  [
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "OperatorLicenseNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ],
-                                                                                                 "defaults":  [
-
-                                                                                                              ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "OperatorLicenseNumber",
-                                                                            "keyReference":  "BMVIMS",
-                                                                            "state":  "In/Out"
-                                                                        }
-                                                                    ],
-                                                   "description":  "ImageQuery -- BMVIMS (OLN). Standalone driver-photo request, devdoc-Basic. autoSelect=$false so it is an officer opt-in and does not co-fire with every DriverLicenseQuery.",
-                                                   "handlerFunction":  "CommsysTransactionRequestHandler",
-                                                   "name":  "OH_LEADS_ImageQuery",
-                                                   "type":  "QUERYINPUTDATAMAPPING",
-                                                   "autoSelect":  false,
-                                                   "provider":  "OH_LEADS",
-                                                   "providerType":  "Commsys",
-                                                   "query":  "ImageQuery",
-                                                   "queryLabel":  "Driver Photo",
-                                                   "targetEntity":  "Person"
                                                },
                                                {
                                                    "attributes":  [
@@ -7649,7 +7609,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for OH_LEADS v2.5 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, existence-only routing gates + identifier-priority guardrails",
+                        "description":  "Provider configuration for OH_LEADS v2.6 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, existence-only routing gates + identifier-priority guardrails",
                         "name":  "OH_LEADS",
                         "type":  "BUNDLE",
                         "provider":  "OH_LEADS"

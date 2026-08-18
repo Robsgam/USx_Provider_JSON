@@ -1,8 +1,8 @@
 ﻿OH_LEADS METADATA REFERENCE
 ============================
 Generated: 2026-08-18
-Source: OH_LEADS.xml (metadata) + OH_LEADS_v2.5.json
-Metadata: 188 total transactions, 7 queries built in JSON
+Source: OH_LEADS.xml (metadata) + OH_LEADS_v2.6.json
+Metadata: 188 total transactions, 6 queries built in JSON
 
 ================================================================================
 1. ArticleSingleQuery (version 9)
@@ -131,25 +131,7 @@ BUILD COVERAGE (1 of 1 built):
   BUILT   QG             set[serialNumber]
 
 ================================================================================
-6. ImageQuery (version 9)
-================================================================================
-
-METADATA FIELDS (4):
-  OperatorLicenseNumber Alphanumeric  maxLen=20  Operator License Number
-  ReasonCode            Alphanumeric  maxLen= 1  Reason Code
-  Requestor             Alphanumeric  maxLen=30  Requestor
-  UserName              Alphanumeric  maxLen=20  User Name
-
-METADATA COMBINATIONS (1 total):
-  KeyRef      Primary                 Set                                                    Any
-  ------------  ----------------------  -----------------------------------------------------  ------------------------------
-  BMVIMS        OperatorLicenseNumber   OperatorLicenseNumber                                  ReasonCode, Requestor, User...
-
-BUILD COVERAGE (1 of 1 built):
-  BUILT   BMVIMS         set[OperatorLicenseNumber]
-
-================================================================================
-7. VehicleRegistrationQuery (version 30)
+6. VehicleRegistrationQuery (version 30)
 ================================================================================
 
 METADATA FIELDS (11):
@@ -200,10 +182,9 @@ BUILD SUMMARY
   DriverHistoryQuery                         3      2     1  67%
   DriverLicenseQuery                         7      5     2  71%
   GunQuery                                   1      1     0  100% (COMPLETE)
-  ImageQuery                                 1      1     0  100% (COMPLETE)
   VehicleRegistrationQuery                   9      7     2  78%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   27     22     5  81%
+  TOTAL                                   26     21     5  81%
 
 ================================================================================
 UNBUILT METADATA COMBOS (5 combos in metadata, not in JSON)
@@ -216,7 +197,7 @@ UNBUILT METADATA COMBOS (5 combos in metadata, not in JSON)
   QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
 
 ================================================================================
-ALL UNBUILT TRANSACTIONS (181 of 188 in metadata)
+ALL UNBUILT TRANSACTIONS (182 of 188 in metadata)
 ================================================================================
 
   AlarmExchangeResponse                    v4    1 combos
@@ -265,6 +246,7 @@ ALL UNBUILT TRANSACTIONS (181 of 188 in metadata)
   IdentityTheftQuery                       v3    2 combos
   IdentityTheftSupplementalCancel          v5    3 combos
   IdentityTheftSupplementalEntry           v5    3 combos
+  ImageQuery                               v9    1 combos
   LicensePlateCancel                       v4    1 combos
   LicensePlateClear                        v4    1 combos
   LicensePlateEntry                        v4    1 combos

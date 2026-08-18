@@ -2,7 +2,22 @@ OH_LEADS SUPPORTED QUERY VALIDATION REPORT
 ==============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-08-18
-JSON version: v2.5
+JSON version: v2.6
+Total combos: 21 CommSys (6 QIDMs)
+  STATED 2026-08-18 SO THE GATE CAN ACTUALLY CHECK THIS FILE. audit_sqvr_integrity CHECK 2 compares
+  a stated combo/QIDM total against the emitted JSON, and this SQVR asserted no total, so CHECK 2
+  reported "DID NOT RUN -- nothing was compared" while the file still read as PASS overall. An
+  assertion nobody makes cannot be wrong, which is exactly how HI_HCJDC_OFML's SQVR carried
+  "17 combos" against a JSON holding 12 through nine version bumps. Counted from the emitted JSON
+  via audit_test_coverage.ps1 ("Total combos (CommSys): 21"), NOT from audit_combo_reachability's
+  "N checked", which reports what it COMPARED and runs lower. If a rebuild changes the combo count
+  this line MUST move with it.
+  6 QIDMs, not 7: ImageQuery was REMOVED at v2.6 by directive (Rob 2026-08-18) and is a documented
+  USER-APPROVED SKIP -- registered as ImageQuery | (devdoc #1) | OperatorLicenseNumber |
+  devdoc-combo-unbuilt, with the reasoning in the v2.6 BUILD_NOTES entry. Driver photos are still
+  requested IN-BAND via ImageIndicator ('Y') in DriverLicenseQuery DQ.O; what went away is the
+  separate standalone photo transaction, not the capability. Do NOT test for a "Driver Photo"
+  checkbox -- it no longer exists on the form.
 
 QUERIES (pending metadata review)
 ==================================
