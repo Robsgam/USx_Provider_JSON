@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -File tools/check_test_preconditions.ps1 -FromHook"
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_test_preconditions.ps1 -FromHook"
           }
         ]
       }
