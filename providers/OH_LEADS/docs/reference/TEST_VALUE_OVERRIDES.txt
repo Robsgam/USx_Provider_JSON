@@ -5,3 +5,23 @@
 # ('X...') makes the provider reject the query, which yields a log proving the field TRANSMITS but
 # not that the query RESOLVES (TX v4.15, BUILD_RULES 24 family).
 Article.NCICNumber=A123456789
+
+# ADDED 2026-08-18 -- the four values emit_test_plan named as "no test value (unmapped in
+# Get-TestValue)", plus the two new owner name components. WHY THIS MATTERED: without them the
+# generator emitted a test with a BLANK fieldId and BLANK value, so on the first live Vehicle sweep
+# the driver logged 'field "undefined" did not fill' on RS and RN, and RN never submitted at all
+# (3 attempts) because its mandatory OwnerLastName/OwnerFirstName were never filled -- the form
+# correctly kept Send disabled. The driver's console blamed latency; it was not latency.
+# ATDP had NO plan test at all for the same reason (DealerPlateType unmapped).
+# Entity-scoped form ('<Entity>.<fieldId>=value') so these cannot leak onto another entity's
+# same-named control.
+Vehicle.OwnerLastName=DOE
+Vehicle.OwnerFirstName=JOHN
+Vehicle.OwnerMiddleName=A
+Vehicle.OwnerNameSuffix=JR
+Vehicle.OwnerSocialSecurityNumber=123456789
+# DealerPlateType is maxLen 1 and its devdoc "Possible Values" column is EMPTY, so this single
+# character is NOT authority-derived -- it is a placeholder chosen to make the ATDP dealer-plate
+# combo drivable at all. If TLETS/LEADS rejects it on the first live run, that is the value to
+# change, not the build.
+Vehicle.DealerPlateType=D

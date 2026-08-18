@@ -101,6 +101,88 @@ if ($jpF) {
     $bad = @($jt2 | Where-Object { "$($_.expectedKeyRef)" -match 'NO-FIRE|UNREACHABLE' })
     Out-Line ("      {0} plan tests, {1} that cannot fire" -f $jt2.Count,$bad.Count) $(if ($bad.Count) { 'Red' } else { 'Green' })
     if ($bad.Count) { $block += "$($bad.Count) plan test(s) cannot fire -- a blank result would be ambiguous" }
+    # ── FILLABILITY: can each plan test ACTUALLY be driven? ──────────────────────────
+    # THE MARKER CHECK ABOVE COULD NOT FAIL ON THE DEFECT THAT MATTERS. It greps
+    # expectedKeyRef for 'NO-FIRE|UNREACHABLE' (markers the SPEC generator writes) and
+    # NEVER LOOKS AT THE FILLS -- so a test carrying a blank fieldId, a blank value, or
+    # missing mandatory fields reads as perfectly healthy and the run is cleared.
+    # OH_LEADS v2.9, 2026-08-18: this section printed "50 plan tests, 0 that cannot fire"
+    # and "PRE-FLIGHT CLEAR -- sweep away", then the driver reported
+    #   field "undefined" did not fill (value="undefined")
+    # on T5(RS) and T6(RN) -- each held ONE fill whose fieldId AND value were both EMPTY --
+    # and T6/T7/T8 never submitted at all because RN's mandatory OwnerLastName/OwnerFirstName
+    # were never in the fills, so Send stayed disabled. The driver blamed latency; it was not
+    # latency. ROOT CAUSE: emit_test_plan.ps1 has no test value for OwnerSocialSecurityNumber,
+    # OwnerLastName, OwnerFirstName or DealerPlateType, and emitted a BLANK entry instead of
+    # refusing to emit the test. A plan that cannot be driven must never reach the operator.
+    $ctl = @{}      # entity -> @{ fieldId = initialValue }
+    $comboSets = @{}  # "entity|keyRef" -> @(set fields)
+    try {
+        $oJ = Get-Content $jsonPath -Raw | ConvertFrom-Json
+        foreach ($bnd in @($oJ.bundles)) {
+            foreach ($cf in @($bnd.configurations)) {
+                if ("$($cf.type)" -eq 'QUERYINPUTFORM') {
+                    $ent = "$($cf.targetEntity)"
+                    if (-not $ctl.ContainsKey($ent)) { $ctl[$ent] = @{} }
+                    # NODES SIT DIRECTLY UNDER EACH LAYOUT VARIANT -- there is NO .nodes level.
+                    # Walking $cf.layout.default.nodes yields NOTHING, which made the first version of
+                    # this check report EVERY field on EVERY entity as an orphan (125 false findings on
+                    # OH_LEADS). Same enumeration audit_wiring_closure uses; union across all variants,
+                    # because a control present only on CAD is still a control.
+                    foreach ($vp in $cf.layout.PSObject.Properties) {
+                        foreach ($np in $vp.Value.PSObject.Properties) {
+                            $p = $np.Value.props
+                            if ($p -and $p.fieldId) { $ctl[$ent]["$($p.fieldId)"] = "$($p.initialValue)" }
+                        }
+                    }
+                }
+                if ("$($cf.type)" -eq 'QUERYINPUTDATAMAPPING' -and "$($cf.provider)" -ne 'RMS') {
+                    foreach ($cb in @($cf.combinations)) {
+                        $comboSets["$($cf.targetEntity)|$($cb.keyReference)"] = @(@($cb.requirements.set) | Where-Object { $_ })
+                    }
+                }
+            }
+        }
+    } catch { }
+    $blank = @(); $orphan = @(); $unsat = @(); $nFills = 0
+    foreach ($t in $jt2) {
+        $ent = "$($t.entity)"
+        $have = @{}
+        foreach ($fl in @($t.fills)) {
+            $nFills++
+            $fid = "$($fl.fieldId)"; $val = "$($fl.value)"
+            if (-not $fid -or -not $val) { $blank += "T$($t.n) $ent/$("$($t.expectedKeyRef)") fieldId='$fid' value='$val'"; continue }
+            $have[$fid] = $true
+            if ($ctl.ContainsKey($ent) -and -not $ctl[$ent].ContainsKey($fid)) { $orphan += "T$($t.n) $ent '$fid' is in no $ent form control" }
+        }
+        $kr = "$($t.expectedKeyRef)"
+        if ($kr -and $kr -notmatch 'NO-FIRE|UNREACHABLE' -and $comboSets.ContainsKey("$ent|$kr")) {
+            foreach ($need in $comboSets["$ent|$kr"]) {
+                if ($have.ContainsKey($need)) { continue }
+                if ($ctl.ContainsKey($ent) -and $ctl[$ent].ContainsKey($need) -and $ctl[$ent][$need]) { continue }  # form-prefilled
+                if ($ctl.ContainsKey($ent) -and -not $ctl[$ent].ContainsKey($need)) { continue }                    # no control at all: wiring_closure class C owns that
+                $unsat += "T$($t.n) $ent/$kr mandatory '$need' is neither filled nor prefilled -- Send will stay DISABLED"
+            }
+        }
+    }
+    $noTest = @()
+    foreach ($k in $comboSets.Keys) {
+        $e2,$k2 = $k -split '\|',2
+        if (-not @($jt2 | Where-Object { "$($_.entity)" -eq $e2 -and "$($_.expectedKeyRef)" -eq $k2 }).Count) { $noTest += "$e2/$k2" }
+    }
+    Out-Line ("      fillability: {0} test(s) / {1} fill(s) examined" -f $jt2.Count,$nFills) 'Gray'
+    if (-not $jt2.Count -or -not $nFills) {
+        Out-Line '      [WARN] fillability reached NO VERDICT -- nothing was examined, which is not a pass' 'Yellow'
+    } elseif (-not ($blank.Count + $orphan.Count + $unsat.Count)) {
+        Out-Line '      [PASS] every plan test has a non-blank fill for every mandatory field' 'Green'
+    }
+    foreach ($b in $blank)  { Out-Line "      [FAIL] BLANK FILL   $b" 'Red' }
+    foreach ($b in $orphan) { Out-Line "      [FAIL] ORPHAN FILL  $b" 'Red' }
+    foreach ($b in $unsat)  { Out-Line "      [FAIL] UNSATISFIED  $b" 'Red' }
+    if ($blank.Count)  { $block += "$($blank.Count) plan test fill(s) are BLANK -- the driver fills 'undefined' and the result is meaningless" }
+    if ($orphan.Count) { $block += "$($orphan.Count) plan fill(s) name a control that does not exist -- a rename was not propagated" }
+    if ($unsat.Count)  { $block += "$($unsat.Count) plan test(s) omit a mandatory field -- Send stays disabled, nothing is sent" }
+    if ($noTest.Count) { Out-Line ("      [NOTE] {0} built combo(s) have NO plan test: {1}" -f $noTest.Count,($noTest -join ', ')) 'Yellow' }
 }
 
 # ── 3. environment (only matters pre-sweep) ──────────────────────────────────────────

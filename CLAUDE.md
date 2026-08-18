@@ -629,8 +629,35 @@ its gates, so the phase word maps to a command, not to a checklist someone has t
 | Phase word | Command | What it owns |
 |---|---|---|
 | **"build" / "rebuild"** | `build_phase1.ps1 -Provider <NAME>` | HANDS-OFF. Proves the build against the sources before a human is asked for anything: [1] every devdoc combination built, [2] every devdoc optional routes AND transmits, [3] combo priority (no ungated subset ahead of a superset), [3b] **devdoc listing order** as the tiebreaker, [4] per-combination requirement fidelity, [5] query trace / prefill-dead, [6] gate efficacy (hand-authored mutations), **[6b] random unaimed fuzz**, [7] enforce. Ends with SHORTCOMINGS + an INTERPRETATION decision tree rather than a bare pass/fail. |
-| **"test"** | `test_phase2.ps1 -Provider <NAME>` (then `-PostIngest`) | **AUTOMATED** — the browser driver runs the plan and the watcher ingests; the human's part is the rendered-form review (pre and post) evidenced on the Jira ticket. Pre-flight: [1] SPEC-vs-JSON plan coverage (an independent statement, not a JSON mirror), [2] package alignment + unfireable-test check, [3] environment. `-PostIngest` runs the FOUR log gates: 6c content, 6d metadata, 2i attribution, plan completeness. |
+| **"test"** | `test_phase2.ps1 -Provider <NAME>` (then `-PostIngest`) | **AUTOMATED** — the browser driver runs the plan and the watcher ingests; the human's part is the rendered-form review (pre and post) evidenced on the Jira ticket. Pre-flight: [1] SPEC-vs-JSON plan coverage (an independent statement, not a JSON mirror), [2] package alignment + **FILLABILITY** (rewritten 2026-08-18 — see below), [3] environment. `-PostIngest` runs the FOUR log gates: 6c content, 6d metadata, 2i attribution, plan completeness. |
 | **"finalize" / "save"** | `enforce.ps1 -Provider <NAME>` → commit+push → `audit_lifecycle.ps1` | Exit 0 is the definition of done. The lifecycle tail (PHASE 2r) is what makes it *finished* rather than merely green: the Jira entry names the current version and the import ledger accounts for it. |
+
+
+**PHASE 2 STEP [2] FILLABILITY -- the check that was named but never performed (2026-08-18).** It
+read `$bad = $jt2 | Where-Object { $_.expectedKeyRef -match "NO-FIRE|UNREACHABLE" }` -- it grepped
+two marker strings and **never looked at the FILLS**, so it printed "50 plan tests, 0 that cannot fire"
+and **"PRE-FLIGHT CLEAR -- sweep away"** on an OH_LEADS plan holding tests that provably could not run.
+The operator drove it and the browser reported `field "undefined" did not fill (value="undefined")` on
+RS and RN, then three consecutive RN tests never submitted at all. **The driver console blamed latency;
+it was not latency** -- RN's mandatory `OwnerLastName`/`OwnerFirstName` were never in the fills, so the
+tenant correctly kept Send DISABLED. Now checks three classes and prints its denominator: **BLANK FILL**
+(fieldId or value empty -- the driver fills `undefined`), **ORPHAN FILL** (a fill naming a control that
+does not exist -- an unpropagated rename), **UNSATISFIED** (a mandatory `set[]` field neither filled nor
+form-prefilled -- nothing is sent), plus a `[NOTE]` for a built combo with **no plan test at all**
+(OH's dealer-plate `ATDP` had none). A 0-fill run WARNs rather than passing. **The information already
+existed and nothing consumed it:** `emit_test_plan` prints `Vehicle RN set[]: OwnerLastName has no test
+value (unmapped in Get-TestValue)` by name -- the same orphaned-finding shape as `audit_layout_flow`.
+Fix is test data, not a build: add the named fields to `docs/reference/TEST_VALUE_OVERRIDES.txt`
+(entity-scoped `<Entity>.<fieldId>=value` preferred). OH went 50 tests / 2 BLANK / 7 UNSATISFIED ->
+**56 tests / 151 fills clean**, recovering ATDP. ⚠️ **Its first draft raised ~125 ORPHAN findings and
+every one was MY PROBE** -- nodes sit **directly under each layout variant**, there is no `.nodes` level,
+so `$cf.layout.default.nodes` yields nothing and every field on every entity read as orphaned. Use the
+`audit_wiring_closure` enumeration (`layout.PSObject.Properties` -> variant -> node). LAW 2 both ways:
+FAILS on OH, and **all 8 tenant-verified providers are clean (592 tests / 1948 fills)** -- expected,
+since a package that actually drove and passed cannot contain an unfireable test. Live elsewhere and
+FLAGGED, not fixed: `[FLAG:plan-fillability-unfireable-tests]` on TN_TIES (4 BLANK / 4 UNSAT),
+CA_eSUN (26 UNSAT), MD_METERS (3 UNSAT).
+
 
 Two is not enough and neither is one: `pipeline.ps1` builds, but only PHASE 1 asks *whether the
 build matches the devdoc*; `enforce` gates the repo, but only PHASE 2 proves the wire.
