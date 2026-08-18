@@ -95,10 +95,42 @@ foreach ($p in $Providers) {
         $x = [regex]::Match($c, '(?s)COMMSYS XML\s*\n(.*?)(?:COMMSYS XML RESPONSE|RMS QUERY|FIELD ANALYSIS)').Groups[1].Value
         $lbl = $l.BaseName -replace "^$([regex]::Escape("${p}_v${ver}_"))", ''
 
-        # A. clone attack -- normalise whitespace so pretty-print differences do not mask a clone
+        # A. clone attack -- normalise whitespace so pretty-print differences do not mask a clone,
+        # AND strip the PER-SUBMISSION UNIQUE envelope fields.
+        # *** THIS CHECK COULD NOT FAIL UNTIL 2026-08-18. *** Every submission carries a unique
+        # <Id> (transaction id), so no two logs ever hashed the same and "[A CLONE] none -- every
+        # log's wire XML is distinct" was a VACUOUS PASS on every provider, every run, forever.
+        # Found by prediction: TX_TLETS v4.21 plan tests n97 and n98 are BYTE-IDENTICAL (same fills,
+        # same expectedKeyRef=QBBoatHullIdNumber), so they must produce functionally identical
+        # requests -- yet the gate reported 0 clones across 98 logs. Diffing the two wires showed
+        # they differed in exactly ONE element: <Id>. Everything a clone check actually cares about
+        # -- the query payload -- was identical.
+        # A clone is "same REQUEST CONTENT twice", not "same bytes twice": two tests that send the
+        # same payload prove one thing, not two, and that is coverage inflation whatever the ids say.
         if ($x.Trim()) {
-            $norm = ($x -replace '\s+', '').ToLower()
-            $h = Get-Sha256Hex $norm
+            # TWO forms of per-submission id, and MISSING THE SECOND ONE KEPT THE GATE VACUOUS EVEN
+            # AFTER THE FIRST FIX: the correlation id appears BOTH as an <Id> ELEMENT and as an
+            # id="..." ATTRIBUTE on <api:Transaction>. Stripping only the element still left the two
+            # byte-identical TX_TLETS n97/n98 tests hashing differently. Found by diffing the two
+            # normalised strings character by character (they diverged at char 306, inside
+            # <api:Transaction id="01M0APF...">), not by reasoning about the regex.
+            $norm = $x -replace '(?is)<(Id|Session|TransactionId|Timestamp|DateTime)>[^<]*</\1>', ''
+            $norm = $norm -replace '(?i)\sid="[^"]*"', ''
+            $norm = ($norm -replace '\s+', '').ToLower()
+            # A CLONE IS SAME INPUT *AND* SAME OUTPUT -- keying on the wire alone is wrong here.
+            # A guardrail test deliberately fills a COMPETING identifier to prove it is ignored, so
+            # a PASSING guardrail produces wire IDENTICAL to its plain base test. That is the
+            # evidence, not duplication: "OLN alone fires DQOLN" and "OLN+Name still fires DQOLN"
+            # are two different tests with two different inputs that must agree on the output.
+            # Keying on wire-only flagged 50 such pairs across 6 providers (TX 4 / NY 14 / NJ 5 /
+            # FL 13 / HI 5 / CA 9) -- all correct behaviour. Shipping that would have trained
+            # everyone to ignore attack A, which is strictly worse than the vacuous pass it replaced.
+            # So the fills are folded into the key: identical wire + identical fills = a genuine
+            # clone (two tests proving one thing), identical wire + different fills = a guardrail
+            # doing its job.
+            $qs = [regex]::Match($c, '(?s)QUERY STRING.*?(\{.*?\})').Groups[1].Value
+            $qsNorm = ($qs -replace '\s+', '').ToLower()
+            $h = Get-Sha256Hex ($norm + '|FILLS|' + $qsNorm)
             if (-not $byHash.ContainsKey($h)) { $byHash[$h] = @() }
             $byHash[$h] += $lbl
         }
