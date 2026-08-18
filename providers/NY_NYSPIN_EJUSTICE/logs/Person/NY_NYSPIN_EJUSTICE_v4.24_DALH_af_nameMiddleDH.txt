@@ -1,16 +1,16 @@
 ﻿================================================================
-TEST LOG: NY_NYSPIN_EJUSTICE Boat BoatQuery
-Combo: BVEH_any (BVEH_any (auto))
-Date: 2026-08-18 13:47:36
+TEST LOG: NY_NYSPIN_EJUSTICE Person DriverHistoryQuery
+Combo: DALH_af_nameMiddleDH (DALH_af_nameMiddleDH (auto))
+Date: 2026-08-18 13:47:47
 Result: PASS
 JSON Version: 4.24
-Entity Fingerprint: d6dce78ca3fb9a4af2d1b82fbfb9a976ee60fcf78be54b0ef12b04e507ea5df8
+Entity Fingerprint: d186f47a5fbfb6cdb51f87736699b2dd69c3f0f88be2f86d6d8af3e4e895b683
 Tier: Full
 ================================================================
 
 QUERY STRING
 ------------
-{"ImageIndicator":"N","RegistrationNumber":"FL1234AB","RegistrationState":"Georgia"}
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","ImageIndicatorDH":"Y","NameFirstDH":"JOHN","NameLastDH":"DOE","SexCodeDH":"Male","nameMiddleDH":"A","nyNyspinTransactionNameDH":"DALL","purposeCodeDH":"C"}
 
 COMMSYS XML
 -----------
@@ -23,7 +23,7 @@ COMMSYS XML
     </api:Destinations>
   </api:Route>
   <api:Transactions>
-    <api:Transaction id="01M0AZKCAACYN1Z4WJNEFFSD96">
+    <api:Transaction id="01M0AZ5VSMH4JSNFJAW304CZYD">
       <LawEnforcementTransaction version="1.0">
         <Session>
           <Id>XX1234567</Id>
@@ -35,11 +35,13 @@ COMMSYS XML
         </Session>
         <Transaction>
           <Request>
-            <MessageType>BoatQuery</MessageType>
-            <Id>01M0AZKCAACYN1Z4WJNEFFSD96</Id>
-            <ImageIndicator>N</ImageIndicator>
-            <State>GA</State>
-            <RegistrationNumber>FL1234AB</RegistrationNumber>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M0AZ5VSMH4JSNFJAW304CZYD</Id>
+            <ImageIndicator>Y</ImageIndicator>
+            <NyNyspinTransactionName>DALL</NyNyspinTransactionName>
+            <SexCode>M</SexCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN A</Name>
           </Request>
         </Transaction>
       </LawEnforcementTransaction>
@@ -62,13 +64,15 @@ AUTO-EXTRACTED FROM COMMSYS XML:
   UserName                       MK43RS
   ORI                            XX1234567
   Mnemonic                       XX1234567
-  Id                             01M0AZKCAACYN1Z4WJNEFFSD96
-  ImageIndicator                 N
-  State                          GA
-  RegistrationNumber             FL1234AB
+  Id                             01M0AZ5VSMH4JSNFJAW304CZYD
+  ImageIndicator                 Y
+  NyNyspinTransactionName        DALL
+  SexCode                        M
+  BirthDate                      01151990
+  Name                           DOE, JOHN A
 
 NOTES
 -----
-Automated capture (txId 01M0AZKCAACYN1Z4WJNEFFSD96). kind=any; anyField=; expectedKeyRef=BVEH; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+Automated capture (txId 01M0AZ5VSMH4JSNFJAW304CZYD). kind=any-field; anyField=nameMiddleDH; expectedKeyRef=DALH; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
 
 RESULT: PASS
