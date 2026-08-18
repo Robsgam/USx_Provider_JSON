@@ -2,9 +2,36 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.7** | Generated: 2026-08-18
+Current: **v2.9** | Generated: 2026-08-18
 
 ---
+
+## v2.9 -- 2026-08-18 -- Operator's field-order pass -- every row placed to Rob's spec, Purpose Code defaults 'C'
+
+**CHANGED** (dictated field-by-field by Rob 2026-08-18, before the first test sweep):
+  VEHICLE   "Owner SSN" -> "SSN" (the Owner qualifier was asked off first/last at v2.7; this  
+            removes it from SSN too, so the whole owner block reads plainly).  
+            State MOVED UP to the top line, beside Plate Number / Plate Type / Plate Year --  
+            which also makes Vehicle and Driver License read the SAME way, since State now sits  
+            on the top line of both.  
+  DL CARD   line 1  OLN | State | NCIC Image  
+            line 2  First Name | Middle Name | Last Name | Suffix  
+            line 3  Date of Birth | Sex  
+  DH CARD   line 1  First Name | Middle Name | Last Name | Suffix  
+            line 2  OLN | Date of Birth | Sex | Purpose Code  
+            hidden Attention row stays LAST  
+  PURPOSE CODE now defaults 'C'.  
+**REASON:** operator field-placement review ahead of testing. No QIDM, combination, condition,
+  routing gate or fieldId changed -- this is placement, labels and one default.  
+
+## v2.8 -- 2026-08-18 -- IN-SESSION INTERMEDIATE -- never committed, never shipped, superseded by v2.9
+
+**CHANGED:** carried the DL/DH row spec and the Purpose Code 'C' default. The Vehicle State move
+  arrived minutes later in the same session, so this JSON was replaced by v2.9 before any commit,  
+  import or test. Root holds exactly one JSON, so no v2.8 artifact exists.  
+**REASON:** superseded. Its changes are fully described in the v2.9 entry above -- deliberately NOT
+  duplicated here, and deliberately NOT left as a "Scheduled rebuild" stub, which would have been  
+  false for a wire/layout change (audit_buildnotes_fidelity exists to catch exactly that).  
 
 ## v2.7 -- 2026-08-18 -- Operator's form pass -- name components, Stolen Check default, NCIC Image on the top line
 

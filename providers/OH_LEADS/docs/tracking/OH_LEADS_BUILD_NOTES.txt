@@ -3,6 +3,87 @@ OH_LEADS -- Build Notes
 Provider: OH_LEADS
 State: Ohio
 Network: LEADS (Law Enforcement Automated Data System)
+v2.9  2026-08-18  Operator's field-order pass -- every row placed to Rob's spec, Purpose Code defaults 'C'
+  CHANGED (dictated field-by-field by Rob 2026-08-18, before the first test sweep):
+    VEHICLE   "Owner SSN" -> "SSN" (the Owner qualifier was asked off first/last at v2.7; this
+              removes it from SSN too, so the whole owner block reads plainly).
+              State MOVED UP to the top line, beside Plate Number / Plate Type / Plate Year --
+              which also makes Vehicle and Driver License read the SAME way, since State now sits
+              on the top line of both.
+    DL CARD   line 1  OLN | State | NCIC Image
+              line 2  First Name | Middle Name | Last Name | Suffix
+              line 3  Date of Birth | Sex
+    DH CARD   line 1  First Name | Middle Name | Last Name | Suffix
+              line 2  OLN | Date of Birth | Sex | Purpose Code
+              hidden Attention row stays LAST
+    PURPOSE CODE now defaults 'C'.
+  REASON: operator field-placement review ahead of testing. No QIDM, combination, condition,
+    routing gate or fieldId changed -- this is placement, labels and one default.
+
+  PURPOSE CODE 'C' IS ROB'S CALL, AND THE AUTHORITIES ARE GENUINELY SILENT -- RECORDED SO NOBODY
+  LATER "CORRECTS" IT TO A DERIVED VALUE THAT DOES NOT EXIST. Both were checked first:
+    - devdoc DriverHistoryQuery: the "Possible Values" row is EMPTY. PurposeCode is size 1 and
+      optional on both combinations ("[Attention, PurposeCode, State]" / "[Attention, PurposeCode,
+      ReasonCode, State]"), but no value list is given anywhere in the section.
+    - metadata: the PurposeCode <Field> is Alphanumeric with NO child elements, and the XML contains
+      ZERO enumeration-style elements (Value/Values/Enumeration/AllowedValue) in the whole file.
+    So no default could be derived from OH_LEADS' own authorities. Asked, and Rob's instruction was
+    "use c for purpose code if you cannot find it". This matters more than a normal cosmetic default:
+    a CJIS purpose code records the legal JUSTIFICATION for running the query, so a silently-guessed
+    value would mislabel the reason on every driver-history request. It is an operator decision, not
+    a derivable one. If OH ever publishes a value list, re-check 'C' against it.
+
+  PREFILL SAFETY MEASURED, NOT ASSUMED (BUILD_RULES 24): purposeCodeDH rides in any[] on both DH
+  combos (KQ.N, KQ.O) and is in NO set[] and NO condition, so a prefill cannot shadow a combination.
+  Done in BOTH required places -- form initialValue AND the combo defaults[] twin on KQ.N and KQ.O,
+  which had `defaults = @()` and now carry purposeCodeDH='C'. The twin is not decoration: CAD ignores
+  form initialValue, so a form-only default would leave any CAD-originated DH query sending nothing.
+  Label kept BARE ("Purpose Code", not "Purpose Code (default C)") per the defaulted-field label rule.
+
+  EVERY VISIBLE ROW STILL SUMS TO 12, which is what keeps audit_layout_flow clean through a
+  reshuffle this large:
+    Vehicle   [3/3/3/3] [4/4/4] [3/3/3/3] [4/4/4]
+    DL        [4/4/4]   [3/3/3/3] [6/6]
+    DH        [3/3/3/3] [3/3/3/3] + hidden [12] last
+  audit_layout_flow: 0 findings. audit_wiring_closure: 0 breaks across all TEN classes -- so no
+  control was orphaned by moving it between rows, which is the specific risk in a placement pass
+  (a field re-parented to a row that does not exist becomes invisible, and no validator would say so).
+
+  DISPLAY ORDER IS NOT COMPOSITE ORDER -- the one trap in this change. Rob asked for the name fields
+  displayed First, Middle, Last, Suffix. The Name composite sourceField order is UNCHANGED at
+  @(Last, First, Middle, Suffix), because that order is what FormatStringRuleHandler consumes to emit
+  "LAST, FIRST MIDDLE SUFFIX". Re-ordering the sourceField to match the visual order would silently
+  change the wire to "FIRST, MIDDLE LAST SUFFIX". Layout order and composite order are independent
+  and must stay that way.
+
+  v2.8 WAS AN IN-SESSION INTERMEDIATE AND NEVER SHIPPED. It carried the DL/DH row spec and the
+  Purpose Code default; the Vehicle State move arrived minutes later, so v2.8's JSON was replaced by
+  v2.9 in the same session (Write-ProviderJson removes the stale sibling, so root holds exactly one
+  JSON). It was never committed, never imported and has no test package, so there is nothing to
+  reconcile -- its changes are described in this entry, not lost. Its stub entry below says so.
+  KNOWN DOC QUIRK, NOT HAND-PATCHED: JSON_INVENTORY.md labels v2.7, v2.8 AND v2.9 all as "Current".
+  sync_version_docs appends a section per version without demoting the previous one's status, so the
+  quirk predates this build and affects every version. Hand-editing would be overwritten on the next
+  rebuild; the fix belongs in the tool.
+
+  PHASE 1 unchanged from v2.7 in substance: 21 combos, 22 fidelity branches 0 under / 0 over,
+  24 built / 0 prefill-dead / 0 shadow / 1 missing (the approved ImageQuery skip), gate efficacy
+  8/8 killed. enforce -Provider OH_LEADS exits 0; the one remaining WARN is the GLOBAL cross-provider
+  Vehicle ImageIndicator='N', which belongs to MD_METERS.
+  STILL OWED: never imported, never tenant-tested -- v2.9 owes a first import to
+  usx-oh-leads.mark43.com and a full 5-entity sweep from T1. Tenant picklists were captured this
+  session (16 dropdowns / 5 entities, no empty lists), so test values can be validated against the
+  real dropdowns.
+
+
+v2.8  2026-08-18  IN-SESSION INTERMEDIATE -- never committed, never shipped, superseded by v2.9
+  CHANGED: carried the DL/DH row spec and the Purpose Code 'C' default. The Vehicle State move
+    arrived minutes later in the same session, so this JSON was replaced by v2.9 before any commit,
+    import or test. Root holds exactly one JSON, so no v2.8 artifact exists.
+  REASON: superseded. Its changes are fully described in the v2.9 entry above -- deliberately NOT
+    duplicated here, and deliberately NOT left as a "Scheduled rebuild" stub, which would have been
+    false for a wire/layout change (audit_buildnotes_fidelity exists to catch exactly that).
+
 v2.7  2026-08-18  Operator's form pass -- name components, Stolen Check default, NCIC Image on the top line
   CHANGED (all five at Rob's direction, 2026-08-18, before the first test sweep):
     1. NAME COMPONENTS: Middle Name + Suffix added to ALL THREE name pools -- Vehicle owner

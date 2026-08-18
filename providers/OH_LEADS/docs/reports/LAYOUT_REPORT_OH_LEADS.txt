@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.7.json
-  Generated: 2026-08-18 17:31
+  Source: OH_LEADS_v2.9.json
+  Generated: 2026-08-18 18:19
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== OH_LEADS_v2.7.json ===
+=== OH_LEADS_v2.9.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=11
   Person | entity=Person | qidm= | cards=2 fields=12
@@ -30,10 +30,11 @@ LAYOUT DETAIL
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
   [default]
     CARD "CARD_VEH"
-      ROW ROW_VEH_1 [4 4 4]
+      ROW ROW_VEH_1 [3 3 3 3]
         LicensePlateNumber (Text | maxLen=10)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
       ROW ROW_VEH_2 [4 4 4]
         VehicleIdentificationNumber (Text | maxLen=20)
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
@@ -43,39 +44,38 @@ LAYOUT DETAIL
         OwnerLastName (Text | maxLen=30)
         OwnerMiddleName (Text | maxLen=30)
         OwnerNameSuffix (Text | maxLen=5)
-      ROW ROW_VEH_4 [3 3 3 3]
+      ROW ROW_VEH_4 [4 4 4]
         OwnerSocialSecurityNumber (Text | maxLen=9)
         AddressCounty (Text | maxLen=4)
         DealerPlateType (Text | maxLen=1)
-        RegistrationState (Dropdown | attributeTypeId=STATE)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER_DL"
-      ROW ROW_PER_DL_1 [3 3 3 3]
+      ROW ROW_PER_DL_1 [4 4 4]
         OperatorLicenseNumber (Text | maxLen=20)
-        NameFirst (Text | maxLen=30)
-        NameLast (Text | maxLen=30)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-      ROW ROW_PER_DL_2 [4 4 4]
-        nameMiddle (Text | maxLen=30)
-        nameSuffix (Text | maxLen=5)
-        BirthDate (FormDate)
-      ROW ROW_PER_DL_3 [6 6]
-        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+      ROW ROW_PER_DL_2 [3 3 3 3]
+        NameFirst (Text | maxLen=30)
+        nameMiddle (Text | maxLen=30)
+        NameLast (Text | maxLen=30)
+        nameSuffix (Text | maxLen=5)
+      ROW ROW_PER_DL_3 [6 6]
+        BirthDate (FormDate)
+        SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DH_1 [3 3 3 3]
-        OperatorLicenseNumberDH (Text | maxLen=20)
         NameFirstDH (Text | maxLen=30)
-        NameLastDH (Text | maxLen=30)
         nameMiddleDH (Text | maxLen=30)
-      ROW ROW_PER_DH_2 [3 3 3 3]
+        NameLastDH (Text | maxLen=30)
         nameSuffixDH (Text | maxLen=5)
+      ROW ROW_PER_DH_2 [3 3 3 3]
+        OperatorLicenseNumberDH (Text | maxLen=20)
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-        purposeCodeDH (Text | maxLen=1)
+        purposeCodeDH (Text | maxLen=1 | default=C)
       ROW ROW_PER_DH_ATTN [12]
         attention (Text | maxLen=30)
 

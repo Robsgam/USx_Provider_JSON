@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.7'
+$Version     = '2.9'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -354,7 +354,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','RegistrationState','attention')
-                defaults = @()
+                defaults = @([PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
@@ -365,7 +365,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('OperatorLicenseNumberDH'); any = @('purposeCodeDH','RegistrationState','attention')
-                defaults = @()
+                defaults = @([PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
@@ -603,10 +603,11 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH'
         title = "VEHICLE SEARCH BY PLATE, `nDEALER PLATE, VIN, OWNER NAME OR OWNER SSN `n(leave State blank for OH; fill it for an out-of-state Nlets query)"
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_VEH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }
@@ -619,11 +620,10 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'OwnerMiddleName_Input'; node = Inp 'OwnerMiddleName' 'Middle Name' '30' 'ROW_VEH_3' }
                 @{ id = 'OwnerNameSuffix_Input'; node = Inp 'OwnerNameSuffix' 'Suffix'      '5'  'ROW_VEH_3' }
             )}
-            @{ id = 'ROW_VEH_4'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'OwnerSocialSecurityNumber_Input'; node = Inp 'OwnerSocialSecurityNumber' 'Owner SSN' '9' 'ROW_VEH_4' }
+            @{ id = 'ROW_VEH_4'; cols = @('4','4','4'); fields = @(
+                @{ id = 'OwnerSocialSecurityNumber_Input'; node = Inp 'OwnerSocialSecurityNumber' 'SSN' '9' 'ROW_VEH_4' }
                 @{ id = 'AddressCounty_Input';     node = Inp 'AddressCounty' 'County Code' '4' 'ROW_VEH_4' }
                 @{ id = 'DealerPlateType_Input';   node = Inp 'DealerPlateType' 'Dealer Plate Type' '1' 'ROW_VEH_4' }
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_4' }
             )}
         )
     }
@@ -658,20 +658,20 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_DL'
         title = "DRIVER LICENSE SEARCH BY OLN, `nOR BY NAME (add DOB + SEX for an out-of-state search) `n(leave State blank for OH)"
         rows  = @(
-            @{ id = 'ROW_PER_DL_1'; cols = @('3','3','3','3'); fields = @(
+            @{ id = 'ROW_PER_DL_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
-                @{ id = 'NameFirst_Input';             node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_DL_1' }
-                @{ id = 'NameLast_Input';              node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
                 @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_1' }
             )}
-            @{ id = 'ROW_PER_DL_2'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_PER_DL_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL_2' }
                 @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_DL_2' }
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '5' 'ROW_PER_DL_2' }
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL_2' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '5'  'ROW_PER_DL_2' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_3' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OH)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_3' }
             )}
         )
     }
@@ -680,16 +680,16 @@ $perLayout = MakeLayouts @(
         title = "DRIVER HISTORY SEARCH BY OLN, `nOR BY NAME + DOB + SEX `n(own field pool -- filling these does not affect the Driver License card)"
         rows  = @(
             @{ id = 'ROW_PER_DH_1'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_1' }
-                @{ id = 'NameFirstDH_Input';             node = Inp 'NameFirstDH' 'First Name' '30' 'ROW_PER_DH_1' }
-                @{ id = 'NameLastDH_Input';              node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_1' }
-                @{ id = 'NameMiddleDH_Input';            node = Inp 'nameMiddleDH' 'Middle Name' '30' 'ROW_PER_DH_1' }
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name'  '30' 'ROW_PER_DH_1' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name' '30' 'ROW_PER_DH_1' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH_1' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix'      '5'  'ROW_PER_DH_1' }
             )}
             @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix' '5' 'ROW_PER_DH_2' }
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_2' }
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DH_2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_2' }
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_2' @{ initialValue = 'C' } }
             )}
             @{ id = 'ROW_PER_DH_ATTN'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Attention_DH_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_DH_ATTN' }

@@ -1,4 +1,4 @@
-OH_LEADS v2.7 -- TEST MATRIX
+OH_LEADS v2.9 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-18
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -11,23 +11,23 @@ Vehicle (1 card, 14 fields):
   CARD_VEH (VEHICLE SEARCH BY PLATE, 
 DEALER PLATE, VIN, OWNER NAME OR OWNER SSN 
 (leave State blank for OH; fill it for an out-of-state Nlets query)):
-    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4], RegistrationState [Sel STATE]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
     ROW 3: OwnerFirstName [Inp 30], OwnerLastName [Inp 30], OwnerMiddleName [Inp 30], OwnerNameSuffix [Inp 5]
-    ROW 4: OwnerSocialSecurityNumber [Inp 9], AddressCounty [Inp 4], DealerPlateType [Inp 1], RegistrationState [Sel STATE]
+    ROW 4: OwnerSocialSecurityNumber [Inp 9], AddressCounty [Inp 4], DealerPlateType [Inp 1]
 
 Person (2 cards, 18 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, 
 OR BY NAME (add DOB + SEX for an out-of-state search) 
 (leave State blank for OH)):
-    ROW 1: OperatorLicenseNumber [Inp 20], NameFirst [Inp 30], NameLast [Inp 30], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-    ROW 2: nameMiddle [Inp 30], nameSuffix [Inp 5], BirthDate [FormDate]
-    ROW 3: SexCode [Sel SEX], RegistrationState [Sel STATE]
+    ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NameFirst [Inp 30], nameMiddle [Inp 30], NameLast [Inp 30], nameSuffix [Inp 5]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, 
 OR BY NAME + DOB + SEX 
 (own field pool -- filling these does not affect the Driver License card)):
-    ROW 1: OperatorLicenseNumberDH [Inp 20], NameFirstDH [Inp 30], NameLastDH [Inp 30], nameMiddleDH [Inp 30]
-    ROW 2: nameSuffixDH [Inp 5], BirthDateDH [FormDate], SexCodeDH [Sel SEX], purposeCodeDH [Inp 1]
+    ROW 1: NameFirstDH [Inp 30], nameMiddleDH [Inp 30], NameLastDH [Inp 30], nameSuffixDH [Inp 5]
+    ROW 2: OperatorLicenseNumberDH [Inp 20], BirthDateDH [FormDate], SexCodeDH [Sel SEX], purposeCodeDH [Inp C, 1]
     ROW 3: attention [Inp 30]
 
 Firearm (1 card, 4 fields):
@@ -207,4 +207,4 @@ COMBO COVERAGE (21/21):
   ArticleSingleQuery: 2/2 -- T48(.S), T50(.N)
   BoatQuery: 4/4 -- T36(BQ+.R), T38(BQ+.H), T40(QB+.R), T42(QB+.H)
 
-IMPORT FILE: OH_LEADS_v2.7.json
+IMPORT FILE: OH_LEADS_v2.9.json
