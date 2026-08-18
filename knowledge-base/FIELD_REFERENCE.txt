@@ -603,8 +603,42 @@ SECTION 7 -- NAME FIELD CONFIGURATION
   HI_HCJDC_OFML, which built First-first (NameFirst,NameLast,Middle,Suffix) and emitted
   the malformed "FIRST LAST MIDDLE SUFFIX" (Last/Middle transposed vs even the tolerated
   format). HI fix queued (-> Last-first + ', '). Cross-check Name order on every build.
-  Separator note: several providers use ',' (no space) for the first separator; the devdoc
-  example uses ', ' (comma-space) -- normalize to comma-space at each provider's rebuild.
+  ---- SEPARATOR: THE PROVIDER'S OWN STATE MANUAL OVERRIDES THE ConnectCIC DEFAULT ----
+  CORRECTED 2026-08-18. This note used to read: "several providers use ',' (no space) for the
+  first separator; the devdoc example uses ', ' (comma-space) -- normalize to comma-space at each
+  provider's rebuild." That standing instruction was WRONG and would have broken a CORRECT build.
+
+  ', ' (comma-space) is the ConnectCIC/NCIC-TCIC default and is right for most providers. It is
+  NOT universal, because the separator is dictated by the QUERIED SYSTEM, not by ConnectCIC:
+
+    TX_TLETS + TX_TLETS_CCH use ',' (NO space) and that is CORRECT, not drift.
+    Authority: 2025 TCIC/TLETS Operation Manual, Part 1 Page 125, "Texas Driver License Search
+    Criteria" -- "The name must match the exact spelling and separated by a comma in the form
+    LASTNAME,FIRSTNAME", reinforced by its hyphen examples "LAST-LAST,FIRST". That section's own
+    field list is Image Request (IMQ) / Reason (RSN) / Email Address (EML) -- i.e. it IS the query
+    TX_TLETS builds. Every Name composite on TX sits on DriverLicenseQuery or DriverHistoryQuery,
+    both Texas DPS DL-system queries, so no-space applies to all of them.
+    The SAME manual gives "Name Query format: LAST, FIRST MIDDLE OTHER" at Part 2 Page 88 -- but
+    that is under INTERPOL / international-surname handling, i.e. the NCIC/TCIC person query. One
+    manual, two formats, two systems. Do not quote one at the other.
+
+  METADATA CANNOT SETTLE THIS AND DOES NOT TRY: TX_TLETS.xml declares
+  <Field name="Name" type="Name" maxLength="30"> with Components First/Last/Middle/Suffix and has
+  ZERO occurrences of format=/pattern=/separator/delimiter. It says WHICH components exist (which
+  is what justifies building the controls); it is silent on how they are joined. The devdoc extract
+  is silent too. The state operations manual is the only authority here.
+
+  HOW THIS ALMOST SHIPPED AS A DEFECT (2026-08-18, TX_TLETS v4.21 sweep): a portfolio count showed
+  18 of 20 providers on ', ' and only TX + TX_CCH on ',', which read as TX being the outlier. The
+  count was accurate and the inference was wrong -- a wire change plus a 98-test re-sweep was about
+  to be recommended. Rob's question ("what does the metadata say about it") is what forced reading
+  the authority instead of the neighbours. A majority across providers is NOT evidence about any
+  one provider's spec (usx-adjudicate: do not generalise from another provider).
+
+  => Before changing a Name separator, read THAT provider's state manual for the specific query.
+     A cross-provider majority is not a finding. Note also that omitting the space conserves one
+     of the 30 permitted characters, which the TLETS manual independently caps ("Names containing
+     more than 30 characters is not supported by TLETS").
 
   Using arguments = [' ', ' ', ' '] with only 2 sourceFields will produce
   wrong output.
