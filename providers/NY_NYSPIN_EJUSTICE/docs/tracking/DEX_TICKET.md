@@ -8,6 +8,16 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
      mention. Never write one in advance and never let a sync tool generate one. -->
 POSTED: v4.24 comment 794205 2026-08-14
+POSTED: v4.24 comment 800806 2026-08-18
+# TWO MARKERS FOR ONE VERSION, ON PURPOSE. 794205 was posted 2026-08-14 claiming "TENANT-VERIFIED
+#   ... 69/69 ... verified and ready" while SIX planned Person tests had not been captured -- a
+#   premature claim, not a wrong build. 800806 (2026-08-18) records the COMPLETED sweep at 75/75 and
+#   corrects the count; it names 794205 as superseded-and-retained per the 2026-08-17 one-new-comment-
+#   per-release rule, so the thread reads in order. The JSON never changed between them, so there was
+#   nothing to re-import: attachment and catalog were already current at v4.24 and stay so.
+#   LESSON WORTH KEEPING: a release line posted before the sweep finishes will state a count that the
+#   sweep then changes. Post stage 5 AFTER plan completeness reads ALL-PASS, not when the version is
+#   built and the board looks green.
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals

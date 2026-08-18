@@ -20,7 +20,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (44 logs) |
 | NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
-| NY_NYSPIN_EJUSTICE | v4.24 | PARTIAL -- 6 plan test(s) owed (69 captured) |
+| NY_NYSPIN_EJUSTICE | v4.24 | ALL-PASS (75 logs) |
 | TX_TLETS | v4.21 | ALL-PASS (96 logs) |
 | _12 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, MD_METERS, NM_NMLETS_OFML, OH_LEADS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
 
@@ -33,12 +33,14 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**TX_TLETS v4.21 IS DONE: ALL-PASS 5/5, 98/98, 0 FAIL.** Layout convergence; name parts WIRE-PROVEN
-(`DOE,JOHN A JR`); `[FLAG:nameparts-untested-unfrozen]` RETIRED on TX. **OWED: Jira release comment
-(stage 5) + import ledger row (stage 6) -- lifecycle NOT closed until both.** TX_TLETS_CCH v1.17
-rebuilt in lockstep (BASE-SYNC v4.21), still NEVER-TESTED.
-**NEXT: `NY_NYSPIN_EJUSTICE` (6 Person tests owed, plan already regenerated), THEN `OR_LEDS v2.3`**
-(last middle/suffix RESTORATION) **then OH_LEADS.** Still owed: 60 name components / 11 providers.
+**TX_TLETS v4.21 + NY_NYSPIN_EJUSTICE v4.24 BOTH LIFECYCLE-COMPLETE (all 6 stages).** TX 96/96
+(layout convergence, wire `DOE,JOHN A JR`, Jira 800608); NY 75/75 (6 new Person tests, wire
+`DOE, JOHN A JR`, Jira 800806 correcting 794205's premature 69/69 claim). Name-parts flag RETIRED on
+both. **LA_LEMS v3.1 also now exits 0** -- DP/DQ re-split on State, 20b WARN resolved not silenced.
+**NEXT: `OR_LEDS v2.3`** (last middle/suffix RESTORATION) **then OH_LEADS.** Still owed: 60 name
+components / 11 providers -- all on NEVER-TESTED providers, the 8 tenant-tested ones are CLEAN.
+**SEPARATOR IS PER-PROVIDER, NOT A CONVENTION:** TX emits `DOE,JOHN` (no space, TCIC/TLETS Part 1
+p125); NY emits `DOE, JOHN` (NCIC form). They MUST differ. See ENGINEERING_STANDARD 4.5.
 **THE SWEEP LOOP NOW SELF-REPORTS:** `watch_captures` prints `report_sweep_ledger` (planned/logged/owed
 per entity) after EVERY ingest. **Trust that table, not the browser** -- `capture.js` "ALL n manifest
 entries captured" only means it drained the manifest, and on 08-18 it said so while 22 Boat tests were
@@ -67,14 +69,13 @@ Name the superseded comment id in Section 1. DRAFT AND WAIT. Rules: `JIRA_COMMEN
   sweeps prove the REQUEST unchanged, nothing about the response. Needs ONE hit query in HI's OWN tenant
   (not HDLE); settles dotted `Hit.Banner`. **Product gap: all 20 + Lafayette map 0 of 21 such fields.**
 - **Officer guides are content-poor, not stale.** HI's says "pick a row" though the PLATFORM picks by field content, never naming the discriminator. Rewrite requested; shape not agreed.
-- **NEW 08-18: `audit_log_inflation` attack A COULD NEVER FAIL until today; now 35 UNTRIAGED clone
-  groups** (NY 10, FL 12, NJ 3, HI 2, CA 8, TX 2). The transaction id appears BOTH as an `<Id>` element
-  AND an `id="..."` ATTRIBUTE, so no two logs ever hashed alike. Now stripped, and keyed on wire+fills
-  so a PASSING guardrail (same wire, different fills) is not mis-flagged. NOT blocking -- standalone
-  gate, in no orchestrator. Triage per provider at its own rebuild (8c), never as a sweep.
-- **CLOSED 08-18, do not re-raise: the 28 TX/TX_CCH `ImageIndicator=Y` constraint triggers.** 12 of 14
-  are the gate applying a DH-scoped devdoc line to Article/Boat/DL/Gun; the 2 real ones are wire-proven
-  satisfied (`ReasonCode=C` + a real `EmailAddress`). Full reasoning in TX's v4.21 BUILD_NOTES.
+- **NEW 08-18: `audit_log_inflation` attack A COULD NEVER FAIL until today; now 38 UNTRIAGED clone
+  groups** (FL 12, NY 10, CA 8, AZ 4, NJ 3, HI 2, IL 1, TX 0). The transaction id appears BOTH as an
+  `<Id>` element AND an `id="..."` ATTRIBUTE, so no two logs ever hashed alike; also its default scope
+  was a hardcoded SIX, so AZ+IL had never been examined. Both fixed; keyed on wire+fills so a PASSING
+  guardrail is not mis-flagged. NOT blocking (no orchestrator runs it). They are duplicate/vacuous
+  guardrails and clear at each provider's own rebuild via the `emit_test_plan` fix -- never a sweep.
+- **CLOSED 08-18, do not re-raise:** the 28 TX/TX_CCH `ImageIndicator=Y` constraint triggers (12 of 14 were the gate applying a DH-scoped devdoc line portfolio-wide; the 2 real ones are wire-proven satisfied). Reasoning in TX's v4.21 BUILD_NOTES. **COMMSYS ASKS ARE ON HOLD (Rob 08-18)** -- LA's devdoc PurposeCode/State inversion is recorded, NOT owed, do NOT raise.
 
 
 ## ON HOLD / DO NOT RE-RAISE
@@ -94,13 +95,12 @@ Name the superseded comment id in Section 1. DRAFT AND WAIT. Rules: `JIRA_COMMEN
 
 **0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` 16 -> 2, owed on
 MD_METERS + OH_LEADS ONLY** (Rob-held; a WIRE change, so bump + re-sweep each. AZ is RULED OUT -- MEASURED).
-**Expect on EVERY provider's enforce:** `[FAIL] Repo audit` = LA + MD STATUS drift (a 1-digit stale
-PASS count in 2 STATUS.txt files; Rob-parked -- it blocks exit 0 for ALL 20, so ENGINEERING_STANDARD
-§5 "finished" is unreachable until ruled on). **`[FLAG:nameparts-untested-unfrozen]` now NY + TX_CCH
-only** (HI v4.20, TX v4.21 retired); retire each once its Person logs exist, never before.
+**LA + MD STATUS DRIFT IS RESOLVED (08-18, Rob-approved doc sync): repo audit 352 PASS / 0 FAIL, and
+enforce can reach exit 0 again -- it had been blocking ALL 20.** LA's STATUS now shows its real score.
+**`[FLAG:nameparts-untested-unfrozen]` now TX_TLETS_CCH ONLY** (HI/TX/NY retired on wire evidence).
 **"95%" IS DEFINED — `ENGINEERING_STANDARD.md` §5.1 (Rob 08-18): 19/20 providers LIFECYCLE-COMPLETE;
-today 6/20 = 30%.** NOT the gate pass-rate (96% while 12 providers were never imported). Stage 4 needs
-stage 6 first, so `report_import_owed.ps1` IS the roadmap; advisory residue moves it 0.
+today 8/20 = 40%** (AZ, CA_CLETS, FL, HI, IL, NJ, NY, TX). NOT the gate pass-rate. Stage 4 needs stage
+6 first, so `report_import_owed.ps1` IS the roadmap; advisory residue moves it 0.
 **Wired 08-18:** `audit_layout_flow` -> enforce **2w ADVISORY**; `report_sweep_ledger` -> every ingest.
 
 ## RULES I HAVE BROKEN -- READ FIRST (`usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c)
