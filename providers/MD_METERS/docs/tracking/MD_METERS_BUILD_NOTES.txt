@@ -3,6 +3,73 @@ MD_METERS -- Build Notes
 Provider: MD_METERS
 State: Maryland
 Network: METERS (Maryland Electronic Telecommunications Enforcement Resource System)
+v2.1  2026-08-19  Last ncic-image carrier closed + 3 unfireable plan tests fixed -- 0 FAIL / 0 WARN
+  CHANGED:
+    - ImageIndicator now defaults 'Y' on EVERY entity that defines the control. Vehicle
+      (ZLRG.P, ZLRG.V, ZVEH.P, ZVEH.V) and Boat (ZBOA.H, ZBOA.R) flipped from 'N'; Person
+      (ZWAR.O/N, ZLDR.O/N, ZDRV.O/N) was already 'Y'. Emitted JSON now reads 9 of 9 form
+      initialValues at 'Y' and 12 of 12 combo defaults[] at 'Y'.
+    - Canonical label applied to all three controls: "Image (optional)" -> "NCIC Image".
+    - NEW docs/reference/TEST_VALUE_OVERRIDES.txt with Person.OperatorLicenseExpirationYear=2028.
+  REASON: three live flags, all three retired in this one rebuild -- [FLAG:ncic-image-default-y-everywhere],
+    [FLAG:plan-fillability-unfireable-tests], [FLAG:validate-imgind-20b-l30].
+
+  *** MD_METERS WAS THE LAST CARRIER, SO THE ncic-image FLAG IS NOW FULLY CLOSED: 16 PROVIDERS -> 0. ***
+  And the effect is portfolio-visible, not bookkeeping: audit_cross_provider had been reporting
+  "Vehicle ImageIndicator initialValue='N' (expected 'Y')" on EVERY provider's enforce run all through
+  2026-08-18 -- it is a global check, so one holdout reddened all twenty. It now reads
+  "RESULT: AUDIT PASSED" with zero WARNs. That is why this provider's enforce closes at
+  40 PASS / 0 FAIL / 0 WARN rather than "PASSED WITH WARNINGS".
+
+  ALL THREE FLAG PRECONDITIONS MEASURED, NOT ASSUMED -- the flag text demands it, and it is right to:
+    (1) ImageIndicator is in NO combination's set[] and in NO condition here -- it rides in any[] on
+        all 12 combos -- so BUILD_RULES 24 cannot bite and the flip can shadow nothing. Contrast
+        AZ_AZDPS (2 set[]s, where v3.10 proved the flip collapses DQPN->DQN and DQP->DQ) and LA_LEMS
+        (1 set[] + 2 conditions); both are carved out of this flag for exactly that reason.
+    (2) TX_TLETS T6 gate CLEAR: MD's devdoc contains no "must be filled if" / "required if" language
+        anywhere, so nothing becomes mandatory when the flag is 'Y'.
+    (3) No combination is gated ImageIndicator NOT_EXISTS, so BUILD_RULES 20b does not apply -- which
+        is also the substance of the separate validate-imgind-20b-l30 flag, whose only real ask was
+        "rebuild to re-record scores". LIMITATION #30 is likewise satisfied (State sits in set[] on
+        the OOS combos).
+  The defaults[] twin is not decoration: CAD ignores the form initialValue, so a form-only flip would
+  have left every CAD-originated Vehicle and Boat query still sending 'N'.
+  COST WAS ZERO, which is why it happened here rather than being deferred a fourth time: never
+  USx-tenant-tested, 0 current-version logs, never imported -- this wire change archived no test
+  package and invalidated no import.
+
+  THE THREE UNFIREABLE PLAN TESTS WERE TEST DATA, NOT A BUILD DEFECT -- and they would have cost a sweep.
+  test_phase2 step [2] reported T12/T13/T14 Person/ZWAR.O "mandatory OperatorLicenseExpirationYear is
+  neither filled nor prefilled -- Send will stay DISABLED". ZWAR.O (the warrant search) genuinely
+  mandates the licence expiry year -- set[NameLast, NameFirst, OperatorLicenseExpirationYear,
+  OperatorLicenseNumber, raceCode, SexCode] -- and the control already existed ("License Expiration
+  Year (warrant search)"). emit_test_plan simply had no value for the field, so it emitted three tests
+  that could not submit. Had they been driven, the tenant would have kept Send DISABLED, nothing would
+  have been sent, and the browser console would most likely have blamed latency -- the exact failure
+  that lost the OH_LEADS Vehicle sweep on 2026-08-18 and the reason the fillability gate now exists.
+  Fixed with a test value, no JSON change: 2028, entity-scoped so it cannot leak onto another entity's
+  same-named control. NOT authority-derived -- metadata types the field Alphanumeric with NO size and
+  the devdoc lists no values -- and the override file says so: if METERS rejects it live, change the
+  VALUE, not the build. Verified: fillability 39 tests / 129 fills, PASS, PHASE 2 PRE-FLIGHT CLEAR
+  (was 3 UNSATISFIED).
+
+  ONE THING I EXPECTED TO FIND AND DID NOT: MD's build script does NOT contain the PENDING_UPDATES
+  Remove-Item block that was destroying flag records on NY_NYSPIN_EJUSTICE and TX_TLETS_CCH (found
+  2026-08-18, where enforce itself was deleting the file via audit_reproducible). Checked before
+  editing rather than after; MD is clean and its three retirements are recorded as closures in
+  REVERSE_PROPAGATION_LOG.md by the tool, not by hand.
+
+  PHASE 1 WAS ALREADY CLEAN ON ARRIVAL AND STAYED CLEAN -- worth recording, because it means every
+  finding here was lifecycle/test-package debt rather than a spec defect:
+    [1] all devdoc combinations accounted for  [2] optionals all route and transmit
+    [3] 14 combos, most-specific-first respected  [4] 15 branches, 0 UNDER / 0 OVER
+    [5] 15 built, 0 prefill-dead, 0 shadow, 0 MISSING  [6] gate efficacy 8/8 killed
+    [6b] fuzz 8/8 caught, 0 survived
+  enforce -Provider MD_METERS: ENFORCED 40 PASS / 0 FAIL / 0 WARN, exit 0.
+  STILL OWED: never USx-tenant-tested, never imported -- v2.1 owes a first import and a full sweep,
+  and the plan is now provably drivable end to end.
+
+
 v2.0  2026-08-02  Galvanize to v2.0 -- single JSON, native PascalCase (commit bb656ac1)
   CHANGED: Consolidated legacy BASE+MC into one versioned MD_METERS_v2.0.json; DH cards +
     queriesToDeselect (no Attention -- MD metadata does not define it); State relabeled

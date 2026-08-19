@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_md_meters.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.0'
+$Version     = '2.1'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\MD_METERS_v${Version}.json"
@@ -75,7 +75,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('RegistrationState','ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -86,7 +86,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('VehicleIdentificationNumber'); any = @('RegistrationState','ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState');  operator = 'EXISTS' }
@@ -100,7 +100,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('VehicleIdentificationNumber'); any = @('VehicleMakeCode','ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState');  operator = 'NOT_EXISTS' }
@@ -114,7 +114,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('LicensePlateNumber'); any = @('ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -350,7 +350,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('BoatHullIdNumber'); any = @('RegistrationNumber','ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
             }
             primaryFieldReference = 'BoatHullIdNumber'
             keyReference          = 'ZBOA.H'
@@ -360,7 +360,7 @@ $boatQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('RegistrationNumber'); any = @('ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'N' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('BoatHullIdNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'RegistrationNumber'
@@ -407,7 +407,7 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_OPT_1'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for MD)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_VEH_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_VEH_OPT_1' }
             )}
         )
     }
@@ -461,7 +461,7 @@ $perLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_PER_OPT_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for MD)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
                 @{ id = 'SexCode_Input';           node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_OPT_1' }
             )}
             @{ id = 'ROW_PER_OPT_2'; cols = @('6'); fields = @(
@@ -583,7 +583,7 @@ $boaLayout = MakeLayouts @(
         title = 'OPTIONS'
         rows  = @(
             @{ id = 'ROW_BOA_OPT_1'; cols = @('6'); fields = @(
-                @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'N' } 'ROW_BOA_OPT_1' }
+                @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_BOA_OPT_1' }
             )}
         )
     }

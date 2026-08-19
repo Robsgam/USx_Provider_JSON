@@ -1,0 +1,21 @@
+# MD_METERS -- TEST VALUE OVERRIDES
+# Format: '<Entity>.<fieldId>=value' (entity-scoped, preferred -- a bare 'fieldId=value' also works but
+# can leak onto another entity's same-named control) . '#' comments ignored.
+# Read by emit_test_plan.ps1 via _combo_value_resolver.ps1 (Get-ComboValueOverrides).
+#
+# CREATED 2026-08-19 to clear [FLAG:plan-fillability-unfireable-tests].
+# test_phase2 step [2] reported THREE unfireable plan tests:
+#   [FAIL] UNSATISFIED  T12/T13/T14 Person/ZWAR.O mandatory 'OperatorLicenseExpirationYear'
+#                       is neither filled nor prefilled -- Send will stay DISABLED
+# ZWAR.O is the warrant search and its set[] genuinely mandates the licence expiry year
+#   set=[NameLast, NameFirst, OperatorLicenseExpirationYear, OperatorLicenseNumber, raceCode, SexCode]
+# and the control exists ("License Expiration Year (warrant search)"), so this was never a build
+# defect -- emit_test_plan simply had no value for the field ("unmapped in Get-TestValue"), so it
+# emitted three tests that could not submit. Had those been driven, the tenant would have kept Send
+# DISABLED and nothing would have been sent; the browser console would most likely have blamed
+# latency, which is exactly how the OH_LEADS Vehicle sweep was lost on 2026-08-18.
+#
+# NOT AUTHORITY-DERIVED: MD's metadata types the field Alphanumeric with NO size and the devdoc gives
+# no value list, so 2028 is a plausible future expiry year chosen to make ZWAR.O drivable at all.
+# If METERS rejects it on the first live run, change THIS VALUE -- not the build.
+Person.OperatorLicenseExpirationYear=2028

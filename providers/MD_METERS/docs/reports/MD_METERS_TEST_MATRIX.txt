@@ -1,6 +1,6 @@
-MD_METERS v2.0 -- TEST MATRIX
+MD_METERS v2.1 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-13
+Generated: 2026-08-19
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -9,7 +9,7 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (3 cards, 7 fields):
   CARD_VEH_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
   CARD_VEH_PLATE (PLATE SEARCH):
     LicensePlateNumber [Inp 10]
     LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
@@ -42,7 +42,7 @@ Article (1 card, 2 fields):
 
 Boat (3 cards, 3 fields):
   CARD_BOA_OPT (OPTIONS):
-    ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, N]
+    ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
   CARD_BOA_HULL (HULL SEARCH):
     BoatHullIdNumber [Inp 20]
   CARD_BOA_REG (REGISTRATION SEARCH):
@@ -151,7 +151,7 @@ ENTITY 4: FIREARM (1 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-34  Firearm     ZGUN+ZGUN          gunCaliber=11, firearmMake=TEST, seri... [    ]
+34  Firearm     ZGUN+ZGUN          gunCaliber=11, firearmMake=IMI, seria... [    ]
               Expected: GunQuery fires (ZGUN)
 
 ENTITY 5: ARTICLE (1 tests -- 1 card, 1 combo)
@@ -172,4 +172,4 @@ COMBO COVERAGE (14/14):
   ArticleSingleQuery: 1/1 -- T35(ZART)
   BoatQuery: 2/2 -- T11(ZBOA.H+ZBOA.H), T13(ZBOA.R+ZBOA.R)
 
-IMPORT FILE: MD_METERS_v2.0.json
+IMPORT FILE: MD_METERS_v2.1.json
