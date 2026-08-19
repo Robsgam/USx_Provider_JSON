@@ -187,6 +187,19 @@ try {
 } catch { Emit "  [WARN] audit_tool_portability.ps1 failed: $($_.Exception.Message)" }
 
 Emit ""
+Emit "--- ARTIFACT PROVENANCE (is this evidence, or something shaped like it; audit_artifact_provenance.ps1) ---"
+try {
+    $ap = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_artifact_provenance.ps1" *>&1 | Out-String
+    ($ap -split "`r?`n") | Where-Object { $_ -match 'EXAMINED|F frozen|\[FAIL\]|\[PASS\]|NO-VERDICT' } | ForEach-Object { Emit ("  " + $_.Trim()) }
+} catch { Emit "  [WARN] audit_artifact_provenance.ps1 failed: $($_.Exception.Message)" }
+Emit ""
+
+Emit "--- MISSION STATUS (the 95% metric, computed; report_mission_status.ps1) ---"
+try {
+    $ms = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\report_mission_status.ps1" *>&1 | Out-String
+    ($ms -split "`r?`n") | Where-Object { $_ -match 'LIFECYCLE-COMPLETE|BLOCKED BY STAGE|^\s{4}\w+\s+\d+ provider|NO-VERDICT' } | ForEach-Object { Emit ("  " + $_.TrimEnd()) }
+} catch { Emit "  [WARN] report_mission_status.ps1 failed: $($_.Exception.Message)" }
+Emit ""
 Emit "--- PROVIDER LINKAGE (a build justified by another provider's authority; audit_provider_linkage.ps1) ---"
 try {
     $pl = & powershell -NoProfile -ExecutionPolicy Bypass -File "$tool\audit_provider_linkage.ps1" *>&1 | Out-String

@@ -17,9 +17,9 @@
 # tenants are same platform level. See instructions printed at end / chat.
 param([string]$ProviderName = 'ZZ_TEST_CONDITIONS')
 
-. "$PSScriptRoot\tools\_build_rms_bundle.ps1"
-. "$PSScriptRoot\tools\_build_layout_helpers.ps1"
-. "$PSScriptRoot\tools\_build_provider_helpers.ps1"
+. "$PSScriptRoot\_build_rms_bundle.ps1"
+. "$PSScriptRoot\_build_layout_helpers.ps1"
+. "$PSScriptRoot\_build_provider_helpers.ps1"
 
 $P = $ProviderName
 function MkAttr($n)        { Build-QidmAttribute -Name $n -Size 20 -SourceField @($n) }
@@ -166,5 +166,8 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($personForm, $vehicleFo
 $rmsBundle = Build-RmsBundle
 $output = [PSCustomObject]@{ bundles = @($entitiesBundle, $provBundle, $rmsBundle) }
 
-$OUT = Join-Path $PSScriptRoot 'ZZ_TEST_CONDITIONS.json'
+# OUTPUT STAYS AT THE REPO ROOT. This script moved from the root into tools\ on 2026-08-19, and
+# $PSScriptRoot moved with it -- writing to $PSScriptRoot would now drop the JSON in tools\ and orphan
+# both the existing ZZ_TEST_CONDITIONS.json and ZZ_TEST_CONDITIONS_BASELINE.md that reference it.
+$OUT = Join-Path (Split-Path $PSScriptRoot -Parent) 'ZZ_TEST_CONDITIONS.json'
 Write-ProviderJson -BundleObject $output -OutPath $OUT -Label "Built TEST-ONLY behavior baseline $P"

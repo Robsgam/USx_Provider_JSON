@@ -182,7 +182,11 @@ Section 5 defines finished for ONE provider. The portfolio number is simply the 
 that meet it:
 
 > **95% = 19 of 20 providers LIFECYCLE-COMPLETE** (all 6 stages of §2 green).
-> **Measured 2026-08-18: 6 of 20 = 30%.**
+>
+> **THE NUMBER IS NOW COMPUTED, NOT CLAIMED — run `tools\report_mission_status.ps1`.**
+> Measured 2026-08-19: **9 of 20 = 45%**. It read 6/20 = 30% when this section was written on
+> 2026-08-18, then 8/20, then 9/20 the same day — each correct when typed and stale within hours,
+> which is exactly why a hand-computed mission metric is one nobody checks.
 
 **Why this definition and not the obvious alternative.** The tempting metric is the gate pass-rate —
 `enforce`'s own `PASS / (PASS+FAIL+WARN)`. On 2026-08-18 that read **614/641 = 96%**, i.e. *already
@@ -197,7 +201,14 @@ tenant-tested. So the queue in `report_import_owed.ps1` *is* the roadmap to 95%,
 conformity residue (layout, name components, BUILD_NOTES, suppressions) — however large the counts
 look — moves this number by exactly zero until a provider is imported and swept.
 
-**Do not restate this number from memory.** Derive it: `portfolio_status.ps1` for stage 4,
+**Do not restate this number from memory.** Run `report_mission_status.ps1`. It COMPOSES the same
+authorities rather than re-implementing any check — stage 4 uses the same `_test_status_lib` classifier
+as `portfolio_status.ps1`, so the two cannot disagree — and it adds what a hand count never could: each
+provider is reported at its **FIRST unmet stage**, and the remainder is grouped by blocking stage, so
+the score reads as a work queue instead of a scoreboard. On 2026-08-19 that grouping showed all 10
+incomplete providers blocked at the SAME stage (test), with build/spec/reachability already met on every
+one — the entire remaining 50% is one activity, not ten problems. If it ever disagrees with an owning
+gate, the GATE is right and the aggregator has a bug. Underlying sources: `portfolio_status.ps1` for stage 4,
 `audit_lifecycle.ps1` for stages 5–6, `report_import_owed.ps1` for the queue.
 
 ---

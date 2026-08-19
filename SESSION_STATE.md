@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-18 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-19 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -34,87 +34,79 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**TX_TLETS v4.21 + NY_NYSPIN_EJUSTICE v4.24 BOTH LIFECYCLE-COMPLETE (all 6 stages).** TX 96/96
-(layout convergence, wire `DOE,JOHN A JR`, Jira 800608); NY 75/75 (6 new Person tests, wire
-`DOE, JOHN A JR`, Jira 800806 correcting 794205's premature 69/69 claim). Name-parts flag RETIRED on
-both. **LA_LEMS v3.1 also now exits 0** -- DP/DQ re-split on State, 20b WARN resolved not silenced.
-**OH_LEADS v2.9 LIFECYCLE-COMPLETE** -- 56/56, Jira 801112+801113, its first import AND first sweep ever.
-Middle/Suffix NOT wire-proven (C3: composed into Name but in no `set[]`/`any[]`, so the PLAN CANNOT FILL
-THEM -- wire read `DOE, JOHN`; v3.0 to prove). **NEXT: `MD_METERS`** -- last `ncic-image` carrier, free.
-**SEPARATOR IS PER-PROVIDER, NOT A CONVENTION:** TX emits `DOE,JOHN` (no space, TCIC/TLETS Part 1
-p125); NY emits `DOE, JOHN` (NCIC form). They MUST differ. See ENGINEERING_STANDARD 4.5.
-**THE SWEEP LOOP NOW SELF-REPORTS:** `watch_captures` prints `report_sweep_ledger` (planned/logged/owed
-per entity) after EVERY ingest. **Trust that table, not the browser** -- `capture.js` "ALL n manifest
-entries captured" only means it drained the manifest, and on 08-18 it said so while 22 Boat tests were
-missing. **CHECK THE LEDGER BEFORE ASKING THE OPERATOR TO RE-RUN ANYTHING.** If `worker download failed
-... sendMessage` appears, reload the tenant TAB (invalidated `chrome.runtime`); ONE watcher only.
+**THE 95% IS NOW A TOOL, NOT A CLAIM: `tools\report_mission_status.ps1` -> 9 of 20 = 45%.**
+It reports each provider at its FIRST unmet stage and groups the rest by blocking stage, which is what
+turns the score into a queue. **ALL 10 incomplete providers are blocked at the SAME stage (test), with
+build+spec+reachability already met on every one** -- so the remaining 50% is ONE ACTIVITY: import, then
+sweep. CA_CONTRA_COSTA is the only other blocker (spec: its devdoc yields ZERO combinations).
+**NEXT: pick a never-tested provider, IMPORT it, sweep it.** Building more will not move the number.
 
-**⚠ PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA · HI_HCJDC_OFML v4.15 at HDLE.**
-A LIVE version is frozen -- a bump is a coordinated re-import, not a repo action. **Mariposa Foundation
-AND LIVE are BOTH CURRENT at v2.26. HDLE Foundation AND LIVE are deliberately HELD at v4.15**
-(repo/ticket v4.20) until the hit block is verified — **so HDLE production discards NCIC hit content
-today.** Authority is `report_import_owed.ps1`, NOT this file. **Neither LIVE row was discoverable from
-the repo** (the capture tool cannot reach them) -- so ASK at every import.
+**FIVE PROVIDERS REBUILT 08-18/19, ALL 0 FAIL** -- CA_CLETS_OCATS v2.6, NM_NMLETS_OFML v2.2,
+MD_METERS v2.1, TN_TIES v2.2, OR_LEDS v2.4 (last four also 0 WARN). Highlights: OCATS BUILT the two
+variants I had wrongly registered as skips (4K, VC) which took over-permits 7->0 -- **building the
+missing variant is usually the right fix for an over-permit**; NM's DL was missing BOTH mandatory
+fields because a `<Choice>` inside `<Set>` hid them; TN's stolen check was FREE-TEXT and the gate
+harness found it by reporting a FALSE survivor; OR was transmitting two fields its transaction does not
+define. MD closed the LAST `ncic-image` carrier, so `audit_cross_provider` now reads AUDIT PASSED.
 
-**JIRA (RULE REVERSED 08-17): 4 sections, one NEW comment per RELEASE -- do NOT edit the previous one.**
-Name the superseded comment id in Section 1. DRAFT AND WAIT. Rules: `JIRA_COMMENT_TEMPLATE.txt`.
+**PORTFOLIO SWEEP 08-19 -- what it found and fixed:**
+- **2 FROZEN artifacts deleted.** `audit_session_state.ps1` and `verify_claims.ps1` sat in the REPO ROOT
+  containing NO PowerShell -- captured console text from 07-30 asserting `[PASS] all 6 provider(s)` and
+  `111 lines`. A photograph of a gate passing, in the place a reader expects a gate.
+- **NEW GATE `audit_artifact_provenance.ps1`** (in `doctor`): F frozen / S stale / U unsourced / O orphan.
+  Baseline now 140 scripts + 273 reports, **all four classes 0**. U 0 means every report is attributable
+  to a generator -- a clean result on an axis nothing measured before.
+- **28 stale reports** regenerated (4 CA providers x 7). **4 GENERIC BUILD_NOTES** replaced: all four were
+  the SAME family-wide `<Authentication>/<DeviceId>` production fix, stubbed on 5 of 6 CA providers by one
+  propagation pass. BUILD_NOTES fidelity is now **0 GENERIC across all 20**.
+- OH_LEADS `DEX_TICKET_ARCHIVE.md` created (uniformity FAIL -> `docs/reports identical across all 9`).
+- `build_zz_test_conditions.ps1` moved root -> `tools/`; **the move broke it twice** (dot-sources became
+  `tools\tools\...`, output would have landed in `tools\`). Both repaired. Its being at root is why the
+  undocumented-tool gate had never seen it.
 
-**EXTENSION v0.5.2**: manifest `https://*.mark43.com/rms/*`; ARM switch, per-host, 8 `requireArmed()` gates. Patterns CANNOT match a URL hash. **Chrome may save a SECOND file (`... (1).json`) -- ingest ALL.**
+**? PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA - HI_HCJDC_OFML v4.15 at HDLE.** A LIVE version is
+frozen -- a bump is a coordinated re-import, not a repo action. **HDLE is deliberately HELD at v4.15**
+(repo/ticket v4.20) until the hit block is verified, **so HDLE production discards NCIC hit content today.**
+Authority is `report_import_owed.ps1`, NOT this file. Neither LIVE row is discoverable from the repo -- ASK.
+
+**JIRA: 4 sections, one NEW comment per RELEASE -- never edit the previous one.** Name the superseded id in
+Section 1. DRAFT AND WAIT, every provider, every time. Rules: `JIRA_COMMENT_TEMPLATE.txt`.
 
 ## OPEN FINDINGS -- confirmed, unfixed
 
-- **⏸ PAUSED PENDING COMMSYS -- LIMITATION #41: a populated HOME state routes a local plate to NLETS**
-  (Mariposa CA_CLETS: `State=CA` satisfied `NLTS.RQ.P`, not `IA.QV`). Our config is provably clean;
-  evidence + DO-NOT-APPLY-YET reasoning in `PLATFORM_CONSTRAINTS.txt` #41. **Read it before any State field.**
-- **`audit_requirement_fidelity` over-permit blind spot:** `vehicleYear` injected into IL `Z2.P any[]` goes unreported (control + mutant both 9 branches). Suspect `$shPool` inheriting sibling VIN.
-- **HI's NCIC hit block is CONFIG-PRESENT, NOT RENDERING-VERIFIED.** v4.16-v4.18 added 25 QRDM attrs;
-  sweeps prove the REQUEST unchanged, nothing about the response. Needs ONE hit query in HI's OWN tenant
-  (not HDLE); settles dotted `Hit.Banner`. **Product gap: all 20 + Lafayette map 0 of 21 such fields.**
-- **Officer guides are content-poor, not stale.** HI's says "pick a row" though the PLATFORM picks by field content, never naming the discriminator. Rewrite requested; shape not agreed.
-- **NEW 08-18: `audit_log_inflation` attack A COULD NEVER FAIL until today; now 38 UNTRIAGED clone
-  groups** (FL 12, NY 10, CA 8, AZ 4, NJ 3, HI 2, IL 1, TX 0). The transaction id appears BOTH as an
-  `<Id>` element AND an `id="..."` ATTRIBUTE, so no two logs ever hashed alike; also its default scope
-  was a hardcoded SIX, so AZ+IL had never been examined. Both fixed; keyed on wire+fills so a PASSING
-  guardrail is not mis-flagged. NOT blocking (no orchestrator runs it). They are duplicate/vacuous
-  guardrails and clear at each provider's own rebuild via the `emit_test_plan` fix -- never a sweep.
-- **CLOSED 08-18, do not re-raise:** the 28 TX/TX_CCH `ImageIndicator=Y` constraint triggers (12 of 14 were the gate applying a DH-scoped devdoc line portfolio-wide; the 2 real ones are wire-proven satisfied). Reasoning in TX's v4.21 BUILD_NOTES. **COMMSYS ASKS ARE ON HOLD (Rob 08-18)** -- LA's devdoc PurposeCode/State inversion is recorded, NOT owed, do NOT raise.
-
+- **TWO BLOCKING GATES LEAVE NO EVIDENCE.** `audit_devdoc_combinations` (2p) and `audit_combo_reachability`
+  (2h) write NOTHING to `docs/` -- zero files repo-wide match `*devdoc*`/`*reach*`. So "was the spec proven
+  for THIS version?" can only be answered by re-running. `report_mission_status` runs them live because of it.
+- **`audit_devdoc_combinations` prints the same fact TWO WAYS** (`19 compared` vs `12 devdoc combination(s)
+  compared`). Cost three wrong parses in one tool. One fact, one wording -- worth standardising.
+- **21 over-broad suppressions** across 243 registry rows (0 STALE, so every row still describes the JSON).
+- **? PAUSED PENDING COMMSYS -- LIMITATION #41:** a populated HOME state routes a local plate to NLETS.
+  Our config is provably clean; evidence in `PLATFORM_CONSTRAINTS.txt` #41. Read before any State work.
+- **HI's NCIC hit block is CONFIG-PRESENT, NOT RENDERING-VERIFIED.** Needs ONE hit query in HI's OWN tenant.
+- **38 UNTRIAGED clone groups** (`audit_log_inflation`) -- duplicate/vacuous guardrails; clear at each
+  provider's own rebuild via the `emit_test_plan` fix, never a sweep.
+- **Officer guides are content-poor, not stale.** Rewrite requested; shape not agreed.
+- 2 live flags: `nameparts-untested-unfrozen` (TX_TLETS_CCH), `plan-fillability-unfireable-tests` (CA_eSUN).
 
 ## ON HOLD / DO NOT RE-RAISE
 
-- **HI PlateType default on a CAD VIN check -- HELD, "may be a cad side fix". DO NOT ADD IT.** Wire
-  shows M55S fired correctly; `LicensePlateTypeCode initialValue=''` is the routing discriminator and
-  defaulting it kills the in-state plate search (BUILD_RULES 24). KB carve-out also held.
-- **CA_CONTRA_COSTA** BLOCKED: `audit_devdoc_combinations` compares ZERO devdoc combos.
-  **LA_LEMS PARKED**: real BUILD_RULES 20b WARN, do NOT silence. Rob's call.
-- **DH IS NOT SUPPORTED FROM CAD** (Rob 08-12), so it is out of scope for LIMITATION #41's CAD-fills-State question. **`audit_devdoc_optionals` re-route hole DOES NOT EXIST** (withdrawn).
-- **LIMITATION #40: the wire is a UNION across every MATCHING combination** (LIVE-PROVEN 38/38) -- do
-  not narrow fidelity's `$formOnly` without reading it. **CA_CLETS purpose-code dropdown: CLOSED (#39).**
-- **SHELVED 08-17, DO NOT ACT:** LIVE CA_eSUN export uses `DEX_INQUIRY_PURPOSE_CODE` (#39 calls it
-  EMPTY-rendering), no initialValue, `clearOnSubmit`, no `defaults[]` -> supplies NO PC to a CAD query.
-
-## STATE
-
-**0F/0W except** LA_LEMS + CA_CONTRA_COSTA. **`[FLAG:ncic-image-default-y-everywhere]` 16 -> 1, MD_METERS
-ONLY** -- OH_LEADS v2.5 closed it (Rob-held elsewhere: a WIRE change = bump + re-sweep. AZ RULED OUT, MEASURED).
-**LA + MD STATUS DRIFT IS RESOLVED (08-18, Rob-approved doc sync): repo audit 352 PASS / 0 FAIL, and
-enforce can reach exit 0 again -- it had been blocking ALL 20.** LA's STATUS now shows its real score.
-**`[FLAG:nameparts-untested-unfrozen]` now TX_TLETS_CCH ONLY** (HI/TX/NY retired on wire evidence).
-**"95%" = `ENGINEERING_STANDARD.md` §5.1: 19/20 LIFECYCLE-COMPLETE; today 9/20 = 45%** -- the 9 ALL-PASS above, all 6 stages each. NOT the gate pass-rate; `report_import_owed.ps1` IS the roadmap.
-**Wired 08-18:** `audit_layout_flow` -> enforce **2w ADVISORY**; `report_sweep_ledger` -> every ingest.
+- **COMMSYS ASKS ARE ON HOLD (Rob 08-18).** LA's devdoc PurposeCode/State inversion is recorded, NOT owed.
+- **HI PlateType default on a CAD VIN check -- HELD.** Defaulting it kills the in-state plate search (BR 24).
+- **CA_CONTRA_COSTA** spec-blocked by a devdoc that yields no combination table -- Rob's call, not a build fix.
+- **DH IS NOT SUPPORTED FROM CAD** (08-12). **`audit_devdoc_optionals` re-route hole DOES NOT EXIST** (withdrawn).
+- **LIMITATION #40: the wire is a UNION across every MATCHING combination** (LIVE-PROVEN 38/38).
+- **CLOSED, do not re-raise:** the 28 TX/TX_CCH `ImageIndicator=Y` constraint triggers; CA_CLETS purpose-code
+  dropdown (#39); LIVE CA_eSUN `DEX_INQUIRY_PURPOSE_CODE` (SHELVED 08-17, do not act).
 
 ## RULES I HAVE BROKEN -- READ FIRST (`usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c)
 
-- **PRINT THE OBJECT'S KEYS BEFORE PROBING IT.** Confident-empty wrong paths: `$cb.defaults` (really
-  `.requirements.defaults`), `.PSObject.Properties` on an ARRAY, `PENDING_UPDATES.txt` in the provider
-  root (it is `docs/tracking/`), `$qif.layouts` (it is `.layout`). **`@($null).Count` IS 1** -- and on
-  08-18 that made QMF's empty `attributes` read as populated, so my "fix" broke all 6 providers.
-- **ADD A CONTROL; a finding across MANY providers -- or one contradicting a gate -- is usually YOUR
-  PROBE.** A "portfolio-wide harness defect" was my probe. **NEVER read `[0]` and generalise.**
-- **A CHECK MUST NOT MATCH ITS OWN TEXT**, and **VERIFY THE VERIFIER**: `node` is not installed, so
-  `node --check` is a vacuous pass. **A ZERO IS NOT A MEASUREMENT until that same probe has produced a
-  NON-ZERO on a known case.** 3x on 08-18: counted `[WARN]` in a tool emitting none; `'...$'` on a
-  multi-line blob cannot match a mid-string line (needs `(?m)` or split-then-match); and **I blamed a
-  defect on the work I touched last -- `git log -S` put the `MI` labels 3 weeks earlier.**
-- **READ THE GATE VERDICT BEFORE COMMITTING, not in the same command.** A shared-tool change
-  reddening another provider gets a FLAG, never a fix (8c). **REPLACE, never append.**
+- **A FINDING ON EVERY PROVIDER IS YOUR PROBE.** `report_mission_status` said "0 of 20" three times before
+  it was right; each cause was my own regex, never the portfolio. **ANCHOR ON THE GATE'S VERDICT LINE.**
+- **`-like` IS A WILDCARD MATCHER -- use `.Contains()` for literal text.** Markdown prose is full of `*` and
+  `[`, so a `-like` guard silently returned False on a line that was byte-identical. Cost 3 attempts.
+- **`-Quiet` SUPPRESSES `Write-Host`, so a piped capture gets NOTHING** -- my `doctor` wiring printed
+  headers with no content. Verify a new dashboard section actually REPORTS, not just that it ran.
+- **MOVING A FILE BREAKS ITS RELATIVE PATHS.** `$PSScriptRoot` moves with it. Check dot-sources AND outputs.
+- **PRINT THE OBJECT'S KEYS / READ THE API BEFORE PROBING.** `Get-ProviderTestState` (not ...Status);
+  layout nodes sit DIRECTLY under each variant with no `.nodes` level; **`@($null).Count` IS 1**.
+- **READ THE GATE VERDICT BEFORE COMMITTING, not after.** **REPLACE this file, never append.**

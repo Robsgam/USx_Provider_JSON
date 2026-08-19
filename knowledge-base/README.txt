@@ -1513,6 +1513,96 @@ AUTHORITATIVE SOURCE FILES (read-only)
     NJ_NJCJIS is the only clean provider and OH_LEADS the next (2) -- the two most recent
     layout passes. Do NOT copy FL (7) or NY (6) for layout; they predate the convention.
 
+  tools/build_zz_test_conditions.ps1
+    TEST-ONLY PLATFORM-BEHAVIOR BASELINE -- NOT a provider. Builds ZZ_TEST_CONDITIONS.json, a probe
+    tenant config that answers how the platform ACTUALLY evaluates QueryInputDataMapping conditions
+    and defaults, versus what the Cringer "QueryInputDataMapping / Attribute Handle" docs claim.
+    Answers are read from REQUEST XML markers -- hidden fields carrying an initialValue that only
+    serialize when their combo fires -- and every query carries a no-condition KEEP-ALIVE combo
+    ordered last, so the query never fully grays out and a request is always produced. Six groups,
+    one query each: A EQUALS/NOT_EQUALS, B EXISTS/NOT_EXISTS plus the poisoned-array case (a
+    value-condition beside a NOT_EXISTS), C defaults on set[] (documented no-op) vs any[] (applies),
+    D IN/NOT_IN including the "null" literal that matches an absent field, E REGEX, F EXCLUSIVE
+    (documented frontend-only; backend always passes). Run per tenant and DIFF -- the baseline should
+    be identical across tenants at the same platform level; recorded findings live in
+    ZZ_TEST_CONDITIONS_BASELINE.md at the repo root.
+    MOVED INTO tools/ ON 2026-08-19, and the move itself broke it twice -- worth remembering before
+    relocating any script: it dot-sourced "$PSScriptRoot\tools\_build_*.ps1" (which became
+    tools\tools\... once $PSScriptRoot was tools\), and it wrote its JSON to $PSScriptRoot (which
+    would have dropped the artifact in tools\ and orphaned the existing root JSON and its BASELINE).
+    Both repaired; the output path is now pinned to the repo root explicitly. It had sat at the root
+    since creation, which is also why audit_repo's undocumented-tool check had never seen it -- that
+    check scans tools/, so a tool in the wrong directory is invisible to the gate that would have
+    demanded this entry.
+    Usage: .\build_zz_test_conditions.ps1 [-ProviderName <name>]
+
+  tools/audit_artifact_provenance.ps1
+    IS THIS EVIDENCE, OR SOMETHING SHAPED LIKE EVIDENCE? The axis none of the other ~40 gates
+    covers. Every one of them asks a CORRECTNESS question -- does the built request match the
+    devdoc, the metadata, the logs, the plan. NOT ONE asked whether an artifact was actually
+    PRODUCED BY A TOOL and still describes the version that is here now. That is load-bearing
+    because the whole trust model rests on tool output: enforce.ps1 reads report FILES rather
+    than live tools, reviewers read docs/, and a restarted session reads SESSION_STATE.md.
+    MOTIVATING FIND (2026-08-19): audit_session_state.ps1 and verify_claims.ps1 sat in the REPO
+    ROOT, beside the real ones in tools/, containing NO POWERSHELL AT ALL -- just captured
+    console text from 2026-07-30 asserting "[PASS] all 6 provider version(s) named match the
+    active JSON" and "111 lines". Six providers, when there are twenty. A frozen green board in
+    the exact place a reader expects a gate, and audit_ps51_parse.ps1 scans only tools/*.ps1, so
+    nothing in the repo had ever looked at them.
+    FIVE PRIOR INSTANCES OF THE SAME SHAPE, all already paid for: a STALE report making a fixed
+    provider look broken (NM_NMLETS_OFML 2026-08-19 -- enforce reported 2 metadata FAILs from
+    METADATA_AUDIT while the live tool said 100 PASS / 0 FAIL); reports REGENERATED FROM A MUTANT
+    during mutation testing (usx-tooling 5c); .test_state.json contradicting the logs (hence
+    "test status from logs, NOT the state file"); a SQVR asserting "17 combos" against a JSON
+    holding 12 for nine version bumps; and a BUILD_NOTES stub calling a wire change a no-op.
+    Every one is EVIDENCE THAT CANNOT BE FALSIFIED BY ITS OWN CONTENT.
+    CLASSES: F FROZEN (.ps1 with no PS tokens but gate-style output -- the ONLY blocking class,
+    because a photograph of a gate passing can never disagree with reality); S STALE (any docs/
+    report older than the active JSON -- generalises enforce PHASE 1's hand-picked ANCILLARY
+    subset to EVERY report and names each one, since that subset was chosen before half these
+    reports existed); U UNSOURCED (a docs/reports file whose name prefix appears in NO tool, so
+    nothing in the repo can generate it -- NOTE not FAIL, because a legitimately renamed
+    generator would trip it); O ORPHAN (a report naming a version no longer present).
+    It does NOT judge content -- a frozen file full of accurate numbers is still frozen.
+    Prints its denominators and reports [NO-VERDICT] on an empty scope, because the failure mode
+    it hunts would otherwise apply to itself. LAW 2 proven both directions: FAILed on the two
+    real frozen files, PASSES after their removal.
+    Baseline 2026-08-19 after cleanup: 140 .ps1 + 273 reports / F 0 - S 0 - U 0 - O 0.
+    Composed into doctor.ps1.
+    Usage: .\audit_artifact_provenance.ps1 [-Provider <NAME>] [-Quiet] [-OutFile <path>]
+
+  tools/report_mission_status.ps1
+    THE 95% METRIC, COMPUTED INSTEAD OF CLAIMED. ENGINEERING_STANDARD 5.1 defines the mission as
+    19 of 20 providers LIFECYCLE-COMPLETE (all six stages of section 2). Until 2026-08-19 that
+    number lived in PROSE, in two places, and was recomputed BY HAND -- it was written 6/20,
+    then 8/20, then 9/20 IN A SINGLE DAY, each correct when typed and stale within hours. A
+    mission metric that only a human can compute is a mission metric nobody checks.
+    COMPOSES, NEVER RE-IMPLEMENTS (LAW 4): stage 4 uses the same _test_status_lib classifier as
+    portfolio_status.ps1 and SESSION_STATE, so the three cannot disagree; stages 5 and 6 read the
+    same authorities audit_lifecycle.ps1 reads (the structured POSTED: marker and
+    IMPORT_LEDGER.md); stage 1 reads the VALIDATOR_REPORT. If a number here ever disagrees with
+    an owning gate, THE GATE IS RIGHT and this aggregator has a bug.
+    STAGES 2 AND 3 ARE RUN LIVE, AND THAT IS A RECORDED FINDING, not an implementation shortcut:
+    audit_devdoc_combinations (enforce 2p) and audit_combo_reachability (enforce 2h) are BLOCKING
+    phases that write NOTHING to docs/ -- verified 2026-08-19, zero files repo-wide match *devdoc*
+    or *reach*. So "was the spec proven for THIS version?" cannot be answered from the repo after
+    the fact; it can only be re-run. Two blocking gates with no durable evidence.
+    THE ORDER IS THE PRODUCT. Stages are strictly dependent -- you cannot tenant-test what is not
+    imported, and you cannot post a release line for a version that has not passed -- so each
+    provider is reported at its FIRST UNMET STAGE and the remainder is GROUPED BY BLOCKING STAGE.
+    That is what turns a score into a work queue: the first run showed 9/20 = 45% with all 10
+    incomplete providers blocked at the SAME stage (test) and build/spec/reachability already met
+    on every one, i.e. the entire remaining 50% is ONE ACTIVITY, not ten problems.
+    Always exits 0 -- a REPORT, not a gate (owing lifecycle stages is the normal mid-flight state,
+    and blocking would train everyone to skip it, the same reasoning report_import_owed.ps1 and
+    report_sweep_ledger.ps1 record) -- but prints [NO-VERDICT] rather than a clean-looking 0/0.
+    ITS FIRST THREE RUNS WERE WRONG AND EVERY FAILURE WAS THE PROBE, NOT THE PORTFOLIO: guessed
+    report filenames produced "0 of 20"; then a regex for "combination(s) compared" missed
+    OH_LEADS' "19 compared"; then the reverse missed HI's "12 devdoc combination(s) compared".
+    The gate prints the same fact TWO WAYS -- anchor on the line that says "compared" and take the
+    integer, never a guessed sentence. Composed into doctor.ps1.
+    Usage: .\report_mission_status.ps1 [-Quiet] [-OutFile <path>]
+
   tools/audit_provider_uniformity.ps1
     ARE THE FINISHED PROVIDERS THE SAME SHAPE? -- the artifact-set direction that neither
     structural gate covers. audit_structure.ps1 checks ONE provider against a template IN
