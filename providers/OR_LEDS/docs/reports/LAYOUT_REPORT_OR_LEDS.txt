@@ -1,20 +1,20 @@
 ﻿================================================================
   Build Report: OR_LEDS
-  Source: OR_LEDS_v2.3.json
-  Generated: 2026-08-17 11:52
+  Source: OR_LEDS_v2.4.json
+  Generated: 2026-08-19 10:25
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== OR_LEDS_v2.3.json ===
+=== OR_LEDS_v2.4.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=3 fields=4
+  Vehicle | entity=Vehicle | qidm= | cards=3 fields=3
   Person | entity=Person | qidm= | cards=3 fields=5
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=3 fields=2
 QIDMs: 5
-  OR_LEDS_VehicleRegistrationQuery | attrs=7 combos=3 autoSelect=True
+  OR_LEDS_VehicleRegistrationQuery | attrs=5 combos=3 autoSelect=True
   OR_LEDS_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
   OR_LEDS_GunQuery | attrs=3 combos=1 autoSelect=
   OR_LEDS_ArticleSingleQuery | attrs=2 combos=1 autoSelect=
@@ -40,9 +40,6 @@ LAYOUT DETAIL
     CARD "CARD_VEH_VIN"
       ROW ROW_VEH_VIN_1 [12]
         VehicleIdentificationNumber (Text | maxLen=20)
-      ROW ROW_VEH_VIN_2 [6 6]
-        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
-        vehicleYear (Text | maxLen=4)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=

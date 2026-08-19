@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.3'
+$Version     = '2.4'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OR_LEDS_v${Version}.json"
@@ -70,14 +70,12 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');            targetField = 'LicensePlateYear' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
         [PSCustomObject]@{ name = 'VehicleIdentificationNumber'; size = 20; sourceField = @('VehicleIdentificationNumber'); targetField = 'VehicleIdentificationNumber' }
-        [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 4;  sourceField = @('VehicleMakeCode');             targetField = 'VehicleMakeCode' }
-        [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
         # OOS plate (most specific -- RegistrationState EXISTS)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','vehicleYear','RegistrationState')
+                set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode','LicensePlateYear','RegistrationState')
                 defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
@@ -88,7 +86,7 @@ $vehRegQuery = [PSCustomObject]@{
         # VIN (Plate>VIN guardrail -- LicensePlateNumber NOT_EXISTS)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('VehicleIdentificationNumber'); any = @('VehicleMakeCode','vehicleYear','RegistrationState')
+                set = @('VehicleIdentificationNumber'); any = @('RegistrationState')
                 conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
@@ -98,7 +96,7 @@ $vehRegQuery = [PSCustomObject]@{
         # In-state plate (RegistrationState NOT_EXISTS)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','vehicleYear')
+                set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode','LicensePlateYear')
                 defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
@@ -314,7 +312,9 @@ $providerBundle = [PSCustomObject]@{
 # Vehicle -- 3 cards (MC)
 # OPTIONS: RegistrationState (shared by all combos, LIMITATION #30)
 # PLATE SEARCH: Plate + PlateType + PlateYear
-# VIN SEARCH: VIN + VehicleMake + VehicleYear
+# VIN SEARCH: VIN only. VehicleMake/VehicleYear REMOVED at v2.4 -- the devdoc lists them as
+# optionals on combination #2 but metadata RQ{VehicleIdentificationNumber} defines Any[State] ONLY,
+# so transmitting them would OVER-PERMIT. Registered devdoc-optional-unreachable.
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
@@ -345,10 +345,6 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_VIN_1'; cols = @('12'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_VIN_1' }
-            )}
-            @{ id = 'ROW_VEH_VIN_2'; cols = @('6','6'); fields = @(
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_VIN_2' }
-                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear'     'Vehicle Year (optional)' '4' 'ROW_VEH_VIN_2' }
             )}
         )
     }

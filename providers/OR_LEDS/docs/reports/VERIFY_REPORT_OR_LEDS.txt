@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OR_LEDS
-  Source: OR_LEDS_v2.3.json
-  Generated: 2026-08-17 11:52
+  Source: OR_LEDS_v2.4.json
+  Generated: 2026-08-19 10:25
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: OR_LEDS_v2.3
+ POST-BUILD VERIFICATION: OR_LEDS_v2.4
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 13 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, nameMiddle, nameSuffix, gunCaliber, gunMake, serialNumber, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 11 [LicensePlateTypeCode, LicensePlateYear, ImageIndicator, nameMiddle, nameSuffix, gunCaliber, gunMake, serialNumber, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [PASS] Cross-bundle fieldId consistency checked
 
@@ -31,14 +31,13 @@ POST-BUILD VERIFICATION
   [PASS] All 2 RMS QIDMs have autoSelect=true
 
 --- CHECK 6: Visible-First Mandate ---
-  [PASS] VehicleMakeCode field 'VehicleMakeCode' is FormSelect (VEHICLE_MAKE dropdown)
   [PASS] Visible-First Mandate: no unapproved hidden fields; Attention automation conforms to standard
 
 --- CHECK 7: Synthetic keyRef Documentation ---
   [PASS] All 3 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (21) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (19) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -55,7 +54,7 @@ POST-BUILD VERIFICATION
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare 'Middle Name' (any[] optional). RESTORED v2.3;)
   [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare 'Suffix' (any[] optional). RESTORED v2.3.)
-  [PASS] All form field labels have required routing hint qualifiers (25 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (23 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
@@ -69,7 +68,7 @@ POST-BUILD VERIFICATION
   [PASS] No duplicate targetField in any REQUEST QIDM (5 in response mappings -- INFO, see CHECK 15 header)
 
 ========================================
- VERIFICATION PASSED: 17 PASS / 0 WARN / 0 FAIL
+ VERIFICATION PASSED: 16 PASS / 0 WARN / 0 FAIL
 ========================================
 
 

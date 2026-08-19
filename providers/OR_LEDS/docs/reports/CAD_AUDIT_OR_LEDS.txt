@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OR_LEDS
-  Source: OR_LEDS_v2.3.json
-  Generated: 2026-08-17 11:52
+  Source: OR_LEDS_v2.4.json
+  Generated: 2026-08-19 10:25
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: OR_LEDS_v2.3
+ CAD AUDIT: OR_LEDS_v2.4
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -17,8 +17,8 @@ CAD AUDIT
     [PASS] licensePlateTypeCode: in QIF as 'LicensePlateTypeCode' (PascalCase USx fieldIds)
     [PASS] licensePlateYear: in QIF as 'LicensePlateYear' (PascalCase USx fieldIds)
     [PASS] vehicleIdentificationNumber: in QIF as 'VehicleIdentificationNumber' (PascalCase USx fieldIds)
-    [PASS] vehicleMakeCode: in QIF as 'VehicleMakeCode' (PascalCase USx fieldIds)
-    [PASS] vehicleYear: in QIF and CAD list
+    [INFO] vehicleMakeCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [INFO] vehicleYear: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [PASS] registrationState: in QIF as 'RegistrationState' (PascalCase USx fieldIds)
     [INFO] imageIndicator: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] nameFirst: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -146,6 +146,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 55 PASS / 0 FAIL / 0 WARN / 61 INFO
+Total: 53 PASS / 0 FAIL / 0 WARN / 63 INFO
 
 

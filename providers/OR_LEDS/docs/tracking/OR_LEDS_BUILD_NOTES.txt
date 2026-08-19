@@ -10,6 +10,80 @@ DOCUMENTED SKIP (recorded 2026-08-11) -- ImageQuery: UNBUILDABLE, not deferred.
   Same class as AZ_AZDPS's GunQuery #1/#2 (devdoc lists a path metadata does not define).
   This is CLOSED, not owed. Contrast LA_LEMS, where ImageQuery IS defined (1 combination,
   DP{OperatorLicenseNumber}) and therefore genuinely is owed at that provider's own turn.
+v2.4  2026-08-19  VehicleMakeCode + VehicleYear removed -- the vehicle query cannot carry them; 0F/0W
+  CHANGED:
+    - VehicleMakeCode and vehicleYear removed from all three RQ combos' any[] (RQ.PO, RQ.V, RQ.P).
+    - Their two QIDM attributes removed, and both form controls removed with ROW_VEH_VIN_2.
+      The VIN card is now VIN only.
+    - REGISTERED VehicleRegistrationQuery | RQ.V | VehicleMakeCode and | VehicleYear as
+      devdoc-optional-unreachable.
+  REASON: audit_requirement_fidelity reported 4 OVER-PERMITTED --
+    "RQ -> built 'RQ.PO' OVER-PERMITTED: VehicleMakeCode; VehicleYear" and the same on RQ.V. We were
+    transmitting two fields this transaction does not define.
+
+  THE DEVDOC LISTS THEM AND THE METADATA DOES NOT -- and that is the whole finding, not a technicality.
+  Devdoc VehicleRegistrationQuery combination #2 reads "(In) VehicleIdentificationNumber,
+  [VehicleMakeCode, VehicleYear]", so both ARE devdoc optionals on the VIN search. But read from the
+  raw XML <Requirements> per <Combination>, the sanctioned exception, this provider's
+  VehicleRegistrationQuery has exactly TWO variants and neither defines either field:
+      RQ{LicensePlateNumber}            Set[LicensePlateNumber]  Any[LicensePlateTypeCode, LicensePlateYear, State]
+      RQ{VehicleIdentificationNumber}   Set[VehicleIdentificationNumber]  Any[State]
+  EVERY transaction in the XML was searched, not just VehicleRegistrationQuery: VehicleMakeCode and
+  VehicleYear appear ONLY on Wanted-Person transactions -- QLW, QW, and the PEWantedPerson
+  Entry/Modify/Supplemental family (EW, ET, SW, RW, MW, MT, MWXW, XN, EN). That is a different product
+  surface (person records), and none of it is the vehicle registration query. So the fields are not
+  merely unmapped here; they are undefined for this query anywhere in the provider's own metadata.
+  Metadata is FIELD authority (Rob 2026-08-18: "meta data wins over dev doc built to the spec"), so the
+  devdoc bracket cannot license transmitting them. This is the structural mismatch a FLAT devdoc
+  optional list cannot express, and it is the same rule class this provider ALREADY carries seven times
+  (RelatedHitSearchIndicator on QA/BQ.H/BQ.R/QG, Name and BirthDate on DQ.N) -- so the disposition was
+  set by this provider's own precedent, not invented.
+
+  REMOVED IN FULL, NOT JUST FROM any[] -- that is the part worth remembering. Dropping the fields from
+  any[] alone would have left two QIDM attributes sourcing nothing (wiring class B ORPHAN ATTRIBUTE)
+  and two officer-facing controls whose input goes nowhere (class A DEAD CONTROL -- the officer types a
+  make and year and the request silently discards them, which is WORSE than not offering the field at
+  all, and it is the exact defect audit_wiring_closure was built for after CA_SAN_LUIS_OBISPO shipped a
+  visible prefilled Purpose Code that was in no combination's any[]). So the attributes and the whole
+  ROW_VEH_VIN_2 went too. Verified: fidelity 4 OVER -> 0 with branches HELD at 8, and
+  audit_wiring_closure 0 breaks across all ten classes.
+  Registration measured too: 8 branches before AND after the two rows, so they RECORD without buying
+  silence.
+
+  A HONEST SIDE EFFECT, recorded rather than left to be discovered: OR_LEDS now has NO VehicleMakeCode
+  form field, so audit_gate_efficacy reports "vehiclemake-as-input [INVALID] N/A -- this provider has no
+  VehicleMakeCode form field, so the VehicleMakeCode gate has nothing to check here". Gate efficacy
+  reads KILLED 7 / 7, SURVIVED 0, INVALID 1 -- it went from 8 applicable mutations to 7. That means
+  verify_build's VehicleMakeCode check is now VACUOUS on this provider, exactly as CLAUDE.md already
+  records for NJ_NJCJIS and HI_HCJDC_OFML, which build no such field either. The harness says so out
+  loud instead of quietly scoring 7/7 as if nothing changed, which is why this is acceptable: a
+  mutation that cannot be applied is reported as INVALID, not as a pass.
+  It also sidesteps LIMITATION #38 here: the VEHICLE_MAKE dropdown transmits the raw attribute code
+  (CNST_FORD) where providers require a code-manual value. OR no longer sends VehicleMakeCode at all,
+  so that parked portfolio-wide defect has one fewer carrier -- a consequence, not the motive.
+
+  TWO EXPECTATIONS I ARRIVED WITH AND BOTH WERE WRONG -- measured, not assumed:
+    1. SESSION_STATE said "NEXT: OR_LEDS v2.3 (last middle/suffix RESTORATION)". audit_name_components
+       reports 0 blocking findings / 4 components examined / C1 0 / C2 0 / C3 0 -- OR's name components
+       are already complete. Nothing was owed and nothing was invented. That note is STALE.
+    2. I expected enforce to be blocking. It arrived at ENFORCED 40 PASS / 0 FAIL / 0 WARN, so this was
+       a raise-the-ceiling pass on an already-clean provider, not a repair.
+
+  THE FUZZ SURVIVOR from the first run ("drop-conditions @ VehicleRegistrationQuery[2]") did not recur
+  at seed 857311 (8/8 caught). Triage if it returns: [2] is RQ.P set[LicensePlateNumber] gated
+  RegistrationState NOT_EXISTS, and [0] is RQ.PO with the IDENTICAL set[] gated EXISTS -- the standard
+  in/out fork. Dropping RQ.P's condition is close to a semantic no-op because first-match ordering
+  already hands the State-present case to RQ.PO, and the two combos' field pools differ only by
+  RegistrationState, so the union (LIMITATION #40) carries the same content either way.
+
+  PHASE 1 at v2.4: [1] all devdoc combinations accounted for - [2] optionals all route and transmit -
+  [3] 9 combos, most-specific-first respected - [4] 8 branches, 0 UNDER / 0 OVER - [5] 8 built,
+  0 prefill-dead, 0 shadow, 0 MISSING - [6] gate efficacy 7/7 killed (1 INVALID by design) -
+  [6b] fuzz 8/8 caught. enforce -Provider OR_LEDS: ENFORCED 40 PASS / 0 FAIL / 0 WARN, exit 0.
+  Cost: zero test package (0 current-version logs, never imported).
+  STILL OWED: never USx-tenant-tested, never imported.
+
+
 v2.3  2026-08-17  RESTORE middle name + suffix on DriverLicenseQuery
   CHANGED: Wired the metadata-defined middle-name and suffix components of the composite `Name`
     field so they reach the wire: added the two form controls per name path, appended them to that
