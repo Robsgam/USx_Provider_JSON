@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML
-  Source: NM_NMLETS_OFML_v2.1.json
-  Generated: 2026-08-02 21:49
+  Source: NM_NMLETS_OFML_v2.2.json
+  Generated: 2026-08-18 21:55
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== NM_NMLETS_OFML_v2.1.json ===
+=== NM_NMLETS_OFML_v2.2.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=3 fields=4
-  Person | entity=Person | qidm= | cards=5 fields=7
+  Person | entity=Person | qidm= | cards=5 fields=9
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=3 fields=2
 QIDMs: 6
   NM_NMLETS_OFML_VehicleRegistrationQuery | attrs=7 combos=4 autoSelect=True
-  NM_NMLETS_OFML_DriverLicenseQuery | attrs=6 combos=2 autoSelect=True
+  NM_NMLETS_OFML_DriverLicenseQuery | attrs=8 combos=2 autoSelect=True
   NM_NMLETS_OFML_DriverHistoryQuery | attrs=7 combos=2 autoSelect=True
   NM_NMLETS_OFML_GunQuery | attrs=4 combos=1 autoSelect=
   NM_NMLETS_OFML_ArticleSingleQuery | attrs=2 combos=1 autoSelect=
@@ -49,10 +49,13 @@ LAYOUT DETAIL
   name=ENTITY_Person | entity=Person | qidm=
   [default]
     CARD "CARD_PER_OPT"
-      ROW ROW_PER_OPT_1 [4 4 4]
+      ROW ROW_PER_OPT_1 [3 3 3 3]
         RegistrationState (Dropdown | attributeTypeId=STATE)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        purposeCode (Text | maxLen=1 | default=C)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
+      ROW ROW_PER_ATTN [12]
+        Attention (Text | maxLen=30)
     CARD "CARD_PER_OLN"
       ROW ROW_PER_OLN_1 [12]
         OperatorLicenseNumber (Text | maxLen=20)

@@ -28,7 +28,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nm_nmlets_ofml.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.1'
+$Version     = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NM_NMLETS_OFML_v${Version}.json"
@@ -155,15 +155,25 @@ $dlQuery = [PSCustomObject]@{
             size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
+        [PSCustomObject]@{ name = 'PurposeCode'; size = 1; sourceField = @('purposeCode'); targetField = 'PurposeCode' }
         [PSCustomObject]@{ name = 'SexCode'; size = 1; sourceField = @('SexCode'); targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
         [PSCustomObject]@{ name = 'State'; size = 2; sourceField = @('RegistrationState'); targetField = 'State'; codeTypeProvider = 'NCIC' }
+        # ATTENTION -- the ONE standing visible-first exception (BUILD_RULES, directive 2026-06-22):
+        # auto-populated by the handler, NO visible control, scoped ONLY to a query whose metadata
+        # lists Attention. NM's DriverLicenseQuery metadata puts it INSIDE <Set>, so it is mandatory
+        # here; it rides in any[] because the handler supplies it at send time and a set[] membership
+        # would demand a form value that never exists, making both DL combos unsatisfiable.
+        [PSCustomObject]@{
+            name = 'Attention'; size = 30; sourceField = @('Attention'); targetField = 'Attention'
+            rule = [PSCustomObject]@{ function = 'CommsysGetLastNameFirstNameInitialRuleHandler' }
+        }
     )
     combinations = @(
         # DL.NAME: Name+DOB+Sex (more specific -- Name before OLN)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('NameLast','NameFirst','BirthDate','SexCode'); any = @('RegistrationState','ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+                set = @('NameLast','NameFirst','BirthDate','SexCode','purposeCode'); any = @('RegistrationState','ImageIndicator','Attention')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'purposeCode'; value = 'C' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
@@ -173,8 +183,8 @@ $dlQuery = [PSCustomObject]@{
         # DL.OLN: OLN (less specific)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('OperatorLicenseNumber'); any = @('RegistrationState','ImageIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+                set = @('OperatorLicenseNumber','purposeCode'); any = @('RegistrationState','ImageIndicator','Attention')
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'purposeCode'; value = 'C' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'DL.OLN'
@@ -456,10 +466,19 @@ $perLayout = MakeLayouts @(
         id    = 'CARD_PER_OPT'
         title = 'OPTIONS'
         rows  = @(
-            @{ id = 'ROW_PER_OPT_1'; cols = @('4','4','4'); fields = @(
+            @{ id = 'ROW_PER_OPT_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NM)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
+                @{ id = 'PurposeCode_Input';       node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_OPT_1' @{ initialValue = 'C' } }
                 @{ id = 'RaceCode_Input';          node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_OPT_1' }
+            )}
+            # HIDDEN Attention feeder, LAST row. The handler populates the VALUE, but the attribute's
+            # sourceField still needs a control to bind to -- without one, audit_wiring_closure reports
+            # class C UNFILLABLE REQ and validate.ps1 reports 'unresolvable any[] fields'. NO prefill and
+            # NO combo default: any[] membership alone feeds the handler (HI_HCJDC_OFML proved a prefill
+            # was never the gate-feeder). Hidden is the ONE standing visible-first exception.
+            @{ id = 'ROW_PER_ATTN'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Attention_Input'; node = InpH 'Attention' 'Attention (auto)' '30' 'ROW_PER_ATTN' }
             )}
         )
     }
@@ -468,7 +487,7 @@ $perLayout = MakeLayouts @(
         title = 'DRIVER LICENSE - OLN SEARCH'
         rows  = @(
             @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_OLN_1' }
             )}
         )
     }

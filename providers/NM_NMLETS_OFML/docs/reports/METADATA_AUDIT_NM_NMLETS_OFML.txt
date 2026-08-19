@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML
-  Source: NM_NMLETS_OFML_v2.1.json
-  Generated: 2026-08-13 09:04
+  Source: NM_NMLETS_OFML_v2.2.json
+  Generated: 2026-08-18 21:55
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-13 09:04
+ Generated: 2026-08-18 21:56
 ============================================================
 
 ============================================================
  METADATA AUDIT: NM_NMLETS_OFML
 ============================================================
   XML: NM_NMLETS_OFML.xml
-  JSON: NM_NMLETS_OFML_v2.1.json
+  JSON: NM_NMLETS_OFML_v2.2.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -53,10 +53,12 @@ METADATA AUDIT
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
   DriverLicenseQuery:
+  [PASS]   Attention: in XML and QIDM
   [PASS]   BirthDate: in XML and QIDM
   [PASS]   ImageIndicator: in XML and QIDM
   [PASS]   Name: in XML and QIDM
   [PASS]   OperatorLicenseNumber: in XML and QIDM
+  [PASS]   PurposeCode: in XML and QIDM
   [PASS]   SexCode: in XML and QIDM
   [PASS]   State: in XML and QIDM
   GunQuery:
@@ -125,6 +127,8 @@ METADATA AUDIT
   [PASS]   No fields over-promoted from metadata any[] to set[]
 
 --- CHECK 4e: Field demoted to any[] vs metadata set[] ---
+  [NOTE]   keyRef DL.NAME: 'Attention' in any[] but metadata set[] -- ACCEPTED per registry
+  [NOTE]   keyRef DL.OLN: 'Attention' in any[] but metadata set[] -- ACCEPTED per registry
   [PASS]   No metadata-required fields demoted to any[]
 
 --- CHECK 4b: Choice-Set Option Coverage ---
@@ -155,6 +159,8 @@ METADATA AUDIT
   [PASS] purposeCodeDH: maxLength 1 matches XML (PurposeCode)
   [PASS] NameLast: maxLength 30 matches XML (Name)
   [PASS] NameFirst: maxLength 30 matches XML (Name)
+  [PASS] purposeCode: maxLength 1 matches XML (PurposeCode)
+  [PASS] Attention: maxLength 30 matches XML (Attention)
   [PASS] OperatorLicenseNumber: maxLength 20 matches XML (OperatorLicenseNumber)
   [PASS] GunModel: maxLength 11 matches XML (GunModel)
   [PASS] serialNumber: maxLength 11 matches XML (GunSerialNumber)
@@ -167,6 +173,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 96 PASS / 0 FAIL / 0 WARN
+Total: 100 PASS / 0 FAIL / 0 WARN
 ============================================================
 

@@ -2,9 +2,25 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.1** | Generated: 2026-08-13
+Current: **v2.2** | Generated: 2026-08-18
 
 ---
+
+## v2.2 -- 2026-08-18 -- DriverLicenseQuery was missing BOTH of its mandatory fields -- PurposeCode + Attention
+
+**CHANGED:**
+  - PurposeCode PROMOTED into set[] on BOTH DL combos (DL.NAME, DL.OLN) + a visible "Purpose Code"  
+    Inp control prefilled 'C' + the CAD defaults[] twin on both combos.  
+  - Attention wired to the standing auto-handler: attribute (size 30, sourceField Attention,  
+    targetField Attention, rule CommsysGetLastNameFirstNameInitialRuleHandler) + any[] membership on  
+    both DL combos + a HIDDEN feeder control, no prefill, no combo default. REGISTERED as  
+    demoted-to-any on both combos.  
+  - Labels owed on this provider's revisit turn: "License Number" -> "OLN" (DEX-1284) and  
+    "Image (optional)" -> "NCIC Image". ROW_PER_OPT_1 widened 4/4/4 -> 3/3/3/3 for the new control.  
+**REASON:** audit_requirement_fidelity reported FOUR severity-1 UNDER-REQUIRED findings --
+  "DL.OLN UNDER-REQUIRED: PurposeCode (ABSENT); Attention (ABSENT)" and the same on DL.NAME.  
+  ABSENT, not demoted: neither field was in set[] NOR any[], so the officer could not supply them at  
+  all and every NM driver-licence query went out missing two fields its metadata makes mandatory.  
 
 ## v2.1 -- 2026-08-01 -- DH raceCodeDH form field -> attributeTypeId (AP #11 CommSys-direction fix)
 

@@ -3,6 +3,95 @@ NM_NMLETS_OFML -- Build Notes
 Provider: NM_NMLETS_OFML
 State: New Mexico
 Network: NMLETS OFML (New Mexico Law Enforcement Telecommunications System)
+v2.2  2026-08-18  DriverLicenseQuery was missing BOTH of its mandatory fields -- PurposeCode + Attention
+  CHANGED:
+    - PurposeCode PROMOTED into set[] on BOTH DL combos (DL.NAME, DL.OLN) + a visible "Purpose Code"
+      Inp control prefilled 'C' + the CAD defaults[] twin on both combos.
+    - Attention wired to the standing auto-handler: attribute (size 30, sourceField Attention,
+      targetField Attention, rule CommsysGetLastNameFirstNameInitialRuleHandler) + any[] membership on
+      both DL combos + a HIDDEN feeder control, no prefill, no combo default. REGISTERED as
+      demoted-to-any on both combos.
+    - Labels owed on this provider's revisit turn: "License Number" -> "OLN" (DEX-1284) and
+      "Image (optional)" -> "NCIC Image". ROW_PER_OPT_1 widened 4/4/4 -> 3/3/3/3 for the new control.
+  REASON: audit_requirement_fidelity reported FOUR severity-1 UNDER-REQUIRED findings --
+    "DL.OLN UNDER-REQUIRED: PurposeCode (ABSENT); Attention (ABSENT)" and the same on DL.NAME.
+    ABSENT, not demoted: neither field was in set[] NOR any[], so the officer could not supply them at
+    all and every NM driver-licence query went out missing two fields its metadata makes mandatory.
+
+  *** THE <Choice> IS WHY THIS WAS INVISIBLE, AND MY FIRST READ OF THE XML WAS WRONG. *** A flat XPath
+  dump of the Set showed one alternative and no OLN variant, which would have meant our DL.OLN combo
+  had no metadata basis at all. Fidelity said "QUERY[alt1/2]" and "QUERY[alt2/2]" -- TWO alternatives --
+  and that contradiction is what forced reading the <Combination> VERBATIM:
+      <Set>
+        <Choice>
+          <Field OperatorLicenseNumber/>
+          <Set><Field SexCode/><Field BirthDate/><Field Name/></Set>   <-- nested Set = mandatory GROUP
+        </Choice>
+        <Field PurposeCode/>          <-- SIBLING of the Choice, so mandatory on BOTH branches
+        <Field Attention/>            <-- same
+        <Any><Field State/><Field ImageIndicator/></Any>
+      </Set>
+    So the two alternatives are {OLN, PurposeCode, Attention} and {SexCode, BirthDate, Name,
+    PurposeCode, Attention}. Both our combos were paired CORRECTLY and both genuinely lacked the same
+    two fields -- one root cause behind 4 fidelity findings and the 1 query_trace MISSING. This is
+    exactly the trap usx-build Step 1 documents: <Choice> POSITION is load-bearing, a nested <Set>
+    inside a Choice is a mandatory GROUP, and METADATA_REFERENCE.txt flattens all of it away.
+
+  THE DEVDOC AND THE METADATA GENUINELY DISAGREE HERE, AND METADATA WINS. NM devdoc combinations #1
+  and #2 both list "[Attention, PurposeCode, State, State2..State5]" -- SQUARE BRACKETS, i.e. OPTIONAL.
+  The metadata puts both INSIDE <Set>. Rob 2026-08-18: "meta data wins over dev doc built to the spec".
+  So PurposeCode was PROMOTED to set[] rather than left out, and Attention was REGISTERED rather than
+  dismissed as "the devdoc says it is optional anyway". Recording this because the devdoc bracket is a
+  perfectly convincing reason to do nothing, and it is the wrong authority for a field requirement.
+
+  WHY PurposeCode GOES IN set[] AND Attention CANNOT -- the distinction that matters:
+    PurposeCode is OFFICER-SUPPLIED. It gets a visible control, so set[] membership is satisfiable.
+    Prefilling 'C' is SAFE here for the CA_CLETS reason, not by luck: it is mandatory in BOTH
+    alternatives, so satisfying it equally for both cannot shadow one path over the other
+    (audit_prefill_shadow: 14 ordered pairs, 0 FAIL). 'C' is NOT authority-derived -- the devdoc gives
+    no value list for it -- it follows Rob's standing fallback ("use c for purpose code if you cannot
+    find it", OH_LEADS 2026-08-18). If NMLETS rejects it, change the VALUE, not the routing.
+    Attention is PLATFORM-SUPPLIED. CommsysGetLastNameFirstNameInitialRuleHandler derives "LASTNAME F"
+    at SEND time; there is no officer value at FORM time. Routing tests PRESENCE, so set[] membership
+    would demand a form value that never exists and BOTH DL combos would be permanently unsatisfiable
+    -- two combos that look built and can never fire, which is strictly worse than the demotion (the
+    AZ_AZDPS DQPN/DQP lesson). Hence any[] + handler, and a registry row that says so.
+
+  A HIDDEN FEEDER CONTROL IS REQUIRED AND I LEARNED THAT FROM THE GATES, NOT FROM THE RULE. Wiring the
+  attribute and any[] membership alone produced 2 wiring breaks (class C UNFILLABLE REQ: "references
+  'Attention' -- no control on the Person form") and 4 validator WARNs ("unresolvable any[] fields:
+  Attention"). BUILD_RULES specifies the attribute shape and says "no visible form field", which is
+  true but incomplete: the sourceField still needs SOMETHING to bind to. Added a hidden InpH on a
+  hidden row placed LAST, with NO prefill and NO combo default -- any[] membership alone feeds the
+  handler, which HI_HCJDC_OFML proved live on 9 of 9 DH wires (`<Attention>SGAMBELLONE R</Attention>`),
+  and whose retired initialValue='X' was shown never to have been the gate-feeder its note claimed.
+
+  TWO SELF-INFLICTED ERRORS, both caught by the gates rather than by re-reading my own diff:
+    1. Duplicate 'defaults' hash keys on DL.OLN -- it already had an ImageIndicator default and I added
+       a second defaults block instead of merging. Hard PowerShell parse error; merged.
+    2. audit_cad FAILed "combo DL.OLN -- missing default for PurposeCode (form default='C')": I had put
+       the CAD twin on DL.NAME only. A form prefill without its combo twin means CAD-originated queries
+       send nothing, which is the whole reason the twin rule exists.
+    Also worth recording: enforce kept reporting "2 metadata divergence FAIL(s)" AFTER the registry
+    rows were written, because enforce reads the METADATA_AUDIT REPORT FILE, not the live tool -- the
+    tool itself already said 100 PASS / 0 FAIL. Regenerating the reports cleared it. A stale report can
+    make a fixed provider look broken just as easily as the reverse.
+
+  PHASE 1 at v2.2: [1] all devdoc combinations accounted for - [2] optionals all route and transmit -
+  [3] 14 combos, most-specific-first respected - [4] 14 branches, 0 UNDER / 0 OVER (was 4 UNDER) -
+  [5] 12 built, 0 prefill-dead, 0 shadow - [6] gate efficacy 8/8 killed - [6b] fuzz 8/8 caught, 0
+  survived (the v2.1 "drop-conditions @ VehicleRegistrationQuery[3]" survivor did not recur; it is
+  seed-dependent and remains worth triaging if it returns -- QV.P's RegistrationState NOT_EXISTS gate
+  is a real in-state/OOS discriminator, so a gate that ignores its removal would be a blind spot).
+  validator 66 PASS / 0 FAIL / 0 WARN - audit_metadata 100 PASS / 0 FAIL / 0 WARN - audit_cad 62 PASS /
+  0 FAIL - audit_wiring_closure 0 breaks across ten classes - enforce 39 PASS / 0 FAIL, exit 0.
+  ONE ADVISORY REMAINS: audit_query_trace still lists "QUERY set[PurposeCode,Attention,SexCode,
+  BirthDate,Name]" as MISSING, because it wants Attention in set[]. Same registered item, same
+  handler reasoning; the tool is advisory by its own header and does not read the registry.
+  STILL OWED: never USx-tenant-tested, never imported -- v2.2 owes a first import and a full sweep.
+  Cost of everything above: zero test package (0 current-version logs).
+
+
 v2.1  2026-08-01  DH raceCodeDH form field -> attributeTypeId (AP #11 CommSys-direction fix)
   CHANGED: DriverHistory race form field 'raceCodeDH' switched from codeTypeCategory='NIBRS_RACE'
            (code-string dropdown) to attributeTypeId='RACE'+codeTypeProvider='NIBRS', matching the

@@ -1,6 +1,6 @@
-NM_NMLETS_OFML v2.1 -- TEST MATRIX
+NM_NMLETS_OFML v2.2 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-13
+Generated: 2026-08-18
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -17,9 +17,10 @@ Vehicle (3 cards, 7 fields):
     VehicleIdentificationNumber [Inp 20]
     VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
 
-Person (5 cards, 15 fields):
+Person (5 cards, 17 fields):
   CARD_PER_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], raceCode [Sel RACE]
+    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], purposeCode [Inp C, 1], raceCode [Sel RACE]
+    Attention [Inp 30]
   CARD_PER_OLN (DRIVER LICENSE - OLN SEARCH):
     OperatorLicenseNumber [Inp 20]
   CARD_PER_NAME (DRIVER LICENSE - NAME SEARCH):
@@ -112,13 +113,13 @@ ENTITY 3: PERSON (11 tests -- 5 cards, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-17  Person      DL.OLN+DL.OLN      OperatorLicenseNumber=D999888777 [    ]
+17  Person      DL.OLN+DL.OLN      OperatorLicenseNumber=D999888777, pur... [    ]
               Expected: DriverLicenseQuery fires (DL.OLN)
-18  Person      DL.OLN+DL.OLN      + RegistrationState, ImageIndicator [    ]
+18  Person      DL.OLN+DL.OLN      + RegistrationState, ImageIndicator, Attention [    ]
               Expected: any[] fields present in XML output.
 19  Person      DL.NAM+DL.NAME     NameLast=DOE, NameFirst=JOHN, BirthDa... [    ]
               Expected: DriverLicenseQuery fires (DL.NAME)
-20  Person      DL.NAM+DL.NAME     + RegistrationState, ImageIndicator [    ]
+20  Person      DL.NAM+DL.NAME     + RegistrationState, ImageIndicator, Attention [    ]
               Expected: any[] fields present in XML output.
 21  Person      KQ+.O              OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQ.O)
@@ -129,7 +130,7 @@ ENTITY 3: PERSON (11 tests -- 5 cards, 4 combos)
 24  Person      KQ+.N              + purposeCodeDH, raceCodeDH, RegistrationState [    ]
               Expected: any[] fields present in XML output.
 25  Person      Guardrail: DL.OLN>DL.NAME  OperatorLicenseNumber=D999888777, Nam... [    ]
-              Expected: DriverLicenseQuery fires (DL.OLN). LastName+FirstName+DOB+SexCode absent from XML.
+              Expected: DriverLicenseQuery fires (DL.OLN). LastName+FirstName+DOB+SexCode+purposeCode absent from XML.
 26  Person      Guardrail: KQ.O>KQ.N  OperatorLicenseNumberDH=D999888777, N... [    ]
               Expected: DriverHistoryQuery fires (KQ.O). LastName+FirstName+DOB+SexCodeDH absent from XML.
 27  Person      Deselect: DL deselects DH.            [    ]
@@ -162,4 +163,4 @@ COMBO COVERAGE (14/14):
   ArticleSingleQuery: 1/1 -- T30(Serial)
   BoatQuery: 4/4 -- T9(BQ+.R), T11(BQ+.H), T13(QB+.R), T14(QB+.H)
 
-IMPORT FILE: NM_NMLETS_OFML_v2.1.json
+IMPORT FILE: NM_NMLETS_OFML_v2.2.json
