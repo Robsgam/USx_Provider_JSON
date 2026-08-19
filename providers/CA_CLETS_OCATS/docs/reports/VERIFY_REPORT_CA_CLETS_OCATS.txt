@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.5.json
-  Generated: 2026-08-18 20:17
+  Source: CA_CLETS_OCATS_v2.6.json
+  Generated: 2026-08-18 20:58
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_CLETS_OCATS_v2.5
+ POST-BUILD VERIFICATION: CA_CLETS_OCATS_v2.6
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 19 [caRequestPurposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, userId, exactSearchIndicator, authorization, pageNumber, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 20 [caRequestPurposeCode, LicensePlateTypeCode, businessIndicator, LicensePlateYear, VehicleMakeCode, vehicleYear, userId, exactSearchIndicator, authorization, pageNumber, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -39,7 +39,7 @@ POST-BUILD VERIFICATION
   [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (27) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (28) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -54,7 +54,7 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [PASS] All form field labels have required routing hint qualifiers (30 fields scanned)
+  [PASS] All form field labels have required routing hint qualifiers (31 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

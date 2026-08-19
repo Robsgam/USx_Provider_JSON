@@ -21,5 +21,18 @@ DriverLicenseQuery | DQ.N | RegistrationState | promoted-to-set | OOS Name combo
 DriverLicenseQuery | DQ.O | RegistrationState | promoted-to-set | OOS OLN combo requires State; EXISTS-gated | design-decision | 2026-07-23
 BoatQuery | BQ.H | RegistrationState | promoted-to-set | OOS Hull combo requires State; EXISTS-gated | design-decision | 2026-07-23
 BoatQuery | BQ.R | RegistrationState | promoted-to-set | OOS Reg combo requires State; EXISTS-gated | design-decision | 2026-07-23
-VehicleRegistrationQuery | 4K | LicensePlateTypeCode | dropped-combo | Metadata 4K = Set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]. NO devdoc Basic combination makes Plate + LicensePlateTypeCode a MANDATORY pair -- LicensePlateTypeCode appears only as an OPTIONAL, on combination 6. The built plate paths cover the devdoc: 4 (plate-only, devdoc 1/4), RQ.P (devdoc 6, out-of-state plate+year with the year defaulted) and AWVEHQ (devdoc 2, plate+UserId). Adjudicated against THIS provider's devdoc "Basic Query Transactions" VehicleRegistrationQuery list, which is exactly seven combinations: 1 (In) LicensePlateNumber / 2 (In) LicensePlateNumber+UserId+[...] / 3 (In) VehicleIdentificationNumber / 4 (In/Out) LicensePlateNumber+[LicensePlateStateCode] / 5 (In/Out) VehicleIdentificationNumber+[VehicleMakeCode] / 6 (Out) LicensePlateNumber+LicensePlateYear+[LicensePlateTypeCode,State] / 7 (Out) VehicleIdentificationNumber+[State,VehicleMakeCode,VehicleYear]. DEVDOC IS QUERY-AUTHORITY: a metadata combination with no counterpart in that list is out of Basic scope and is NOT a gap (the BASIC-scoped rule -- out-of-Basic metadata combos are never owed). Verified 2026-08-01. | metadata-vs-devdoc | 2026-08-01
-VehicleRegistrationQuery | VC | BusinessIndicator | dropped-combo | Metadata VC = Set[CaRequestPurposeCode, Name, BusinessIndicator]. BusinessIndicator appears NOWHERE in the devdoc Basic VehicleRegistrationQuery list, and no Basic combination is keyed on a business name. The built VP covers the ordinary owner-name path. Adjudicated against THIS provider's devdoc "Basic Query Transactions" VehicleRegistrationQuery list, which is exactly seven combinations: 1 (In) LicensePlateNumber / 2 (In) LicensePlateNumber+UserId+[...] / 3 (In) VehicleIdentificationNumber / 4 (In/Out) LicensePlateNumber+[LicensePlateStateCode] / 5 (In/Out) VehicleIdentificationNumber+[VehicleMakeCode] / 6 (Out) LicensePlateNumber+LicensePlateYear+[LicensePlateTypeCode,State] / 7 (Out) VehicleIdentificationNumber+[State,VehicleMakeCode,VehicleYear]. DEVDOC IS QUERY-AUTHORITY: a metadata combination with no counterpart in that list is out of Basic scope and is NOT a gap (the BASIC-scoped rule -- out-of-Basic metadata combos are never owed). Verified 2026-08-01. | metadata-vs-devdoc | 2026-08-01
+
+# ROWS RETIRED 2026-08-18 at v2.6 -- 4K and VC are now BUILT, so their dropped-combo rows had to go.
+#   An unbuilt-class rule (dropped-combo/not-built/shadow) makes audit_requirement_fidelity SKIP that
+#   keyRef's ENTIRE comparison, so leaving these rows in place after building the combos would have
+#   silenced the very branches we just added -- coverage would fall while the finding count read 0,
+#   which is indistinguishable from a clean run. Retired text kept here for the audit trail:
+#   4K: "Metadata 4K = Set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]. NO devdoc
+#       Basic combination makes Plate + LicensePlateTypeCode mandatory."
+#   VC: "Metadata VC = Set[CaRequestPurposeCode, Name, BusinessIndicator]. BusinessIndicator appears
+#       NOWHERE in the devdoc Basic VehicleRegistration section."
+#   BOTH REASONS WERE TRUE AND BOTH ARE NOW SUPERSEDED by Rob 2026-08-18: "not sure why you stopped
+#   short of making all the queries combinations worked from the dev doc and metat data". The devdoc is
+#   QUERY authority (VehicleRegistrationQuery IS Basic-supported) and the metadata is FIELD authority
+#   (it defines both variants and their mandatory fields) -- so a variant of an authorized query gets
+#   BUILT, not skipped, even where the devdoc's flat combination list does not enumerate it.

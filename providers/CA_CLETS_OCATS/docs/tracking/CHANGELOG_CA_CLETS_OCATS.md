@@ -2,9 +2,27 @@
 
 Auto-generated from `CA_CLETS_OCATS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.5** | Generated: 2026-08-18
+Current: **v2.6** | Generated: 2026-08-18
 
 ---
+
+## v2.6 -- 2026-08-18 -- EVERY metadata variant of every devdoc-Basic query is now BUILT -- 4K and VC added
+
+**CHANGED:**
+  - BUILT 4K  = set[caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode], ordered ahead  
+    of `4` (whose set[] is a strict subset). Carries defaults[] LicensePlateTypeCode='PC' for CAD.  
+  - BUILT VC  = set[caRequestPurposeCode, NameLast, NameFirst, businessIndicator], ordered ahead of  
+    VP (strict subset). New BusinessIndicator attribute + a "Business Owner" Y/N control.  
+  - `4` any[] and `4V` any[] emptied to match their metadata <Any>, which is EMPTY on both.  
+  - REMOVED the LicensePlateTypeCode form prefill ('PC'); label "Plate Type (optional)" -> "Plate Type".  
+  - ROW_VEH_NAME_1 widened 6/6 -> 4/4/4 for the third control.  
+**REASON:** Rob 2026-08-18 -- "not sure why you stopped short of making all the queries combinations
+  worked from the dev doc and metat data  proceed with that directive until complete with a high  
+  level of confidemnce." v2.5 had REGISTERED 4K and VC as dropped-combo skips. That was stopping  
+  short: both are variants of VehicleRegistrationQuery, which IS devdoc-Basic-supported, and the  
+  metadata defines them and their mandatory fields. Devdoc = QUERY authority (is this query in  
+  scope), metadata = FIELD authority (what the query requires). A variant of an AUTHORIZED query  
+  gets BUILT, not skipped -- even where the devdoc's flat combination list never enumerates it.  
 
 ## v2.5 -- 2026-08-18 -- RQ.P: LicensePlateYear was OPTIONAL where the metadata MANDATES it
 

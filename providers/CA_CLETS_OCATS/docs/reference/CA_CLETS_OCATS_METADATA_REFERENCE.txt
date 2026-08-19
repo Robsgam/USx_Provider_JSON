@@ -1,7 +1,7 @@
 ﻿CA_CLETS_OCATS METADATA REFERENCE
 ==================================
 Generated: 2026-08-18
-Source: CA_CLETS_OCATS.xml (metadata) + CA_CLETS_OCATS_v2.5.json
+Source: CA_CLETS_OCATS.xml (metadata) + CA_CLETS_OCATS_v2.6.json
 Metadata: 110 total transactions, 5 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -142,17 +142,17 @@ METADATA COMBINATIONS (10 total):
   VP            Name                    CaRequestPurposeCode, Name                             --
   VC            Name                    CaRequestPurposeCode, Name, BusinessIndicator          --
 
-BUILD COVERAGE (6 of 10 built):
+BUILD COVERAGE (8 of 10 built):
   BUILT   AWVEHQ         set[caRequestPurposeCode, LicensePlateNumber, userId]
   BUILT   RQ.P           set[caRequestPurposeCode, LicensePlateNumber, LicensePlateYear, RegistrationState]
   BUILT   RQ.V           set[caRequestPurposeCode, VehicleIdentificationNumber, RegistrationState]
+  BUILT   VC             set[caRequestPurposeCode, NameLast, NameFirst, businessIndicator]
   BUILT   VP             set[caRequestPurposeCode, NameLast, NameFirst]
   BUILT   4V             set[caRequestPurposeCode, VehicleIdentificationNumber]
+  BUILT   4K             set[caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]
   BUILT   4              set[caRequestPurposeCode, LicensePlateNumber]
-  UNBUILT 4K             LicensePlateNumber
   UNBUILT QV             LicensePlateNumber
   UNBUILT QV             VehicleIdentificationNumber
-  UNBUILT VC             Name
 
 ================================================================================
 BUILD SUMMARY
@@ -164,18 +164,16 @@ BUILD SUMMARY
   BoatQuery                                  7      5     2  71%
   DriverLicenseQuery                         5      5     0  100% (COMPLETE)
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                  10      6     4  60%
+  VehicleRegistrationQuery                  10      8     2  80%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   25     19     6  76%
+  TOTAL                                   25     21     4  84%
 
 ================================================================================
-UNBUILT METADATA COMBOS (4 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (2 combos in metadata, not in JSON)
 ================================================================================
 
-  4K             LicensePlateNumber       (VehicleRegistrationQuery)
   QV             LicensePlateNumber       (VehicleRegistrationQuery)
   QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
-  VC             Name                     (VehicleRegistrationQuery)
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (105 of 110 in metadata)

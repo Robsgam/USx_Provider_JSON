@@ -1,4 +1,4 @@
-CA_CLETS_OCATS v2.5 -- TEST MATRIX
+CA_CLETS_OCATS v2.6 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-18
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -7,18 +7,18 @@ Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (4 cards, 14 fields):
+Vehicle (4 cards, 15 fields):
   CARD_VEH_OPT (OPTIONS - Leave blank for CA queries):
     ROW 1: RegistrationState [Sel STATE], caRequestPurposeCode [Inp C, 1]
     ROW 2: userId [Inp 2], authorization [Inp 1], exactSearchIndicator [Inp 1], pageNumber [Inp 2]
   CARD_VEH_PLATE (PLATE SEARCH):
     LicensePlateNumber [Inp 10]
-    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 2026, 4]
   CARD_VEH_VIN (VIN SEARCH):
     VehicleIdentificationNumber [Inp 30]
     VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
   CARD_VEH_NAME (NAME SEARCH (Vehicle by Owner)):
-    NameFirst [Inp 30], NameLast [Inp 30]
+    NameFirst [Inp 30], NameLast [Inp 30], businessIndicator [Sel YES_NO_UNKNOWN/NCIC]
 
 Person (3 cards, 8 fields):
   CARD_PER_OPT (OPTIONS - Leave blank for CA queries):
@@ -56,9 +56,9 @@ Boat (4 cards, 5 fields):
   CARD_BOA_OAN (OAN SEARCH):
     ownerAppliedNumber [Inp 20]
 
-QIDM SUMMARY (5 QIDMs, 19 combos)
+QIDM SUMMARY (5 QIDMs, 21 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 6 combos (RQ x2, 4V x1, 4 x1, AWVEHQ x1, VP x1), autoSelect=true
+  VehicleRegistrationQuery: 8 combos (RQ x2, 4V x1, 4K x1, 4 x1, AWVEHQ x1, VC x1, VP x1), autoSelect=true
   DriverLicenseQuery: 5 combos (DQ x2, L1.O x1, L1.N x1, OCNAMQ x1), autoSelect=true
   GunQuery: 1 combos (QG x1)
   ArticleSingleQuery: 2 combos (QA x2)
@@ -73,32 +73,32 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (14 tests -- 4 cards, 6 combos)
+ENTITY 1: VEHICLE (14 tests -- 4 cards, 8 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
  1  Vehicle     RQ+.P+State        caRequestPurposeCode=C, LicensePlateN... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P)
- 2  Vehicle     RQ+.P+State        + LicensePlateTypeCode, VehicleMakeCode, vehicleYear [    ]
+ 2  Vehicle     RQ+.P+State        + VehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
  3  Vehicle     RQ+.V+State        caRequestPurposeCode=C, VehicleIdenti... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.V)
  4  Vehicle     RQ+.V+State        + VehicleMakeCode, vehicleYear  [    ]
               Expected: any[] fields present in XML output.
- 5  Vehicle     4+4                caRequestPurposeCode=C, LicensePlateN... [    ]
+ 5  Vehicle     4K+4K              caRequestPurposeCode=C, LicensePlateN... [    ]
+              Expected: VehicleRegistrationQuery fires (4K)
+ 6  Vehicle     4+4                caRequestPurposeCode=C, LicensePlateN... [    ]
               Expected: VehicleRegistrationQuery fires (4)
- 6  Vehicle     4+4                + LicensePlateTypeCode, VehicleMakeCode, vehicleYear [    ]
-              Expected: any[] fields present in XML output.
  7  Vehicle     VP+VP              caRequestPurposeCode=C, NameLast=DOE,... [    ]
               Expected: VehicleRegistrationQuery fires (VP)
  8  Vehicle     AWVEHQ+AWVEHQ      caRequestPurposeCode=C, LicensePlateN... [    ]
               Expected: VehicleRegistrationQuery fires (AWVEHQ)
  9  Vehicle     AWVEHQ+AWVEHQ      + exactSearchIndicator, authorization, pageNumber, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-10  Vehicle     4V+4V              caRequestPurposeCode=C, VehicleIdenti... [    ]
+10  Vehicle     VC+VC              caRequestPurposeCode=C, NameLast=DOE,... [    ]
+              Expected: VehicleRegistrationQuery fires (VC)
+11  Vehicle     4V+4V              caRequestPurposeCode=C, VehicleIdenti... [    ]
               Expected: VehicleRegistrationQuery fires (4V)
-11  Vehicle     4V+4V              + VehicleMakeCode               [    ]
-              Expected: any[] fields present in XML output.
 12  Vehicle     Guardrail: AWVEHQ>RQ.V  LicensePlateNumber=TEST123, caRequest... [    ]
               Expected: VehicleRegistrationQuery fires (AWVEHQ). caRequestPurposeCode+VIN+RegistrationState absent from XML.
 13  Vehicle     Guardrail: AWVEHQ>4V  LicensePlateNumber=TEST123, caRequest... [    ]
@@ -175,11 +175,11 @@ ENTITY 5: FIREARM (2 tests -- 2 cards, 1 combo)
 ================================================================================
 TOTAL: 37 tests
 
-COMBO COVERAGE (19/19):
-  VehicleRegistrationQuery: 6/6 -- T1(RQ+.P), T3(RQ+.V), T5(4+4), T7(VP+VP), T8(AWVEHQ+AWVEHQ), T10(4V+4V)
+COMBO COVERAGE (21/21):
+  VehicleRegistrationQuery: 8/8 -- T1(RQ+.P), T3(RQ+.V), T5(4K+4K), T6(4+4), T7(VP+VP), T8(AWVEHQ+AWVEHQ), T10(VC+VC), T11(4V+4V)
   DriverLicenseQuery: 5/5 -- T23(DQ+.O), T24(DQ+.N), T25(L1.O+L1.O), T26(OCNAMQ+OCNAMQ), T27(L1.N+L1.N)
   GunQuery: 1/1 -- T36(B)
   ArticleSingleQuery: 2/2 -- T32(.O), T34(.S)
   BoatQuery: 5/5 -- T15(BQ+.H), T16(BQ+.R), T17(QB+.O), T18(4V.B+4V.B), T19(4B+4B)
 
-IMPORT FILE: CA_CLETS_OCATS_v2.5.json
+IMPORT FILE: CA_CLETS_OCATS_v2.6.json

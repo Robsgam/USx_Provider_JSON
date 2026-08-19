@@ -1,18 +1,18 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.5.json
-  Generated: 2026-08-18 20:17
+  Source: CA_CLETS_OCATS_v2.6.json
+  Generated: 2026-08-18 20:58
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_OCATS_v2.5.json
+  CommSys Query Simulator -- CA_CLETS_OCATS_v2.6.json
 ================================================================
 
 --- QIDM: CA_CLETS_OCATS_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 14  |  Combos: 6
+    Query: VehicleRegistrationQuery  |  Attrs: 15  |  Combos: 8
 
     [FIRES first-match] AWVEHQ
       set: [caRequestPurposeCode, LicensePlateNumber, userId]
@@ -50,6 +50,7 @@ QUERY SIMULATION
         <LicensePlateStateCode>NJ</LicensePlateStateCode>
       </Transaction>
     [SKIP] RQ.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
+    [SKIP] VC -- missing set: businessIndicator
 
     [FIRES shadowed -- first match above wins] VP
       set: [caRequestPurposeCode, NameLast, NameFirst]
@@ -62,21 +63,25 @@ QUERY SIMULATION
       </Transaction>
     [SKIP] 4V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; RegistrationState NOT_EXISTS [value='NJ']
 
+    [FIRES shadowed -- first match above wins] 4K
+      set: [caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>4K</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+      </Transaction>
+
     [FIRES shadowed -- first match above wins] 4
       set: [caRequestPurposeCode, LicensePlateNumber]
-      any: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear] -> matched: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>4</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
-        <State>NJ</State>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
-        <LicensePlateStateCode>NJ</LicensePlateStateCode>
       </Transaction>
 
     >> PLATFORM FIRES: AWVEHQ (first matching combo)

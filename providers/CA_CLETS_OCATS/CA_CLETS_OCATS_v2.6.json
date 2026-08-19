@@ -341,10 +341,9 @@
                                                                                                                      "displayName":  "Select",
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                   "label":  "Plate Type (optional)",
-                                                                                                                                   "initialValue":  "PC",
-                                                                                                                                   "codeTypeSource":  "NCIC",
-                                                                                                                                   "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
+                                                                                                                                   "label":  "Plate Type",
+                                                                                                                                   "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                                   "codeTypeSource":  "NCIC"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -524,15 +523,17 @@
                                                                                                          "displayName":  "Row",
                                                                                                          "props":  {
                                                                                                                        "templateColumns":  [
-                                                                                                                                               "6",
-                                                                                                                                               "6"
+                                                                                                                                               "4",
+                                                                                                                                               "4",
+                                                                                                                                               "4"
                                                                                                                                            ]
                                                                                                                    },
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "NameFirst_Input",
-                                                                                                                       "NameLast_Input"
+                                                                                                                       "NameLast_Input",
+                                                                                                                       "BusinessIndicator_Input"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
@@ -578,7 +579,28 @@
 
                                                                                                                          },
                                                                                                          "parent":  "ROW_VEH_NAME_1"
-                                                                                                     }
+                                                                                                     },
+                                                                                  "BusinessIndicator_Input":  {
+                                                                                                                  "type":  {
+                                                                                                                               "resolvedName":  "FormSelect"
+                                                                                                                           },
+                                                                                                                  "displayName":  "Select",
+                                                                                                                  "props":  {
+                                                                                                                                "fieldId":  "businessIndicator",
+                                                                                                                                "label":  "Business Owner",
+                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                "codeTypeSource":  "NCIC"
+                                                                                                                            },
+                                                                                                                  "isCanvas":  false,
+                                                                                                                  "hidden":  false,
+                                                                                                                  "nodes":  [
+
+                                                                                                                            ],
+                                                                                                                  "linkedNodes":  {
+
+                                                                                                                                  },
+                                                                                                                  "parent":  "ROW_VEH_NAME_1"
+                                                                                                              }
                                                                               },
                                                                   "CAD_DISPATCH":  {
                                                                                        "ROOT":  {
@@ -915,10 +937,9 @@
                                                                                                                           "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                        "label":  "Plate Type (optional)",
-                                                                                                                                        "initialValue":  "PC",
-                                                                                                                                        "codeTypeSource":  "NCIC",
-                                                                                                                                        "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
+                                                                                                                                        "label":  "Plate Type",
+                                                                                                                                        "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                                        "codeTypeSource":  "NCIC"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -1098,15 +1119,17 @@
                                                                                                               "displayName":  "Row",
                                                                                                               "props":  {
                                                                                                                             "templateColumns":  [
-                                                                                                                                                    "6",
-                                                                                                                                                    "6"
+                                                                                                                                                    "4",
+                                                                                                                                                    "4",
+                                                                                                                                                    "4"
                                                                                                                                                 ]
                                                                                                                         },
                                                                                                               "isCanvas":  true,
                                                                                                               "hidden":  false,
                                                                                                               "nodes":  [
                                                                                                                             "NameFirst_Input",
-                                                                                                                            "NameLast_Input"
+                                                                                                                            "NameLast_Input",
+                                                                                                                            "BusinessIndicator_Input"
                                                                                                                         ],
                                                                                                               "linkedNodes":  {
 
@@ -1153,6 +1176,27 @@
                                                                                                                               },
                                                                                                               "parent":  "ROW_VEH_NAME_1"
                                                                                                           },
+                                                                                       "BusinessIndicator_Input":  {
+                                                                                                                       "type":  {
+                                                                                                                                    "resolvedName":  "FormSelect"
+                                                                                                                                },
+                                                                                                                       "displayName":  "Select",
+                                                                                                                       "props":  {
+                                                                                                                                     "fieldId":  "businessIndicator",
+                                                                                                                                     "label":  "Business Owner",
+                                                                                                                                     "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                     "codeTypeSource":  "NCIC"
+                                                                                                                                 },
+                                                                                                                       "isCanvas":  false,
+                                                                                                                       "hidden":  false,
+                                                                                                                       "nodes":  [
+
+                                                                                                                                 ],
+                                                                                                                       "linkedNodes":  {
+
+                                                                                                                                       },
+                                                                                                                       "parent":  "ROW_VEH_NAME_1"
+                                                                                                                   },
                                                                                        "CONTEXT_INFO_CARD":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "Card"
@@ -1570,10 +1614,9 @@
                                                                                                                              "displayName":  "Select",
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "LicensePlateTypeCode",
-                                                                                                                                           "label":  "Plate Type (optional)",
-                                                                                                                                           "initialValue":  "PC",
-                                                                                                                                           "codeTypeSource":  "NCIC",
-                                                                                                                                           "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
+                                                                                                                                           "label":  "Plate Type",
+                                                                                                                                           "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                                           "codeTypeSource":  "NCIC"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -1753,15 +1796,17 @@
                                                                                                                  "displayName":  "Row",
                                                                                                                  "props":  {
                                                                                                                                "templateColumns":  [
-                                                                                                                                                       "6",
-                                                                                                                                                       "6"
+                                                                                                                                                       "4",
+                                                                                                                                                       "4",
+                                                                                                                                                       "4"
                                                                                                                                                    ]
                                                                                                                            },
                                                                                                                  "isCanvas":  true,
                                                                                                                  "hidden":  false,
                                                                                                                  "nodes":  [
                                                                                                                                "NameFirst_Input",
-                                                                                                                               "NameLast_Input"
+                                                                                                                               "NameLast_Input",
+                                                                                                                               "BusinessIndicator_Input"
                                                                                                                            ],
                                                                                                                  "linkedNodes":  {
 
@@ -1808,6 +1853,27 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_VEH_NAME_1"
                                                                                                              },
+                                                                                          "BusinessIndicator_Input":  {
+                                                                                                                          "type":  {
+                                                                                                                                       "resolvedName":  "FormSelect"
+                                                                                                                                   },
+                                                                                                                          "displayName":  "Select",
+                                                                                                                          "props":  {
+                                                                                                                                        "fieldId":  "businessIndicator",
+                                                                                                                                        "label":  "Business Owner",
+                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN",
+                                                                                                                                        "codeTypeSource":  "NCIC"
+                                                                                                                                    },
+                                                                                                                          "isCanvas":  false,
+                                                                                                                          "hidden":  false,
+                                                                                                                          "nodes":  [
+
+                                                                                                                                    ],
+                                                                                                                          "linkedNodes":  {
+
+                                                                                                                                          },
+                                                                                                                          "parent":  "ROW_VEH_NAME_1"
+                                                                                                                      },
                                                                                           "CONTEXT_INFO_CARD":  {
                                                                                                                     "type":  {
                                                                                                                                  "resolvedName":  "Card"
@@ -7322,6 +7388,14 @@
                                                                           "targetField":  "LicensePlateTypeCode"
                                                                       },
                                                                       {
+                                                                          "name":  "BusinessIndicator",
+                                                                          "size":  1,
+                                                                          "sourceField":  [
+                                                                                              "businessIndicator"
+                                                                                          ],
+                                                                          "targetField":  "BusinessIndicator"
+                                                                      },
+                                                                      {
                                                                           "name":  "LicensePlateYear",
                                                                           "size":  4,
                                                                           "sourceField":  [
@@ -7519,6 +7593,28 @@
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
                                                                                                              "NameLast",
+                                                                                                             "NameFirst",
+                                                                                                             "businessIndicator"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "Name",
+                                                                            "keyReference":  "VC",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "NameLast",
                                                                                                              "NameFirst"
                                                                                                          ],
                                                                                                  "any":  [
@@ -7542,7 +7638,7 @@
                                                                                                              "VehicleIdentificationNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "VehicleMakeCode"
+
                                                                                                          ],
                                                                                                  "conditions":  [
                                                                                                                     {
@@ -7573,14 +7669,11 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
-                                                                                                             "LicensePlateNumber"
+                                                                                                             "LicensePlateNumber",
+                                                                                                             "LicensePlateTypeCode"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "RegistrationState",
-                                                                                                             "LicensePlateTypeCode",
-                                                                                                             "LicensePlateYear",
-                                                                                                             "VehicleMakeCode",
-                                                                                                             "vehicleYear"
+
                                                                                                          ],
                                                                                                  "defaults":  [
                                                                                                                   {
@@ -7588,9 +7681,25 @@
                                                                                                                       "value":  "PC"
                                                                                                                   },
                                                                                                                   {
-                                                                                                                      "field":  "LicensePlateYear",
-                                                                                                                      "value":  "2026"
-                                                                                                                  },
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "4K",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
+                                                                                                             "LicensePlateNumber"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "caRequestPurposeCode",
                                                                                                                       "value":  "C"
@@ -8218,7 +8327,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_CLETS_OCATS v2.5 MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat), no DH",
+                        "description":  "Provider configuration for CA_CLETS_OCATS v2.6 MC -- 5 QIDMs (VehReg + DL + Gun + Article + Boat), no DH",
                         "name":  "CA_CLETS_OCATS",
                         "type":  "BUNDLE",
                         "provider":  "CA_CLETS_OCATS"

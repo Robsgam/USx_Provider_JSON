@@ -1,7 +1,7 @@
 ======================================================================
-  PICKLIST / DROPDOWN REPORT: CA_CLETS_OCATS_v2.5
-  Source: CA_CLETS_OCATS_v2.5.json
-  Generated: 2026-08-18 20:17
+  PICKLIST / DROPDOWN REPORT: CA_CLETS_OCATS_v2.6
+  Source: CA_CLETS_OCATS_v2.6.json
+  Generated: 2026-08-18 20:58
 ======================================================================
 
 SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
@@ -30,7 +30,9 @@ SECTION 1: QIF FORM DROPDOWNS (FormSelect fields)
       Config: attributeTypeId=SEX, codeTypeProvider=NIBRS
 
   Entity: Vehicle
-    LicensePlateTypeCode [Plate Type (optional)] (default=PC)
+    businessIndicator [Business Owner]
+      Config: codeTypeCategory=YES_NO_UNKNOWN, codeTypeSource=NCIC
+    LicensePlateTypeCode [Plate Type]
       Config: codeTypeCategory=NCIC_LICENSE_PLATE_TYPE, codeTypeSource=NCIC
     RegistrationState [State (leave blank for CA)]
       Config: attributeTypeId=STATE
@@ -97,5 +99,5 @@ SECTION 3: QIDM OUTBOUND CODE TYPES (codeTypeProvider on QIDM attrs)
 ======================================================================
   SUMMARY
 ======================================================================
-  Form dropdowns: 10
+  Form dropdowns: 11
   QRDM code type attrs: 14

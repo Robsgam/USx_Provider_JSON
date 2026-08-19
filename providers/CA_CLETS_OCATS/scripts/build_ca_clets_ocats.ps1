@@ -12,7 +12,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_ocats_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.5'
+$Version  = '2.6'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -51,6 +51,7 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'CaRequestPurposeCode';       size = 1;  sourceField = @('caRequestPurposeCode');       targetField = 'CaRequestPurposeCode' }
         [PSCustomObject]@{ name = 'LicensePlateNumber';          size = 10; sourceField = @('LicensePlateNumber');          targetField = 'LicensePlateNumber' }
         [PSCustomObject]@{ name = 'LicensePlateTypeCode';        size = 2;  sourceField = @('LicensePlateTypeCode');        targetField = 'LicensePlateTypeCode' }
+        [PSCustomObject]@{ name = 'BusinessIndicator';           size = 1;  sourceField = @('businessIndicator');           targetField = 'BusinessIndicator' }
         [PSCustomObject]@{ name = 'LicensePlateYear';            size = 4;  sourceField = @('LicensePlateYear');            targetField = 'LicensePlateYear' }
         [PSCustomObject]@{
             name = 'Name'
@@ -119,19 +120,43 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
+            # VC -- metadata Set[CaRequestPurposeCode, Name, BusinessIndicator]. Ordered AHEAD of VP because
+            # VP's set[] is a strict SUBSET, so first-match would starve VC of every fill (usx-build Step 3).
+            # BusinessIndicator is NOT prefilled ON PURPOSE: it is the only discriminator between VC and VP,
+            # and a prefill would make VC always match and kill the plain owner-name search (BUILD_RULES 24).
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst','businessIndicator'); any = @() }
+            primaryFieldReference = 'Name'
+            keyReference          = 'VC'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
             requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst'); any = @() }
             primaryFieldReference = 'Name'
             keyReference          = 'VP'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','VehicleIdentificationNumber'); any = @('VehicleMakeCode'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','VehicleIdentificationNumber'); any = @(); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'VehicleIdentificationNumber'
             keyReference          = '4V'
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber'); any = @('RegistrationState','LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','vehicleYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            # 4K -- metadata Set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]. Ordered ahead
+            # of 4, whose set[] is a strict subset. REACHABLE ONLY BECAUSE the LicensePlateTypeCode form
+            # prefill was removed at v2.6: with 'PC' prefilled, 4K's set collapsed to [Plate] and collided
+            # EXACTLY with 4, which no ordering can separate (BUILD_RULES 24 / the AZ DQPN case). CAD still
+            # gets PC from defaults[] here and on RQ.P -- combo defaults[] do not affect ROUTING.
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateTypeCode'); any = @(); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = '4K'
+            state                 = 'In/Out'
+        }
+        [PSCustomObject]@{
+            # 4 any[] is EMPTY to match metadata: its <Any> defines NOTHING. The five optionals it used to
+            # carry (State, PlateType, PlateYear, VehicleMake, VehicleYear) are defined by OTHER variants
+            # (RQ, QV, AWVEHQ) and were reported as OVER-PERMITTED on this branch.
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','LicensePlateNumber'); any = @() }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = '4'
             state                 = 'In/Out'
@@ -444,7 +469,7 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
             )}
             @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (optional)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC' } 'ROW_VEH_PLATE_2' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_PLATE_2' @{ initialValue = $currentYear } }
             )}
         )
@@ -466,9 +491,10 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH_NAME'
         title = 'NAME SEARCH (Vehicle by Owner)'
         rows  = @(
-            @{ id = 'ROW_VEH_NAME_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_VEH_NAME_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_VEH_NAME_1' }
                 @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_VEH_NAME_1' }
+                @{ id = 'BusinessIndicator_Input'; node = Sel 'businessIndicator' 'Business Owner' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC' } 'ROW_VEH_NAME_1' }
             )}
         )
     }

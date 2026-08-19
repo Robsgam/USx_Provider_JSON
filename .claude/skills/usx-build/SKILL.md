@@ -180,6 +180,87 @@ other name combo to fall through to.
   **Watch BRANCHES-COMPARED, not just the finding count** — a suppression that lowers coverage looks
   identical to a clean run.
 
+### 3d — BUILD EVERY VARIANT OF EVERY IN-SCOPE QUERY. "Register it as a skip" is the LAST resort, not the first.
+
+**Rob, 2026-08-18 (CA_CLETS_OCATS):** *"not sure why you stopped short of making all the queries
+combinations worked from the dev doc and metat data  proceed with that directive until complete with
+a high level of confidemnce."*
+
+I had REGISTERED two metadata variants as `dropped-combo` skips — `4K` (plate + plate-type) and `VC`
+(owner name + business indicator) — with reasons that were *true* and still wrong as decisions: "no
+devdoc Basic combination makes Plate + LicensePlateTypeCode mandatory", "BusinessIndicator appears
+NOWHERE in the devdoc". Both are variants of `VehicleRegistrationQuery`, which **is** devdoc-Basic
+supported. A registry row is not a substitute for a combination.
+
+**THE SCOPE RULE, and it is a two-authority test — do not collapse it to one:**
+
+> **Devdoc = QUERY authority** (is this transaction in scope at all — the "Basic Queries Supported" list).
+> **Metadata = FIELD authority** (what that transaction's variants require and permit).
+> **For every transaction the devdoc authorizes, BUILD EVERY metadata variant of it.** The devdoc's flat
+> combination list does NOT have to enumerate a variant for that variant to be real — the metadata
+> defines it, and the devdoc already authorized the query.
+
+**What this is NOT.** Do not read it as "build every combination in the XML". Measure the denominator
+before you act: `CA_CLETS_OCATS.xml` holds **214 combinations across 111 transactions**, and exactly
+**FIVE** are devdoc-Basic. The rest are NCIC record **ENTRY / MODIFY / CANCEL / LOCATE** operations
+(`BEArticleEntry`, `BEBoatCancel`, `UP.EA`, `UA.XB`, `AOSHazardousMaterialQuery`, …) — writing and
+cancelling records, a different product surface. Building those is not completeness, it is scope
+invention. **Enumerate metadata variants PER BUILT TRANSACTION, never per XML.**
+
+**Building the missing variant is usually the RIGHT FIX for an OVER-PERMIT, and that is the payoff.**
+On OCATS, built `4` permitted five optionals its own `<Any>` (which is EMPTY) does not define — two of
+them prefilled, so every in-state plate query transmitted undefined fields. It looked like a binary:
+tighten `4`'s `any[]` or accept the divergence. **Building `4K` was the third answer**: once
+`LicensePlateTypeCode` is MANDATORY somewhere, removing it from `4`'s `any[]` costs the officer nothing
+— the fill routes to `4K` instead. Result: fidelity `23 branches / 1 UNDER / 7 OVER` →
+`25 branches / 0 UNDER / 0 OVER`, and query-trace `3 MISSING` → `0`. **Branches went UP while both
+defect classes went to zero** — the signature of a real fix rather than a suppression.
+
+**FOUR THINGS THAT WILL BITE, all of them on that one provider:**
+
+1. **A prefilled field in the new variant's `set[]` makes it DEAD ON ARRIVAL (BUILD_RULES 24).**
+   `4K` = `set[PurposeCode, Plate, LicensePlateTypeCode]`, and PlateType was prefilled `'PC'` — so its
+   set collapsed to an always-present `[Plate]` and collided **exactly** with `4`. An exact collision
+   is the one case ordering CANNOT separate (AZ_AZDPS DQPN/DQP). A "built" combo that can never fire is
+   **worse** than an unbuilt one: it counts toward coverage and carries logs. **Remove the form
+   prefill** so the field discriminates, and keep it in `defaults[]` for CAD — `defaults[]` does not
+   participate in routing (`audit_combo_reachability` counts only form `initialValue` as always-present).
+   Then verify with reachability, not reasoning.
+2. **A NEW discriminator control must NOT be prefilled either, for the mirror reason.** `VC`'s
+   `BusinessIndicator` is the only thing separating VC from VP; prefilling it would make VC always match
+   and kill the plain owner-name search.
+3. **ORDER THE NEW VARIANT AHEAD OF THE LOOSER ONE.** Its `set[]` is a superset, so if the subset combo
+   sits first it takes every fill and the new path is dead (usx-build Step 3, and it applies here twice:
+   `4K` ahead of `4`, `VC` ahead of `VP`).
+4. **RETIRE THE OLD SKIP ROW IN THE SAME PASS — this one is silent.** An unbuilt-class rule
+   (`dropped-combo|not-built|shadow|unbuilt|dead-combo`) makes `audit_requirement_fidelity` **skip that
+   keyRef's ENTIRE comparison**. Leave the row in after building the combo and you have silenced the
+   branch you just added: coverage FALLS while the finding count reads 0, which is indistinguishable
+   from a clean run. Keep the retired text as history and say what superseded it.
+
+**WHEN A VARIANT GENUINELY CANNOT BE BUILT, say why STRUCTURALLY and prove it.** OCATS' `QV{plate}` and
+`QV{VIN}` have `set[]`s **identical** to `4` and `4V`; their `<Any>` adds only one optional each, and
+**optionals cannot discriminate** because routing tests field PRESENCE against `set[]` plus conditions.
+So no fill can distinguish them — whichever is ordered first takes everything. That is a routing
+IMPOSSIBILITY (6a: "impossible = no configuration satisfies it"), not a preference, and
+`audit_query_trace` agrees by reporting 0 MISSING once a combo of the same shape exists. Contrast that
+with "the devdoc doesn't list it", which is **not** a reason. And do NOT import another provider's
+explanation as authority: FL_FCIC's registry calls QV a platform auto-send "platform-confirmed", but
+that claim is **not in the knowledge base**, so on a different provider it is a thing to verify, not a
+fact to cite.
+
+**Verify completeness with the tools, not by re-reading your own diff:**
+```
+tools\audit_query_trace.ps1 -Provider <NAME>          # MISSING must reach 0 (or be structurally justified)
+tools\audit_requirement_fidelity.ps1 -Provider <NAME> # branches must RISE; UNDER/OVER must not
+tools\audit_combo_reachability.ps1 -Path <json>       # every NEW combo must be REACHABLE
+tools\audit_prefill_shadow.ps1 -Path <json>           # a prefill removal must not have created a shadow
+tools\audit_wiring_closure.ps1 -Provider <NAME>       # a new control must not be a dead control
+tools\validate.ps1 -Path <json>                       # a new control needs its row's templateColumns widened
+```
+That last one is not padding: adding a third control to a `cols = @('6','6')` row produced three real
+validator WARNs on the first attempt.
+
 ## Step 4 — THE GATES MUST BE ABLE TO FAIL (LAW 2)
 
 `0 FAIL` is produced identically by a correct config and an inert check.

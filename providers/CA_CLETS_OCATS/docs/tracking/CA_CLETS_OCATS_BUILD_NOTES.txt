@@ -1,6 +1,91 @@
 CA_CLETS_OCATS -- Build Notes
 ==============================
 
+v2.6  2026-08-18  EVERY metadata variant of every devdoc-Basic query is now BUILT -- 4K and VC added
+  CHANGED:
+    - BUILT 4K  = set[caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode], ordered ahead
+      of `4` (whose set[] is a strict subset). Carries defaults[] LicensePlateTypeCode='PC' for CAD.
+    - BUILT VC  = set[caRequestPurposeCode, NameLast, NameFirst, businessIndicator], ordered ahead of
+      VP (strict subset). New BusinessIndicator attribute + a "Business Owner" Y/N control.
+    - `4` any[] and `4V` any[] emptied to match their metadata <Any>, which is EMPTY on both.
+    - REMOVED the LicensePlateTypeCode form prefill ('PC'); label "Plate Type (optional)" -> "Plate Type".
+    - ROW_VEH_NAME_1 widened 6/6 -> 4/4/4 for the third control.
+  REASON: Rob 2026-08-18 -- "not sure why you stopped short of making all the queries combinations
+    worked from the dev doc and metat data  proceed with that directive until complete with a high
+    level of confidemnce." v2.5 had REGISTERED 4K and VC as dropped-combo skips. That was stopping
+    short: both are variants of VehicleRegistrationQuery, which IS devdoc-Basic-supported, and the
+    metadata defines them and their mandatory fields. Devdoc = QUERY authority (is this query in
+    scope), metadata = FIELD authority (what the query requires). A variant of an AUTHORIZED query
+    gets BUILT, not skipped -- even where the devdoc's flat combination list never enumerates it.
+
+  *** BUILDING THEM RESOLVED THE OVER-PERMITS INSTEAD OF TRIMMING THEM, WHICH IS THE WHOLE POINT. ***
+  v2.6 opened with an OPEN RULING I had raised: built `4` permitted 5 optionals its own metadata
+  <Any> does not define (LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, plus
+  State), two of them PREFILLED, so every in-state plate query transmitted fields that transaction
+  does not define. The options looked like "tighten `4`" or "accept it". Building the missing variants
+  is the third and correct answer: LicensePlateTypeCode now has a home (4K) where it is MANDATORY, so
+  removing it from `4`'s any[] loses the officer nothing -- the fill routes to 4K instead. Same shape
+  for LicensePlateYear, which RQ.P already mandates as of v2.5.
+    fidelity  23 branches / 1 UNDER / 7 OVER   ->   25 branches / 0 UNDER / 0 OVER
+    trace     22 built / 3 MISSING             ->   25 built / 0 MISSING
+  Branches went UP by 2 while both defect classes went to zero -- no coverage was traded for silence.
+
+  *** 4K WOULD HAVE SHIPPED DEAD WITHOUT THE PREFILL REMOVAL, AND THAT IS BUILD_RULES 24. ***
+  LicensePlateTypeCode was prefilled 'PC'. With that prefill, 4K's set[] collapses to an
+  always-present [Plate] and collides EXACTLY with `4` -- and an exact collision is the one thing
+  ordering CANNOT separate (the AZ_AZDPS DQPN/DQP case, where prefilling three set[] fields killed
+  four combos). So a "built" 4K would have been a combo that looks present and can never fire, which
+  is strictly worse than not building it. Removing the form prefill makes LicensePlateTypeCode a real
+  DISCRIMINATOR: plate alone -> `4`, plate+type -> 4K, plate+year+state -> RQ.P.
+  CAD IS NOT AFFECTED: combo defaults[] still supply PC on 4K and RQ.P, and defaults[] do not
+  participate in ROUTING (audit_combo_reachability counts only form initialValue as always-present).
+  The cost is that an officer now picks Plate Type when they want the 4K path -- which is exactly what
+  "LicensePlateTypeCode is MANDATORY on 4K" means. audit_cross_provider does NOT gate a PC default, so
+  this deviates from no enforced convention.
+
+  BUSINESSINDICATOR IS DELIBERATELY NOT PREFILLED, for the same reason in the other direction: it is
+  the ONLY discriminator between VC and VP. Prefilling it would make VC always match and kill the
+  plain owner-name search. Built as a Y/N Select (YES_NO_UNKNOWN|NCIC) because the metadata types it
+  Alphabetic with NO enumeration and no size -- a Select constrains the input where free text would
+  not, and "Indicator" reads Y/N. If CLETS rejects Y/N, that is the value to change, not the routing.
+
+  REGISTRY ROWS RETIRED, and this mattered more than it looks: the 4K and VC dropped-combo rows had to
+  GO once the combos existed. An unbuilt-class rule (dropped-combo/not-built/shadow) makes
+  audit_requirement_fidelity SKIP that keyRef's ENTIRE comparison -- so leaving them would have
+  silenced the very branches just added, and coverage would have FALLEN while the finding count read
+  0, which is indistinguishable from a clean run. Retired text kept in the registry as history with
+  both original reasons, which were true and are now superseded.
+
+  WHAT IS STILL NOT BUILT, AND WHY IT IS NOT "STOPPING SHORT":
+    QV{LicensePlateNumber} and QV{VehicleIdentificationNumber}. Their Set[] are IDENTICAL to `4` and
+    `4V` respectively (Set[CaRequestPurposeCode, LicensePlateNumber] / [.., VehicleIdentificationNumber]),
+    and their <Any> adds only LicensePlateStateCode / VehicleMakeCode -- OPTIONALS CANNOT DISCRIMINATE,
+    because routing tests field PRESENCE against set[] plus conditions. So no fill can distinguish QV
+    from `4`: whichever is ordered first takes every fill and the other is dead on arrival. This is a
+    routing IMPOSSIBILITY, not a preference, and audit_query_trace agrees -- it reports 0 MISSING,
+    treating the requirement as satisfied by the built combo of the same shape. FL_FCIC's registry
+    records QV as a platform auto-send ("CommSys auto-sends QV as a side effect ... platform-confirmed")
+    but that claim is NOT in the knowledge base, so it is NOT transferred here as authority -- it is
+    named only as the thing to verify if QV coverage is ever required.
+    THE OTHER 189 metadata combinations are out of scope and must stay out: this XML holds 214
+    combinations across 111 transactions, and only FIVE transactions are devdoc-Basic. The rest are
+    NCIC record ENTRY / MODIFY / CANCEL / LOCATE operations (BEArticleEntry, BEBoatCancel, UP.EA,
+    UA.XB, AOSHazardousMaterialQuery ...). Those are a different product surface -- writing and
+    cancelling NCIC records, not querying -- and nothing authorizes building them.
+
+  PHASE 1 at v2.6: [1] all devdoc combinations accounted for - [2] optionals all route and transmit -
+  [3] 21 combos, most-specific-first respected - [4] 25 branches, 0 under / 0 over - [5] 25 built,
+  0 prefill-dead, 0 shadow, 0 MISSING - [6] gate efficacy 7/7 killed. Reachability 20/20 ALL
+  REACHABLE (so 4K and VC are LIVE, which is the check that matters after a prefill removal);
+  audit_prefill_shadow 49 ordered pairs, 0 FAIL; audit_wiring_closure 0 breaks across ten classes
+  (so the new BusinessIndicator control is not a dead control). Validator 66 PASS / 0 FAIL / 0 WARN --
+  it briefly read 3 WARN because I added the third control without widening ROW_VEH_NAME_1's
+  templateColumns; the validator caught it and the row is now 4/4/4.
+  Remaining fuzz survivor "prefill-field caRequestPurposeCode" is a CORRECT survivor: purposeCode is
+  mandatory in EVERY combination here, so prefilling it cannot shadow one path over another.
+  STILL OWED: never USx-tenant-tested, never imported -- v2.6 owes a first import and a full sweep.
+
+
 v2.5  2026-08-18  RQ.P: LicensePlateYear was OPTIONAL where the metadata MANDATES it
   CHANGED: RQ.P `LicensePlateYear` moved from `any[]` into `set[]`, so its combination now reads
     set[caRequestPurposeCode, LicensePlateNumber, LicensePlateYear, RegistrationState].

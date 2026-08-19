@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.5.json
-  Generated: 2026-08-18 20:17
+  Source: CA_CLETS_OCATS_v2.6.json
+  Generated: 2026-08-18 20:58
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -23,15 +23,15 @@ VALIDATOR RESULTS
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
-  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
-  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 17 fieldIds
+  [PASS] QIF 'ENTITY_Vehicle' PlateType no initialValue (combo defaults expected)
+  [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 18 fieldIds
   [PASS] QIF 'ENTITY_Person' -> Person : 11 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 8 fieldIds
   [PASS] QIF 'ENTITY_Article' -> Article : 9 fieldIds
   [PASS] QIF 'ENTITY_Boat' -> Boat : 8 fieldIds
 
 === PHASE 3: QIDM Validation ===
-  [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' -> Vehicle : 14 attrs, 6 combos
+  [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' -> Vehicle : 15 attrs, 8 combos
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' attr 'LicensePlateStateCode' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' -> Person : 7 attrs, 5 combos
@@ -68,8 +68,10 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 'AWVEHQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 'RQ.P': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 'VC': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo 'VP': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo '4V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo '4K': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_OCATS_VehicleRegistrationQuery' combo '4': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo 'OCNAMQ': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_CLETS_OCATS_DriverLicenseQuery' combo 'DQ.N': all set[]/any[] fields resolvable
@@ -86,7 +88,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_CLETS_OCATS_BoatQuery' combo '4B': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 64 PASS / 0 FAIL / 0 WARN
+  RESULTS: 66 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.

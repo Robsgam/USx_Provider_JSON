@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.5.json
-  Generated: 2026-08-18 20:17
+  Source: CA_CLETS_OCATS_v2.6.json
+  Generated: 2026-08-18 20:58
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-18 20:17
+ Generated: 2026-08-18 20:58
 ============================================================
 
 ============================================================
  METADATA AUDIT: CA_CLETS_OCATS
 ============================================================
   XML: CA_CLETS_OCATS.xml
-  JSON: CA_CLETS_OCATS_v2.5.json
+  JSON: CA_CLETS_OCATS_v2.6.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -26,8 +26,10 @@ METADATA AUDIT
 
 --- CHECK 2: KeyReference Validation ---
   [PASS] AWVEHQ: exists in XML VehicleRegistrationQuery
+  [PASS] VC: exists in XML VehicleRegistrationQuery
   [PASS] VP: exists in XML VehicleRegistrationQuery
   [PASS] 4V: exists in XML VehicleRegistrationQuery
+  [PASS] 4K: exists in XML VehicleRegistrationQuery
   [PASS] 4: exists in XML VehicleRegistrationQuery
   [PASS] OCNAMQ: exists in XML DriverLicenseQuery
   [PASS] QGB: exists in XML GunQuery
@@ -76,6 +78,7 @@ METADATA AUDIT
   VehicleFCNQuery: (not built in JSON -- see CHECK 1)
   VehicleRegistrationQuery:
   [PASS]   Authorization: in XML and QIDM
+  [PASS]   BusinessIndicator: in XML and QIDM
   [PASS]   CaRequestPurposeCode: in XML and QIDM
   [PASS]   ExactSearchIndicator: in XML and QIDM
   [PASS]   LicensePlateNumber: in XML and QIDM
@@ -152,6 +155,9 @@ METADATA AUDIT
   VehicleRegistrationQuery:
   [PASS]   keyRef 4: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef 4: set field 'LicensePlateNumber' present
+  [PASS]   keyRef 4K: set field 'CaRequestPurposeCode' present
+  [PASS]   keyRef 4K: set field 'LicensePlateNumber' present
+  [PASS]   keyRef 4K: set field 'LicensePlateTypeCode' present
   [PASS]   keyRef 4V: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef 4V: set field 'VehicleIdentificationNumber' present
   [PASS]   keyRef AWVEHQ: set field 'CaRequestPurposeCode' present
@@ -173,6 +179,9 @@ METADATA AUDIT
   [PASS]   keyRef RQ: any field 'VehicleYear' covered by RQ.P,RQ.V
   [PASS]   keyRef VP: set field 'CaRequestPurposeCode' present
   [PASS]   keyRef VP: set field 'Name' present
+  [PASS]   keyRef VC: set field 'CaRequestPurposeCode' present
+  [PASS]   keyRef VC: set field 'Name' present
+  [PASS]   keyRef VC: set field 'BusinessIndicator' present
 
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
   [NOTE]   keyRef RQ.P: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
@@ -237,6 +246,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 158 PASS / 0 FAIL / 0 WARN
+Total: 167 PASS / 0 FAIL / 0 WARN
 ============================================================
 
