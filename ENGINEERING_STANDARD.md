@@ -25,6 +25,22 @@ must be **demonstrably capable of failing** on the defect class it owns, proven 
 (`tools/audit_gate_efficacy.ps1`). A gate's PASS is evidence **only** for the classes it has killed
 a mutant on. Unproven gates are decoration.
 
+**LAW 2b — THE CONVERSE: A FAIL THAT CANNOT BE CLEARED BY FIXING THE THING IT POINTS AT IS NOISE.**
+LAW 2 makes us hunt gates that cannot fail. The mirror-image defect is a gate that cannot *pass*, and
+it is harder to see because a red light looks like diligence. Test: **name the change to the artifact
+under audit that would clear this finding.** If none exists, the finding is mis-aimed — the defect is
+in the authority chain, the scope, or the gate — and it must be re-aimed, not carried.
+Proven twice on CA_CONTRA_COSTA, 2026-08-19: `audit_devdoc_combinations` reported `0 devdoc
+combinations parsed` for 17 days as the portfolio's LAST blocking spec FAIL, but that provider's
+devdoc says *"Basic Queries Supported: None"* — **no possible build change could ever have cleared
+it.** It had been filed as "Rob's call, not a build fix", which correctly exonerated the build and
+still mis-located the defect: the fix was a devdoc-of-record fallback to the linked base. The same day,
+`21 over-broad suppressions across 243 rows` read as a portfolio-wide tax and was **one provider
+missing one comment line** (19 of 20 already carried the direction-aware marker).
+The two failure modes are symmetric and both hide in a number nobody can act on: **an un-failable gate
+manufactures confidence, an un-passable one manufactures work.** Cross-check with §4.3 (print the
+denominator) — a vacuous PASS and a vacuous FAIL are the same bug wearing opposite colours.
+
 **LAW 3 — AUTHORITY IS DIRECTIONAL, AND BOTH DIRECTIONS MUST BE CHECKED.**
 Devdoc is **query** authority. Metadata XML is **field** authority. A check that only validates what
 EXISTS can never see an omission, so every authority relationship needs a gate in **both**
