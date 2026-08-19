@@ -3,6 +3,91 @@ TN_TIES -- Build Notes
 Provider: TN_TIES
 State: Tennessee
 Network: TIES (Tennessee Information Enforcement System)
+v2.2  2026-08-19  FREE-TEXT stolen check -> coded Y/N; 4 unfireable specialty-plate tests fixed; 0F/0W
+  CHANGED:
+    - relatedHitSearchIndicator converted from a FREE-TEXT FormInput to a coded FormSelect
+      (YES_NO_UNKNOWN | NCIC), label "Related Hit Search (optional)" -> canonical "Stolen Check",
+      initialValue 'Y', plus the CAD defaults[] twin on all three carrying combos (QWA, DQ01, DQ06).
+      A '# LABEL-OVERRIDE:' tag records the bare label, the same mechanism OH_LEADS uses.
+    - NEW docs/reference/TEST_VALUE_OVERRIDES.txt with DealerLicensePlateNumber, HandicapPlacardNumber
+      and TemporaryLicensePlateNumber.
+    - REGISTERED VehicleRegistrationQuery | RQ05 | RegistrationState | routing-only-not-transmitted.
+    - Two flags retired: [FLAG:plan-fillability-unfireable-tests] and
+      [FLAG:wiring-closure-class-J-routing-only].
+
+  *** THE GATE HARNESS FOUND A REAL DEFECT BY FAILING, AND MY FIRST DIAGNOSIS WAS WRONG. ***
+  audit_gate_efficacy reported "codetype-select-as-input -- validate.ps1 *** SURVIVED -- GATE IS BLIND
+  TO THIS ***" (7/8 killed). That reads as a tool blind spot, and I spent three probes chasing
+  validate.ps1's guard before measuring the mutation's TARGET. The mutation walks
+  Vehicle -> Person for relatedHitSearchIndicator, then ImageIndicator, and flips the first hit to
+  FormInput. TN's Person relatedHitSearchIndicator WAS ALREADY A FormInput with no codeTypeCategory --
+  so the mutation was a NO-OP. Nothing changed, so no gate could react, and the harness reported
+  SURVIVED. A FALSE SURVIVED, which usx-tooling warns is worse than a missed one because it sends you
+  to widen a gate that already works.
+  BUT THE REASON IT WAS A NO-OP IS THE DEFECT: a free-text stolen check where a coded Y/N is required
+  means the officer can type anything and it reaches the wire UNCODED -- precisely the class that
+  mutation exists to catch, and the same defect AZ_AZDPS fixed ("the tenant showed ... FREE-TEXT
+  Stolen Check"). Every other provider carrying this field builds it as a Sel with YES_NO_UNKNOWN|NCIC.
+  PROOF THE DIAGNOSIS WAS RIGHT: after converting it, the SAME mutation is now [KILLED] findings 0 -> 1
+  and gate efficacy reads 8/8, 0 SURVIVED. validate.ps1 was never blind -- the build was defective, and
+  fixing the build restored the mutation's power. Do not "fix" validate.ps1 for this.
+  Default 'Y' is safe and follows Rob's stolen-check ruling (OH_LEADS 2026-08-18): the field is in
+  any[] on 3 combos and in NO set[] and NO condition, so BUILD_RULES 24 cannot bite. The CAD twin is
+  required because CAD ignores the form initialValue.
+
+  FOUR UNFIREABLE TESTS WERE THREE MISSING VALUES -- AND THEY WERE TN'S DISTINCTIVE PATHS.
+  test_phase2 step [2]: T13 Vehicle/RQ05 + T14 Vehicle/QV.D (DealerLicensePlateNumber), T15 RQ06
+  (HandicapPlacardNumber), T16 RQ07 (TemporaryLicensePlateNumber) -- each producing one BLANK FILL
+  (fieldId and value both empty, so the driver fills 'undefined') AND one UNSATISFIED (mandatory field
+  never filled, so the tenant keeps Send DISABLED and NOTHING is sent). These are the dealer, handicap
+  and temporary-tag paths -- most of what distinguishes TN's 8 Vehicle combos from the portfolio's
+  usual 3-4 -- so FOUR OF EIGHT Vehicle paths could never have been driven. Not a build defect: every
+  combo is metadata-faithful and every control exists; emit_test_plan just had no value. Fixed as TEST
+  DATA, no JSON change for it. Values are NOT authority-derived (metadata types them Alphanumeric, the
+  devdoc gives no formats) and the file says so. fillability 4 BLANK + 4 UNSATISFIED -> PASS
+  (48 tests / 129 fills), PRE-FLIGHT CLEAR.
+
+  *** THE class-J FLAG PRESCRIBED A FIX THAT WOULD HAVE BEEN A NEW DEFECT -- ITS OWN "CONFIRM FIRST"
+  INSTRUCTION IS WHAT SAVED IT. *** [FLAG:wiring-closure-class-J-routing-only] said: "add
+  RegistrationState to the RQ05 any[] (metadata permits it on the Nlets variant -- confirm against the
+  RQ Requirements block before building)". BOTH premises are FALSE:
+    (1) "metadata permits it on the Nlets variant" -- there is EXACTLY ONE RQ05 in the whole XML
+        (VehicleRegistrationQuery, Set[DealerLicensePlateNumber] Any[InquiryTypeIndicator]). No State
+        in Set, none in Any, and NO other transaction defines the keyRef at all; every transaction in
+        the file was searched, not just VehicleRegistrationQuery. Adding State would OVER-PERMIT.
+    (2) "its RQ06 (handicap) and RQ07 (temp) siblings DO carry State, so this reads as an omission" --
+        they do NOT. Metadata RQ06 = Set[HandicapPlacardNumber] Any[]; RQ07 =
+        Set[TemporaryLicensePlateNumber] Any[]; our built combos likewise carry no State. There is no
+        asymmetry, so there is no omission to infer.
+  WHAT IS ACTUALLY HAPPENING is the portfolio's standard in/out fork: RQ05 and QV.D have IDENTICAL
+  set[] (DealerLicensePlateNumber) and are separated ONLY by the State condition (EXISTS vs
+  NOT_EXISTS). The officer's State value SHOULD route and SHOULD NOT ride along, because the RQ05
+  transaction cannot carry it -- the same shape already registered on OH_LEADS BoatQuery BQ.H.
+  Class J will KEEP PRINTING: it is a wiring OBSERVATION (its own output says only classes A and C are
+  officer-facing) and it does not read the registry. Expected, not a regression.
+
+  ALSO CONFIRMED FIXED FROM AN EARLIER ERA, so nobody re-raises it: the KQ.N defect recorded in
+  usx-build Step 3 ("TN_TIES KQ.N was gated RegistrationState EXISTS while metadata KQ{Name} has
+  Any[State], which made an in-state driver-history name search IMPOSSIBLE") is gone -- KQ.N is now
+  gated OperatorLicenseNumberDH NOT_EXISTS with RegistrationState in any[]. An in-state DH name search
+  works.
+
+  TWO SELF-INFLICTED ERRORS, both caught immediately by a parse check rather than by a later gate:
+    1. I inserted the LABEL-OVERRIDE with a regex whose '^(\s*).*' indent capture ran against the whole
+       remaining file, duplicating the script tail ahead of the control. Reverted the script with
+       git checkout and re-applied all four edits LINE-BASED instead of by string surgery.
+    2. Earlier, on MD_METERS, the same session produced a duplicate 'defaults' hash key; here the
+       defaults twin was applied by matching the EXISTING defaults line and extending it, which is why
+       it patched cleanly 3 for 3.
+
+  PHASE 1 at v2.2: [1] all devdoc combinations accounted for - [2] optionals all route and transmit -
+  [3] 22 combos, most-specific-first respected - [4] 28 branches, 0 UNDER / 0 OVER - [5] 0 prefill-dead,
+  0 shadow - [6] gate efficacy 8/8 KILLED (was 7/8) - fillability PRE-FLIGHT CLEAR.
+  enforce -Provider TN_TIES: ENFORCED 40 PASS / 0 FAIL / 0 WARN, exit 0.
+  STILL OWED: never USx-tenant-tested, never imported -- v2.2 owes a first import and a full sweep,
+  and all 8 Vehicle paths are now provably drivable.
+
+
 v2.1  2026-08-01  KQ.N -- an in-state driver-history name search was IMPOSSIBLE (commit e3e40c53)
   CHANGED: Removed the RegistrationState EXISTS gate from KQ.N, plus four DQ.N registrations.
   REASON: KQ.N was gated RegistrationState EXISTS while metadata KQ{Name} has State in <Any> --

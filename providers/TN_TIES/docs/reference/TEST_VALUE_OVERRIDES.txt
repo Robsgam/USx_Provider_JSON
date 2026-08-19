@@ -1,0 +1,26 @@
+# TN_TIES -- TEST VALUE OVERRIDES
+# Format: '<Entity>.<fieldId>=value' (entity-scoped, preferred). '#' comments ignored.
+# Read by emit_test_plan.ps1 via _combo_value_resolver.ps1 (Get-ComboValueOverrides).
+#
+# CREATED 2026-08-19 to clear [FLAG:plan-fillability-unfireable-tests].
+# test_phase2 step [2] reported EIGHT findings that were really THREE missing values -- each unvalued
+# field produced one BLANK FILL (fieldId and value both empty, so the driver fills 'undefined') AND one
+# UNSATISFIED (the mandatory field never filled, so the tenant keeps Send DISABLED and NOTHING is sent):
+#   T13 Vehicle/RQ05  mandatory 'DealerLicensePlateNumber'
+#   T14 Vehicle/QV.D  mandatory 'DealerLicensePlateNumber'
+#   T15 Vehicle/RQ06  mandatory 'HandicapPlacardNumber'
+#   T16 Vehicle/RQ07  mandatory 'TemporaryLicensePlateNumber'
+# These are TN's THREE SPECIALTY-PLATE PATHS -- dealer, handicap placard and temporary tag -- which is
+# most of what distinguishes this provider's 8 Vehicle combos from the portfolio's usual 3-4. Without
+# these values, four of the eight Vehicle paths could never be driven, and the browser console would
+# most likely have blamed latency: exactly how the OH_LEADS Vehicle sweep was lost on 2026-08-18.
+# NOT A BUILD DEFECT -- every one of these combos is metadata-faithful (RQ05 Set[DealerLicensePlateNumber],
+# RQ06 Set[HandicapPlacardNumber], RQ07 Set[TemporaryLicensePlateNumber]) and every control exists.
+# emit_test_plan simply had no value for the fields ("unmapped in Get-TestValue").
+#
+# NOT AUTHORITY-DERIVED. TN's metadata types these Alphanumeric and the devdoc gives no value lists or
+# formats, so these are plausible placeholders chosen only to make the paths drivable. If TIES rejects
+# any of them on the first live run, change THE VALUE HERE -- not the build.
+Vehicle.DealerLicensePlateNumber=DLR123
+Vehicle.HandicapPlacardNumber=HP12345
+Vehicle.TemporaryLicensePlateNumber=TMP1234

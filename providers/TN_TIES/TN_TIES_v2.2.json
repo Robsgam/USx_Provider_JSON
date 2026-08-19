@@ -1829,13 +1829,15 @@
                                                                                                                    },
                                                                                   "RelatedHitSearchIndicator_Input":  {
                                                                                                                           "type":  {
-                                                                                                                                       "resolvedName":  "FormInput"
+                                                                                                                                       "resolvedName":  "FormSelect"
                                                                                                                                    },
-                                                                                                                          "displayName":  "Input",
+                                                                                                                          "displayName":  "Select",
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                        "label":  "Related Hit Search (optional)",
-                                                                                                                                        "maxLength":  "1"
+                                                                                                                                        "label":  "Stolen Check",
+                                                                                                                                        "initialValue":  "Y",
+                                                                                                                                        "codeTypeSource":  "NCIC",
+                                                                                                                                        "codeTypeCategory":  "YES_NO_UNKNOWN"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -2568,13 +2570,15 @@
                                                                                                                         },
                                                                                        "RelatedHitSearchIndicator_Input":  {
                                                                                                                                "type":  {
-                                                                                                                                            "resolvedName":  "FormInput"
+                                                                                                                                            "resolvedName":  "FormSelect"
                                                                                                                                         },
-                                                                                                                               "displayName":  "Input",
+                                                                                                                               "displayName":  "Select",
                                                                                                                                "props":  {
                                                                                                                                              "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                             "label":  "Related Hit Search (optional)",
-                                                                                                                                             "maxLength":  "1"
+                                                                                                                                             "label":  "Stolen Check",
+                                                                                                                                             "initialValue":  "Y",
+                                                                                                                                             "codeTypeSource":  "NCIC",
+                                                                                                                                             "codeTypeCategory":  "YES_NO_UNKNOWN"
                                                                                                                                          },
                                                                                                                                "isCanvas":  false,
                                                                                                                                "hidden":  false,
@@ -3388,13 +3392,15 @@
                                                                                                                            },
                                                                                           "RelatedHitSearchIndicator_Input":  {
                                                                                                                                   "type":  {
-                                                                                                                                               "resolvedName":  "FormInput"
+                                                                                                                                               "resolvedName":  "FormSelect"
                                                                                                                                            },
-                                                                                                                                  "displayName":  "Input",
+                                                                                                                                  "displayName":  "Select",
                                                                                                                                   "props":  {
                                                                                                                                                 "fieldId":  "relatedHitSearchIndicator",
-                                                                                                                                                "label":  "Related Hit Search (optional)",
-                                                                                                                                                "maxLength":  "1"
+                                                                                                                                                "label":  "Stolen Check",
+                                                                                                                                                "initialValue":  "Y",
+                                                                                                                                                "codeTypeSource":  "NCIC",
+                                                                                                                                                "codeTypeCategory":  "YES_NO_UNKNOWN"
                                                                                                                                             },
                                                                                                                                   "isCanvas":  false,
                                                                                                                                   "hidden":  false,
@@ -7599,6 +7605,10 @@
                                                                                                                   {
                                                                                                                       "field":  "ImageIndicator",
                                                                                                                       "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "relatedHitSearchIndicator",
+                                                                                                                      "value":  "Y"
                                                                                                                   }
                                                                                                               ],
                                                                                                  "conditions":  [
@@ -7635,6 +7645,10 @@
                                                                                                                   {
                                                                                                                       "field":  "ImageIndicator",
                                                                                                                       "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "relatedHitSearchIndicator",
+                                                                                                                      "value":  "Y"
                                                                                                                   }
                                                                                                               ],
                                                                                                  "conditions":  [
@@ -7664,6 +7678,10 @@
                                                                                                  "defaults":  [
                                                                                                                   {
                                                                                                                       "field":  "ImageIndicator",
+                                                                                                                      "value":  "Y"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "field":  "relatedHitSearchIndicator",
                                                                                                                       "value":  "Y"
                                                                                                                   }
                                                                                                               ],
@@ -8126,7 +8144,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TN_TIES v2.1 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 22 combos, DH-suffix, existence-only routing gates + identifier-priority guardrails",
+                        "description":  "Provider configuration for TN_TIES v2.2 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 22 combos, DH-suffix, existence-only routing gates + identifier-priority guardrails",
                         "name":  "TN_TIES",
                         "type":  "BUNDLE",
                         "provider":  "TN_TIES"

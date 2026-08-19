@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: TN_TIES
-  Source: TN_TIES_v2.1.json
-  Generated: 2026-08-02 21:51
+  Source: TN_TIES_v2.2.json
+  Generated: 2026-08-19 10:02
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== TN_TIES_v2.1.json ===
+=== TN_TIES_v2.2.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=4 fields=8
-  Person | entity=Person | qidm= | cards=5 fields=12
+  Person | entity=Person | qidm= | cards=5 fields=11
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=3 fields=3
@@ -62,7 +62,7 @@ LAYOUT DETAIL
       ROW ROW_PER_OPT_2 [4 4 4]
         InquiryTypeIndicator (Text | maxLen=1)
         ExpandedNameSearchCode (Text | maxLen=1)
-        relatedHitSearchIndicator (Text | maxLen=1)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
     CARD "CARD_PER_OLN"
       ROW ROW_PER_OLN_1 [6 6]
         OperatorLicenseNumber (Text | maxLen=20)

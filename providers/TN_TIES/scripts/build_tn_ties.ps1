@@ -34,7 +34,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.1'
+$Version     = '2.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\TN_TIES_v${Version}.json"
@@ -238,7 +238,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('NameLast','NameFirst','BirthDate','SexCode'); any = @('ExpandedNameSearchCode','ImageIndicator','InquiryTypeIndicator','raceCode','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'relatedHitSearchIndicator'; value = 'Y' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
@@ -252,7 +252,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('OperatorLicenseNumber'); any = @('ExpandedNameSearchCode','ImageIndicator','InquiryTypeIndicator','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'relatedHitSearchIndicator'; value = 'Y' })
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
@@ -263,7 +263,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('SocialSecurityNumber'); any = @('ExpandedNameSearchCode','ImageIndicator','InquiryTypeIndicator','relatedHitSearchIndicator')
-                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
+                defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'relatedHitSearchIndicator'; value = 'Y' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
@@ -605,7 +605,8 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_OPT_2'; cols = @('4','4','4'); fields = @(
                 @{ id = 'InquiryTypeIndicator_Input';      node = Inp 'InquiryTypeIndicator'      'Inquiry Type (1/2/3, optional)' '1' 'ROW_PER_OPT_2' }
                 @{ id = 'ExpandedNameSearchCode_Input';    node = Inp 'ExpandedNameSearchCode'    'Expanded Name Search (optional)' '1' 'ROW_PER_OPT_2' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Inp 'relatedHitSearchIndicator' 'Related Hit Search (optional)'   '1' 'ROW_PER_OPT_2' }
+                # LABEL-OVERRIDE: relatedHitSearchIndicator -- "Stolen Check" per DEX-1284, canonical on FL/HI/IL/NY/OH/TX (any[] optional)
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_2' }
             )}
         )
     }

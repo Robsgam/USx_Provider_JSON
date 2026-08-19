@@ -1,6 +1,6 @@
-TN_TIES v2.1 -- TEST MATRIX
+TN_TIES v2.2 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-13
+Generated: 2026-08-19
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -22,7 +22,7 @@ Vehicle (4 cards, 11 fields):
 Person (5 cards, 19 fields):
   CARD_PER_OPT (OPTIONS):
     ROW 1: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], raceCode [Sel RACE]
-    ROW 2: InquiryTypeIndicator [Inp 1], ExpandedNameSearchCode [Inp 1], relatedHitSearchIndicator [Inp 1]
+    ROW 2: InquiryTypeIndicator [Inp 1], ExpandedNameSearchCode [Inp 1], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
   CARD_PER_OLN (DRIVER LICENSE - OLN / SSN SEARCH):
     OperatorLicenseNumber [Inp 20], SocialSecurityNumber [Inp 20]
   CARD_PER_NAME (DRIVER LICENSE - NAME SEARCH):
@@ -216,4 +216,4 @@ COMBO COVERAGE (22/22):
   ArticleSingleQuery: 1/1 -- T55(serialNumber)
   BoatQuery: 4/4 -- T43(QB+.R), T45(QB+.H), T47(BB.H+BB.H), T49(BB.R+BB.R)
 
-IMPORT FILE: TN_TIES_v2.1.json
+IMPORT FILE: TN_TIES_v2.2.json
