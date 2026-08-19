@@ -387,8 +387,13 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
         Emit "  [FAIL] $provName -- 0 devdoc combinations parsed; this gate compared NOTHING, so its verdict is not evidence. Fix the devdoc parse or record why there is no combination table." 'Red'
         return @{ Fail = ($fails + 1); Note = $notes; Compared = 0 }
     }
+    # ONE FACT, ONE WORDING. These two branches used to phrase the SAME denominator differently --
+    # "(12 devdoc combination(s) compared)" here and "(4 note(s); 19 compared)" below -- so every
+    # consumer had to know both. That cost report_mission_status.ps1 three wrong parses on 2026-08-19
+    # and silently reported 4 providers as unproven. The compared-count now always reads the same way
+    # and the note count is an optional suffix.
     if (-not $fails -and -not $notes) { Emit "  [PASS] $provName -- every devdoc combination is built or accepted ($ddCount devdoc combination(s) compared)" 'Green' }
-    elseif (-not $fails)              { Emit "  [PASS] $provName -- no unbuilt devdoc combination ($notes note(s); $ddCount compared)" 'Green' }
+    elseif (-not $fails)              { Emit "  [PASS] $provName -- every devdoc combination is built or accepted ($ddCount devdoc combination(s) compared, $notes note(s) for human review)" 'Green' }
     return @{ Fail = $fails; Note = $notes }
 }
 

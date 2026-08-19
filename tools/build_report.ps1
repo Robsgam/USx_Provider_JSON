@@ -73,7 +73,7 @@ if ($docsDirWasExplicit -or -not $isModernSingleJson) {
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-$stepCount = 15
+$stepCount = 17   # 16-17 added 2026-08-19: the two BLOCKING enforce gates that left no artifact
 
 Write-Host ""
 Write-Host "================================================================" -ForegroundColor Cyan
@@ -509,6 +509,35 @@ if (Test-Path $changelogToolPath) {
     else { Write-Host "  [15/$stepCount] Changelog not produced (advisory)" -ForegroundColor Gray }
 } else {
     Write-Host "  [15/$stepCount] SKIPPED (generate_changelog.ps1 not found)" -ForegroundColor Gray
+}
+
+# ── Step 16: Devdoc-combination coverage (enforce 2p) -- PREVIOUSLY LEFT NO ARTIFACT ──
+# This gate and step 17 are BLOCKING phases of enforce, yet until 2026-08-19 neither wrote anything to
+# docs/: a repo-wide search for *devdoc* / *reach* returned ZERO files. So "was the spec proven for THIS
+# version?" could not be answered after the fact -- only by re-running. Every other gate in this script
+# saves its report; these two were the exception, and nothing had noticed because enforce re-runs them
+# live. Saving them makes the PASS auditable AND puts them under audit_artifact_provenance's STALE class.
+Write-Host ""
+Write-Host "  [16/$stepCount] Devdoc-combination coverage..." -ForegroundColor Yellow
+$devdocCombPath = Join-Path $toolDir "audit_devdoc_combinations.ps1"
+$devdocCombFile = Join-Path $ReportsDir "DEVDOC_COMBINATIONS_$jsonName.txt"
+if (Test-Path $devdocCombPath) {
+    & powershell -ExecutionPolicy Bypass -File $devdocCombPath -Path $resolvedStr -OutFile $devdocCombFile 2>&1 | Out-Null
+    if (Test-Path $devdocCombFile) { Write-Host "  [16/$stepCount] Saved: $devdocCombFile" -ForegroundColor Green }
+} else {
+    Write-Host "  [16/$stepCount] SKIPPED (audit_devdoc_combinations.ps1 not found)" -ForegroundColor Gray
+}
+
+# ── Step 17: Combo reachability (enforce 2h) -- PREVIOUSLY LEFT NO ARTIFACT ──
+Write-Host ""
+Write-Host "  [17/$stepCount] Combo reachability..." -ForegroundColor Yellow
+$reachPath = Join-Path $toolDir "audit_combo_reachability.ps1"
+$reachFile = Join-Path $ReportsDir "REACHABILITY_$jsonName.txt"
+if (Test-Path $reachPath) {
+    & powershell -ExecutionPolicy Bypass -File $reachPath -Path $resolvedStr -OutFile $reachFile 2>&1 | Out-Null
+    if (Test-Path $reachFile) { Write-Host "  [17/$stepCount] Saved: $reachFile" -ForegroundColor Green }
+} else {
+    Write-Host "  [17/$stepCount] SKIPPED (audit_combo_reachability.ps1 not found)" -ForegroundColor Gray
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
