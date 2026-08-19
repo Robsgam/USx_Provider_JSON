@@ -3,15 +3,22 @@
 **Active ticket:** [DEX-990 — \[OH - LEADS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-990)
 Project: DEX (CJIS/USx/DEx Implementation) · Status (verified 2026-08-10): In Progress · Unassigned
 
-POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
-move** -- never post a correction as a sibling comment. That is what produced contradictory totals
-across these tickets (DEX-969 carried NINE; DEX-967's newest comment claimed 89/89 while the
-provider was at 92). Format is FIXED for every provider and every update -- see
-knowledge-base/JIRA_COMMENT_TEMPLATE.txt (six numbered sections, None rather than omitted;
-plus the separate HISTORY-ANCHOR shape for the one initial dump). **No delete-comment tool exists**,
-so superseded comments are rewritten to the stub defined there, never removed -- and every edit is
-irreversible, so capture the original first. Only automation-authored (🤖) comments may be edited:
-never Rob's own manual notes, never a third party's.
+POSTING RULE -- **REVERSED 2026-08-17 BY ROB, and this file had the SUPERSEDED version until
+2026-08-18.** It previously said "ONE COMMENT PER RELEASE, and EDIT it in place if the numbers move"
+and "six numbered sections". Both are wrong now, and following them would have destroyed a record:
+  * **POST A NEW COMMENT PER RELEASE. Do NOT edit the previous release line** -- leave it in place as
+    history. Rob: "post as a new comment and leave the other comments there. we can't keep erasing
+    the previous posts everytime." There is NO delete-comment tool and an edit is IRREVERSIBLE, so
+    edit-in-place silently overwrote each prior release's evidence.
+  * **FOUR sections, not six** (Rob 2026-08-13 -- six was "way too many details"). Known limits and
+    documented skips are NOT in the comment; they live in `PLATFORM_CONSTRAINTS.txt` and
+    `<P>_ACCEPTED_DIVERGENCES.txt`, which already own and gate them.
+  * Every new release comment must name the comment id it SUPERSEDES and say the old one is retained
+    as history -- that is what keeps the thread unambiguous without erasing it.
+Format is FIXED for every provider and every update: `knowledge-base/JIRA_COMMENT_TEMPLATE.txt` is
+the single source (two shapes per ticket: one release line, one history anchor). Only
+automation-authored (🤖) comments may ever be edited: never Rob's own manual notes, never a third
+party's.
 
 > **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-990`
 > (cloudId `5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c`). `audit_lifecycle` (enforce 2r) READS THIS FILE,
@@ -32,10 +39,27 @@ Its description also supplies a fact the ledger was missing: the tenant is
 **`usx-oh-leads.mark43.com`**.
 
 **Posted so far:** NOTHING. `comments: []`, total 0 — this ticket has never been commented on, by
-anyone. So the changelog dump here is a first post, not a catch-up (the same situation IL's DEX-984
-was in on 2026-08-10, and it was verified as genuinely empty before posting there too).
+**Posted 2026-08-18 -- the FIRST comments this ticket has ever carried, by anyone.** Verified
+`comments: []`, total 0 immediately before posting, so this was a genuine first post and not a
+catch-up. Two comments, which is the full complement for a ticket (one release line + one history
+anchor); everything after this is a new release line.
 
+POSTED: v2.9 comment 801112 2026-08-18
+POSTED: v2.9 comment 801113 2026-08-18
+
+  801112 = RELEASE LINE (current state -- read this one). OH_LEADS v2.9 TENANT-VERIFIED, 56/56.
+  801113 = HISTORY ANCHOR (v1.0 -> v2.9, wire-affecting changes marked; no metrics, by design --
+           metrics belong only in the release line, which is what stopped the contradictory-total
+           problem on the older tickets). Points at 801112 for current state.
+  DISCLOSED IN 801112 RATHER THAN ROUNDED OFF: inflation is 2/0/0/0, not 0/0/0/0 (two of the 56 logs
+  are not distinct tests), the ATDP guardrail was inconclusive, and the v2.7 Middle/Suffix controls
+  were NOT exercised by the sweep -- they are composed into Name but sit in no set[]/any[], so the
+  plan cannot fill them and the wire read `DOE, JOHN`. Making that provable is a wire change (v3.0).
 **Current: v2.4 — BUILT 2026-08-10, NEVER tenant-tested, never imported.**
+
+**Current: v2.9 -- TENANT-VERIFIED ALL-PASS 5/5 (56 logs, 56 PASS / 0 FAIL) 2026-08-18. First ever
+tenant import and first ever sweep for this provider.** Was "v2.4 BUILT, NEVER tenant-tested, never
+imported" until today.
 Recent history (full detail in `OH_LEADS_BUILD_NOTES.txt`):
 - **v2.4** — **card collapse 14 → 6** (Vehicle 6→1, Person 5→2, Boat 3→1) with every title now
   carrying its query paths; OH had been the only provider of nine with 0 path-carrying titles. Zero
