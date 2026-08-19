@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.3.json
-  Generated: 2026-08-02 21:45
+  Source: CA_CLETS_OCATS_v2.5.json
+  Generated: 2026-08-18 20:17
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_OCATS_v2.3.json
+  CommSys Query Simulator -- CA_CLETS_OCATS_v2.5.json
 ================================================================
 
 --- QIDM: CA_CLETS_OCATS_VehicleRegistrationQuery [Vehicle] ---
@@ -34,8 +34,8 @@ QUERY SIMULATION
       </Transaction>
 
     [FIRES shadowed -- first match above wins] RQ.P
-      set: [caRequestPurposeCode, LicensePlateNumber, RegistrationState]
-      any: [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear] -> matched: [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear]
+      set: [caRequestPurposeCode, LicensePlateNumber, LicensePlateYear, RegistrationState]
+      any: [LicensePlateTypeCode, VehicleMakeCode, vehicleYear] -> matched: [LicensePlateTypeCode, VehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->

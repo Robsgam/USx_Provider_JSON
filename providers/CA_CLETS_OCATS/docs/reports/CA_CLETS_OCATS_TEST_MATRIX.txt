@@ -1,6 +1,6 @@
-CA_CLETS_OCATS v2.4 -- TEST MATRIX
+CA_CLETS_OCATS v2.5 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-17
+Generated: 2026-08-18
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -79,7 +79,7 @@ ENTITY 1: VEHICLE (14 tests -- 4 cards, 6 combos)
 --  ----------  --------------------------------------------------  ------
  1  Vehicle     RQ+.P+State        caRequestPurposeCode=C, LicensePlateN... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P)
- 2  Vehicle     RQ+.P+State        + LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear [    ]
+ 2  Vehicle     RQ+.P+State        + LicensePlateTypeCode, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
  3  Vehicle     RQ+.V+State        caRequestPurposeCode=C, VehicleIdenti... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.V)
@@ -87,7 +87,7 @@ ENTITY 1: VEHICLE (14 tests -- 4 cards, 6 combos)
               Expected: any[] fields present in XML output.
  5  Vehicle     4+4                caRequestPurposeCode=C, LicensePlateN... [    ]
               Expected: VehicleRegistrationQuery fires (4)
- 6  Vehicle     4+4                + LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear [    ]
+ 6  Vehicle     4+4                + LicensePlateTypeCode, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
  7  Vehicle     VP+VP              caRequestPurposeCode=C, NameLast=DOE,... [    ]
               Expected: VehicleRegistrationQuery fires (VP)
@@ -182,4 +182,4 @@ COMBO COVERAGE (19/19):
   ArticleSingleQuery: 2/2 -- T32(.O), T34(.S)
   BoatQuery: 5/5 -- T15(BQ+.H), T16(BQ+.R), T17(QB+.O), T18(4V.B+4V.B), T19(4B+4B)
 
-IMPORT FILE: CA_CLETS_OCATS_v2.4.json
+IMPORT FILE: CA_CLETS_OCATS_v2.5.json

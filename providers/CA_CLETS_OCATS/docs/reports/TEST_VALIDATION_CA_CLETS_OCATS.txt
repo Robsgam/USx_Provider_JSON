@@ -1,16 +1,16 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.3.json
-  Generated: 2026-08-02 21:45
+  Source: CA_CLETS_OCATS_v2.5.json
+  Generated: 2026-08-18 20:17
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_OCATS_v2.3
+TEST MATRIX <-> JSON CONSISTENCY -- CA_CLETS_OCATS_v2.5
 ============================================================
-Source: CA_CLETS_OCATS_v2.3.json
+Source: CA_CLETS_OCATS_v2.5.json
 Matrix: CA_CLETS_OCATS_TEST_MATRIX.txt
-Generated: 2026-08-02
+Generated: 2026-08-18
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
@@ -19,11 +19,11 @@ checked separately against the devdoc by audit_supported_queries.ps1.
 
 ENTITY: VEHICLE (14 tests -- 4 cards, 6 combos)
   T1  Vehicle    [PASS] (structural check)
-  T2  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear
+  T2  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, VehicleMakeCode, vehicleYear
   T3  Vehicle    [PASS] (structural check)
   T4  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T5  Vehicle    [PASS] VehicleRegistrationQuery fires (4)
-  T6  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear
+  T6  Vehicle    [PASS] any[] fields verified: LicensePlateTypeCode, VehicleMakeCode, vehicleYear
   T7  Vehicle    [PASS] VehicleRegistrationQuery fires (VP)
   T8  Vehicle    [PASS] VehicleRegistrationQuery fires (AWVEHQ)
   T9  Vehicle    [PASS] any[] fields verified: exactSearchIndicator, authorization, pageNumber, vehicleYear

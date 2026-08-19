@@ -1,9 +1,85 @@
 CA_CLETS_OCATS -- Build Notes
 ==============================
 
-v2.4  2026-08-17  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+v2.5  2026-08-18  RQ.P: LicensePlateYear was OPTIONAL where the metadata MANDATES it
+  CHANGED: RQ.P `LicensePlateYear` moved from `any[]` into `set[]`, so its combination now reads
+    set[caRequestPurposeCode, LicensePlateNumber, LicensePlateYear, RegistrationState].
+    Nothing else moved: the CAD `defaults[]` twin (LicensePlateTypeCode='PC', LicensePlateYear=
+    <current year>) and the registered RegistrationState promotion are unchanged.
+  REASON: audit_requirement_fidelity reported
+    "VehicleRegistrationQuery / RQ -> built 'RQ.P' UNDER-REQUIRED: LicensePlateYear (built any[])",
+    the severity-1 class -- a combination that can fire WITHOUT a field its metadata variant makes
+    mandatory sends a request the metadata calls INVALID.
+    READ FROM THE RAW XML <Requirements> PER <Combination>, the sanctioned exception:
+      RQ{LicensePlateNumber} = Set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateYear]
+                               Any[State, LicensePlateTypeCode]
+    So Year is MANDATORY on the RQ plate path and State is merely OPTIONAL -- we had it exactly
+    inverted (State in set[], Year in any[]). The State half is DELIBERATE and already registered
+    ("OOS plate combo requires State; EXISTS-gated", 2026-07-23); only the Year half was a defect.
+    NOT REGISTERABLE: a demoted-to-any row is only honest when a LOOSER metadata variant permits the
+    field's absence, and RQ has no second plate variant. A plate-only search is legal under `4` and
+    `QV{plate}`, but those are DIFFERENT keyRefs on a different transaction -- they cannot license an
+    incomplete RQ.
+
+  *** IT WAS INERT IN PRACTICE, AND I NEARLY REPORTED THE WRONG REASON FOR FIXING IT. *** My first
+  read was "CAD ignores form initialValue, so a CAD-originated OOS plate query would send RQ with no
+  year". That premise was FALSE and reading the build script refuted it in one line: RQ.P already
+  carries `defaults[] LicensePlateYear = $currentYear`, so CAD is covered too. Between the form
+  prefill ('2026') and that defaults twin, LicensePlateYear was ALWAYS present from either origin --
+  the request was never actually invalid.
+  SO WHY FIX IT AT ALL: because the guarantee was INCIDENTAL, and set[] makes it STRUCTURAL. The two
+  failure modes are not equivalent. With Year in any[], removing the prefill later would make RQ.P
+  fire and send an INVALID request -- silent, no gate would see it, because the wire looks well-formed.
+  With Year in set[], removing the prefill makes RQ.P simply stop matching, and the fill falls to `4`:
+  the wrong query, but a VALID one, and reachability would say so. Prefer the failure mode a gate can
+  detect. Cost of doing it now: zero -- never imported, no current-version logs.
+
+  MEASURED, and the numbers moved in a way worth explaining rather than hiding:
+    UNDER-REQUIRED 1 -> 0. Branches compared held at 23 (no coverage traded away).
+    Reachability 18 checked, ALL REACHABLE. audit_prefill_shadow 36 ordered pairs, 0 FAIL -- so
+    adding a PREFILLED field to a set[] shadowed nothing here (BUILD_RULES 24 does not bite: no
+    combination requires LicensePlateYear to be ABSENT).
+    OVER-PERMITTED 6 -> 7 and "registered" 6 -> 5, which looks like a regression and is not one:
+    the fidelity pairing RE-DISTRIBUTED. With Year now in RQ.P's set[], metadata `QV{plate}` stopped
+    pairing to RQ.P and re-paired to built `4` (an exact set match), so the SAME over-permitted
+    fields on `4` are now reported under the label `QV -> built '4'` instead of `4 -> built '4'`.
+    No field's treatment changed; only which branch label carries the finding.
+
+  ONE PRE-EXISTING FINDING THIS EXPOSED -- OPEN, NOT FIXED HERE, NEEDS A RULING:
+    built `4` permits any[RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode,
+    vehicleYear], but by its OWN authority metadata `4` has an **EMPTY <Any>** and `QV{plate}` defines
+    only LicensePlateStateCode. So LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode and
+    vehicleYear are defined by NEITHER variant that pairs to `4`, and two of them are PREFILLED --
+    meaning every in-state plate query transmits fields that transaction does not define.
+    It is class-4 (over-permit): nothing errors, and it predates this version. It is NOT registered
+    (this provider's 9 registry rows cover RegistrationState promotions, 4K and VC -- nothing for
+    `4`/`QV`/`4V`), and it must NOT be registered on the "a looser variant permits it" grounds,
+    because none does. The honest options are to tighten `4`'s any[] (an in-state plate search then
+    stops sending type/year) or to accept it deliberately with evidence. Rob's call; raised rather
+    than silently resolved, because it changes what the most-used query path puts on the wire.
+
+  PHASE 1 at v2.5: [1] all devdoc combinations accounted for - [2] optionals all route and transmit -
+  [3] most-specific-first respected - [4] 23 branches, 0 UNDER - [5] 0 prefill-dead, 0 shadow,
+  3 MISSING (4K and VC are REGISTERED dropped-combos with devdoc reasoning; the third was the RQ
+  plate+year variant this version builds) - [6] gate efficacy 7/7 killed.
+  Fuzz survivor "prefill-field caRequestPurposeCode" is a CORRECT survivor and is documented as such:
+  purposeCode is mandatory in EVERY combination here, so prefilling it cannot shadow one path over
+  another (the same reasoning recorded in this script's own header and in usx-build Step 2).
+  STILL OWED: never USx-tenant-tested, never imported -- v2.5 owes a first import and a full sweep.
+
+
+v2.4  2026-08-17  CA-FAMILY HEADER FIX -- <Authentication>/<DeviceId> (Mariposa LIVE failure)
+  CHANGED: Build-Auth called with -IncludeDeviceId, adding <Authentication>/<DeviceId> -- the
+    agency-assigned CLETS Terminal Identifier. No form control: DeviceId sits in validate.ps1's
+    $systemSourceFields alongside ORI and Mnemonic.
+  REASON: Rob 2026-08-17 -- "the header is missing the device id in the auth part and its failing at
+    mariposa ... this is required for all ca providers." Applied to all six CA providers in one pass
+    because the requirement is CA-family-wide, not per-provider (commit 1a8477c2).
+  RECOVERED 2026-08-18: this entry read "Rebuilt via pipeline.ps1 / Scheduled rebuild", which is FALSE
+    for a production auth-header fix -- audit_buildnotes_fidelity FAILed it ("GENERIC entry but the
+    JSON CHANGED vs v2.3"). The truth was never lost, only misfiled: the build script's own v2.4
+    header comment documented it. This is the SECOND stub recovered on this provider (v2.3 was the
+    first) -- the pipeline stamps a stub and nothing forces a human to replace it.
 
 v2.3  2026-08-02  Wire ArticleCategory; fix an Authorization size read from the wrong transaction (5f010dd5)
   CHANGED: ArticleCategory wired so the officer's value is transmitted, and an Authorization field

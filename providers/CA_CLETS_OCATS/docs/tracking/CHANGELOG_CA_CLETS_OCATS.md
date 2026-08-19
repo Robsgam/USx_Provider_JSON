@@ -2,14 +2,44 @@
 
 Auto-generated from `CA_CLETS_OCATS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-17
+Current: **v2.5** | Generated: 2026-08-18
 
 ---
 
-## v2.4 -- 2026-08-17 -- Pipeline rebuild
+## v2.5 -- 2026-08-18 -- RQ.P: LicensePlateYear was OPTIONAL where the metadata MANDATES it
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+**CHANGED:** RQ.P `LicensePlateYear` moved from `any[]` into `set[]`, so its combination now reads
+  set[caRequestPurposeCode, LicensePlateNumber, LicensePlateYear, RegistrationState].  
+  Nothing else moved: the CAD `defaults[]` twin (LicensePlateTypeCode='PC', LicensePlateYear=  
+  <current year>) and the registered RegistrationState promotion are unchanged.  
+**REASON:** audit_requirement_fidelity reported
+  "VehicleRegistrationQuery / RQ -> built 'RQ.P' UNDER-REQUIRED: LicensePlateYear (built any[])",  
+  the severity-1 class -- a combination that can fire WITHOUT a field its metadata variant makes  
+  mandatory sends a request the metadata calls INVALID.  
+  READ FROM THE RAW XML <Requirements> PER <Combination>, the sanctioned exception:  
+    RQ{LicensePlateNumber} = Set[CaRequestPurposeCode, LicensePlateNumber, LicensePlateYear]  
+                             Any[State, LicensePlateTypeCode]  
+  So Year is MANDATORY on the RQ plate path and State is merely OPTIONAL -- we had it exactly  
+  inverted (State in set[], Year in any[]). The State half is DELIBERATE and already registered  
+  ("OOS plate combo requires State; EXISTS-gated", 2026-07-23); only the Year half was a defect.  
+  NOT REGISTERABLE: a demoted-to-any row is only honest when a LOOSER metadata variant permits the  
+  field's absence, and RQ has no second plate variant. A plate-only search is legal under `4` and  
+  `QV{plate}`, but those are DIFFERENT keyRefs on a different transaction -- they cannot license an  
+  incomplete RQ.  
+
+## v2.4 -- 2026-08-17 -- CA-FAMILY HEADER FIX -- <Authentication>/<DeviceId> (Mariposa LIVE failure)
+
+**CHANGED:** Build-Auth called with -IncludeDeviceId, adding <Authentication>/<DeviceId> -- the
+  agency-assigned CLETS Terminal Identifier. No form control: DeviceId sits in validate.ps1's  
+  $systemSourceFields alongside ORI and Mnemonic.  
+**REASON:** Rob 2026-08-17 -- "the header is missing the device id in the auth part and its failing at
+  mariposa ... this is required for all ca providers." Applied to all six CA providers in one pass  
+  because the requirement is CA-family-wide, not per-provider (commit 1a8477c2).  
+RECOVERED 2026-08-18: this entry read "Rebuilt via pipeline.ps1 / Scheduled rebuild", which is FALSE  
+  for a production auth-header fix -- audit_buildnotes_fidelity FAILed it ("GENERIC entry but the  
+  JSON CHANGED vs v2.3"). The truth was never lost, only misfiled: the build script's own v2.4  
+  header comment documented it. This is the SECOND stub recovered on this provider (v2.3 was the  
+  first) -- the pipeline stamps a stub and nothing forces a human to replace it.  
 
 ## v2.3 -- 2026-08-02 -- Wire ArticleCategory; fix an Authorization size read from the wrong transaction (5f010dd5)
 
