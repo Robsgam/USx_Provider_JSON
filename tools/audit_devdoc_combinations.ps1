@@ -51,6 +51,29 @@
     against the PDF. Validated against TX_TLETS, where the answer was known independently
     before the tool was written (expected: Boat #2 + DL #3 flagged, nothing else).
 
+  DEVDOC OF RECORD -- when a provider's OWN devdoc authorises none of what it builds (2026-08-19)
+    CA_CONTRA_COSTA's devdoc says "Basic Queries Supported: None" and the only combination tables
+    it carries are the UNBUILT JAWS/Expanded set. So this tool compared ZERO combinations there and
+    printed "[FAIL] 0 devdoc combinations parsed" -- a VACUOUS FAIL. It was the portfolio's last
+    blocking spec finding, and it was un-actionable by construction: nothing about the build could
+    make a devdoc that lists no queries validate a build of six queries.
+    Fix: when the parsed devdoc overlaps the built queries in ZERO cases, fall back to the LINKED
+    BASE provider's devdoc (Get-LinkedBaseProvider -- marker-driven, never a name split) and say so
+    LOUDLY in a [NOTE]. CA_CONTRA_COSTA -> CA_CLETS is the one blessed directed link
+    (audit_provider_linkage: "build = full CA_CLETS copy + CC's JAWS").
+    IT DID NOT MANUFACTURE A PASS, which is the only reason it is acceptable: on its first run the
+    fallback produced a REAL, specific FAIL -- devdoc VehReg #1 "LicensePlateNumber, FileCode,
+    InfoCode" unbuilt -- the identical item CA_CLETS had already adjudicated and registered. CC went
+    from a vacuous red to an actionable red, then to a recorded green. Measured across all 20:
+    exactly one provider's compared count moved (CC 0 -> 34, matching its base and its CLETS-family
+    twin CA_VENTURA_COUNTY); portfolio total 357 -> 391, providers FAILing 1 -> 0.
+    KNOCK-ON, worth knowing: audit_devdoc_optionals sources its items from this tool (-Explain), so
+    the fallback propagated there and surfaced 3 further NO-COMBO-FIRES items on CC. All three were
+    adjudicated REGISTER against CC's own raw XML -- and the discriminator was PARENT TRANSACTION,
+    not variant: a looser NLTS.BQ{Name} with State optional exists but lives in
+    Transaction='CAIBoatRegistrationQuery', a CAI-prefixed sibling, not devdoc-Basic 'BoatQuery'.
+    Building from it would be the AZ_AZDPS defect audit_supported_queries CHECK 0 exists to catch.
+
   Usage:
     .\audit_devdoc_combinations.ps1 -Path providers\TX_TLETS\TX_TLETS_v4.16.json
     .\audit_devdoc_combinations.ps1 -All
@@ -252,6 +275,28 @@ function Get-DevdocCombinations([string]$txtPath) {
     return [pscustomobject]@{ Basic = $basic; Combos = $flat }
 }
 
+# ── LINKED BASE PROVIDER -- MARKER-DRIVEN, never a name split ──────────────────────────
+# Returns the provider whose devdoc/metadata legitimately authorises THIS provider's build, or $null.
+# Two, and only two, blessed links exist (CLAUDE.md "Provider Variants" + audit_provider_linkage):
+#   1. CA_CONTRA_COSTA -> CA_CLETS   explicit ruling (build = CA_CLETS copy + CC's JAWS)
+#   2. <BASE>_<VARIANT> -> <BASE>    declared by a '# BASE-SYNC: <BASE> vX.Y' marker in the build script
+# THE OLD CODE SPLIT THE NAME: ($provName -split '_')[0..1] -join '_'. That returns CA_CLETS for
+# CA_CLETS_OCATS -- an INDEPENDENT provider with its own devdoc and metadata -- which is exactly the
+# mistake CLAUDE.md warns about and why audit_variant_sync was made marker-driven. It was latent only
+# because that path fired solely when a provider's own devdoc file was MISSING, and OCATS has one.
+# Detection is by MARKER so an independent provider that merely shares a name prefix is never claimed.
+function Get-LinkedBaseProvider([string]$provName) {
+    if ($provName -eq 'CA_CONTRA_COSTA') { return 'CA_CLETS' }
+    $scriptsDir = Join-Path $repoRoot "providers\$provName\scripts"
+    if (Test-Path $scriptsDir) {
+        foreach ($s in @(Get-ChildItem $scriptsDir -Filter '*.ps1' -File -ErrorAction SilentlyContinue)) {
+            $m = [regex]::Match((Get-Content $s.FullName -Raw), '#\s*BASE-SYNC:\s*([A-Za-z0-9_]+)\s')
+            if ($m.Success) { return $m.Groups[1].Value }
+        }
+    }
+    return $null
+}
+
 # ── per-provider audit ────────────────────────────────────────────────────────────────
 function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
     $fails = 0; $notes = 0; $compared = 0
@@ -259,7 +304,7 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
     $txt = Join-Path $provDir "source\${provName}_DEVDOC.txt"
     if (-not (Test-Path $txt)) {
         # variant fallback: a variant inherits its BASE devdoc (see CLAUDE.md Provider Variants)
-        $baseGuess = ($provName -split '_')[0..1] -join '_'
+        $baseGuess = Get-LinkedBaseProvider $provName
         $alt = Join-Path $repoRoot "providers\$baseGuess\source\${baseGuess}_DEVDOC.txt"
         if (Test-Path $alt) { $txt = $alt }
         else {
@@ -322,6 +367,39 @@ function Invoke-One([string]$jsonPath, [string]$provName, [string]$provDir) {
             $p = $l -split '\|'
             if ($p.Count -ge 4 -and $p[3].Trim() -eq 'devdoc-combo-unbuilt') {
                 $accepted += [pscustomobject]@{ Query = $p[0].Trim(); Field = ($p[2].Trim().ToLower()) }
+            }
+        }
+    }
+
+    # ── DEVDOC-OF-RECORD FALLBACK: a provider whose OWN devdoc authorises none of what it builds ──
+    # CA_CONTRA_COSTA was the portfolio's last blocking FAIL, and the cause was NOT a broken parse.
+    # Its devdoc is faithfully extracted and says, verbatim: "Basic Queries Supported: None".
+    # The combination tables it DOES carry sit under "Expanded Queries Supported" and are the JAWS
+    # queries (CaContraCostaJawsWarrantQuery / ...PersonQuery) -- which this provider does not build
+    # (verified: zero occurrences of Jaws/SuperQuery/RequestingAgencyId in the emitted JSON). So every
+    # parsed devdoc item was skipped for "query not built", $compared stayed 0, and the gate correctly
+    # reported that its verdict was not evidence.
+    # THE BUILD IS AUTHORISED BY CA_CLETS'S DEVDOC, by Rob's explicit ruling of 2026-07-23 ("scope it
+    # as a CA_CLETS copy + the JAWS queries"), which is already encoded as the ONE blessed directed
+    # link in audit_provider_linkage.ps1. Verification should follow the SAME authority the build
+    # followed -- otherwise the build is justified by a document this gate refuses to read.
+    # SO: if the provider's own devdoc overlaps NOTHING it built, and a blessed base link exists,
+    # re-read the BASE devdoc and compare against that -- announcing it loudly, because a reader must
+    # never mistake this for verification against the provider's own document.
+    # LAW 2 IS PRESERVED: this cannot manufacture a pass. With no linked base, or a base whose devdoc
+    # also overlaps nothing, $compared stays 0 and the FAIL below still fires.
+    $ddOverlap = @($dd.Combos.Keys | Where-Object { $built.ContainsKey($_) }).Count
+    if ($ddOverlap -eq 0) {
+        $linkedBase = Get-LinkedBaseProvider $provName
+        if ($linkedBase) {
+            $baseTxt = Join-Path $repoRoot "providers\$linkedBase\source\${linkedBase}_DEVDOC.txt"
+            if (Test-Path $baseTxt) {
+                $ddBase = Get-DevdocCombinations $baseTxt
+                $baseOverlap = @($ddBase.Combos.Keys | Where-Object { $built.ContainsKey($_) }).Count
+                if ($baseOverlap -gt 0) {
+                    Emit "  [NOTE] $provName -- its OWN devdoc authorises none of what it builds (Basic Queries Supported: None; its combination tables are the unbuilt JAWS/Expanded set). Comparing against the DEVDOC OF RECORD for this build: $linkedBase (blessed directed link, audit_provider_linkage). This is NOT verification against $provName's own document." 'Yellow'
+                    $dd = $ddBase
+                }
             }
         }
     }

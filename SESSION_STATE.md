@@ -36,10 +36,13 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 **THE 95% IS NOW A TOOL, NOT A CLAIM: `tools\report_mission_status.ps1` -> 9 of 20 = 45%.**
 It reports each provider at its FIRST unmet stage and groups the rest by blocking stage, which is what
-turns the score into a queue. **ALL 10 incomplete providers are blocked at the SAME stage (test), with
-build+spec+reachability already met on every one** -- so the remaining 50% is ONE ACTIVITY: import, then
-sweep. CA_CONTRA_COSTA is the only other blocker (spec: its devdoc yields ZERO combinations).
-**NEXT: pick a never-tested provider, IMPORT it, sweep it.** Building more will not move the number.
+turns the score into a queue. **ALL ELEVEN incomplete providers are now blocked at the SAME stage (test),
+with build+spec+reachability met on every one** -- CA_CONTRA_COSTA was the last exception and cleared
+08-19, so the remaining 55% is ONE ACTIVITY. Building more will not move the number.
+
+**?? NO LOG SWEEP AND NO IMPORT UNTIL ROB LIFTS THIS (his words, 08-19): "we will not run a log sweep
+until we get this all fixed and figured out."** The queue above is READY, not authorised -- do NOT pick a
+never-tested provider and import it, which is what this file told the last session to do. Ask first.
 
 **FIVE PROVIDERS REBUILT 08-18/19, ALL 0 FAIL** -- CA_CLETS_OCATS v2.6, NM_NMLETS_OFML v2.2,
 MD_METERS v2.1, TN_TIES v2.2, OR_LEDS v2.4 (last four also 0 WARN). Highlights: OCATS BUILT the two
@@ -74,12 +77,10 @@ Section 1. DRAFT AND WAIT, every provider, every time. Rules: `JIRA_COMMENT_TEMP
 
 ## OPEN FINDINGS -- confirmed, unfixed
 
-- **TWO BLOCKING GATES LEAVE NO EVIDENCE.** `audit_devdoc_combinations` (2p) and `audit_combo_reachability`
-  (2h) write NOTHING to `docs/` -- zero files repo-wide match `*devdoc*`/`*reach*`. So "was the spec proven
-  for THIS version?" can only be answered by re-running. `report_mission_status` runs them live because of it.
-- **`audit_devdoc_combinations` prints the same fact TWO WAYS** (`19 compared` vs `12 devdoc combination(s)
-  compared`). Cost three wrong parses in one tool. One fact, one wording -- worth standardising.
-- **21 over-broad suppressions** across 243 registry rows (0 STALE, so every row still describes the JSON).
+- 0 over-broad suppressions / 248 rows / 0 STALE. **The "21 over-broad" that sat here was ONE PROVIDER
+  MISSING A MARKER** -- `# SUPPRESSION-SCOPE: direction-aware` was on 19 of 20; the 08-02 sweep opted in
+  "all 8 remaining eligible" and skipped CA_CONTRA_COSTA. Adding it: 21 -> 0, `audit_metadata` **215 PASS /
+  0 FAIL both before and after**, so it un-silenced nothing. It was never a portfolio problem.
 - **? PAUSED PENDING COMMSYS -- LIMITATION #41:** a populated HOME state routes a local plate to NLETS.
   Our config is provably clean; evidence in `PLATFORM_CONSTRAINTS.txt` #41. Read before any State work.
 - **HI's NCIC hit block is CONFIG-PRESENT, NOT RENDERING-VERIFIED.** Needs ONE hit query in HI's OWN tenant.
@@ -92,7 +93,12 @@ Section 1. DRAFT AND WAIT, every provider, every time. Rules: `JIRA_COMMENT_TEMP
 
 - **COMMSYS ASKS ARE ON HOLD (Rob 08-18).** LA's devdoc PurposeCode/State inversion is recorded, NOT owed.
 - **HI PlateType default on a CAD VIN check -- HELD.** Defaulting it kills the in-state plate search (BR 24).
-- **CA_CONTRA_COSTA** spec-blocked by a devdoc that yields no combination table -- Rob's call, not a build fix.
+- **CA_CONTRA_COSTA spec block CLEARED 08-19 -- do not re-file it as "Rob's call".** Its devdoc really does
+  say "Basic Queries Supported: None", but the defect was the authority CHAIN, not the build: the gate now
+  falls back to the DEVDOC OF RECORD (`CA_CLETS`, the one blessed directed link) and compares 34, equal to
+  its base. It did NOT manufacture a pass -- the fallback's first run raised a real unbuilt VehReg #1
+  (`FileCode`/`InfoCode`), the same item CA_CLETS had already registered. **A vacuous FAIL is still
+  un-actionable: no build change could ever have cleared a devdoc that lists no queries.**
 - **DH IS NOT SUPPORTED FROM CAD** (08-12). **`audit_devdoc_optionals` re-route hole DOES NOT EXIST** (withdrawn).
 - **LIMITATION #40: the wire is a UNION across every MATCHING combination** (LIVE-PROVEN 38/38).
 - **CLOSED, do not re-raise:** the 28 TX/TX_CCH `ImageIndicator=Y` constraint triggers; CA_CLETS purpose-code

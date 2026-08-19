@@ -1061,6 +1061,38 @@ TOOLS
     that cannot show its intermediate state is indistinguishable from one that is silently wrong,
     which is the entire failure class this tool exists for. Validate any change against TX_TLETS,
     whose answer is known: 0 FAIL / 4 NOTE with the divergences recorded (2 FAIL without them).
+    DEVDOC OF RECORD (2026-08-19) -- A VACUOUS FAIL IS STILL A FAIL THAT CANNOT BE ACTED ON.
+    The 2026-08-02 rule "0 compared is a FAIL, not a PASS" was right, but on the single provider it
+    caught it produced a finding no build change could ever clear: CA_CONTRA_COSTA's devdoc says
+    "Basic Queries Supported: None" and the only combination tables it carries are the UNBUILT
+    JAWS/Expanded set. It sat as the portfolio's last blocking spec finding for 17 days and had been
+    filed as "Rob's call, not a build fix" -- correct as far as it went, but the authority CHAIN was
+    the actual defect, not the build and not the ruling.
+    Now: if the parsed devdoc overlaps the built queries in ZERO cases, fall back to the LINKED BASE
+    provider's devdoc and say so in a loud [NOTE] that names the substitution and states it is NOT
+    verification against the provider's own document. The base is resolved by Get-LinkedBaseProvider,
+    which is MARKER-DRIVEN (the '# BASE-SYNC: <BASE>' line in the build script) plus the one explicit
+    ruling CA_CONTRA_COSTA -> CA_CLETS from audit_provider_linkage. That replaced a name-split
+    heuristic which would have read CA_CLETS_OCATS as a variant of CA_CLETS -- an independent
+    provider that merely shares a prefix, the exact trap audit_variant_sync documents.
+    LAW 2, and this is the part that makes it acceptable rather than a manufactured pass: the
+    fallback's FIRST run produced a REAL, specific FAIL -- devdoc VehicleRegistrationQuery #1
+    "LicensePlateNumber, FileCode, InfoCode" unbuilt -- which is the IDENTICAL item CA_CLETS had
+    already adjudicated and registered (its registry line 72). So the provider went vacuous-red ->
+    actionable-red -> recorded-green, and the row written for it was verified against CC's OWN
+    metadata (FileCode 3 nodes / InfoCode 6, byte-identical to CA_CLETS.xml), not inherited.
+    Measured across all 20 before and after: exactly ONE compared count moved (CA_CONTRA_COSTA
+    0 -> 34, equal to its base CA_CLETS and to its CLETS-family twin CA_VENTURA_COUNTY); portfolio
+    total 357 -> 391; providers FAILing 1 -> 0; fixture branches unchanged.
+    KNOCK-ON YOU MUST EXPECT WHEN TOUCHING THIS PARSER: audit_devdoc_optionals does not parse the
+    devdoc itself -- it sources its items from THIS tool via -Explain (see its own header). So the
+    fallback propagated there the same day and surfaced 3 further NO-COMBO-FIRES items on CC. All
+    three were adjudicated REGISTER, and the discriminator was PARENT TRANSACTION, not variant: a
+    looser NLTS.BQ{Name} with State in <Any> does exist in CC's metadata, but it belongs to
+    Transaction='CAIBoatRegistrationQuery', a CAI-prefixed duplicate-transaction-pair sibling, NOT
+    devdoc-Basic 'BoatQuery'. Reading it as a refutation of the base's reason and "fixing" it would
+    have been the AZ_AZDPS defect audit_supported_queries CHECK 0 exists to catch (a label is not a
+    transaction). Any change to this parser can move audit_devdoc_optionals; measure both.
     Usage: .\audit_devdoc_combinations.ps1 -Path <json> | -All [-Explain] [-OutFile <path>]
 
   tools/audit_devdoc_optionals.ps1
