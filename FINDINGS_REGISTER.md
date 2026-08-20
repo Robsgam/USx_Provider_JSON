@@ -121,3 +121,35 @@ byte-identical to its predecessor with transaction ids normalised. Do that rathe
   while reporting success.
 - **Read a gate's verdict BEFORE committing, not after.** Done twice; the second time the commit body
   asserted "4 PASS / 124 lines" while the gate said 2 FAIL / 134 lines.
+
+---
+
+## L2 RULE CORRECTED 2026-08-20 — five of its seven findings were FALSE POSITIVES
+
+`audit_layout_flow`'s L2 asserted *"an officer can fill everything visible above it and still fail."*
+It evaluated ONE combination in isolation and never asked whether another combo in the same query
+fires on what was already filled. Two guards added:
+
+- **(d) FALLBACK EXISTS** — an alternative combo whose `set[]` is satisfiable from *this combo's own
+  pool minus the flagged field*. **NY**: `RVIN` needs `RegistrationState`, but `RCAR` is
+  `set[VehicleIdentificationNumber]` gated `State NOT_EXISTS`, so a VIN with State blank fires `RCAR`.
+  **FL** identical (`FRQVehicleIdentificationNumber` backs `RQVehicleIdentificationNumber`). State
+  sitting on the shared-context row below the identifiers is CORRECT — it is the field that chooses
+  the network.
+- **(e) PREFILLED** — a mandatory field carrying a form `initialValue` can never be blank, so its
+  position cannot cause the failure. CA_CLETS / CA_CONTRA_COSTA `purposeCode` = `'C'`.
+
+⚠️ **MY FIRST VERSION OF GUARD (d) WAS A BLANKET SUPPRESSOR AND THE LAW 2 PROBE CAUGHT IT.** It
+accepted any combo satisfiable from fields *positioned above* the flagged one — so on NY it latched
+onto `RVEH` (`set[LicensePlateNumber]`) merely because a plate control sits on row 1, even though the
+officer filled a VIN. Deleting `RCAR` from a replica did NOT bring the finding back, which is how the
+bug surfaced. Since nearly every card has some identifier above, that version would have silenced
+almost every real L2 — a gate that cannot fail, introduced while fixing a gate that fired wrongly.
+Corrected to test the combo's OWN pool. LAW 2 then passed both ways: `RCAR` removed → fires;
+`RCAR` present → silent.
+
+**Portfolio effect: 83 → 78 layout findings, L2 7 → 2.** The two survivors (TX_TLETS, TX_TLETS_CCH
+`CPLName`) are REAL — `NameLast` after `messageKey` with no fallback — and are the recorded DEX-1283
+override, so they should keep reporting.
+
+**Rows superseded in section A above:** NY's L2 and FL's L2 are NOT defects. Do not fix them.

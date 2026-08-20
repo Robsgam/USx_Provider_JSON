@@ -129,6 +129,12 @@ function Get-RowsAndFields($layout, $cardId) {
                 hidden     = ($rowHidden -or ($fn.hidden -eq $true))
                 isDropdown = ($t -match 'Select')
                 isDate     = ($t -match 'Date')
+                # PREFILLED: a form initialValue means the officer can never leave it blank, so a
+                # "mandatory field positioned late" cannot cause the failure L2 claims. Needed for
+                # L2 guard (e). Counts ONLY a non-empty form initialValue -- combo defaults[] do NOT
+                # participate (CAD applies those, the form does not), which is the same rule
+                # audit_combo_reachability uses for always-present.
+                prefilled  = ($null -ne $fn.props.initialValue -and "$($fn.props.initialValue)" -ne '')
             }
         }
         $cols = @()
@@ -284,6 +290,12 @@ function Audit-One($jsonPath, $provName) {
             foreach ($r in $rows) { foreach ($f in $r.fields) { if (-not $f.hidden) { $order += $f.fieldId } } }
             $pos = @{}
             for ($i = 0; $i -lt $order.Count; $i++) { if (-not $pos.ContainsKey($order[$i])) { $pos[$order[$i]] = $i } }
+            # fieldId -> field object, for the L2 guards (d) fallback-satisfiable and (e) prefilled.
+            # Built from ALL rows including hidden ones: a hidden prefilled control is still always
+            # present on the wire, so it can satisfy a fallback combo's set[] even though the officer
+            # never sees it (AZ's dexStateUserId is exactly that).
+            $fieldById = @{}
+            foreach ($r in $rows) { foreach ($f in $r.fields) { if (-not $fieldById.ContainsKey($f.fieldId)) { $fieldById[$f.fieldId] = $f } } }
 
             foreach ($c in $combos) {
                 $setPos = @()
@@ -318,8 +330,56 @@ function Audit-One($jsonPath, $provName) {
                 $maxSet = ($setPos | Sort-Object p -Descending)[0]
                 $minAny = ($anyPos | Sort-Object p)[0]
                 if ($maxSet.p -gt $minAny.p) {
+                    # (d) FALLBACK EXISTS -- the whole finding asserts "an officer can fill everything
+                    #     visible above it and STILL FAIL". That is FALSE when another combo in the
+                    #     same query fires on what is already filled above. NY_NYSPIN_EJUSTICE is the
+                    #     case that exposed it: RVIN is set[VIN, RegistrationState] with State on the
+                    #     shared-context row BELOW the identifiers, so L2 flagged it -- but RCAR is
+                    #     set[VehicleIdentificationNumber] gated State NOT_EXISTS, so a VIN with State
+                    #     left blank fires RCAR. That is the standard in-state/out-of-state fork, and
+                    #     State sitting below IS correct: it is the field that chooses the network.
+                    #     FL_FCIC is identical (FRQVehicleIdentificationNumber backs
+                    #     RQVehicleIdentificationNumber). Without this guard L2 was about to buy a
+                    #     75-test and a 118-test re-sweep for defects that do not exist.
+                    #     THE FALLBACK MUST BELONG TO THE SAME SEARCH PATH, and getting this wrong
+                    #     turns the guard into a blanket suppressor. My first version accepted any
+                    #     combo satisfiable from fields POSITIONED ABOVE the flagged one -- and a
+                    #     LAW 2 probe (delete RCAR from a replica; the finding must return) showed it
+                    #     did NOT return: it had latched onto RVEH (set[LicensePlateNumber]) merely
+                    #     because a plate control sits on row 1. But the officer filled a VIN, not a
+                    #     plate, so RVEH is no fallback at all. Since almost every card has some
+                    #     identifier above, that version would have suppressed nearly every real L2.
+                    #     Correct test: the alternative's set[] must be satisfiable from THIS combo's
+                    #     OWN pool minus the flagged field (plus anything prefilled, which is always
+                    #     present). NY: RVIN pool minus State = {VIN}; RCAR set{VIN} fits -> suppress.
+                    #     RVEH set{LicensePlateNumber} does not fit -> correctly rejected.
+                    $ownPool = @{}
+                    foreach ($sf in $c.set) { if ($sf -ne $maxSet.f) { $ownPool[$sf] = 1 } }
+                    foreach ($af in $c.any) { if ($af -ne $maxSet.f) { $ownPool[$af] = 1 } }
+                    $fallback = $null
+                    foreach ($alt in $combos) {
+                        if ($alt.keyRef -eq $c.keyRef) { continue }
+                        if ($alt.set -contains $maxSet.f) { continue }        # still needs the field
+                        if (@($alt.set).Count -eq 0) { continue }
+                        $satisfiable = $true
+                        foreach ($sf in $alt.set) {
+                            if ($ownPool.ContainsKey($sf)) { continue }       # same search path
+                            $fld = $fieldById[$sf]
+                            if ($fld -and $fld.prefilled) { continue }        # always present anyway
+                            $satisfiable = $false; break
+                        }
+                        if ($satisfiable) { $fallback = $alt.keyRef; break }
+                    }
+                    if ($fallback) { continue }
+
+                    # (e) PREFILLED -- a mandatory field carrying a form initialValue can never be
+                    #     left blank, so its POSITION cannot cause a failure. CA_CLETS/CA_CONTRA_COSTA
+                    #     flag 'purposeCode', which is prefilled 'C' on every entity.
+                    $flaggedFld = $fieldById[$maxSet.f]
+                    if ($flaggedFld -and $flaggedFld.prefilled) { continue }
+
                     $nAfter = @($anyPos | Where-Object { $_.p -lt $maxSet.p }).Count
-                    $findings += "[L2 SET-BELOW-ANY] $ent / combo $($c.keyRef) -- MANDATORY '$($maxSet.f)' is positioned AFTER $nAfter optional field(s) of the same combo (first is '$($minAny.f)'). An officer can fill everything visible above it and still fail. Mandatory fields lead."
+                    $findings += "[L2 SET-BELOW-ANY] $ent / combo $($c.keyRef) -- MANDATORY '$($maxSet.f)' is positioned AFTER $nAfter optional field(s) of the same combo (first is '$($minAny.f)'), it is NOT prefilled, and NO other combo in this query fires on what is filled above it. An officer can fill everything visible above and still get no query. Mandatory fields lead."
                 }
             }
 
