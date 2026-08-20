@@ -1,4 +1,4 @@
-NM_NMLETS_OFML v2.4 -- TEST MATRIX
+NM_NMLETS_OFML v2.5 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -68,7 +68,7 @@ ENTITY 1: PERSON (11 tests -- 2 cards, 4 combos)
               Expected: any[] fields present in XML output.
  3  Person      DL.NAM+DL.NAME     NameLast=DOE, NameFirst=JOHN, BirthDa... [    ]
               Expected: DriverLicenseQuery fires (DL.NAME)
- 4  Person      DL.NAM+DL.NAME     + RegistrationState, ImageIndicator, Attention [    ]
+ 4  Person      DL.NAM+DL.NAME     + RegistrationState, ImageIndicator, Attention, NameMiddle [    ]
               Expected: any[] fields present in XML output.
  5  Person      KQ+.O              OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (KQ.O)
@@ -76,7 +76,7 @@ ENTITY 1: PERSON (11 tests -- 2 cards, 4 combos)
               Expected: any[] fields present in XML output.
  7  Person      KQ+.N              NameLastDH=DOE, NameFirstDH=JOHN, Bir... [    ]
               Expected: DriverHistoryQuery fires (KQ.N)
- 8  Person      KQ+.N              + purposeCodeDH, raceCodeDH, RegistrationState [    ]
+ 8  Person      KQ+.N              + purposeCodeDH, raceCodeDH, RegistrationState, NameMiddleDH [    ]
               Expected: any[] fields present in XML output.
  9  Person      Guardrail: DL.OLN>DL.NAME  OperatorLicenseNumber=D999888777, Nam... [    ]
               Expected: DriverLicenseQuery fires (DL.OLN). LastName+FirstName+DOB+SexCode+purposeCode absent from XML.
@@ -154,4 +154,4 @@ COMBO COVERAGE (14/14):
   ArticleSingleQuery: 1/1 -- T30(Serial)
   BoatQuery: 4/4 -- T20(BQ+.R), T22(BQ+.H), T24(QB+.R), T25(QB+.H)
 
-IMPORT FILE: NM_NMLETS_OFML_v2.4.json
+IMPORT FILE: NM_NMLETS_OFML_v2.5.json

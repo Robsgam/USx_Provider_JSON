@@ -31,7 +31,7 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nm_nmlets_ofml.ps1
 $ErrorActionPreference = "Stop"
-$Version     = '2.4'
+$Version     = '2.5'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NM_NMLETS_OFML_v${Version}.json"
@@ -175,7 +175,7 @@ $dlQuery = [PSCustomObject]@{
         # DL.NAME: Name+DOB+Sex (more specific -- Name before OLN)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('NameLast','NameFirst','BirthDate','SexCode','purposeCode'); any = @('RegistrationState','ImageIndicator','Attention')
+                set = @('NameLast','NameFirst','BirthDate','SexCode','purposeCode'); any = @('RegistrationState','ImageIndicator','Attention','NameMiddle','NameSuffix')
                 defaults = @([PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }, [PSCustomObject]@{ field = 'purposeCode'; value = 'C' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' })
             }
@@ -234,7 +234,7 @@ $dhQuery = [PSCustomObject]@{
         # KQ.N: Name+DOB+Sex (Name before OLN)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','raceCodeDH','RegistrationState')
+                set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','raceCodeDH','RegistrationState','NameMiddleDH','NameSuffixDH')
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
@@ -449,6 +449,15 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
+# The four name components become any[]-only at v2.5 -- that IS the fix (they were composed into
+# their Name attribute but in no combination pool, so an officer's middle name went nowhere), and it
+# is also what makes CHECK 15 Rule 3 start asking for an "(optional)" qualifier the lean-label
+# convention forbids. ONE TAG PER LINE, fieldId first, ' -- ' on the SAME line: verify_build matches
+# '#\s*LABEL-OVERRIDE:\s*(\S+)\s*--\s*(.+?)$' per line, and a multi-field line registers NOTHING.
+# LABEL-OVERRIDE: NameMiddle -- bare "Middle Name", DEX-1284 lean pass (any[] optional, DL pool)
+# LABEL-OVERRIDE: NameSuffix -- bare "Suffix", DEX-1284 lean pass (any[] optional, DL pool)
+# LABEL-OVERRIDE: NameMiddleDH -- bare "Middle Name", DEX-1284 lean pass (any[] optional, DH pool)
+# LABEL-OVERRIDE: NameSuffixDH -- bare "Suffix", DEX-1284 lean pass (any[] optional, DH pool)
 # LABEL-OVERRIDE: raceCodeDH -- bare "Race" per the DEX-1284 lean pass (any[] optional DH qualifier).
 #   verify_build CHECK 15 asks for "(optional)" or a context hint on an any[]-only field. The lean-label
 #   convention (BUILD_RULES Section 11 / usx-cosmetic Step 3b) strips "(optional)" suffixes portfolio-wide

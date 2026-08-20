@@ -2,9 +2,41 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-20
+Current: **v2.5** | Generated: 2026-08-20
 
 ---
+
+## v2.5 -- 2026-08-20 -- Name components pooled -- the officer's middle name will now reach the state
+
+**CHANGED:** middle/suffix added to the any[] of both NAME combos, and only those:
+    DL.NAME  any[RegistrationState,ImageIndicator,Attention]        -> +NameMiddle, NameSuffix  
+    KQ.N     any[purposeCodeDH,raceCodeDH,RegistrationState]        -> +NameMiddleDH, NameSuffixDH  
+  UNTOUCHED: DL.OLN and KQ.O -- OLN paths, where name plays no part.  
+  any[] not set[]: optional qualifiers. In set[] a middle name becomes MANDATORY and a driver  
+  without one could not be searched.  
+**REASON:** v2.3 added the controls and composed them into each Name attribute, which moved
+  audit_name_components from C1 NO-CONTROL to C3 NOT-IN-POOL -- and v2.4's notes recorded that as  
+  "the documented C3 class whose impact is UNPROVEN". It is not benign: composed-but-unpooled means  
+  the officer can type a middle name and it goes nowhere.  
+  WHAT SETTLED IT: AZ_AZDPS pools its components and its AUTO-GENERATED `DQN_af_nameMiddle` /  
+  `_af_nameSuffix` logs carry `DOE, JOHN A` and `DOE, JOHN JR` against a `DOE, JOHN` control.  
+  POOLED IS WIRE-PROVEN. Whether unpooled also works is still unproven and no longer needs an  
+  answer, because the pooled path is what ships. Same change applied to NJ_NJCJIS v4.17 (already  
+  wire-proven on its re-sweep) and OH_LEADS v2.11 this same day.  
+SELF-CLOSING: emit_test_plan emits one test per any[] field, so the v2.5 plan ALREADY contains the  
+  proof tests -- verified on disk: NameMiddle, NameSuffix, NameMiddleDH, NameSuffixDH. Nothing  
+  hand-written. NM's first sweep will prove or refute the wire.  
+VERIFIED: name components 4 C3 -> 0 (8 examined, 0 C1 / 0 C2 / 0 C3) - wiring closure 0 breaks  
+  across all ten classes - 12 combinations all reachable - requirement fidelity 14 branches HELD at  
+  0 UNDER / 0 OVER (branches did not fall, so nothing was suppressed) - prefill shadow 14 pairs  
+  0 FAIL - validator 66 PASS / 0 FAIL / 0 WARN.  
+FOUR LABEL-OVERRIDE tags added for the bare "Middle Name"/"Suffix" labels, which only trip CHECK 15  
+  Rule 3 BECAUSE the fields are now any[]-only -- i.e. the WARN is the fix working. Written ONE PER  
+  LINE with ' -- ' on the same line: verify_build matches that pattern per line, and on OH_LEADS the  
+  same day I wrote all six fieldIds on one line with the '--' wrapped, which registered NOTHING and  
+  left all six WARNs standing through a rebuild.  
+COST: zero test package -- NM has never been tenant-tested and never imported, so nothing was  
+  archived. Still owed: an IMPORT of v2.5 and a picklist capture before the sweep.  
 
 ## v2.4 -- 2026-08-20 -- Operator cosmetic pass -- State to the top line, Race after Sex on both Person cards
 
