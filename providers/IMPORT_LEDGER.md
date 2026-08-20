@@ -285,3 +285,43 @@ When each arrives:
 4. Fix OUR build only where the DEVDOC or METADATA says we are wrong. A defect found in a deployed
    file is a defect in THAT file; it becomes our work only when it reveals something our own
    authorities also demand.
+
+### B.3 BLIND BUILD PROTOCOL — the diff is only evidence if the build was blind
+
+Rob, 2026-08-20: *"i want blind buils for each provider so a diff check will be crucial to
+understand."*
+
+**The method.** Build each provider from its OWN devdoc + metadata XML, without opening the deployed
+JSON. Then diff. Every difference is then INDEPENDENT evidence, and each one gets adjudicated into
+exactly one of three buckets:
+
+| Bucket | Meaning | Action |
+|---|---|---|
+| **THEIR DEFECT** | our build matches the authorities, theirs does not | the cutover fixes it; record it as a found error |
+| **OUR GAP** | the authorities support what they built and we missed it | fix our build, cite the devdoc/metadata line |
+| **BOTH DEFENSIBLE** | authorities permit either (naming, layout, ordering) | prefer ours for portfolio uniformity; record the choice |
+
+**Why blind matters and is not ceremony:** if the deployed file is read first, its choices anchor the
+build and the subsequent diff proves nothing — it measures how well I copied, not whether either is
+right. A blind build makes agreement meaningful (two independent derivations concurring) and
+disagreement actionable.
+
+⚠️ **CONTAMINATION DISCLOSED — CA_eSUN's build CANNOT be called fully blind, and I will not claim it.**
+Before this protocol was set, Rob asked me to inspect the San Diego file and I did, in detail. What I
+already know about it, and must therefore discount from any later "independent agreement" claim:
+  * it carries 2 bundles and NO RMS bundle (ours has 3)
+  * its description reads `Provider configuration for CA eSUN` with no version string
+  * its VehicleRegistration keyRef is `RQLicensePlateTypeYearOut` (ours: `RQ.P`)
+  * it spells the purpose field `PurposeCode`, not `CaRequestPurposeCode`
+  * `LicensePlateTypeCode` is absent from that combo's `set[]`
+  * that combo's variable set reduces to `[Plate, State]` after prefills
+On those SIX points a match between our build and theirs is NOT independent corroboration. Everything
+else about CA_eSUN — every other query, every other entity — I have not looked at, so the diff there
+stands as real evidence.
+**LA_LEMS is partially contaminated too:** section B.1 above already analyses Lafayette's build and I
+have read parts of it (bundle ordering, and that its DL coverage is 2 combos where ours has 4).
+**NOPD's file is unseen — a diff against it will be genuinely blind.**
+
+**Everything else in the build queue is uncontaminated.** No deployed file exists or has been read for
+MD_METERS, TN_TIES, OR_LEDS, CA_VENTURA_COUNTY, CA_SAN_LUIS_OBISPO, CA_CLETS_OCATS or
+CA_CONTRA_COSTA.
