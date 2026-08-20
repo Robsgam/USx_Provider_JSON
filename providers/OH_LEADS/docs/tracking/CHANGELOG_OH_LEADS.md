@@ -2,9 +2,23 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.9** | Generated: 2026-08-18
+Current: **v2.10** | Generated: 2026-08-20
 
 ---
+
+## v2.10 -- 2026-08-20 -- Card titles: every parenthetical helper removed -- OPERATOR DIRECTIVE, cosmetic only
+
+**CHANGED:** the trailing/inline "(...)" clause stripped from all 5 card titles that carried one.
+  VEHICLE  removed "(leave State blank for OH; fill it for an out-of-state Nlets query)"  
+  DL       removed "(add DOB + SEX for an out-of-state search)" and "(leave State blank for OH)"  
+  DH       removed "(own field pool -- filling these does not affect the Driver License card)"  
+  FIREARM  removed "(Make, Caliber and Stolen Check are optional refinements)"  
+  BOAT     removed "(Hull wins if both are entered)" and "(leave State blank for OH)"  
+  ARTICLE  untouched -- it never carried a parenthetical.  
+**REASON:** Rob, 2026-08-20: "on oh  all the card titles  remove the stuff in () on all cards."
+  Each title keeps its query paths, which is the part the convention requires; only the  
+  explanatory asides go. THE OPERATOR HAS FINAL SAY (usx-cosmetic Step 0) and this entry IS the  
+  record, so the removed hints do not get "rediscovered" and re-litigated at the next pass.  
 
 ## v2.9 -- 2026-08-18 -- Operator's field-order pass -- every row placed to Rob's spec, Purpose Code defaults 'C'
 

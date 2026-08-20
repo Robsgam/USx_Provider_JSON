@@ -3,6 +3,52 @@ OH_LEADS -- Build Notes
 Provider: OH_LEADS
 State: Ohio
 Network: LEADS (Law Enforcement Automated Data System)
+v2.10  2026-08-20  Card titles: every parenthetical helper removed -- OPERATOR DIRECTIVE, cosmetic only
+  CHANGED: the trailing/inline "(...)" clause stripped from all 5 card titles that carried one.
+    VEHICLE  removed "(leave State blank for OH; fill it for an out-of-state Nlets query)"
+    DL       removed "(add DOB + SEX for an out-of-state search)" and "(leave State blank for OH)"
+    DH       removed "(own field pool -- filling these does not affect the Driver License card)"
+    FIREARM  removed "(Make, Caliber and Stolen Check are optional refinements)"
+    BOAT     removed "(Hull wins if both are entered)" and "(leave State blank for OH)"
+    ARTICLE  untouched -- it never carried a parenthetical.
+  REASON: Rob, 2026-08-20: "on oh  all the card titles  remove the stuff in () on all cards."
+    Each title keeps its query paths, which is the part the convention requires; only the
+    explanatory asides go. THE OPERATOR HAS FINAL SAY (usx-cosmetic Step 0) and this entry IS the
+    record, so the removed hints do not get "rediscovered" and re-litigated at the next pass.
+
+  ONE CONSEQUENCE, RECORDED RATHER THAN ARGUED. The two State hints were not decoration: OH sets
+  no State initialValue (LIMITATION #30, because in-state NCIC and out-of-state Nlets are separate
+  keyRefs and a prefill would pin every query to one path -- BUILD_RULES 24). The card title was
+  therefore the officer's ONLY cue that blank = Ohio. CLAUDE.md's lean-label convention had
+  deliberately moved that cue here ("strip inline helpers and let the card title carry the query
+  paths; State keeps its routing hint"). Removing it does not change routing or the wire by one
+  byte -- an officer who leaves State blank still gets NCIC -- but the cue is now absent from the
+  form entirely. Raised with Rob at the time of the change; his call stands. If it should come back
+  it belongs on the State field LABEL, not in a parenthetical title.
+
+  COSMETIC MEANS THE WIRE MUST BE IDENTICAL, AND THAT IS PROVEN, NOT ASSERTED -- BUT NOT BY THE
+  PROOF I REACHED FOR FIRST. Card titles are props.title on a Card node, referenced by no QIDM, no
+  combination set[]/any[], no condition and no default. My first instinct was to cite per-entity
+  fingerprints; that proof DOES NOT HOLD and citing it would have been wrong, because the
+  fingerprint covers the entity's whole QIF including its layout, so 4 of 5 legitimately MOVED
+  (Vehicle 8dfb57a7->bb351b6c, Person 4f93fd78->76a3df1a, Firearm 9ed05087->6417db76,
+  Boat 0ed21b92->32e9e1a4). A cosmetic change is EXPECTED to move them -- that is precisely why the
+  test package archives.
+  WHAT ACTUALLY PROVES IT, two ways:
+    1. The PROVIDER bundle -- all 6 QIDMs plus AUTH/QMF/QRDM, i.e. the entire wire contract -- is
+       BYTE-IDENTICAL across the bump with the version string normalised: 28647 chars both sides,
+       sha 829d031135925c64 both sides.
+    2. The ENTITIES bundle with every props.title blanked is IDENTICAL across the bump, so
+       props.title is the ONLY changed value anywhere in the file.
+  And the run carried its own control: ARTICLE's fingerprint is UNCHANGED
+  (9772a934, both versions) -- it is the one card that never had a parenthetical. So the four that
+  moved moved for the stated reason and nothing else drifted in with them.
+  audit_layout_flow also holds at 0 findings (6 cards / 16 rows / 46 fields / 21 combinations
+  compared, so not a vacuous pass).
+  COST, accepted knowingly: a cosmetic bump archives the ENTIRE test package -- all 56 current-
+  version logs across 5 entities -- and OH must be re-imported and re-swept from T1. Re-test cost
+  is NOT grounds to defer a cosmetic fix (Rob 2026-08-11).
+
 v2.9  2026-08-18  Operator's field-order pass -- every row placed to Rob's spec, Purpose Code defaults 'C'
   CHANGED (dictated field-by-field by Rob 2026-08-18, before the first test sweep):
     VEHICLE   "Owner SSN" -> "SSN" (the Owner qualifier was asked off first/last at v2.7; this

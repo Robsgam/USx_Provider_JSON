@@ -1,0 +1,1123 @@
+﻿{
+    "provider":  "OH_LEADS",
+    "version":  "2.10",
+    "derivedFrom":  "devdoc + metadata (NOT the built JSON)",
+    "note":  "expectedKeyRef=NO-FIRE means the devdoc allows this fill but no built combo matches -- the driver should submit it and the sweep should record that nothing was sent. UNREACHABLE means a devdoc field has no form control at all.",
+    "testCount":  48,
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QA.S",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "articleTypeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #1",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QA.S",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "articleTypeCode",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #1",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QA.S",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "articleTypeCode",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "A123456789"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #2",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "A123456789"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #2",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QA.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NCICNumber",
+                                        "value":  "A123456789"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QB.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  8,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QB.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  9,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QB.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  10,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "BQ.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  11,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "NCICNumber"
+                                        ],
+                      "fills":  [
+
+                                ]
+                  },
+                  {
+                      "n":  12,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "NCICNumber"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  13,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "NCICNumber"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  14,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #3",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QB.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  15,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #3",
+                      "optionalsAdded":  [
+                                             "BoatHullIdNumber"
+                                         ],
+                      "expectedKeyRef":  "QB.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  16,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #3",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QB.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  17,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #3",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QB.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  18,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #3",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "BQ.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "KQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #1",
+                      "optionalsAdded":  [
+                                             "Attention"
+                                         ],
+                      "expectedKeyRef":  "KQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "attention",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  21,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #1",
+                      "optionalsAdded":  [
+                                             "PurposeCode"
+                                         ],
+                      "expectedKeyRef":  "KQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  22,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "KQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  23,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "KQ.O",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  24,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #2",
+                      "optionalsAdded":  [
+                                             "Attention"
+                                         ],
+                      "expectedKeyRef":  "KQ.O",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "attention",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  25,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #2",
+                      "optionalsAdded":  [
+                                             "PurposeCode"
+                                         ],
+                      "expectedKeyRef":  "KQ.O",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  26,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #2",
+                      "optionalsAdded":  [
+                                             "ReasonCode"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "ReasonCode"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  27,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #2",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "KQ.O",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DN",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "DOE"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  29,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "BirthDate"
+                                         ],
+                      "expectedKeyRef":  "QWA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  30,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DL",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "ReasonCode"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "ReasonCode"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "Requestor"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "Requestor"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+                                             "UserName"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "UserName"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  34,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #3",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DL",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #4",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ.O",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  36,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #4",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "DQ.O",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  37,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #5",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  38,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  39,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "GunCaliber"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "gunCaliber",
+                                        "value":  "TEST"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  40,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "GunMake"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  41,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  42,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "NCICNumber"
+                                        ],
+                      "fills":  [
+
+                                ]
+                  },
+                  {
+                      "n":  43,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #2",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "UNREACHABLE",
+                      "unwiredFields":  [
+                                            "NCICNumber"
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  44,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "ATDP",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "DealerPlateType",
+                                        "value":  "D"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  45,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RP",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  46,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #3",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RV",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  47,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #4",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RQ.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  48,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #5",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RQ.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  }
+              ]
+}

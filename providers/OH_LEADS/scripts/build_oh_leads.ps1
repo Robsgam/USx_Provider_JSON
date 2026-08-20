@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.9'
+$Version     = '2.10'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -601,7 +601,7 @@ $ohBundle = [PSCustomObject]@{
 $vehLayout = MakeLayouts @(
     @{
         id    = 'CARD_VEH'
-        title = "VEHICLE SEARCH BY PLATE, `nDEALER PLATE, VIN, OWNER NAME OR OWNER SSN `n(leave State blank for OH; fill it for an out-of-state Nlets query)"
+        title = "VEHICLE SEARCH BY PLATE, `nDEALER PLATE, VIN, OWNER NAME OR OWNER SSN"
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
@@ -656,7 +656,7 @@ $vehicleForm = [PSCustomObject]@{
 $perLayout = MakeLayouts @(
     @{
         id    = 'CARD_PER_DL'
-        title = "DRIVER LICENSE SEARCH BY OLN, `nOR BY NAME (add DOB + SEX for an out-of-state search) `n(leave State blank for OH)"
+        title = "DRIVER LICENSE SEARCH BY OLN, `nOR BY NAME"
         rows  = @(
             @{ id = 'ROW_PER_DL_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
@@ -677,7 +677,7 @@ $perLayout = MakeLayouts @(
     }
     @{
         id    = 'CARD_PER_DH'
-        title = "DRIVER HISTORY SEARCH BY OLN, `nOR BY NAME + DOB + SEX `n(own field pool -- filling these does not affect the Driver License card)"
+        title = "DRIVER HISTORY SEARCH BY OLN, `nOR BY NAME + DOB + SEX"
         rows  = @(
             @{ id = 'ROW_PER_DH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name'  '30' 'ROW_PER_DH_1' }
@@ -712,7 +712,7 @@ $personForm = [PSCustomObject]@{
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = "FIREARM SEARCH BY SERIAL NUMBER `n(Make, Caliber and Stolen Check are optional refinements)"
+        title = "FIREARM SEARCH BY SERIAL NUMBER"
         rows  = @(
             @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '20' 'ROW_GUN_1' }
@@ -773,7 +773,7 @@ $articleForm = [PSCustomObject]@{
 $boaLayout = MakeLayouts @(
     @{
         id    = 'CARD_BOA'
-        title = "BOAT SEARCH BY HULL ID, `nOR BY REGISTRATION NUMBER (Hull wins if both are entered) `n(leave State blank for OH)"
+        title = "BOAT SEARCH BY HULL ID, `nOR BY REGISTRATION NUMBER"
         rows  = @(
             @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
