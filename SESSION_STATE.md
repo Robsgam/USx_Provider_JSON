@@ -19,7 +19,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (44 logs) |
-| NJ_NJCJIS | v4.16 | ALL-PASS (40 logs) |
+| NJ_NJCJIS | v4.17 | NEVER-TESTED -- 39 test(s) owed |
 | NY_NYSPIN_EJUSTICE | v4.24 | ALL-PASS (75 logs) |
 | OH_LEADS | v2.10 | ALL-PASS (56 logs) |
 | TX_TLETS | v4.21 | ALL-PASS (96 logs) |

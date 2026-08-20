@@ -1,6 +1,6 @@
-NJ_NJCJIS v4.16 -- TEST MATRIX
+NJ_NJCJIS v4.17 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-14
+Generated: 2026-08-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -13,10 +13,10 @@ Vehicle (1 card, 7 fields):
     ROW 2: VehicleIdentificationNumber [Inp 20]
     ROW 3: RegistrationState [Sel STATE, NJ], RandomRequest [Sel YES_NO_UNKNOWN/NCIC, N], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-Person (1 card, 7 fields):
+Person (1 card, 9 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, "OR" NAME):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE, NJ], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-    ROW 2: NameFirst [Inp 30], NameLast [Inp 30]
+    ROW 2: NameFirst [Inp 30], NameMiddle [Inp 30], NameLast [Inp 30], NameSuffix [Inp 10]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
 
 Firearm (1 card, 5 fields):
@@ -122,4 +122,4 @@ COMBO COVERAGE (8/8):
   ArticleSingleQuery: 1/1 -- T18(Serial)
   BoatQuery: 2/2 -- T6(N), T8(Reg)
 
-IMPORT FILE: NJ_NJCJIS_v4.16.json
+IMPORT FILE: NJ_NJCJIS_v4.17.json

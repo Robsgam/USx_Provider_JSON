@@ -2,9 +2,28 @@
 
 Auto-generated from `NJ_NJCJIS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.16** | Generated: 2026-08-14
+Current: **v4.17** | Generated: 2026-08-20
 
 ---
+
+## v4.17 -- 2026-08-20 -- Middle name + Suffix -- the officer could not enter two components NJ's own metadata defines
+
+**CHANGED:**
+  - ROW_PER_2 [3,3,3,3] = First Name | MIDDLE NAME | Last Name | SUFFIX (was First | Last at [6,6]).  
+  - DriverLicenseQuery Name composite: sourceField @('NameLast','NameFirst') ->  
+    @('NameLast','NameFirst','NameMiddle','NameSuffix').  
+  - AP #15: FormatStringRuleHandler arguments @(', ') -> @(', ', ' ', ' ') -- separators must equal  
+    (sourceFields - 1) or the build hard-fails.  
+**REASON:** audit_name_components reported 2 C1 NO-CONTROL findings. VERIFIED IN NJ'S OWN RAW XML (the
+  sanctioned exception): the Name field declares `Name :: First + Last + Middle + Suffix` and  
+  DriverLicenseQuery references it. So the provider accepts four components, the form offered two,  
+  and the wire could only ever carry `DOE, JOHN`. Capability is WIRE-PROVEN elsewhere, not  
+  theoretical: AZ_AZDPS v3.11 emitted `DOE, JOHN A JR` across 10 captures and TX_TLETS v4.21 proved  
+  it again, both degrading with no double space when a component is blank.  
+SCOPE: ONE name pool, Person only. NJ has no DriverHistory card, and a first count of "3 NameFirst  
+  controls" was the SAME fieldId across the three layout variants (default/CAD_DISPATCH/  
+  FIRST_RESPONDER), not three pools -- checked before proposing, because the cost here is real.  
+NO layout work: NJ is the portfolio's cleanest provider on that axis, audit_layout_flow 0 findings.  
 
 ## v4.16 -- 2026-08-14 -- NCIC Image defaults to 'Y' on Vehicle/Firearm/Article/Boat (WIRE CHANGE)
 

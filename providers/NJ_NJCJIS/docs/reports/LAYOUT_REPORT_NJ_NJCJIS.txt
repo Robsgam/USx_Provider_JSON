@@ -1,15 +1,15 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
-  Source: NJ_NJCJIS_v4.16.json
-  Generated: 2026-08-14 13:00
+  Source: NJ_NJCJIS_v4.17.json
+  Generated: 2026-08-20 16:14
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== NJ_NJCJIS_v4.16.json ===
+=== NJ_NJCJIS_v4.17.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=3
-  Person | entity=Person | qidm= | cards=1 fields=3
+  Person | entity=Person | qidm= | cards=1 fields=5
   Firearm | entity=Firearm | qidm= | cards=1 fields=2
   Article | entity=Article | qidm= | cards=1 fields=1
   Boat | entity=Boat | qidm= | cards=1 fields=2
@@ -48,9 +48,11 @@ LAYOUT DETAIL
         OperatorLicenseNumber (Text | maxLen=20)
         RegistrationState (Dropdown | attributeTypeId=STATE | default=NJ)
         ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-      ROW ROW_PER_2 [6 6]
+      ROW ROW_PER_2 [3 3 3 3]
         NameFirst (Text | maxLen=30)
+        NameMiddle (Text | maxLen=30)
         NameLast (Text | maxLen=30)
+        NameSuffix (Text | maxLen=10)
       ROW ROW_PER_3 [6 6]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)

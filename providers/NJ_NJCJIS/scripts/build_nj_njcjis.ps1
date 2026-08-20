@@ -111,7 +111,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nj_njcjis.ps1
 
 param(
-    [string]$Version = "4.16"
+    [string]$Version = "4.17"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -250,8 +250,12 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ImageIndicator';        size = 1;  sourceField = @('ImageIndicator');        targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name        = 'Name'
-            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size        = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            # AP #15: FormatStringRuleHandler takes (sourceFields - 1) separators. Four sourceFields
+            # therefore need THREE -- ', ' between surname and forename, then a space before middle
+            # and before suffix. Wire: "DOE, JOHN A JR", degrading to "DOE, JOHN JR" with no double
+            # space when middle is blank (wire-proven on AZ_AZDPS v3.11, 10 captures, and on TX v4.21).
+            rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') }
+            size        = 30; sourceField = @('NameLast','NameFirst','NameMiddle','NameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'SexCode';               size = 1;  sourceField = @('SexCode');               targetField = 'SexCode'; codeTypeProvider = 'NIBRS' }
@@ -505,9 +509,17 @@ $perLayout = MakeLayouts @(
                 @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State' @{ attributeTypeId = 'STATE'; initialValue = 'NJ' } 'ROW_PER_1' }
                 @{ id = 'ImageIndicator_Input';        node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_1' }
             )}
-            @{ id = 'ROW_PER_2'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_2' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_2' }
+            # All four name components in ONE row, First then Last (usx-cosmetic L8). The WIRE stays
+            # LAST-first via the composite FormatStringRuleHandler -- form order and sourceField order
+            # are independent. Middle + Suffix ADDED v4.17: NJ's own metadata declares
+            # `Name :: First + Last + Middle + Suffix` and DriverLicenseQuery references that field,
+            # so the officer had been unable to enter two components the provider accepts, and the
+            # wire could only ever carry `DOE, JOHN`.
+            @{ id = 'ROW_PER_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_2' }
+                @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_PER_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_2' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix'      '10' 'ROW_PER_2' }
             )}
             @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth (required with Name)'                             'ROW_PER_3' }

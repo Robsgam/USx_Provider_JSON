@@ -1,7 +1,7 @@
 {
     "bundles":  [
                     {
-                        "description":  "Provider configuration for NJ_NJCJIS v4.16 -- entity forms",
+                        "description":  "Provider configuration for NJ_NJCJIS v4.17 -- entity forms",
                         "configurations":  [
                                                {
                                                    "description":  "Vehicle queries -- RANDOM-REMOVED branch: 1 card (v4.14, collapsed from OPTIONS+PLATE+VIN). VehicleStolenQuery eliminated; ncicNumber/vehicleMakeCode removed (stolen-only fields).",
@@ -1182,15 +1182,19 @@
                                                                                                     "displayName":  "Row",
                                                                                                     "props":  {
                                                                                                                   "templateColumns":  [
-                                                                                                                                          "6",
-                                                                                                                                          "6"
+                                                                                                                                          "3",
+                                                                                                                                          "3",
+                                                                                                                                          "3",
+                                                                                                                                          "3"
                                                                                                                                       ]
                                                                                                               },
                                                                                                     "isCanvas":  true,
                                                                                                     "hidden":  false,
                                                                                                     "nodes":  [
                                                                                                                   "NameFirst_Input",
-                                                                                                                  "NameLast_Input"
+                                                                                                                  "NameMiddle_Input",
+                                                                                                                  "NameLast_Input",
+                                                                                                                  "NameSuffix_Input"
                                                                                                               ],
                                                                                                     "linkedNodes":  {
 
@@ -1217,6 +1221,26 @@
                                                                                                                           },
                                                                                                           "parent":  "ROW_PER_2"
                                                                                                       },
+                                                                                  "NameMiddle_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "NameMiddle",
+                                                                                                                         "label":  "Middle Name",
+                                                                                                                         "maxLength":  "30"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_PER_2"
+                                                                                                       },
                                                                                   "NameLast_Input":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "FormInput"
@@ -1237,6 +1261,26 @@
                                                                                                                          },
                                                                                                          "parent":  "ROW_PER_2"
                                                                                                      },
+                                                                                  "NameSuffix_Input":  {
+                                                                                                           "type":  {
+                                                                                                                        "resolvedName":  "FormInput"
+                                                                                                                    },
+                                                                                                           "displayName":  "Input",
+                                                                                                           "props":  {
+                                                                                                                         "fieldId":  "NameSuffix",
+                                                                                                                         "label":  "Suffix",
+                                                                                                                         "maxLength":  "10"
+                                                                                                                     },
+                                                                                                           "isCanvas":  false,
+                                                                                                           "hidden":  false,
+                                                                                                           "nodes":  [
+
+                                                                                                                     ],
+                                                                                                           "linkedNodes":  {
+
+                                                                                                                           },
+                                                                                                           "parent":  "ROW_PER_2"
+                                                                                                       },
                                                                                   "ROW_PER_3":  {
                                                                                                     "type":  {
                                                                                                                  "resolvedName":  "Row"
@@ -1470,15 +1514,19 @@
                                                                                                          "displayName":  "Row",
                                                                                                          "props":  {
                                                                                                                        "templateColumns":  [
-                                                                                                                                               "6",
-                                                                                                                                               "6"
+                                                                                                                                               "3",
+                                                                                                                                               "3",
+                                                                                                                                               "3",
+                                                                                                                                               "3"
                                                                                                                                            ]
                                                                                                                    },
                                                                                                          "isCanvas":  true,
                                                                                                          "hidden":  false,
                                                                                                          "nodes":  [
                                                                                                                        "NameFirst_Input",
-                                                                                                                       "NameLast_Input"
+                                                                                                                       "NameMiddle_Input",
+                                                                                                                       "NameLast_Input",
+                                                                                                                       "NameSuffix_Input"
                                                                                                                    ],
                                                                                                          "linkedNodes":  {
 
@@ -1505,6 +1553,26 @@
                                                                                                                                },
                                                                                                                "parent":  "ROW_PER_2"
                                                                                                            },
+                                                                                       "NameMiddle_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "NameMiddle",
+                                                                                                                              "label":  "Middle Name",
+                                                                                                                              "maxLength":  "30"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_PER_2"
+                                                                                                            },
                                                                                        "NameLast_Input":  {
                                                                                                               "type":  {
                                                                                                                            "resolvedName":  "FormInput"
@@ -1525,6 +1593,26 @@
                                                                                                                               },
                                                                                                               "parent":  "ROW_PER_2"
                                                                                                           },
+                                                                                       "NameSuffix_Input":  {
+                                                                                                                "type":  {
+                                                                                                                             "resolvedName":  "FormInput"
+                                                                                                                         },
+                                                                                                                "displayName":  "Input",
+                                                                                                                "props":  {
+                                                                                                                              "fieldId":  "NameSuffix",
+                                                                                                                              "label":  "Suffix",
+                                                                                                                              "maxLength":  "10"
+                                                                                                                          },
+                                                                                                                "isCanvas":  false,
+                                                                                                                "hidden":  false,
+                                                                                                                "nodes":  [
+
+                                                                                                                          ],
+                                                                                                                "linkedNodes":  {
+
+                                                                                                                                },
+                                                                                                                "parent":  "ROW_PER_2"
+                                                                                                            },
                                                                                        "ROW_PER_3":  {
                                                                                                          "type":  {
                                                                                                                       "resolvedName":  "Row"
@@ -1839,15 +1927,19 @@
                                                                                                             "displayName":  "Row",
                                                                                                             "props":  {
                                                                                                                           "templateColumns":  [
-                                                                                                                                                  "6",
-                                                                                                                                                  "6"
+                                                                                                                                                  "3",
+                                                                                                                                                  "3",
+                                                                                                                                                  "3",
+                                                                                                                                                  "3"
                                                                                                                                               ]
                                                                                                                       },
                                                                                                             "isCanvas":  true,
                                                                                                             "hidden":  false,
                                                                                                             "nodes":  [
                                                                                                                           "NameFirst_Input",
-                                                                                                                          "NameLast_Input"
+                                                                                                                          "NameMiddle_Input",
+                                                                                                                          "NameLast_Input",
+                                                                                                                          "NameSuffix_Input"
                                                                                                                       ],
                                                                                                             "linkedNodes":  {
 
@@ -1874,6 +1966,26 @@
                                                                                                                                   },
                                                                                                                   "parent":  "ROW_PER_2"
                                                                                                               },
+                                                                                          "NameMiddle_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "NameMiddle",
+                                                                                                                                 "label":  "Middle Name",
+                                                                                                                                 "maxLength":  "30"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_PER_2"
+                                                                                                               },
                                                                                           "NameLast_Input":  {
                                                                                                                  "type":  {
                                                                                                                               "resolvedName":  "FormInput"
@@ -1894,6 +2006,26 @@
                                                                                                                                  },
                                                                                                                  "parent":  "ROW_PER_2"
                                                                                                              },
+                                                                                          "NameSuffix_Input":  {
+                                                                                                                   "type":  {
+                                                                                                                                "resolvedName":  "FormInput"
+                                                                                                                            },
+                                                                                                                   "displayName":  "Input",
+                                                                                                                   "props":  {
+                                                                                                                                 "fieldId":  "NameSuffix",
+                                                                                                                                 "label":  "Suffix",
+                                                                                                                                 "maxLength":  "10"
+                                                                                                                             },
+                                                                                                                   "isCanvas":  false,
+                                                                                                                   "hidden":  false,
+                                                                                                                   "nodes":  [
+
+                                                                                                                             ],
+                                                                                                                   "linkedNodes":  {
+
+                                                                                                                                   },
+                                                                                                                   "parent":  "ROW_PER_2"
+                                                                                                               },
                                                                                           "ROW_PER_3":  {
                                                                                                             "type":  {
                                                                                                                          "resolvedName":  "Row"
@@ -4057,7 +4189,7 @@
                         "provider":  "MARK43"
                     },
                     {
-                        "description":  "Provider configuration for NJ_NJCJIS v4.16",
+                        "description":  "Provider configuration for NJ_NJCJIS v4.17",
                         "configurations":  [
                                                {
                                                    "attributes":  [
@@ -5294,13 +5426,17 @@
                                                                           "rule":  {
                                                                                        "function":  "FormatStringRuleHandler",
                                                                                        "arguments":  [
-                                                                                                         ", "
+                                                                                                         ", ",
+                                                                                                         " ",
+                                                                                                         " "
                                                                                                      ]
                                                                                    },
                                                                           "size":  30,
                                                                           "sourceField":  [
                                                                                               "NameLast",
-                                                                                              "NameFirst"
+                                                                                              "NameFirst",
+                                                                                              "NameMiddle",
+                                                                                              "NameSuffix"
                                                                                           ],
                                                                           "targetField":  "Name"
                                                                       },
@@ -5631,7 +5767,7 @@
                         "provider":  "NJ_NJCJIS"
                     },
                     {
-                        "description":  "Provider configuration for NJ_NJCJIS v4.16 -- RMS bundle",
+                        "description":  "Provider configuration for NJ_NJCJIS v4.17 -- RMS bundle",
                         "name":  "RMS",
                         "type":  "BUNDLE",
                         "provider":  "RMS",

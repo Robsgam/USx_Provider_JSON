@@ -2,6 +2,46 @@ NJ_NJCJIS BUILD NOTES -- v2.x Line
 ====================================
 Started: 2026-04-28
 Metadata: NJ_NJCJIS.xml + NJ_NJCJIS.pdf (2026-04-28 update)
+v4.17  2026-08-20  Middle name + Suffix -- the officer could not enter two components NJ's own metadata defines
+  CHANGED:
+    - ROW_PER_2 [3,3,3,3] = First Name | MIDDLE NAME | Last Name | SUFFIX (was First | Last at [6,6]).
+    - DriverLicenseQuery Name composite: sourceField @('NameLast','NameFirst') ->
+      @('NameLast','NameFirst','NameMiddle','NameSuffix').
+    - AP #15: FormatStringRuleHandler arguments @(', ') -> @(', ', ' ', ' ') -- separators must equal
+      (sourceFields - 1) or the build hard-fails.
+  REASON: audit_name_components reported 2 C1 NO-CONTROL findings. VERIFIED IN NJ'S OWN RAW XML (the
+    sanctioned exception): the Name field declares `Name :: First + Last + Middle + Suffix` and
+    DriverLicenseQuery references it. So the provider accepts four components, the form offered two,
+    and the wire could only ever carry `DOE, JOHN`. Capability is WIRE-PROVEN elsewhere, not
+    theoretical: AZ_AZDPS v3.11 emitted `DOE, JOHN A JR` across 10 captures and TX_TLETS v4.21 proved
+    it again, both degrading with no double space when a component is blank.
+  SCOPE: ONE name pool, Person only. NJ has no DriverHistory card, and a first count of "3 NameFirst
+    controls" was the SAME fieldId across the three layout variants (default/CAD_DISPATCH/
+    FIRST_RESPONDER), not three pools -- checked before proposing, because the cost here is real.
+  NO layout work: NJ is the portfolio's cleanest provider on that axis, audit_layout_flow 0 findings.
+
+  *** HOW THIS WAS MISSED FOR THREE DAYS, WHICH IS THE PART WORTH KEEPING. ***
+  NJ was NAMED IN WRITING on 2026-08-17, in CLAUDE.md and knowledge-base/README.txt, as one of four
+  tenant-verified providers carrying this gap: "four of them (NJ/FL/IL/CA_CLETS) tenant-verified
+  ALL-PASS". That same day a pass fixed FL v7.24, IL v2.8, CA_CLETS v2.25, HI v4.19 and OR_LEDS v2.3
+  -- and skipped NJ, the FIRST name on the list, with no recorded reason. An omission, not a decision.
+  It then stayed invisible because *** audit_name_components was wired into NOTHING *** -- not
+  enforce, not doctor, not pipeline, not build_report, not build_phase1, not test_phase2. It ran only
+  when a human typed its name. So NJ read 0 FAIL / 0 WARN through the 08-19 portfolio sweep and two
+  further days of runs. Rob found it only because he asked for an unrelated layout check.
+  THIRD INSTANCE OF ONE CLASS: audit_layout_flow's L7 'MI' labels sat unseen 2026-07-27 -> 08-18 for
+  the same reason, then NM_NMLETS_OFML's collapse + components gap, now this. FIXED AT THE CLASS:
+  audit_name_components is now enforce PHASE 2x (advisory, following the 2w precedent -- 50 C1
+  findings across 9 providers, so blocking would force a mass rebuild). Proven both directions before
+  commit: [INFO] naming NJ's 2 findings, [PASS] on AZ_AZDPS.
+
+  COST, accepted knowingly: v4.16 was TENANT-VERIFIED ALL-PASS 5/5 with 40 logs, so this bump
+  ARCHIVES ALL 40 and owes a full re-sweep from T1 plus a re-import. Newark Foundation is on v4.16
+  and now sits BEHIND until re-imported. Re-test cost is NOT grounds to defer (Rob 2026-08-11), and
+  Rob's call here was explicit: "we need nj done".
+  STILL OWED: import v4.17 to the NJ provider tenant, re-sweep 5/5, new DEX-988 release comment,
+  Newark re-import.
+
 v4.16  2026-08-14  NCIC Image defaults to 'Y' on Vehicle/Firearm/Article/Boat (WIRE CHANGE)
   CHANGED: ImageIndicator initialValue 'N' -> 'Y' on the four entities that were still 'N', in BOTH
     halves of the default: the form FormSelect initialValue (Vehicle ROW_VEH_3, Firearm ROW_GUN_2,

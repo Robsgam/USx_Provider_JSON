@@ -1209,6 +1209,54 @@ if (-not (Test-Path $lfTool)) {
     }
 }
 
+#  PHASE 2x: Name components -- can the officer enter every component the metadata defines? (ADVISORY)
+# ---------------------------------------------------------------------------------
+#  WIRED 2026-08-20, AND THE REASON IS A CONCRETE MISS, NOT TIDINESS.
+#  audit_name_components was written 2026-08-17 and, until today, was called by NOTHING -- not
+#  enforce, not doctor, not pipeline, not build_report, not build_phase1, not test_phase2. It ran
+#  only when a human typed its name.
+#  WHAT THAT COST: its own baseline named FOUR tenant-verified providers carrying the gap --
+#  "NJ/FL/IL/CA_CLETS" -- in CLAUDE.md and in knowledge-base/README.txt. The 08-17 pass fixed FL,
+#  IL and CA_CLETS (plus HI and OR_LEDS) and SKIPPED NJ_NJCJIS, the first name on that list, with no
+#  recorded reason. NJ then sat at 0 FAIL / 0 WARN through a full portfolio sweep on 08-19 and two
+#  more days of runs, because no orchestrator ever asked. Rob found it by asking for a different
+#  check entirely. Third instance of the same class: the L7 'MI' labels (2026-07-27 -> 08-18) and
+#  NM_NMLETS_OFML's collapse+components gap were both "a gate nobody runs".
+#  ADVISORY, deliberately, following the PHASE 2w precedent above: 50 C1 findings across 9 providers
+#  as of 2026-08-20, and 8 of those 9 are never-tested (free to fix) while NJ costs a 40-log
+#  re-sweep. Blocking would redden 9 providers at once and force exactly the mass rebuild that
+#  one-provider-at-a-time exists to prevent. VISIBLE now, BLOCKING when the residue is zero.
+#  C1 (no control -- the officer CANNOT enter it) and C2 (not composed) are the blocking classes the
+#  tool itself counts; C3 (composed but in no set[]/any[]) is NOTE-only because its impact is
+#  unproven, so it is reported separately rather than folded into the finding count.
+SectionHeader "PHASE 2x: Name components -- metadata components vs form controls (advisory)"
+$ncTool = Join-Path $toolDir "audit_name_components.ps1"
+if (-not (Test-Path $ncTool)) {
+    Info "audit_name_components.ps1 not found -- name components NOT checked"
+} else {
+    foreach ($pd in $providers) {
+        $ncOut   = & powershell -ExecutionPolicy Bypass -File $ncTool -Provider $pd.Name 2>&1 | Out-String
+        $ncLines = $ncOut -split "`n"
+        # Anchor on the tool's own tally line, not a guessed sentence, and match per LINE -- the
+        # PHASE 2w bug above was exactly this ($ without (?m) cannot match mid-blob).
+        $c1 = -1; $c3 = 0; $examined = ''
+        foreach ($ln in $ncLines) {
+            if ($ln -match 'C1 no-control\s+(\d+)\s*/\s*C2 not-composed\s+(\d+)\s*/\s*C3 not-in-pool\s+(\d+)') {
+                $c1 = [int]$Matches[1] + [int]$Matches[2]; $c3 = [int]$Matches[3]
+            }
+            if ($ln -match 'component\(s\) examined') { $examined = $ln.Trim() }
+        }
+        if ($c1 -lt 0) {
+            Warn "$($pd.Name) -- audit_name_components reached no verdict; name components NOT checked"
+        } elseif ($c1 -gt 0) {
+            Info "$($pd.Name) -- $c1 blocking name-component finding(s)$(if($c3){" + $c3 C3 note(s)"}else{''}): the officer cannot enter a component the metadata defines. tools\audit_name_components.ps1 -Provider $($pd.Name)"
+            @($ncLines | Where-Object { $_ -match 'C1 NO-CONTROL|C2 NOT-COMPOSED' }) | Select-Object -First 4 | ForEach-Object { Out "       $($_.Trim())" }
+        } else {
+            Pass "$($pd.Name) -- every metadata name component has a control$(if($c3){" ($c3 C3 note(s), impact unproven)"}else{''})"
+        }
+    }
+}
+
 SectionHeader "PHASE 3: Doc Version Sync"
 
 # Check 3j prerequisite -- reported ONCE, not per provider.
