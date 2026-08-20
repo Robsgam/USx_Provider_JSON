@@ -48,6 +48,81 @@ So: **a C3 row is a half-finished C1 fix.** Add the components to the name combo
 
 ---
 
+## TRIAGE — what each provider needs. **NOTES ONLY; DO NOT BUILD.**
+
+Rob 2026-08-20: *"do not build just make the notes and we will bulk rebuild all providre that we flag
+it and let it run later. we want to triage them all. right now nj is retest only and ny should be
+rebuild and retest"*
+
+**One item at a time, minimal drift.** Nothing in section A or B is to be built until the bulk pass is
+authorised. This table is the queue for that pass.
+
+| Provider | ACTION | Needs Rob? | Why |
+|---|---|---|---|
+| **NJ_NJCJIS** v4.17 | **RETEST ONLY** | import + sweep | Build is DONE (middle+suffix, composite, AP #15, `FULL.any[]`). 0 C1 / 0 C2 / 0 C3, enforce 46 PASS / 0 FAIL / 0 WARN. Owes: import, 40-test sweep, DEX-988 comment, Newark re-import |
+| **NY_NYSPIN_EJUSTICE** v4.24 | **REBUILD + RETEST** | **YES — one question below** | 2 real label fixes + a DH row combine. See the NY work order |
+| **OH_LEADS** v2.10 | REBUILD + RETEST | no | C3 ×6 — the `any[]` pool fix. Officer's middle name is dropped today |
+| **NM_NMLETS_OFML** v2.4 | REBUILD + RETEST | no | C3 ×4 — same `any[]` pool fix. Already owes a sweep anyway |
+| **TN_TIES** v2.2 | REBUILD | no | Layout collapse 14→6, C1 ×4, **+ the class-J wiring break** |
+| **CA_VENTURA_COUNTY** v2.4 | REBUILD | no | 20→6 cards, C1 ×10 |
+| **CA_eSUN** v2.3 | REBUILD | no | 16→6 cards, C1 ×8, fillability flag |
+| **CA_CLETS_OCATS** v2.6 | REBUILD | no | 16→6 cards, C1 ×4 |
+| **CA_CONTRA_COSTA** v2.3 | REBUILD | **YES** | 7→6 cards, C1 ×10 — **and a scope question: builds no JAWS/SuperQuery despite the recorded recipe** |
+| **MD_METERS** v2.1 | REBUILD | no | 13→6 cards, C1 ×4 |
+| **CA_SAN_LUIS_OBISPO** v2.4 | REBUILD | no | 13→6 cards, C1 ×4 |
+| **LA_LEMS** v3.1 | REBUILD | no | 12→6 cards, C1 ×4 |
+| **OR_LEDS** v2.4 | REBUILD | no | 11→6 cards, layout only (0 C1) |
+| **TX_TLETS_CCH** v1.17 | HOLD | no | Must move in lockstep with TX_TLETS (`# BASE-SYNC`). 9 cards is correct |
+| **FL_FCIC** v7.24 | **NOTHING** | no | Its L2 was my false positive. Only a date picker on a wide row remains — cosmetic |
+| **CA_CLETS** v2.26 | **NOTHING** | no | Both L2s benign (`purposeCode` prefilled). Clean after the L2 fix |
+| **TX_TLETS** v4.21 | **NOTHING** | no | Its L2 is the recorded DEX-1283 override |
+| **IL_LEADS_OFML** v2.8 | NOTHING | no | 2 dead-space rows only |
+| **HI_HCJDC_OFML** v4.20 | NOTHING | no | 1 wasted-width row only |
+| **AZ_AZDPS** v3.11 | NOTHING | no | Clean on all three gates. Reference build |
+
+---
+
+## NY WORK ORDER — for the bulk rebuild. NOT YET BUILT.
+
+**DO change — the real finding (Rob confirmed by eye: *"oh i see midddle name not middle iniital"*):**
+
+| Where | From | To |
+|---|---|---|
+| `build_ny_nyspin_ejustice.ps1:690` `nameMiddle` (DL card) | `'MI'` | `'Middle Name'` |
+| `build_ny_nyspin_ejustice.ps1:713` `nameMiddleDH` (DH card) | `'MI'` | `'Middle Name'` |
+
+Both fields are `maxLength=35` — full middle names, not initials. NY's components ARE in the combo
+pool (0 C1 / 0 C3), so the data path works; the label is the only thing making officers under-fill it.
+TX_TLETS fixed the identical mislabel at v4.21. Add `# LABEL-OVERRIDE:` tags per AZ's precedent.
+
+**Cosmetic, requested by Rob 2026-08-20 — Person DH card, combine two rows.** Current DH card:
+```
+DH_1  [6,3,3]    OLN | State | Image
+DH_2  [4,4,2,2]  First | Last | Middle | Suffix
+DH_3  [6,6]      BirthDate | SexCode
+DH_4  [6,6]      purposeCode | nyNyspinTransactionName
+DH_5B [12]       requestor                              <- alone on a full row
+```
+⚠️ **ONE WORD NEEDED FROM ROB BEFORE THIS IS BUILT** — *"combine last row and thrid row togther"* has
+two readings and I will not encode a guess into an unattended bulk rebuild:
+- **(a)** merge `DH_5B` into `DH_3` → `[4,4,4] BirthDate | SexCode | requestor`, leaving `DH_4` after it.
+- **(b)** merge `DH_5B` into `DH_4` → `[4,4,4] purposeCode | nyNyspinTransactionName | requestor`,
+  i.e. absorb the lone last row into the row above it. **This is what I would implement** — it removes
+  the orphan 12-col row without reordering anything, and DH then reads 4 rows.
+
+**DO NOT change — verified deliberate, and I nearly "fixed" it:**
+`ROW_VEH_3 [4,4]` and `ROW_ART_2 [4,4]` are flagged L6 ROW-NOT-12 (4 columns of dead space). They are
+an **accepted decision from Rob's own v4.13 feedback**, recorded in the build script header AND
+BUILD_NOTES lines 263-264: *"ROW_VEH_3 6/6 -> 4/4 (State 6 -> 4; a 2-char code no longer sits in a
+half-row box; State/Image align under the columns above)"*. Leave both. This is why usx-build 6c says
+to read the provider's own notes for the field you are about to change — the cheapest authority in the
+repo, and it stopped a wrong edit here.
+
+**Cost:** v4.24 → v4.25, archives **75 logs**, owes a 75-test sweep. Wire provably unchanged (prove it
+the OH v2.10 way, not with per-entity fingerprints).
+
+---
+
 ## A. TENANT-VERIFIED — high priority (Rob 2026-08-20). Each fix costs a re-sweep.
 
 | Provider | Ver | Logs at risk | Finding | Class | REAL? | Status |
