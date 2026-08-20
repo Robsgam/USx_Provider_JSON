@@ -224,3 +224,41 @@ Recorded because `audit_lifecycle.ps1` (enforce PHASE 2r) treats SILENCE as the 
 not imported" is a perfectly good state and must be WRITTEN, so that "where is v4.18 installed" is
 never answered from memory.
 
+
+### B.2 PRODUCTION TENANTS RUNNING NON-REPO, CLAUDE-BUILT JSONs — support to be assumed
+
+Recorded 2026-08-20 on Rob's report: *"live production enviroment uses a non repo claude built json
+at San Diego Sheriff's office. it is an eSun provider. We have the same situation with la lems at
+LAfeyyete parish and New Oreleans PD. We will need to assume support for those providers. My plan is
+to ingest what was built aand go from there in terms of fixing issues."*
+
+**THIS CHANGES THE RISK ON TWO PROVIDERS THAT THE BUILD QUEUE CALLED "FREE".** CA_eSUN and LA_LEMS
+have no logs in this repo, so a rebuild costs no re-sweep — but they are NOT greenfield. Real officers
+are running DIFFERENT builds of both today, and we are taking over support. Our JSON is not the only
+thing that has to be right; it has to be reconcilable with what is deployed.
+
+| Tenant | Provider | Status | Reference copy held? |
+|---|---|---|---|
+| **San Diego Sheriff's Office** | CA_eSUN | **LIVE PRODUCTION**, non-repo build | **YES** — `providers/CA_eSUN/source/San Diego Sheriff CA_eSUN 8.17.2026.json` |
+| **Lafayette Parish** | LA_LEMS | LIVE, hand-built by engineering | YES — `providers/LA_LEMS/source/Lafayette Parish LA_LEMS 8.13.2026.json`, analysed in §B.1 |
+| **New Orleans PD** | LA_LEMS | **LIVE PRODUCTION**, non-repo build | **NO — NOT YET SUPPLIED.** Ask before answering any NOPD issue report |
+
+**The San Diego file was nearly discarded.** It sat untracked as `department-export-71459778290 (1).json`
+and I twice advised leaving it alone as scrap; it was even reported as the sole blocker keeping
+`enforce`'s repo-wide git check at exit 1. It is in fact the production reference for a LIVE tenant —
+the same class of artifact as Lafayette's, which has been tracked and analysed since 08-13. Renamed to
+match that convention and committed.
+
+**What it already tells us, measured 2026-08-20 (diagnostic only — NOT authority):** it carries
+**2 bundles, no RMS bundle at all** (ours has 3), its description says `Provider configuration for
+CA eSUN` with **no version string**, and its VehicleRegistration keyRefs are descriptive
+(`RQLicensePlateTypeYearOut`) where ours are short (`RQ.P`). It spells the purpose field `PurposeCode`
+where the CLETS family uses `CaRequestPurposeCode`, and omits `LicensePlateTypeCode` from that combo's
+`set[]`. Its plate combo is structurally safe for the same reason ours is — after prefills the
+variable set reduces to `[Plate, State]`.
+
+**RULES FOR THESE FILES, same as §B.1:** the devdoc and metadata XML remain the authority for what we
+BUILD; a deployed file is evidence of what a tenant is RUNNING, never a spec to copy. Its value is
+diagnostic — when San Diego or Lafayette or NOPD reports a symptom, diff their build against ours and
+the difference is the first place to look. **Do not "align" our JSON to a deployed file** on the
+strength of the file alone.
