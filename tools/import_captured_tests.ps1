@@ -174,6 +174,7 @@ Write-Host ""
 Write-Host "  Importing captured tests from $($files.Count) file(s)" -ForegroundColor Cyan
 
 $imported = 0; $failed = 0; $skipped = 0; $errored = 0
+$provsTouched = @{}   # providers this run wrote to -- drives SCOPED git staging, see the commit block
 foreach ($file in $files) {
     $records = @()
     # ASSIGN the ConvertFrom-Json result to a variable BEFORE wrapping in @(). In Windows
@@ -199,6 +200,11 @@ foreach ($file in $files) {
             Write-Host "  [SKIP] record missing provider/entity/query/combo/requestXml (query=$($r.query) combo=$combo)" -ForegroundColor DarkYellow
             $skipped++; continue
         }
+        # Remember which providers this run actually wrote to, so the commit can stage NARROWLY
+        # (see the scoped-staging block below -- `git add -- providers` once swept in an untracked
+        # tenant export). Recorded only AFTER the record passes validation, so a skipped record
+        # never widens the staging scope.
+        $provsTouched[$r.provider] = 1
 
         # PASS requires BOTH: (a) the fired query family (messageType) matches intent, AND (b) the
         # wire carries the EXPECTED combo's set[] identifiers. (a) alone was the old check -- every
@@ -293,7 +299,23 @@ if ($Commit -and ($imported + $failed) -gt 0) {
     $prevEap = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        git add -- providers automation/captures 2>&1 | Out-Null
+        # SCOPED STAGING -- do NOT `git add -- providers`. That stages the ENTIRE providers tree
+        # including UNTRACKED files belonging to nobody in this import, and on 2026-08-20 it
+        # committed a 228KB tenant department export that Rob had deliberately kept untracked in
+        # providers/CA_eSUN/source/ (an earlier session had already unstaged it once on purpose).
+        # The capture commit is the WORST place for that to happen: it is automatic, it pushes
+        # immediately, and its message says "Import ... captures" -- so nobody reviewing the log
+        # would suspect an unrelated file rode along. A commit that stages more than it announces
+        # is the same defect class as a gate that reports more than it checked.
+        # Stage only the directories THIS import writes, for the provider it was told to import.
+        $stagePaths = @('automation/captures')
+        foreach ($p in @($provsTouched.Keys | Sort-Object)) {
+            $stagePaths += "providers/$p/logs"
+            $stagePaths += "providers/$p/docs"
+        }
+        $stagePaths = @($stagePaths | Where-Object { Test-Path (Join-Path $repoRoot $_) })
+        if ($stagePaths.Count) { git add -- @($stagePaths) 2>&1 | Out-Null }
+        else { Write-Host "  [WARN] nothing to stage -- no written path resolved" -ForegroundColor Yellow }
         git commit -m "Import automated USx Tenant Testing captures ($imported PASS / $failed FAIL)`n`nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>" 2>&1 | Out-Null
         $commitExit = $LASTEXITCODE
         git push 2>&1 | Out-Null
