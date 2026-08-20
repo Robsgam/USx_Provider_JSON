@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: OH_LEADS Vehicle VehicleRegistrationQuery
+Combo: RN_any (RN_any (auto))
+Date: 2026-08-20 10:51:52
+Result: PASS
+JSON Version: 2.10
+Entity Fingerprint: bb351b6c22f560be07d178cf0f2f3ecf891a136acc540217ac520fe92887d84d
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"AddressCounty":"LA","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","OwnerFirstName":"JOHN","OwnerLastName":"DOE"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0FSAKM7J3YYN1N4APF8KX8S">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M0FSAKM7J3YYN1N4APF8KX8S</Id>
+            <AddressCounty>LA</AddressCounty>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0FSAKM7J3YYN1N4APF8KX8S
+  AddressCounty                  LA
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01M0FSAKM7J3YYN1N4APF8KX8S). kind=any; anyField=; expectedKeyRef=RN; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
