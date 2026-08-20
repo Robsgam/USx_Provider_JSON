@@ -46,6 +46,19 @@ anchor); everything after this is a new release line.
 
 POSTED: v2.9 comment 801112 2026-08-18
 POSTED: v2.9 comment 801113 2026-08-18
+POSTED: v2.10 comment 802507 2026-08-20
+
+**Posted 2026-08-20 -- v2.10 release line, comment 802507.** A NEW comment, per the 2026-08-17 rule;
+801112 is LEFT IN PLACE as the v2.9 history and 802507 names it as superseded-but-retained. Three
+comments now: 801113 (history anchor) + 801112 (v2.9, retained) + 802507 (CURRENT).
+  DISCLOSED AGAIN RATHER THAN QUIETLY DROPPED, because all three carried over unchanged from v2.9:
+  inflation is 2/0/0/0 (RN_af_AddressCounty == RN_any, ATDP == ATDP_guardrail_vs_RQ.P), the ATDP
+  guardrail reproduces its base test's wire so it adds no independent evidence, and Middle/Suffix are
+  still not exercised (wire reads `DOE, JOHN`). A cosmetic release is exactly where a stale caveat
+  would be easiest to drop, so it is repeated verbatim.
+  THE COSMETIC CLAIM IS WIRE-PROVEN, not asserted: all 56 captured wires are byte-identical to their
+  v2.9 archived counterparts with transaction ids normalised (56/0/0), and ARTICLE -- the one card not
+  edited -- is the unchanged-fingerprint control.
 
   801112 = RELEASE LINE (current state -- read this one). OH_LEADS v2.9 TENANT-VERIFIED, 56/56.
   801113 = HISTORY ANCHOR (v1.0 -> v2.9, wire-affecting changes marked; no metrics, by design --
@@ -55,11 +68,19 @@ POSTED: v2.9 comment 801113 2026-08-18
   are not distinct tests), the ATDP guardrail was inconclusive, and the v2.7 Middle/Suffix controls
   were NOT exercised by the sweep -- they are composed into Name but sit in no set[]/any[], so the
   plan cannot fill them and the wire read `DOE, JOHN`. Making that provable is a wire change (v3.0).
-**Current: v2.4 — BUILT 2026-08-10, NEVER tenant-tested, never imported.**
+**Current: v2.10 -- TENANT-VERIFIED ALL-PASS 5/5 (56 logs, 56 PASS / 0 FAIL) 2026-08-20.** Cosmetic
+only: the parenthetical helper clause removed from all 5 card titles that carried one. NO wire change,
+and that is PROVEN rather than claimed -- all 56 captured wires are byte-identical to their v2.9
+counterparts (transaction ids normalised), with ARTICLE, the one card not edited, as the
+unchanged-fingerprint control. Release line **comment 802507**; 801112 retained as v2.9 history.
 
-**Current: v2.9 -- TENANT-VERIFIED ALL-PASS 5/5 (56 logs, 56 PASS / 0 FAIL) 2026-08-18. First ever
-tenant import and first ever sweep for this provider.** Was "v2.4 BUILT, NEVER tenant-tested, never
-imported" until today.
+THIS FILE CARRIED **TWO** COMPETING "Current:" LINES UNTIL 2026-08-20 -- `v2.4 BUILT, NEVER
+tenant-tested` AND `v2.9 TENANT-VERIFIED` -- one directly contradicting the other, with nothing
+marking which was live. That is the same defect `JIRA_COMMENT_TEMPLATE.txt` was written to stop on
+the TICKETS (DEX-969 once showed nine mutually exclusive totals), reproduced here in the repo file
+that `audit_lifecycle` reads. Collapsed to ONE line; prior states are history below, never a second
+"Current". Superseded, for the record: v2.9 TENANT-VERIFIED 2026-08-18 (the first ever tenant import
+and first ever sweep for this provider), and before it v2.4 BUILT 2026-08-10, never imported.
 Recent history (full detail in `OH_LEADS_BUILD_NOTES.txt`):
 - **v2.4** — **card collapse 14 → 6** (Vehicle 6→1, Person 5→2, Boat 3→1) with every title now
   carrying its query paths; OH had been the only provider of nine with 0 path-carrying titles. Zero
