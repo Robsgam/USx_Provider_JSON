@@ -16,6 +16,18 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      Pre-edit body captured verbatim in DEX_TICKET_ARCHIVE.md -- an edit is IRREVERSIBLE and there is
      no delete-comment tool. -->
 POSTED: v4.16 comment 795856 2026-08-14
+POSTED: v4.17 comment 802981 2026-08-20
+
+**Posted 2026-08-20 -- v4.17 release line, comment 802981.** NEW comment per the 2026-08-17 rule;
+795856 (v4.16) LEFT IN PLACE as history and named as superseded-but-retained in Section 1.
+  WHAT IT REPORTS: middle name + suffix now enterable AND on the wire for the first time in this
+  provider's history -- `DOE, JOHN A` / `DOE, JOHN JR` against a `DOE, JOHN` control. 41/41 ALL-PASS,
+  four log gates 41/41 each.
+  DISCLOSED RATHER THAN ROUNDED OFF: inflation 2/0/0/0 (QA_af_ImageIndicator == QA_any and
+  QB_af_ImageIndicator == QB_any are byte-identical because those queries have exactly ONE any[]
+  field, so the "one optional" and "all optionals" tests are the same test) -- 39 of 41 logs are
+  distinct. Also recorded that the PLAN HAD TO BE REGENERATED before the sweep: it predated the
+  any[] entries, so driving it as-was would have passed 40/40 while exercising nothing that changed.
 
 POSTING RULE (revised 2026-08-11): **ONE COMMENT PER RELEASE, and EDIT it in place if the numbers
 move** -- never post a correction as a sibling comment. That is what produced contradictory totals
