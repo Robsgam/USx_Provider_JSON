@@ -2,9 +2,23 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.24** | Generated: 2026-08-18
+Current: **v4.25** | Generated: 2026-08-20
 
 ---
+
+## v4.25 -- 2026-08-20 -- "MI" -> "Middle Name" on both name pools, and the DH card merged to 3 visible rows
+
+**CHANGED** (operator pass, Rob 2026-08-20):
+  - nameMiddle (DL) and nameMiddleDH (DH): label 'MI' -> 'Middle Name'. Both are maxLength=35.  
+  - ROW_PER_DH_4 MERGED INTO ROW_PER_DH_3, which becomes [3,3,3,3]:  
+      Date of Birth | Sex | Purpose Code | Transaction Type  
+    The Driver History card now renders THREE visible rows plus the hidden requestorDH feeder,  
+    matching the Driver License card's shape.  
+**REASON:** audit_layout_flow L7 flagged the labels -- "MI" means middle INITIAL but the field accepts
+  a full middle name, so officers were being told to type one letter into a 35-character field and  
+  NY's wire carried a less specific name than it could. Rob confirmed by eye: "oh i see midddle name  
+  not middle iniital". TX_TLETS fixed the identical mislabel at v4.21. The row merge is his direct  
+  instruction: "purpose code and transaction type need to be with dob and sex on the same line".  
 
 ## v4.24 -- 2026-08-14 -- NCIC Image defaults to 'Y' on Vehicle/Article/Boat (WIRE CHANGE)
 

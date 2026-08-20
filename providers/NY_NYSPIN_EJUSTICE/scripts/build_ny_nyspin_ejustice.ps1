@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.24"
+    [string]$Version = "4.25"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -687,7 +687,15 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name' '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'  '35' 'ROW_PER_DL_2' }
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'MI'     '35' 'ROW_PER_DL_2' }
+                # LABEL-OVERRIDE: nameMiddle -- bare "Middle Name" per the DEX-1284 lean pass (any[]
+                #   optional). v4.25 RENAMED FROM "MI": maxLength=35 is a FULL middle name, not an
+                #   initial, so the old label told officers to type one letter into a 35-char field and
+                #   NY's wire carried a less specific name than it could. audit_layout_flow L7 flagged
+                #   it; TX_TLETS fixed the identical mislabel at v4.21. Rob confirmed by eye 2026-08-20:
+                #   "oh i see midddle name not middle iniital". NOT a prior decision being overridden --
+                #   BUILD_NOTES only ever DESCRIBED the row as "First/Last/MI/Suffix" (v4.14), it never
+                #   ruled on the wording.
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '35' 'ROW_PER_DL_2' }
                 @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix' '10' 'ROW_PER_DL_2' }
             )}
             @{ id = 'ROW_PER_DL_3'; cols = @('6','6'); fields = @(
@@ -710,7 +718,9 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DH_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name' '35' 'ROW_PER_DH_2' }
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'  '35' 'ROW_PER_DH_2' }
-                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'MI'         '35' 'ROW_PER_DH_2' }
+                # LABEL-OVERRIDE: nameMiddleDH -- bare "Middle Name", same reasoning as the DL twin
+                #   above (maxLength=35, renamed from "MI" at v4.25).
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'nameMiddleDH' 'Middle Name' '35' 'ROW_PER_DH_2' }
                 @{ id = 'NameSuffixDH_Input'; node = Inp 'nameSuffixDH' 'Suffix'     '10' 'ROW_PER_DH_2' }
             )}
             # DH row 3 SPLIT at v4.17 (DEX-1284, Leo's CAD review): this was a single 4-across
@@ -723,11 +733,17 @@ $perLayout = MakeLayouts @(
             # This is layout-only: same fieldIds, same initialValues, same combo membership, so
             # the wire is unchanged. Applies to ALL THREE layout variants automatically --
             # MakeLayouts builds default/CAD_DISPATCH/FIRST_RESPONDER from this one definition.
-            @{ id = 'ROW_PER_DH_3'; cols = @('6','6'); fields = @(
+            # v4.25 (Rob 2026-08-20): the old ROW_PER_DH_4 is MERGED INTO THIS ROW -- "purpose code
+            # and transaction type need to be with dob and sex on the same line". DH ends at THREE
+            # visible rows, matching the DL card's shape. Position only: neither field moved between
+            # combinations, so routing and the wire are untouched.
+            # NOTE for whoever counts rows next: the card looks like FOUR rows in the JSON but
+            # renders as THREE-plus-hidden, because ROW_PER_DH_5B's only control is FIELD-hidden.
+            # I mis-reported this card as having five visible rows by testing $row.hidden alone --
+            # a row is invisible if the ROW is hidden OR EVERY FIELD in it is (usx-cosmetic Step 3).
+            @{ id = 'ROW_PER_DH_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth'                                 'ROW_PER_DH_3' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
-            )}
-            @{ id = 'ROW_PER_DH_4'; cols = @('6','6'); fields = @(
                 # DEX-1284 v4.22 tried FormSelect + attributeTypeId='DEX_INQUIRY_PURPOSE_CODE' (the
                 # pattern in the CA_eSUN department export). REVERTED v4.23 -- DISPROVEN LIVE
                 # (NY_NYSPIN_EJUSTICE tenant, 2026-08-06): the dropdown opened with ZERO options on
@@ -737,12 +753,12 @@ $perLayout = MakeLayouts @(
                 # platform code table like STATE/SEX/VEHICLE_MAKE -- the underlying code table was
                 # most likely never provisioned for the NY tenant at all, so no attributeTypeId or
                 # codeTypeCategory/codeTypeSource pairing fixes this from our JSON. Back to FormInput.
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_4' @{ initialValue = 'C' } }
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_3' @{ initialValue = 'C' } }
                 # LABEL-OVERRIDE: nyNyspinTransactionNameDH -- Rob's explicit exception; bare
                 # "Transaction Type" is the intended wording (prefilled initialValue=DALL,
                 # officer-editable, any[] optional). CHECK 15 Rule 3's "(optional)" qualifier is not
                 # wanted -- do not "fix" this to "(auto)"/"(default X)" in a future labeling pass.
-                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_4' @{ initialValue = 'DALL' } }
+                @{ id = 'NyNyspinTransactionName_Input'; node = Inp 'nyNyspinTransactionNameDH' 'Transaction Type' '4' 'ROW_PER_DH_3' @{ initialValue = 'DALL' } }
             )}
             # Requestor (DH) automated-identity EXCEPTION (2026-07-06, user-approved): the value
             # is knowable and stable (officer's own RMS-profile name), not officer judgment --

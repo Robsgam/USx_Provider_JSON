@@ -3,6 +3,54 @@ NY_NYSPIN_EJUSTICE -- BUILD NOTES
 Phase 1 reboot: 2026-04-20. Prior version history (v1.0-v1.21) archived in git.
 Clean restart from XML metadata as sole source of truth.
 See SQVR_main.txt for test results. See STATUS.txt for test matrix.
+v4.25  2026-08-20  "MI" -> "Middle Name" on both name pools, and the DH card merged to 3 visible rows
+  CHANGED (operator pass, Rob 2026-08-20):
+    - nameMiddle (DL) and nameMiddleDH (DH): label 'MI' -> 'Middle Name'. Both are maxLength=35.
+    - ROW_PER_DH_4 MERGED INTO ROW_PER_DH_3, which becomes [3,3,3,3]:
+        Date of Birth | Sex | Purpose Code | Transaction Type
+      The Driver History card now renders THREE visible rows plus the hidden requestorDH feeder,
+      matching the Driver License card's shape.
+  REASON: audit_layout_flow L7 flagged the labels -- "MI" means middle INITIAL but the field accepts
+    a full middle name, so officers were being told to type one letter into a 35-character field and
+    NY's wire carried a less specific name than it could. Rob confirmed by eye: "oh i see midddle name
+    not middle iniital". TX_TLETS fixed the identical mislabel at v4.21. The row merge is his direct
+    instruction: "purpose code and transaction type need to be with dob and sex on the same line".
+
+  NOT A PRIOR DECISION BEING OVERRIDDEN -- checked before editing (usx-build 6c). BUILD_NOTES only
+  ever DESCRIBED the row as "First/Last/MI/Suffix" (v4.14, in passing); no entry ever ruled on the
+  wording. Contrast ROW_VEH_3 / ROW_ART_2 at [4,4], which audit_layout_flow ALSO flags (L6, 4 columns
+  of dead space) and which are LEFT ALONE: those ARE a recorded decision from Rob's own v4.13
+  feedback -- "State 6 -> 4; a 2-char code no longer sits in a half-row box" -- and I was about to
+  "fix" them until the notes said otherwise.
+
+  THE WIRE IS UNCHANGED AND IT IS PROVEN, NOT ASSERTED:
+    * PROVIDER bundle (all QIDMs + AUTH/QMF/QRDM, i.e. the entire wire contract) is BYTE-IDENTICAL
+      with the version string normalised: 27396 chars, sha 3d031b4c7ff9599c, both versions.
+    * Control inventory (entity|fieldId|maxLength|initialValue, labels excluded) IDENTICAL:
+      41 controls before, 41 after, none added, removed, resized or re-defaulted.
+    Per-entity fingerprints are the WRONG proof here and were not used -- they include the layout, so
+    a row merge legitimately moves them.
+
+  PHASE 1 at v4.25: [1] all devdoc combinations accounted for - [2] optionals all route and transmit -
+  [3] 16 combos, most-specific-first respected - [4] 16 branches, 0 UNDER / 0 OVER - [5] 14 built,
+  0 prefill-dead, 0 shadow, 2 MISSING (see below) - [6] gate efficacy 14/15 - [6b] fuzz 7/8.
+  Validator 76 PASS / 0 FAIL / 0 WARN.
+
+  TWO PRE-EXISTING ITEMS, NEITHER CAUSED BY THIS VERSION -- this change touched labels and row
+  grouping only, so it cannot have affected combinations or conditions:
+    * [5] 2 MISSING, both DALL[alt2/2] variants requiring Requestor in set[]. ALREADY REGISTERED at
+      v4.21 (4 Requestor rows in the divergence registry, demoted-to-any) with live evidence: a hidden
+      field with no initialValue submits no key, and set[] membership makes the CLIENT gate Send on
+      that field having a value -- DALHOUT's Send button stayed permanently disabled on 2026-08-06.
+      any[] keeps the wire identical because the handler populates Requestor unconditionally.
+    * [6] 1 SURVIVED: 'ny-drop-oos-guardrail' -- removing RegistrationStateDH EXISTS from DALLOUT is
+      not detected by verify_build. Recorded as a GATE finding, not a build defect, and it looks
+      MIS-AIMED: a dropped discriminator that creates a shadow is audit_combo_reachability's question,
+      not verify_build's. Logged in FINDINGS_REGISTER for triage rather than chased mid-build.
+  COST: archived all 75 v4.24 logs (Veh 19 / Per 33 / Gun 5 / Art 4 / Boat 14) to
+  logs/<Entity>/_archive_pre_v4.25/. NY drops ALL-PASS -> NEVER-TESTED, 75 tests owed, and needs a
+  re-import. Re-test cost is not grounds to defer (Rob 2026-08-11).
+
 v4.24  2026-08-14  NCIC Image defaults to 'Y' on Vehicle/Article/Boat (WIRE CHANGE)
   CHANGED: ImageIndicator initialValue 'N' -> 'Y' on the three entities still at 'N', in BOTH halves
     of the default: the form FormSelect initialValue (Vehicle ROW_VEH_3, Article ROW_ART_2, Boat
