@@ -2,9 +2,38 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.2** | Generated: 2026-08-18
+Current: **v2.3** | Generated: 2026-08-20
 
 ---
+
+## v2.3 -- 2026-08-20 -- LAYOUT COLLAPSED 13 cards -> 6, and the officer could not enter a middle name or suffix
+
+**CHANGED:**
+  - Vehicle 3 cards -> 1 ("VEHICLE SEARCH BY PLATE, OR BY VIN"). OPTIONS held a single shared  
+    control (State); PLATE and VIN are the two identifier paths and now lead their own rows.  
+  - Person 5 cards -> 2, the ONLY entity legitimately at two: DRIVER LICENSE + DRIVER HISTORY.  
+    The DH-suffix fieldIds are a separate field pool and that separation IS the isolation  
+    mechanism, so collapsing to one card would be wrong, not tidier.  
+  - Boat 3 cards -> 1 ("BOAT SEARCH BY HULL ID, OR BY REGISTRATION NUMBER").  
+  - Firearm/Article titles made path-carrying ("... BY SERIAL NUMBER", "... BY SERIAL NUMBER + TYPE").  
+  - MIDDLE NAME + SUFFIX CONTROLS ADDED on BOTH name pools (NameMiddle/NameSuffix and  
+    NameMiddleDH/NameSuffixDH), composed into each Name composite.  
+  - Labels to canon: DH OLN control read "License Number" -> "OLN"; "(optional)" stripped from  
+    Vehicle Make, Make, Caliber, Model, Race, Purpose Code; "Vehicle Year (Nlets registration  
+    search)" -> "Vehicle Year". State KEEPS its routing hint -- that is the sanctioned location.  
+**REASON:** two separate gates were reporting on this provider and neither had been acted on.
+  audit_layout_flow: 6 findings -- L4 CARDS-NOT-COLLAPSED on Vehicle/Person/Boat, two L5  
+  WASTED-WIDTH (Plate maxLen 10 and Boat RegistrationNumber maxLen 8 each alone on a full  
+  12-column row), and an L9 RMS-ONLY-BESIDE-IDENTIFIER (raceCode shared a row with the mandatory  
+  purposeCode, so an RMS-only field sat beside a state identifier and read as though it queried  
+  the state). audit_name_components: 4 C1 NO-CONTROL -- Name.Middle and Name.Suffix on BOTH  
+  DriverLicenseQuery and DriverHistoryQuery, i.e. the metadata defines them and the officer  
+  COULD NOT ENTER THEM. Rob, 2026-08-20: "veh has 3 cards  person has 5 and boat has 3  reall  
+  the process is to callapose them".  
+**RESULT:** layout_flow 6 findings -> 0 (6 cards / 15 rows / 37 fields / 14 combinations compared,
+  so not a vacuous pass). name_components 4 C1 -> 0 C1 / 0 C2, PASS on 8 components examined.  
+  audit_wiring_closure 0 breaks across all ten classes -- the four new controls are not dead and  
+  the Attention requirement is still fillable. validator 66 PASS / 0 FAIL / 0 WARN.  
 
 ## v2.2 -- 2026-08-18 -- DriverLicenseQuery was missing BOTH of its mandatory fields -- PurposeCode + Attention
 

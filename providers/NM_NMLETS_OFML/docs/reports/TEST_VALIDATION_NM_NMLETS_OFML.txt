@@ -1,52 +1,52 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML
-  Source: NM_NMLETS_OFML_v2.2.json
-  Generated: 2026-08-18 21:55
+  Source: NM_NMLETS_OFML_v2.3.json
+  Generated: 2026-08-20 14:30
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- NM_NMLETS_OFML_v2.2
+TEST MATRIX <-> JSON CONSISTENCY -- NM_NMLETS_OFML_v2.3
 ============================================================
-Source: NM_NMLETS_OFML_v2.2.json
+Source: NM_NMLETS_OFML_v2.3.json
 Matrix: NM_NMLETS_OFML_TEST_MATRIX.txt
-Generated: 2026-08-18
+Generated: 2026-08-20
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: VEHICLE (8 tests -- 3 cards, 4 combos)
-  T1  Vehicle    [PASS] (structural check)
-  T2  Vehicle    [PASS] any[] fields verified: RegistrationState
-  T3  Vehicle    [PASS] (structural check)
-  T4  Vehicle    [PASS] any[] fields verified: RegistrationState
-  T5  Vehicle    [PASS] (structural check)
-  T6  Vehicle    [PASS] (structural check)
-  T7  Vehicle    [PASS] (structural check)
-  T8  Vehicle    [PASS] (structural check)
-ENTITY: BOAT (8 tests -- 3 cards, 4 combos)
-  T9  Boat       [PASS] (structural check)
-  T10  Boat       [PASS] any[] fields verified: RegistrationState
-  T11  Boat       [PASS] (structural check)
-  T12  Boat       [PASS] any[] fields verified: RegistrationState
-  T13  Boat       [PASS] (structural check)
-  T14  Boat       [PASS] (structural check)
-  T15  Boat       [PASS] (structural check)
-  T16  Boat       [PASS] (structural check)
-ENTITY: PERSON (11 tests -- 5 cards, 4 combos)
-  T17  Person     [PASS] (structural check)
-  T18  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, Attention
-  T19  Person     [PASS] (structural check)
-  T20  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, Attention
-  T21  Person     [PASS] (structural check)
-  T22  Person     [PASS] any[] fields verified: purposeCodeDH, RegistrationState
-  T23  Person     [PASS] (structural check)
-  T24  Person     [PASS] any[] fields verified: purposeCodeDH, raceCodeDH, RegistrationState
-  T25  Person     [PASS] (structural check)
-  T26  Person     [PASS] (structural check)
-  T27  Person     [PASS] queriesToDeselect verified
+ENTITY: PERSON (11 tests -- 2 cards, 4 combos)
+  T1  Person     [PASS] (structural check)
+  T2  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, Attention
+  T3  Person     [PASS] (structural check)
+  T4  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, Attention
+  T5  Person     [PASS] (structural check)
+  T6  Person     [PASS] any[] fields verified: purposeCodeDH, RegistrationState
+  T7  Person     [PASS] (structural check)
+  T8  Person     [PASS] any[] fields verified: purposeCodeDH, raceCodeDH, RegistrationState
+  T9  Person     [PASS] (structural check)
+  T10  Person     [PASS] (structural check)
+  T11  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (8 tests -- 1 card, 4 combos)
+  T12  Vehicle    [PASS] (structural check)
+  T13  Vehicle    [PASS] any[] fields verified: RegistrationState
+  T14  Vehicle    [PASS] (structural check)
+  T15  Vehicle    [PASS] any[] fields verified: RegistrationState
+  T16  Vehicle    [PASS] (structural check)
+  T17  Vehicle    [PASS] (structural check)
+  T18  Vehicle    [PASS] (structural check)
+  T19  Vehicle    [PASS] (structural check)
+ENTITY: BOAT (8 tests -- 1 card, 4 combos)
+  T20  Boat       [PASS] (structural check)
+  T21  Boat       [PASS] any[] fields verified: RegistrationState
+  T22  Boat       [PASS] (structural check)
+  T23  Boat       [PASS] any[] fields verified: RegistrationState
+  T24  Boat       [PASS] (structural check)
+  T25  Boat       [PASS] (structural check)
+  T26  Boat       [PASS] (structural check)
+  T27  Boat       [PASS] (structural check)
 ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
   T28  Firearm    [PASS] GunQuery fires (QG)
   T29  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, GunModel

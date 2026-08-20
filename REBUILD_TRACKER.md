@@ -49,7 +49,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 13 | IL_LEADS_OFML | v2.8 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 14 | MD_METERS | v2.1 |  | 70P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 15 | OH_LEADS | v2.10 |  | 78P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 16 | NM_NMLETS_OFML | v2.2 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 16 | NM_NMLETS_OFML | v2.3 |  | 66P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 17 | OR_LEDS | v2.4 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 18 | TN_TIES | v2.2 |  | 74P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 19 | TX_TLETS_CCH | v1.17 |  | 112P/0F/0W/0LIM | 0 | base-6 re-synced to TX_TLETS v4.7 (email handler + FRT=E, QWName removed); lockstep restored; CCH stub, NOT USx-tenant-tested |

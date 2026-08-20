@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML
-  Source: NM_NMLETS_OFML_v2.2.json
-  Generated: 2026-08-18 21:55
+  Source: NM_NMLETS_OFML_v2.3.json
+  Generated: 2026-08-20 14:30
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: NM_NMLETS_OFML_v2.2
+ POST-BUILD VERIFICATION: NM_NMLETS_OFML_v2.3
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 22 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, purposeCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, purposeCodeDH, raceCodeDH, SexCodeDH, gunCaliber, firearmMake, GunModel, serialNumber, ArticleSerialNumber, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 26 [LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, NameMiddle, NameSuffix, purposeCode, Attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, raceCodeDH, SexCodeDH, gunCaliber, firearmMake, GunModel, serialNumber, ArticleSerialNumber, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [PASS] Cross-bundle fieldId consistency checked
 
@@ -55,14 +55,17 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [INFO] Field 'OperatorLicenseNumberDH' label='License Number' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'purposeCodeDH' label='Purpose Code (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'raceCodeDH' label='Race (optional)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [PASS] All form field labels have required routing hint qualifiers (34 fields scanned) (7 DH field(s) untagged -- advisory only, see Info above)
+  [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'raceCodeDH' label='Race' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'raceCodeDH' (any[]-only) label='Race' -- manual label override accepted (bare "Race" per the DEX-1284 lean pass (any[] optional DH qualifier).)
+  [PASS] All form field labels have required routing hint qualifiers (38 fields scanned) (9 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

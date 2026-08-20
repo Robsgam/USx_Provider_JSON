@@ -3,6 +3,68 @@ NM_NMLETS_OFML -- Build Notes
 Provider: NM_NMLETS_OFML
 State: New Mexico
 Network: NMLETS OFML (New Mexico Law Enforcement Telecommunications System)
+v2.3  2026-08-20  LAYOUT COLLAPSED 13 cards -> 6, and the officer could not enter a middle name or suffix
+  CHANGED:
+    - Vehicle 3 cards -> 1 ("VEHICLE SEARCH BY PLATE, OR BY VIN"). OPTIONS held a single shared
+      control (State); PLATE and VIN are the two identifier paths and now lead their own rows.
+    - Person 5 cards -> 2, the ONLY entity legitimately at two: DRIVER LICENSE + DRIVER HISTORY.
+      The DH-suffix fieldIds are a separate field pool and that separation IS the isolation
+      mechanism, so collapsing to one card would be wrong, not tidier.
+    - Boat 3 cards -> 1 ("BOAT SEARCH BY HULL ID, OR BY REGISTRATION NUMBER").
+    - Firearm/Article titles made path-carrying ("... BY SERIAL NUMBER", "... BY SERIAL NUMBER + TYPE").
+    - MIDDLE NAME + SUFFIX CONTROLS ADDED on BOTH name pools (NameMiddle/NameSuffix and
+      NameMiddleDH/NameSuffixDH), composed into each Name composite.
+    - Labels to canon: DH OLN control read "License Number" -> "OLN"; "(optional)" stripped from
+      Vehicle Make, Make, Caliber, Model, Race, Purpose Code; "Vehicle Year (Nlets registration
+      search)" -> "Vehicle Year". State KEEPS its routing hint -- that is the sanctioned location.
+  REASON: two separate gates were reporting on this provider and neither had been acted on.
+    audit_layout_flow: 6 findings -- L4 CARDS-NOT-COLLAPSED on Vehicle/Person/Boat, two L5
+    WASTED-WIDTH (Plate maxLen 10 and Boat RegistrationNumber maxLen 8 each alone on a full
+    12-column row), and an L9 RMS-ONLY-BESIDE-IDENTIFIER (raceCode shared a row with the mandatory
+    purposeCode, so an RMS-only field sat beside a state identifier and read as though it queried
+    the state). audit_name_components: 4 C1 NO-CONTROL -- Name.Middle and Name.Suffix on BOTH
+    DriverLicenseQuery and DriverHistoryQuery, i.e. the metadata defines them and the officer
+    COULD NOT ENTER THEM. Rob, 2026-08-20: "veh has 3 cards  person has 5 and boat has 3  reall
+    the process is to callapose them".
+  RESULT: layout_flow 6 findings -> 0 (6 cards / 15 rows / 37 fields / 14 combinations compared,
+    so not a vacuous pass). name_components 4 C1 -> 0 C1 / 0 C2, PASS on 8 components examined.
+    audit_wiring_closure 0 breaks across all ten classes -- the four new controls are not dead and
+    the Attention requirement is still fillable. validator 66 PASS / 0 FAIL / 0 WARN.
+
+  AP #15 WAS THE TRAP AND THE GATE CAUGHT IT: FormatStringRuleHandler takes (sourceFields - 1)
+  separators, so growing each Name composite from 2 to 4 sourceFields required arguments to grow
+  @(', ') -> @(', ', ' ', ' '). The wire stays LAST-first ("DOE, JOHN A JR") because form order and
+  sourceField order are INDEPENDENT -- the form shows First,Middle,Last,Suffix (L8) while the
+  composite is ordered NameLast,NameFirst,NameMiddle,NameSuffix.
+
+  *** TWO THINGS I GOT WRONG MID-PASS, both caught by this provider's own files. ***
+  1. I MOVED THE HIDDEN ATTENTION FEEDER TO THE DRIVER HISTORY CARD and wrote a comment saying the
+     handler feeds the DH query. BOTH FALSE. Attention is an attribute of DriverLicenseQuery ONLY,
+     carried in the any[] of BOTH DL.NAME and DL.OLN with
+     CommsysGetLastNameFirstNameInitialRuleHandler; DriverHistoryQuery has no Attention attribute at
+     all. One grep of the build script refuted it. The feeder now sits last on the DL card, where its
+     pool is.
+  2. THIS FILE'S OWN HEADER TOLD ME THE WRONG THING and I believed it. It read "No Attention handler
+     in DH metadata ... so it is DROPPED entirely ... NM has none" -- flatly contradicted by the
+     attribute at line ~167 and by the two registry rows dated 2026-08-18. That stale note is what
+     made the wrong move look reasonable, so it has been rewritten rather than left to mislead the
+     next pass. A provider's own comments are the cheapest authority in the repo AND the easiest to
+     leave rotting.
+
+  NOT CHANGED, and both deliberate:
+    - query_trace still reports 1 MISSING (DriverLicenseQuery set[PurposeCode,Attention,SexCode,
+      BirthDate,Name]). PRE-EXISTING and ALREADY ADJUDICATED at v2.2 -- registry rows 29/30
+      demoted-to-any. Attention is populated by the handler at SEND time, so a set[] membership
+      would demand a form value that never exists and make BOTH DL combos permanently
+      unsatisfiable (the AZ_AZDPS DQPN/DQP lesson). Advisory, correctly registered, not owed.
+    - 4 C3 NOT-IN-POOL notes on the new middle/suffix controls: composed into Name but in no
+      combination set[]/any[]. That is the documented C3 class whose impact is UNPROVEN (same
+      position as HI_HCJDC_OFML), reported as [NOTE] not a failure. Settling it needs one live
+      query filling middle+suffix -- which this provider's first sweep can now actually do,
+      because before v2.3 there was no control to fill.
+  COST: zero test package -- NM has never been tenant-tested and never imported, so nothing was
+  archived. It DOES need an import and a picklist capture before the sweep.
+
 v2.2  2026-08-18  DriverLicenseQuery was missing BOTH of its mandatory fields -- PurposeCode + Attention
   CHANGED:
     - PurposeCode PROMOTED into set[] on BOTH DL combos (DL.NAME, DL.OLN) + a visible "Purpose Code"
