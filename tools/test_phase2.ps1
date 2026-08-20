@@ -222,23 +222,38 @@ if (-not $PostIngest) {
         $askNames = @($Provider)
         $shortName = ($Provider -replace '_OFML$|_EJUSTICE$', '')
         if ($shortName -ne $Provider) { $askNames += $shortName }
-        $planOnDisk = @(Get-ChildItem (Join-Path $provDir 'logs') -Filter "${Provider}_TEST_PLAN_v*.json" -ErrorAction SilentlyContinue)
-        $diskBytes = if ($planOnDisk.Count -eq 1) { (Get-Content $planOnDisk[0].FullName -Raw).Length } else { -1 }
-        foreach ($nm in $askNames) {
-            $got = $null
-            try { $got = Invoke-WebRequest "http://127.0.0.1:$planPort/plan/$nm" -TimeoutSec 6 -UseBasicParsing } catch { $got = $null }
-            if (-not $got) {
-                Out-Line "      plan fetch '/plan/$nm': FAILED -- the driver would report 'repo load failed'" 'Red'
-                $block += "serve_plans cannot serve /plan/$nm (the name the driver asks for)"
-            } elseif ($diskBytes -ge 0 -and $got.Content.Length -ne $diskBytes) {
-                Out-Line "      plan fetch '/plan/$nm': served $($got.Content.Length)b but the plan on disk is ${diskBytes}b -- SERVING A DIFFERENT PLAN" 'Red'
-                $block += "serve_plans is serving a plan that is not $($planOnDisk[0].Name)"
-            } else {
-                Out-Line "      plan fetch '/plan/$nm': OK ($($got.Content.Length)b, matches $(if($planOnDisk.Count -eq 1){$planOnDisk[0].Name}else{'disk'}))" 'Green'
+        # EVERY endpoint the extension fetches, not just the one that bit us. serve_plans exposes
+        # /plan AND /scope; the first version of this check gated only /plan, and the very next thing
+        # the operator hit was "no scope for NM_NMLETS_OFML" -- the same failure, one endpoint over.
+        # Derived from the server's own route list so a THIRD endpoint cannot be missed the same way.
+        $endpoints = @(
+            @{ Route='plan';  Filter="${Provider}_TEST_PLAN_v*.json";  What='the driver would report "repo load failed"' }
+            @{ Route='scope'; Filter="${Provider}_PICKLIST_SCOPE.json"; What='the browser scope tool would report "no scope"' }
+        )
+        foreach ($ep in $endpoints) {
+            $onDisk = @(Get-ChildItem (Join-Path $provDir 'logs') -Filter $ep.Filter -ErrorAction SilentlyContinue)
+            $diskBytes = if ($onDisk.Count -eq 1) { (Get-Content $onDisk[0].FullName -Raw).Length } else { -1 }
+            if ($onDisk.Count -eq 0) {
+                Out-Line "      $($ep.Route) file: MISSING on disk ($($ep.Filter)) -- $($ep.What)" 'Red'
+                $block += "$($ep.Filter) missing -- regenerate with reset_test_package -Provider $Provider -Force"
+                continue
             }
-        }
-        if ($planOnDisk.Count -gt 1) {
-            Out-Line "      [WARN] $($planOnDisk.Count) plan files on disk for $Provider -- reset_test_package should have archived the stale one(s)" 'Yellow'
+            foreach ($nm in $askNames) {
+                $got = $null
+                try { $got = Invoke-WebRequest "http://127.0.0.1:$planPort/$($ep.Route)/$nm" -TimeoutSec 6 -UseBasicParsing } catch { $got = $null }
+                if (-not $got) {
+                    Out-Line "      fetch '/$($ep.Route)/$nm': FAILED -- $($ep.What)" 'Red'
+                    $block += "serve_plans cannot serve /$($ep.Route)/$nm (a name the browser asks for)"
+                } elseif ($diskBytes -ge 0 -and $got.Content.Length -ne $diskBytes) {
+                    Out-Line "      fetch '/$($ep.Route)/$nm': served $($got.Content.Length)b but disk holds ${diskBytes}b -- SERVING A DIFFERENT FILE" 'Red'
+                    $block += "serve_plans is serving something that is not $($onDisk[0].Name)"
+                } else {
+                    Out-Line "      fetch '/$($ep.Route)/$nm': OK ($($got.Content.Length)b, matches $($onDisk[0].Name))" 'Green'
+                }
+            }
+            if ($onDisk.Count -gt 1) {
+                Out-Line "      [WARN] $($onDisk.Count) '$($ep.Route)' files on disk for $Provider -- reset_test_package should have archived the stale one(s)" 'Yellow'
+            }
         }
     }
 }

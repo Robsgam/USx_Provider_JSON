@@ -339,6 +339,25 @@ if (Test-Path $activeJson) {
     $specRegenerated = Test-Path (Join-Path $logsRoot "${Provider}_TEST_PLAN_SPEC_v${version}.json")
 }
 
+# 6c. THE PICKLIST SCOPE, which NO ORCHESTRATOR HAS EVER GENERATED (found 2026-08-20).
+#     serve_plans exposes TWO endpoints the extension fetches -- /plan/<P> AND /scope/<P>. The scope
+#     file (logs/<P>_PICKLIST_SCOPE.json) tells the browser which dropdowns to enumerate, and
+#     emit_picklist_scope.ps1 was referenced by exactly nothing in the build or test path: only
+#     audit_provider_uniformity (which merely NOTICES it) and the emitter itself.
+#     THE EVIDENCE THAT IT WAS ALWAYS A MANUAL STEP: the 9 providers holding a scope file are
+#     EXACTLY the 9 tenant-verified ones, and all 11 never-tested providers had none. Somebody ran
+#     it by hand once per sweep, every time, and nothing recorded that as a required step -- so
+#     "run the scope" failed in the browser for the 10th provider with a bare
+#     "no scope for NM_NMLETS_OFML".
+#     It is regenerated on every reset rather than created-if-absent on purpose: the scope enumerates
+#     the form's FormSelect controls, so a rebuild that adds, removes or renames a dropdown makes the
+#     previous scope wrong, not merely old -- and a wrong scope silently under-scopes the capture.
+$scopeRegenerated = $false
+if (Test-Path $activeJson) {
+    & powershell -ExecutionPolicy Bypass -File (Join-Path $toolDir "emit_picklist_scope.ps1") -Path $activeJson 2>&1 | Out-Null
+    $scopeRegenerated = Test-Path (Join-Path $logsRoot "${Provider}_PICKLIST_SCOPE.json")
+}
+
 Say ""
 $scope = if ($fullReset) { "all entities" } else { "entities: $($resetEntities -join ', ')" }
 Say "  RESET: $Provider test package restarted for v$version -- $scope" "Yellow"
@@ -372,6 +391,11 @@ if ($specRegenerated) {
     Say "    - regenerated logs/${Provider}_TEST_PLAN_SPEC_v${version}.json (the INDEPENDENT devdoc+metadata plan)" "Gray"
 } else {
     Say "    [WARN] could not regenerate TEST_PLAN_SPEC -- test_phase2 step [1] will compare against a STALE or ABSENT spec baseline" "Yellow"
+}
+if ($scopeRegenerated) {
+    Say "    - regenerated logs/${Provider}_PICKLIST_SCOPE.json (served as /scope/$Provider)" "Gray"
+} else {
+    Say "    [WARN] could not regenerate PICKLIST_SCOPE -- the browser scope tool will report 'no scope for $Provider'" "Yellow"
 }
 Say "  Re-run the full test matrix from Test 1 (see ${Provider}_TEST_MATRIX.txt)" "Gray"
 
