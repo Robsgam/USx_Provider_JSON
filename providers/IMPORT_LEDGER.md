@@ -232,10 +232,22 @@ at San Diego Sheriff's office. it is an eSun provider. We have the same situatio
 LAfeyyete parish and New Oreleans PD. We will need to assume support for those providers. My plan is
 to ingest what was built aand go from there in terms of fixing issues."*
 
-**THIS CHANGES THE RISK ON TWO PROVIDERS THAT THE BUILD QUEUE CALLED "FREE".** CA_eSUN and LA_LEMS
-have no logs in this repo, so a rebuild costs no re-sweep — but they are NOT greenfield. Real officers
-are running DIFFERENT builds of both today, and we are taking over support. Our JSON is not the only
-thing that has to be right; it has to be reconcilable with what is deployed.
+⚠️ **THE DEPLOYED FILES ARE NOT A BASIS, A BASELINE, OR A SPEC. THEY CONTAIN ERRORS — THAT IS WHY WE
+WERE CALLED IN.** Rob, 2026-08-20, correcting an earlier framing of mine: *"don't use that as a basis.
+we found there were errors in one of the jsons so that is why we are being called in to mamange the
+configurations and control the file and track it."*
+
+The job is to **take control of these configurations and replace them** with builds derived from the
+devdoc and metadata, under version control and gated. A deployed file is a record of what a tenant is
+running TODAY — useful for explaining a symptom an officer reports and for planning the cutover, and
+for nothing else. **Never treat a difference between our build and a deployed file as evidence that
+ours is wrong.** The presumption runs the other way: ours is derived from the authorities and gated;
+theirs is the artifact with known defects.
+
+**THIS DOES CHANGE THE RISK ON TWO PROVIDERS THE BUILD QUEUE CALLS "FREE".** CA_eSUN and LA_LEMS have
+no logs in this repo, so a rebuild costs no re-sweep — but they are not greenfield either. Real
+officers are running defective builds of both today, so getting our version right is urgent in a way
+a never-deployed provider is not.
 
 | Tenant | Provider | Status | Reference copy held? |
 |---|---|---|---|
@@ -259,6 +271,17 @@ variable set reduces to `[Plate, State]`.
 
 **RULES FOR THESE FILES, same as §B.1:** the devdoc and metadata XML remain the authority for what we
 BUILD; a deployed file is evidence of what a tenant is RUNNING, never a spec to copy. Its value is
-diagnostic — when San Diego or Lafayette or NOPD reports a symptom, diff their build against ours and
-the difference is the first place to look. **Do not "align" our JSON to a deployed file** on the
-strength of the file alone.
+diagnostic — when San Diego or Lafayette or NOPD reports a symptom, their build explains what they are
+seeing. **Do not "align" our JSON to a deployed file**, and do not read a difference as our defect.
+
+**INTAKE — Rob is supplying the JSONs (2026-08-20: "i will give you the josns to work from").**
+When each arrives:
+1. Commit it to that provider's `source/` under the tenant-named convention
+   (`<Tenant> <PROVIDER> <M.D.YYYY>.json`), exactly as Lafayette's and San Diego's are.
+2. Record the tenant in the table above — including any tenant not yet listed.
+3. Analyse it the way §B.1 analyses Lafayette's: what it carries, how it differs from our build, and
+   **which of those differences are its defects** — that is the point of the exercise, since the
+   errors in these files are why we were engaged.
+4. Fix OUR build only where the DEVDOC or METADATA says we are wrong. A defect found in a deployed
+   file is a defect in THAT file; it becomes our work only when it reveals something our own
+   authorities also demand.
