@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.10.json
-  Generated: 2026-08-20 09:16
+  Source: OH_LEADS_v2.11.json
+  Generated: 2026-08-20 19:00
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: OH_LEADS_v2.10
+ POST-BUILD VERIFICATION: OH_LEADS_v2.11
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -41,7 +41,7 @@ POST-BUILD VERIFICATION
   [PASS] All 5 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (33) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (39) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -65,6 +65,12 @@ POST-BUILD VERIFICATION
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'AddressCounty' (any[]-only) label='County Code' -- manual label override accepted (bare "County Code" per DEX-1284 lean pass (any[] optional owner-search qualifier))
+  [INFO] Field 'OwnerMiddleName' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, Vehicle owner pool))
+  [INFO] Field 'OwnerNameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, Vehicle owner pool))
+  [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, Person DL pool))
+  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, Person DL pool))
+  [INFO] Field 'nameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, Person DH pool))
+  [INFO] Field 'nameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, Person DH pool))
   [INFO] Field 'firearmMake' (any[]-only) label='Make' -- manual label override accepted (bare "Make" per DEX-1284 lean pass (any[] optional gun qualifier))
   [INFO] Field 'gunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare "Caliber" per DEX-1284 lean pass (any[] optional gun qualifier))
   [INFO] Field 'relatedHitSearchIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted ("Stolen Check" per DEX-1284, canonical on FL/HI/IL/NY/TX (any[] optional))

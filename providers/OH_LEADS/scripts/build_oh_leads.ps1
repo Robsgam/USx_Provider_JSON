@@ -36,7 +36,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_oh_leads.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.10'
+$Version     = '2.11'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OH_LEADS_v${Version}.json"
@@ -190,7 +190,7 @@ $vehRegQuery = [PSCustomObject]@{
         # RN -- owner by Name (cross-entity; lowest priority)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('OwnerLastName','OwnerFirstName'); any = @('AddressCounty')
+                set = @('OwnerLastName','OwnerFirstName'); any = @('AddressCounty','OwnerMiddleName','OwnerNameSuffix')
                 conditions = @(
                     [PSCustomObject]@{ field = @('LicensePlateNumber');          operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('VehicleIdentificationNumber'); operator = 'NOT_EXISTS' }
@@ -260,7 +260,7 @@ $dlQuery = [PSCustomObject]@{
         # DQ.N -- OOS Name+DOB+Sex (State present). OLN>Name guardrail
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('NameLast','NameFirst','BirthDate','SexCode'); any = @('RegistrationState')
+                set = @('NameLast','NameFirst','BirthDate','SexCode'); any = @('RegistrationState','nameMiddle','nameSuffix')
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState');     operator = 'EXISTS' }
@@ -285,7 +285,7 @@ $dlQuery = [PSCustomObject]@{
         # State-bearing name search still routes to DQ.N, the variant that does define it.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('NameLast','NameFirst','BirthDate'); any = @()
+                set = @('NameLast','NameFirst','BirthDate'); any = @('nameMiddle','nameSuffix')
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
@@ -298,7 +298,7 @@ $dlQuery = [PSCustomObject]@{
         # DN -- in-state Name (no State). OLN>Name guardrail
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('NameLast','NameFirst'); any = @()
+                set = @('NameLast','NameFirst'); any = @('nameMiddle','nameSuffix')
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('RegistrationState');     operator = 'NOT_EXISTS' }
@@ -353,7 +353,7 @@ $dhQuery = [PSCustomObject]@{
         # KQ.N: Name+DOB+Sex (Name before OLN)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','RegistrationState','attention')
+                set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','RegistrationState','attention','nameMiddleDH','nameSuffixDH')
                 defaults = @([PSCustomObject]@{ field = 'purposeCodeDH'; value = 'C' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' })
             }
@@ -591,6 +591,22 @@ $ohBundle = [PSCustomObject]@{
 # LABEL-OVERRIDE: firearmMake -- bare "Make" per DEX-1284 lean pass (any[] optional gun qualifier)
 # LABEL-OVERRIDE: gunCaliber -- bare "Caliber" per DEX-1284 lean pass (any[] optional gun qualifier)
 # LABEL-OVERRIDE: AddressCounty -- bare "County Code" per DEX-1284 lean pass (any[] optional owner-search qualifier)
+# The six name components below became any[]-only AT v2.11 -- which is the entire point of that
+# version: they were composed into their Name attribute but sat in NO combination pool, so an officer
+# could type a middle name and it went nowhere. Pooling them is what puts the value on the wire, and
+# it is ALSO what makes CHECK 15 Rule 3 start asking for an "(optional)" qualifier they should not
+# carry. The WARN is the fix working, not a regression. "Middle Name" not "MI": maxLength 30 is a full
+# middle name -- the mislabel that sat on NY/TX/TX_CCH from 2026-07-27 to 08-18. Same overrides
+# AZ_AZDPS records for its own components.
+# ONE TAG PER LINE, fieldId first, ' -- ' on the SAME line: verify_build matches
+# '#\s*LABEL-OVERRIDE:\s*(\S+)\s*--\s*(.+?)$' per line. My first attempt listed all six on one line
+# with the '--' wrapped onto the next, so NONE of them registered and all six WARNs survived.
+# LABEL-OVERRIDE: nameMiddle -- bare "Middle Name", DEX-1284 lean pass (any[] optional, Person DL pool)
+# LABEL-OVERRIDE: nameSuffix -- bare "Suffix", DEX-1284 lean pass (any[] optional, Person DL pool)
+# LABEL-OVERRIDE: nameMiddleDH -- bare "Middle Name", DEX-1284 lean pass (any[] optional, Person DH pool)
+# LABEL-OVERRIDE: nameSuffixDH -- bare "Suffix", DEX-1284 lean pass (any[] optional, Person DH pool)
+# LABEL-OVERRIDE: OwnerMiddleName -- bare "Middle Name", DEX-1284 lean pass (any[] optional, Vehicle owner pool)
+# LABEL-OVERRIDE: OwnerNameSuffix -- bare "Suffix", DEX-1284 lean pass (any[] optional, Vehicle owner pool)
 # ------------------------------------------------------------------
 # v2.4 CARD COLLAPSE 6 -> 1, matching the portfolio (every other provider runs one Vehicle card).
 # The old six cards (OPTIONS / PLATE / DEALER PLATE / VIN / NAME / SSN) split ONE entity's search

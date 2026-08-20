@@ -2,9 +2,25 @@
 
 Auto-generated from `OH_LEADS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.10** | Generated: 2026-08-20
+Current: **v2.11** | Generated: 2026-08-20
 
 ---
+
+## v2.11 -- 2026-08-20 -- The 8 name components now sit in a combination pool -- the officer's middle name reaches the state
+
+**CHANGED:** middle/suffix added to the any[] of every NAME combo, and ONLY those:
+    DQ.N  any[RegistrationState] -> +nameMiddle, nameSuffix  
+    QWA   any[]                  -> +nameMiddle, nameSuffix  
+    DN    any[]                  -> +nameMiddle, nameSuffix  
+    KQ.N  any[purposeCodeDH,...] -> +nameMiddleDH, nameSuffixDH  
+    RN    any[AddressCounty]     -> +OwnerMiddleName, OwnerNameSuffix   (Vehicle owner-by-name)  
+  UNTOUCHED: DQ.O, DL, KQ.O -- OLN paths, where name plays no part.  
+  any[] not set[]: they are optional qualifiers. In set[] a middle name becomes MANDATORY and a  
+  driver without one could not be searched.  
+**REASON:** audit_name_components reported C3 NOT-IN-POOL x6 (now x8 counting the Vehicle owner pool).
+  The controls existed, were labelled correctly, and were composed into their Name attribute -- but  
+  sat in NO combination's set[]/any[], so an officer could type a middle name and it went nowhere.  
+  OH's own v2.10 wire says so: `<Name>DOE, JOHN</Name>` on all 56 logs.  
 
 ## v2.10 -- 2026-08-20 -- Card titles: every parenthetical helper removed -- OPERATOR DIRECTIVE, cosmetic only
 

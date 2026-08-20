@@ -3,6 +3,47 @@ OH_LEADS -- Build Notes
 Provider: OH_LEADS
 State: Ohio
 Network: LEADS (Law Enforcement Automated Data System)
+v2.11  2026-08-20  The 8 name components now sit in a combination pool -- the officer's middle name reaches the state
+  CHANGED: middle/suffix added to the any[] of every NAME combo, and ONLY those:
+      DQ.N  any[RegistrationState] -> +nameMiddle, nameSuffix
+      QWA   any[]                  -> +nameMiddle, nameSuffix
+      DN    any[]                  -> +nameMiddle, nameSuffix
+      KQ.N  any[purposeCodeDH,...] -> +nameMiddleDH, nameSuffixDH
+      RN    any[AddressCounty]     -> +OwnerMiddleName, OwnerNameSuffix   (Vehicle owner-by-name)
+    UNTOUCHED: DQ.O, DL, KQ.O -- OLN paths, where name plays no part.
+    any[] not set[]: they are optional qualifiers. In set[] a middle name becomes MANDATORY and a
+    driver without one could not be searched.
+  REASON: audit_name_components reported C3 NOT-IN-POOL x6 (now x8 counting the Vehicle owner pool).
+    The controls existed, were labelled correctly, and were composed into their Name attribute -- but
+    sat in NO combination's set[]/any[], so an officer could type a middle name and it went nowhere.
+    OH's own v2.10 wire says so: `<Name>DOE, JOHN</Name>` on all 56 logs.
+
+  *** THIS SUPERSEDES A DELIBERATE v2.7 DECISION, AND THE REASON IT IS BEING REVISITED IS NOT
+  "I DISAGREE" -- IT IS THAT THE DECISION'S OWN SETTLING MECHANISM CANNOT WORK. *** v2.7 recorded:
+  "C3 NOT-IN-POOL x6 IS DELIBERATE ... the value reaches the wire through the composite ... They are
+  NOT added to any[] on speculation ... settle it with one live query filling middle+suffix, which
+  OH's first sweep will now do."
+  That sweep HAPPENED at v2.10, 56/56 ALL-PASS -- and it settled NOTHING, because an UNPOOLED field
+  generates no `_af_` plan test, so no test ever filled a middle name. The wire read `DOE, JOHN` for
+  want of input, not as evidence. The deferral was unreachable by construction: it asked for a test
+  that the configuration it was defending makes impossible to generate.
+  WHAT IS ACTUALLY PROVEN, stated narrowly: AZ_AZDPS carries its components in the any[] of every
+  name combo and its auto-generated `DQN_af_nameMiddle` / `_af_nameSuffix` logs show `DOE, JOHN A`
+  and `DOE, JOHN JR` against a `DOE, JOHN` control. So POOLED IS PROVEN TO WORK. Whether UNPOOLED
+  also works remains genuinely unproven -- and after this change it no longer needs an answer, because
+  the pooled path is the one shipped. I am not claiming the old note was factually wrong about the
+  composite; I am claiming its position could never be tested from inside itself.
+  CONSEQUENCE THAT MAKES THIS SELF-CLOSING: emit_test_plan generates one test per any[] field, so the
+  v2.11 plan now CONTAINS the middle/suffix tests automatically and the re-sweep will prove or refute
+  the wire. Nothing hand-written.
+
+  VERIFIED: name components 6 C3 -> 0 (12 examined, 0 C1 / 0 C2 / 0 C3) - wiring closure 0 breaks
+  across all ten classes - 20 combinations all reachable - requirement fidelity 22 branches HELD with
+  0 UNDER / 0 OVER (branches did not fall, so nothing was suppressed) - prefill shadow 39 pairs,
+  0 FAIL - validator 78 PASS / 0 FAIL / 0 WARN.
+  COST: archives all 56 v2.10 logs; OH drops ALL-PASS -> NEVER-TESTED and owes a re-import plus a
+  re-sweep. This is a WIRE change, so the sweep verifies something genuinely new.
+
 v2.10  2026-08-20  Card titles: every parenthetical helper removed -- OPERATOR DIRECTIVE, cosmetic only
   CHANGED: the trailing/inline "(...)" clause stripped from all 5 card titles that carried one.
     VEHICLE  removed "(leave State blank for OH; fill it for an out-of-state Nlets query)"

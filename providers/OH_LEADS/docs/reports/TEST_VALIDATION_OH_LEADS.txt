@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: OH_LEADS
-  Source: OH_LEADS_v2.10.json
-  Generated: 2026-08-20 09:16
+  Source: OH_LEADS_v2.11.json
+  Generated: 2026-08-20 19:00
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- OH_LEADS_v2.10
+TEST MATRIX <-> JSON CONSISTENCY -- OH_LEADS_v2.11
 ============================================================
-Source: OH_LEADS_v2.10.json
+Source: OH_LEADS_v2.11.json
 Matrix: OH_LEADS_TEST_MATRIX.txt
 Generated: 2026-08-20
 
@@ -17,64 +17,66 @@ data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (16 tests -- 2 cards, 7 combos)
+ENTITY: PERSON (18 tests -- 2 cards, 7 combos)
   T1  Person     [PASS] (structural check)
-  T2  Person     [PASS] any[] fields verified: RegistrationState
+  T2  Person     [PASS] any[] fields verified: RegistrationState, nameMiddle, nameSuffix
   T3  Person     [PASS] (structural check)
   T4  Person     [PASS] any[] fields verified: ImageIndicator, RegistrationState
   T5  Person     [PASS] DriverLicenseQuery fires (QWA)
-  T6  Person     [PASS] DriverLicenseQuery fires (DN)
-  T7  Person     [PASS] DriverLicenseQuery fires (DL)
-  T8  Person     [PASS] (structural check)
-  T9  Person     [PASS] any[] fields verified: purposeCodeDH, RegistrationState, attention
+  T6  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix
+  T7  Person     [PASS] DriverLicenseQuery fires (DN)
+  T8  Person     [PASS] any[] fields verified: nameMiddle, nameSuffix
+  T9  Person     [PASS] DriverLicenseQuery fires (DL)
   T10  Person     [PASS] (structural check)
   T11  Person     [PASS] any[] fields verified: purposeCodeDH, RegistrationState, attention
   T12  Person     [PASS] (structural check)
-  T13  Person     [PASS] (structural check)
+  T13  Person     [PASS] any[] fields verified: purposeCodeDH, RegistrationState, attention, nameMiddleDH
   T14  Person     [PASS] (structural check)
   T15  Person     [PASS] (structural check)
-  T16  Person     [PASS] queriesToDeselect verified
+  T16  Person     [PASS] (structural check)
+  T17  Person     [PASS] (structural check)
+  T18  Person     [PASS] queriesToDeselect verified
 ENTITY: VEHICLE (19 tests -- 1 card, 7 combos)
-  T17  Vehicle    [PASS] (structural check)
-  T18  Vehicle    [PASS] (structural check)
-  T19  Vehicle    [PASS] VehicleRegistrationQuery fires (RS)
-  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (RN)
-  T21  Vehicle    [PASS] any[] fields verified: AddressCounty
-  T22  Vehicle    [PASS] VehicleRegistrationQuery fires (RV)
-  T23  Vehicle    [PASS] VehicleRegistrationQuery fires (RP)
-  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
-  T25  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
-  T26  Vehicle    [PASS] (structural check)
+  T19  Vehicle    [PASS] (structural check)
+  T20  Vehicle    [PASS] (structural check)
+  T21  Vehicle    [PASS] VehicleRegistrationQuery fires (RS)
+  T22  Vehicle    [PASS] VehicleRegistrationQuery fires (RN)
+  T23  Vehicle    [PASS] any[] fields verified: AddressCounty, OwnerMiddleName, OwnerNameSuffix
+  T24  Vehicle    [PASS] VehicleRegistrationQuery fires (RV)
+  T25  Vehicle    [PASS] VehicleRegistrationQuery fires (RP)
+  T26  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
   T27  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
-  T28  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T28  Vehicle    [PASS] (structural check)
   T29  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
-  T30  Vehicle    [PASS] (structural check)
+  T30  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
   T31  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
   T32  Vehicle    [PASS] (structural check)
   T33  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
   T34  Vehicle    [PASS] (structural check)
-  T35  Vehicle    [PASS] VehicleRegistrationQuery fires (RS)
+  T35  Vehicle    [PASS] VehicleRegistrationQuery fires (ATDP)
+  T36  Vehicle    [PASS] (structural check)
+  T37  Vehicle    [PASS] VehicleRegistrationQuery fires (RS)
 ENTITY: BOAT (10 tests -- 1 card, 4 combos)
-  T36  Boat       [PASS] (structural check)
-  T37  Boat       [PASS] any[] fields verified: RegistrationState
   T38  Boat       [PASS] (structural check)
   T39  Boat       [PASS] any[] fields verified: RegistrationState
   T40  Boat       [PASS] (structural check)
-  T41  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T41  Boat       [PASS] any[] fields verified: RegistrationState
   T42  Boat       [PASS] (structural check)
   T43  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
   T44  Boat       [PASS] (structural check)
-  T45  Boat       [PASS] (structural check)
+  T45  Boat       [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T46  Boat       [PASS] (structural check)
+  T47  Boat       [PASS] (structural check)
 ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
-  T46  Firearm    [PASS] GunQuery fires (QG)
-  T47  Firearm    [PASS] any[] fields verified: firearmMake, gunCaliber, relatedHitSearchIndicator
+  T48  Firearm    [PASS] GunQuery fires (QG)
+  T49  Firearm    [PASS] any[] fields verified: firearmMake, gunCaliber, relatedHitSearchIndicator
 ENTITY: ARTICLE (5 tests -- 1 card, 2 combos)
-  T48  Article    [PASS] (structural check)
-  T49  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
   T50  Article    [PASS] (structural check)
   T51  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
   T52  Article    [PASS] (structural check)
+  T53  Article    [PASS] any[] fields verified: ImageIndicator, relatedHitSearchIndicator
+  T54  Article    [PASS] (structural check)
 
-SUMMARY: 52/52 PASS, 0 FAIL
+SUMMARY: 54/54 PASS, 0 FAIL
 
 
