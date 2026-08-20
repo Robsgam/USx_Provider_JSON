@@ -1,88 +1,129 @@
-# FINDINGS REGISTER — open defects per provider
+# FINDINGS REGISTER — THE WORK LOG
 
-> Created 2026-08-20 at Rob's direction: *"log everything you found as to be fixed so we dont lose it
-> and lets start teacking them all."*
+> **This file is the guide for work moving forward** (Rob, 2026-08-20: *"i want the build test stsues
+> we derived to be durably saved and be the guide for work moving forward"*). Build order, per-provider
+> status, and every open finding live here. Read it before starting any provider.
 >
-> **Why this file exists.** Every finding below came from a gate that already existed and that
-> **nothing ran automatically**. `audit_layout_flow` (built 08-11) and `audit_name_components`
-> (built 08-17) were wired into no orchestrator, so their findings only surfaced when a human typed
-> the tool name. That is how NJ_NJCJIS — *named in writing* in CLAUDE.md on 08-17 as carrying the
-> name-component gap — sat at `0 FAIL / 0 WARN` through a full portfolio sweep and two further days
-> of runs. Both gates are now wired (`enforce` PHASE 2w and 2x, advisory). **This file is the
-> backstop for the same failure: a finding written here cannot be lost by nobody thinking to ask.**
+> **Why it exists.** Every finding below came from a gate that already existed and that **nothing ran
+> automatically**. `audit_layout_flow` (08-11) and `audit_name_components` (08-17) were wired into no
+> orchestrator, so their findings surfaced only when a human typed the tool name. That is how
+> NJ_NJCJIS — *named in writing* in CLAUDE.md on 08-17 — sat at `0 FAIL / 0 WARN` through a full
+> portfolio sweep and two more days of runs. Both are now wired (`enforce` PHASE 2w / 2x, advisory).
+> **This file is the backstop: a finding written here cannot be lost to nobody thinking to ask.**
 >
-> **Rules for this file.** One row per finding. Never delete a row — move it to DONE with the version
-> that fixed it. `REAL?` is the load-bearing column: a finding that is prefilled, adjudicated or
-> cosmetic is *not* a defect, and treating it as one costs a re-sweep for nothing.
-> Re-derive counts with `audit_layout_flow -All`, `audit_name_components -All`,
-> `audit_wiring_closure -All`. Never from memory.
+> **Rules.** Never delete a row — move it to DONE with the version that fixed it. `REAL?` is the
+> load-bearing column: prefilled, adjudicated or cosmetic findings are **not** defects, and treating
+> one as a defect costs a re-sweep for nothing. Re-derive every number with the tools
+> (`audit_layout_flow -All`, `audit_name_components -All`, `audit_wiring_closure -All`), never from
+> memory. **DO NOT BUILD anything here until the pass is authorised.**
 
-## The rule that decides priority
+---
 
-| State | Meaning | Cost of fixing |
+## 0. THE COST RULE — why the order looks like this
+
+| State | Meaning | Cost of changing it |
 |---|---|---|
-| **tenant-verified** | has passing logs from a sweep Rob sat through | changing it archives those logs → **Rob must re-drive the whole sweep** |
 | **never-tested** | no logs at all | **nothing** — no package to lose, no re-sweep |
+| **tenant-verified** | passing logs from a sweep Rob sat through | archives those logs → **Rob must re-drive the whole sweep** |
 
-Rob 2026-08-20: **FL, TX, NJ, NY, CA_CLETS, IL, HI are all high priority** — i.e. the tenant-verified
-set is to be fixed despite the re-sweep cost, not deferred because of it. Re-test cost is explicitly
-**not** grounds to defer (Rob 2026-08-11).
+Every provider in the build queue below is **never-tested**, so the entire queue costs zero of Rob's
+time. That is why it runs first. The tenant-verified providers are tracked separately, and only two
+of them need anything at all.
 
----
-
-## THE DISCOVERY THAT CHANGES SEVERAL ROWS BELOW — read before working any C3
-
-`audit_name_components` grades three classes. C1 NO-CONTROL (the officer cannot enter it) and C2
-NOT-COMPOSED block; **C3 NOT-IN-POOL is labelled "[NOTE] impact UNPROVEN"** — composed into the Name
-attribute but present in no combination's `set[]`/`any[]`.
-
-**C3 is NOT benign, and it is no longer unproven.** Found 2026-08-20 on NJ: adding the middle/suffix
-controls and composing them into `Name` moved the finding C1 → C3, which reads like success. It is
-not. **AZ_AZDPS — the only provider with a wire-PROVEN `DOE, JOHN A JR` — carries
-`nameMiddle`/`nameSuffix` in the `any[]` of EVERY name combo** (`ACWL`, `DQPN`, `DQN`, and `KQH` on
-the DH side). Pool membership is what puts a component on the wire. Without it the officer types a
-middle name and **it is silently dropped**.
-
-So: **a C3 row is a half-finished C1 fix.** Add the components to the name combo's `any[]` (never
-`set[]` — they are optional qualifiers), and never to an OLN-path combo where name plays no part.
+Standing rulings: **re-test cost is NOT grounds to defer a fix** (Rob 2026-08-11), and
+**"resweeping a fixed provider is what needs to happen"** (Rob 2026-08-20) — so a real defect gets
+fixed even on a verified provider. The cost table decides ORDER, never whether.
 
 ---
 
-## TRIAGE — what each provider needs. **NOTES ONLY; DO NOT BUILD.**
+## 1. BUILD ORDER — Rob's queue, 2026-08-20
 
-Rob 2026-08-20: *"do not build just make the notes and we will bulk rebuild all providre that we flag
-it and let it run later. we want to triage them all. right now nj is retest only and ny should be
-rebuild and retest"*
+Ordered by Rob. Work strictly top-down, one provider at a time, minimal drift.
 
-**One item at a time, minimal drift.** Nothing in section A or B is to be built until the bulk pass is
-authorised. This table is the queue for that pass.
-
-| Provider | ACTION | Needs Rob? | Why |
+| # | Provider | Build work | Status |
 |---|---|---|---|
-| **NJ_NJCJIS** v4.17 | **RETEST ONLY** | import + sweep | Build is DONE (middle+suffix, composite, AP #15, `FULL.any[]`). 0 C1 / 0 C2 / 0 C3, enforce 46 PASS / 0 FAIL / 0 WARN. Owes: import, 40-test sweep, DEX-988 comment, Newark re-import |
-| **NY_NYSPIN_EJUSTICE** v4.24 | **REBUILD + RETEST** | no — fully specified | 2 label fixes + DH rows 3&4 merged. Work order below is complete and unambiguous |
-| **OH_LEADS** v2.10 | REBUILD + RETEST | no | C3 ×6 — the `any[]` pool fix. Officer's middle name is dropped today |
-| **NM_NMLETS_OFML** v2.4 | REBUILD + RETEST | no | C3 ×4 — same `any[]` pool fix. Already owes a sweep anyway |
-| **TN_TIES** v2.2 | REBUILD | no | Layout collapse 14→6, C1 ×4, **+ the class-J wiring break** |
-| **CA_VENTURA_COUNTY** v2.4 | REBUILD | no | 20→6 cards, C1 ×10 |
-| **CA_eSUN** v2.3 | REBUILD | no | 16→6 cards, C1 ×8, fillability flag |
-| **CA_CLETS_OCATS** v2.6 | REBUILD | no | 16→6 cards, C1 ×4 |
-| **CA_CONTRA_COSTA** v2.3 | REBUILD | **YES** | 7→6 cards, C1 ×10 — **and a scope question: builds no JAWS/SuperQuery despite the recorded recipe** |
-| **MD_METERS** v2.1 | REBUILD | no | 13→6 cards, C1 ×4 |
-| **CA_SAN_LUIS_OBISPO** v2.4 | REBUILD | no | 13→6 cards, C1 ×4 |
-| **LA_LEMS** v3.1 | REBUILD | no | 12→6 cards, C1 ×4 |
-| **OR_LEDS** v2.4 | REBUILD | no | 11→6 cards, layout only (0 C1) |
-| **TX_TLETS_CCH** v1.17 | HOLD | no | Must move in lockstep with TX_TLETS (`# BASE-SYNC`). 9 cards is correct |
-| **FL_FCIC** v7.24 | **NOTHING** | no | Its L2 was my false positive. Only a date picker on a wide row remains — cosmetic |
-| **CA_CLETS** v2.26 | **NOTHING** | no | Both L2s benign (`purposeCode` prefilled). Clean after the L2 fix |
-| **TX_TLETS** v4.21 | **NOTHING** | no | Its L2 is the recorded DEX-1283 override |
-| **IL_LEADS_OFML** v2.8 | NOTHING | no | 2 dead-space rows only |
-| **HI_HCJDC_OFML** v4.20 | NOTHING | no | 1 wasted-width row only |
-| **AZ_AZDPS** v3.11 | NOTHING | no | Clean on all three gates. Reference build |
+| 1 | **OH_LEADS** v2.10 | `any[]` pool fix on 4 name combos (`DQ.N`, `QWA`, `DN`, `KQ.N`) | **NEXT** |
+| 2 | **NM_NMLETS_OFML** v2.4 | `any[]` pool fix on its 2 name combos | queued |
+| 3 | **LA_LEMS** v3.1 | collapse 12→6 cards; add name controls + compose + pool | queued |
+| 4 | **CA_eSUN** v2.3 | collapse 16→6; name controls; `[FLAG:plan-fillability-unfireable-tests]` (26 UNSAT) | queued |
+| 5 | **MD_METERS** v2.1 | collapse 13→6; name controls | queued |
+| 6 | **TN_TIES** v2.2 | collapse 14→6; name controls; **+ the class-J wiring break on `RQ05`** | queued |
+| 7 | **OR_LEDS** v2.4 | collapse 11→6 — **LAYOUT ONLY**, its name components are already pooled | queued |
+| 8 | **CA_VENTURA_COUNTY** v2.4 | collapse 20→6 (worst in portfolio); name controls | queued |
+| 9 | **CA_SAN_LUIS_OBISPO** v2.4 | collapse 13→6; name controls | queued |
+| 10 | **CA_CLETS_OCATS** v2.6 | collapse 16→6; name controls | queued |
+| 11 | **CA_CONTRA_COSTA** v2.3 | collapse 7→6; name controls | ⛔ **PARKED — awaiting Rob's ruling** on whether JAWS / SuperQuery / RequestingAgencyId is in scope |
+
+**Not in the build queue, tracked separately:**
+
+| Provider | State | Owed |
+|---|---|---|
+| **NJ_NJCJIS** v4.17 | build COMPLETE | **RETEST ONLY** — regenerate the plan first (see §3), then import, 40-test sweep, DEX-988 comment, Newark re-import |
+| **NY_NYSPIN_EJUSTICE** v4.24 | build spec'd, not built | **REBUILD + RETEST** — 2 `MI` labels + DH rows 3&4 merged (§4). Its name components are already wire-proven |
+| **TX_TLETS_CCH** v1.17 | fully wired | **DRIVE ONLY** — 14 pooled combos, 24 planned tests, 0 logs. Never imported. Lockstep with TX_TLETS |
+| AZ, CA_CLETS, FL, HI, IL, TX | clean | nothing |
 
 ---
 
-## NY WORK ORDER — for the bulk rebuild. NOT YET BUILT.
+## 2. NAME COMPONENTS — status across all 20
+
+`POOLED` = combos whose `set[]`/`any[]` carries a middle/suffix control · `PLAN_af` = auto-generated
+`_af_` tests · `LOGS_af` = committed logs proving it on the wire.
+
+**The chain is self-closing:** put the components in `any[]` → `emit_test_plan` generates one test per
+`any[]` field → the sweep proves the wire. Nothing hand-written. AZ is the reference:
+`DQN` → `DOE, JOHN` · `DQN_af_nameMiddle` → `DOE, JOHN A` · `DQN_af_nameSuffix` → `DOE, JOHN JR`.
+
+```
+PROVIDER               POOLED   PLAN_af   LOGS_af   STATUS
+AZ_AZDPS               4        8         8         COVERED -- nothing owed
+CA_CLETS               8        16        16        COVERED -- nothing owed
+CA_CLETS_OCATS         0        0         0         NO CONTROLS -- needs controls + pool
+CA_CONTRA_COSTA        0        0         0         NO CONTROLS -- needs controls + pool
+CA_eSUN                0        0         0         NO CONTROLS -- needs controls + pool
+CA_SAN_LUIS_OBISPO     0        0         0         NO CONTROLS -- needs controls + pool
+CA_VENTURA_COUNTY      0        0         0         NO CONTROLS -- needs controls + pool
+FL_FCIC                4        8         8         COVERED -- nothing owed
+HI_HCJDC_OFML          2        4         4         COVERED -- nothing owed
+IL_LEADS_OFML          1        2         2         COVERED -- nothing owed
+LA_LEMS                0        0         0         NO CONTROLS -- needs controls + pool
+MD_METERS              0        0         0         NO CONTROLS -- needs controls + pool
+NJ_NJCJIS              1        0         0         pooled but UNPROVEN
+NM_NMLETS_OFML         0        0         0         NEEDS THE any[] FIX
+NY_NYSPIN_EJUSTICE     3        6         6         COVERED -- nothing owed
+OH_LEADS               0        0         0         NEEDS THE any[] FIX
+OR_LEDS                1        2         0         pooled but UNPROVEN
+TN_TIES                0        0         0         NO CONTROLS -- needs controls + pool
+TX_TLETS               3        6         6         COVERED -- nothing owed
+TX_TLETS_CCH           14       24        0         pooled but UNPROVEN
+```
+
+**7 COVERED · 2 need the `any[]` fix · 3 pooled but never swept · 8 need controls built.**
+
+Read the four states as different work, not one number:
+- **NO CONTROLS** — the officer cannot type it. Needs control + composite + `any[]`, in the same pass
+  as that provider's card collapse. These 8 are the 48 C1 findings seen from the other side.
+- **NEEDS THE any[] FIX** — controls exist, labelled correctly, composed into `Name`, and **in no
+  combination pool, so the value is silently dropped.** Worse than a missing field: the form looks
+  complete. OH's own wire says `<Name>DOE, JOHN</Name>` on all 56 logs.
+- **pooled but UNPROVEN** — build is right, no logs yet. Needs DRIVING, not building.
+- **COVERED** — components pooled, plan tests generated, wire proven. Nothing owed.
+
+⚠️ **`set[]` would be WRONG.** Components go in `any[]` — they are optional qualifiers. In `set[]` a
+middle name becomes MANDATORY and any driver without one cannot be searched. Confirmed by
+`audit_requirement_fidelity` on NJ: 10 branches / 0 UNDER-REQUIRED / 0 OVER-PERMITTED.
+
+---
+
+## 3. NJ_NJCJIS — plan regeneration, before its sweep
+
+NJ reads `POOLED 1 / PLAN_af 0 / LOGS_af 0`. The pool is correct; the **plan is stale** because
+`reset_test_package` ran BEFORE the `any[]` entries were added, so it generated no `_af_` name tests.
+**Regenerate the plan before driving**, or the sweep will pass 40/40 and prove nothing about the fix
+that motivated the version. Found by measuring the table above, not by any gate.
+
+---
+## 4. NY WORK ORDER — for the bulk rebuild. NOT YET BUILT.
 
 **DO change — the real finding (Rob confirmed by eye: *"oh i see midddle name not middle iniital"*):**
 
