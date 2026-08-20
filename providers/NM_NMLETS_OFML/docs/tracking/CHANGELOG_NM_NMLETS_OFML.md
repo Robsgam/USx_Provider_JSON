@@ -2,9 +2,29 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-20
+Current: **v2.4** | Generated: 2026-08-20
 
 ---
+
+## v2.4 -- 2026-08-20 -- Operator cosmetic pass -- State to the top line, Race after Sex on both Person cards
+
+**CHANGED** (dictated by Rob 2026-08-20: "move state to top line 2nd feild ... for person move race to
+3rd line after sex and on dh 2nd line after sex"):  
+  VEHICLE  ROW_VEH_1 [3,3,3,3] = Plate Number | STATE | Plate Type | Plate Year.  
+           State was on its own third row; it is now the 2nd field on the top line.  
+  DL       ROW_PER_DL_3 [3,3,3,3] = Date of Birth | Sex | RACE | Purpose Code.  
+           Race moves up from the lone 4th row to sit immediately after Sex; the 4th row is gone.  
+  DH       ROW_PER_DH_2 [3,3,3,3] = OLN | Date of Birth | Sex | RACE.  
+           Purpose Code displaced to ROW_PER_DH_3 -- it is an optional any[] qualifier on both DH  
+           combos, so it is the right field to move rather than an identifier.  
+  BOAT     ROW_BOA_1 [4,4,4] = Hull ID | STATE | Registration Number.  ** MY EXTENSION, NOT  
+           DICTATED ** -- the directive named no card, and State is the same routing field here  
+           (EXISTS -> Nlets BQ.H/BQ.R, NOT_EXISTS -> NCIC QB.H/QB.R), so it was carried across for  
+           uniformity. Say the word and it becomes [Hull, Registration, State]; see the trade-off  
+           noted in the build script at ROW_BOA_1.  
+**REASON:** operator directive. The State placement also happens to be defensible on its own terms --
+on NM, RegistrationState is the field that decides WHICH NETWORK every vehicle and boat query hits,  
+so the officer's first decision was previously the last thing on the card.  
 
 ## v2.3 -- 2026-08-20 -- LAYOUT COLLAPSED 13 cards -> 6, and the officer could not enter a middle name or suffix
 

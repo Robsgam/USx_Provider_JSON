@@ -1,4 +1,4 @@
-NM_NMLETS_OFML v2.3 -- TEST MATRIX
+NM_NMLETS_OFML v2.4 -- TEST MATRIX
 ==================================================
 Generated: 2026-08-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
@@ -10,23 +10,21 @@ FORM FIELDS
 Vehicle (1 card, 7 fields):
   CARD_VEH (VEHICLE SEARCH BY PLATE, 
 OR BY VIN):
-    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 1: LicensePlateNumber [Inp 10], RegistrationState [Sel STATE], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-    ROW 3: RegistrationState [Sel STATE]
 
 Person (2 cards, 21 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, 
 OR BY NAME):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     ROW 2: NameFirst [Inp 30], NameMiddle [Inp 30], NameLast [Inp 30], NameSuffix [Inp 10]
-    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], purposeCode [Inp C, 1]
-    ROW 4: raceCode [Sel RACE]
-    ROW 5: Attention [Inp 30]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel RACE], purposeCode [Inp C, 1]
+    ROW 4: Attention [Inp 30]
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, 
 OR BY NAME + DOB + SEX):
     ROW 1: NameFirstDH [Inp 30], NameMiddleDH [Inp 30], NameLastDH [Inp 30], NameSuffixDH [Inp 10]
-    ROW 2: OperatorLicenseNumberDH [Inp 20], BirthDateDH [FormDate], SexCodeDH [Sel SEX], purposeCodeDH [Inp 1]
-    ROW 3: raceCodeDH [Sel RACE]
+    ROW 2: OperatorLicenseNumberDH [Inp 20], BirthDateDH [FormDate], SexCodeDH [Sel SEX], raceCodeDH [Sel RACE]
+    ROW 3: purposeCodeDH [Inp 1]
 
 Firearm (1 card, 4 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
@@ -40,8 +38,7 @@ Article (1 card, 2 fields):
 Boat (1 card, 3 fields):
   CARD_BOA (BOAT SEARCH BY HULL ID, 
 OR BY REGISTRATION NUMBER):
-    BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8]
-    RegistrationState [Sel STATE]
+    BoatHullIdNumber [Inp 20], RegistrationState [Sel STATE], RegistrationNumber [Inp 8]
 
 QIDM SUMMARY (6 QIDMs, 14 combos)
 ----------------------------------------
@@ -157,4 +154,4 @@ COMBO COVERAGE (14/14):
   ArticleSingleQuery: 1/1 -- T30(Serial)
   BoatQuery: 4/4 -- T20(BQ+.R), T22(BQ+.H), T24(QB+.R), T25(QB+.H)
 
-IMPORT FILE: NM_NMLETS_OFML_v2.3.json
+IMPORT FILE: NM_NMLETS_OFML_v2.4.json

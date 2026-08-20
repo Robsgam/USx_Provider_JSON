@@ -30,9 +30,8 @@
 #   VehicleMakeCode: FormSelect VEHICLE_MAKE dropdown (hard gate -- never FormInput).
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nm_nmlets_ofml.ps1
-
 $ErrorActionPreference = "Stop"
-$Version     = '2.3'
+$Version     = '2.4'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NM_NMLETS_OFML_v${Version}.json"
@@ -421,8 +420,14 @@ $vehLayout = MakeLayouts @(
         id    = 'CARD_VEH'
         title = "VEHICLE SEARCH BY PLATE, `nOR BY VIN"
         rows  = @(
-            @{ id = 'ROW_VEH_1'; cols = @('4','4','4'); fields = @(
+            # State is the 2nd field on the TOP line by operator directive (Rob 2026-08-20: "move state
+            # to top line 2nd feild"), and it earns the position: on NM it is the ROUTING field for BOTH
+            # vehicle paths -- RegistrationState EXISTS -> Nlets (RQ.P/RQ.V), NOT_EXISTS -> NCIC
+            # (QV.P/QV.V). The officer's very first decision on this card is which network to hit, so
+            # burying it on a third row under the identifiers had it backwards.
+            @{ id = 'ROW_VEH_1'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for NM)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
@@ -430,9 +435,6 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }
                 @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
                 @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year' '4' 'ROW_VEH_2' }
-            )}
-            @{ id = 'ROW_VEH_3'; cols = @('6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NM)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
             )}
         )
     }
@@ -485,16 +487,14 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL_2' }
                 @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix'      '10' 'ROW_PER_DL_2' }
             )}
-            @{ id = 'ROW_PER_DL_3'; cols = @('4','4','4'); fields = @(
+            # Race is the 3rd line, immediately AFTER Sex, by operator directive (Rob 2026-08-20:
+            # "for person ... move race to 3rd line after sex"). This SUPERSEDES the v2.3 placement
+            # that parked it alone on a 4th row -- see the L9 override recorded in BUILD_NOTES.
+            @{ id = 'ROW_PER_DL_3'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_3' }
                 @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
+                @{ id = 'RaceCode_Input';  node = Sel 'raceCode'  'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
                 @{ id = 'PurposeCode_Input'; node = Inp 'purposeCode' 'Purpose Code' '1' 'ROW_PER_DL_3' @{ initialValue = 'C' } }
-            )}
-            # raceCode sits ALONE, deliberately: it feeds the RMS query ONLY (it is in no CommSys
-            # combination), and audit_layout_flow L9 flagged it at v2.2 for sharing ROW_PER_OPT_1 with
-            # the mandatory purposeCode -- which reads as though it queries the state, and it does not.
-            @{ id = 'ROW_PER_DL_4'; cols = @('6'); fields = @(
-                @{ id = 'RaceCode_Input'; node = Sel 'raceCode' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
             )}
             # HIDDEN Attention feeder, LAST row on THIS card (L3). It belongs to the DRIVER LICENSE pool,
             # not DH: Attention is an attribute of DriverLicenseQuery only, carried in the any[] of BOTH
@@ -522,20 +522,23 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH_1' }
                 @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix'      '10' 'ROW_PER_DH_1' }
             )}
+            # Race on the 2ND line, immediately AFTER Sex, by operator directive (Rob 2026-08-20:
+            # "on dh 2nd line after sex"). Purpose Code moves to the 3rd row to make room -- it is an
+            # optional any[] qualifier on both DH combos, so it is the right thing to displace.
             @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_2' }
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DH_2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_2' }
+                @{ id = 'RaceCodeDH_Input';  node = Sel 'raceCodeDH'  'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
             )}
-            # RMS-only, alone, same reasoning as raceCode on the DL card (L9).
-            # attributeTypeId='RACE'+codeTypeProvider='NIBRS' matches the DL raceCode field so it produces
-            # the attribute ID the DH RaceCode attr's codeTypeProvider reverse-lookup needs (was a
-            # codeTypeCategory code-string -> reverse-lookup couldn't resolve it; AP #11 CommSys
-            # direction, caught by the validate check added 2026-07-24).
+            # raceCodeDH keeps attributeTypeId='RACE'+codeTypeProvider='NIBRS' (matching the DL raceCode
+            # field) so it produces the attribute ID the DH RaceCode attr's codeTypeProvider
+            # reverse-lookup needs -- it was a codeTypeCategory code-string, which the reverse-lookup
+            # could not resolve (AP #11 CommSys direction, caught by the validate check added
+            # 2026-07-24). Moved up to row 2 at v2.4; this row now carries the displaced Purpose Code.
             # NO Attention row on this card -- DH has no Attention attribute at all (see line ~210).
             @{ id = 'ROW_PER_DH_3'; cols = @('6'); fields = @(
-                @{ id = 'RaceCodeDH_Input'; node = Sel 'raceCodeDH' 'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_3' }
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_3' }
             )}
         )
     }
@@ -613,12 +616,18 @@ $boaLayout = MakeLayouts @(
             # (BQ.H has hull in set[], BQ.R has reg in set[]), so two identifiers side by side on one
             # row is correct -- usx-cosmetic Step 3. Also clears the two L5 WASTED-WIDTH findings:
             # both had a full 12-col row at maxLen 20 and 8.
-            @{ id = 'ROW_BOA_1'; cols = @('6','6'); fields = @(
+            # State on the TOP line, 2nd field -- the same operator directive applied to Vehicle, carried
+            # here for uniformity because it is the SAME routing field on this entity too
+            # (RegistrationState EXISTS -> Nlets BQ.H/BQ.R, NOT_EXISTS -> NCIC QB.H/QB.R).
+            # NOTE, and flag it if this is not what was wanted: the directive named "state to top line
+            # 2nd field" without naming a card. Applying it here puts State BETWEEN the two alternative
+            # identifiers (Hull in BQ.H's set[], Registration in BQ.R's set[]), which usx-cosmetic would
+            # otherwise keep adjacent so they read as "either one". Operator placement wins over that
+            # guidance; swapping to [Hull, Registration, State] is a one-line change if preferred.
+            @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for NM)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
                 @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
-            )}
-            @{ id = 'ROW_BOA_2'; cols = @('6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NM)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_2' }
             )}
         )
     }
