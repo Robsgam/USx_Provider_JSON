@@ -40,9 +40,16 @@ turns the score into a queue. **ALL ELEVEN incomplete providers are now blocked 
 with build+spec+reachability met on every one** -- CA_CONTRA_COSTA was the last exception and cleared
 08-19, so the remaining 55% is ONE ACTIVITY. Building more will not move the number.
 
-**?? NO LOG SWEEP AND NO IMPORT UNTIL ROB LIFTS THIS (his words, 08-19): "we will not run a log sweep
-until we get this all fixed and figured out."** The queue above is READY, not authorised -- do NOT pick a
-never-tested provider and import it, which is what this file told the last session to do. Ask first.
+**SWEEPING AGAIN -- the 08-19 hold is LIFTED. NEXT: NM_NMLETS_OFML v2.2 (Rob, 08-20: "we will test nm
+next").** Pre-flight CLEAR (32 plan tests / 104 fills / 0 unfireable). **NM needs TWO things OH did not:
+an IMPORT (never installed) and a PICKLIST CAPTURE -- it has no `TENANT_PICKLISTS.json`.** Note NM's
+JSON plan is 32 tests against a SPEC plan of 51: the gate passes (every entity covered) but the sweep
+will exercise a thinner slice of the spec than OH's did. Say so before, not after, the logs land.
+
+**OH_LEADS v2.10 COMPLETE 08-20** -- cosmetic (parentheticals stripped from all 5 card titles that had
+one), re-swept 56/56, four log gates 56/56, DEX-990 comment **802507**, ticket + catalog on v2.10.
+**Wire-identity was PROVEN, not asserted: all 56 captured wires byte-identical to their v2.9 archived
+counterparts, with ARTICLE -- the one card not edited -- as the unchanged-fingerprint control.**
 
 **FIVE PROVIDERS REBUILT 08-18/19, ALL 0 FAIL** -- CA_CLETS_OCATS v2.6, NM_NMLETS_OFML v2.2,
 MD_METERS v2.1, TN_TIES v2.2, OR_LEDS v2.4 (last four also 0 WARN). Highlights: OCATS BUILT the two
@@ -105,6 +112,15 @@ Section 1. DRAFT AND WAIT, every provider, every time. Rules: `JIRA_COMMENT_TEMP
   dropdown (#39); LIVE CA_eSUN `DEX_INQUIRY_PURPOSE_CODE` (SHELVED 08-17, do not act).
 
 ## RULES I HAVE BROKEN -- READ FIRST (`usx-adjudicate`, `usx-metadata` 6, `usx-tooling` 5b/5c)
+
+- **A TOOL THAT AUTO-COMMITS MUST STAGE ONLY WHAT IT WROTE.** `import_captured_tests` ran
+  `git add -- providers`, so the watcher's automatic capture commit swept in a 228KB untracked CA_eSUN
+  tenant export and PUSHED it under the message "Import ... captures" -- fixed 08-20 to stage
+  `providers/<P>/{logs,docs}` + `automation/captures` only. **The blob is still in pushed history at
+  `8273a87f`; un-tracking does not remove it, and a rewrite is Rob's call.**
+- **`sed` FALLBACK AFTER A FAILED HEREDOC OVERWROTE A LINE WITH `X`** in this very file, 08-20. A
+  `cmd || sed ...` fallback runs the fallback when the FIRST command is merely absent (`python3`), not
+  when the edit is needed. Use the Edit tool for prose; never a blind regex over a curated file.
 
 - **A FINDING ON EVERY PROVIDER IS YOUR PROBE.** `report_mission_status` said "0 of 20" three times before
   it was right; each cause was my own regex, never the portfolio. **ANCHOR ON THE GATE'S VERDICT LINE.**
