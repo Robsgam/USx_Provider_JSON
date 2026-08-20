@@ -1,0 +1,59 @@
+﻿================================================================
+  Build Report: LA_LEMS
+  Source: LA_LEMS_v3.2.json
+  Generated: 2026-08-20 19:38
+================================================================
+TEST CONDUCTOR RESULTS
+=====================
+
+TEST MATRIX <-> JSON CONSISTENCY -- LA_LEMS_v3.2
+============================================================
+Source: LA_LEMS_v3.2.json
+Matrix: LA_LEMS_TEST_MATRIX.txt
+Generated: 2026-08-20
+
+SCOPE: This confirms each matrix row's expected combo fires for its
+data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
+It does NOT prove the combo is a provider-supported query: that is
+checked separately against the devdoc by audit_supported_queries.ps1.
+
+ENTITY: PERSON (17 tests -- 2 cards, 6 combos)
+  T1  Person     [PASS] DriverLicenseQuery fires (DQ)
+  T2  Person     [PASS] any[] fields verified: RegistrationState, attention
+  T3  Person     [PASS] DriverLicenseQuery fires (QWDN)
+  T4  Person     [PASS] any[] fields verified: RegistrationState, attention, NameMiddle, NameSuffix
+  T5  Person     [PASS] DriverLicenseQuery fires (QWA)
+  T6  Person     [PASS] any[] fields verified: attention, NameMiddle, NameSuffix
+  T7  Person     [PASS] DriverLicenseQuery fires (DP)
+  T8  Person     [PASS] any[] fields verified: attention
+  T9  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
+  T10  Person     [PASS] any[] fields verified: RegistrationState
+  T11  Person     [PASS] DriverHistoryQuery fires (KQName)
+  T12  Person     [PASS] any[] fields verified: RegistrationState, NameMiddleDH, NameSuffixDH
+  T13  Person     [PASS] DriverLicenseQuery fires (DP)
+  T14  Person     [PASS] DriverLicenseQuery fires (DP)
+  T15  Person     [PASS] DriverLicenseQuery fires (QWDN)
+  T16  Person     [PASS] DriverHistoryQuery fires (KQOperatorLicenseNumber)
+  T17  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (5 tests -- 1 card, 2 combos)
+  T18  Vehicle    [PASS] VehicleRegistrationQuery fires (RQSLicensePlateNumber)
+  T19  Vehicle    [PASS] any[] fields verified: attention
+  T20  Vehicle    [PASS] VehicleRegistrationQuery fires (RQSVehicleIdentificationNumber)
+  T21  Vehicle    [PASS] any[] fields verified: attention
+  T22  Vehicle    [PASS] VehicleRegistrationQuery fires (RQSLicensePlateNumber)
+ENTITY: BOAT (5 tests -- 1 card, 2 combos)
+  T23  Boat       [PASS] BoatQuery fires (BQ)
+  T24  Boat       [PASS] any[] fields verified: RegistrationState
+  T25  Boat       [PASS] BoatQuery fires (QB)
+  T26  Boat       [PASS] any[] fields verified: attention
+  T27  Boat       [PASS] BoatQuery fires (QB)
+ENTITY: FIREARM (2 tests -- 1 card, 1 combo)
+  T28  Firearm    [PASS] GunQuery fires (QG)
+  T29  Firearm    [PASS] any[] fields verified: attention, firearmMake, gunTypeCode
+ENTITY: ARTICLE (2 tests -- 1 card, 1 combo)
+  T30  Article    [PASS] ArticleSingleQuery fires (QA)
+  T31  Article    [PASS] any[] fields verified: attention, articleTypeCode
+
+SUMMARY: 31/31 PASS, 0 FAIL
+
+

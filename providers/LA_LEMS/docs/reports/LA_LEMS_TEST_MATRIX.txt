@@ -1,36 +1,30 @@
-LA_LEMS v3.1 -- TEST MATRIX
+LA_LEMS v3.2 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-18
+Generated: 2026-08-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 6 fields):
-  CARD_VEH_OPT (OPTIONS):
-    RegistrationState [Sel STATE]
-    attention [Inp X, 30]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10]
-    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-  CARD_VEH_VIN (VIN SEARCH):
+Vehicle (1 card, 6 fields):
+  CARD_VEH (VEHICLE SEARCH BY PLATE, 
+OR BY VIN):
+    LicensePlateNumber [Inp 10], RegistrationState [Sel STATE], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
     VehicleIdentificationNumber [Inp 17]
-
-Person (5 cards, 15 fields):
-  CARD_PER_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
     attention [Inp X, 30]
-  CARD_PER_OLN (DRIVER LICENSE - LICENSE NUMBER):
-    OperatorLicenseNumber [Inp 17]
-  CARD_PER_NAME (DRIVER LICENSE - NAME SEARCH):
-    ROW 1: NameFirst [Inp 30], NameLast [Inp 30]
-    ROW 2: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel NIBRS_RACE/NIBRS]
-  CARD_PER_DH_OLN (DRIVER HISTORY - LICENSE NUMBER):
-    OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp C, 1]
-  CARD_PER_DH_NAME (DRIVER HISTORY - NAME SEARCH):
-    ROW 1: NameFirstDH [Inp 30], NameLastDH [Inp 30]
-    ROW 2: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+
+Person (2 cards, 19 fields):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, 
+OR BY NAME + DOB + SEX):
+    ROW 1: OperatorLicenseNumber [Inp 17], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+    ROW 2: NameFirst [Inp 30], NameMiddle [Inp 30], NameLast [Inp 30], NameSuffix [Inp 10]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel NIBRS_RACE/NIBRS]
+    ROW 4: attention [Inp X, 30]
+  CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, 
+OR BY NAME + DOB + SEX):
+    ROW 1: NameFirstDH [Inp 30], NameMiddleDH [Inp 30], NameLastDH [Inp 30], NameSuffixDH [Inp 10]
+    ROW 2: OperatorLicenseNumberDH [Inp 20], BirthDateDH [FormDate], SexCodeDH [Sel SEX], purposeCodeDH [Inp C, 1]
 
 Firearm (1 card, 4 fields):
   CARD_GUN (FIREARM SEARCH):
@@ -42,12 +36,11 @@ Article (1 card, 3 fields):
     serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
     attention [Inp X, 30]
 
-Boat (2 cards, 4 fields):
-  CARD_BOA_HULL (HULL SEARCH):
-    BoatHullIdNumber [Inp 20]
+Boat (1 card, 4 fields):
+  CARD_BOA (BOAT SEARCH BY HULL ID, 
+OR BY REGISTRATION NUMBER):
+    BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
     attention [Inp X, 30]
-  CARD_BOA_REG (REGISTRATION SEARCH):
-    RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
 
 QIDM SUMMARY (6 QIDMs, 12 combos)
 ----------------------------------------
@@ -67,7 +60,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (17 tests -- 5 cards, 6 combos)
+ENTITY 1: PERSON (17 tests -- 2 cards, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -77,11 +70,11 @@ ENTITY 1: PERSON (17 tests -- 5 cards, 6 combos)
               Expected: any[] fields present in XML output.
  3  Person      QW+DN              SexCode=M, BirthDate=01/15/1990, Name... [    ]
               Expected: DriverLicenseQuery fires (QWDN)
- 4  Person      QW+DN              + RegistrationState, attention  [    ]
+ 4  Person      QW+DN              + RegistrationState, attention, NameMiddle, NameSuffix [    ]
               Expected: any[] fields present in XML output.
  5  Person      QW+A               SexCode=M, BirthDate=01/15/1990, Name... [    ]
               Expected: DriverLicenseQuery fires (QWA)
- 6  Person      QW+A               + attention                     [    ]
+ 6  Person      QW+A               + attention, NameMiddle, NameSuffix [    ]
               Expected: any[] fields present in XML output.
  7  Person      DP+DP              OperatorLicenseNumber=D999888777, Ima... [    ]
               Expected: DriverLicenseQuery fires (DP)
@@ -93,7 +86,7 @@ ENTITY 1: PERSON (17 tests -- 5 cards, 6 combos)
               Expected: any[] fields present in XML output.
 11  Person      KQ+Name            SexCodeDH=M, BirthDateDH=01/15/1990, ... [    ]
               Expected: DriverHistoryQuery fires (KQName)
-12  Person      KQ+Name            + RegistrationState             [    ]
+12  Person      KQ+Name            + RegistrationState, NameMiddleDH, NameSuffixDH [    ]
               Expected: any[] fields present in XML output.
 13  Person      Guardrail: DP>QWDN  OperatorLicenseNumber=D999888777, Sex... [    ]
               Expected: DriverLicenseQuery fires (DP). SexCode+DOB+LastName+FirstName+raceCode absent from XML.
@@ -106,7 +99,7 @@ ENTITY 1: PERSON (17 tests -- 5 cards, 6 combos)
 17  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
 
-ENTITY 2: VEHICLE (5 tests -- 3 cards, 2 combos)
+ENTITY 2: VEHICLE (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -121,7 +114,7 @@ ENTITY 2: VEHICLE (5 tests -- 3 cards, 2 combos)
 22  Vehicle     Guardrail: RQSLicensePlateNumber>RQSVehicleIdentificationNumber  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RQSLicensePlateNumber). VIN+RegistrationState absent from XML.
 
-ENTITY 3: BOAT (5 tests -- 2 cards, 2 combos)
+ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -165,4 +158,4 @@ COMBO COVERAGE (12/12):
   ArticleSingleQuery: 1/1 -- T30(serialNumber)
   BoatQuery: 2/2 -- T23(BQ+Reg), T25(QB+Hull)
 
-IMPORT FILE: LA_LEMS_v3.1.json
+IMPORT FILE: LA_LEMS_v3.2.json

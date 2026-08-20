@@ -51,7 +51,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_la_lems.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '3.1'
+$Version     = '3.2'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\LA_LEMS_v${Version}.json"
@@ -165,8 +165,8 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'ImageIndicator';       size = 1;  sourceField = @('ImageIndicator');       targetField = 'ImageIndicator' }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLast','NameFirst'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') }
+            size = 30; sourceField = @('NameLast','NameFirst','NameMiddle','NameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 17; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'RaceCode';              size = 1;  sourceField = @('raceCode');              targetField = 'RaceCode' }
@@ -177,7 +177,7 @@ $dlQuery = [PSCustomObject]@{
         # QWDN -- warrant Name+DOB+Sex+Race (5 set, most specific)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('SexCode','BirthDate','NameLast','NameFirst','raceCode'); any = @('RegistrationState','attention')
+                set = @('SexCode','BirthDate','NameLast','NameFirst','raceCode'); any = @('RegistrationState','attention','NameMiddle','NameSuffix')
                 defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('raceCode');              operator = 'EXISTS' }
@@ -191,7 +191,7 @@ $dlQuery = [PSCustomObject]@{
         # QWA -- warrant Name+DOB+Sex (4 set; raceCode NOT_EXISTS -> distinguishes from QWDN)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('attention')
+                set = @('SexCode','BirthDate','NameLast','NameFirst'); any = @('attention','NameMiddle','NameSuffix')
                 defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
@@ -291,8 +291,8 @@ $dhQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             name = 'Name'
-            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ') }
-            size = 30; sourceField = @('NameLastDH','NameFirstDH'); targetField = 'Name'
+            rule = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ', ' ', ' ') }
+            size = 30; sourceField = @('NameLastDH','NameFirstDH','NameMiddleDH','NameSuffixDH'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumberDH'); targetField = 'OperatorLicenseNumber' }
         [PSCustomObject]@{ name = 'PurposeCode';           size = 1;  sourceField = @('purposeCodeDH');           targetField = 'PurposeCode' }
@@ -303,7 +303,7 @@ $dhQuery = [PSCustomObject]@{
         # KQ Name -- Name+DOB+Sex+PurposeCode (5 set, most specific)
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH','purposeCodeDH'); any = @('RegistrationState')
+                set = @('SexCodeDH','BirthDateDH','NameLastDH','NameFirstDH','purposeCodeDH'); any = @('RegistrationState','NameMiddleDH','NameSuffixDH')
                 defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' })
             }
@@ -475,40 +475,41 @@ $laBundle = [PSCustomObject]@{
 # =====================================================================
 
 # ------------------------------------------------------------------
+# The four name components are any[]-only from v3.2 -- which is the fix (they were absent entirely
+# before, C1 NO-CONTROL x4) and is also what makes CHECK 15 Rule 3 ask for an "(optional)" qualifier
+# the lean-label convention forbids. One tag per line, fieldId first, ' -- ' on the SAME line.
+# LABEL-OVERRIDE: NameMiddle -- bare "Middle Name", DEX-1284 lean pass (any[] optional, DL pool)
+# LABEL-OVERRIDE: NameSuffix -- bare "Suffix", DEX-1284 lean pass (any[] optional, DL pool)
+# LABEL-OVERRIDE: NameMiddleDH -- bare "Middle Name", DEX-1284 lean pass (any[] optional, DH pool)
+# LABEL-OVERRIDE: NameSuffixDH -- bare "Suffix", DEX-1284 lean pass (any[] optional, DH pool)
 # Vehicle -- 3 cards. State REQUIRED (in set[]).
 # ------------------------------------------------------------------
+# v3.2: COLLAPSED 3 cards -> 1 (OPTIONS + PLATE SEARCH + VIN SEARCH). The OPTIONS card held one
+# shared control; PLATE and VIN are the two identifier paths and now lead their own rows.
+# State is 2nd on the top line, per the operator convention set on NM/OH -- and it earns the spot
+# here more than anywhere: on LA_LEMS State is MANDATORY (in the set[] of BOTH RQS combos), so it is
+# not a refinement the officer can skip. Also clears both L5 WASTED-WIDTH findings (State alone on a
+# 12-col row; Plate, maxLen 10, alone on another).
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH_OPT'
-        title = 'OPTIONS'
+        id    = 'CARD_VEH'
+        title = "VEHICLE SEARCH BY PLATE, `nOR BY VIN"
         rows  = @(
-            @{ id = 'ROW_VEH_OPT_1'; cols = @('12'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (required)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
+            @{ id = 'ROW_VEH_1'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (required)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_OPT_HID'; cols = @('12'); hidden = $true; fields = @(
-                @{ id = 'Attention_Veh_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_VEH_OPT_HID' @{ initialValue = 'X' } }
+            @{ id = 'ROW_VEH_2'; cols = @('6'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '17' 'ROW_VEH_2' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_PLATE'
-        title = 'PLATE SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_PLATE_1'; cols = @('12'); fields = @(
-                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
-            )}
-            @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_PLATE_2' @{ initialValue = $currentYear } }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_VIN'
-        title = 'VIN SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_VIN_1'; cols = @('12'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '17' 'ROW_VEH_VIN_1' }
+            # Hidden Attention feeder LAST (L3). NOTE, not fixed in this pass: it still carries
+            # initialValue='X', the placeholder DEX-1283 removed from TX/FL/CA_CLETS/NY. LA_LEMS was
+            # never in that propagation. Out of scope here (this pass is collapse + name components);
+            # recorded so it is not mistaken for an oversight.
+            @{ id = 'ROW_VEH_HID'; cols = @('12'); hidden = $true; fields = @(
+                @{ id = 'Attention_Veh_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_VEH_HID' @{ initialValue = 'X' } }
             )}
         )
     }
@@ -532,68 +533,57 @@ $vehicleForm = [PSCustomObject]@{
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER_OPT'
-        title = 'OPTIONS'
+        id    = 'CARD_PER_DL'
+        title = "DRIVER LICENSE SEARCH BY OLN, `nOR BY NAME + DOB + SEX"
         rows  = @(
-            @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for LA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
+            @{ id = 'ROW_PER_DL_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '17' 'ROW_PER_DL_1' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for LA)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_1' }
                 # Label was 'Image (Y for photo; clear for no-photo DL)' -- it instructed the officer to
                 # CLEAR a control that is prefilled 'Y' and offers only Y/N with no blank option, i.e. it
                 # documented an interaction the UI does not provide. That wording existed only because
                 # ImageIndicator was (wrongly) the DP/DQ router; State does that job now, so the canonical
                 # bare label applies (CLAUDE.md: every image toggle reads exactly 'NCIC Image').
-                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
+                @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_1' }
             )}
+            # All four name components in one row, First then Last (L8). Middle+Suffix ADDED at v3.2 --
+            # audit_name_components had 4 C1 NO-CONTROL findings: the metadata declares
+            # Name :: First + Last + Middle + Suffix on both DL and DH, and the officer could not enter
+            # two of them.
+            @{ id = 'ROW_PER_DL_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL_2' }
+                @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_PER_DL_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL_2' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix'      '10' 'ROW_PER_DL_2' }
+            )}
+            @{ id = 'ROW_PER_DL_3'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
+                @{ id = 'RaceCode_Input';  node = Sel 'raceCode'  'Race (warrant search)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_DL_3' }
+            )}
+            # Hidden Attention feeder LAST (L3). initialValue='X' left as-is -- see the Vehicle card note.
             @{ id = 'ROW_PER_OPT_HID'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Attention_Per_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_PER_OPT_HID' @{ initialValue = 'X' } }
             )}
         )
     }
     @{
-        id    = 'CARD_PER_OLN'
-        title = 'DRIVER LICENSE - LICENSE NUMBER'
+        id    = 'CARD_PER_DH'
+        title = "DRIVER HISTORY SEARCH BY OLN, `nOR BY NAME + DOB + SEX"
         rows  = @(
-            @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '17' 'ROW_PER_OLN_1' }
+            # All four name components in one row, First then Last (L8). The WIRE stays LAST-first via
+            # the composite FormatStringRuleHandler -- form order and sourceField order are independent.
+            @{ id = 'ROW_PER_DH_1'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirstDH_Input';  node = Inp 'NameFirstDH'  'First Name'  '30' 'ROW_PER_DH_1' }
+                @{ id = 'NameMiddleDH_Input'; node = Inp 'NameMiddleDH' 'Middle Name' '30' 'ROW_PER_DH_1' }
+                @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH_1' }
+                @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix'      '10' 'ROW_PER_DH_1' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_NAME'
-        title = 'DRIVER LICENSE - NAME SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_NAME_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
-            )}
-            @{ id = 'ROW_PER_NAME_2'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_NAME_2' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_2' }
-                @{ id = 'RaceCode_Input';  node = Sel 'raceCode'  'Race (warrant search)' @{ codeTypeCategory = 'NIBRS_RACE'; codeTypeSource = 'NIBRS' } 'ROW_PER_NAME_2' }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_DH_OLN'
-        title = 'DRIVER HISTORY - LICENSE NUMBER'
-        rows  = @(
-            @{ id = 'ROW_PER_DH_OLN_1'; cols = @('6','6'); fields = @(
-                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'License Number' '20' 'ROW_PER_DH_OLN_1' }
-                @{ id = 'PurposeCodeDH_Input';           node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_OLN_1' @{ initialValue = 'C' } }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_DH_NAME'
-        title = 'DRIVER HISTORY - NAME SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_DH_NAME_1'; cols = @('6','6'); fields = @(
-                @{ id = 'NameFirstDH_Input'; node = Inp 'NameFirstDH' 'First Name' '30' 'ROW_PER_DH_NAME_1' }
-                @{ id = 'NameLastDH_Input';  node = Inp 'NameLastDH'  'Last Name'  '30' 'ROW_PER_DH_NAME_1' }
-            )}
-            @{ id = 'ROW_PER_DH_NAME_2'; cols = @('6','6'); fields = @(
-                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DH_NAME_2' }
-                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_NAME_2' }
+            @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_2' }
+                @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DH_2' }
+                @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_2' @{ initialValue = 'C' } }
             )}
         )
     }
@@ -665,26 +655,28 @@ $articleForm = [PSCustomObject]@{
 # ------------------------------------------------------------------
 # Boat -- 2 cards (HULL + REGISTRATION). State on REG card (any[], leave blank for LA).
 # ------------------------------------------------------------------
+# v3.2: COLLAPSED 2 cards -> 1. Hull and Registration are ALTERNATIVE IDENTIFIERS (QB has hull in
+# set[], BQ has reg), so they belong side by side on one row -- two identifiers reading as "either
+# one", which two separate cards obscured.
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA_HULL'
-        title = 'HULL SEARCH'
+        id    = 'CARD_BOA'
+        title = "BOAT SEARCH BY HULL ID, `nOR BY REGISTRATION NUMBER"
         rows  = @(
-            @{ id = 'ROW_BOA_HULL_1'; cols = @('12'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_HULL_1' }
+            # BOTH IDENTIFIERS LEAD, THEN THE SHARED QUALIFIER. My first attempt put State BETWEEN
+            # hull and registration (copying the NM Boat arrangement) and audit_layout_flow L2 caught
+            # it immediately: BQ's MANDATORY RegistrationNumber then sat after an optional, with no
+            # other Boat combo able to fire on what is filled above it (BQ's pool minus the reg number
+            # is just State, and QB needs a hull). An officer starting a registration search would
+            # fill State and find the field it qualifies is further right. Identifiers first.
+            # This is the L2 rule I corrected this morning earning its keep on a defect I introduced.
+            @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for LA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
             @{ id = 'ROW_BOA_HID'; cols = @('12'); hidden = $true; fields = @(
                 @{ id = 'Attention_Boa_Input'; node = InpH 'attention' 'Attention (auto)' '30' 'ROW_BOA_HID' @{ initialValue = 'X' } }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_BOA_REG'
-        title = 'REGISTRATION SEARCH'
-        rows  = @(
-            @{ id = 'ROW_BOA_REG_1'; cols = @('8','4'); fields = @(
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_REG_1' }
-                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for LA)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_REG_1' }
             )}
         )
     }

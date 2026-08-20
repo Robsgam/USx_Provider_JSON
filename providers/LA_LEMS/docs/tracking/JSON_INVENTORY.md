@@ -24,6 +24,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v3.2 (2026-08-20)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| LA_LEMS_v3.2.json | v3.2 | Current | 65P/0F/0W/0LIM. |
 ## v3.1 (2026-08-18)
 
 | File | Version | Status | Notes |

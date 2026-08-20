@@ -1,0 +1,201 @@
+﻿================================================================
+  Build Report: LA_LEMS
+  Source: LA_LEMS_v3.2.json
+  Generated: 2026-08-20 19:38
+================================================================
+QUERY SIMULATION
+================
+
+  Seeded form defaults (4): Article.attention=X, Boat.attention=X, Firearm.attention=X, Vehicle.attention=X
+
+================================================================
+  CommSys Query Simulator -- LA_LEMS_v3.2.json
+================================================================
+
+--- QIDM: LA_LEMS_VehicleRegistrationQuery [Vehicle] ---
+    Query: VehicleRegistrationQuery  |  Attrs: 6  |  Combos: 2
+
+    [FIRES first-match] RQSLicensePlateNumber
+      set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
+      any: [attention] -> matched: [attention]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>RQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>DOE J</Attention>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+        <LicensePlateYear>2024</LicensePlateYear>
+        <State>NJ</State>
+      </Transaction>
+    [SKIP] RQSVehicleIdentificationNumber -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
+
+    >> PLATFORM FIRES: RQSLicensePlateNumber (first matching combo)
+    >> UNION POOL (platform serializes): Attention=DOE J, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: LA_LEMS_DriverLicenseQuery [Person] ---
+    Query: DriverLicenseQuery  |  Attrs: 8  |  Combos: 4
+    [SKIP] QWDN -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] QWA -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']; raceCode NOT_EXISTS [value='W']
+    [SKIP] DP -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
+
+    [FIRES first-match] DQ
+      set: [OperatorLicenseNumber]
+      any: [RegistrationState, ImageIndicator, attention] -> matched: [RegistrationState, ImageIndicator, attention]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>DQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>DOE J</Attention>
+        <ImageIndicator>Y</ImageIndicator>
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <State>NJ</State>
+      </Transaction>
+
+    >> PLATFORM FIRES: DQ (first matching combo)
+    >> UNION POOL (platform serializes): Attention=DOE J, ImageIndicator=Y, OperatorLicenseNumber=D123456789, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: LA_LEMS_DriverHistoryQuery [Person] ---
+    Query: DriverHistoryQuery  |  Attrs: 6  |  Combos: 2
+    [SKIP] KQName -- conditions failed: OperatorLicenseNumberDH NOT_EXISTS [value='D123456789']
+
+    [FIRES first-match] KQOperatorLicenseNumber
+      set: [OperatorLicenseNumberDH, purposeCodeDH]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>KQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
+        <PurposeCode>C</PurposeCode>
+        <State>NJ</State>
+      </Transaction>
+
+    >> PLATFORM FIRES: KQOperatorLicenseNumber (first matching combo)
+    >> UNION POOL (platform serializes): OperatorLicenseNumber=D123456789, PurposeCode=C, State=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: LA_LEMS_GunQuery [Firearm] ---
+    Query: GunQuery  |  Attrs: 4  |  Combos: 1
+
+    [FIRES first-match] QG
+      set: [serialNumber]
+      any: [attention, firearmMake, gunTypeCode] -> matched: [attention, firearmMake, gunTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QG</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>DOE J</Attention>
+        <GunMake>SMT</GunMake>
+        <GunSerialNumber>ABC12345</GunSerialNumber>
+        <GunTypeCode>PI</GunTypeCode>
+      </Transaction>
+
+    >> PLATFORM FIRES: QG (first matching combo)
+    >> UNION POOL (platform serializes): Attention=DOE J, GunMake=SMT, GunSerialNumber=ABC12345, GunTypeCode=PI
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: LA_LEMS_ArticleSingleQuery [Article] ---
+    Query: ArticleSingleQuery  |  Attrs: 3  |  Combos: 1
+
+    [FIRES first-match] QA
+      set: [serialNumber]
+      any: [attention, articleTypeCode] -> matched: [attention, articleTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QA</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <ArticleSerialNumber>SN12345678</ArticleSerialNumber>
+        <ArticleTypeCode>COMP</ArticleTypeCode>
+      </Transaction>
+
+    >> PLATFORM FIRES: QA (first matching combo)
+    >> UNION POOL (platform serializes): ArticleSerialNumber=SN12345678, ArticleTypeCode=COMP
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: LA_LEMS_BoatQuery [Boat] ---
+    Query: BoatQuery  |  Attrs: 4  |  Combos: 2
+
+    [FIRES first-match] QB
+      set: [BoatHullIdNumber]
+      any: [attention] -> matched: [attention]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QB</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <Attention>DOE J</Attention>
+        <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+      </Transaction>
+    [SKIP] BQ -- conditions failed: BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
+
+    >> PLATFORM FIRES: QB (first matching combo)
+    >> UNION POOL (platform serializes): Attention=DOE J, BoatHullIdNumber=FL1234AB56H7
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Person Search query [Person] ---
+    Query: Person  |  Attrs: 6  |  Combos: 4
+
+    [FIRES first-match] firstNameLastNameDriversLicenseNumber
+      set: [OperatorLicenseNumber, NameFirst, NameLast]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dlNumber":"D123456789","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastNameDateOfBirth
+      set: [NameFirst, NameLast, BirthDate]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","dateOfBirth":"1990-01-15","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] firstNameLastName
+      set: [NameFirst, NameLast]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"firstName":"John","lastName":"Doe","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] driversLicenseNumber
+      set: [OperatorLicenseNumber]
+      any: [SexCode, RegistrationState] -> matched: [SexCode, RegistrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"dlNumber":"D123456789","sexAttrId":"M","registrationStateAttrId":"NJ"}}
+
+    >> PLATFORM FIRES: firstNameLastNameDriversLicenseNumber (first matching combo)
+    >> UNION POOL (platform serializes): firstName=John, lastName=Doe, dlNumber=D123456789, dateOfBirth=1990-01-15, sexAttrId=M, registrationStateAttrId=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+--- QIDM: RMS Vehicle search query [Vehicle] ---
+    Query: Vehicle  |  Attrs: 3  |  Combos: 2
+
+    [FIRES first-match] vehicleIdentificationNumber
+      set: [VehicleIdentificationNumber]
+      any: [LicensePlateNumber, RegistrationState] -> matched: [LicensePlateNumber, RegistrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.vinNumber":"1HGCM82633A123456","vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    [FIRES shadowed -- first match above wins] licensePlateIn
+      set: [LicensePlateNumber]
+      any: [RegistrationState] -> matched: [RegistrationState]
+      -- RMS elastic payload (combo-scoped) --
+      {"elasticQuery":{"vehicle.tag":"ABC1234","vehicle.registrationStateAttrIds":"NJ"}}
+
+    >> PLATFORM FIRES: vehicleIdentificationNumber (first matching combo)
+    >> UNION POOL (platform serializes): vehicle.vinNumber=1HGCM82633A123456, vehicle.tag=ABC1234, vehicle.registrationStateAttrIds=NJ
+       (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
+        if this exceeds the first-match combo's fields, the platform OVER-SENDS)
+
+================================================================
+  Filter: -Entity <name>  -Combo <keyRef>
+  Edit testData in script to change form values.
+  Save: -OutFile <path> to save test case reference.
+================================================================
+
+

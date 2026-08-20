@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: LA_LEMS
-  Source: LA_LEMS_v3.1.json
-  Generated: 2026-08-18 12:29
+  Source: LA_LEMS_v3.2.json
+  Generated: 2026-08-20 19:38
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: LA_LEMS_v3.1
+ POST-BUILD VERIFICATION: LA_LEMS_v3.2
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 17 [attention, LicensePlateTypeCode, LicensePlateYear, ImageIndicator, raceCode, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, firearmMake, serialNumber, gunTypeCode, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 21 [attention, LicensePlateTypeCode, LicensePlateYear, ImageIndicator, NameMiddle, NameSuffix, raceCode, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, firearmMake, serialNumber, gunTypeCode, articleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -42,7 +42,7 @@ POST-BUILD VERIFICATION
   [PASS] All 4 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (25) (RMS-generic allowed)
+  [PASS] RMS combo fields (8) are a subset of CommSys combo fields (29) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -58,13 +58,19 @@ POST-BUILD VERIFICATION
 
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'RegistrationState' label='State (required)' -- manual label override accepted (REQUIRED in set[] for LA vehicle queries (metadata),)
-  [INFO] Field 'OperatorLicenseNumberDH' label='License Number' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [PASS] All form field labels have required routing hint qualifiers (28 fields scanned) (6 DH field(s) untagged -- advisory only, see Info above)
+  [INFO] Field 'purposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, DL pool))
+  [INFO] Field 'NameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, DL pool))
+  [INFO] Field 'NameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, DH pool))
+  [INFO] Field 'NameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, DH pool))
+  [PASS] All form field labels have required routing hint qualifiers (32 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

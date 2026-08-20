@@ -2,9 +2,30 @@
 
 Auto-generated from `LA_LEMS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.1** | Generated: 2026-08-18
+Current: **v3.2** | Generated: 2026-08-20
 
 ---
+
+## v3.2 -- 2026-08-20 -- Layout collapsed 12 cards -> 6, and the officer could not enter a middle name or suffix
+
+**CHANGED:**
+  - Vehicle 3 -> 1 ("VEHICLE SEARCH BY PLATE, OR BY VIN"). State is 2nd on the top line and earns  
+    it here more than on any other provider: on LA_LEMS State is MANDATORY, in the set[] of BOTH  
+    RQS combos, not a refinement the officer may skip.  
+  - Person 5 -> 2 (DRIVER LICENSE + DRIVER HISTORY). Two cards is correct, not a compromise: the  
+    DH-suffix fieldIds are a separate field pool and that separation IS the isolation mechanism.  
+  - Boat 2 -> 1 ("BOAT SEARCH BY HULL ID, OR BY REGISTRATION NUMBER").  
+  - MIDDLE NAME + SUFFIX added on BOTH pools (NameMiddle/NameSuffix, NameMiddleDH/NameSuffixDH),  
+    composed into each Name attribute, and pooled into the any[] of all three NAME combos --  
+    QWDN, QWA and KQName. NOT added to DP, DQ or KQOperatorLicenseNumber: OLN paths.  
+  - AP #15: both composites 2 -> 4 sourceFields, so arguments @(', ') -> @(', ', ' ', ' ').  
+  - 4 LABEL-OVERRIDE tags, one per line.  
+**REASON:** audit_name_components reported 4 C1 NO-CONTROL -- the metadata declares
+  Name :: First + Last + Middle + Suffix on both DL and DH and the officer could not enter two of  
+  them. audit_layout_flow reported 5 findings (3x L4 not-collapsed, 2x L5 wasted width).  
+**RESULT:** name components 4 C1 -> 0 (8 examined, 0 C1 / 0 C2 / 0 C3). Layout 5 findings -> 0.
+  Wiring closure 0 breaks across all ten classes. 10 combinations all reachable. Requirement  
+  fidelity 12 branches HELD at 0 UNDER / 0 OVER. Validator 65 PASS / 0 FAIL / 0 WARN.  
 
 ## v3.1 -- 2026-08-18 -- DP/DQ re-discriminated on STATE -- the parked BUILD_RULES 20b WARN is RESOLVED (WIRE CHANGE)
 
