@@ -58,7 +58,7 @@ Ordered by Rob. Work strictly top-down, one provider at a time, minimal drift.
 
 | Provider | State | Owed |
 |---|---|---|
-| **NJ_NJCJIS** v4.17 | build COMPLETE | **RETEST ONLY** — regenerate the plan first (see §3), then import, 40-test sweep, DEX-988 comment, Newark re-import |
+| ~~**NJ_NJCJIS** v4.17~~ | ✅ **LIFECYCLE-COMPLETE 2026-08-20** | Nothing owed. 41/41 ALL-PASS, four log gates 41/41, DEX-988 comment **802981**, catalog + ticket + Newark Foundation all on v4.17. **Middle name and suffix wire-proven** (`DOE, JOHN A` / `DOE, JOHN JR` vs a `DOE, JOHN` control) — the first time in this provider's history |
 | **NY_NYSPIN_EJUSTICE** v4.24 | build spec'd, not built | **REBUILD + RETEST** — 2 `MI` labels + DH rows 3&4 merged (§4). Its name components are already wire-proven |
 | **TX_TLETS_CCH** v1.17 | fully wired | **DRIVE ONLY** — 14 pooled combos, 24 planned tests, 0 logs. Never imported. Lockstep with TX_TLETS |
 | AZ, CA_CLETS, FL, HI, IL, TX | clean | nothing |
