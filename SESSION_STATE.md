@@ -51,28 +51,12 @@ one), re-swept 56/56, four log gates 56/56, DEX-990 comment **802507**, ticket +
 **Wire-identity was PROVEN, not asserted: all 56 captured wires byte-identical to their v2.9 archived
 counterparts, with ARTICLE -- the one card not edited -- as the unchanged-fingerprint control.**
 
-**FIVE PROVIDERS REBUILT 08-18/19, ALL 0 FAIL** -- CA_CLETS_OCATS v2.6, NM_NMLETS_OFML v2.2,
-MD_METERS v2.1, TN_TIES v2.2, OR_LEDS v2.4 (last four also 0 WARN). Highlights: OCATS BUILT the two
-variants I had wrongly registered as skips (4K, VC) which took over-permits 7->0 -- **building the
-missing variant is usually the right fix for an over-permit**; NM's DL was missing BOTH mandatory
-fields because a `<Choice>` inside `<Set>` hid them; TN's stolen check was FREE-TEXT and the gate
-harness found it by reporting a FALSE survivor; OR was transmitting two fields its transaction does not
-define. MD closed the LAST `ncic-image` carrier, so `audit_cross_provider` now reads AUDIT PASSED.
-
-**PORTFOLIO SWEEP 08-19 -- what it found and fixed:**
-- **2 FROZEN artifacts deleted.** `audit_session_state.ps1` and `verify_claims.ps1` sat in the REPO ROOT
-  containing NO PowerShell -- captured console text from 07-30 asserting `[PASS] all 6 provider(s)` and
-  `111 lines`. A photograph of a gate passing, in the place a reader expects a gate.
-- **NEW GATE `audit_artifact_provenance.ps1`** (in `doctor`): F frozen / S stale / U unsourced / O orphan.
-  Baseline now 140 scripts + 273 reports, **all four classes 0**. U 0 means every report is attributable
-  to a generator -- a clean result on an axis nothing measured before.
-- **28 stale reports** regenerated (4 CA providers x 7). **4 GENERIC BUILD_NOTES** replaced: all four were
-  the SAME family-wide `<Authentication>/<DeviceId>` production fix, stubbed on 5 of 6 CA providers by one
-  propagation pass. BUILD_NOTES fidelity is now **0 GENERIC across all 20**.
-- OH_LEADS `DEX_TICKET_ARCHIVE.md` created (uniformity FAIL -> `docs/reports identical across all 9`).
-- `build_zz_test_conditions.ps1` moved root -> `tools/`; **the move broke it twice** (dot-sources became
-  `tools\tools\...`, output would have landed in `tools\`). Both repaired. Its being at root is why the
-  undocumented-tool gate had never seen it.
+**HEALTH, measured 08-20 (`doctor.ps1`) -- nothing owed:** 20 providers 0 FAIL / 0 WARN · PS-5.1 117/0 ·
+portability 280 cells / 0 · provenance F0 S0 U0 O0 · 248 registry rows / 0 over-broad / 0 STALE ·
+BUILD_NOTES 0 GENERIC / 20 · variant drift 0 · cross-provider AUDIT PASSED. `audit_provider_linkage`
+FAILs on 12 providers are the KNOWN ADVISORY (comment provenance, no wire impact, cleared at each
+provider's own rebuild) -- not a blocker, do not "fix" it as a sweep.
+History of the 08-18/19 rebuilds and the portfolio sweep lives in git + `CHANGELOG_<P>.md`, not here.
 
 **? PRODUCTION = TWO LIVE TENANTS: CA_CLETS at MARIPOSA - HI_HCJDC_OFML v4.15 at HDLE.** A LIVE version is
 frozen -- a bump is a coordinated re-import, not a repo action. **HDLE is deliberately HELD at v4.15**
