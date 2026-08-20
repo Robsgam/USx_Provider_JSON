@@ -196,6 +196,51 @@ if (-not $PostIngest) {
     $w = @(Get-CimInstance Win32_Process -Filter "Name='pwsh.exe' OR Name='powershell.exe'" | Where-Object { $_.CommandLine -match 'watch_captures\.ps1' -and $self -notcontains $_.ProcessId })
     Out-Line ("      stray watchers: {0}{1}" -f $w.Count,$(if ($w.Count) { ' -- CONCURRENT WATCHERS DEADLOCK, kill first' } else { '' })) $(if ($w.Count) { 'Red' } else { 'Green' })
     if ($w.Count) { $block += 'stray watch_captures process -- kill before ingesting' }
+
+    # ── PLAN SERVER: is it up, and can it actually SERVE THIS PROVIDER'S plan? ────────────
+    # Added 2026-08-20. Pre-flight said "CLEAR -- sweep away" for NM_NMLETS_OFML and the operator
+    # then hit, in the browser:
+    #     repo load failed (no plan for NM_NMLETS) -- is tools\serve_plans.ps1 running?
+    # The server WAS running. The extension derives the provider from the TENANT HOSTNAME, which for
+    # this provider yields NM_NMLETS while the directory is NM_NMLETS_OFML -- so serve_plans 404'd and
+    # the browser message blamed the process. Two failures in one: a name mismatch, and a pre-flight
+    # that declared the environment clean without ever asking the server a question.
+    # THE SHAPE OF THE BUG IS THE POINT: checking "is a process named serve_plans running" would ALSO
+    # have passed here. The only check worth having is an END-TO-END one -- fetch the plan the driver
+    # will fetch, by the name the driver will use, and compare it to the plan on disk. Anything less
+    # is a success message that cannot fail (see report_sweep_ledger's header for the same lesson).
+    $planPort = 8477
+    $svc = $null
+    try { $svc = Invoke-WebRequest "http://127.0.0.1:$planPort/ping" -TimeoutSec 4 -UseBasicParsing } catch { $svc = $null }
+    if (-not $svc) {
+        Out-Line "      plan server: NOT RESPONDING on 127.0.0.1:$planPort -- start it: powershell -File tools\serve_plans.ps1" 'Red'
+        $block += "plan server not responding on port $planPort -- the driver cannot load the plan"
+    } else {
+        Out-Line "      plan server: responding on 127.0.0.1:$planPort" 'Green'
+        # the name the EXTENSION will ask for, derived the way it derives it (tenant host), plus the
+        # directory name -- both must resolve, because either could be what reaches the server.
+        $askNames = @($Provider)
+        $shortName = ($Provider -replace '_OFML$|_EJUSTICE$', '')
+        if ($shortName -ne $Provider) { $askNames += $shortName }
+        $planOnDisk = @(Get-ChildItem (Join-Path $provDir 'logs') -Filter "${Provider}_TEST_PLAN_v*.json" -ErrorAction SilentlyContinue)
+        $diskBytes = if ($planOnDisk.Count -eq 1) { (Get-Content $planOnDisk[0].FullName -Raw).Length } else { -1 }
+        foreach ($nm in $askNames) {
+            $got = $null
+            try { $got = Invoke-WebRequest "http://127.0.0.1:$planPort/plan/$nm" -TimeoutSec 6 -UseBasicParsing } catch { $got = $null }
+            if (-not $got) {
+                Out-Line "      plan fetch '/plan/$nm': FAILED -- the driver would report 'repo load failed'" 'Red'
+                $block += "serve_plans cannot serve /plan/$nm (the name the driver asks for)"
+            } elseif ($diskBytes -ge 0 -and $got.Content.Length -ne $diskBytes) {
+                Out-Line "      plan fetch '/plan/$nm': served $($got.Content.Length)b but the plan on disk is ${diskBytes}b -- SERVING A DIFFERENT PLAN" 'Red'
+                $block += "serve_plans is serving a plan that is not $($planOnDisk[0].Name)"
+            } else {
+                Out-Line "      plan fetch '/plan/$nm': OK ($($got.Content.Length)b, matches $(if($planOnDisk.Count -eq 1){$planOnDisk[0].Name}else{'disk'}))" 'Green'
+            }
+        }
+        if ($planOnDisk.Count -gt 1) {
+            Out-Line "      [WARN] $($planOnDisk.Count) plan files on disk for $Provider -- reset_test_package should have archived the stale one(s)" 'Yellow'
+        }
+    }
 }
 
 # ── 4. the FOUR log gates (post-ingest) ──────────────────────────────────────────────

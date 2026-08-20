@@ -44,6 +44,37 @@ while ($true) {
         if ($urlPath -eq '/ping') { Send-Http $stream 200 '{"ok":true}' }
         elseif ($urlPath -match '^/(plan|scope)/([A-Za-z0-9_]+)/?$') {
             $kind = $Matches[1]; $prov = $Matches[2]
+
+            # PROVIDER RESOLUTION: exact -> UNIQUE prefix -> refuse. Added 2026-08-20.
+            # The extension derives the provider from the TENANT HOSTNAME, and the hostname does not
+            # always carry the provider directory's full name: `usx-nm-nmlets` yields NM_NMLETS while
+            # the directory is NM_NMLETS_OFML, so the driver got
+            #   {"error":"no plan for NM_NMLETS"}
+            # and the operator saw "repo load failed -- is serve_plans.ps1 running?" -- which points at
+            # the wrong thing entirely. The server WAS running; it was a name mismatch. (HI and IL are
+            # unaffected only because their tenants happen to spell the -ofml suffix out.)
+            # AMBIGUITY IS REFUSED, NOT GUESSED -- the Get-ProviderMetadataXml rule: a caller can handle
+            # an error but cannot detect a plausible WRONG answer. `CA_CLETS` prefix-matches BOTH
+            # CA_CLETS and CA_CLETS_OCATS, so exact-match MUST win first, and a genuinely ambiguous
+            # prefix returns 409 naming the candidates instead of silently serving one.
+            if (-not (Test-Path (Join-Path $providersDir $prov))) {
+                $pfx = @(Get-ChildItem $providersDir -Directory -ErrorAction SilentlyContinue |
+                         Where-Object { $_.Name -like "${prov}_*" -and (Test-Path (Join-Path $_.FullName 'scripts')) })
+                if ($pfx.Count -eq 1) {
+                    Write-Host "[SERVE] resolved '$prov' -> '$($pfx[0].Name)' (unique prefix match)" -ForegroundColor Cyan
+                    $prov = $pfx[0].Name
+                }
+                elseif ($pfx.Count -gt 1) {
+                    $names = ($pfx | ForEach-Object { $_.Name }) -join ', '
+                    Write-Host "[SERVE] AMBIGUOUS '$prov' -> $names ; refusing to guess" -ForegroundColor Red
+                    Send-Http $stream 409 ('{"error":"ambiguous provider ' + $prov + '","candidates":"' + $names + '"}')
+                    # NO explicit Close here: `continue` targets the outer accept loop and the
+                    # finally block at the bottom already closes $client. Closing twice was the
+                    # first draft of this line.
+                    continue
+                }
+            }
+
             $logsDir = Join-Path (Join-Path $providersDir $prov) 'logs'
             $file = $null
             if (Test-Path $logsDir) {
