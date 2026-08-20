@@ -60,7 +60,7 @@ authorised. This table is the queue for that pass.
 | Provider | ACTION | Needs Rob? | Why |
 |---|---|---|---|
 | **NJ_NJCJIS** v4.17 | **RETEST ONLY** | import + sweep | Build is DONE (middle+suffix, composite, AP #15, `FULL.any[]`). 0 C1 / 0 C2 / 0 C3, enforce 46 PASS / 0 FAIL / 0 WARN. Owes: import, 40-test sweep, DEX-988 comment, Newark re-import |
-| **NY_NYSPIN_EJUSTICE** v4.24 | **REBUILD + RETEST** | **YES — one question below** | 2 real label fixes + a DH row combine. See the NY work order |
+| **NY_NYSPIN_EJUSTICE** v4.24 | **REBUILD + RETEST** | no — fully specified | 2 label fixes + DH rows 3&4 merged. Work order below is complete and unambiguous |
 | **OH_LEADS** v2.10 | REBUILD + RETEST | no | C3 ×6 — the `any[]` pool fix. Officer's middle name is dropped today |
 | **NM_NMLETS_OFML** v2.4 | REBUILD + RETEST | no | C3 ×4 — same `any[]` pool fix. Already owes a sweep anyway |
 | **TN_TIES** v2.2 | REBUILD | no | Layout collapse 14→6, C1 ×4, **+ the class-J wiring break** |
@@ -95,20 +95,28 @@ Both fields are `maxLength=35` — full middle names, not initials. NY's compone
 pool (0 C1 / 0 C3), so the data path works; the label is the only thing making officers under-fill it.
 TX_TLETS fixed the identical mislabel at v4.21. Add `# LABEL-OVERRIDE:` tags per AZ's precedent.
 
-**Cosmetic, requested by Rob 2026-08-20 — Person DH card, combine two rows.** Current DH card:
+**Cosmetic, dictated by Rob 2026-08-20 — Person DH card, merge the last visible row into the third.**
+Rob, clarifying: *"for ny last row is the foruth row that is visibile  purpose code and transaction
+type need to be with dob and sex on the same line"*. RESOLVED — no ambiguity left, build exactly this:
+
 ```
-DH_1  [6,3,3]    OLN | State | Image
-DH_2  [4,4,2,2]  First | Last | Middle | Suffix
-DH_3  [6,6]      BirthDate | SexCode
-DH_4  [6,6]      purposeCode | nyNyspinTransactionName
-DH_5B [12]       requestor                              <- alone on a full row
+BEFORE                                                    AFTER
+DH_1  [6,3,3]    OLN | State | Image                      DH_1  [6,3,3]    OLN | State | Image
+DH_2  [4,4,2,2]  First | Last | Middle | Suffix           DH_2  [4,4,2,2]  First | Last | Middle | Suffix
+DH_3  [6,6]      BirthDate | SexCode                      DH_3  [3,3,3,3]  BirthDate | SexCode |
+DH_4  [6,6]      purposeCode | nyNyspinTransactionName                     purposeCode | nyNyspinTransactionName
+DH_5B [12]       requestor   (FIELD-HIDDEN)               DH_4  -- REMOVED, absorbed into DH_3
+                                                          DH_5B [12]       requestor   (FIELD-HIDDEN, stays last)
 ```
-⚠️ **ONE WORD NEEDED FROM ROB BEFORE THIS IS BUILT** — *"combine last row and thrid row togther"* has
-two readings and I will not encode a guess into an unattended bulk rebuild:
-- **(a)** merge `DH_5B` into `DH_3` → `[4,4,4] BirthDate | SexCode | requestor`, leaving `DH_4` after it.
-- **(b)** merge `DH_5B` into `DH_4` → `[4,4,4] purposeCode | nyNyspinTransactionName | requestor`,
-  i.e. absorb the lone last row into the row above it. **This is what I would implement** — it removes
-  the orphan 12-col row without reordering anything, and DH then reads 4 rows.
+Result: **3 visible rows + the hidden feeder**, and rows 1-3 then match the DL card's shape.
+
+⚠️ **MY FIRST READING OF THIS WAS WRONG AND THE REASON IS A DOCUMENTED TRAP.** I reported the DH card
+as having FIVE visible rows and offered Rob two guesses, because my probe tested `$row.hidden` only.
+`requestorDH` is hidden at the **FIELD/NODE** level, not the row level — so the card really does show
+FOUR rows, exactly as Rob said. `usx-cosmetic` Step 3 records this precise trap ("`hidden` is a
+NODE-level property, NOT `props.hidden`"; it produced nine false findings on its first run) and
+`verify_build` CHECK 6 has always read it correctly. **When counting what an officer sees, a row is
+invisible if the row is hidden OR every field in it is hidden.**
 
 **DO NOT change — verified deliberate, and I nearly "fixed" it:**
 `ROW_VEH_3 [4,4]` and `ROW_ART_2 [4,4]` are flagged L6 ROW-NOT-12 (4 columns of dead space). They are
