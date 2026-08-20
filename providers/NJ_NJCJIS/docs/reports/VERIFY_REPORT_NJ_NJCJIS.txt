@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: NJ_NJCJIS
   Source: NJ_NJCJIS_v4.17.json
-  Generated: 2026-08-20 16:14
+  Generated: 2026-08-20 16:45
 ================================================================
 POST-BUILD VERIFICATION
 =======================
@@ -38,7 +38,7 @@ POST-BUILD VERIFICATION
   [PASS] All 3 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (20) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (22) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -55,6 +55,8 @@ POST-BUILD VERIFICATION
 --- CHECK 13: Form Field Label Hints ---
   [INFO] Field 'RegistrationState' label='State' -- manual label override accepted (Rob's explicit cosmetic call (NJ v4.9); bare)
   [INFO] Field 'RegistrationState' (any[]-only) label='State' -- manual label override accepted (Rob's explicit cosmetic call (NJ v4.9); bare)
+  [INFO] Field 'NameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name" per DEX-1284 lean pass (any[] optional).)
+  [INFO] Field 'NameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per DEX-1284 lean pass (any[] optional).)
   [PASS] All form field labels have required routing hint qualifiers (25 fields scanned)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---

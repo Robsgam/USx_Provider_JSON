@@ -265,7 +265,17 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('BirthDate','NameLast','NameFirst')
-                any      = @('ImageIndicator','SexCode','RegistrationState')
+                # NameMiddle/NameSuffix ride in any[] -- OPTIONAL name qualifiers, never mandatory.
+                # THIS IS THE HALF I MISSED FIRST TIME. Adding the two controls and composing them
+                # into the Name attribute is NOT enough: audit_name_components downgraded the finding
+                # from C1 NO-CONTROL to C3 NOT-IN-POOL, which reads as "note only, impact unproven"
+                # and is easy to wave off. It is not unproven -- AZ_AZDPS, the only provider with a
+                # wire-PROVEN `DOE, JOHN A JR`, carries nameMiddle/nameSuffix in the any[] of EVERY
+                # name combo (ACWL, DQPN, DQN, and KQH on the DH side). Pool membership is what puts
+                # a component on the wire; without it the officer types a middle name and it is
+                # silently dropped. Copied that wiring, not that provider's fields.
+                # NOT added to FULLN: that is the OLN path, where name plays no part at all.
+                any      = @('ImageIndicator','SexCode','RegistrationState','NameMiddle','NameSuffix')
                 defaults = @(
                     [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' }
                     [PSCustomObject]@{ field = 'State';          value = 'NJ' }
@@ -517,8 +527,13 @@ $perLayout = MakeLayouts @(
             # wire could only ever carry `DOE, JOHN`.
             @{ id = 'ROW_PER_2'; cols = @('3','3','3','3'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_2' }
+                # LABEL-OVERRIDE: NameMiddle -- bare "Middle Name" per DEX-1284 lean pass (any[] optional).
+                #   maxLen=30 is a full middle name, NOT an initial, so "MI" would be the wrong label --
+                #   that exact mislabel sat on NY/TX/TX_CCH from 2026-07-27 to 08-18 (audit_layout_flow L7).
+                #   Same override AZ_AZDPS records for nameMiddle, the wire-proven reference build.
                 @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_PER_2' }
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_2' }
+                # LABEL-OVERRIDE: NameSuffix -- bare "Suffix" per DEX-1284 lean pass (any[] optional).
                 @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix'      '10' 'ROW_PER_2' }
             )}
             @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(

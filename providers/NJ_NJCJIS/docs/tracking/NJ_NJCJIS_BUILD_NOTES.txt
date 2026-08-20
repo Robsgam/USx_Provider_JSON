@@ -35,6 +35,28 @@ v4.17  2026-08-20  Middle name + Suffix -- the officer could not enter two compo
   findings across 9 providers, so blocking would force a mass rebuild). Proven both directions before
   commit: [INFO] naming NJ's 2 findings, [PASS] on AZ_AZDPS.
 
+  *** AMENDED SAME DAY, STILL v4.17 -- THE FIRST ATTEMPT WAS HALF A FIX. ***
+  Adding the two controls and composing them into the Name attribute moved audit_name_components from
+  C1 NO-CONTROL to C3 NOT-IN-POOL, which the tool labels "[NOTE] impact UNPROVEN" -- and that reads
+  like success. It was not: NameMiddle/NameSuffix were in NO combination's set[]/any[], so an officer
+  could type a middle name and it would be SILENTLY DROPPED. The fix was incomplete in exactly the way
+  that looks complete.
+  IT IS NOT UNPROVEN, AND ONE COMPARISON SETTLED IT: AZ_AZDPS is the only provider with a wire-PROVEN
+  `DOE, JOHN A JR`, and it carries nameMiddle/nameSuffix in the any[] of EVERY name combo -- ACWL,
+  DQPN, DQN, and KQH on the DH side. POOL MEMBERSHIP is what puts a component on the wire. So
+  'NameMiddle','NameSuffix' were added to FULL's any[] (optional qualifiers -- never set[]), and
+  deliberately NOT to FULLN, which is the OLN path where name plays no part.
+  Verified after: audit_name_components 0 C1 / 0 C2 / 0 C3, PASS on 4 components examined;
+  audit_wiring_closure 0 breaks across all ten classes; audit_combo_reachability 6 combos all
+  reachable; validator 61 PASS / 0 FAIL / 0 WARN.
+  AMENDED IN PLACE RATHER THAN BUMPED TO v4.18 because v4.17 has NEVER been imported and holds ZERO
+  logs -- the "an imported version is frozen" rule (usx-build 6d) exists so that captured logs stay
+  attributable, and there are none to orphan. A bump here would be version churn with no evidence to
+  protect. Had v4.17 been imported or swept, this would have been v4.18.
+  KNOCK-ON RECORDED IN FINDINGS_REGISTER.md: OH_LEADS (6 C3) and NM_NMLETS_OFML (4 C3) are in the
+  SAME half-fixed state and need the same any[] pool addition. Their C3 rows were previously read as
+  note-only.
+
   COST, accepted knowingly: v4.16 was TENANT-VERIFIED ALL-PASS 5/5 with 40 logs, so this bump
   ARCHIVES ALL 40 and owes a full re-sweep from T1 plus a re-import. Newark Foundation is on v4.16
   and now sits BEHIND until re-imported. Re-test cost is NOT grounds to defer (Rob 2026-08-11), and
