@@ -3,7 +3,7 @@
     "version":  "4.17",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  39,
+    "testCount":  41,
     "formDefaults":  {
                          "Vehicle":  {
                                          "LicensePlateTypeCode":  "PC",
@@ -408,6 +408,62 @@
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "FULL",
                       "expectedKeyRef":  "FULL",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "NameMiddle",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FULL",
+                      "expectedKeyRef":  "FULL",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "NameSuffix",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "comboKeyRef":  "FULL",
+                      "expectedKeyRef":  "FULL",
                       "kind":  "any",
                       "tier":  "Full",
                       "fills":  [
@@ -434,11 +490,19 @@
                                     {
                                         "fieldId":  "RegistrationState",
                                         "value":  "GA"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
                                     }
                                 ]
                   },
                   {
-                      "n":  19,
+                      "n":  21,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "FULLN",
@@ -451,7 +515,7 @@
                                 }
                   },
                   {
-                      "n":  20,
+                      "n":  22,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "FULLN",
@@ -471,7 +535,7 @@
                                 ]
                   },
                   {
-                      "n":  21,
+                      "n":  23,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "FULLN",
@@ -491,7 +555,7 @@
                                 ]
                   },
                   {
-                      "n":  22,
+                      "n":  24,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "FULLN",
@@ -514,7 +578,7 @@
                                 ]
                   },
                   {
-                      "n":  23,
+                      "n":  25,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -542,7 +606,7 @@
                       "guardrailLoser":  "FULL"
                   },
                   {
-                      "n":  24,
+                      "n":  26,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -555,7 +619,7 @@
                                 }
                   },
                   {
-                      "n":  25,
+                      "n":  27,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -575,7 +639,7 @@
                                 ]
                   },
                   {
-                      "n":  26,
+                      "n":  28,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -595,7 +659,7 @@
                                 ]
                   },
                   {
-                      "n":  27,
+                      "n":  29,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -615,7 +679,7 @@
                                 ]
                   },
                   {
-                      "n":  28,
+                      "n":  30,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -635,7 +699,7 @@
                                 ]
                   },
                   {
-                      "n":  29,
+                      "n":  31,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "QG",
@@ -666,7 +730,7 @@
                                 ]
                   },
                   {
-                      "n":  30,
+                      "n":  32,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -685,7 +749,7 @@
                                 ]
                   },
                   {
-                      "n":  31,
+                      "n":  33,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -709,7 +773,7 @@
                                 ]
                   },
                   {
-                      "n":  32,
+                      "n":  34,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "QA",
@@ -724,39 +788,6 @@
                                     {
                                         "fieldId":  "ArticleTypeCode",
                                         "value":  "BBICYCL"
-                                    },
-                                    {
-                                        "fieldId":  "ImageIndicator",
-                                        "value":  "N"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  33,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "QB",
-                      "expectedKeyRef":  "QB",
-                      "kind":  "combo",
-                      "tier":  "Full",
-                      "fills":  {
-                                    "fieldId":  "RegistrationNumber",
-                                    "value":  "FL1234AB"
-                                }
-                  },
-                  {
-                      "n":  34,
-                      "entity":  "Boat",
-                      "query":  "BoatQuery",
-                      "comboKeyRef":  "QB",
-                      "expectedKeyRef":  "QB",
-                      "kind":  "any-field",
-                      "tier":  "Full",
-                      "anyField":  "ImageIndicator",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "RegistrationNumber",
-                                        "value":  "FL1234AB"
                                     },
                                     {
                                         "fieldId":  "ImageIndicator",
@@ -770,6 +801,39 @@
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QB",
                       "expectedKeyRef":  "QB",
+                      "kind":  "combo",
+                      "tier":  "Full",
+                      "fills":  {
+                                    "fieldId":  "RegistrationNumber",
+                                    "value":  "FL1234AB"
+                                }
+                  },
+                  {
+                      "n":  36,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QB",
+                      "expectedKeyRef":  "QB",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "ImageIndicator",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "FL1234AB"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  37,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "comboKeyRef":  "QB",
+                      "expectedKeyRef":  "QB",
                       "kind":  "any",
                       "tier":  "Full",
                       "fills":  [
@@ -784,7 +848,7 @@
                                 ]
                   },
                   {
-                      "n":  36,
+                      "n":  38,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",
@@ -797,7 +861,7 @@
                                 }
                   },
                   {
-                      "n":  37,
+                      "n":  39,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",
@@ -817,7 +881,7 @@
                                 ]
                   },
                   {
-                      "n":  38,
+                      "n":  40,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",
@@ -837,7 +901,7 @@
                                 ]
                   },
                   {
-                      "n":  39,
+                      "n":  41,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "QBN",

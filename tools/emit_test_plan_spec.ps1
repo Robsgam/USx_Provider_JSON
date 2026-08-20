@@ -166,7 +166,32 @@ if (Test-Path $ovPath) {
     }
 }
 # composite + alias expansion: a devdoc field name may map to several form fields
-$expand = @{ 'name' = @('namelast','namefirst'); 'state' = @('registrationstate')
+$expand = @{ # 'name' EXPANDS TO ALL FOUR COMPONENTS -- corrected 2026-08-20.
+             # It was @('namelast','namefirst') for the tool's whole life, so the SPEC plan --
+             # the INDEPENDENT statement of what should be testable -- never demanded a middle name
+             # or a suffix on ANY provider. That is why it could not cross-verify the one thing NJ
+             # v4.17, OH and NM were being rebuilt for: the JSON plan grew the tests (it is any[]-
+             # driven, so the fix produces them automatically) while the spec plan stayed silent and
+             # step [1] passed either way -- it would have passed identically had the fix never been
+             # made. A cross-check that agrees with you regardless is not a cross-check.
+             # Metadata declares Name :: First + Last + Middle + Suffix (verified in NJ's raw XML),
+             # so all four are what the authority asks for. Resolve-FieldIds resolves each against
+             # THIS provider's controls and silently skips what does not exist, so a provider with
+             # no middle-name control simply gains no fill.
+             # ⚠ WHAT THIS DOES *NOT* DO -- I claimed the opposite here first and then measured it:
+             # it does NOT raise "UNREACHABLE (devdoc field not on form)" for a provider that lacks
+             # the controls. UNREACHABLE fires when a devdoc FIELD resolves to nothing, and 'Name'
+             # still resolves via namelast/namefirst, so the missing components stay invisible to it.
+             # Verified: TN_TIES (no middle/suffix control at all) reports 0 UNREACHABLE before AND
+             # after this change. DETECTING A MISSING CONTROL REMAINS audit_name_components' JOB
+             # (enforce PHASE 2x) -- this change buys the CROSS-CHECK for providers that HAVE the
+             # controls, i.e. it makes the spec plan independently demand the components the JSON
+             # plan already tests, so step [1] can no longer pass identically whether or not the
+             # any[] fix was made. That is worth having; it is not a substitute for 2x.
+             # SAFE PORTFOLIO-WIDE: nothing validates LOGS against the spec plan. Its only consumers
+             # are this emitter, reset_test_package (which archives it), and test_phase2 step [1]
+             # coverage -- verified by grep before the change. No log on any provider is invalidated.
+             'name' = @('namelast','namefirst','namemiddle','namesuffix'); 'state' = @('registrationstate')
              'gunserialnumber' = @('serialnumber'); 'articleserialnumber' = @('articleserialnumber','serialnumber')
              'gunmake' = @('gunmake','firearmmake'); 'badgenumber' = @('dexstateuserid')
              # The CLETS family names this control caRequestPurposeCode while every devdoc writes
@@ -180,6 +205,24 @@ $expand = @{ 'name' = @('namelast','namefirst'); 'state' = @('registrationstate'
 function Get-Value([string]$devField, [string]$fieldId, [string]$ent) {
     if ($ov.ContainsKey("$ent.$fieldId")) { return $ov["$ent.$fieldId"] }
     if ($ov.ContainsKey($fieldId)) { return $ov[$fieldId] }
+    # NAME COMPONENTS MUST GET DISTINCT VALUES, and this has to key off $fieldId -- NOT $devField.
+    # All four components expand from the ONE devdoc field 'Name', so $devField is "name" for every
+    # one of them and the switch below ('^name' -> 'DOE') returned DOE four times:
+    #     NameLast=DOE, NameFirst=DOE, NameMiddle=DOE, NameSuffix=DOE   ->  wire "DOE, DOE DOE DOE"
+    # A suffix of "DOE" is nonsense, and identical values across competing parts is the
+    # DEGENERATE-FILL class audit_log_inflation attack D exists to catch (competing fields filled
+    # with the same value prove nothing). Latent while 'name' expanded to last+first only; adding
+    # middle and suffix made it four-wide and visible.
+    # My first fix added branches to that switch and they NEVER MATCHED, for exactly this reason --
+    # I keyed them on $devField without checking what it holds. Values match the JSON-derived plan so
+    # the two plans cross-verify on VALUES as well as coverage: DOE / JOHN / A / JR -> "DOE, JOHN A JR",
+    # the string AZ_AZDPS and TX_TLETS have both wire-proven.
+    switch -Regex ($fieldId) {
+        '(?i)name(suffix|sfx)'  { return 'JR' }
+        '(?i)namemiddle'        { return 'A' }
+        '(?i)namefirst'         { return 'JOHN' }
+        '(?i)namelast'          { return 'DOE' }
+    }
     $def = $null; if ($fieldDef.ContainsKey($devField)) { $def = $fieldDef[$devField] }
     $ty = if ($def) { $def.Type } else { '' }
     $mx = 0; if ($def -and $def.Max) { [void][int]::TryParse($def.Max, [ref]$mx) }
