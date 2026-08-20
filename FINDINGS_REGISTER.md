@@ -53,10 +53,10 @@ So: **a C3 row is a half-finished C1 fix.** Add the components to the name combo
 | Provider | Ver | Logs at risk | Finding | Class | REAL? | Status |
 |---|---|---|---|---|---|---|
 | **NJ_NJCJIS** | v4.17 | 0 (already archived) | Middle+Suffix absent, then not-in-pool | C1 ×2 → C3 ×2 | **YES** | **FIXED 08-20** — controls + composite + AP #15 separators + `FULL.any[]`. Now 0 C1 / 0 C2 / 0 C3. **Owes: import, 40-test sweep, DEX-988 comment, Newark re-import** |
-| **NY_NYSPIN_EJUSTICE** | v4.24 | **75** | `RVIN` needs `RegistrationState` (blank, no prefill) but it sits BELOW the VIN row → officer fills every visible field in that row and **no query fires at all** | L2 SET-BELOW-ANY | **YES — officer-facing dead end** | OPEN |
+| **NY_NYSPIN_EJUSTICE** | v4.24 | 75 | `RVIN` needs `RegistrationState`, positioned below the VIN row | L2 SET-BELOW-ANY | **NO — I REPORTED THIS AS A DEAD END AND IT IS NOT.** `RCAR` is `set[VehicleIdentificationNumber]` gated `State NOT_EXISTS`, so a VIN with State blank fires `RCAR`. State below the identifiers is CORRECT — it chooses the network | **CLOSED — false positive.** L2 rule corrected 08-20 |
 | **NY_NYSPIN_EJUSTICE** | v4.24 | 75 | `MI` label on `nameMiddle` **maxLen=35**, and again on `nameMiddleDH` | L7 ×2 | **YES** — label says *initial*, field takes a full name, so the officer under-fills and the wire carries a less specific name. Sat unnoticed 07-27 → 08-18 | OPEN |
 | **NY_NYSPIN_EJUSTICE** | v4.24 | 75 | `ROW_ART_2` and `ROW_VEH_3` sum to 8 not 12 | L6 ×2 | no — dead space only | OPEN (cosmetic) |
-| **FL_FCIC** | v7.24 | **118** | Same shape as NY: mandatory `RegistrationState` (blank) below 2 optionals on the VIN combo → **same dead end** | L2 | **YES — officer-facing dead end** | OPEN |
+| **FL_FCIC** | v7.24 | 118 | Same shape as NY: `RegistrationState` below 2 optionals on the VIN combo | L2 | **NO — same false positive.** `FRQVehicleIdentificationNumber` is `set[VehicleIdentificationNumber]` gated `State NOT_EXISTS` and backs it | **CLOSED — false positive** |
 | **FL_FCIC** | v7.24 | 118 | Boat `ROW_BOA_4B` — `BirthDate` alone on a 12-col row | L5 | no — cosmetic | OPEN |
 | **CA_CLETS** | v2.26 | **111** | `purposeCode` positioned below optionals on `IG.QGB` and `IR.QVC.N` | L2 ×2 | **NO** — `purposeCode` is prefilled `'C'` on all 5 entities, so it cannot be left blank. **Do not "fix" this** | CLOSED — benign |
 | **TX_TLETS** | v4.21 | **96** | `NameLast` below optional `messageKey` on `CPLName` | L2 | **NO** — already a recorded DEX-1283 override | CLOSED — adjudicated |
