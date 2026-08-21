@@ -1,0 +1,70 @@
+﻿================================================================
+TEST LOG: NM_NMLETS_OFML Boat BoatQuery
+Combo: QB.H (QB.H (auto))
+Date: 2026-08-21 12:46:05
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: d61307cf99eb7a749cb7ac419542b7a781100010059743bff8000d793a5a07d8
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0JKBR8519V8W2D31A4Q3JNA">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M0JKBR8519V8W2D31A4Q3JNA</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0JKBR8519V8W2D31A4Q3JNA
+  BoatHullIdNumber               FL1234AB56H7
+
+NOTES
+-----
+Automated capture (txId 01M0JKBR8519V8W2D31A4Q3JNA). kind=combo; anyField=; expectedKeyRef=QB.H; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
