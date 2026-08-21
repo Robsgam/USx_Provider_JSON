@@ -2,9 +2,44 @@
 
 Auto-generated from `CA_CLETS_OCATS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.6** | Generated: 2026-08-18
+Current: **v2.7** | Generated: 2026-08-20
 
 ---
+
+## v2.7 -- 2026-08-20 -- LAYOUT COLLAPSE 16->5 CARDS + NAME COMPONENTS
+
+**CHANGED:**
+  LAYOUT -- 16 cards -> 5, the uniform shape (usx-cosmetic Step 3b). Vehicle 4->1,  
+    Person 3->1, Firearm 2->1, Article 3->1, Boat 4->1. Titles ALL-CAPS and path-carrying.  
+    'VIN' -> 'Vehicle Identification Number', 'License Number' -> 'OLN' (DEX-1284).  
+    State keeps its routing hint -- OCATS forks in-state vs OOS on State presence.  
+  PERSON IS ONE CARD AND THAT IS CORRECT: OCATS builds no DriverHistoryQuery (5 basic  
+    queries, no DH), so there is no second field pool to isolate. The uniform target's  
+    "Person = 2 cards" is a CONSEQUENCE of DH-suffix isolation, not a count to hit.  
+  NAME COMPONENTS -- NameMiddle/NameSuffix added to BOTH forms that carry the shared name  
+    pool (Vehicle-owner and Person use the SAME ('NameLast','NameFirst') sourceField), both  
+    Name composites extended with the separator list grown @(', ') -> @(', ', ' ', ' ')  
+    (AP #15), and the components POOLED into the any[] of all FIVE name combinations  
+    (VC, VP, OCNAMQ, and the two DL name paths). audit_name_components: 4 C1 -> 0.  
+PRESERVED DELIBERATELY -- the two UN-PREFILLED routing discriminators, now carried in a  
+  loud comment on the Vehicle card so a future "add the standard defaults" pass cannot undo  
+  them: LicensePlateTypeCode has NO initialValue because it is what separates built 4K from  
+  4, and businessIndicator has NO initialValue because it is what separates VC from VP. A  
+  prefill on either makes it always-present and kills the plainer sibling (BUILD_RULES 24).  
+  Those two combos were BUILT at v2.6 specifically to clear an over-permit, and fidelity  
+  still reads 25 branches / 0 UNDER / 0 OVER here, so the collapse preserved that work.  
+A GATE PAIR THAT CONSTRAINS FROM OPPOSITE DIRECTIONS: my first Firearm row 2 used  
+  cols = @('4','4') for two fields. validate.ps1 was happy (columns match children) but  
+  audit_layout_flow L6 was not -- "templateColumns [4 4] sums to 8, not 12 (4 column(s) of  
+  dead space)". Fixed to @('6','6'). Compare CA_SAN_LUIS_OBISPO v2.5, where the opposite  
+  mistake (@('6','6') for ONE field) tripped validate.ps1 instead. The rule that satisfies  
+  both: columns must match the child COUNT and sum to 12 -- and L6 does not fire on a  
+  single-field row, which is why a lone control legitimately takes @('6').  
+GATES: validator 66P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | name components 0  
+  blocking / 8 examined | layout flow 1 finding -> 0 | wiring closure 0 breaks in all ten  
+  classes | reachability 20/20 | prefill shadow 0 (49 pairs) | fidelity 25 branches 0 UNDER  
+  / 0 OVER.  
+NOT TESTED: never tenant-tested. Owes an import and a first-ever sweep.  
 
 ## v2.6 -- 2026-08-18 -- EVERY metadata variant of every devdoc-Basic query is now BUILT -- 4K and VC added
 

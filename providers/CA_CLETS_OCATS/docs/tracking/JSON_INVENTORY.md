@@ -12,6 +12,12 @@
 
 
 
+
+## v2.7 (2026-08-20)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CLETS_OCATS_v2.7.json | v2.7 | Current | 66P/0F/0W/0LIM. |
 ## v2.6 (2026-08-18)
 
 | File | Version | Status | Notes |

@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CLETS_OCATS
-  Source: CA_CLETS_OCATS_v2.6.json
-  Generated: 2026-08-18 20:58
+  Source: CA_CLETS_OCATS_v2.7.json
+  Generated: 2026-08-20 21:24
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CLETS_OCATS_v2.6.json
+  CommSys Query Simulator -- CA_CLETS_OCATS_v2.7.json
 ================================================================
 
 --- QIDM: CA_CLETS_OCATS_VehicleRegistrationQuery [Vehicle] ---
@@ -54,6 +54,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] VP
       set: [caRequestPurposeCode, NameLast, NameFirst]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
