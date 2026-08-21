@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO
-  Source: CA_SAN_LUIS_OBISPO_v2.4.json
-  Generated: 2026-08-19 11:26
+  Source: CA_SAN_LUIS_OBISPO_v2.5.json
+  Generated: 2026-08-20 21:18
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: CA_SAN_LUIS_OBISPO_v2.4
+ CAD AUDIT: CA_SAN_LUIS_OBISPO_v2.5
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -34,8 +34,8 @@ CAD AUDIT
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF as 'NameMiddle' (PascalCase USx fieldIds)
+    [PASS] nameSuffix: in QIF as 'NameSuffix' (PascalCase USx fieldIds)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [INFO] raceCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
@@ -59,11 +59,13 @@ CAD AUDIT
     [INFO] height: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] OperatorLicenseNumberDH: in QIF, not in CAD list (provider-specific)
     [INFO] caRequestPurposeCodeDH: in QIF, not in CAD list (provider-specific)
-    [INFO] attentionDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameMiddleDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameSuffixDH: in QIF, not in CAD list (provider-specific)
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
+    [INFO] attentionDH: in QIF, not in CAD list (provider-specific)
   Firearm:
     [PASS] serialNumber: in QIF and CAD list
     [PASS] firearmMake: in QIF and CAD list
@@ -161,6 +163,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 64 PASS / 0 FAIL / 0 WARN / 67 INFO
+Total: 66 PASS / 0 FAIL / 0 WARN / 67 INFO
 
 

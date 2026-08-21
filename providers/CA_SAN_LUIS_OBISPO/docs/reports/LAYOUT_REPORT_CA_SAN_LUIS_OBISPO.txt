@@ -1,18 +1,18 @@
 ﻿================================================================
   Build Report: CA_SAN_LUIS_OBISPO
-  Source: CA_SAN_LUIS_OBISPO_v2.4.json
-  Generated: 2026-08-19 11:26
+  Source: CA_SAN_LUIS_OBISPO_v2.5.json
+  Generated: 2026-08-20 21:18
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== CA_SAN_LUIS_OBISPO_v2.4.json ===
+=== CA_SAN_LUIS_OBISPO_v2.5.json ===
 QIFs: 5
-  Vehicle | entity=Vehicle | qidm= | cards=3 fields=4
-  Person | entity=Person | qidm= | cards=5 fields=8
+  Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
+  Person | entity=Person | qidm= | cards=2 fields=12
   Firearm | entity=Firearm | qidm= | cards=1 fields=1
   Article | entity=Article | qidm= | cards=1 fields=3
-  Boat | entity=Boat | qidm= | cards=3 fields=2
+  Boat | entity=Boat | qidm= | cards=1 fields=2
 QIDMs: 6
   CA_SAN_LUIS_OBISPO_VehicleRegistrationQuery | attrs=7 combos=4 autoSelect=True
   CA_SAN_LUIS_OBISPO_DriverLicenseQuery | attrs=5 combos=5 autoSelect=True
@@ -29,86 +29,77 @@ LAYOUT DETAIL
 === Vehicle ===
   name=ENTITY_Vehicle | entity=Vehicle | qidm=
   [default]
-    CARD "CARD_VEH_OPT"
-      ROW ROW_VEH_OPT_1 [6]
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-      ROW ROW_VEH_OPT_2 [6 6]
+    CARD "CARD_VEH"
+      ROW ROW_VEH_1 [6 3 3]
+        LicensePlateNumber (Text | maxLen=10)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
-    CARD "CARD_VEH_PLATE"
-      ROW ROW_VEH_PLATE_1 [12]
-        LicensePlateNumber (Text | maxLen=10)
-    CARD "CARD_VEH_VIN"
-      ROW ROW_VEH_VIN_1 [12]
+      ROW ROW_VEH_2 [6 3 3]
         VehicleIdentificationNumber (Text | maxLen=20)
-      ROW ROW_VEH_VIN_2 [6 6]
         VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
         vehicleYear (Text | maxLen=4)
+      ROW ROW_VEH_3 [6]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
   [default]
-    CARD "CARD_PER_OPT"
-      ROW ROW_PER_OPT_1 [6]
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-    CARD "CARD_PER_OLN"
-      ROW ROW_PER_OLN_1 [12]
+    CARD "CARD_PER_DL"
+      ROW ROW_PER_DL_1 [6 6]
         OperatorLicenseNumber (Text | maxLen=17)
-    CARD "CARD_PER_NAME"
-      ROW ROW_PER_NAME_1 [6 6]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+      ROW ROW_PER_DL_2 [3 3 3 3]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
-      ROW ROW_PER_NAME_2 [6 6]
+        NameMiddle (Text | maxLen=30)
+        NameSuffix (Text | maxLen=5)
+      ROW ROW_PER_DL_3 [6 6]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
-    CARD "CARD_PER_DH_OLN"
-      ROW ROW_PER_DH_OLN_1 [6 6]
+    CARD "CARD_PER_DH"
+      ROW ROW_PER_DH_1 [6 6]
         OperatorLicenseNumberDH (Text | maxLen=20)
         caRequestPurposeCodeDH (Text | maxLen=1 | default=C)
-      ROW ROW_PER_DH_ATTN [12]
-        attentionDH (Text | maxLen=30 | default=X)
-    CARD "CARD_PER_DH_NAME"
-      ROW ROW_PER_DH_NAME_1 [6 6]
+      ROW ROW_PER_DH_2 [3 3 3 3]
         NameFirstDH (Text | maxLen=30)
         NameLastDH (Text | maxLen=30)
-      ROW ROW_PER_DH_NAME_2 [6 6]
+        NameMiddleDH (Text | maxLen=30)
+        NameSuffixDH (Text | maxLen=5)
+      ROW ROW_PER_DH_3 [6 6]
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
+      ROW ROW_PER_DH_ATTN [12]
+        attentionDH (Text | maxLen=30 | default=X)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=
   [default]
-    CARD "CARD_GUN_SERIAL"
-      ROW ROW_GUN_SERIAL_1 [6 6]
+    CARD "CARD_GUN"
+      ROW ROW_GUN_1 [3 3 3 3]
         serialNumber (Text | maxLen=20)
         firearmMake (Dropdown | codeTypeCategory=NCIC_FIREARM_MAKE | codeTypeSource=NCIC)
-      ROW ROW_GUN_SERIAL_2 [6 6]
         GunCaliber (Dropdown | codeTypeCategory=NCIC_FIREARM_CALIBER | codeTypeSource=NCIC)
         gunTypeCode (Dropdown | codeTypeCategory=NCIC_FIREARM_TYPE | codeTypeSource=NCIC)
 
 === Article ===
   name=ENTITY_Article | entity=Article | qidm=
   [default]
-    CARD "CARD_ART_SERIAL"
-      ROW ROW_ART_SERIAL_1 [12]
+    CARD "CARD_ART"
+      ROW ROW_ART_1 [6 6]
         serialNumber (Text | maxLen=20)
-      ROW ROW_ART_SERIAL_2 [4 4 4]
         ArticleTypeCode (Dropdown | codeTypeCategory=NCIC_ARTICLE_TYPE | codeTypeSource=CA_CLETS)
+      ROW ROW_ART_2 [6 6]
         articleBrand (Text | maxLen=6)
         articleCategory (Text | maxLen=1)
 
 === Boat ===
   name=ENTITY_Boat | entity=Boat | qidm=
   [default]
-    CARD "CARD_BOA_OPT"
-      ROW ROW_BOA_OPT_1 [6]
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-    CARD "CARD_BOA_HULL"
-      ROW ROW_BOA_HULL_1 [12]
+    CARD "CARD_BOA"
+      ROW ROW_BOA_1 [4 4 4]
         BoatHullIdNumber (Text | maxLen=20)
-    CARD "CARD_BOA_REG"
-      ROW ROW_BOA_REG_1 [12]
         RegistrationNumber (Text | maxLen=8)
+        RegistrationState (Dropdown | attributeTypeId=STATE)
 
 === RMS QIDMs ===
   RMS Person Search query

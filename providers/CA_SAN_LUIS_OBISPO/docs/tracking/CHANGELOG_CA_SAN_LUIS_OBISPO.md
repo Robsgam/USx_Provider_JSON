@@ -2,9 +2,42 @@
 
 Auto-generated from `CA_SAN_LUIS_OBISPO_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-19
+Current: **v2.5** | Generated: 2026-08-20
 
 ---
+
+## v2.5 -- 2026-08-20 -- LAYOUT COLLAPSE 13->6 CARDS + NAME COMPONENTS
+
+**CHANGED:**
+  LAYOUT -- 13 cards -> 6, the uniform shape (usx-cosmetic Step 3b). Vehicle 3->1,  
+    Person 5->2 (DL + DH), Firearm 1, Article 1, Boat 3->1. Titles ALL-CAPS and  
+    path-carrying. 'VIN' -> 'Vehicle Identification Number'. The "(DH)" label suffixes are  
+    dropped -- the card title now says DRIVER HISTORY, so repeating it on every control was  
+    noise; the fieldIds keep their DH suffix, which is what actually isolates the pool.  
+    Boat: Hull now LEADS Registration, matching the Hull > Reg guardrail.  
+    State keeps its routing hint -- SLO forks in-state vs OOS on State presence.  
+  NAME COMPONENTS -- 4 new controls (NameMiddle/NameSuffix on the DL pool,  
+    NameMiddleDH/NameSuffixDH on the DH pool), composed into both Name  
+    FormatStringRuleHandlers with the separator list grown @(', ') -> @(', ', ' ', ' ')  
+    (AP #15), and POOLED into the any[] of all FIVE name combinations (3 DL, 2 DH).  
+    audit_name_components: 4 C1 -> 0, 8 components examined.  
+  PRESERVED DELIBERATELY -- the OLN maxLen asymmetry. The DL control caps at 17 and the DH  
+    control at 20 because each transaction caps it differently in this provider's own  
+    metadata. That difference was itself a real finding once (audit_metadata flagged the DL  
+    control at 20 > XML 17 and the gate was RIGHT), so it is called out here to stop a  
+    future pass "harmonising" the two and either truncating a valid 20-character DH OLN or  
+    re-introducing a request the DL transaction rejects.  
+A PROBE NOTE WORTH KEEPING: my first Vehicle card put State alone on a row with  
+  cols = @('6','6'), reasoning that L6 wants rows summing to 12. validate.ps1 rejected it --  
+  "templateColumns has 2 entries but Row has 1 children -- misaligned columns", 3 WARNs, one  
+  per layout variant. templateColumns must MATCH the child count, not the nominal 12. Fixed  
+  to @('6'), which is what this provider's own pre-collapse OPTIONS row already used and  
+  which audit_layout_flow accepts (L5 would have flagged @('12') for a lone dropdown).  
+GATES: validator 67P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | name components 0  
+  blocking / 8 examined | layout flow 5 findings -> 0 | wiring closure 0 breaks in all ten  
+  classes | reachability 15/15 | prefill shadow 0 (23 pairs) | fidelity 22 branches 0 UNDER  
+  / 0 OVER.  
+NOT TESTED: never tenant-tested. Owes an import and a first-ever sweep.  
 
 ## v2.4 -- 2026-08-17 -- CA-FAMILY HEADER FIX -- <Authentication>/<DeviceId> (Mariposa LIVE failure)
 
