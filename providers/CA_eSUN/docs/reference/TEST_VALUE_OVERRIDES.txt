@@ -1,0 +1,29 @@
+# TEST_VALUE_OVERRIDES.txt -- fieldId=value  OR  <Entity>.fieldId=value (entity-scoped wins)
+# CA_eSUN
+#
+# ADDED 2026-08-20 at v2.4 -- resolves [FLAG:plan-fillability-unfireable-tests].
+# test_phase2 step [2] reported 26 UNSATISFIED plan tests, ALL of them on the two CROSS-ENTITY
+# owner name pools. Cause is exactly what the flag predicted: these fieldIds are provider-specific
+# (VehName*/GunName*, not the portfolio-standard NameFirst/NameLast), so Get-TestValue had no
+# mapping and emit_test_plan omitted them -- leaving VP.D/VP.N/QGH.A/QGH.B tests that name a
+# mandatory field they never fill. The tenant would correctly keep Send DISABLED and send nothing,
+# so those tests could not have produced evidence. NOT a build defect and NOT a JSON change.
+#
+# Entity-scoped form throughout, so a value cannot leak onto another entity's control.
+#
+# Vehicle -- owner search (VP.D mandatory Last+First+BirthDate, VP.N mandatory Last+First)
+Vehicle.VehNameLast=DOE
+Vehicle.VehNameFirst=JOHN
+Vehicle.VehNameMiddle=A
+Vehicle.VehNameSuffix=JR
+Vehicle.VehBirthDate=1980-01-15
+#
+# Firearm -- gun-by-owner search. Metadata puts Choice[Age|BirthDate] INSIDE <Set> on the Name
+# variant, which is why QGH is split into QGH.A (Age) and QGH.B (BirthDate) -- one combination per
+# branch, since set[] has no OR. Both branches therefore need their own discriminator value.
+Firearm.GunNameLast=DOE
+Firearm.GunNameFirst=JOHN
+Firearm.GunNameMiddle=A
+Firearm.GunNameSuffix=JR
+Firearm.GunAge=45
+Firearm.GunBirthDate=1980-01-15

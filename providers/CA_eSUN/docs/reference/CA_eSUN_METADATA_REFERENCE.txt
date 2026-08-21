@@ -1,7 +1,7 @@
 ﻿CA_eSUN METADATA REFERENCE
 ===========================
-Generated: 2026-08-01
-Source: CA_eSUN.xml (metadata) + CA_eSUN_v2.2.json
+Generated: 2026-08-20
+Source: CA_eSUN.xml (metadata) + CA_eSUN_v2.4.json
 Metadata: 63 total transactions, 6 queries built in JSON
 
 CaRequestPurposeCode: Mandatory on ALL transactions.
@@ -108,13 +108,12 @@ METADATA COMBINATIONS (6 total):
   QW            Name                    CaRequestPurposeCode, BirthDate, Name                  Age, SexCode
   QW            OperatorLicenseNumber   CaRequestPurposeCode, OperatorLicenseNumber            --
 
-BUILD COVERAGE (4 of 6 built):
+BUILD COVERAGE (5 of 6 built):
   BUILT   DQ.N           set[caRequestPurposeCode, SexCode, BirthDate, NameLast, NameFirst]
+  BUILT   QW.N           set[caRequestPurposeCode, BirthDate, NameLast, NameFirst]
   BUILT   L1.N           set[caRequestPurposeCode, NameLast, NameFirst]
   BUILT   DQ.O           set[caRequestPurposeCode, OperatorLicenseNumber]
   BUILT   L1.O           set[caRequestPurposeCode, OperatorLicenseNumber]
-  UNBUILT QW             Name
-  UNBUILT QW             OperatorLicenseNumber
 
 ================================================================================
 5. GunQuery (version 10)
@@ -189,14 +188,14 @@ BUILD SUMMARY
   ArticleSingleQuery                         1      1     0  100% (COMPLETE)
   BoatQuery                                  6      2     4  33%
   DriverHistoryQuery                         4      4     0  100% (COMPLETE)
-  DriverLicenseQuery                         6      4     2  67%
+  DriverLicenseQuery                         6      5     1  83%
   GunQuery                                   2      3     0  150%
   VehicleRegistrationQuery                   7      6     1  86%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   26     20     7  77%
+  TOTAL                                   26     21     6  81%
 
 ================================================================================
-UNBUILT METADATA COMBOS (10 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (8 combos in metadata, not in JSON)
 ================================================================================
 
   4B             RegistrationNumber       (BoatQuery)
@@ -205,8 +204,6 @@ UNBUILT METADATA COMBOS (10 combos in metadata, not in JSON)
   QB             BoatHullIdNumber         (BoatQuery)
   L1             Name                     (DriverHistoryQuery)
   L1             OperatorLicenseNumber    (DriverHistoryQuery)
-  QW             Name                     (DriverLicenseQuery)
-  QW             OperatorLicenseNumber    (DriverLicenseQuery)
   4              LicensePlateNumber       (VehicleRegistrationQuery)
   4V             VehicleIdentificationNumber (VehicleRegistrationQuery)
 

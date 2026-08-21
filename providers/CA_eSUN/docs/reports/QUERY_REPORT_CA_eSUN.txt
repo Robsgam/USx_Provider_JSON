@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.3.json
-  Generated: 2026-08-19 11:25
+  Source: CA_eSUN_v2.4.json
+  Generated: 2026-08-20 20:04
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_eSUN_v2.3.json
+  CommSys Query Simulator -- CA_eSUN_v2.4.json
 ================================================================
 
 --- QIDM: CA_eSUN_ArticleSingleQuery [Article] ---
@@ -53,8 +53,9 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_eSUN_DriverLicenseQuery [Person] ---
-    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 4
+    Query: DriverLicenseQuery  |  Attrs: 6  |  Combos: 5
     [SKIP] DQ.N -- conditions failed: OperatorLicenseNumber NOT_EXISTS [value='D123456789']
+    [SKIP] QW.N -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']; OperatorLicenseNumber NOT_EXISTS [value='D123456789']
     [SKIP] L1.N -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']; OperatorLicenseNumber NOT_EXISTS [value='D123456789']
 
     [FIRES first-match] DQ.O

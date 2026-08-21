@@ -1,81 +1,87 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.3.json
-  Generated: 2026-08-19 11:25
+  Source: CA_eSUN_v2.4.json
+  Generated: 2026-08-20 20:04
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- CA_eSUN_v2.3
+TEST MATRIX <-> JSON CONSISTENCY -- CA_eSUN_v2.4
 ============================================================
-Source: CA_eSUN_v2.3.json
+Source: CA_eSUN_v2.4.json
 Matrix: CA_eSUN_TEST_MATRIX.txt
-Generated: 2026-08-19
+Generated: 2026-08-20
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: PERSON (19 tests -- 5 cards, 8 combos)
+ENTITY: PERSON (23 tests -- 2 cards, 9 combos)
   T1  Person     [PASS] (structural check)
   T2  Person     [PASS] any[] fields verified: RegistrationState
   T3  Person     [PASS] (structural check)
-  T4  Person     [PASS] any[] fields verified: RegistrationState
+  T4  Person     [PASS] any[] fields verified: RegistrationState, NameMiddle, NameSuffix
   T5  Person     [PASS] (structural check)
-  T6  Person     [PASS] (structural check)
+  T6  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
   T7  Person     [PASS] (structural check)
-  T8  Person     [PASS] any[] fields verified: attention, RegistrationState
-  T9  Person     [PASS] (structural check)
-  T10  Person     [PASS] any[] fields verified: attention, RegistrationState
-  T11  Person     [PASS] (structural check)
-  T12  Person     [PASS] any[] fields verified: attention
-  T13  Person     [PASS] (structural check)
-  T14  Person     [PASS] any[] fields verified: attention
-  T15  Person     [PASS] (structural check)
+  T8  Person     [PASS] (structural check)
+  T9  Person     [PASS] any[] fields verified: NameMiddle, NameSuffix
+  T10  Person     [PASS] (structural check)
+  T11  Person     [PASS] any[] fields verified: attention, RegistrationState
+  T12  Person     [PASS] (structural check)
+  T13  Person     [PASS] any[] fields verified: attention, RegistrationState, NameMiddleDH, NameSuffixDH
+  T14  Person     [PASS] (structural check)
+  T15  Person     [PASS] any[] fields verified: attention
   T16  Person     [PASS] (structural check)
-  T17  Person     [PASS] (structural check)
+  T17  Person     [PASS] any[] fields verified: attention, NameMiddleDH, NameSuffixDH
   T18  Person     [PASS] (structural check)
-  T19  Person     [PASS] queriesToDeselect verified
-ENTITY: VEHICLE (20 tests -- 4 cards, 6 combos)
-  T20  Vehicle    [PASS] (structural check)
-  T21  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
-  T22  Vehicle    [PASS] (structural check)
-  T23  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
+  T19  Person     [PASS] (structural check)
+  T20  Person     [PASS] (structural check)
+  T21  Person     [PASS] (structural check)
+  T22  Person     [PASS] (structural check)
+  T23  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (20 tests -- 1 card, 6 combos)
   T24  Vehicle    [PASS] (structural check)
   T25  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T26  Vehicle    [PASS] (structural check)
   T27  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T28  Vehicle    [PASS] (structural check)
-  T29  Vehicle    [PASS] any[] fields verified: AddressCity, AddressStreetNumber
+  T29  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T30  Vehicle    [PASS] (structural check)
-  T31  Vehicle    [PASS] any[] fields verified: AddressCity, AddressStreetNumber
+  T31  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, vehicleYear
   T32  Vehicle    [PASS] (structural check)
-  T33  Vehicle    [PASS] (structural check)
+  T33  Vehicle    [PASS] any[] fields verified: AddressCity, AddressStreetNumber, VehNameMiddle, VehNameSuffix
   T34  Vehicle    [PASS] (structural check)
-  T35  Vehicle    [PASS] (structural check)
+  T35  Vehicle    [PASS] any[] fields verified: AddressCity, AddressStreetNumber, VehNameMiddle, VehNameSuffix
   T36  Vehicle    [PASS] (structural check)
   T37  Vehicle    [PASS] (structural check)
   T38  Vehicle    [PASS] (structural check)
   T39  Vehicle    [PASS] (structural check)
-ENTITY: BOAT (5 tests -- 3 cards, 2 combos)
-  T40  Boat       [PASS] (structural check)
-  T41  Boat       [PASS] any[] fields verified: RegistrationState
-  T42  Boat       [PASS] (structural check)
-  T43  Boat       [PASS] any[] fields verified: RegistrationState
+  T40  Vehicle    [PASS] (structural check)
+  T41  Vehicle    [PASS] (structural check)
+  T42  Vehicle    [PASS] (structural check)
+  T43  Vehicle    [PASS] (structural check)
+ENTITY: BOAT (5 tests -- 1 card, 2 combos)
   T44  Boat       [PASS] (structural check)
-ENTITY: FIREARM (7 tests -- 3 cards, 3 combos)
-  T45  Firearm    [PASS] GunQuery fires (QGB)
-  T46  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, gunTypeCode, RelatedSearchHitIndicator
-  T47  Firearm    [PASS] (structural check)
-  T48  Firearm    [PASS] (structural check)
+  T45  Boat       [PASS] any[] fields verified: RegistrationState
+  T46  Boat       [PASS] (structural check)
+  T47  Boat       [PASS] any[] fields verified: RegistrationState
+  T48  Boat       [PASS] (structural check)
+ENTITY: FIREARM (9 tests -- 1 card, 3 combos)
   T49  Firearm    [PASS] GunQuery fires (QGB)
-  T50  Firearm    [PASS] GunQuery fires (QGB)
+  T50  Firearm    [PASS] any[] fields verified: gunCaliber, firearmMake, gunTypeCode, RelatedSearchHitIndicator
   T51  Firearm    [PASS] (structural check)
+  T52  Firearm    [PASS] any[] fields verified: GunNameMiddle, GunNameSuffix
+  T53  Firearm    [PASS] (structural check)
+  T54  Firearm    [PASS] any[] fields verified: GunNameMiddle, GunNameSuffix
+  T55  Firearm    [PASS] GunQuery fires (QGB)
+  T56  Firearm    [PASS] GunQuery fires (QGB)
+  T57  Firearm    [PASS] (structural check)
 ENTITY: ARTICLE (2 tests -- 1 card, 1 combo)
-  T52  Article    [PASS] ArticleSingleQuery fires (QA)
-  T53  Article    [PASS] any[] fields verified: articleBrand, articleCategory, articleTypeCode
+  T58  Article    [PASS] ArticleSingleQuery fires (QA)
+  T59  Article    [PASS] any[] fields verified: articleBrand, articleCategory, articleTypeCode
 
-SUMMARY: 53/53 PASS, 0 FAIL
+SUMMARY: 59/59 PASS, 0 FAIL
 
 

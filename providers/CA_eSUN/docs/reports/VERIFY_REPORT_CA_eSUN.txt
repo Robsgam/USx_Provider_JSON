@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.3.json
-  Generated: 2026-08-19 11:25
+  Source: CA_eSUN_v2.4.json
+  Generated: 2026-08-20 20:04
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_eSUN_v2.3
+ POST-BUILD VERIFICATION: CA_eSUN_v2.4
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 30 [articleBrand, articleCategory, serialNumber, articleTypeCode, caRequestPurposeCode, BoatHullIdNumber, RegistrationNumber, attention, BirthDateDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, GunAge, GunBirthDate, gunCaliber, firearmMake, gunTypeCode, GunNameLast, GunNameFirst, RelatedSearchHitIndicator, AddressCity, AddressStreetNumber, VehBirthDate, LicensePlateTypeCode, LicensePlateYear, VehNameLast, VehNameFirst, VehicleMakeCode, vehicleYear]
+  [INFO] CommSys-only: 38 [articleBrand, articleCategory, serialNumber, articleTypeCode, caRequestPurposeCode, BoatHullIdNumber, RegistrationNumber, NameMiddle, NameSuffix, attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, SexCodeDH, GunAge, GunBirthDate, gunCaliber, firearmMake, gunTypeCode, GunNameLast, GunNameFirst, GunNameMiddle, GunNameSuffix, RelatedSearchHitIndicator, AddressCity, AddressStreetNumber, VehBirthDate, LicensePlateTypeCode, LicensePlateYear, VehNameLast, VehNameFirst, VehNameMiddle, VehNameSuffix, VehicleMakeCode, vehicleYear]
   [INFO] RMS-only (expected for RMS-specific fields): 1
   [INFO] RMS-only sourceFields (RMS defaults, no form match): 1 [raceCode]
   [PASS] Cross-bundle fieldId consistency checked
@@ -41,7 +41,7 @@ POST-BUILD VERIFICATION
   [PASS] All 5 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (38) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (46) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -56,12 +56,24 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [INFO] Field 'OperatorLicenseNumberDH' label='License Number' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
   [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'BirthDateDH' label='Date of Birth (required with Name for out-of-state)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [INFO] Field 'SexCodeDH' label='Sex (required with Name for out-of-state)' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
-  [PASS] All form field labels have required routing hint qualifiers (41 fields scanned) (5 DH field(s) untagged -- advisory only, see Info above)
+  [INFO] Field 'NameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, DL pool))
+  [INFO] Field 'NameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, DL pool))
+  [INFO] Field 'attention' (any[]-only) label='Attention' -- manual label override accepted (hidden gate-feeder, the label is dead text the officer never sees)
+  [INFO] Field 'NameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, DH pool))
+  [INFO] Field 'NameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, DH pool))
+  [INFO] Field 'GunNameMiddle' (any[]-only) label='Owner Middle Name' -- manual label override accepted (bare "Owner Middle Name", DEX-1284 lean pass (any[], QGH pool))
+  [INFO] Field 'GunNameSuffix' (any[]-only) label='Owner Suffix' -- manual label override accepted (bare "Owner Suffix", DEX-1284 lean pass (any[], QGH pool))
+  [INFO] Field 'RelatedSearchHitIndicator' (any[]-only) label='Stolen Check' -- manual label override accepted (canonical bare "Stolen Check" per BUILD_RULES 11)
+  [INFO] Field 'VehNameMiddle' (any[]-only) label='Owner Middle Name' -- manual label override accepted (bare "Owner Middle Name", DEX-1284 lean pass (any[], VP pool))
+  [INFO] Field 'VehNameSuffix' (any[]-only) label='Owner Suffix' -- manual label override accepted (bare "Owner Suffix", DEX-1284 lean pass (any[], VP pool))
+  [PASS] All form field labels have required routing hint qualifiers (49 fields scanned) (7 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)
