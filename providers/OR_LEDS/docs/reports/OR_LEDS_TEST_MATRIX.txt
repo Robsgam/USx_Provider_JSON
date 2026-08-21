@@ -1,46 +1,35 @@
-OR_LEDS v2.4 -- TEST MATRIX
+OR_LEDS v2.5 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-19
+Generated: 2026-08-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 5 fields):
-  CARD_VEH_OPT (OPTIONS - Leave blank for OR queries):
-    RegistrationState [Sel STATE]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10]
-    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-  CARD_VEH_VIN (VIN SEARCH):
-    VehicleIdentificationNumber [Inp 20]
+Vehicle (1 card, 5 fields):
+  CARD_VEH (VEHICLE SEARCH BY PLATE, OR VIN):
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 2: VehicleIdentificationNumber [Inp 20], RegistrationState [Sel STATE]
 
-Person (3 cards, 10 fields):
-  CARD_PER_OPT (OPTIONS - Leave blank for OR queries):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-  CARD_PER_OLN (OLN SEARCH):
-    OperatorLicenseNumber [Inp 20]
-  CARD_PER_NAME (NAME SEARCH):
-    ROW 1: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 5]
-    ROW 2: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel RACE]
+Person (1 card, 10 fields):
+  CARD_PER (DRIVER LICENSE SEARCH BY OLN, OR NAME):
+    ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE]
+    ROW 2: NameFirst [Inp 30], NameLast [Inp 30], nameMiddle [Inp 30], nameSuffix [Inp 5]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
+    ROW 4: ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], raceCode [Sel RACE]
 
 Firearm (1 card, 3 fields):
-  CARD_GUN (FIREARM SEARCH):
-    serialNumber [Inp 11], gunMake [Sel NCIC_FIREARM_MAKE/NCIC]
-    gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
+  CARD_GUN (FIREARM SEARCH BY SERIAL):
+    serialNumber [Inp 11], gunMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
 
 Article (1 card, 2 fields):
-  CARD_ART (ARTICLE SEARCH):
+  CARD_ART (ARTICLE SEARCH BY SERIAL AND TYPE):
     serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
 
-Boat (3 cards, 3 fields):
-  CARD_BOA_OPT (OPTIONS - Leave blank for OR queries):
-    RegistrationState [Sel STATE]
-  CARD_BOA_REG (REGISTRATION SEARCH):
-    RegistrationNumber [Inp 8]
-  CARD_BOA_HULL (HULL SEARCH):
-    BoatHullIdNumber [Inp 20]
+Boat (1 card, 3 fields):
+  CARD_BOA (BOAT SEARCH BY HULL, OR REGISTRATION):
+    BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8], RegistrationState [Sel STATE]
 
 QIDM SUMMARY (5 QIDMs, 9 combos)
 ----------------------------------------
@@ -59,7 +48,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (7 tests -- 3 cards, 3 combos)
+ENTITY 1: VEHICLE (7 tests -- 1 card, 3 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -78,7 +67,7 @@ ENTITY 1: VEHICLE (7 tests -- 3 cards, 3 combos)
  7  Vehicle     Guardrail: RQ.PO>RQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.PO). VIN absent from XML.
 
-ENTITY 2: BOAT (5 tests -- 3 cards, 2 combos)
+ENTITY 2: BOAT (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -93,7 +82,7 @@ ENTITY 2: BOAT (5 tests -- 3 cards, 2 combos)
 12  Boat        Guardrail: BQ.H>BQ.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BQ.H). Reg absent from XML.
 
-ENTITY 3: PERSON (5 tests -- 3 cards, 2 combos)
+ENTITY 3: PERSON (5 tests -- 1 card, 2 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -134,4 +123,4 @@ COMBO COVERAGE (9/9):
   ArticleSingleQuery: 1/1 -- T20(serialNumber)
   BoatQuery: 2/2 -- T8(.H), T10(.R)
 
-IMPORT FILE: OR_LEDS_v2.4.json
+IMPORT FILE: OR_LEDS_v2.5.json

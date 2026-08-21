@@ -2,9 +2,43 @@
 
 Auto-generated from `OR_LEDS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-19
+Current: **v2.5** | Generated: 2026-08-20
 
 ---
+
+## v2.5 -- 2026-08-20 -- LAYOUT COLLAPSE 11->5 CARDS; L9 RMS-ONLY ROW SPLIT
+
+**CHANGED:**
+  LAYOUT -- 11 cards -> 5, the uniform shape (usx-cosmetic Step 3b). Vehicle 3->1,  
+    Person 3->1, Firearm 1, Article 1, Boat 3->1. Titles ALL-CAPS and path-carrying.  
+    Canonical labels: 'VIN' -> 'Vehicle Identification Number', 'License Number' -> 'OLN'  
+    (DEX-1284), 'Image (optional)' -> 'NCIC Image'. State keeps its routing hint on all  
+    three carrying entities -- OR forks in-state vs Nlets on State presence.  
+  PERSON IS LEGITIMATELY ONE CARD, not the usual DL + DH pair: OR builds no  
+    DriverHistoryQuery (5 basic queries, no DH), so there is no second field pool to  
+    isolate. The uniform target's "Person = 2 cards" is a consequence of DH-suffix  
+    isolation, not a rule to satisfy where DH does not exist.  
+  BOAT -- Hull now LEADS Registration. The old layout put the REGISTRATION card first,  
+    which read as though registration were the primary path; the identifier-priority  
+    guardrail is Hull > Reg, so the form now matches the routing.  
+  L9 FIX -- ROW_PER_3 split into two rows. raceCode is RMS-ONLY on OR (it appears in NO  
+    CommSys combination) and was sharing a row with the mandatory CommSys identifiers  
+    BirthDate and SexCode, so the most prominent qualifier row implied a state query that  
+    never happens. It now sits with NCIC Image, which is a CommSys OPTIONAL rather than an  
+    identifier. Found by audit_layout_flow L9 after the collapse -- the finding did not  
+    exist before, because the pre-collapse cards were too small to trip it (which is the  
+    vacuity L4 warns about in its own message).  
+NOT CHANGED, because it was already right: OR's name components were WIRED at v2.3 --  
+  nameMiddle/nameSuffix are composed into the Name FormatStringRuleHandler  
+  (@(', ',' ',' ') separators, AP #15) AND pooled in DQ.N's any[]. audit_name_components  
+  reports 0 blocking / 4 examined. Worth recording because v2.2 had DELETED those two  
+  controls as "dead", and v2.3 restored and wired them -- the fix for an unwired control  
+  is to wire it, not to remove the officer's ability to type it.  
+GATES: validator 55P/0F/0W | verify_build 16 PASS / 0 WARN / 0 FAIL | name components 0  
+  blocking / 4 examined | layout flow 1 finding -> 0 | wiring closure 0 breaks in all ten  
+  classes | reachability 7/7 | prefill shadow 0 (5 pairs) | fidelity 8 branches 0 UNDER /  
+  0 OVER.  
+NOT TESTED: never tenant-tested. Owes an import and a first-ever sweep.  
 
 ## v2.4 -- 2026-08-19 -- VehicleMakeCode + VehicleYear removed -- the vehicle query cannot carry them; 0F/0W
 

@@ -24,7 +24,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.4'
+$Version     = '2.5'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OR_LEDS_v${Version}.json"
@@ -316,41 +316,27 @@ $providerBundle = [PSCustomObject]@{
 # optionals on combination #2 but metadata RQ{VehicleIdentificationNumber} defines Any[State] ONLY,
 # so transmitting them would OVER-PERMIT. Registered devdoc-optional-unreachable.
 # ------------------------------------------------------------------
+# Vehicle -- 1 card (v2.5, collapsed from 3: OPTIONS/PLATE/VIN)
+# ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
-        id    = 'CARD_VEH_OPT'
-        title = 'OPTIONS - Leave blank for OR queries'
+        id    = 'CARD_VEH'
+        title = 'VEHICLE SEARCH BY PLATE, OR VIN'
         rows  = @(
-            @{ id = 'ROW_VEH_OPT_1'; cols = @('6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OR)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_OPT_1' }
+            @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
+                @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (optional)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_PLATE'
-        title = 'PLATE SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_PLATE_1'; cols = @('12'); fields = @(
-                @{ id = 'LicensePlateNumber_Input'; node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_PLATE_1' }
-            )}
-            @{ id = 'ROW_VEH_PLATE_2'; cols = @('6','6'); fields = @(
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type (optional)' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_PLATE_2' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year (optional)' '4' 'ROW_VEH_PLATE_2' @{ initialValue = $currentYear } }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_VEH_VIN'
-        title = 'VIN SEARCH'
-        rows  = @(
-            @{ id = 'ROW_VEH_VIN_1'; cols = @('12'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'VIN' '20' 'ROW_VEH_VIN_1' }
+            @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }
+                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OR)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_2' }
             )}
         )
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- MC: OPTIONS (State) + PLATE (RQ.P/RQ.PO) + VIN (RQ.V/RQ.VO)'
+    description  = 'Vehicle queries -- 1 card: Plate (RQ.P/RQ.PO) + VIN (RQ.V/RQ.VO). Blank State routes the in-state OR keyRef.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'
@@ -359,60 +345,45 @@ $vehicleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Person -- 3 cards (MC)
-# OPTIONS: RegistrationState + ImageIndicator + RelatedHitSearchIndicator
-# OLN SEARCH: OperatorLicenseNumber
-# NAME SEARCH: First + Last + Middle + Suffix + DOB + Sex + Race
+# Person -- 1 card (v2.5, collapsed from 3). OR builds no DriverHistoryQuery,
+# so Person is legitimately ONE card here, not the usual DL + DH pair.
+# LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional). RESTORED v2.3;
+#   ROW_PER_NAME_2 was removed at v2.2 as dead controls, but OR metadata declares Name
+#   with four components -- the fix was to WIRE them, not delete them.
+# LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional). RESTORED v2.3.
 # ------------------------------------------------------------------
 $perLayout = MakeLayouts @(
     @{
-        id    = 'CARD_PER_OPT'
-        title = 'OPTIONS - Leave blank for OR queries'
+        id    = 'CARD_PER'
+        title = 'DRIVER LICENSE SEARCH BY OLN, OR NAME'
         rows  = @(
-            @{ id = 'ROW_PER_OPT_1'; cols = @('6','6'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for OR)' @{ attributeTypeId = 'STATE' } 'ROW_PER_OPT_1' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator'          'Image (optional)' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_OPT_1' }
+            @{ id = 'ROW_PER_1'; cols = @('6','6'); fields = @(
+                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_1' }
+                @{ id = 'RegistrationState_Input';     node = Sel 'RegistrationState' 'State (leave blank for OR)' @{ attributeTypeId = 'STATE' } 'ROW_PER_1' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_OLN'
-        title = 'OLN SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_OLN_1'; cols = @('12'); fields = @(
-                @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'License Number' '20' 'ROW_PER_OLN_1' }
+            @{ id = 'ROW_PER_2'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_2' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_2' }
+                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_2' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '5'  'ROW_PER_2' }
             )}
-        )
-    }
-    @{
-        id    = 'CARD_PER_NAME'
-        title = 'NAME SEARCH'
-        rows  = @(
-            @{ id = 'ROW_PER_NAME_1'; cols = @('4','4','2','2'); fields = @(
-                @{ id = 'NameFirst_Input'; node = Inp 'NameFirst' 'First Name' '30' 'ROW_PER_NAME_1' }
-                @{ id = 'NameLast_Input';  node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_NAME_1' }
-                # LABEL-OVERRIDE: nameMiddle -- bare 'Middle Name' (any[] optional). RESTORED v2.3;
-                # ROW_PER_NAME_2 was removed at v2.2 as dead controls, but OR metadata declares Name
-                # with four components -- the fix was to WIRE them, not delete them.
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '30' 'ROW_PER_NAME_1' }
-                # LABEL-OVERRIDE: nameSuffix -- bare 'Suffix' (any[] optional). RESTORED v2.3.
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'      '5'  'ROW_PER_NAME_1' }
+            @{ id = 'ROW_PER_3'; cols = @('6','6'); fields = @(
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_3' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode'  'Sex (optional)'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_3' }
             )}
-            # v2.2: ROW_PER_NAME_2 REMOVED (Rob 2026-08-02) -- it held nameMiddle + nameSuffix, both
-            # visible controls wired to nothing. The Name attribute sources only [NameLast, NameFirst],
-            # so an officer's middle name or suffix was silently discarded on every DriverLicense
-            # query. Found by audit_wiring_closure. Removed rather than wired: no wire behaviour
-            # changes, and the form stops implying a precision it never delivered.
-            @{ id = 'ROW_PER_NAME_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_NAME_3' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode'   'Sex (optional)'  @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_3' }
-                @{ id = 'RaceCode_Input';  node = Sel 'raceCode'  'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_NAME_3' }
+            # raceCode is RMS-ONLY on OR (it is in no CommSys combination), so it must NOT sit
+            # beside the mandatory CommSys identifiers BirthDate/SexCode -- that reads as though
+            # it queries the state and it does not (audit_layout_flow L9). Paired with NCIC Image,
+            # which is a CommSys OPTIONAL rather than an identifier.
+            @{ id = 'ROW_PER_4'; cols = @('6','6'); fields = @(
+                @{ id = 'ImageIndicator_Input'; node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_4' }
+                @{ id = 'RaceCode_Input';       node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_4' }
             )}
         )
     }
 )
 $personForm = [PSCustomObject]@{
-    description  = 'Person queries -- MC: OPTIONS (State + Image) + OLN (DQ.O) + NAME (DQ.N)'
+    description  = 'Person queries -- 1 card: OLN (DQ.O) + Name (DQ.N). No DriverHistoryQuery on OR, so no DH card.'
     label        = 'Person'
     layout       = $perLayout
     name         = 'ENTITY_Person'
@@ -421,31 +392,23 @@ $personForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Firearm -- 1 card (single combo QG)
+# Firearm -- 1 card (serial mandatory, make/caliber optional)
 # ------------------------------------------------------------------
 $faLayout = MakeLayouts @(
     @{
         id    = 'CARD_GUN'
-        title = 'FIREARM SEARCH'
+        title = 'FIREARM SEARCH BY SERIAL'
         rows  = @(
-            @{ id = 'ROW_GUN_1'; cols = @('6','6'); fields = @(
+            @{ id = 'ROW_GUN_1'; cols = @('4','4','4'); fields = @(
                 @{ id = 'SerialNumber_Input'; node = Inp 'serialNumber' 'Serial Number' '11' 'ROW_GUN_1' }
-                @{ id = 'GunMake_Input';      node = Sel 'gunMake'      'Make (optional)'           @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
-            )}
-            # v2.2: gunTypeCode REMOVED (Rob 2026-08-02). Not merely unwired -- UNWIREABLE. This XML
-            # defines GunTypeCode exactly ONCE, under CPICBIGunQuery, a transaction this build does not
-            # carry; the built GunQuery defines only GunCaliber, GunMake and GunSerialNumber (probe
-            # validated -- both siblings resolve inside GunQuery). The dropdown offered a filter the
-            # query cannot accept and discarded the officer's choice. If CPICBIGunQuery is ever brought
-            # into scope it comes back WITH its attribute and combination.
-            @{ id = 'ROW_GUN_2'; cols = @('12'); fields = @(
-                @{ id = 'GunCaliber_Input';  node = Sel 'gunCaliber'  'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_2' }
+                @{ id = 'GunMake_Input';      node = Sel 'gunMake'    'Make (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_MAKE'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
+                @{ id = 'GunCaliber_Input';   node = Sel 'gunCaliber' 'Caliber (optional)' @{ codeTypeCategory = 'NCIC_FIREARM_CALIBER'; codeTypeSource = 'NCIC' } 'ROW_GUN_1' }
             )}
         )
     }
 )
 $firearmsForm = [PSCustomObject]@{
-    description  = 'Firearm query -- single card (QG serial)'
+    description  = 'Firearm query -- 1 card: serial, with optional make/caliber.'
     label        = 'Firearm'
     layout       = $faLayout
     name         = 'ENTITY_Firearm'
@@ -454,22 +417,22 @@ $firearmsForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Article -- 1 card (single combo QA)
+# Article -- 1 card
 # ------------------------------------------------------------------
 $artLayout = MakeLayouts @(
     @{
         id    = 'CARD_ART'
-        title = 'ARTICLE SEARCH'
+        title = 'ARTICLE SEARCH BY SERIAL AND TYPE'
         rows  = @(
             @{ id = 'ROW_ART_1'; cols = @('6','6'); fields = @(
-                @{ id = 'SerialNumber_Input';   node = Inp 'serialNumber'   'Serial Number' '20' 'ROW_ART_1' }
+                @{ id = 'SerialNumber_Input';    node = Inp 'serialNumber'    'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'ArticleTypeCode_Input'; node = Sel 'articleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
         )
     }
 )
 $articleForm = [PSCustomObject]@{
-    description  = 'Article query -- single card (QA serial+type)'
+    description  = 'Article query -- 1 card: serial + type.'
     label        = 'Article'
     layout       = $artLayout
     name         = 'ENTITY_Article'
@@ -478,42 +441,25 @@ $articleForm = [PSCustomObject]@{
 }
 
 # ------------------------------------------------------------------
-# Boat -- 3 cards (MC)
-# OPTIONS: RegistrationState (shared by both combos)
-# REGISTRATION SEARCH: RegistrationNumber (BQ.R)
-# HULL SEARCH: BoatHullIdNumber (BQ.H)
+# Boat -- 1 card (v2.5, collapsed from 3). Hull now LEADS Registration:
+# the identifier-priority guardrail is Hull > Reg, and the previous layout put the
+# REGISTRATION card first, which read as though registration were the primary path.
 # ------------------------------------------------------------------
 $boaLayout = MakeLayouts @(
     @{
-        id    = 'CARD_BOA_OPT'
-        title = 'OPTIONS - Leave blank for OR queries'
+        id    = 'CARD_BOA'
+        title = 'BOAT SEARCH BY HULL, OR REGISTRATION'
         rows  = @(
-            @{ id = 'ROW_BOA_OPT_1'; cols = @('6'); fields = @(
-                @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for OR)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_OPT_1' }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_BOA_REG'
-        title = 'REGISTRATION SEARCH'
-        rows  = @(
-            @{ id = 'ROW_BOA_REG_1'; cols = @('12'); fields = @(
-                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_REG_1' }
-            )}
-        )
-    }
-    @{
-        id    = 'CARD_BOA_HULL'
-        title = 'HULL SEARCH'
-        rows  = @(
-            @{ id = 'ROW_BOA_HULL_1'; cols = @('12'); fields = @(
-                @{ id = 'BoatHullIdNumber_Input'; node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_HULL_1' }
+            @{ id = 'ROW_BOA_1'; cols = @('4','4','4'); fields = @(
+                @{ id = 'BoatHullIdNumber_Input';   node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
+                @{ id = 'RegistrationNumber_Input'; node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
+                @{ id = 'RegistrationState_Input';  node = Sel 'RegistrationState' 'State (leave blank for OR)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
             )}
         )
     }
 )
 $boatForm = [PSCustomObject]@{
-    description  = 'Boat queries -- MC: OPTIONS (State) + REG (BQ.R) + HULL (BQ.H)'
+    description  = 'Boat queries -- 1 card: Hull (BQ.H) + Registration (BQ.R). Blank State routes the in-state OR keyRef.'
     label        = 'Boat'
     layout       = $boaLayout
     name         = 'ENTITY_Boat'
