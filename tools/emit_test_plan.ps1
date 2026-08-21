@@ -722,8 +722,21 @@ foreach ($t in $tests) {
     if ($t.kind -eq 'guardrail' -and $t.expectedKeyRef) {
         $winKey = "$($t.entity)|$($t.expectedKeyRef)"
         if ($comboFillsByKey.ContainsKey($winKey)) {
-            $gf = @($t.fills | ForEach-Object { "$($_.fieldId)" })
-            $extra = @($gf | Where-Object { -not $comboFillsByKey[$winKey].Contains($_) })
+            # A FIELD FILLED AT ITS OWN FORM DEFAULT IS NOT AN ADDED FIELD (BUILD_RULES 24, applied
+            # to plan dedupe). OH_LEADS v2.11 shipped `ATDP` and `ATDP_guardrail_vs_RQ.P` as a
+            # byte-identical inflation clone pair while PASSING this rule: the guardrail's fills
+            # held LicensePlateYear=2026, absent from ATDP's own combo test -- so `$extra` was 1
+            # and it read as a genuine competing identifier. But 2026 IS the form prefill, so it
+            # was already present in the winner's form state and BOTH tests submitted the same
+            # thing. Compare EFFECTIVE FORM STATE, not the fill list. A DIFFERENT value than the
+            # default still counts as extra -- that is a real variation.
+            $entDef = $formDefaultsByEntity[$t.entity]
+            $extra = @($t.fills | Where-Object {
+                if ($comboFillsByKey[$winKey].Contains("$($_.fieldId)")) { return $false }
+                if ($entDef -and $entDef.Contains("$($_.fieldId)") -and
+                    "$($entDef["$($_.fieldId)"])" -eq "$($_.value)") { return $false }
+                return $true
+            } | ForEach-Object { "$($_.fieldId)" })
             if ($extra.Count -eq 0) {
                 $noContest.Add("$($t.expectedKeyRef) vs $($t.guardrailLoser) [$($t.entity)] -- fill adds no competing identifier over $($t.expectedKeyRef)'s own test; the pair differs only by a presence condition, so the loser can never match")
                 continue
