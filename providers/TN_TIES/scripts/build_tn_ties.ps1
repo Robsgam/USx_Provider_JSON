@@ -136,7 +136,14 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'QV.P'
             state                 = 'In/Out'
         }
-        # RQ05 -- OOS dealer plate (Nlets)
+        # RQ05 -- dealer plate, TIES transaction. NOT "OOS": devdoc combination 4 reads
+        # "(In) DealerLicensePlateNumber, [InquiryTypeIndicator]" and there is NO (Out) dealer
+        # entry, so QV.D (State NOT_EXISTS) is what serves the devdoc path. RQ05 is a second
+        # metadata variant with IDENTICAL requirements (both are Set[DealerLicensePlateNumber,
+        # Any[InquiryTypeIndicator]] -- note <Any> is NESTED INSIDE <Set> in this schema) --
+        # and optionals cannot discriminate, so the State gate is the only thing keeping it
+        # reachable; the officer's State selects the destination rather than riding the request.
+        # Neither dealer variant defines State, so putting it in any[] would OVER-PERMIT.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('DealerLicensePlateNumber'); any = @('InquiryTypeIndicator')

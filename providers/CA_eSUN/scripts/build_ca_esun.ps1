@@ -14,7 +14,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.4'
+$Version  = '2.5'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_eSUN_v${Version}.json"
@@ -145,14 +145,16 @@ $dlQuery = [PSCustomObject]@{
         }
         # SYNTHETIC keyRef 'QW.N' -- LIMITATION #21/#36 split of metadata keyRef 'QW', which
         # carries both {Name} and {OperatorLicenseNumber}; only the Name branch is built here.
-        # Metadata QW{Name} SET = [CaRequestPurposeCode, BirthDate, Name] with an EMPTY <Any>,
-        # so BirthDate is MANDATORY. Built v2.4 to give the in-state name+DOB search a home:
-        # it was previously riding L1.N's any[], which QW's sibling L1{Name} does not define.
+        # Metadata QW{Name} = Set[CaRequestPurposeCode, BirthDate, Name, Any[Age, SexCode]] --
+        # BirthDate is MANDATORY here. Built v2.4 to give the in-state name+DOB search its own
+        # combination (SexCode rides in any[]; Age has no control).
+        # NOTE v2.5: L1{Name} DOES define BirthDate -- Set[PurposeCode, Name, Any[Choice[Age|BirthDate]]],
+        # a Choice inside <Any> so both are OPTIONAL -- so BirthDate stays in L1.N's any[] too.
         # Ordered AHEAD of L1.N -- L1.N's set[] is a strict subset, so first-match would
         # otherwise take every fill and leave this path dead on arrival.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('caRequestPurposeCode','BirthDate','NameLast','NameFirst'); any = @('NameMiddle','NameSuffix')
+                set = @('caRequestPurposeCode','BirthDate','NameLast','NameFirst'); any = @('SexCode','NameMiddle','NameSuffix')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');      operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
@@ -164,7 +166,7 @@ $dlQuery = [PSCustomObject]@{
         }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('caRequestPurposeCode','NameLast','NameFirst'); any = @('NameMiddle','NameSuffix')
+                set = @('caRequestPurposeCode','NameLast','NameFirst'); any = @('BirthDate','NameMiddle','NameSuffix')
                 conditions = @(
                     [PSCustomObject]@{ field = @('RegistrationState');      operator = 'NOT_EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }

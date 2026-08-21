@@ -2,9 +2,51 @@
 
 Auto-generated from `CA_eSUN_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-20
+Current: **v2.5** | Generated: 2026-08-20
 
 ---
+
+## v2.5 -- 2026-08-20 -- CORRECTS v2.4 -- I DROPPED A LEGAL OPTIONAL ON THE STRENGTH OF A BROKEN PROBE
+
+**CHANGED:**
+  L1.N any[] -- BirthDate RESTORED. v2.4 removed it as an over-permit. It is not one.  
+  QW.N any[] -- SexCode ADDED. Metadata QW{Name} defines Any[Age, SexCode]; SexCode has a  
+    control on the DL card, Age does not, so leaving SexCode out silently discarded an  
+    officer's Sex entry whenever the in-state name+DOB path fired.  
+WHAT WENT WRONG, precisely:  
+  v2.4's note asserted "EVERY <Any> in this metadata is EMPTY". That was FALSE, and it was  
+  my own probe, not the metadata. In this schema <Any> is NESTED INSIDE <Set>:  
+    <Set><Field CaRequestPurposeCode/><Field Name/><Any><Choice><Field Age/><Field  
+    BirthDate/></Choice></Any></Set>  
+  so a PowerShell `$c.Requirements.Any` lookup returns NOTHING for every combination in the  
+  file. I read that as "no optionals anywhere" and tightened three any[] pools on it.  
+  Dumping OuterXml instead settles each one, and only ONE of the three was wrong:  
+    DL  L1{Name}  = Set[PurposeCode, Name, Any[Choice[Age|BirthDate]]]  -> BirthDate IS a  
+        legal optional (a Choice inside <Any> makes both branches optional). v2.4 WRONG.  
+    DH  L1{Name}  = Set[PurposeCode, Name]  -- no <Any> AT ALL. v2.4 correct: BirthDateDH  
+        stays out of L1.N.DH. The DL and DH siblings are NOT symmetric.  
+    QV{LicensePlateNumber} = Set[PurposeCode, LicensePlateNumber] -- no <Any>. v2.4 correct:  
+        LicensePlateTypeCode/LicensePlateYear stay out of QV.P, and their CAD defaults with them.  
+  QW.N itself remains right and remains worth having -- QW{Name} genuinely makes BirthDate  
+  MANDATORY, so the in-state name+DOB search has its own combination instead of relying on  
+  an optional. Ordering (QW.N ahead of L1.N) is unchanged and still required.  
+WHY IT WAS CAUGHT AT ALL, and it was not this provider:  
+  the same broken probe was pointed at TN_TIES an hour later and printed ANY=[] for a  
+  combination whose registry row (written 08-19) explicitly quoted Any[InquiryTypeIndicator].  
+  A gate disagreeing with a registry row is the cheap signal; the probe lost.  
+REGISTERED, not re-fixed: audit_requirement_fidelity still reports  
+  "built 'L1.N' OVER-PERMITTED: BirthDate" because it enumerates <Any>'s direct <Field>  
+  children and does not descend into a nested <Choice>. The raw XML says otherwise, so the  
+  BUILD is right and the GATE has a gap. Recorded as rule 'demoted-to-any' scoped to keyRef  
+  L1.N. Deliberately NOT registered against the bare metadata keyRef 'L1' -- the prefix  
+  bridge would mute L1.N, L1.O, L1.N.DH and L1.O.DH, four branches, to silence one line.  
+  Fixing the gate is a shared-tool change owing the 6-provider regression fixture and a  
+  20-provider sweep; some of the portfolio's 34 OVER-PERMITTED may be this same false class.  
+GATES: validator 73P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | name components 0  
+  blocking / 16 examined | layout flow 0 findings | wiring closure 0 breaks | reachability  
+  20/20 | prefill shadow 0 (35 pairs) | fidelity 27 branches 0 UNDER / 1 OVER (the gate gap  
+  above, registered) | suppression scope 250 rows / 0 over-broad.  
+NOT TESTED: never tenant-tested. v2.4 was never imported, so nothing was lost to this bump.  
 
 ## v2.4 -- 2026-08-20 -- LAYOUT COLLAPSE 16->6 CARDS + NAME COMPONENTS + 4 OVER-PERMITS CLEARED
 
