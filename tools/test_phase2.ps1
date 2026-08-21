@@ -290,6 +290,57 @@ if ($block.Count) {
 } else {
     Out-Line $(if ($PostIngest) { '  PHASE 2 VALIDATED -- all four log gates green, plan complete.' } else { '  PHASE 2 PRE-FLIGHT CLEAR -- sweep away.' }) 'Green'
 }
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  STAGE 5 + 6 HANDOFF -- printed automatically when a sweep VALIDATES.
+#
+#  Rob 2026-08-21: "wire that as the next step after succesful testing. i shouldn't
+#  have to prompt you." Passing the four log gates completes stage 4 of six, and the
+#  two that follow were the ones that always needed asking for: the Jira release line
+#  and the deployment picture (what is now BEHIND the version just verified).
+#
+#  Composes, never re-implements: the tenant rows come from IMPORT_LEDGER.md, which is
+#  the authority, and the owed-import view from report_import_owed.ps1. Nothing here
+#  decides anything -- it surfaces the two facts a release needs and says DRAFT AND WAIT,
+#  because posting to Jira is approval-gated per provider, every time.
+# ─────────────────────────────────────────────────────────────────────────────
+if ($PostIngest -and -not $block.Count) {
+    Out-Line ''
+    Out-Line '  NEXT: STAGE 5 (Jira release line) + STAGE 6 (import record)' 'Cyan'
+    Out-Line ('  ' + ('-' * 82)) 'DarkGray'
+
+    $ledger = Join-Path $repoRoot 'providers\IMPORT_LEDGER.md'
+    if (Test-Path $ledger) {
+        $rows = @(Get-Content $ledger | Where-Object { $_ -match "^\|\s*$([regex]::Escape($Provider))\s*\|" })
+        if ($rows.Count) {
+            Out-Line '  DEPLOYMENT -- where the PREVIOUS version still is (IMPORT_LEDGER.md):'
+            foreach ($r in $rows) {
+                $c = @($r -split '\|' | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' })
+                # ledger shapes differ per section; show the first few cells, which carry
+                # host / ticket / installed-version, and truncate the long narrative cell.
+                $head = @($c[0..([Math]::Min(4, $c.Count - 1))]) -join '  |  '
+                if ($head.Length -gt 150) { $head = $head.Substring(0,150) + ' ...' }
+                Out-Line "    $head"
+            }
+        } else {
+            Out-Line '  DEPLOYMENT: [NOTE] no IMPORT_LEDGER row for this provider -- record one; silence is the defect.' 'DarkYellow'
+        }
+    }
+
+    $dex = Join-Path $repoRoot "providers\$Provider\docs\tracking\DEX_TICKET.md"
+    if (Test-Path $dex) {
+        $t = Get-Content $dex -Raw
+        $tk = [regex]::Match($t, 'DEX-\d+')
+        $ids = @([regex]::Matches($t, '(?i)comment\s+\*{0,2}(\d{6,})') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+        Out-Line ''
+        Out-Line ("  JIRA: ticket {0} -- the new release comment must NAME the one it supersedes and say it is RETAINED." -f `
+                  $(if ($tk.Success) { $tk.Value } else { '(not found in DEX_TICKET.md)' }))
+        if ($ids.Count) { Out-Line ("        comment ids on record: {0}" -f ($ids -join ', ')) }
+        Out-Line '        Format: knowledge-base\JIRA_COMMENT_TEMPLATE.txt -- FOUR sections, every number from a tool.'
+        Out-Line '        DRAFT AND WAIT: show Rob the comment and get explicit approval. Every provider, every time.' 'Yellow'
+    }
+    Out-Line ('  ' + ('-' * 82)) 'DarkGray'
+}
 Out-Line ('-' * 84)
 if ($OutFile) { $lines | Out-File -FilePath $OutFile -Encoding utf8 }
 exit 0
