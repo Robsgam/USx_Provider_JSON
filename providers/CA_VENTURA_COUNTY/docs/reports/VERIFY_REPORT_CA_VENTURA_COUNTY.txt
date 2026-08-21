@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
-  Source: CA_VENTURA_COUNTY_v2.4.json
-  Generated: 2026-08-19 11:26
+  Source: CA_VENTURA_COUNTY_v2.5.json
+  Generated: 2026-08-20 21:00
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: CA_VENTURA_COUNTY_v2.4
+ POST-BUILD VERIFICATION: CA_VENTURA_COUNTY_v2.5
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 9
-  [INFO] CommSys-only: 27 [caRequestPurposeCode, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, age, criminalIdNumber, socialSecurityNumber, addressCounty, height, attention, BirthDateDH, caRequestPurposeCodeDH, NameLastDH, NameFirstDH, OperatorLicenseNumberDH, SexCodeDH, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 31 [caRequestPurposeCode, LicensePlateTypeCode, LicensePlateYear, NameMiddle, NameSuffix, VehicleMakeCode, vehicleYear, age, criminalIdNumber, socialSecurityNumber, addressCounty, height, attention, BirthDateDH, caRequestPurposeCodeDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, SexCodeDH, GunCaliber, firearmMake, serialNumber, gunTypeCode, articleBrand, articleCategory, ArticleTypeCode, ownerAppliedNumber, BoatHullIdNumber, RegistrationNumber]
   [PASS] Cross-bundle fieldId consistency checked
 
 --- CHECK 5: Reference Pattern Check ---
@@ -39,7 +39,7 @@ POST-BUILD VERIFICATION
   [PASS] All 6 multi-combo QIDMs have LIMITATION #21/#36 documentation in build script
 
 --- CHECK 8: RMS combos subset of CommSys combos ---
-  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (36) (RMS-generic allowed)
+  [PASS] RMS combo fields (9) are a subset of CommSys combo fields (40) (RMS-generic allowed)
 
 --- CHECK 9: Value-Comparison Conditions (poisoned-array) ---
   [PASS] No value-comparison routing conditions (existence-only or none)
@@ -54,8 +54,20 @@ POST-BUILD VERIFICATION
   [PASS] No NOT_EXISTS field appears in its own combo's set[]/any[] (no gate-xor-companion contradictions)
 
 --- CHECK 13: Form Field Label Hints ---
-  [INFO] Field 'raceCode' (any[]-only) label='Race' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional refinement))
-  [PASS] All form field labels have required routing hint qualifiers (39 fields scanned)
+  [INFO] Field 'OperatorLicenseNumberDH' label='OLN' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'caRequestPurposeCodeDH' label='Purpose Code' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameFirstDH' label='First Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameLastDH' label='Last Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameMiddleDH' label='Middle Name' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameSuffixDH' label='Suffix' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'BirthDateDH' label='Date of Birth' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'SexCodeDH' label='Sex' has no '(DH...' qualifier -- fine if DH has its own titled card, consider tagging if it shares a card with DL (BUILD_RULES Section 11)
+  [INFO] Field 'NameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'NameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'attention' (any[]-only) label='Attention' -- manual label override accepted (hidden gate-feeder, the label is dead text the officer never sees)
+  [INFO] Field 'NameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name", DEX-1284 lean pass (any[] optional, DH pool))
+  [INFO] Field 'NameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix", DEX-1284 lean pass (any[] optional, DH pool))
+  [PASS] All form field labels have required routing hint qualifiers (43 fields scanned) (8 DH field(s) untagged -- advisory only, see Info above)
 
 --- CHECK 14: Combo Reachability (shadow detection) ---
   [PASS] Combo reachability: all conditioned combos reachable (no earlier unconditioned combo shadows them)

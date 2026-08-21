@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_VENTURA_COUNTY
-  Source: CA_VENTURA_COUNTY_v2.4.json
-  Generated: 2026-08-19 11:26
+  Source: CA_VENTURA_COUNTY_v2.5.json
+  Generated: 2026-08-20 21:00
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_VENTURA_COUNTY_v2.4.json
+  CommSys Query Simulator -- CA_VENTURA_COUNTY_v2.5.json
 ================================================================
 
 --- QIDM: CA_VENTURA_COUNTY_VehicleRegistrationQuery [Vehicle] ---
@@ -33,6 +33,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IN.VP
       set: [caRequestPurposeCode, NameLast, NameFirst]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -43,7 +44,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IA.QV
       set: [caRequestPurposeCode, LicensePlateNumber]
-      any: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear] -> matched: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear]
+      any: [RegistrationState, LicensePlateTypeCode] -> matched: [RegistrationState, LicensePlateTypeCode]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -51,10 +52,7 @@ QUERY SIMULATION
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
       </Transaction>
     [SKIP] IA.QVK -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
 
@@ -144,6 +142,7 @@ QUERY SIMULATION
 
     [FIRES first-match] IG.QGH.A
       set: [caRequestPurposeCode, NameLast, NameFirst, age]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -155,6 +154,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IG.QGH.B
       set: [caRequestPurposeCode, NameLast, NameFirst, BirthDate]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -220,6 +220,7 @@ QUERY SIMULATION
 
     [FIRES first-match] NLTS.BQ.N
       set: [caRequestPurposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
