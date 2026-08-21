@@ -1,0 +1,81 @@
+﻿================================================================
+TEST LOG: OH_LEADS Person DriverLicenseQuery
+Combo: DN_af_nameMiddle (DN_af_nameMiddle (auto))
+Date: 2026-08-21 14:02:18
+Result: PASS
+JSON Version: 2.11
+Entity Fingerprint: d095395a3d6a095d2c0e7b568708a7bb57a22d0dff71be3932c8c0299e008541
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","NameFirst":"JOHN","NameLast":"DOE","nameMiddle":"A","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0JQGEMRQEZNMDCXYGNXZPYS">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M0JQGEMRQEZNMDCXYGNXZPYS</Id>
+            <Name>DOE, JOHN A</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0JQGEMRQEZNMDCXYGNXZPYS
+  Name                           DOE, JOHN A
+
+NOTES
+-----
+Automated capture (txId 01M0JQGEMRQEZNMDCXYGNXZPYS). kind=any-field; anyField=nameMiddle; expectedKeyRef=DN; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

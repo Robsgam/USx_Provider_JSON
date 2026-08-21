@@ -1,7 +1,7 @@
-OH_LEADS SUPPORTED QUERY VALIDATION REPORT
+﻿OH_LEADS SUPPORTED QUERY VALIDATION REPORT
 ==============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-20
+Last updated: 2026-08-21
 JSON version: v2.11
 Total combos: 21 CommSys (6 QIDMs)
   STATED 2026-08-18 SO THE GATE CAN ACTUALLY CHECK THIS FILE. audit_sqvr_integrity CHECK 2 compares
@@ -54,40 +54,40 @@ QUERY PATHS -- 21 combos, ALL CONFIRMED (56 logs, 56 PASS, 0 FAIL)
   _guardrail_vs_<other> = both identifiers filled, to prove which one wins.
 
   VEHICLE -- VehicleRegistrationQuery                                        17 logs / 17 PASS
-  [PENDING] ATDP  dealer plate      Fills: LicensePlateNumber + LicensePlateTypeCode + DealerPlateType
+  [CONFIRMED] ATDP  dealer plate      Fills: LicensePlateNumber + LicensePlateTypeCode + DealerPlateType
               Routes when: LicensePlateNumber EXISTS and DealerPlateType EXISTS
               FIRST EVER TEST OF THIS COMBO -- it had NO plan test at all until 2026-08-18, because
               DealerPlateType had no test value. Its value 'D' is a PLACEHOLDER, not authority-derived
               (the devdoc's Possible Values column is empty). If LEADS rejects it, change the value.
-  [PENDING] RQ.P  plate, OUT-OF-STATE  Fills: LicensePlateNumber + LicensePlateTypeCode + LicensePlateYear + State
+  [CONFIRMED] RQ.P  plate, OUT-OF-STATE  Fills: LicensePlateNumber + LicensePlateTypeCode + LicensePlateYear + State
               Routes when: LicensePlateNumber EXISTS, RegistrationState EXISTS, DealerPlateType NOT_EXISTS
   [PENDING] RP    plate, IN-STATE   Fills: LicensePlateNumber + LicensePlateTypeCode
               Routes when: LicensePlateNumber EXISTS, RegistrationState NOT_EXISTS, DealerPlateType NOT_EXISTS
               (leave State blank for OH)
-  [PENDING] RQ.V  VIN + make + year Fills: VehicleIdentificationNumber + VehicleMakeCode + vehicleYear
+  [CONFIRMED] RQ.V  VIN + make + year Fills: VehicleIdentificationNumber + VehicleMakeCode + vehicleYear
               Optional: RegistrationState
-  [PENDING] RV    VIN only          Fills: VehicleIdentificationNumber
-  [PENDING] RS    owner SSN         Fills: OwnerSocialSecurityNumber
-  [PENDING] RN    owner name        Fills: OwnerLastName + OwnerFirstName    Optional: AddressCounty
+  [CONFIRMED] RV    VIN only          Fills: VehicleIdentificationNumber
+  [CONFIRMED] RS    owner SSN         Fills: OwnerSocialSecurityNumber
+  [CONFIRMED] RN    owner name        Fills: OwnerLastName + OwnerFirstName    Optional: AddressCounty
               Identifier priority proven live: Plate > VIN > SSN > Name (guardrails RP_vs_RV,
               RP_vs_RS, RP_vs_RN, RP_vs_RQ.V, RV_vs_RS, RV_vs_RN, RS_vs_RN, ATDP_vs_RQ.P all PASS).
 
   PERSON / DRIVER LICENSE -- DriverLicenseQuery                               8 logs /  8 PASS
-  [PENDING] DQ.O  by OLN, out-of-state   Fills: OperatorLicenseNumber + State   Optional: ImageIndicator
-  [PENDING] DL    by OLN, in-state       Fills: OperatorLicenseNumber   (leave State blank for OH)
-  [PENDING] DQ.N  by name, out-of-state  Fills: NameLast + NameFirst + BirthDate + SexCode + State
-  [PENDING] QWA   by name + DOB          Fills: NameLast + NameFirst + BirthDate
-  [PENDING] DN    by name only           Fills: NameLast + NameFirst
+  [CONFIRMED] DQ.O  by OLN, out-of-state   Fills: OperatorLicenseNumber + State   Optional: ImageIndicator
+  [CONFIRMED] DL    by OLN, in-state       Fills: OperatorLicenseNumber   (leave State blank for OH)
+  [CONFIRMED] DQ.N  by name, out-of-state  Fills: NameLast + NameFirst + BirthDate + SexCode + State
+  [CONFIRMED] QWA   by name + DOB          Fills: NameLast + NameFirst + BirthDate
+  [CONFIRMED] DN    by name only           Fills: NameLast + NameFirst
               OLN beats Name, proven live: DL_guardrail_vs_DQ.N / _vs_QWA / _vs_DN all PASS.
               Middle Name + Suffix controls exist (v2.7) and compose into Name as
               LAST, FIRST MIDDLE SUFFIX; they are in no set[]/any[] (class C3), so they ride the
               composite rather than being search keys of their own.
 
   PERSON / DRIVER HISTORY -- DriverHistoryQuery                               7 logs /  7 PASS
-  [PENDING] KQ.N  by name + DOB + Sex  Fills: NameLastDH + NameFirstDH + BirthDateDH + SexCodeDH
+  [CONFIRMED] KQ.N  by name + DOB + Sex  Fills: NameLastDH + NameFirstDH + BirthDateDH + SexCodeDH
               Optional: purposeCodeDH (defaults 'C'), RegistrationState, attention (auto-handler)
               Routes when: OperatorLicenseNumberDH NOT_EXISTS
-  [PENDING] KQ.O  by OLN              Fills: OperatorLicenseNumberDH
+  [CONFIRMED] KQ.O  by OLN              Fills: OperatorLicenseNumberDH
               Optional: purposeCodeDH (defaults 'C'), RegistrationState, attention
               OLN beats Name here too: KQ.O_guardrail_vs_KQ.N PASS.
               DH has its OWN field pool (the DH-suffix fieldIds) -- filling the Driver History card
@@ -95,27 +95,27 @@ QUERY PATHS -- 21 combos, ALL CONFIRMED (56 logs, 56 PASS, 0 FAIL)
               layout accident.
 
   FIREARM -- GunQuery                                                         5 logs /  5 PASS
-  [PENDING] QG    by serial           Fills: serialNumber
+  [CONFIRMED] QG    by serial           Fills: serialNumber
               Optional: firearmMake, gunCaliber, relatedHitSearchIndicator (Stolen Check, defaults 'Y')
               NOTE the form fieldId is camelCase 'serialNumber', not the PascalCase USx token -- CAD
               injects the gun serial under that name, and matching it is what lets a CAD event
               populate the Firearm form.
 
   ARTICLE -- ArticleSingleQuery                                               8 logs /  8 PASS
-  [PENDING] QA.S  by serial + type    Fills: serialNumber + articleTypeCode
+  [CONFIRMED] QA.S  by serial + type    Fills: serialNumber + articleTypeCode
               Optional: ImageIndicator ('Y'), relatedHitSearchIndicator ('Y')
               articleTypeCode is MANDATORY here -- a serial alone will not fire this path.
-  [PENDING] QA.N  by NCIC number      Fills: NCICNumber
+  [CONFIRMED] QA.N  by NCIC number      Fills: NCICNumber
               Optional: ImageIndicator ('Y'), relatedHitSearchIndicator ('Y')
               Routes when: serialNumber NOT_EXISTS
 
   BOAT -- BoatQuery                                                          11 logs / 11 PASS
-  [PENDING] BQ.H  hull, OUT-OF-STATE  Fills: BoatHullIdNumber + State        (Nlets transaction)
-  [PENDING] QB.H  hull, IN-STATE      Fills: BoatHullIdNumber                (NCIC transaction)
+  [CONFIRMED] BQ.H  hull, OUT-OF-STATE  Fills: BoatHullIdNumber + State        (Nlets transaction)
+  [CONFIRMED] QB.H  hull, IN-STATE      Fills: BoatHullIdNumber                (NCIC transaction)
               Optional: ImageIndicator ('Y'), relatedHitSearchIndicator ('Y')
               Routes when: RegistrationState NOT_EXISTS
-  [PENDING] BQ.R  registration, OUT-OF-STATE  Fills: RegistrationNumber + State
-  [PENDING] QB.R  registration, IN-STATE      Fills: RegistrationNumber
+  [CONFIRMED] BQ.R  registration, OUT-OF-STATE  Fills: RegistrationNumber + State
+  [CONFIRMED] QB.R  registration, IN-STATE      Fills: RegistrationNumber
               Optional: ImageIndicator ('Y'), relatedHitSearchIndicator ('Y')
               Routes when: RegistrationState NOT_EXISTS and BoatHullIdNumber NOT_EXISTS
               Hull beats registration: QB.H_guardrail_vs_BQ.R PASS.

@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: OH_LEADS Boat BoatQuery
+Combo: QB.R (QB.R (auto))
+Date: 2026-08-21 14:01:56
+Result: PASS
+JSON Version: 2.11
+Entity Fingerprint: 32e9e1a43c06703c91d213ff4f460ee91df5e6e05fc71d66082f671903d119ad
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","RegistrationNumber":"FL1234AB","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0JQQFFFVQR1JSPMS2JV42HD">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M0JQQFFFVQR1JSPMS2JV42HD</Id>
+            <RelatedHitSearchIndicator>Y</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0JQQFFFVQR1JSPMS2JV42HD
+  RelatedHitSearchIndicator      Y
+  ImageIndicator                 Y
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01M0JQQFFFVQR1JSPMS2JV42HD). kind=combo; anyField=; expectedKeyRef=QB.R; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

@@ -1,0 +1,74 @@
+﻿================================================================
+TEST LOG: OH_LEADS Person DriverHistoryQuery
+Combo: KQ.O (KQ.O (auto))
+Date: 2026-08-21 14:02:14
+Result: PASS
+JSON Version: 2.11
+Entity Fingerprint: d095395a3d6a095d2c0e7b568708a7bb57a22d0dff71be3932c8c0299e008541
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"Y","OperatorLicenseNumberDH":"D999888777","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0JQJ17AB14E4R12Y1451J0H">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M0JQJ17AB14E4R12Y1451J0H</Id>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <PurposeCode>C</PurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0JQJ17AB14E4R12Y1451J0H
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  PurposeCode                    C
+
+NOTES
+-----
+Automated capture (txId 01M0JQJ17AB14E4R12Y1451J0H). kind=combo; anyField=; expectedKeyRef=KQ.O; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
