@@ -2,9 +2,20 @@
 ================================================================
   DEVDOC COMBINATION COVERAGE (devdoc -> built)
 ================================================================
-  [FAIL] CA_CONTRA_COSTA -- 0 devdoc combinations parsed; this gate compared NOTHING, so its verdict is not evidence. Fix the devdoc parse or record why there is no combination table.
+  [NOTE] CA_CONTRA_COSTA -- its OWN devdoc authorises none of what it builds (Basic Queries Supported: None; its combination tables are the unbuilt JAWS/Expanded set). Comparing against the DEVDOC OF RECORD for this build: CA_CLETS (blessed directed link, audit_provider_linkage). This is NOT verification against CA_CONTRA_COSTA's own document.
+  [NOTE] CA_CONTRA_COSTA -- ArticleSingleQuery #1: all fields wired but no single combo's set[] covers [ArticleSerialNumber, ArticleBrand] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- ArticleSingleQuery #2: all fields wired but no single combo's set[] covers [ArticleSerialNumber, ArticleTypeCode] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- ArticleSingleQuery #3: all fields wired but no single combo's set[] covers [OwnerAppliedNumber, ArticleBrand] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- ArticleSingleQuery #4: all fields wired but no single combo's set[] covers [OwnerAppliedNumber, ArticleTypeCode] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- DriverHistoryQuery #3: all fields wired but no single combo's set[] covers [BirthDate, Name, SexCode, State] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- DriverHistoryQuery #4: all fields wired but no single combo's set[] covers [OperatorLicenseNumber, State] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- DriverLicenseQuery #3: all fields wired but no single combo's set[] covers [Age, Name, SexCode] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- DriverLicenseQuery #4: all fields wired but no single combo's set[] covers [BirthDate, Name, SexCode] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- DriverLicenseQuery #8: all fields wired but no single combo's set[] covers [Name, BirthDate, SexCode] (metadata may require more; human check)
+  [NOTE] CA_CONTRA_COSTA -- VehicleRegistrationQuery #1 unbuilt, ACCEPTED divergence (unwired: FileCode, InfoCode)
+  [PASS] CA_CONTRA_COSTA -- every devdoc combination is built or accepted (34 devdoc combination(s) compared, 10 note(s) for human review)
 
 ----------------------------------------------------------------
-  RESULT: 1 FAIL / 0 NOTE
+  RESULT: 0 FAIL / 10 NOTE
 ----------------------------------------------------------------
 

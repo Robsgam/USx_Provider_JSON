@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_CONTRA_COSTA
-  Source: CA_CONTRA_COSTA_v2.3.json
-  Generated: 2026-08-19 11:25
+  Source: CA_CONTRA_COSTA_v2.4.json
+  Generated: 2026-08-20 21:34
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_CONTRA_COSTA_v2.3.json
+  CommSys Query Simulator -- CA_CONTRA_COSTA_v2.4.json
 ================================================================
 
 --- QIDM: CA_CONTRA_COSTA_VehicleRegistrationQuery [Vehicle] ---
@@ -33,7 +33,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IN.VP
       set: [purposeCode, NameLast, NameFirst]
-      any: [addressCity, addressStreetNumber] -> matched: [addressCity, addressStreetNumber]
+      any: [addressCity, addressStreetNumber, NameMiddle, NameSuffix] -> matched: [addressCity, addressStreetNumber]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -47,18 +47,14 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IA.QV
       set: [purposeCode, LicensePlateNumber]
-      any: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear] -> matched: [RegistrationState, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear]
+      any: [RegistrationState] -> matched: [RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>IA.QV</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <CaRequestPurposeCode>C</CaRequestPurposeCode>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
-        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
-        <LicensePlateYear>2024</LicensePlateYear>
         <State>NJ</State>
-        <VehicleMakeCode>FORD</VehicleMakeCode>
-        <VehicleYear>2023</VehicleYear>
       </Transaction>
 
     >> PLATFORM FIRES: NLTS.RQ.P (first matching combo)
@@ -121,6 +117,7 @@ QUERY SIMULATION
 
     [FIRES first-match] IG.QGH.A
       set: [purposeCode, NameLast, NameFirst, age]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -132,6 +129,7 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] IG.QGH.B
       set: [purposeCode, NameLast, NameFirst, BirthDate]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -197,6 +195,7 @@ QUERY SIMULATION
 
     [FIRES first-match] NLTS.BQ.N
       set: [purposeCode, NameLast, NameFirst, BirthDate, RegistrationState]
+      any: [NameMiddle, NameSuffix] -> matched: []
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->

@@ -7,6 +7,12 @@
 
 
 
+
+## v2.4 (2026-08-20)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| CA_CONTRA_COSTA_v2.4.json | v2.4 | Current | 79P/0F/0W/0LIM. |
 ## v2.3 (2026-08-17)
 
 | File | Version | Status | Notes |

@@ -1,6 +1,59 @@
 CA_CONTRA_COSTA BUILD NOTES
 ===========================
 Last Updated: 2026-05-06
+v2.4  2026-08-20  CLONE SHAPE COMPLETED (7->6 cards) + NAME COMPONENTS + IA.QV OVER-PERMIT CLEARED
+  Rob 2026-08-20: "build contra costa as a ca clets clone for now. final ruling will be forth
+  coming." This is that build. The JAWS / SuperQuery scope question is UNTOUCHED and still open.
+  CHANGED:
+    LAYOUT -- 7 cards -> 6. Only Person needed collapsing (3 -> 2): the standalone
+      'Search Options' card is gone and its State + Purpose Code row is now the DL card's last
+      row as shared context. Titles are now ALL-CAPS and path-carrying on all six cards.
+      'License Number' -> 'OLN', 'CII' -> 'CII Number', 'Hull ID' -> 'Hull ID Number'.
+    NAME COMPONENTS -- 10 findings closed. FOUR of the five Name composites share ONE field
+      pool (Vehicle-owner, DL, Gun-owner, Boat-owner all source ('NameLast','NameFirst')), so
+      NameMiddle/NameSuffix controls were added to those four FORMS and NameMiddleDH/
+      NameSuffixDH to the DH card. All five composites extended, separators grown
+      @(', ') -> @(', ', ' ', ' ') (AP #15), and the components POOLED into the any[] of ALL
+      EIGHT name combinations (IN.VP, NLTS.DQ.N, IR.QVC.N, IN.L1, NLTS.KQ.N, IG.QGH.A,
+      IG.QGH.B, NLTS.BQ.N). audit_name_components: 10 C1 -> 0, 20 components examined.
+      Three owner rows were split so all four components sit together per L8 (Vehicle, Firearm
+      and Boat each had First/Last sharing a row with unrelated qualifiers).
+    IA.QV any[] narrowed to RegistrationState ONLY, and the PlateType / PlateYear CAD defaults
+      removed with the fields they applied to. OVER-PERMITTED 7 -> 3, branches HELD at 27,
+      wiring closure still 0 breaks in all ten classes.
+  WHY THAT ONE WAS SAFE TO FIX WHILE THE RULING IS PENDING, and how I checked:
+    read from THIS provider's OWN raw <Requirements> -- not imported from a sibling, because
+    audit_provider_linkage exists precisely for the case where CA_CLETS and
+    CA_VENTURA_COUNTY require OPPOSITE things on an identically-named combo:
+      IA.QV{plate}   = Set[CaRequestPurposeCode, LicensePlateNumber, Any[State]]
+      NLTS.RQ{plate} = Set[PurposeCode, plate, LicensePlateTypeCode, LicensePlateYear, State,
+                            Any[VehicleMakeCode, VehicleYear]]
+    NLTS.RQ.P IS built, so nothing the metadata allows was lost -- fill State and it fires and
+    carries all four fields. The pending ruling concerns the UNBUILT JAWS / SuperQuery
+    transactions, not the built VehicleRegistration path, so this does not pre-empt it.
+    Also corrected a stale code comment that called IA.QV a "catchall ... for any plate type
+    not matched above": NO IV.4x combination is built on this provider, so nothing above it
+    matches a plate type. The 13 IV.4x variants discriminate on PlateType VALUES and routing
+    tests PRESENCE, so they cannot be separated -- the same structural shadow already recorded
+    for CA_CLETS and re-confirmed on CA_VENTURA_COUNTY v2.5 today.
+  STILL OPEN, DELIBERATELY -- 4 UNDER-REQUIRED / 3 OVER-PERMITTED, all PRE-EXISTING and all in
+  the CA_CLETS-family Choice-branch area that Rob's forthcoming ruling bears on:
+      IR.QVC[alt1/2] -> IR.QVC.N  UNDER-REQUIRED: BirthDate (built any[])
+      IR.QVC[alt2/2] -> IR.QVC.N  UNDER-REQUIRED: Age (built any[])
+      NLTS.DQ        -> NLTS.DQ.N UNDER-REQUIRED: SexCode (ABSENT); BirthDate (built any[])
+      IR.QVC         -> IR.QVC.O / .C / .S  OVER-PERMITTED: Age
+    NOT touched. These are exactly the Choice-position questions where CLAUDE.md records that
+    CA_CLETS's IR.QVC has four metadata variants with Choice[Age|BirthDate] inside <Any> while
+    CA_VENTURA_COUNTY's single variant puts it inside <Set> -- opposite answers on the same
+    keyRef. Adjudicating them for CONTRA_COSTA while its spec authority is itself the subject
+    of a pending ruling is how the wrong fix gets shipped. Verified they are pre-existing: none
+    involves a name component, so this build did not introduce any of them.
+  GATES: validator 79P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | name components 0
+    blocking / 20 examined | layout flow 0 findings | wiring closure 0 breaks in all ten
+    classes | reachability 27/27 | prefill shadow 0 (66 pairs) | fidelity 27 branches
+    4 UNDER / 3 OVER (all listed above, all deferred to the ruling).
+  NOT TESTED: never tenant-tested. Owes an import and a first-ever sweep.
+
 v2.3  2026-08-17  CA-FAMILY HEADER FIX -- <Authentication>/<DeviceId> (Mariposa LIVE failure)
   CHANGED: Build-Auth called with -IncludeDeviceId, adding <Authentication>/<DeviceId> -- the
     agency-assigned CLETS Terminal Identifier. No form control: DeviceId sits in validate.ps1's
