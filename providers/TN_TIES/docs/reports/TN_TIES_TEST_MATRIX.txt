@@ -1,56 +1,43 @@
-TN_TIES v2.2 -- TEST MATRIX
+TN_TIES v2.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-19
+Generated: 2026-08-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (4 cards, 11 fields):
-  CARD_VEH_OPT (OPTIONS):
-    RegistrationState [Sel STATE], InquiryTypeIndicator [Inp 1]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10]
-    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-  CARD_VEH_VIN (VIN SEARCH):
-    VehicleIdentificationNumber [Inp 20]
-    VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
-  CARD_VEH_SPEC (SPECIALTY SEARCH):
-    DealerLicensePlateNumber [Inp 10], HandicapPlacardNumber [Inp 10], TemporaryLicensePlateNumber [Inp 10]
+Vehicle (1 card, 11 fields):
+  CARD_VEH (VEHICLE SEARCH BY PLATE, VIN, DEALER, HANDICAP, OR TEMP PLATE):
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE], vehicleYear [Inp 4]
+    ROW 3: DealerLicensePlateNumber [Inp 10], HandicapPlacardNumber [Inp 10], TemporaryLicensePlateNumber [Inp 10]
+    ROW 4: RegistrationState [Sel STATE], InquiryTypeIndicator [Inp 1]
 
-Person (5 cards, 19 fields):
-  CARD_PER_OPT (OPTIONS):
-    ROW 1: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], raceCode [Sel RACE]
-    ROW 2: InquiryTypeIndicator [Inp 1], ExpandedNameSearchCode [Inp 1], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-  CARD_PER_OLN (DRIVER LICENSE - OLN / SSN SEARCH):
-    OperatorLicenseNumber [Inp 20], SocialSecurityNumber [Inp 20]
-  CARD_PER_NAME (DRIVER LICENSE - NAME SEARCH):
-    ROW 1: NameFirst [Inp 30], NameLast [Inp 30]
-    ROW 2: BirthDate [FormDate], SexCode [Sel SEX]
-  CARD_PER_DH_OLN (DRIVER HISTORY - OLN SEARCH):
-    OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp 1]
-    attention [Inp X, 30]
-  CARD_PER_DH_NAME (DRIVER HISTORY - NAME SEARCH):
-    ROW 1: NameFirstDH [Inp 30], NameLastDH [Inp 30]
-    ROW 2: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+Person (2 cards, 23 fields):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, SSN, OR NAME):
+    ROW 1: OperatorLicenseNumber [Inp 20], SocialSecurityNumber [Inp 20]
+    ROW 2: NameFirst [Inp 30], NameLast [Inp 30], NameMiddle [Inp 30], NameSuffix [Inp 5]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel RACE]
+    ROW 4: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], relatedHitSearchIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], InquiryTypeIndicator [Inp 1]
+    ROW 5: ExpandedNameSearchCode [Inp 1]
+  CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, OR NAME):
+    ROW 1: OperatorLicenseNumberDH [Inp 20], purposeCodeDH [Inp 1]
+    ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], NameMiddleDH [Inp 30], NameSuffixDH [Inp 5]
+    ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+    ROW 4: attention [Inp X, 30]
 
 Firearm (1 card, 3 fields):
-  CARD_GUN (FIREARM SEARCH):
-    serialNumber [Inp 20]
-    firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
+  CARD_GUN (FIREARM SEARCH BY SERIAL):
+    serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
 
 Article (1 card, 2 fields):
-  CARD_ART (ARTICLE SEARCH):
+  CARD_ART (ARTICLE SEARCH BY SERIAL AND TYPE):
     serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
 
-Boat (3 cards, 4 fields):
-  CARD_BOA_OPT (OPTIONS):
-    RegistrationState [Sel STATE], InquiryTypeIndicator [Inp 1]
-  CARD_BOA_HULL (HULL SEARCH):
-    BoatHullIdNumber [Inp 20]
-  CARD_BOA_REG (REGISTRATION SEARCH):
-    RegistrationNumber [Inp 8]
+Boat (1 card, 4 fields):
+  CARD_BOA (BOAT SEARCH BY HULL, OR REGISTRATION):
+    BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8], RegistrationState [Sel STATE], InquiryTypeIndicator [Inp 1]
 
 QIDM SUMMARY (6 QIDMs, 22 combos)
 ----------------------------------------
@@ -70,7 +57,7 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: PERSON (23 tests -- 5 cards, 8 combos)
+ENTITY 1: PERSON (23 tests -- 2 cards, 8 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -84,7 +71,7 @@ ENTITY 1: PERSON (23 tests -- 5 cards, 8 combos)
               Expected: any[] fields present in XML output.
  5  Person      DQ+.N+State        NameLast=DOE, NameFirst=JOHN, BirthDa... [    ]
               Expected: DriverLicenseQuery fires (DQ.N)
- 6  Person      DQ+.N+State        + InquiryTypeIndicator          [    ]
+ 6  Person      DQ+.N+State        + InquiryTypeIndicator, NameMiddle, NameSuffix [    ]
               Expected: any[] fields present in XML output.
  7  Person      DQ+.O+State        OperatorLicenseNumber=D999888777, Reg... [    ]
               Expected: DriverLicenseQuery fires (DQ.O)
@@ -96,7 +83,7 @@ ENTITY 1: PERSON (23 tests -- 5 cards, 8 combos)
               Expected: DriverHistoryQuery fires (DQ05)
 11  Person      KQ+.N              NameLastDH=DOE, NameFirstDH=JOHN, Bir... [    ]
               Expected: DriverHistoryQuery fires (KQ.N)
-12  Person      KQ+.N              + attention                     [    ]
+12  Person      KQ+.N              + attention, NameMiddleDH, NameSuffixDH [    ]
               Expected: any[] fields present in XML output.
 13  Person      KQ+.O              OperatorLicenseNumberDH=D999888777, p... [    ]
               Expected: DriverHistoryQuery fires (KQ.O)
@@ -121,7 +108,7 @@ ENTITY 1: PERSON (23 tests -- 5 cards, 8 combos)
 23  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
 
-ENTITY 2: VEHICLE (19 tests -- 4 cards, 8 combos)
+ENTITY 2: VEHICLE (19 tests -- 1 card, 8 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -164,7 +151,7 @@ ENTITY 2: VEHICLE (19 tests -- 4 cards, 8 combos)
 42  Vehicle     Guardrail: RQ.P>QV.D  RegistrationState=GA, DealerLicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). DealerLicensePlateNumber absent from XML.
 
-ENTITY 3: BOAT (10 tests -- 3 cards, 4 combos)
+ENTITY 3: BOAT (10 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
@@ -216,4 +203,4 @@ COMBO COVERAGE (22/22):
   ArticleSingleQuery: 1/1 -- T55(serialNumber)
   BoatQuery: 4/4 -- T43(QB+.R), T45(QB+.H), T47(BB.H+BB.H), T49(BB.R+BB.R)
 
-IMPORT FILE: TN_TIES_v2.2.json
+IMPORT FILE: TN_TIES_v2.3.json

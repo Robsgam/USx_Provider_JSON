@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: TN_TIES
-  Source: TN_TIES_v2.2.json
-  Generated: 2026-08-19 10:02
+  Source: TN_TIES_v2.3.json
+  Generated: 2026-08-20 20:31
 ================================================================
 CAD AUDIT
 =========
 
 
 ========================================
- CAD AUDIT: TN_TIES_v2.2
+ CAD AUDIT: TN_TIES_v2.3
 ========================================
 
 --- CHECK 1: CAD Field Alignment ---
@@ -30,16 +30,16 @@ CAD AUDIT
     [INFO] addressCity: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] addressStreetNumber: in CAD list, not in QIF (CAD sends it but form doesn't have it)
     [INFO] licensePlateColorCode: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] InquiryTypeIndicator: in QIF, not in CAD list (provider-specific)
     [INFO] DealerLicensePlateNumber: in QIF, not in CAD list (provider-specific)
     [INFO] HandicapPlacardNumber: in QIF, not in CAD list (provider-specific)
     [INFO] TemporaryLicensePlateNumber: in QIF, not in CAD list (provider-specific)
+    [INFO] InquiryTypeIndicator: in QIF, not in CAD list (provider-specific)
   Person:
     [PASS] operatorLicenseNumber: in QIF as 'OperatorLicenseNumber' (PascalCase USx fieldIds)
     [PASS] nameFirst: in QIF as 'NameFirst' (PascalCase USx fieldIds)
     [PASS] nameLast: in QIF as 'NameLast' (PascalCase USx fieldIds)
-    [INFO] nameMiddle: in CAD list, not in QIF (CAD sends it but form doesn't have it)
-    [INFO] nameSuffix: in CAD list, not in QIF (CAD sends it but form doesn't have it)
+    [PASS] nameMiddle: in QIF as 'NameMiddle' (PascalCase USx fieldIds)
+    [PASS] nameSuffix: in QIF as 'NameSuffix' (PascalCase USx fieldIds)
     [PASS] birthDate: in QIF as 'BirthDate' (PascalCase USx fieldIds)
     [PASS] sexCode: in QIF as 'SexCode' (PascalCase USx fieldIds)
     [PASS] raceCode: in QIF and CAD list
@@ -67,6 +67,8 @@ CAD AUDIT
     [INFO] purposeCodeDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameFirstDH: in QIF, not in CAD list (provider-specific)
     [INFO] NameLastDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameMiddleDH: in QIF, not in CAD list (provider-specific)
+    [INFO] NameSuffixDH: in QIF, not in CAD list (provider-specific)
     [INFO] BirthDateDH: in QIF, not in CAD list (provider-specific)
     [INFO] SexCodeDH: in QIF, not in CAD list (provider-specific)
   Firearm:
@@ -172,6 +174,6 @@ CAD AUDIT
  CAD AUDIT SUMMARY
 ========================================
 Providers: 1
-Total: 71 PASS / 0 FAIL / 0 WARN / 71 INFO
+Total: 73 PASS / 0 FAIL / 0 WARN / 71 INFO
 
 
