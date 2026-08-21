@@ -80,6 +80,14 @@ TENANT-VERIFIED, so each costs a re-sweep. **NM's L9 is an ACCEPTED OPERATOR OVE
 
 ## ON HOLD / DO NOT RE-RAISE
 
+- **`State2`-`State5` MULTI-STATE NLETS BROADCAST -- PARKED UNTIL ROB BRINGS IT UP (2026-08-21).** Do
+  not re-raise, do not propose propagating the registry row to the 7 providers missing it, do not
+  cost it again. Already ruled OUT OF SCOPE by Rob on 2026-08-02 ("multi-destination Nlets routing is
+  not built on any provider"); it is registered on 6 of the 13 affected providers, rule class `other`
+  so it silences nothing. **I re-derived it as a new open question on 08-21 anyway, on a provider that
+  had three such rows** -- the pre-sweep flow reads the spec plan's UNREACHABLE findings and never
+  cross-checks the registry, so it will keep looking new. It is not. The 24 UNREACHABLE spec tests on
+  NM are this, and they are expected output.
 - **COMMSYS ASKS ARE ON HOLD (Rob 08-18).** LA's devdoc PurposeCode/State inversion is recorded, NOT owed.
 - **HI PlateType default on a CAD VIN check -- HELD.** Defaulting it kills the in-state plate search (BR 24).
 - **CA_CONTRA_COSTA spec block CLEARED 08-19** via the DEVDOC-OF-RECORD fallback to `CA_CLETS` -- do not
