@@ -2,9 +2,14 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.5** | Generated: 2026-08-20
+Current: **v2.6** | Generated: 2026-08-21
 
 ---
+
+## v2.6 -- 2026-08-21 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.5 -- 2026-08-20 -- Name components pooled -- the officer's middle name will now reach the state
 

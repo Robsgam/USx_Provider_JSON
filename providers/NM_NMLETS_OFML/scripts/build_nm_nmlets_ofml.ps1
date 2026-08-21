@@ -31,7 +31,7 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nm_nmlets_ofml.ps1
 $ErrorActionPreference = "Stop"
-$Version     = '2.5'
+$Version     = '2.6'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NM_NMLETS_OFML_v${Version}.json"
@@ -235,6 +235,10 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('NameLastDH','NameFirstDH','BirthDateDH','SexCodeDH'); any = @('purposeCodeDH','raceCodeDH','RegistrationState','NameMiddleDH','NameSuffixDH')
+                # CAD ignores form initialValue (BUILD_RULES 12), so the 'C' prefill needs this twin
+                # or a CAD-dispatched DH query goes out with no PurposeCode at all -- which is what
+                # happened on every DH path before 2026-08-21 while the DL side sent C.
+                defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' })
                 conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'Name'
@@ -245,6 +249,7 @@ $dhQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('OperatorLicenseNumberDH'); any = @('purposeCodeDH','RegistrationState')
+                defaults = @([PSCustomObject]@{ field = 'PurposeCode'; value = 'C' })
             }
             primaryFieldReference = 'OperatorLicenseNumber'
             keyReference          = 'KQ.O'
@@ -531,23 +536,18 @@ $perLayout = MakeLayouts @(
                 @{ id = 'NameLastDH_Input';   node = Inp 'NameLastDH'   'Last Name'   '30' 'ROW_PER_DH_1' }
                 @{ id = 'NameSuffixDH_Input'; node = Inp 'NameSuffixDH' 'Suffix'      '10' 'ROW_PER_DH_1' }
             )}
-            # Race on the 2ND line, immediately AFTER Sex, by operator directive (Rob 2026-08-20:
-            # "on dh 2nd line after sex"). Purpose Code moves to the 3rd row to make room -- it is an
-            # optional any[] qualifier on both DH combos, so it is the right thing to displace.
-            @{ id = 'ROW_PER_DH_2'; cols = @('3','3','3','3'); fields = @(
+            # Purpose Code is the LAST field on this row, not a lone third row (Rob 2026-08-21:
+            # "person dh purpose code neeeds to move 1 line to the end"). This also mirrors the DL
+            # card, where Purpose Code is likewise the last field of the last qualifier row.
+            # Race stays immediately after Sex, per the earlier directive -- Purpose Code goes after
+            # Race, so that ordering is preserved rather than disturbed.
+            @{ id = 'ROW_PER_DH_2'; cols = @('3','3','2','2','2'); fields = @(
                 @{ id = 'OperatorLicenseNumberDH_Input'; node = Inp 'OperatorLicenseNumberDH' 'OLN' '20' 'ROW_PER_DH_2' }
                 @{ id = 'BirthDateDH_Input'; node = Dt  'BirthDateDH' 'Date of Birth' 'ROW_PER_DH_2' }
                 @{ id = 'SexCodeDH_Input';   node = Sel 'SexCodeDH'   'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
                 @{ id = 'RaceCodeDH_Input';  node = Sel 'raceCodeDH'  'Race' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DH_2' }
-            )}
-            # raceCodeDH keeps attributeTypeId='RACE'+codeTypeProvider='NIBRS' (matching the DL raceCode
-            # field) so it produces the attribute ID the DH RaceCode attr's codeTypeProvider
-            # reverse-lookup needs -- it was a codeTypeCategory code-string, which the reverse-lookup
-            # could not resolve (AP #11 CommSys direction, caught by the validate check added
-            # 2026-07-24). Moved up to row 2 at v2.4; this row now carries the displaced Purpose Code.
-            # NO Attention row on this card -- DH has no Attention attribute at all (see line ~210).
-            @{ id = 'ROW_PER_DH_3'; cols = @('6'); fields = @(
-                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_3' }
+                # LABEL-OVERRIDE: purposeCodeDH -- prefilled 'C', bare label per BUILD_RULES 11
+                @{ id = 'PurposeCodeDH_Input'; node = Inp 'purposeCodeDH' 'Purpose Code' '1' 'ROW_PER_DH_2' @{ initialValue = 'C' } }
             )}
         )
     }

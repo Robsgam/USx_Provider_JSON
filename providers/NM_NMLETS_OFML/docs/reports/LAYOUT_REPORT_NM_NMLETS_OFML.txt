@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML
-  Source: NM_NMLETS_OFML_v2.5.json
-  Generated: 2026-08-20 19:04
+  Source: NM_NMLETS_OFML_v2.6.json
+  Generated: 2026-08-21 12:18
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== NM_NMLETS_OFML_v2.5.json ===
+=== NM_NMLETS_OFML_v2.6.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=4
   Person | entity=Person | qidm= | cards=2 fields=13
@@ -66,13 +66,12 @@ LAYOUT DETAIL
         NameMiddleDH (Text | maxLen=30)
         NameLastDH (Text | maxLen=30)
         NameSuffixDH (Text | maxLen=10)
-      ROW ROW_PER_DH_2 [3 3 3 3]
+      ROW ROW_PER_DH_2 [3 3 2 2 2]
         OperatorLicenseNumberDH (Text | maxLen=20)
         BirthDateDH (FormDate)
         SexCodeDH (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         raceCodeDH (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-      ROW ROW_PER_DH_3 [6]
-        purposeCodeDH (Text | maxLen=1)
+        purposeCodeDH (Text | maxLen=1 | default=C)
 
 === Firearm ===
   name=ENTITY_Firearm | entity=Firearm | qidm=

@@ -1,8 +1,51 @@
 NM_NMLETS_OFML -- Build Notes
 =======================
 Provider: NM_NMLETS_OFML
+v2.6  2026-08-21  DH PURPOSE CODE: moved up one line, and given the default it never had
+  CHANGED (both by operator directive, Rob 2026-08-21 on the rendered form):
+    LAYOUT -- Purpose Code moved UP one line to the END of the DH qualifier row, eliminating
+      the lone third row it had been sitting on by itself. The card is now two rows:
+        ROW_PER_DH_1 [3 3 3 3]    First  Middle  Last  Suffix
+        ROW_PER_DH_2 [3 3 2 2 2]  OLN  DOB  Sex  Race  Purpose Code
+      Race stays immediately after Sex per the 2026-08-20 directive; Purpose Code goes AFTER
+      Race, so that ordering is preserved rather than disturbed. This also matches the DL card,
+      where Purpose Code is likewise the last field of the last qualifier row.
+    purposeCodeDH -- initialValue 'C' ADDED, plus the combo defaults[] twin on BOTH DH combos
+      (KQ.N and KQ.O).
+  WHY IT HAD NO DEFAULT: no reason. Asked to explain it and could not -- it was an oversight
+    from v2.4/v2.5, not a decision, and nothing in the build recorded a justification.
+    THE ASYMMETRY IT LEFT: the DL side has purposeCode in set[] on BOTH combos, prefilled 'C',
+    with a defaults[] twin. The DH side had purposeCodeDH in any[] on both combos with NO prefill
+    and NO default. So a DL query transmitted PurposeCode=C while a DH query transmitted no
+    purpose code at all unless the officer typed one.
+  WHY THE PREFILL IS SAFE HERE, checked before adding it rather than after:
+    BUILD_RULES 24 only bites when the prefilled field sits in a set[] -- an always-present value
+    then makes that combo always match and collapses it onto a plainer sibling. purposeCodeDH is
+    in NO set[] at all (any[] on KQ.N and KQ.O), so there is nothing for it to shadow.
+    audit_prefill_shadow confirms: 0 findings across 14 ordered pairs, and reachability holds at
+    12/12. Metadata agrees it is optional -- KQ{Name} and KQ{OperatorLicenseNumber} both carry
+    PurposeCode inside <Any>.
+    (Contrast the DL side, where the prefill IS on a set[] field and is safe for the different,
+    CA_CLETS reason: purposeCode is in EVERY DL combo's set[], so it cannot favour one over another.)
+  WHY THE COMBO defaults[] TWIN IS NOT OPTIONAL: CAD ignores form initialValue (BUILD_RULES 12).
+    Without the twin a CAD-dispatched DH query would still have gone out with no PurposeCode --
+    the exact gap being closed. Added to both DH combos.
+  GATES: validator 66P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | wiring closure 0 breaks
+    in all ten classes | name components 0 blocking / 8 examined | reachability 12/12 | prefill
+    shadow 0 (14 pairs) | fidelity 14 branches 0 UNDER / 0 OVER | test_phase2 PRE-FLIGHT CLEAR,
+    36 tests / 130 fills.
+  LAYOUT FLOW still reports 1 finding and it is the RECORDED OPERATOR OVERRIDE, unchanged by this
+    edit: L9 raceCode on the DL card's ROW_PER_DL_3, beside BirthDate/SexCode/purposeCode. Rob
+    directed race onto line 3 after sex; it stays. Nothing on the DH card is flagged.
+  NOT TESTED: never tenant-tested at any version. v2.5 was never imported or driven, so this bump
+    archived 0 logs. Owes an import, a first-ever sweep, and the one-time picklist capture.
+
 State: New Mexico
 Network: NMLETS OFML (New Mexico Law Enforcement Telecommunications System)
+v2.6  2026-08-21  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v2.5  2026-08-20  Name components pooled -- the officer's middle name will now reach the state
   CHANGED: middle/suffix added to the any[] of both NAME combos, and only those:
       DL.NAME  any[RegistrationState,ImageIndicator,Attention]        -> +NameMiddle, NameSuffix

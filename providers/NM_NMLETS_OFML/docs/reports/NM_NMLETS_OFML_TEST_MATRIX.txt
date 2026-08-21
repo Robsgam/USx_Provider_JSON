@@ -1,6 +1,6 @@
-NM_NMLETS_OFML v2.5 -- TEST MATRIX
+NM_NMLETS_OFML v2.6 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-20
+Generated: 2026-08-21
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -23,8 +23,7 @@ OR BY NAME):
   CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, 
 OR BY NAME + DOB + SEX):
     ROW 1: NameFirstDH [Inp 30], NameMiddleDH [Inp 30], NameLastDH [Inp 30], NameSuffixDH [Inp 10]
-    ROW 2: OperatorLicenseNumberDH [Inp 20], BirthDateDH [FormDate], SexCodeDH [Sel SEX], raceCodeDH [Sel RACE]
-    ROW 3: purposeCodeDH [Inp 1]
+    ROW 2: OperatorLicenseNumberDH [Inp 20], BirthDateDH [FormDate], SexCodeDH [Sel SEX], raceCodeDH [Sel RACE], purposeCodeDH [Inp C, 1]
 
 Firearm (1 card, 4 fields):
   CARD_GUN (FIREARM SEARCH BY SERIAL NUMBER):
@@ -154,4 +153,4 @@ COMBO COVERAGE (14/14):
   ArticleSingleQuery: 1/1 -- T30(Serial)
   BoatQuery: 4/4 -- T20(BQ+.R), T22(BQ+.H), T24(QB+.R), T25(QB+.H)
 
-IMPORT FILE: NM_NMLETS_OFML_v2.5.json
+IMPORT FILE: NM_NMLETS_OFML_v2.6.json
