@@ -40,6 +40,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path $PSScriptRoot -Parent
 . "$repo\tools\_resolve_provider_json.ps1"
+. "$repo\tools\_test_status_lib.ps1"   # Get-ProviderTestPark -- a parked provider owes nothing
 
 $lines = New-Object System.Collections.Generic.List[string]
 function Emit($s, $color) {
@@ -63,6 +64,17 @@ $anyOwed = $false
 foreach ($p in $targets) {
     $dir = Join-Path $repo "providers\$p"
     if (-not (Test-Path $dir)) { Emit "  [NO-VERDICT] $p -- no such provider directory" 'DarkYellow'; continue }
+
+    # A PARKED provider owes NOTHING. Its plan is still correct and still generated; there is
+    # simply no test expectation (see docs\tracking\TEST_PARKED.txt for the operator's reason).
+    # Reported explicitly rather than skipped, because a provider silently missing from the
+    # ledger is indistinguishable from one nobody measured.
+    $park = Get-ProviderTestPark -ProvDir $dir
+    if ($park.Parked) {
+        Emit "" $null
+        Emit "  $p -- PARKED, NOT OWED: $($park.Reason)" 'DarkCyan'
+        continue
+    }
 
     $jsonPath = Get-ProviderRootJson -ProvDir $dir -Provider $p
     if (-not $jsonPath) { Emit "  [NO-VERDICT] $p -- no active root JSON; cannot measure a sweep" 'DarkYellow'; continue }

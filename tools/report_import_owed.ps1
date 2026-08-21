@@ -54,6 +54,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 . "$PSScriptRoot\_resolve_provider_json.ps1"
+. "$PSScriptRoot\_test_status_lib.ps1"   # Get-ProviderTestPark -- a parked provider owes no import
 
 $lines = New-Object System.Collections.ArrayList
 function Emit([string]$s) { [void]$lines.Add($s); if (-not $Quiet) { Write-Host $s } }
@@ -145,7 +146,17 @@ foreach ($d in $provDirs) {
     }
 
     $flags = New-Object System.Collections.ArrayList
-    if ($tenantVer -ne $repo) {
+
+    # A PARKED provider owes NO IMPORT. There is no test expectation, so "import then sweep" is
+    # not work that exists (see docs\tracking\TEST_PARKED.txt for the operator's reason). Counted
+    # into $held so the report still ACCOUNTS for it -- silence is the defect this tool exists to
+    # catch, so a parked provider must be named as deliberately-not-owed, never omitted.
+    $park = Get-ProviderTestPark -ProvDir $d.FullName
+    if ($park.Parked) {
+        [void]$flags.Add("USx provider tenant: PARKED, NOT OWED -- $($park.Reason)")
+        $held += "$($d.Name)/USx provider tenant (parked)"
+    }
+    elseif ($tenantVer -ne $repo) {
         if (-not $tenantVer) { [void]$flags.Add("USx provider tenant: NO logs at any version -- import v$repo then sweep") }
         else                 { [void]$flags.Add("USx provider tenant: logs at v$tenantVer, repo is v$repo -- import + re-sweep") }
         $owedUsx += $d.Name

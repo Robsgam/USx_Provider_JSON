@@ -49,7 +49,7 @@ foreach ($pd in $provDirs) {
         Emit ""
         $verShow = if ($ver) { $ver } else { '?' }
         Emit ("{0,-22} v{1,-6} NOT ON USx-TENANT-TEST TRACK (no logs package / legacy build)" -f $name, $verShow)
-        $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State='NOT-TRACKED' })
+        $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State='NOT-TRACKED'; Parked=[bool]$ts.Parked })
         continue
     }
 
@@ -68,7 +68,7 @@ foreach ($pd in $provDirs) {
 
     Emit ("    => {0}: {1}/{2} entities tested, PASS={3} FAIL={4} PENDING={5} UNKNOWN={6}" -f `
           $ts.State, $ts.EntitiesTested, $Entities.Count, $ts.Pass, $ts.Fail, $ts.Pending, $ts.Unknown)
-    $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State=$ts.State })
+    $summary.Add([pscustomobject]@{ Provider=$name; Version=$ver; State=$ts.State; Parked=[bool]$ts.Parked })
 }
 
 Emit ""
@@ -76,6 +76,14 @@ Emit ("=" * 78)
 Emit "SUMMARY"
 foreach ($grp in ($summary | Group-Object State | Sort-Object Name)) {
     Emit ("  {0,-13} {1}" -f $grp.Name, (($grp.Group | ForEach-Object { $vv = if ($_.Version) { $_.Version } else { '?' }; "$($_.Provider) v$vv" }) -join ', '))
+}
+# PARKED is a SUBSET of the state line(s) above, not a sixth state -- _test_status_lib deliberately
+# leaves State alone so none of its ten callers shift. Named here so a reader cannot mistake a
+# parked provider's NEVER-TESTED row for outstanding work.
+$prk = @($summary | Where-Object { $_.Parked })
+if ($prk.Count) {
+    Emit ("  {0,-13} {1}   <-- listed above, but NOT owed" -f 'PARKED', `
+          (($prk | ForEach-Object { $vv = if ($_.Version) { $_.Version } else { '?' }; "$($_.Provider) v$vv" }) -join ', '))
 }
 
 $out = $lines -join "`n"

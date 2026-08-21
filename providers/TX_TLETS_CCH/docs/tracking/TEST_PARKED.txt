@@ -1,0 +1,44 @@
+TX_TLETS_CCH -- TEST EXPECTATION PARKED
+=======================================
+
+PARKED: proof of concept for the base<->variant parallel build; no tenant need yet (Rob 2026-08-21)
+
+WHAT THE OPERATOR SAID, verbatim, because the reason matters more than the state:
+
+  "tx cch was a proof of concept and has no need at all yet so it need to be parked in terms of
+   testing expectations. It is really about the parallel build ability. we will likely at some
+   point have teh same variations of each provider with candaina and chc and other adon
+   ccombinations"   -- Rob, 2026-08-21
+
+WHAT THIS PROVIDER IS FOR
+  TX_TLETS_CCH is not a deliverable waiting on a sweep. It is the WORKING PROOF that a variant
+  can be built ALONGSIDE its base and kept in lockstep with it:
+    - it inherits the base's devdoc + metadata (source sharing -- CLAUDE.md "Provider Variants"),
+    - it declares `# BASE-SYNC: TX_TLETS v4.21` and `audit_variant_sync` fails if that marker
+      falls behind the base's current version,
+    - `audit_supported_queries` CHECK 0 grants it Basic UNION "Transactions Supported" because
+      the marker makes it a variant, not a look-alike,
+    - `audit_devdoc_combinations` resolves its DEVDOC OF RECORD through the same marker,
+    - `audit_provider_linkage` allows exactly one directed reference, TX_TLETS_CCH -> TX_TLETS.
+  All five of those are marker-driven, never name-based, so the pattern generalises.
+
+WHY THAT MATTERS GOING FORWARD
+  The expectation is the SAME shape for every provider eventually -- CCH, Canadian (CPIC) and
+  other add-on combinations. So this machinery is strategic infrastructure, not a TX one-off.
+  DO NOT delete this provider as unused, and do not "finish" it by driving a sweep nobody asked
+  for. 183 plan tests exist and are correct; they are simply not owed.
+
+WHAT IS STILL TRUE AND STILL GATED
+  Parking suspends the TEST expectation ONLY. Everything else still applies and still passes:
+  validator 112P/0F/0W, base<->variant lockstep, and every build/spec gate in enforce. If the
+  base moves, THIS MUST BE REBUILT IN THE SAME PASS -- lockstep is not parked.
+
+WHAT UN-PARKS IT
+  A tenant that actually needs CCH. At that point delete this file, and the 183 owed tests
+  reappear in report_sweep_ledger and report_import_owed automatically -- nothing to remember.
+
+KNOWN CONSEQUENCE, stated so it is not read as a defect later:
+  `[FLAG:nameparts-untested-unfrozen]` in PENDING_UPDATES.txt could ONLY be cleared by a sweep.
+  With the sweep parked it became un-clearable -- a FAIL that cannot be cleared by fixing the
+  thing it points at, which is noise by ENGINEERING_STANDARD's own rule. Retired to a comment
+  in that file on 2026-08-21, with this park as the reason.

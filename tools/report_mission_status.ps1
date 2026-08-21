@@ -132,7 +132,14 @@ foreach ($d in $provDirs) {
     # ---- stage 4 TENANT TEST: the SHARED classifier, so this cannot disagree with portfolio_status.
     $st   = Get-ProviderTestState -ProvDir $d.FullName -Name $p
     $s4   = ("$($st.State)" -eq 'ALL-PASS')
-    $s4why = if ($s4) { '' } else { "tenant-test state $($st.State)" }
+    # A PARKED provider is NOT "blocked at test" -- there is no test expectation to block on
+    # (docs\tracking\TEST_PARKED.txt). Distinguished in the WHY so it never lands in the work
+    # queue below, which exists to say what to go DO next. It still counts in the denominator:
+    # see the PARKED note after the score, and note that 19-of-20 exists for one provider
+    # MID-FLIGHT, which is not the same category as one deliberately parked.
+    $s4why = if ($s4) { '' }
+             elseif ($st.Parked) { "PARKED -- no test expectation ($($st.ParkReason))" }
+             else { "tenant-test state $($st.State)" }
 
     # ---- stage 5 JIRA: the STRUCTURED marker only. A version number appearing somewhere in the
     # file is NOT evidence -- every DEX_TICKET.md names its own current version, which is why the
@@ -161,7 +168,7 @@ foreach ($d in $provDirs) {
     for ($i = 0; $i -lt 6; $i++) { if (-not $met[$i]) { $first = $i; break } }
 
     $rows += [pscustomobject]@{
-        Provider = $p; Ver = $ver
+        Provider = $p; Ver = $ver; Parked = [bool]$st.Parked
         Stages   = (0..5 | ForEach-Object { if ($met[$_]) { 'X' } else { '.' } }) -join ''
         Count    = @($met | Where-Object { $_ }).Count
         Complete = ($first -lt 0)
@@ -188,9 +195,28 @@ Out-Line ("  LIFECYCLE-COMPLETE: {0} of {1} = {2}%     TARGET {3} of {1} = {4}% 
           $done, $rows.Count, $pct, $TARGET_NUM, $tpct, [math]::Max(0, $TARGET_NUM - $done)) `
           $(if ($done -ge $TARGET_NUM) { 'Green' } else { 'Yellow' })
 
+# PARKED PROVIDERS -- reported, NEVER silently absorbed into the target. A parked provider has no
+# test expectation, so it can never reach LIFECYCLE-COMPLETE while the park stands, and it still
+# occupies one of the 20. ENGINEERING_STANDARD 5.1's "19 of 20" exists to allow ONE provider
+# MID-FLIGHT -- that is a different category from one deliberately parked, so whether the target
+# should be measured against (20 - parked) is an ENGINEERING_STANDARD decision and NOT a default
+# this tool is entitled to pick. Stating it is the whole point: a denominator quietly redefined by
+# a tool is how a mission metric stops meaning anything.
+$parked = @($rows | Where-Object { $_.Parked })
+if ($parked.Count) {
+    Out-Line ''
+    Out-Line ("  PARKED (no test expectation -- cannot complete while parked): {0}" -f `
+              (($parked | ForEach-Object { $_.Provider }) -join ', ')) 'DarkCyan'
+    Out-Line ("  So {0} of the {1} are ELIGIBLE. Against the eligible set this reads {2} of {0}. Whether" -f `
+              ($rows.Count - $parked.Count), $rows.Count, $done)
+    Out-Line "  the TARGET moves to that denominator is Rob's call on ENGINEERING_STANDARD 5.1, not this tool's."
+}
+
 # WHERE THE QUEUE ACTUALLY IS. Grouping by blocking stage is what makes this a work queue instead
 # of a scoreboard: 11 providers blocked at 'test' all need the SAME next action (import, then sweep).
-$byStage = $rows | Where-Object { -not $_.Complete } | Group-Object { ($_.Blocker -split ':')[0] } | Sort-Object Count -Descending
+# Parked providers are EXCLUDED here -- this block answers "what do I go do next", and a
+# provider with no test expectation is not work. It is still reported, in the PARKED note above.
+$byStage = $rows | Where-Object { -not $_.Complete -and -not $_.Parked } | Group-Object { ($_.Blocker -split ':')[0] } | Sort-Object Count -Descending
 if ($byStage) {
     Out-Line ''
     Out-Line '  BLOCKED BY STAGE -- same stage means same next action:'

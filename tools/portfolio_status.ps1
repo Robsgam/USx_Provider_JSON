@@ -47,10 +47,16 @@ foreach ($pd in $provDirs) {
     } else { "(no report)" }
 
     $totalLogs = $ts.Pass + $ts.Fail + $ts.Pending + $ts.Unknown
-    $liveStr = switch ($ts.State) {
-        'NOT-TRACKED'  { "not on track" }
-        'NEVER-TESTED' { "NEVER 0/5" }
-        default        { "{0} {1}/5 ({2})" -f $ts.State, $ts.EntitiesTested, $totalLogs }
+    # A PARKED provider reads "PARKED" rather than "NEVER 0/5": the numbers are identical but the
+    # MEANING is opposite -- one is work outstanding, the other is work that does not exist. The
+    # underlying State is deliberately unchanged (see _test_status_lib), so the totals below and
+    # every other consumer still classify it as they always did.
+    $liveStr = if ($ts.Parked) { "PARKED (no test expectation)" } else {
+        switch ($ts.State) {
+            'NOT-TRACKED'  { "not on track" }
+            'NEVER-TESTED' { "NEVER 0/5" }
+            default        { "{0} {1}/5 ({2})" -f $ts.State, $ts.EntitiesTested, $totalLogs }
+        }
     }
 
     $rows.Add([pscustomobject]@{
@@ -88,6 +94,13 @@ Emit ("  USx-tenant-test: {0} ALL-PASS, {1} PARTIAL, {2} HAS-FAIL, {3} NEVER-TES
       $allpass.Count, $partial.Count, $hasfail.Count, $never.Count, $untrack.Count, ([int]$liveLogs))
 if ($allpass.Count) { Emit ("    ALL-PASS:     " + (($allpass | ForEach-Object { "$($_.Provider) $($_.Ver)" }) -join ', ')) }
 if ($never.Count)   { Emit ("    NEVER-TESTED: " + (($never   | ForEach-Object { "$($_.Provider) $($_.Ver)" }) -join ', ')) }
+# PARKED is called out separately because it is a SUBSET of the NEVER-TESTED list above, not a
+# sixth state -- the classifier deliberately keeps State unchanged so no other consumer shifts.
+# Without this line a reader sees TX_TLETS_CCH under NEVER-TESTED and reads it as owed work.
+$parkedRows = @($rows | Where-Object { $_.Live -like 'PARKED*' })
+if ($parkedRows.Count) {
+    Emit ("    PARKED (in the list above, but NOT owed): " + (($parkedRows | ForEach-Object { "$($_.Provider) $($_.Ver)" }) -join ', '))
+}
 if ($untrack.Count) { Emit ("    NOT-TRACKED:  " + (($untrack | ForEach-Object { "$($_.Provider) $($_.Ver)" }) -join ', ')) }
 
 # ---- git footer ----

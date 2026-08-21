@@ -24,6 +24,49 @@ if (-not (Get-Command Get-ProviderRootJson -ErrorAction SilentlyContinue)) {
 
 $script:TS_Entities = @('Vehicle','Person','Firearm','Article','Boat')
 
+# ─────────────────────────────────────────────────────────────────────────────
+#  TEST PARK -- a provider with NO TEST EXPECTATION, by operator directive.
+#
+#  Why this is a MARKER and not prose. TX_TLETS_CCH is a proof of concept: it
+#  exists to prove the base<->variant PARALLEL BUILD works, not to be swept
+#  (Rob 2026-08-21: "tx cch was a proof of concept and has no need at all yet so
+#  it need to be parked in terms of testing expectations. It is really about the
+#  parallel build ability"). Recorded only in prose, that directive is guaranteed
+#  to be lost: report_sweep_ledger would keep printing "183 TEST(S) STILL OWED",
+#  report_import_owed would keep listing an import, and every status report would
+#  re-raise it until someone re-explained. The ImageIndicator/MD_METERS line in
+#  CLAUDE.md is exactly that failure already in the repo.
+#
+#  DELIBERATELY DOES NOT CHANGE `State`. Ten tools call Get-ProviderTestState and
+#  scope on ALL-PASS / NEVER-TESTED; inventing a sixth state would silently alter
+#  every one of them. Parking is ADDITIVE -- `Parked` / `ParkReason` -- and only
+#  the tools where it changes the ANSWER consume it.
+#
+#  Requires a STRUCTURED line, `PARKED: <reason>`, in
+#  docs/tracking/TEST_PARKED.txt. An empty or accidental file parks nothing --
+#  same discipline as `# BASE-SYNC:` and `POSTED:` (audit_lifecycle stage 5,
+#  where `-match "v$ver"` over a whole file was a check that could not fail).
+#
+#  A park NEVER hides a failure: HAS-FAIL is reported regardless, because a
+#  parked provider holding failing logs is a real finding, not a quiet state.
+# ─────────────────────────────────────────────────────────────────────────────
+function Get-ProviderTestPark {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$ProvDir)
+
+    $marker = Join-Path $ProvDir "docs\tracking\TEST_PARKED.txt"
+    if (-not (Test-Path $marker)) {
+        return [pscustomobject]@{ Parked = $false; Reason = $null }
+    }
+    $raw = Get-Content $marker -Raw
+    if ($raw -match '(?m)^\s*PARKED:\s*(\S.*?)\s*$') {
+        return [pscustomobject]@{ Parked = $true; Reason = $Matches[1] }
+    }
+    # File present but no structured line -- announce it rather than park silently.
+    Write-Warning "TEST_PARKED.txt present in $ProvDir but has no 'PARKED: <reason>' line -- NOT parked"
+    return [pscustomobject]@{ Parked = $false; Reason = $null }
+}
+
 function Get-ProviderTestState {
     [CmdletBinding()]
     param([Parameter(Mandatory)][string]$ProvDir, [Parameter(Mandatory)][string]$Name)
@@ -44,12 +87,14 @@ function Get-ProviderTestState {
         if ($raw -match 'configuration for [^"]*?\bv([\d]+\.[\d]+)') { $ver = $Matches[1] }
     }
 
+    $park = Get-ProviderTestPark -ProvDir $ProvDir
     $perEntity = [ordered]@{}
     if (-not (Test-Path $logsDir) -or -not $ver) {
         return [pscustomobject]@{
             Provider=$Name; Version=$ver; State='NOT-TRACKED'
             Pass=0; Fail=0; Pending=0; Unknown=0; EntitiesTested=0; EntitiesMissing=$script:TS_Entities.Count
             PerEntity=$perEntity
+            Parked=$park.Parked; ParkReason=$park.Reason
         }
     }
 
@@ -130,6 +175,7 @@ function Get-ProviderTestState {
         Pass=$provPass; Fail=$provFail; Pending=$provPend; Unknown=$provUnk
         EntitiesTested=$entTested; EntitiesMissing=$entMissing; PerEntity=$perEntity
         OwedPlanTests=$owed
+        Parked=$park.Parked; ParkReason=$park.Reason
     }
 }
 
