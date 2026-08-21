@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: MD_METERS
-  Source: MD_METERS_v2.1.json
-  Generated: 2026-08-19 09:10
+  Source: MD_METERS_v2.2.json
+  Generated: 2026-08-20 20:13
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- MD_METERS_v2.1.json
+  CommSys Query Simulator -- MD_METERS_v2.2.json
 ================================================================
 
 --- QIDM: MD_METERS_VehicleRegistrationQuery [Vehicle] ---
@@ -41,13 +41,13 @@ QUERY SIMULATION
 
     [FIRES first-match] ZWAR.O
       set: [NameLast, NameFirst, OperatorLicenseExpirationYear, OperatorLicenseNumber, raceCode, SexCode]
-      any: [RegistrationState, ImageIndicator] -> matched: [RegistrationState, ImageIndicator]
+      any: [RegistrationState, ImageIndicator, NameMiddle, NameSuffix] -> matched: [RegistrationState, ImageIndicator, NameMiddle]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>ZWAR.O</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <ImageIndicator>Y</ImageIndicator>
-        <Name>Doe, John</Name>
+        <Name>Doe, John A</Name>
         <OperatorLicenseExpirationYear>2028</OperatorLicenseExpirationYear>
         <OperatorLicenseNumber>D123456789</OperatorLicenseNumber>
         <RaceCode>W</RaceCode>
@@ -59,7 +59,7 @@ QUERY SIMULATION
     [SKIP] ZLDR.O -- conditions failed: raceCode NOT_EXISTS [value='W']
 
     >> PLATFORM FIRES: ZWAR.O (first matching combo)
-    >> UNION POOL (platform serializes): ImageIndicator=Y, Name=Doe, John, OperatorLicenseExpirationYear=2028, OperatorLicenseNumber=D123456789, RaceCode=W, SexCode=M, State=NJ
+    >> UNION POOL (platform serializes): ImageIndicator=Y, Name=Doe, John A, OperatorLicenseExpirationYear=2028, OperatorLicenseNumber=D123456789, RaceCode=W, SexCode=M, State=NJ
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

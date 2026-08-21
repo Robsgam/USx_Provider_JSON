@@ -1,52 +1,40 @@
-MD_METERS v2.1 -- TEST MATRIX
+MD_METERS v2.2 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-19
+Generated: 2026-08-20
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
 
 FORM FIELDS
 ----------------------------------------
-Vehicle (3 cards, 7 fields):
-  CARD_VEH_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-  CARD_VEH_PLATE (PLATE SEARCH):
-    LicensePlateNumber [Inp 10]
-    LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
-  CARD_VEH_VIN (VIN SEARCH):
-    VehicleIdentificationNumber [Inp 20]
-    VehicleMakeCode [Sel VEHICLE_MAKE]
+Vehicle (1 card, 7 fields):
+  CARD_VEH (VEHICLE SEARCH BY PLATE, OR VIN):
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE]
+    ROW 3: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
-Person (5 cards, 14 fields):
-  CARD_PER_OPT (OPTIONS):
-    RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y], SexCode [Sel SEX]
-    raceCode [Sel NIBRS_RACE/NIBRS]
-  CARD_PER_OLN (DRIVER LICENSE - OLN SEARCH):
-    OperatorLicenseNumber [Inp 20], OperatorLicenseExpirationYear [Inp 4]
-  CARD_PER_NAME (DRIVER LICENSE - NAME SEARCH):
-    NameFirst [Inp 30], NameLast [Inp 30]
-    BirthDate [FormDate]
-  CARD_PER_DH_OLN (DRIVER HISTORY - OLN SEARCH):
-    OperatorLicenseNumberDH [Inp 20]
-  CARD_PER_DH_NAME (DRIVER HISTORY - NAME SEARCH):
-    ROW 1: NameFirstDH [Inp 30], NameLastDH [Inp 30]
-    ROW 2: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
+Person (2 cards, 18 fields):
+  CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN, OR NAME):
+    ROW 1: OperatorLicenseNumber [Inp 20], OperatorLicenseExpirationYear [Inp 4]
+    ROW 2: NameFirst [Inp 30], NameLast [Inp 30], NameMiddle [Inp 30], NameSuffix [Inp 5]
+    ROW 3: BirthDate [FormDate], SexCode [Sel SEX], raceCode [Sel NIBRS_RACE/NIBRS]
+    ROW 4: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
+  CARD_PER_DH (DRIVER HISTORY SEARCH BY OLN, OR NAME):
+    ROW 1: OperatorLicenseNumberDH [Inp 20]
+    ROW 2: NameFirstDH [Inp 30], NameLastDH [Inp 30], NameMiddleDH [Inp 30], NameSuffixDH [Inp 5]
+    ROW 3: BirthDateDH [FormDate], SexCodeDH [Sel SEX]
 
 Firearm (1 card, 3 fields):
-  CARD_GUN (FIREARM SEARCH):
+  CARD_GUN (FIREARM SEARCH BY SERIAL, MAKE AND CALIBER):
     serialNumber [Inp 20], firearmMake [Sel NCIC_FIREARM_MAKE/NCIC], gunCaliber [Sel NCIC_FIREARM_CALIBER/NCIC]
 
 Article (1 card, 2 fields):
-  CARD_ART (ARTICLE SEARCH):
+  CARD_ART (ARTICLE SEARCH BY SERIAL AND TYPE):
     serialNumber [Inp 20], articleTypeCode [Sel NCIC_ARTICLE_TYPE/CA_CLETS]
 
-Boat (3 cards, 3 fields):
-  CARD_BOA_OPT (OPTIONS):
-    ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
-  CARD_BOA_HULL (HULL SEARCH):
-    BoatHullIdNumber [Inp 20]
-  CARD_BOA_REG (REGISTRATION SEARCH):
-    RegistrationNumber [Inp 8]
+Boat (1 card, 3 fields):
+  CARD_BOA (BOAT SEARCH BY HULL, OR REGISTRATION):
+    BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
 QIDM SUMMARY (6 QIDMs, 14 combos)
 ----------------------------------------
@@ -66,86 +54,86 @@ Arrangement: ENTITY-GROUPED -- each entity is tested start-to-finish
 (render/negative are manual one-time checks at initial provider build, not in this matrix)
 
 
-ENTITY 1: VEHICLE (10 tests -- 3 cards, 4 combos)
+ENTITY 1: PERSON (18 tests -- 2 cards, 6 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
- 1  Vehicle     ZVEH+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (ZVEH.V)
- 2  Vehicle     ZVEH+.V            + VehicleMakeCode, ImageIndicator [    ]
-              Expected: any[] fields present in XML output.
- 3  Vehicle     ZVEH+.P            LicensePlateNumber=TEST123       [    ]
-              Expected: VehicleRegistrationQuery fires (ZVEH.P)
- 4  Vehicle     ZVEH+.P            + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
- 5  Vehicle     ZLRG+.P            LicensePlateNumber=TEST123, LicensePl... [    ]
-              Expected: VehicleRegistrationQuery fires (ZLRG.P)
- 6  Vehicle     ZLRG+.P            + RegistrationState, ImageIndicator [    ]
-              Expected: any[] fields present in XML output.
- 7  Vehicle     ZLRG+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (ZLRG.V)
- 8  Vehicle     ZLRG+.V            + RegistrationState, ImageIndicator [    ]
-              Expected: any[] fields present in XML output.
- 9  Vehicle     Guardrail: ZLRG.P>ZLRG.V  LicensePlateNumber=TEST123, VehicleId... [    ]
-              Expected: VehicleRegistrationQuery fires (ZLRG.P). VIN absent from XML.
-10  Vehicle     Guardrail: ZLRG.P>ZVEH.V  LicensePlateNumber=TEST123, VehicleId... [    ]
-              Expected: VehicleRegistrationQuery fires (ZLRG.P). VIN absent from XML.
-
-ENTITY 2: BOAT (5 tests -- 3 cards, 2 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-11  Boat        ZBOA.H+ZBOA.H      BoatHullIdNumber=FL1234AB56H7    [    ]
-              Expected: BoatQuery fires (ZBOA.H)
-12  Boat        ZBOA.H+ZBOA.H      + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
-13  Boat        ZBOA.R+ZBOA.R      RegistrationNumber=FL1234AB      [    ]
-              Expected: BoatQuery fires (ZBOA.R)
-14  Boat        ZBOA.R+ZBOA.R      + ImageIndicator                [    ]
-              Expected: any[] fields present in XML output.
-15  Boat        Guardrail: ZBOA.H>ZBOA.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
-              Expected: BoatQuery fires (ZBOA.H). Reg absent from XML.
-
-ENTITY 3: PERSON (18 tests -- 5 cards, 6 combos)
-------------------------------------------------------------------------
-#   Entity      Action / Combo                                      Result
---  ----------  --------------------------------------------------  ------
-16  Person      ZLDR.N+ZLDR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+ 1  Person      ZLDR.N+ZLDR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: DriverLicenseQuery fires (ZLDR.N)
-17  Person      ZLDR.N+ZLDR.N      + RegistrationState, ImageIndicator [    ]
+ 2  Person      ZLDR.N+ZLDR.N      + RegistrationState, ImageIndicator, NameMiddle, NameSuffix [    ]
               Expected: any[] fields present in XML output.
-18  Person      ZLDR.O+ZLDR.O      OperatorLicenseNumber=D999888777 [    ]
+ 3  Person      ZLDR.O+ZLDR.O      OperatorLicenseNumber=D999888777 [    ]
               Expected: DriverLicenseQuery fires (ZLDR.O)
-19  Person      ZLDR.O+ZLDR.O      + RegistrationState, ImageIndicator [    ]
+ 4  Person      ZLDR.O+ZLDR.O      + RegistrationState, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
-20  Person      ZWAR.O+ZWAR.O      NameLast=DOE, NameFirst=JOHN, Operato... [    ]
+ 5  Person      ZWAR.O+ZWAR.O      NameLast=DOE, NameFirst=JOHN, Operato... [    ]
               Expected: DriverLicenseQuery fires (ZWAR.O)
-21  Person      ZWAR.O+ZWAR.O      + RegistrationState, ImageIndicator [    ]
+ 6  Person      ZWAR.O+ZWAR.O      + RegistrationState, ImageIndicator, NameMiddle, NameSuffix [    ]
               Expected: any[] fields present in XML output.
-22  Person      ZWAR.N+ZWAR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
+ 7  Person      ZWAR.N+ZWAR.N      BirthDate=01/15/1990, NameLast=DOE, N... [    ]
               Expected: DriverLicenseQuery fires (ZWAR.N)
-23  Person      ZWAR.N+ZWAR.N      + ImageIndicator                [    ]
+ 8  Person      ZWAR.N+ZWAR.N      + ImageIndicator, NameMiddle, NameSuffix [    ]
               Expected: any[] fields present in XML output.
-24  Person      ZDRV+.O            OperatorLicenseNumberDH=D999888777 [    ]
+ 9  Person      ZDRV+.O            OperatorLicenseNumberDH=D999888777 [    ]
               Expected: DriverHistoryQuery fires (ZDRV.O)
-25  Person      ZDRV+.O            + ImageIndicator                [    ]
+10  Person      ZDRV+.O            + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-26  Person      ZDRV+.N            BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
+11  Person      ZDRV+.N            BirthDateDH=01/15/1990, NameLastDH=DO... [    ]
               Expected: DriverHistoryQuery fires (ZDRV.N)
-27  Person      ZDRV+.N            + ImageIndicator                [    ]
+12  Person      ZDRV+.N            + ImageIndicator, NameMiddleDH, NameSuffixDH [    ]
               Expected: any[] fields present in XML output.
-28  Person      Guardrail: ZWAR.O>ZWAR.N  OperatorLicenseNumber=D999888777, Bir... [    ]
+13  Person      Guardrail: ZWAR.O>ZWAR.N  OperatorLicenseNumber=D999888777, Bir... [    ]
               Expected: DriverLicenseQuery fires (ZWAR.O). DOB+LastName+FirstName+raceCode+SexCode absent from XML.
-29  Person      Guardrail: ZWAR.O>ZLDR.N  OperatorLicenseNumber=D999888777, Bir... [    ]
+14  Person      Guardrail: ZWAR.O>ZLDR.N  OperatorLicenseNumber=D999888777, Bir... [    ]
               Expected: DriverLicenseQuery fires (ZWAR.O). DOB+LastName+FirstName+SexCode absent from XML.
-30  Person      Guardrail: ZWAR.O>ZLDR.N  raceCode=W, BirthDate=01/15/1990, Nam... [    ]
+15  Person      Guardrail: ZWAR.O>ZLDR.N  raceCode=W, BirthDate=01/15/1990, Nam... [    ]
               Expected: DriverLicenseQuery fires (ZWAR.O). DOB+LastName+FirstName+SexCode absent from XML.
-31  Person      Guardrail: ZWAR.O>ZLDR.O  raceCode=W, OperatorLicenseNumber=D99... [    ]
+16  Person      Guardrail: ZWAR.O>ZLDR.O  raceCode=W, OperatorLicenseNumber=D99... [    ]
               Expected: DriverLicenseQuery fires (ZWAR.O). OLN absent from XML.
-32  Person      Guardrail: ZDRV.O>ZDRV.N  OperatorLicenseNumberDH=D999888777, B... [    ]
+17  Person      Guardrail: ZDRV.O>ZDRV.N  OperatorLicenseNumberDH=D999888777, B... [    ]
               Expected: DriverHistoryQuery fires (ZDRV.O). DOB+LastName+FirstName+SexCodeDH absent from XML.
-33  Person      Deselect: DL deselects DH.            [    ]
+18  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
+
+ENTITY 2: VEHICLE (10 tests -- 1 card, 4 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+19  Vehicle     ZVEH+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (ZVEH.V)
+20  Vehicle     ZVEH+.V            + VehicleMakeCode, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+21  Vehicle     ZVEH+.P            LicensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (ZVEH.P)
+22  Vehicle     ZVEH+.P            + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+23  Vehicle     ZLRG+.P            LicensePlateNumber=TEST123, LicensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (ZLRG.P)
+24  Vehicle     ZLRG+.P            + RegistrationState, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+25  Vehicle     ZLRG+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (ZLRG.V)
+26  Vehicle     ZLRG+.V            + RegistrationState, ImageIndicator [    ]
+              Expected: any[] fields present in XML output.
+27  Vehicle     Guardrail: ZLRG.P>ZLRG.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+              Expected: VehicleRegistrationQuery fires (ZLRG.P). VIN absent from XML.
+28  Vehicle     Guardrail: ZLRG.P>ZVEH.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+              Expected: VehicleRegistrationQuery fires (ZLRG.P). VIN absent from XML.
+
+ENTITY 3: BOAT (5 tests -- 1 card, 2 combos)
+------------------------------------------------------------------------
+#   Entity      Action / Combo                                      Result
+--  ----------  --------------------------------------------------  ------
+29  Boat        ZBOA.H+ZBOA.H      BoatHullIdNumber=FL1234AB56H7    [    ]
+              Expected: BoatQuery fires (ZBOA.H)
+30  Boat        ZBOA.H+ZBOA.H      + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+31  Boat        ZBOA.R+ZBOA.R      RegistrationNumber=FL1234AB      [    ]
+              Expected: BoatQuery fires (ZBOA.R)
+32  Boat        ZBOA.R+ZBOA.R      + ImageIndicator                [    ]
+              Expected: any[] fields present in XML output.
+33  Boat        Guardrail: ZBOA.H>ZBOA.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+              Expected: BoatQuery fires (ZBOA.H). Reg absent from XML.
 
 ENTITY 4: FIREARM (1 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
@@ -165,11 +153,11 @@ ENTITY 5: ARTICLE (1 tests -- 1 card, 1 combo)
 TOTAL: 35 tests
 
 COMBO COVERAGE (14/14):
-  VehicleRegistrationQuery: 4/4 -- T1(ZVEH+.V), T3(ZVEH+.P), T5(ZLRG+.P), T7(ZLRG+.V)
-  DriverLicenseQuery: 4/4 -- T16(ZLDR.N+ZLDR.N), T18(ZLDR.O+ZLDR.O), T20(ZWAR.O+ZWAR.O), T22(ZWAR.N+ZWAR.N)
-  DriverHistoryQuery: 2/2 -- T24(ZDRV+.O), T26(ZDRV+.N)
+  VehicleRegistrationQuery: 4/4 -- T19(ZVEH+.V), T21(ZVEH+.P), T23(ZLRG+.P), T25(ZLRG+.V)
+  DriverLicenseQuery: 4/4 -- T1(ZLDR.N+ZLDR.N), T3(ZLDR.O+ZLDR.O), T5(ZWAR.O+ZWAR.O), T7(ZWAR.N+ZWAR.N)
+  DriverHistoryQuery: 2/2 -- T9(ZDRV+.O), T11(ZDRV+.N)
   GunQuery: 1/1 -- T34(ZGUN)
   ArticleSingleQuery: 1/1 -- T35(ZART)
-  BoatQuery: 2/2 -- T11(ZBOA.H+ZBOA.H), T13(ZBOA.R+ZBOA.R)
+  BoatQuery: 2/2 -- T29(ZBOA.H+ZBOA.H), T31(ZBOA.R+ZBOA.R)
 
-IMPORT FILE: MD_METERS_v2.1.json
+IMPORT FILE: MD_METERS_v2.2.json

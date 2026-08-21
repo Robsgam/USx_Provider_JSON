@@ -19,6 +19,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.2 (2026-08-20)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| MD_METERS_v2.2.json | v2.2 | Current | 70P/0F/0W/0LIM. |
 ## v2.1 (2026-08-19)
 
 | File | Version | Status | Notes |

@@ -1,58 +1,58 @@
 ﻿================================================================
   Build Report: MD_METERS
-  Source: MD_METERS_v2.1.json
-  Generated: 2026-08-19 09:10
+  Source: MD_METERS_v2.2.json
+  Generated: 2026-08-20 20:13
 ================================================================
 TEST CONDUCTOR RESULTS
 =====================
 
-TEST MATRIX <-> JSON CONSISTENCY -- MD_METERS_v2.1
+TEST MATRIX <-> JSON CONSISTENCY -- MD_METERS_v2.2
 ============================================================
-Source: MD_METERS_v2.1.json
+Source: MD_METERS_v2.2.json
 Matrix: MD_METERS_TEST_MATRIX.txt
-Generated: 2026-08-19
+Generated: 2026-08-20
 
 SCOPE: This confirms each matrix row's expected combo fires for its
 data per the JSON's own combo logic -- i.e. matrix <-> JSON consistency.
 It does NOT prove the combo is a provider-supported query: that is
 checked separately against the devdoc by audit_supported_queries.ps1.
 
-ENTITY: VEHICLE (10 tests -- 3 cards, 4 combos)
-  T1  Vehicle    [PASS] (structural check)
-  T2  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, ImageIndicator
-  T3  Vehicle    [PASS] (structural check)
-  T4  Vehicle    [PASS] any[] fields verified: ImageIndicator
-  T5  Vehicle    [PASS] (structural check)
-  T6  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
-  T7  Vehicle    [PASS] (structural check)
-  T8  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
-  T9  Vehicle    [PASS] (structural check)
-  T10  Vehicle    [PASS] (structural check)
-ENTITY: BOAT (5 tests -- 3 cards, 2 combos)
-  T11  Boat       [PASS] (structural check)
-  T12  Boat       [PASS] any[] fields verified: ImageIndicator
-  T13  Boat       [PASS] (structural check)
-  T14  Boat       [PASS] any[] fields verified: ImageIndicator
-  T15  Boat       [PASS] (structural check)
-ENTITY: PERSON (18 tests -- 5 cards, 6 combos)
+ENTITY: PERSON (18 tests -- 2 cards, 6 combos)
+  T1  Person     [PASS] (structural check)
+  T2  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, NameMiddle, NameSuffix
+  T3  Person     [PASS] (structural check)
+  T4  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
+  T5  Person     [PASS] (structural check)
+  T6  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator, NameMiddle, NameSuffix
+  T7  Person     [PASS] (structural check)
+  T8  Person     [PASS] any[] fields verified: ImageIndicator, NameMiddle, NameSuffix
+  T9  Person     [PASS] (structural check)
+  T10  Person     [PASS] any[] fields verified: ImageIndicator
+  T11  Person     [PASS] (structural check)
+  T12  Person     [PASS] any[] fields verified: ImageIndicator, NameMiddleDH, NameSuffixDH
+  T13  Person     [PASS] (structural check)
+  T14  Person     [PASS] (structural check)
+  T15  Person     [PASS] (structural check)
   T16  Person     [PASS] (structural check)
-  T17  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
-  T18  Person     [PASS] (structural check)
-  T19  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
-  T20  Person     [PASS] (structural check)
-  T21  Person     [PASS] any[] fields verified: RegistrationState, ImageIndicator
-  T22  Person     [PASS] (structural check)
-  T23  Person     [PASS] any[] fields verified: ImageIndicator
-  T24  Person     [PASS] (structural check)
-  T25  Person     [PASS] any[] fields verified: ImageIndicator
-  T26  Person     [PASS] (structural check)
-  T27  Person     [PASS] any[] fields verified: ImageIndicator
-  T28  Person     [PASS] (structural check)
-  T29  Person     [PASS] (structural check)
-  T30  Person     [PASS] (structural check)
-  T31  Person     [PASS] (structural check)
-  T32  Person     [PASS] (structural check)
-  T33  Person     [PASS] queriesToDeselect verified
+  T17  Person     [PASS] (structural check)
+  T18  Person     [PASS] queriesToDeselect verified
+ENTITY: VEHICLE (10 tests -- 1 card, 4 combos)
+  T19  Vehicle    [PASS] (structural check)
+  T20  Vehicle    [PASS] any[] fields verified: VehicleMakeCode, ImageIndicator
+  T21  Vehicle    [PASS] (structural check)
+  T22  Vehicle    [PASS] any[] fields verified: ImageIndicator
+  T23  Vehicle    [PASS] (structural check)
+  T24  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
+  T25  Vehicle    [PASS] (structural check)
+  T26  Vehicle    [PASS] any[] fields verified: RegistrationState, ImageIndicator
+  T27  Vehicle    [PASS] (structural check)
+  T28  Vehicle    [PASS] (structural check)
+ENTITY: BOAT (5 tests -- 1 card, 2 combos)
+  T29  Boat       [PASS] (structural check)
+  T30  Boat       [PASS] any[] fields verified: ImageIndicator
+  T31  Boat       [PASS] (structural check)
+  T32  Boat       [PASS] any[] fields verified: ImageIndicator
+  T33  Boat       [PASS] (structural check)
 ENTITY: FIREARM (1 tests -- 1 card, 1 combo)
   T34  Firearm    [PASS] GunQuery fires (ZGUN)
 ENTITY: ARTICLE (1 tests -- 1 card, 1 combo)
