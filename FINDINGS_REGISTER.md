@@ -36,141 +36,74 @@ fixed even on a verified provider. The cost table decides ORDER, never whether.
 
 ---
 
-## 1. BUILD ORDER — Rob's queue, 2026-08-20
+## 1. BUILD ORDER — Rob's queue, 2026-08-20 — ✅ **COMPLETE, ALL TWELVE BUILT**
 
-Ordered by Rob. Work strictly top-down, one provider at a time, minimal drift.
+Rob 2026-08-20: *"build them all and build contra costa as a ca clets clone for now."* Done in one
+pass, one provider at a time, each `enforce` **45 PASS / 0 FAIL / 0 WARN**, each committed and
+pushed separately. **Every row below is now IMPORT + SWEEP work, not build work.**
 
-| # | Provider | Build work | Status |
-|---|---|---|---|
-| 1 | **OH_LEADS** v2.10 | `any[]` pool fix on 4 name combos (`DQ.N`, `QWA`, `DN`, `KQ.N`) | **NEXT** |
-| 2 | **NM_NMLETS_OFML** v2.4 | `any[]` pool fix on its 2 name combos | queued |
-| 3 | **LA_LEMS** v3.1 | collapse 12→6 cards; add name controls + compose + pool | queued |
-| 4 | **CA_eSUN** v2.3 | collapse 16→6; name controls; `[FLAG:plan-fillability-unfireable-tests]` (26 UNSAT) | queued |
-| 5 | **MD_METERS** v2.1 | collapse 13→6; name controls | queued |
-| 6 | **TN_TIES** v2.2 | collapse 14→6; name controls; **+ the class-J wiring break on `RQ05`** | queued |
-| 7 | **OR_LEDS** v2.4 | collapse 11→6 — **LAYOUT ONLY**, its name components are already pooled | queued |
-| 8 | **CA_VENTURA_COUNTY** v2.4 | collapse 20→6 (worst in portfolio); name controls | queued |
-| 9 | **CA_SAN_LUIS_OBISPO** v2.4 | collapse 13→6; name controls | queued |
-| 10 | **CA_CLETS_OCATS** v2.6 | collapse 16→6; name controls | queued |
-| 11 | **CA_CONTRA_COSTA** v2.3 | collapse 7→6; name controls | ⛔ **PARKED — awaiting Rob's ruling** on whether JAWS / SuperQuery / RequestingAgencyId is in scope |
+| # | Provider | Built | Cards | What it took beyond the queue entry |
+|---|---|---|---|---|
+| — | **NY_NYSPIN_EJUSTICE** | v4.24 → **v4.26** | — | v4.25 did the labels + DH merge; v4.26 fixed 2 L6 rows found by the portfolio-wide sweep |
+| 1 | **OH_LEADS** | v2.10 → **v2.11** | 5 | name pool fix on 4 combos |
+| 2 | **NM_NMLETS_OFML** | v2.4 → **v2.5** | 6 | name pool fix on 2 combos. **Its L9 is an ACCEPTED OPERATOR OVERRIDE** — race on line 3 after sex, by Rob's directive. I tried to "fix" it and reverted |
+| 3 | **LA_LEMS** | v3.1 → **v3.2** | 12 → 6 | the corrected L2 rule caught a Boat row *I* had just mis-ordered |
+| 4 | **CA_eSUN** | v2.3 → **v2.5** | 16 → 6 | 4 pre-existing OVER-PERMITs cleared; **built `QW.N`** (a real metadata variant) rather than accept a divergence. v2.5 REVERTED one v2.4 tightening — see §D |
+| 5 | **MD_METERS** | v2.1 → **v2.2** | 13 → 6 | **owed NOTHING on ImageIndicator** — CLAUDE.md names it as the last `'N'` carrier and that prose is STALE (12 defaults already `'Y'`, 0 at `'N'`) |
+| 6 | **TN_TIES** | v2.2 → **v2.3** | 14 → 6 | class-J `RQ05` adjudicated: the registry row was already right, the CODE COMMENT was arguing the opposite of the devdoc. **Found unbuilt `RQ01` — Rob's call, §C** |
+| 7 | **OR_LEDS** | v2.4 → **v2.5** | 11 → 5 | layout only, as predicted — and the collapse EXPOSED a real L9 that the small cards had hidden |
+| 8 | **CA_VENTURA_COUNTY** | v2.4 → **v2.5** | 20 → 6 | widest collapse. 1 UNDER / 9 OVER cleared; `IV.4` registered as structurally unbuildable |
+| 9 | **CA_SAN_LUIS_OBISPO** | v2.4 → **v2.5** | 13 → 6 | OLN maxLen asymmetry (17 DL / 20 DH) PRESERVED and flagged so nobody harmonises it |
+| 10 | **CA_CLETS_OCATS** | v2.6 → **v2.7** | 16 → 5 | the two UN-PREFILLED discriminators (`LicensePlateTypeCode`, `businessIndicator`) survived the rewrite — v2.6's `4K`/`VC` work intact |
+| 11 | **CA_CONTRA_COSTA** | v2.3 → **v2.4** | 7 → 6 | clone shape done. **JAWS ruling still open**; its 4 UNDER / 3 OVER deliberately untouched, listed verbatim in its BUILD_NOTES |
+
+**Portfolio effect, measured across all 20 (never from memory):**
+`audit_name_components` **216 components / 0 C1 / 0 C2 / 0 C3** — closed.
+`audit_layout_flow` **139 → 10 findings**, providers-with-findings **19 → 7**. The 10 remaining are on
+FL(1) HI(1) IL(2) NM(1) TX(1) TX_TLETS_CCH(2); six of those seven are tenant-verified, so each costs
+a full re-sweep, and NM's is the recorded override. Validator: 20 providers **0 FAIL / 0 WARN**.
 
 **Not in the build queue, tracked separately:**
 
 | Provider | State | Owed |
 |---|---|---|
-| ~~**NJ_NJCJIS** v4.17~~ | ✅ **LIFECYCLE-COMPLETE 2026-08-20** | Nothing owed. 41/41 ALL-PASS, four log gates 41/41, DEX-988 comment **802981**, catalog + ticket + Newark Foundation all on v4.17. **Middle name and suffix wire-proven** (`DOE, JOHN A` / `DOE, JOHN JR` vs a `DOE, JOHN` control) — the first time in this provider's history |
-| **NY_NYSPIN_EJUSTICE** v4.24 | build spec'd, not built | **REBUILD + RETEST** — 2 `MI` labels + DH rows 3&4 merged (§4). Its name components are already wire-proven |
+| ~~**NJ_NJCJIS** v4.17~~ | ✅ **LIFECYCLE-COMPLETE 2026-08-20** | Nothing. 41/41 ALL-PASS, DEX-988 comment **802981**, middle name + suffix wire-proven |
 | **TX_TLETS_CCH** v1.17 | fully wired | **DRIVE ONLY** — 14 pooled combos, 24 planned tests, 0 logs. Never imported. Lockstep with TX_TLETS |
-| AZ, CA_CLETS, FL, HI, IL, TX | clean | nothing |
+| AZ, CA_CLETS, FL, HI, IL, TX | tenant-verified | nothing built; layout findings above cost a re-sweep each |
+
+
+## 2. NAME COMPONENTS — ✅ **CLOSED 2026-08-20. 216 components / 0 C1 / 0 C2 / 0 C3 across all 20.**
+
+`audit_name_components -All` now reports **20 providers compared / 216 components examined /
+C1 no-control 0 / C2 not-composed 0 / C3 not-in-pool 0**. Every provider's officer can type a middle
+name and a suffix, every component is composed into its pool's `FormatStringRuleHandler`, and every
+component sits in at least one combination's `any[]`.
+
+**The chain is self-closing, which is why it is finished rather than merely built:** components in
+`any[]` → `emit_test_plan` generates one `_af_` test per `any[]` field → the sweep proves the wire.
+Nothing hand-written. AZ is the reference: `DQN` → `DOE, JOHN` · `DQN_af_nameMiddle` →
+`DOE, JOHN A` · `DQN_af_nameSuffix` → `DOE, JOHN JR`. NJ_NJCJIS reproduced it live on 08-20.
+
+**What remains is PROOF, not wiring.** Seven providers have committed `_af_` logs (AZ, CA_CLETS, FL,
+HI, IL, NJ, TX). The other thirteen have the plan tests generated and will prove them on their first
+sweep — TX_TLETS_CCH is the one that is fully wired and has never been driven at all
+(`[FLAG:nameparts-untested-unfrozen]`, 14 pooled combos / 24 planned tests / 0 logs).
+
+**The one thing NOT settled is COSMETIC and needs a ruling, not a build:** the fieldId casing is split
+roughly 50/50 (`NameMiddle` vs `nameMiddle`) and SEVEN providers are internally MIXED — AZ 6/6,
+CA_CLETS 10/23, FL 6/13, IL 2/4, NY 4/9, OH 4/10, OR 2/4. No gate flags it. See §C.
+
+## 3. NJ_NJCJIS — CLOSED 2026-08-20
+
+Plan regenerated (39 → 41), swept 41/41, middle name and suffix wire-proven. Nothing owed.
 
 ---
+## 4. NY WORK ORDER — CLOSED. Built as v4.25 then v4.26.
 
-## 2. NAME COMPONENTS — status across all 20
-
-`POOLED` = combos whose `set[]`/`any[]` carries a middle/suffix control · `PLAN_af` = auto-generated
-`_af_` tests · `LOGS_af` = committed logs proving it on the wire.
-
-**The chain is self-closing:** put the components in `any[]` → `emit_test_plan` generates one test per
-`any[]` field → the sweep proves the wire. Nothing hand-written. AZ is the reference:
-`DQN` → `DOE, JOHN` · `DQN_af_nameMiddle` → `DOE, JOHN A` · `DQN_af_nameSuffix` → `DOE, JOHN JR`.
-
-```
-PROVIDER               POOLED   PLAN_af   LOGS_af   STATUS
-AZ_AZDPS               4        8         8         COVERED -- nothing owed
-CA_CLETS               8        16        16        COVERED -- nothing owed
-CA_CLETS_OCATS         0        0         0         NO CONTROLS -- needs controls + pool
-CA_CONTRA_COSTA        0        0         0         NO CONTROLS -- needs controls + pool
-CA_eSUN                0        0         0         NO CONTROLS -- needs controls + pool
-CA_SAN_LUIS_OBISPO     0        0         0         NO CONTROLS -- needs controls + pool
-CA_VENTURA_COUNTY      0        0         0         NO CONTROLS -- needs controls + pool
-FL_FCIC                4        8         8         COVERED -- nothing owed
-HI_HCJDC_OFML          2        4         4         COVERED -- nothing owed
-IL_LEADS_OFML          1        2         2         COVERED -- nothing owed
-LA_LEMS                0        0         0         NO CONTROLS -- needs controls + pool
-MD_METERS              0        0         0         NO CONTROLS -- needs controls + pool
-NJ_NJCJIS              1        0         0         pooled but UNPROVEN
-NM_NMLETS_OFML         0        0         0         NEEDS THE any[] FIX
-NY_NYSPIN_EJUSTICE     3        6         6         COVERED -- nothing owed
-OH_LEADS               0        0         0         NEEDS THE any[] FIX
-OR_LEDS                1        2         0         pooled but UNPROVEN
-TN_TIES                0        0         0         NO CONTROLS -- needs controls + pool
-TX_TLETS               3        6         6         COVERED -- nothing owed
-TX_TLETS_CCH           14       24        0         pooled but UNPROVEN
-```
-
-**7 COVERED · 2 need the `any[]` fix · 3 pooled but never swept · 8 need controls built.**
-
-Read the four states as different work, not one number:
-- **NO CONTROLS** — the officer cannot type it. Needs control + composite + `any[]`, in the same pass
-  as that provider's card collapse. These 8 are the 48 C1 findings seen from the other side.
-- **NEEDS THE any[] FIX** — controls exist, labelled correctly, composed into `Name`, and **in no
-  combination pool, so the value is silently dropped.** Worse than a missing field: the form looks
-  complete. OH's own wire says `<Name>DOE, JOHN</Name>` on all 56 logs.
-- **pooled but UNPROVEN** — build is right, no logs yet. Needs DRIVING, not building.
-- **COVERED** — components pooled, plan tests generated, wire proven. Nothing owed.
-
-⚠️ **`set[]` would be WRONG.** Components go in `any[]` — they are optional qualifiers. In `set[]` a
-middle name becomes MANDATORY and any driver without one cannot be searched. Confirmed by
-`audit_requirement_fidelity` on NJ: 10 branches / 0 UNDER-REQUIRED / 0 OVER-PERMITTED.
-
----
-
-## 3. NJ_NJCJIS — plan regeneration, before its sweep
-
-NJ reads `POOLED 1 / PLAN_af 0 / LOGS_af 0`. The pool is correct; the **plan is stale** because
-`reset_test_package` ran BEFORE the `any[]` entries were added, so it generated no `_af_` name tests.
-**Regenerate the plan before driving**, or the sweep will pass 40/40 and prove nothing about the fix
-that motivated the version. Found by measuring the table above, not by any gate.
-
----
-## 4. NY WORK ORDER — for the bulk rebuild. NOT YET BUILT.
-
-**DO change — the real finding (Rob confirmed by eye: *"oh i see midddle name not middle iniital"*):**
-
-| Where | From | To |
-|---|---|---|
-| `build_ny_nyspin_ejustice.ps1:690` `nameMiddle` (DL card) | `'MI'` | `'Middle Name'` |
-| `build_ny_nyspin_ejustice.ps1:713` `nameMiddleDH` (DH card) | `'MI'` | `'Middle Name'` |
-
-Both fields are `maxLength=35` — full middle names, not initials. NY's components ARE in the combo
-pool (0 C1 / 0 C3), so the data path works; the label is the only thing making officers under-fill it.
-TX_TLETS fixed the identical mislabel at v4.21. Add `# LABEL-OVERRIDE:` tags per AZ's precedent.
-
-**Cosmetic, dictated by Rob 2026-08-20 — Person DH card, merge the last visible row into the third.**
-Rob, clarifying: *"for ny last row is the foruth row that is visibile  purpose code and transaction
-type need to be with dob and sex on the same line"*. RESOLVED — no ambiguity left, build exactly this:
-
-```
-BEFORE                                                    AFTER
-DH_1  [6,3,3]    OLN | State | Image                      DH_1  [6,3,3]    OLN | State | Image
-DH_2  [4,4,2,2]  First | Last | Middle | Suffix           DH_2  [4,4,2,2]  First | Last | Middle | Suffix
-DH_3  [6,6]      BirthDate | SexCode                      DH_3  [3,3,3,3]  BirthDate | SexCode |
-DH_4  [6,6]      purposeCode | nyNyspinTransactionName                     purposeCode | nyNyspinTransactionName
-DH_5B [12]       requestor   (FIELD-HIDDEN)               DH_4  -- REMOVED, absorbed into DH_3
-                                                          DH_5B [12]       requestor   (FIELD-HIDDEN, stays last)
-```
-Result: **3 visible rows + the hidden feeder**, and rows 1-3 then match the DL card's shape.
-
-⚠️ **MY FIRST READING OF THIS WAS WRONG AND THE REASON IS A DOCUMENTED TRAP.** I reported the DH card
-as having FIVE visible rows and offered Rob two guesses, because my probe tested `$row.hidden` only.
-`requestorDH` is hidden at the **FIELD/NODE** level, not the row level — so the card really does show
-FOUR rows, exactly as Rob said. `usx-cosmetic` Step 3 records this precise trap ("`hidden` is a
-NODE-level property, NOT `props.hidden`"; it produced nine false findings on its first run) and
-`verify_build` CHECK 6 has always read it correctly. **When counting what an officer sees, a row is
-invisible if the row is hidden OR every field in it is hidden.**
-
-**DO NOT change — verified deliberate, and I nearly "fixed" it:**
-`ROW_VEH_3 [4,4]` and `ROW_ART_2 [4,4]` are flagged L6 ROW-NOT-12 (4 columns of dead space). They are
-an **accepted decision from Rob's own v4.13 feedback**, recorded in the build script header AND
-BUILD_NOTES lines 263-264: *"ROW_VEH_3 6/6 -> 4/4 (State 6 -> 4; a 2-char code no longer sits in a
-half-row box; State/Image align under the columns above)"*. Leave both. This is why usx-build 6c says
-to read the provider's own notes for the field you are about to change — the cheapest authority in the
-repo, and it stopped a wrong edit here.
-
-**Cost:** v4.24 → v4.25, archives **75 logs**, owes a 75-test sweep. Wire provably unchanged (prove it
-the OH v2.10 way, not with per-entity fingerprints).
-
----
+v4.25 delivered the labels (`MI` → `Middle Name` on both pools) and the DH card merge Rob asked
+for. v4.26 then fixed two L6 rows (Vehicle `ROW_VEH_3`, Article `ROW_ART_2` — `@('4','4')` →
+`@('6','6')`) that only surfaced once the portfolio-wide sweep compared NY against a converged
+baseline. Neither version was ever imported, so the second bump cost nothing.
 
 ## A. TENANT-VERIFIED — high priority (Rob 2026-08-20). Each fix costs a re-sweep.
 
@@ -197,57 +130,68 @@ byte-identical to its predecessor with transaction ids normalised. Do that rathe
 
 ---
 
-## B. NEVER-TESTED — fixing costs Rob nothing. Do these without asking.
+## B. NEVER-TESTED — ✅ **ALL BUILT 2026-08-20.** These rows are now IMPORT + SWEEP work.
 
-| Provider | Ver | Cards → target | Layout | C1 | Other |
-|---|---|---|---|---|---|
-| **CA_VENTURA_COUNTY** | v2.4 | 20 → 6 | 11 (L4,L5,L6) | **10** | |
-| **CA_eSUN** | v2.3 | 16 → 6 | 11 (L4,L5,L6) | **8** | `[FLAG:plan-fillability-unfireable-tests]` — 26 UNSAT plan tests |
-| **CA_CLETS_OCATS** | v2.6 | 16 → 6 | 12 (L4,L5,L6) | 4 | |
-| **CA_CONTRA_COSTA** | v2.3 | 7 → 6 | 6 (L2,L4,L6) | **10** | builds no JAWS/SuperQuery despite the recorded recipe — scope question for Rob |
-| **TN_TIES** | v2.2 | 14 → 6 | 5 (L4,L5) | 4 | **+ wiring class J: `RQ05` is gated `EXISTS RegistrationState` but the field is in neither its `set[]` nor `any[]` — the officer's value routes and is then NOT transmitted.** Only wiring break in the portfolio |
-| **MD_METERS** | v2.1 | 13 → 6 | 5 (L4,L5) | 4 | |
-| **CA_SAN_LUIS_OBISPO** | v2.4 | 13 → 6 | 5 (L4,L5) | 4 | |
-| **LA_LEMS** | v3.1 | 12 → 6 | 5 (L4,L5) | 4 | Lafayette runs a hand-built LA_LEMS that is NOT ours |
-| **OR_LEDS** | v2.4 | 11 → 6 | 7 (L4,L5,L9) | 0 | layout only |
-| **TX_TLETS_CCH** | v1.17 | 9 → **9 (correct)** | 2 (L2,L4) | 0 | 6 base + 3 CCH cards is by design — its L4 is **not** a collapse gap. `[FLAG:nameparts-untested-unfrozen]`. Must stay in lockstep with TX_TLETS (`# BASE-SYNC`) |
-| **NM_NMLETS_OFML** | v2.4 | 6 → 6 ✔ | 1 (L9, **recorded override**) | 0 | **C3 ×4 — needs the `any[]` pool fix** (see the C3 note) |
+Every provider that was in this table has been rebuilt; see §1 for the versions and what each took.
+Kept here only as the record of what the pass was FOR — do not re-derive work from it.
 
----
+| Provider | Now | Layout findings | C1 | Residual, if any |
+|---|---|---|---|---|
+| **CA_VENTURA_COUNTY** | v2.5 | 0 | 0 | `IV.4` registered unbuildable (MessageKeyModifier has no authority anywhere in the XML) |
+| **CA_eSUN** | v2.5 | 0 | 0 | 1 OVER-PERMIT that is a **GATE GAP, not a defect** — Choice-inside-Any; registered |
+| **CA_CLETS_OCATS** | v2.7 | 0 | 0 | — |
+| **CA_CONTRA_COSTA** | v2.4 | 0 | 0 | **4 UNDER / 3 OVER deliberately untouched — Rob's JAWS ruling** |
+| **TN_TIES** | v2.3 | 0 | 0 | class-J `RQ05` registered (both fixes are worse); **unbuilt `RQ01` is Rob's call** |
+| **MD_METERS** | v2.2 | 0 | 0 | — (owed nothing on ImageIndicator; CLAUDE.md prose is stale) |
+| **CA_SAN_LUIS_OBISPO** | v2.5 | 0 | 0 | OLN maxLen 17/20 asymmetry PRESERVED by design |
+| **LA_LEMS** | v3.2 | 0 | 0 | Lafayette runs a hand-built LA_LEMS that is NOT ours |
+| **OR_LEDS** | v2.5 | 0 | 0 | — |
+| **TX_TLETS_CCH** | v1.17 | 2 (L2, L4 — L4 is by design) | 0 | **DRIVE ONLY**, never rebuilt. `[FLAG:nameparts-untested-unfrozen]` |
+| **NM_NMLETS_OFML** | v2.5 | 1 (L9, **recorded override**) | 0 | — |
+| **NY_NYSPIN_EJUSTICE** | v4.26 | 0 | 0 | — |
+| **OH_LEADS** | v2.11 | 0 | 0 | — |
 
 ## C. PORTFOLIO / PROCESS — not provider-specific
 
 | Item | Detail | Status |
 |---|---|---|
-| eSUN export in git history | A 228KB tenant department export was committed+pushed by the capture watcher's broad `git add -- providers` (fixed). Untracked again, but **the blob remains in pushed history at `8273a87f`** — removing it needs a history rewrite + force-push | **Rob's call** |
-| Newark Foundation behind | v4.16 vs repo v4.17. Customer tenant | **Rob's call** |
+| **13 providers owe IMPORT + SWEEP** | Every one is build/spec/reachability-complete. Authority: `report_import_owed.ps1`. **Nothing further can be BUILT to move the mission number** | **THE ONLY REMAINING ACTIVITY** |
+| **11 providers owe a PICKLIST CAPTURE** | Each rebuild regenerated `<P>_PICKLIST_SCOPE.json`, but only a tenant capture produces `TENANT_PICKLISTS.json` | OPEN |
+| **`audit_requirement_fidelity` cannot see a `<Choice>` nested in `<Any>`** | So a legal optional reads OVER-PERMITTED. PROVEN on CA_eSUN `DriverLicenseQuery L1{Name}` = `Set[PurposeCode, Name, Any[Choice[Age\|BirthDate]]]`; registered there as `demoted-to-any` scoped to `L1.N`. **Some of the portfolio's remaining OVER-PERMITs may be this same false class** | OPEN — owes the 6-provider fixture + 20-provider sweep |
+| **Name-component fieldId casing split ~50/50** | 16 providers carry the controls; SEVEN are internally MIXED (AZ 6/6, CA_CLETS 10/23, FL 6/13). No gate flags it, and AZ — the only wire-PROVEN one — is itself mixed. Converging = 16-provider sweep | **Rob's ruling**, not a habit |
+| **TN_TIES `RQ01` unbuilt** | Maps to devdoc "1. (In) LicensePlateNumber"; the build serves blank-State plate with `QV.P`, the NCIC query. If wrong, in-state TN plate searches reach NCIC not TIES/DMV | **Rob's call** — routing model |
+| **CA_CONTRA_COSTA JAWS / SuperQuery scope** | v2.4 built as the CA_CLETS clone and deliberately did NOT pre-empt the ruling. Its 4 UNDER / 3 OVER are listed verbatim in its BUILD_NOTES | **Rob's ruling** |
+| **CLAUDE.md prose is STALE in two places** | (1) names MD_METERS as the last `ImageIndicator='N'` carrier — measured 08-20, MD has 12 `'Y'` defaults and ZERO `'N'`, and `audit_reverse_propagation` says the flag is fully PROPAGATED. (2) `audit_layout_flow` baseline still reads "139 findings / 19 providers" | OPEN — doc-only |
+| eSUN export in git history | 228KB tenant export still in pushed history at `8273a87f`; removing it needs a rewrite + force-push | **Rob's call** |
+| Newark Foundation behind | v4.16 vs repo v4.17 | **Rob's call** |
 | HDLE held at v4.15 | Deliberate. HI production discards NCIC hit content until the hit block is verified | HELD by decision |
 | HI hit block | Config-present, never exercised against a live hit response | Needs 1 hit query in HI's own tenant |
-| 12 C3 → 0 | NJ done; OH 6 and NM 4 remain | OPEN |
 | Officer guides | Content-poor, not stale. Rewrite requested, shape not agreed | OPEN |
-| ~30 clone groups | `audit_log_inflation` class A. Duplicate/vacuous guardrail tests; class B/C/D all 0 | Clears at each provider's own rebuild |
-| `audit_name_components` not blocking | Advisory (PHASE 2x) because 48 C1 across 7 providers would redden them all at once | Make BLOCKING when residue is 0 |
-| `audit_layout_flow` not blocking | Advisory (PHASE 2w), same reason | Make BLOCKING when residue is recorded overrides only |
+| 38 clone groups | `audit_log_inflation` class A. Class B/C/D all 0 | Clears at each provider's own rebuild |
+| `audit_name_components` now at 0 | 216 components, 0 C1/C2/C3 across all 20 | **Ready to make BLOCKING** |
+| `audit_layout_flow` residue = 10 | 7 providers; 6 tenant-verified (re-sweep each) + NM's recorded override | Make BLOCKING once those are recorded overrides |
 
 ---
 
 ## D. MY OWN RECURRING ERRORS — read before trusting a number in here
 
-- **A finding on every provider is my probe, not the portfolio.** Four hand-written regexes misled me
-  on 2026-08-20 alone: one said CA_CLETS `purposeCode` was **not** prefilled (it is, on all 5
-  entities) and would have had me "fix" a non-defect on a 111-log provider. **Read parsed JSON, not
-  pattern-matched text.**
-- **PowerShell `-match` is CASE-INSENSITIVE** — summary lines like `C1 no-control 50` matched an
-  uppercase `C1 NO-CONTROL` pattern and inflated a per-provider count, inventing a finding on
-  TX_TLETS_CCH that does not exist.
-- **A line-number `sed` is invalid the moment the file changes length** — bumping `$Version` that way
-  left NJ/NM with TWO assignments; the second wins, so the build silently produced the OLD version
-  while reporting success.
-- **Read a gate's verdict BEFORE committing, not after.** Done twice; the second time the commit body
-  asserted "4 PASS / 124 lines" while the gate said 2 FAIL / 134 lines.
+- **`<Any>` IS NESTED INSIDE `<Set>` in this schema.** `$c.Requirements.Any` returns NOTHING, so I read
+  "no optionals anywhere", tightened three `any[]` pools on CA_eSUN v2.4 and **dropped a legal
+  optional**. **Dump `$c.Requirements.OuterXml`.** Caught only because my fresh measurement
+  contradicted a committed registry row — one of them had to be wrong, and it was mine.
+- **A finding on every provider is my probe, not the portfolio.** `-match` is CASE-INSENSITIVE; a
+  single-line regex finds nothing in pretty-printed JSON; `@($null).Count` is 1; `-Quiet` suppresses
+  `Write-Host` so a piped capture is empty.
+- **An operator override is recorded FOR A REASON.** I re-split NM's race row to satisfy L9 and had to
+  revert — Rob directed it, and the override was in the BUILD_NOTES *and* the comment I displaced.
+- **A line-number `sed` is invalid the moment the file changes length**, and **a `head -N` splice is
+  only safe if you know what line N is** — three BUILD_NOTES inserts landed inside an existing entry.
+- **Narrowing an `any[]` strands its `defaults[]`** (wiring class E). Twice in one day.
+- **A gate suite chained after a FAILED build reports on the stale JSON.** The tell was an ABSENT
+  `RESULTS:` line, not a complaint. Confirm the build succeeded before reading gates.
+- **Read a gate's verdict BEFORE committing, not after.**
 
 ---
-
 ## L2 RULE CORRECTED 2026-08-20 — five of its seven findings were FALSE POSITIVES
 
 `audit_layout_flow`'s L2 asserted *"an officer can fill everything visible above it and still fail."*

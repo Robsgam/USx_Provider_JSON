@@ -2,9 +2,32 @@
 
 Auto-generated from `NY_NYSPIN_EJUSTICE_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.25** | Generated: 2026-08-20
+Current: **v4.26** | Generated: 2026-08-20
 
 ---
+
+## v4.26 -- 2026-08-20 -- L6 WIDTH FIX -- two shared-context rows were 8 columns wide, not 12
+
+**CHANGED:**
+  Vehicle ROW_VEH_3 (State + NCIC Image) and Article ROW_ART_2 (NCIC Image + Stolen Check):  
+  templateColumns @('4','4') -> @('6','6'). Both were leaving 4 columns of dead space.  
+  Nothing else moved: no field changed row, card, pool or combination, and the wire is  
+  IDENTICAL -- fidelity holds at 16 branches 0 UNDER / 0 OVER and reachability at 14/14.  
+WHY IT WAS FOUND ONLY NOW: audit_layout_flow was run across all 20 providers after the  
+  portfolio collapse pass finished, which is the first time NY was compared against a  
+  converged baseline rather than against itself. The two rows predate the [6][6]  
+  shared-context convention.  
+WHY IT WAS FIXED RATHER THAN DEFERRED: v4.25 was never imported, so a bump costs nothing --  
+  no test package existed to archive. Fixing after the operator imported and swept v4.25  
+  would have cost a whole re-sweep for two width numbers (usx-cosmetic Step 0: an imported  
+  version is frozen).  
+NOT TOUCHED -- the Person DH card. Rob's 2026-08-20 directive for NY was "purpose code and  
+  transaction type need to be with dob and sex on the same line", which is the DH card and  
+  was satisfied at v4.25. These two rows are Vehicle and Article and are outside it.  
+GATES: validator 76P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | name components 0  
+  blocking / 8 examined | layout flow 2 findings -> 0 | wiring closure 0 breaks in all ten  
+  classes | reachability 14/14 | fidelity 16 branches 0 UNDER / 0 OVER.  
+NOT TESTED: never tenant-tested. Owes an import and a first-ever sweep.  
 
 ## v4.25 -- 2026-08-20 -- "MI" -> "Middle Name" on both name pools, and the DH card merged to 3 visible rows
 

@@ -95,7 +95,7 @@
 #   Functional routing change -> all 5 entities re-test from T1 (block-by-version).
 
 param(
-    [string]$Version = "4.25"
+    [string]$Version = "4.26"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -637,7 +637,7 @@ $vehLayout = MakeLayouts @(
             # Options row (v4.13): State + Image on the uniform 4/4/4 grid (each 4 wide, aligned
             # under the Plate#/VIN and Type/Make columns above) -- content-sized, not a half-row box
             # for a 2-char State code.
-            @{ id = 'ROW_VEH_3'; cols = @('4','4'); fields = @(
+            @{ id = 'ROW_VEH_3'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input'; node = Sel 'RegistrationState' 'State (leave blank for NY)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_3' }
                 @{ id = 'ImageIndicator_Input';    node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_VEH_3' }
             )}
@@ -842,7 +842,7 @@ $artLayout = MakeLayouts @(
                 @{ id = 'ArticleSerialNumber_Input'; node = Inp 'ArticleSerialNumber' 'Serial Number' '20' 'ROW_ART_1' }
                 @{ id = 'ArticleTypeCode_Input';     node = Sel 'ArticleTypeCode' 'Article Type' @{ codeTypeCategory = 'NCIC_ARTICLE_TYPE'; codeTypeSource = 'CA_CLETS' } 'ROW_ART_1' }
             )}
-            @{ id = 'ROW_ART_2'; cols = @('4','4'); fields = @(
+            @{ id = 'ROW_ART_2'; cols = @('6','6'); fields = @(
                 @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_ART_2' }
                 @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeSource = 'NCIC'; codeTypeCategory = 'YES_NO_UNKNOWN'; initialValue = 'Y' } 'ROW_ART_2' }
             )}
