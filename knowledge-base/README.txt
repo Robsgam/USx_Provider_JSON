@@ -690,7 +690,17 @@ TOOLS
     codeTypeCategory dropdowns are compared (attributeTypeId STATE/SEX/VEHICLE_MAKE capture as
     null and are tenant-stable). Required categories are scoped to the ENTITIES bundle (not RMS).
     enforce.ps1 surfaces the NOTE without affecting the verdict/exit code.
-    Usage: .\tools\audit_picklist_scope.ps1 -Path <provider.json>
+    SWEEP MODE added 2026-08-21 (-All / -Providers, composed into doctor.ps1). enforce runs this
+    ONE PROVIDER AT A TIME, so a standing owed capture was invisible unless someone happened to
+    enforce that provider: AZ_AZDPS had owed 4 categories (NCIC_ARTICLE_TYPE, NCIC_FIREARM_CALIBER,
+    NCIC_FIREARM_MAKE, YES_NO_UNKNOWN -- its capture covers Vehicle only) while every board read
+    green. -All prints denominators and emits [NO-VERDICT] on an empty scope. Single-provider
+    output is byte-for-byte unchanged, because enforce filters this tool on '^\[NOTE\]'.
+    DO NOT re-cut this to per-CONTROL granularity: a control reusing an already-captured category
+    (RegistrationStateDH, ImageIndicatorDH, relatedHitSearchIndicator) shares the same option list,
+    so a control-level check reports 8 permanent non-findings across the portfolio.
+    Baseline 2026-08-21: 20 examined / 10 owe the capture / 1 owe a re-scope / 9 current.
+    Usage: .\tools\audit_picklist_scope.ps1 -Path <provider.json> | -All | -Providers <list>
 
   tools/_archive/audit_metadata_field_coverage.ps1  (ARCHIVED 2026-07-24 -- advisory, never gated)
     Was: ADVISORY "form behind the metadata" detector ([FIELD-GAP]/[OK], always exit 0) flagging a
@@ -836,6 +846,23 @@ TOOLS
     'Name'/'OperatorLicenseNumber'; built set[] says NameLast,NameFirst / OperatorLicenseNumberDH).
     Getting any of that wrong silently reports every combo as an empty-set SHADOW -- validate any
     change against TX_TLETS, whose answer is known (17 built / 4 PREFILL-DEAD / 0 SHADOW / 0 MISSING).
+    targetField NOTE (2026-08-21) -- normalization now resolves a metadata field name against the
+    QIDM attribute's `targetField` AS WELL AS its `name`. The `name` is INTERNAL; the `targetField`
+    is the WIRE CONTRACT and therefore the thing a metadata field name actually corresponds to.
+    FL_FCIC's DriverHistoryQuery names every attribute cleanly (`State` <- RegistrationStateDH)
+    except ONE, declared name=OperatorLicenseNumberDH / targetField=OperatorLicenseNumber -- so
+    metadata 'OperatorLicenseNumber' matched no attribute, fell back to the literal name, failed
+    against the built set[]'s OperatorLicenseNumberDH, and KQ set[OperatorLicenseNumber,State] read
+    MISSING while it is built as KQOperatorLicenseNumber and the captured wire says
+    <OperatorLicenseNumber> on all 4 logs. Measured across all 20 before commit: BUILT 391 -> 392,
+    MISSING 21 -> 20, exactly one line removed and none added (a resolution, not a suppression).
+    LAW 2 both ways -- deleting that combination from a replica brings the identical MISSING line
+    straight back. Resolve-Fid takes the same rule; keeping the two resolvers on different rules is
+    how one silently disagrees with the other.
+    WHAT THIS FIX DOES *NOT* COVER, and should not -- a metadata-MANDATORY field we deliberately
+    auto-populate and keep OUT of set[] still reads MISSING, correctly: NY's DALL alt2 wants
+    Requestor (registered `prefilled-mandatory-autopopulated`) and NM's QUERY wants Attention (the
+    auto-handler feeder standard). Those need adjudication, not a looser matcher.
     NESTED-CHOICE NOTE (2026-07-30) -- a <Choice> may contain nested <Set> children, not just
     <Field>: <Set><Choice><Set>..</Set><Set>..</Set></Choice><Any>..</Any></Set>. Each nested
     <Set> is a complete ALTERNATIVE requirement set (typically the in-state vs out-of-state

@@ -113,6 +113,19 @@ try {
 }
 
 Emit ""
+Emit "--- TENANT PICKLIST SCOPE (owed captures / owed re-scopes; audit_picklist_scope.ps1) ---"
+# ADDED 2026-08-21. enforce runs this tool ONE PROVIDER AT A TIME, so a standing owed capture is
+# invisible unless someone happens to enforce that provider -- and AZ_AZDPS had owed 4 dropdown
+# categories (Firearm/Article/Person never scoped) while every board read green. A gate nobody
+# sweeps is indistinguishable from one that does not exist.
+try {
+    $pk = & "$tool\audit_picklist_scope.ps1" -All -Quiet *>&1 | Out-String
+    ($pk.TrimEnd() -split "`n") | Where-Object { $_.Trim() -ne '' } | ForEach-Object { Emit $_ }
+} catch {
+    Emit "  [WARN] audit_picklist_scope.ps1 failed: $($_.Exception.Message)"
+}
+
+Emit ""
 Emit "--- PS 5.1 PARSE GATE (tools must parse on the engine that runs them; audit_ps51_parse.ps1) ---"
 try {
     # MUST be invoked as `powershell` (5.1), never pwsh: PS7's grammar accepts constructs 5.1

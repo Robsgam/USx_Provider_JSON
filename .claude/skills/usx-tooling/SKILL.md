@@ -50,7 +50,7 @@ cannot, revert.
 ## Step 2 — Portability is a separate property from correctness
 
 `tools\audit_tool_portability.ps1` runs the `-Path` gates against every provider and asks only
-whether each **reaches a verdict**. 260 cells (13 gates x 20 providers), currently 0 unportable. The 13th is `audit_wiring_closure`, added 2026-08-02 -- it was blocking in enforce for a day while absent from this sweep AND from the fuzz panel, so **when you add a gate, add it to every harness that characterises the stack, not just to enforce**.
+whether each **reaches a verdict**. **280 cells (14 gates x 20 providers), currently 0 unportable** (re-measured 2026-08-21; this line read 260/13 and was stale). The 13th is `audit_wiring_closure`, added 2026-08-02 -- it was blocking in enforce for a day while absent from this sweep AND from the fuzz panel, so **when you add a gate, add it to every harness that characterises the stack, not just to enforce**.
 
 **A green portability sweep does NOT mean the tools are right.** Every real bug found on 2026-08-01
 reached a verdict happily — it was just wrong:

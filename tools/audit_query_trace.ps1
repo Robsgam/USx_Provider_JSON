@@ -75,12 +75,24 @@ function Sig($fields) {
 # ALL form fieldIds a metadata field name can legitimately appear as. A composite maps to many
 # (Name -> NameLast, NameFirst, nameMiddle, nameSuffix); a DH-isolated query maps to the suffixed
 # copies. Falls back to the name itself when the QIDM has no matching attribute.
+#
+# MATCH ON targetField AS WELL AS name -- fixed 2026-08-21. The attribute `name` is INTERNAL; the
+# `targetField` is the WIRE CONTRACT, and therefore the thing a metadata field name actually
+# corresponds to (usx-tooling Step 3: "compare targetFields, not sourceFields"). Matching only on
+# `name` produced a FALSE MISSING on FL_FCIC's DriverHistoryQuery: every attribute in that QIDM
+# carries the clean metadata name (`State` <- RegistrationStateDH) except ONE, declared
+# `name=OperatorLicenseNumberDH` with `targetField=OperatorLicenseNumber`. So metadata
+# `OperatorLicenseNumber` matched no attribute, fell back to the literal name, failed to match the
+# built set[]'s `OperatorLicenseNumberDH`, and `KQ set[OperatorLicenseNumber,State]` was reported
+# unbuilt -- while it is built as `KQOperatorLicenseNumber` and the captured wire says
+# `<OperatorLicenseNumber>` on all 4 logs. The build is CORRECT on the wire; the probe was reading
+# the wrong side of the mapping.
 function Expand-Sf([string]$name, $qidm, $formIds) {
     $out = @()
     $direct = $formIds | Where-Object { $_ -ieq $name } | Select-Object -First 1
     if ($direct) { $out += "$direct" }
     foreach ($a in @($qidm.attributes)) {
-        if ("$($a.name)" -ieq $name) {
+        if ("$($a.name)" -ieq $name -or "$($a.targetField)" -ieq $name) {
             foreach ($s in @($a.sourceField)) {
                 $m = $formIds | Where-Object { $_ -ieq $s } | Select-Object -First 1
                 if ($m) { $out += "$m" } else { $out += "$s" }
@@ -95,7 +107,9 @@ function Resolve-Fid([string]$name, $qidm, $formIds) {
     $direct = $formIds | Where-Object { $_ -ieq $name } | Select-Object -First 1
     if ($direct) { return $direct }
     foreach ($a in @($qidm.attributes)) {
-        if ("$($a.name)" -ieq $name) {
+        # targetField as well as name -- same reason as Expand-Sf above. Keeping these two
+        # resolvers on different rules is how one of them silently disagrees with the other.
+        if ("$($a.name)" -ieq $name -or "$($a.targetField)" -ieq $name) {
             foreach ($s in @($a.sourceField)) {
                 $m = $formIds | Where-Object { $_ -ieq $s } | Select-Object -First 1
                 if ($m) { return $m }
