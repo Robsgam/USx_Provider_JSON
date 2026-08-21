@@ -9,6 +9,7 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      mention. Never write one in advance and never let a sync tool generate one. -->
 POSTED: v4.24 comment 794205 2026-08-14
 POSTED: v4.24 comment 800806 2026-08-18
+POSTED: v4.26 comment 803322 2026-08-21
 # TWO MARKERS FOR ONE VERSION, ON PURPOSE. 794205 was posted 2026-08-14 claiming "TENANT-VERIFIED
 #   ... 69/69 ... verified and ready" while SIX planned Person tests had not been captured -- a
 #   premature claim, not a wrong build. 800806 (2026-08-18) records the COMPLETED sweep at 75/75 and
