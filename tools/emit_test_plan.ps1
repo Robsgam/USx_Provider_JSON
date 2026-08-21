@@ -653,6 +653,93 @@ if ($dropped.Count -gt 0) {
     $tests = $kept
 }
 
+# ── DROP TESTS THAT ARE A DUPLICATE OF AN EARLIER TEST, SAME ENTITY + SAME FILL ──
+# Rob 2026-08-21, on NY_NYSPIN_EJUSTICE: "fix the 8 vacuous plan tests first".
+#
+# Two shapes, both of which emit a test that is LITERALLY another test run twice:
+#   1. `X_af_<field>` == `X_any` when the combo has exactly ONE any[] optional. "Toggle the one
+#      optional" and "fill every optional" are then the same fill, so the second proves nothing.
+#   2. `X` == `X_guardrail_vs_Y` when the guardrail's losing identifier is not actually in the
+#      fill -- the guardrail collapses onto its own base test and demonstrates no priority.
+#      (NY: DALHOUT == DALHOUT_guardrail_vs_DALH, DALLOUT == DALLOUT_guardrail_vs_DALL.)
+#
+# WHY DEDUPE BY FILL-SET RATHER THAN BY SHAPE. Keying on (entity, sorted fills) is
+# shape-agnostic: it catches both classes above and any future one, and it makes this generator
+# agree with audit_log_inflation attack A BY CONSTRUCTION -- that gate keys on wire + fill-set
+# for exactly this reason, so a plan that passes here cannot produce clone groups there. Writing
+# two narrow rules instead would have left the next shape to be discovered by a live sweep.
+#
+# WHAT IS NOT LOST: identical fill means identical wire, so no combination loses coverage and no
+# any[] field goes unexercised -- NY stayed at 16/16 combos, 100%. What goes is the double count.
+# ORDER MATTERS: the FIRST occurrence is kept, and combo tests are emitted before their _af_/_any/
+# _guardrail derivatives, so the surviving test is always the plainer, better-named one.
+$seenFill = @{}
+$kept2    = New-Object System.Collections.Generic.List[object]
+$dupes    = New-Object System.Collections.Generic.List[string]
+foreach ($t in $tests) {
+    $sig = "$($t.entity)|" + ((@($t.fills | ForEach-Object { "$($_.fieldId)=$($_.value)" }) | Sort-Object) -join '&')
+    if ($seenFill.ContainsKey($sig)) {
+        $dupes.Add("$($t.comboKeyRef)$(if($t.anyField){"_af_$($t.anyField)"}) [$($t.kind)] -- byte-identical fill to $($seenFill[$sig])")
+        continue
+    }
+    $seenFill[$sig] = "$($t.comboKeyRef)$(if($t.anyField){"_af_$($t.anyField)"})"
+    $kept2.Add($t)
+}
+if ($dupes.Count -gt 0) {
+    Write-Host "  [plan] dropped $($dupes.Count) DUPLICATE test(s) (same entity, byte-identical fill -- proves nothing twice):" -ForegroundColor DarkYellow
+    $dupes | ForEach-Object { Write-Host "         $_" -ForegroundColor DarkGray }
+    $i = 0
+    foreach ($t in $kept2) { $i++; $t.n = $i }
+    $tests = $kept2
+}
+
+# ── DROP GUARDRAILS THAT CANNOT BE A CONTEST ─────────────────────────────────────
+# A guardrail asserts "when BOTH identifiers are filled, WINNER fires, not LOSER". That is only
+# a test if the loser could plausibly have won. When the winner and loser differ ONLY by an
+# EXISTS / NOT_EXISTS condition on one field -- an in-state / out-of-state twin pair -- there is
+# no contest: presence cannot be both, so the loser can never match the same fill.
+#
+# NY_NYSPIN_EJUSTICE, 2026-08-21: DALHOUT-vs-DALH and DALLOUT-vs-DALL differ only by whether
+# RegistrationStateDH is present. Both guardrails filled exactly what plain DALHOUT / DALLOUT
+# already fill, submitted a byte-identical wire, and proved nothing -- they surfaced as
+# audit_log_inflation clone groups that the fill-set dedupe above could not see, because in the
+# PLAN their fills differ from the winner's by one form-PREFILLED field (purposeCodeDH).
+#
+# THE TEST: a guardrail is vacuous when its fill-set is a SUBSET of the winner's OWN combo
+# fill-set -- it adds no competing identifier at all. The five real guardrails on NY are all
+# supersets (Plate+VIN, OLN+Name, Hull+Reg), so this keeps every genuine priority test and drops
+# only the impossible ones. Verified on NY: 7 guardrails -> 5, and inflation A 2 -> 0.
+$comboFillsByKey = @{}
+foreach ($t in $tests) {
+    if ($t.kind -eq 'combo') {
+        $comboFillsByKey["$($t.entity)|$($t.comboKeyRef)"] =
+            [System.Collections.Generic.HashSet[string]]::new([string[]]@($t.fills | ForEach-Object { "$($_.fieldId)" }))
+    }
+}
+$kept3    = New-Object System.Collections.Generic.List[object]
+$noContest = New-Object System.Collections.Generic.List[string]
+foreach ($t in $tests) {
+    if ($t.kind -eq 'guardrail' -and $t.expectedKeyRef) {
+        $winKey = "$($t.entity)|$($t.expectedKeyRef)"
+        if ($comboFillsByKey.ContainsKey($winKey)) {
+            $gf = @($t.fills | ForEach-Object { "$($_.fieldId)" })
+            $extra = @($gf | Where-Object { -not $comboFillsByKey[$winKey].Contains($_) })
+            if ($extra.Count -eq 0) {
+                $noContest.Add("$($t.expectedKeyRef) vs $($t.guardrailLoser) [$($t.entity)] -- fill adds no competing identifier over $($t.expectedKeyRef)'s own test; the pair differs only by a presence condition, so the loser can never match")
+                continue
+            }
+        }
+    }
+    $kept3.Add($t)
+}
+if ($noContest.Count -gt 0) {
+    Write-Host "  [plan] dropped $($noContest.Count) NO-CONTEST guardrail(s) (loser cannot match the same fill -- proves no priority):" -ForegroundColor DarkYellow
+    $noContest | ForEach-Object { Write-Host "         $_" -ForegroundColor DarkGray }
+    $i = 0
+    foreach ($t in $kept3) { $i++; $t.n = $i }
+    $tests = $kept3
+}
+
 $plan = [ordered]@{
     provider = $provName
     version  = $version
