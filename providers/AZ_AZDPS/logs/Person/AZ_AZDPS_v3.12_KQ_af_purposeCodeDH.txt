@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: AZ_AZDPS Person DriverHistoryQuery
+Combo: KQ_af_purposeCodeDH (KQ_af_purposeCodeDH (auto))
+Date: 2026-08-24 11:16:23
+Result: PASS
+JSON Version: 3.12
+Entity Fingerprint: 3cc243b995a33dcc3e96a4698e2784b9c2be18da55f958315bb80d70ac9f2401
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"OperatorLicenseNumberDH":"D999888777","RegistrationStateDH":"New Jersey","Requestor":"X","dexStateUserId":"X","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0T57YE15887WBPTR4N57J5B">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M0T57YE15887WBPTR4N57J5B</Id>
+            <State>NJ</State>
+            <Attention>SGAMBELLONE R</Attention>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+            <PurposeCode>C</PurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0T57YE15887WBPTR4N57J5B
+  State                          NJ
+  Attention                      SGAMBELLONE R
+  OperatorLicenseNumber          D999888777
+  PurposeCode                    C
+
+NOTES
+-----
+Automated capture (txId 01M0T57YE15887WBPTR4N57J5B). kind=any-field; anyField=purposeCodeDH; expectedKeyRef=KQ; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
