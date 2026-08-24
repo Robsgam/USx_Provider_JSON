@@ -222,13 +222,18 @@ foreach ($n in $names) {
                           Where-Object { $_.FullName -notmatch '[\\/]_archive' }).Count
         }
         if ($logCount -eq 0) {
-            Emit ("  {0,-22}   [DM3 NOTE] QRDM mapping present but CONFIG-PRESENT-NOT-VERIFIED: no logs at all." -f '')
-            Emit ("  {0,-22}              Make 'does a mined hit render?' a stated objective of the first sweep." -f '')
+            Emit ("  {0,-22}   [DM3 NOTE] QRDM mapping present, never exercised: no logs at all." -f '')
             $dm3++
         } else {
-            Emit ("  {0,-22}   QRDM hit/related mapping PRESENT; {1} log(s) on disk. Rendering of a MINED hit is" -f '', $logCount)
-            Emit ("  {0,-22}   still only proven by a query that actually returns one -- config presence is not proof." -f '')
+            Emit ("  {0,-22}   QRDM hit/related mapping PRESENT; {1} log(s) on disk." -f '', $logCount)
         }
+        # DO NOT turn DM3 into a sweep objective. Rob, 2026-08-24, correcting exactly that:
+        # "false  we want logs that show the xml message and verify that uit matches the metadata
+        # specs." A sweep proves the OUTGOING REQUEST -- gate 6d validates every <Request> field
+        # against the metadata for that query and checks the field-set satisfies a real metadata
+        # combination. Whether a MINED tag RENDERS is a RESPONSE-side question, it needs a real hit
+        # record in the tenant (which we do not control), and no amount of request capture settles
+        # it. DM3 is a statement about coverage of the response mapping, NOT work the sweep can do.
     }
 }
 

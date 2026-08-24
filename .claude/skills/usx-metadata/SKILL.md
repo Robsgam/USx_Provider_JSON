@@ -157,8 +157,13 @@ Consequences, all three load-bearing:
 - `InquiryTypeIndicator` (`1` reg-only / `2` hotfiles-only / **`3` both, default**) is why ONE query
   covers registration *and* hot files.
 - **What IS real:** the QRDM must be able to receive those tags. That is class **DM2**, the only
-  actionable output of the tool — and config presence is still not proof that a mined hit *renders*
-  (class DM3, currently 7 providers).
+  actionable output of the tool. Class **DM3** (mapping present, never exercised) is a COVERAGE
+  STATEMENT about the response mapping, **not** work a sweep can do. ⚠️ **Do not turn DM3 into a
+  sweep objective** — I did, and Rob corrected it 2026-08-24: *"we want logs that show the xml
+  message and verify that uit matches the metadata specs."* A sweep proves the OUTGOING REQUEST —
+  gate 6d validates every `<Request>` field against the metadata for that query and checks the
+  field-set satisfies a real metadata combination. Whether a mined tag RENDERS is response-side, it
+  needs a real hit record in the tenant we do not control, and no amount of request capture settles it.
 
 **WHY THIS IS A SKILL RULE AND NOT JUST A TOOL.** `audit_supported_queries` used the string
 `Data-Mined Transactions` purely as a **parse boundary** to stop reading the Basic list — it read

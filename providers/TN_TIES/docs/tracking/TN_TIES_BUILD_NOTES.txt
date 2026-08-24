@@ -59,10 +59,18 @@ v2.4  2026-08-24  keyRefs renamed off the DATA-MINED transactions, and the redun
     fidelity 28 branches / 0 UNDER / 0 OVER (HELD, so nothing was suppressed) - wiring closure
     1 break -> 0 (the registered class J on RQ05 is gone because its State gate is gone) -
     audit_data_mined DM1 7 -> 4, DM2 0, DM3 1 - zero QV.* combos or plan tests remain.
-  NOT TESTED YET: never tenant-tested. Owes an import and a first-ever sweep. STATED OBJECTIVE for
-    that sweep: DOES A MINED NCIC HIT RENDER? The QRDM carries the shared hit/RelatedSearchHitIndicator
-    mapping, so mined-tag consumption is CONFIG-PRESENT and has never been exercised (audit_data_mined
-    class DM3). Same class as HI's unverified NCIC hit block.
+  NOT TESTED YET: never tenant-tested. Owes an import and a first-ever sweep.
+  STATED OBJECTIVE OF THAT SWEEP -- CORRECTED 2026-08-24 BY ROB, and my first version was wrong:
+    "we want logs that show the xml message and verify that uit matches the metadata specs."
+    So: a saved log per plan test carrying the COMMSYS XML of the outgoing request, and gate 6d
+    (audit_log_metadata) green on every one of them -- every <Request> field metadata-defined for
+    that query, and the present field-set satisfying a real metadata combination's set[]. That is
+    the thing this package exists to prove, for all 21 combinations.
+    WHAT I WRONGLY WROTE HERE FIRST: "does a mined NCIC hit render?" That is a RESPONSE-side
+    question. It needs a real hit record in the tenant, which we do not control, and no amount of
+    REQUEST capture can settle it -- so it was not an objective a sweep could ever deliver.
+    audit_data_mined class DM3 records that the QRDM's hit/RelatedSearchHitIndicator mapping is
+    unexercised; that is a COVERAGE STATEMENT about the response mapping, not sweep work.
 
 v2.3  2026-08-20  LAYOUT COLLAPSE 14->6 CARDS + NAME COMPONENTS; RQ05 COMMENT CORRECTED
   CHANGED:
