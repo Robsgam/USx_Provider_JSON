@@ -1,18 +1,18 @@
 ﻿================================================================
   Build Report: TN_TIES
-  Source: TN_TIES_v2.3.json
-  Generated: 2026-08-20 20:31
+  Source: TN_TIES_v2.4.json
+  Generated: 2026-08-24 13:52
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- TN_TIES_v2.3.json
+  CommSys Query Simulator -- TN_TIES_v2.4.json
 ================================================================
 
 --- QIDM: TN_TIES_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 8
+    Query: VehicleRegistrationQuery  |  Attrs: 11  |  Combos: 7
 
     [FIRES first-match] RQ.P
       set: [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode, RegistrationState]
@@ -27,8 +27,8 @@ QUERY SIMULATION
         <State>NJ</State>
       </Transaction>
     [SKIP] RQ.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
-    [SKIP] QV.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; RegistrationState NOT_EXISTS [value='NJ']
-    [SKIP] QV.P -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
+    [SKIP] RQ03 -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; RegistrationState NOT_EXISTS [value='NJ']
+    [SKIP] RQ01 -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
 
     [FIRES shadowed -- first match above wins] RQ05
       set: [DealerLicensePlateNumber]
@@ -39,7 +39,6 @@ QUERY SIMULATION
         <MessageKey>RQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <DealerLicensePlateNumber>D123456</DealerLicensePlateNumber>
       </Transaction>
-    [SKIP] QV.D -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
 
     [FIRES shadowed -- first match above wins] RQ06
       set: [HandicapPlacardNumber]

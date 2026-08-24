@@ -4,7 +4,7 @@
                         "description":  "Entity form configurations",
                         "configurations":  [
                                                {
-                                                   "description":  "Vehicle queries -- 1 card: Plate (RQ.P/QV.P) + VIN (RQ.V/QV.V) + specialty (RQ05/QV.D dealer, RQ06 handicap, RQ07 temp). State-existence routing + Plate\u003eVIN guardrail.",
+                                                   "description":  "Vehicle queries -- 1 card: Plate (RQ.P/RQ01) + VIN (RQ.V/RQ03) + specialty (RQ05 dealer, RQ06 handicap, RQ07 temp). State-existence routing + Plate\u003eVIN guardrail.",
                                                    "label":  "Vehicle",
                                                    "layout":  {
                                                                   "default":  {
@@ -6860,7 +6860,7 @@
                                                                                                                 ]
                                                                                              },
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
-                                                                            "keyReference":  "QV.V",
+                                                                            "keyReference":  "RQ03",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -6888,7 +6888,7 @@
                                                                                                                 ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "QV.P",
+                                                                            "keyReference":  "RQ01",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -6898,39 +6898,10 @@
                                                                                                          ],
                                                                                                  "any":  [
                                                                                                              "InquiryTypeIndicator"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ]
+                                                                                                         ]
                                                                                              },
                                                                             "primaryFieldReference":  "DealerLicensePlateNumber",
                                                                             "keyReference":  "RQ05",
-                                                                            "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "DealerLicensePlateNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-                                                                                                             "InquiryTypeIndicator"
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "DealerLicensePlateNumber",
-                                                                            "keyReference":  "QV.D",
                                                                             "state":  "In/Out"
                                                                         },
                                                                         {
@@ -6960,7 +6931,7 @@
                                                                             "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- RQ.P/RQ.V (OOS Nlets), QV.V/QV.P (NCIC), RQ05/QV.D (dealer), RQ06 (handicap), RQ07 (temp). State-existence routing + Plate\u003eVIN guardrail.",
+                                                   "description":  "VehicleRegistrationQuery -- RQ.P/RQ.V (OOS Nlets), RQ03/RQ01 (in-state), RQ05 (dealer), RQ06 (handicap), RQ07 (temp). State-existence routing + Plate\u003eVIN guardrail.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "TN_TIES_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -7705,7 +7676,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TN_TIES v2.3 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 22 combos, DH-suffix, existence-only routing gates + identifier-priority guardrails",
+                        "description":  "Provider configuration for TN_TIES v2.4 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 22 combos, DH-suffix, existence-only routing gates + identifier-priority guardrails",
                         "name":  "TN_TIES",
                         "type":  "BUNDLE",
                         "provider":  "TN_TIES"

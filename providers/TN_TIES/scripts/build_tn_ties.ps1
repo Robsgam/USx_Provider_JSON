@@ -23,18 +23,19 @@
 #   Name: composite Last,First via FormatStringRuleHandler.
 #   VehicleMakeCode: FormSelect VEHICLE_MAKE dropdown (hard gate -- never FormInput).
 #   ArticleTypeCode dropdown: codeTypeSource='CA_CLETS' (NCIC gives empty dropdown).
-#   Specialty Vehicle searches: Dealer (RQ05/QV.D), Handicap (RQ06), Temp (RQ07).
+#   Specialty Vehicle searches: Dealer (RQ05, ONE ungated combo as of v2.4), Handicap (RQ06), Temp (RQ07).
 #
 # DROPPED (form-identical shadows -- server routes by keyRef, form input is identical so only
 #   one can ever fire; OCATS/MD precedent -- documented in TN_TIES_ACCEPTED_DIVERGENCES.txt):
-#   Vehicle: RQ01/RV01 (== QV.P no-state plate), RQ03/RV03 (== QV.V no-state VIN), RV (== RQ.P OOS plate)
+#   Vehicle: RV01 (== RQ01 in-state plate), RV03 (== RQ03 in-state VIN), RV (== RQ.P OOS plate),
+#            QV{plate}/QV{VIN}/QV{dealer} (mined NCIC twins, identical set[] -- see v2.4 note below)
 #   DL:      DQ02 (== QWA no-state Name+DOB+Sex)
 #   28 metadata combos -> 22 built.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.3'
+$Version     = '2.4'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\TN_TIES_v${Version}.json"
@@ -50,8 +51,8 @@ if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 
 # keyRef INVENTORY (LIMITATION #21 -- unique keyRefs per QIDM; TN_TIES 6 basic queries, DH-suffix,
 # existence-only OOS routing gates + identifier-priority guardrails; 22 combos):
-#   VehicleRegistrationQuery : RQ.P (OOS plate), RQ.V (OOS VIN), QV.V (NCIC VIN), QV.P (NCIC plate),
-#                              RQ05 (OOS dealer), QV.D (NCIC dealer), RQ06 (handicap), RQ07 (temp)
+#   VehicleRegistrationQuery : RQ.P (OOS plate), RQ.V (OOS VIN), RQ03 (in-state VIN), RQ01 (in-state
+#                              plate), RQ05 (dealer, ungated at v2.4), RQ06 (handicap), RQ07 (temp)
 #   DriverLicenseQuery       : DQ.N (OOS Name), DQ.O (OOS OLN), QWA (NCIC Name), DQ01 (no-state OLN), DQ06 (SSN)
 #   DriverHistoryQuery       : KQ.N (OOS Name+DOB+Sex), KQ.O (OOS OLN), DQ05 (no-state OLN) -- DH-suffix
 #   GunQuery                 : QG (serial + optional caliber/make)
@@ -70,7 +71,7 @@ $qmf = Build-Qmf -ProviderName 'TN_TIES'
 
 # =====================================================================
 # VehicleRegistrationQuery -- RQ (Nlets/OOS, State EXISTS), QV (NCIC, State NOT_EXISTS),
-# + specialty (Dealer RQ05/QV.D, Handicap RQ06, Temp RQ07). Plate>VIN guardrail
+# + specialty (Dealer RQ05 ungated, Handicap RQ06, Temp RQ07). Plate>VIN guardrail
 # (VIN combos: LicensePlateNumber NOT_EXISTS).
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
@@ -112,7 +113,11 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'RQ.V'
             state                 = 'In/Out'
         }
-        # QV.V -- NCIC VIN (no state). Plate>VIN
+        # RQ03 -- in-state VIN (blank State = TN), devdoc #3. Plate>VIN.
+        # RENAMED from QV.V at v2.4: QV is a DATA-MINED transaction (devdoc line 9), so naming an
+        # OUTGOING combo after it read as "we send this to NCIC" -- which is not a thing a keyRef can
+        # do, since the keyRef never reaches the wire. Zero wire impact; the name now matches the
+        # metadata variant this combo implements.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('VehicleIdentificationNumber'); any = @('InquiryTypeIndicator','VehicleMakeCode','vehicleYear')
@@ -122,10 +127,12 @@ $vehRegQuery = [PSCustomObject]@{
                 )
             }
             primaryFieldReference = 'VehicleIdentificationNumber'
-            keyReference          = 'QV.V'
+            keyReference          = 'RQ03'
             state                 = 'In/Out'
         }
-        # QV.P -- NCIC plate (no state, plate-only catch-all)
+        # RQ01 -- in-state plate (blank State = TN), devdoc #1 "(In) LicensePlateNumber".
+        # RENAMED from QV.P at v2.4 -- same reason as RQ03 above. THIS is the combo whose name caused
+        # a note in FOUR places claiming in-state TN plate searches "reach NCIC not TIES/DMV".
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('LicensePlateNumber'); any = @('InquiryTypeIndicator','LicensePlateTypeCode')
@@ -133,34 +140,36 @@ $vehRegQuery = [PSCustomObject]@{
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QV.P'
+            keyReference          = 'RQ01'
             state                 = 'In/Out'
         }
-        # RQ05 -- dealer plate, TIES transaction. NOT "OOS": devdoc combination 4 reads
-        # "(In) DealerLicensePlateNumber, [InquiryTypeIndicator]" and there is NO (Out) dealer
-        # entry, so QV.D (State NOT_EXISTS) is what serves the devdoc path. RQ05 is a second
-        # metadata variant with IDENTICAL requirements (both are Set[DealerLicensePlateNumber,
-        # Any[InquiryTypeIndicator]] -- note <Any> is NESTED INSIDE <Set> in this schema) --
-        # and optionals cannot discriminate, so the State gate is the only thing keeping it
-        # reachable; the officer's State selects the destination rather than riding the request.
-        # Neither dealer variant defines State, so putting it in any[] would OVER-PERMIT.
+        # RQ05 -- dealer plate. ONE combo, UNGATED, as of v2.4.
+        #
+        # v2.3 built TWO dealer combos -- RQ05 gated `RegistrationState EXISTS` and QV.D gated
+        # NOT_EXISTS -- and the v2.3 comment justified the split like this: "optionals cannot
+        # discriminate, so the State gate is the only thing keeping it reachable; the officer's
+        # State selects the DESTINATION rather than riding the request."
+        #
+        # *** THAT JUSTIFICATION WAS WRONG, and it is the SAME misconception that produced the
+        # "unbuilt RQ01" note closed on 2026-08-24: THE KEYREF NEVER REACHES THE WIRE. *** A request
+        # carries <MessageType>VehicleRegistrationQuery</MessageType> plus the FIELDS -- nothing
+        # else. State is in NEITHER combo's set[] NOR any[], so it is never transmitted by either,
+        # and the two combos emitted BYTE-IDENTICAL requests. The officer's State choice selected
+        # which keyRef got RECORDED, not where the query went. Two names, one query.
+        #
+        # Cost of leaving it: a guaranteed audit_log_inflation attack-A clone group in every sweep
+        # (identical wire), and double the dealer tests for zero extra coverage.
+        # Devdoc agrees with the collapse: combination 4 is "(In) DealerLicensePlateNumber,
+        # [InquiryTypeIndicator]" and there is NO (Out) dealer entry -- so an out-of-state dealer
+        # path was never a devdoc path to serve. Ungated is also what RQ06/RQ07 already do, and for
+        # exactly the same reason (both are (In)-only devdoc entries on a unique field).
+        # State stays OUT of any[]: no dealer variant defines it, so adding it would OVER-PERMIT.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('DealerLicensePlateNumber'); any = @('InquiryTypeIndicator')
-                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'DealerLicensePlateNumber'
             keyReference          = 'RQ05'
-            state                 = 'In/Out'
-        }
-        # QV.D -- NCIC dealer plate (no state)
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set = @('DealerLicensePlateNumber'); any = @('InquiryTypeIndicator')
-                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-            }
-            primaryFieldReference = 'DealerLicensePlateNumber'
-            keyReference          = 'QV.D'
             state                 = 'In/Out'
         }
         # RQ06 -- Handicap placard (unique field, always reachable)
@@ -178,7 +187,7 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
     )
-    description        = 'VehicleRegistrationQuery -- RQ.P/RQ.V (OOS Nlets), QV.V/QV.P (NCIC), RQ05/QV.D (dealer), RQ06 (handicap), RQ07 (temp). State-existence routing + Plate>VIN guardrail.'
+    description        = 'VehicleRegistrationQuery -- RQ.P/RQ.V (OOS Nlets), RQ03/RQ01 (in-state), RQ05 (dealer), RQ06 (handicap), RQ07 (temp). State-existence routing + Plate>VIN guardrail.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'TN_TIES_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
@@ -566,7 +575,7 @@ $vehLayout = MakeLayouts @(
     }
 )
 $vehicleForm = [PSCustomObject]@{
-    description  = 'Vehicle queries -- 1 card: Plate (RQ.P/QV.P) + VIN (RQ.V/QV.V) + specialty (RQ05/QV.D dealer, RQ06 handicap, RQ07 temp). State-existence routing + Plate>VIN guardrail.'
+    description  = 'Vehicle queries -- 1 card: Plate (RQ.P/RQ01) + VIN (RQ.V/RQ03) + specialty (RQ05 dealer, RQ06 handicap, RQ07 temp). State-existence routing + Plate>VIN guardrail.'
     label        = 'Vehicle'
     layout       = $vehLayout
     name         = 'ENTITY_Vehicle'

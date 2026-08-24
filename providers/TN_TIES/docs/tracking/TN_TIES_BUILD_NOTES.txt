@@ -2,6 +2,68 @@ TN_TIES -- Build Notes
 =======================
 Provider: TN_TIES
 State: Tennessee
+v2.4  2026-08-24  keyRefs renamed off the DATA-MINED transactions, and the redundant dealer pair
+                  collapsed -- both were the SAME misconception
+  CHANGED:
+    (a) QV.P -> RQ01 (in-state plate, devdoc #1) and QV.V -> RQ03 (VIN, devdoc #3). The kept combos
+        now carry the metadata names for the paths they implement.
+    (b) The two dealer combos COLLAPSED to one ungated RQ05. v2.3 had RQ05 gated
+        `RegistrationState EXISTS` and QV.D gated NOT_EXISTS with IDENTICAL set[] and IDENTICAL
+        any[], and State in NEITHER -- so both emitted BYTE-IDENTICAL requests. Devdoc #4 is
+        "(In) DealerLicensePlateNumber, [InquiryTypeIndicator]" with no (Out) counterpart, so an
+        out-of-state dealer path was never a devdoc path. Ungated now matches RQ06/RQ07, which are
+        single and ungated for the same reason.
+  REASON -- ONE ROOT CAUSE BEHIND BOTH: the belief that a keyRef selects a DESTINATION. v2.3's own
+    code comment said it outright -- "the officer's State selects the destination rather than riding
+    the request" -- and the same belief produced a note carried in FOUR places claiming in-state TN
+    plate searches "reach NCIC not TIES/DMV", filed as needing Rob's ruling. THE KEYREF NEVER
+    REACHES THE WIRE: a request carries <MessageType>VehicleRegistrationQuery</MessageType> plus the
+    FIELDS and nothing else (verified against a real capture -- the keyRef appears ZERO times).
+    Rob 2026-08-24: "we only send the VehicleRegistrationQuery and not the transaction name."
+    And `QV` is one of the DATA-MINED transactions the devdoc names on its own line ("NCIC (QA, QB,
+    QG, QV, QW) and DMV ... Tags returned from Data mining") -- TIES runs it off our single request,
+    so naming an OUTGOING combo after it invited precisely the wrong reading. `InquiryTypeIndicator`
+    (default 3 = registration AND hotfiles) is why one query covers both.
+  ZERO WIRE IMPACT FROM (a) -- a keyRef is platform-internal. (b) REMOVES one duplicate request:
+    the dealer pair would have produced a guaranteed audit_log_inflation attack-A clone group on
+    every sweep, and doubled the dealer tests for no coverage.
+  ALSO CLEARED: [FLAG:plan-dedupe-vacuous-tests] -- this rebuild regenerates the plan.
+  DOCS CORRECTED IN THE SAME PASS, because a stale justification is how this recurs: the
+    ACCEPTED_DIVERGENCES shadow table had "kept QV.P / kept QV.V" (now inverted, with the QV twins
+    recorded as dropped-mined); its "Net effect" paragraph claimed blank-State "routes to the NCIC
+    national keyRefs" (rewritten -- the State choice selects which FIELD SET is sent, not a
+    destination); and the RQ05 `routing-only-not-transmitted` row is RETIRED with history, because
+    the wiring-closure class J finding it adjudicated cannot fire once the State gate is gone. The
+    rule that row stated is still binding: State must NOT go into RQ05's any[] -- no dealer variant
+    defines it, so that would OVER-PERMIT.
+  GUARDRAIL SO IT CANNOT RECUR: tools\audit_data_mined.ps1 (new 2026-08-24) reads the devdoc's
+    Data-Mined line -- which audit_supported_queries had only ever used as a parse BOUNDARY, so
+    nothing had read it -- and build_phase1 prints it as step 5b immediately after the query-trace
+    MISSING list, which is where the wrong conclusion gets drawn. usx-metadata Step 2b carries both
+    facts for whoever reads the authorities next.
+  I CHECKED THE OTHER SIBLING PAIRS RATHER THAN ONLY FIXING THE ONE I NOTICED, and the Boat pairs
+    are LEGITIMATE -- keep them. BB.H/QB.H and BB.R/QB.R share a set[] just like the dealer pair did,
+    but BB carries `RegistrationState` in its any[] and QB does not (metadata: BB{hull} has
+    Any[InquiryTypeIndicator, State], QB{hull} has Any[InquiryTypeIndicator] only). So filling State
+    produces a genuinely DIFFERENT wire. That is the precise test: not "do the set[]s match" but
+    "can any fill make the two requests differ". Dealer failed it (State in NEITHER pool); Boat
+    passes it. Plate/VIN differ in set[] outright.
+  THE RENAME STOPS AT VEHICLE, AND NOT ARBITRARILY: Article/QA and Firearm/QG are the ONLY keyRefs
+    their transactions define in the metadata, and Boat's blank-State paths have only QB. There is
+    no non-mined alternative to move to, so renaming them would mean INVENTING a keyRef for cosmetic
+    reasons. Vehicle was the one entity where metadata already offered non-mined names (RQ01/RQ03/
+    RQ05) for the same field sets. audit_data_mined DM1 therefore still annotates 4 combos on TN
+    (Article/QA, Boat/QB.H, Boat/QB.R, Firearm/QG) -- down from 7 -- and that residue is CORRECT.
+  MEASURED v2.3 -> v2.4: Vehicle combos 8 -> 7 - total combos 22 -> 21 - plan 55 -> 54 - validator
+    74P/0F/0W -> 73P/0F/0W (one fewer combo to score) - reachability 20/20 -> 19/19 all reachable -
+    fidelity 28 branches / 0 UNDER / 0 OVER (HELD, so nothing was suppressed) - wiring closure
+    1 break -> 0 (the registered class J on RQ05 is gone because its State gate is gone) -
+    audit_data_mined DM1 7 -> 4, DM2 0, DM3 1 - zero QV.* combos or plan tests remain.
+  NOT TESTED YET: never tenant-tested. Owes an import and a first-ever sweep. STATED OBJECTIVE for
+    that sweep: DOES A MINED NCIC HIT RENDER? The QRDM carries the shared hit/RelatedSearchHitIndicator
+    mapping, so mined-tag consumption is CONFIG-PRESENT and has never been exercised (audit_data_mined
+    class DM3). Same class as HI's unverified NCIC hit block.
+
 v2.3  2026-08-20  LAYOUT COLLAPSE 14->6 CARDS + NAME COMPONENTS; RQ05 COMMENT CORRECTED
   CHANGED:
     LAYOUT -- 14 cards -> 6, the uniform shape (usx-cosmetic Step 3b). Vehicle 4->1

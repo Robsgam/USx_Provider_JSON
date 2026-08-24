@@ -1,7 +1,7 @@
 ﻿TN_TIES METADATA REFERENCE
 ===========================
-Generated: 2026-08-20
-Source: TN_TIES.xml (metadata) + TN_TIES_v2.3.json
+Generated: 2026-08-24
+Source: TN_TIES.xml (metadata) + TN_TIES_v2.4.json
 Metadata: 13 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -155,20 +155,20 @@ METADATA COMBINATIONS (13 total):
   QV            LicensePlateNumber      LicensePlateNumber                                     InquiryTypeIndicator, Licen...
   QV            DealerLicensePlateNumber  DealerLicensePlateNumber                               InquiryTypeIndicator
 
-BUILD COVERAGE (8 of 13 built):
+BUILD COVERAGE (7 of 13 built):
   BUILT   RQ.P           set[LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode, RegistrationState]
   BUILT   RQ.V           set[RegistrationState, VehicleIdentificationNumber]
-  BUILT   QV.V           set[VehicleIdentificationNumber]
-  BUILT   QV.P           set[LicensePlateNumber]
+  BUILT   RQ03           set[VehicleIdentificationNumber]
+  BUILT   RQ01           set[LicensePlateNumber]
   BUILT   RQ05           set[DealerLicensePlateNumber]
-  BUILT   QV.D           set[DealerLicensePlateNumber]
   BUILT   RQ06           set[HandicapPlacardNumber]
   BUILT   RQ07           set[TemporaryLicensePlateNumber]
-  UNBUILT RQ01           LicensePlateNumber
   UNBUILT RV01           LicensePlateNumber
-  UNBUILT RQ03           VehicleIdentificationNumber
   UNBUILT RV03           VehicleIdentificationNumber
   UNBUILT RV             LicensePlateNumber
+  UNBUILT QV             VehicleIdentificationNumber
+  UNBUILT QV             LicensePlateNumber
+  UNBUILT QV             DealerLicensePlateNumber
 
 ================================================================================
 BUILD SUMMARY
@@ -181,20 +181,21 @@ BUILD SUMMARY
   DriverHistoryQuery                         3      3     0  100% (COMPLETE)
   DriverLicenseQuery                         6      5     1  83%
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                  13      8     5  62%
+  VehicleRegistrationQuery                  13      7     6  54%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   28     22     6  79%
+  TOTAL                                   28     21     7  75%
 
 ================================================================================
-UNBUILT METADATA COMBOS (6 combos in metadata, not in JSON)
+UNBUILT METADATA COMBOS (7 combos in metadata, not in JSON)
 ================================================================================
 
   DQ02           Name                     (DriverLicenseQuery)
-  RQ01           LicensePlateNumber       (VehicleRegistrationQuery)
   RV01           LicensePlateNumber       (VehicleRegistrationQuery)
-  RQ03           VehicleIdentificationNumber (VehicleRegistrationQuery)
   RV03           VehicleIdentificationNumber (VehicleRegistrationQuery)
   RV             LicensePlateNumber       (VehicleRegistrationQuery)
+  QV             VehicleIdentificationNumber (VehicleRegistrationQuery)
+  QV             LicensePlateNumber       (VehicleRegistrationQuery)
+  QV             DealerLicensePlateNumber (VehicleRegistrationQuery)
 
 ================================================================================
 ALL UNBUILT TRANSACTIONS (7 of 13 in metadata)

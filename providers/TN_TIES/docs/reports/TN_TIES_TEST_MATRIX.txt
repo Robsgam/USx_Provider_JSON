@@ -1,6 +1,6 @@
-TN_TIES v2.3 -- TEST MATRIX
+TN_TIES v2.4 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-20
+Generated: 2026-08-24
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -39,9 +39,9 @@ Boat (1 card, 4 fields):
   CARD_BOA (BOAT SEARCH BY HULL, OR REGISTRATION):
     BoatHullIdNumber [Inp 20], RegistrationNumber [Inp 8], RegistrationState [Sel STATE], InquiryTypeIndicator [Inp 1]
 
-QIDM SUMMARY (6 QIDMs, 22 combos)
+QIDM SUMMARY (6 QIDMs, 21 combos)
 ----------------------------------------
-  VehicleRegistrationQuery: 8 combos (RQ x5, QV x3), autoSelect=true
+  VehicleRegistrationQuery: 7 combos (RQ x7), autoSelect=true
   DriverLicenseQuery: 5 combos (DQ x4, QW x1), autoSelect=true, deselects: [DH]
   DriverHistoryQuery: 3 combos (DQ x1, KQ x2), autoSelect=true, deselects: [DL]
   GunQuery: 1 combos (QG x1)
@@ -108,18 +108,18 @@ ENTITY 1: PERSON (23 tests -- 2 cards, 8 combos)
 23  Person      Deselect: DL deselects DH.            [    ]
               Fill both query fields. Check deselect behavior.
 
-ENTITY 2: VEHICLE (19 tests -- 1 card, 8 combos)
+ENTITY 2: VEHICLE (16 tests -- 1 card, 7 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
 24  Vehicle     RQ+06              HandicapPlacardNumber=TEST       [    ]
               Expected: VehicleRegistrationQuery fires (RQ06)
-25  Vehicle     RQ+07              TemporaryLicensePlateNumber=TEST [    ]
-              Expected: VehicleRegistrationQuery fires (RQ07)
-26  Vehicle     RQ+05              DealerLicensePlateNumber=TEST    [    ]
+25  Vehicle     RQ+05              DealerLicensePlateNumber=TEST    [    ]
               Expected: VehicleRegistrationQuery fires (RQ05)
-27  Vehicle     RQ+05              + InquiryTypeIndicator          [    ]
+26  Vehicle     RQ+05              + InquiryTypeIndicator          [    ]
               Expected: any[] fields present in XML output.
+27  Vehicle     RQ+07              TemporaryLicensePlateNumber=TEST [    ]
+              Expected: VehicleRegistrationQuery fires (RQ07)
 28  Vehicle     RQ+.P+State        LicensePlateNumber=TEST123, LicensePl... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P)
 29  Vehicle     RQ+.P+State        + InquiryTypeIndicator          [    ]
@@ -128,79 +128,73 @@ ENTITY 2: VEHICLE (19 tests -- 1 card, 8 combos)
               Expected: VehicleRegistrationQuery fires (RQ.V)
 31  Vehicle     RQ+.V+State        + InquiryTypeIndicator, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-32  Vehicle     QV+.P              LicensePlateNumber=TEST123       [    ]
-              Expected: VehicleRegistrationQuery fires (QV.P)
-33  Vehicle     QV+.P              + InquiryTypeIndicator          [    ]
+32  Vehicle     RQ+03              VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (RQ03)
+33  Vehicle     RQ+03              + InquiryTypeIndicator, VehicleMakeCode, vehicleYear [    ]
               Expected: any[] fields present in XML output.
-34  Vehicle     QV+.V              VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (QV.V)
-35  Vehicle     QV+.V              + InquiryTypeIndicator, VehicleMakeCode, vehicleYear [    ]
+34  Vehicle     RQ+01              LicensePlateNumber=TEST123       [    ]
+              Expected: VehicleRegistrationQuery fires (RQ01)
+35  Vehicle     RQ+01              + InquiryTypeIndicator          [    ]
               Expected: any[] fields present in XML output.
-36  Vehicle     QV+.D              DealerLicensePlateNumber=TEST    [    ]
-              Expected: VehicleRegistrationQuery fires (QV.D)
-37  Vehicle     QV+.D              + InquiryTypeIndicator          [    ]
-              Expected: any[] fields present in XML output.
-38  Vehicle     Guardrail: RQ.P>RQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+36  Vehicle     Guardrail: RQ.P>RQ.V  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). RegistrationState+VIN absent from XML.
-39  Vehicle     Guardrail: RQ.P>QV.V  LicensePlateNumber=TEST123, VehicleId... [    ]
+37  Vehicle     Guardrail: RQ.P>RQ03  LicensePlateNumber=TEST123, VehicleId... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). VIN absent from XML.
-40  Vehicle     Guardrail: RQ.P>QV.V  RegistrationState=GA, VehicleIdentifi... [    ]
+38  Vehicle     Guardrail: RQ.P>RQ03  RegistrationState=GA, VehicleIdentifi... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). VIN absent from XML.
-41  Vehicle     Guardrail: RQ.P>QV.P  RegistrationState=GA, LicensePlateNum... [    ]
+39  Vehicle     Guardrail: RQ.P>RQ01  RegistrationState=GA, LicensePlateNum... [    ]
               Expected: VehicleRegistrationQuery fires (RQ.P). Plate absent from XML.
-42  Vehicle     Guardrail: RQ.P>QV.D  RegistrationState=GA, DealerLicensePl... [    ]
-              Expected: VehicleRegistrationQuery fires (RQ.P). DealerLicensePlateNumber absent from XML.
 
 ENTITY 3: BOAT (10 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-43  Boat        QB+.R              RegistrationNumber=FL1234AB      [    ]
+40  Boat        QB+.R              RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (QB.R)
-44  Boat        QB+.R              + InquiryTypeIndicator          [    ]
+41  Boat        QB+.R              + InquiryTypeIndicator          [    ]
               Expected: any[] fields present in XML output.
-45  Boat        QB+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
+42  Boat        QB+.H              BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (QB.H)
-46  Boat        QB+.H              + InquiryTypeIndicator          [    ]
+43  Boat        QB+.H              + InquiryTypeIndicator          [    ]
               Expected: any[] fields present in XML output.
-47  Boat        BB.H+BB.H          BoatHullIdNumber=FL1234AB56H7    [    ]
+44  Boat        BB.H+BB.H          BoatHullIdNumber=FL1234AB56H7    [    ]
               Expected: BoatQuery fires (BB.H)
-48  Boat        BB.H+BB.H          + InquiryTypeIndicator, RegistrationState [    ]
+45  Boat        BB.H+BB.H          + InquiryTypeIndicator, RegistrationState [    ]
               Expected: any[] fields present in XML output.
-49  Boat        BB.R+BB.R          RegistrationNumber=FL1234AB      [    ]
+46  Boat        BB.R+BB.R          RegistrationNumber=FL1234AB      [    ]
               Expected: BoatQuery fires (BB.R)
-50  Boat        BB.R+BB.R          + InquiryTypeIndicator, RegistrationState [    ]
+47  Boat        BB.R+BB.R          + InquiryTypeIndicator, RegistrationState [    ]
               Expected: any[] fields present in XML output.
-51  Boat        Guardrail: BB.H>BB.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+48  Boat        Guardrail: BB.H>BB.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BB.H). Reg absent from XML.
-52  Boat        Guardrail: BB.H>QB.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
+49  Boat        Guardrail: BB.H>QB.R  BoatHullIdNumber=FL1234AB56H7, Regist... [    ]
               Expected: BoatQuery fires (BB.H). Reg absent from XML.
 
 ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-53  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
+50  Firearm     QG+serialNumber    serialNumber=GUN12345            [    ]
               Expected: GunQuery fires (QG)
-54  Firearm     QG+serialNumber    + gunCaliber, firearmMake       [    ]
+51  Firearm     QG+serialNumber    + gunCaliber, firearmMake       [    ]
               Expected: any[] fields present in XML output.
 
 ENTITY 5: ARTICLE (1 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-55  Article     QA+serialNumber    serialNumber=GUN12345, articleTypeCod... [    ]
+52  Article     QA+serialNumber    serialNumber=GUN12345, articleTypeCod... [    ]
               Expected: ArticleSingleQuery fires (QA)
 
 ================================================================================
-TOTAL: 55 tests
+TOTAL: 52 tests
 
-COMBO COVERAGE (22/22):
-  VehicleRegistrationQuery: 8/8 -- T24(RQ+06), T25(RQ+07), T26(RQ+05), T28(RQ+.P), T30(RQ+.V), T32(QV+.P), T34(QV+.V), T36(QV+.D)
+COMBO COVERAGE (21/21):
+  VehicleRegistrationQuery: 7/7 -- T24(06), T25(05), T27(07), T28(.P), T30(.V), T32(03), T34(01)
   DriverLicenseQuery: 5/5 -- T1(DQ+06), T3(DQ+01), T5(DQ+.N), T7(DQ+.O), T8(QW+A)
   DriverHistoryQuery: 3/3 -- T10(DQ+05), T11(KQ+.N), T13(KQ+.O)
-  GunQuery: 1/1 -- T53(serialNumber)
-  ArticleSingleQuery: 1/1 -- T55(serialNumber)
-  BoatQuery: 4/4 -- T43(QB+.R), T45(QB+.H), T47(BB.H+BB.H), T49(BB.R+BB.R)
+  GunQuery: 1/1 -- T50(serialNumber)
+  ArticleSingleQuery: 1/1 -- T52(serialNumber)
+  BoatQuery: 4/4 -- T40(QB+.R), T42(QB+.H), T44(BB.H+BB.H), T46(BB.R+BB.R)
 
-IMPORT FILE: TN_TIES_v2.3.json
+IMPORT FILE: TN_TIES_v2.4.json

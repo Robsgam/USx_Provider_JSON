@@ -25,20 +25,49 @@ them apart (value-comparison conditions are banned -- poisoned-array rule, valid
 Per the OCATS / MD_METERS precedent ("server routes by keyRef; dropped form-identical
 dups"), the redundant twin in each pair is dropped:
 
-  VehicleRegistrationQuery:
-    RQ01  (in-state plate,  set[LicensePlateNumber])            == QV.P (no-state plate)  -> DROPPED (kept QV.P)
-    RV01  (in-state plate,  set[LicensePlateNumber])            == QV.P                   -> DROPPED
-    RQ03  (in-state VIN,    set[VehicleIdentificationNumber])   == QV.V (no-state VIN)    -> DROPPED (kept QV.V)
-    RV03  (in-state VIN,    set[VehicleIdentificationNumber])   == QV.V                   -> DROPPED
+  VehicleRegistrationQuery:  *** WHICH TWIN IS KEPT WAS INVERTED AT v2.4 -- see the note below ***
+    RV01  (in-state plate,  set[LicensePlateNumber])            == RQ01 (in-state plate)  -> DROPPED (KEPT RQ01)
+    QV    {LicensePlateNumber}                                  == RQ01                   -> DROPPED (mined)
+    RV03  (in-state VIN,    set[VehicleIdentificationNumber])   == RQ03 (in-state VIN)    -> DROPPED (KEPT RQ03)
+    QV    {VehicleIdentificationNumber}                         == RQ03                   -> DROPPED (mined)
+    QV    {DealerLicensePlateNumber}                            == RQ05 (dealer)          -> DROPPED (mined)
     RV    (OOS plate, set[Plate,Year,Type,State])               == RQ.P (OOS plate)       -> DROPPED (kept RQ.P)
+
+  v2.4 CORRECTION -- THE PAIRS ARE UNCHANGED, THE NAMES WE KEEP ARE REVERSED. Through v2.3 these
+  rows read "RQ01 == QV.P -> DROPPED (kept QV.P)", i.e. the surviving combos were named after the
+  NCIC transactions QV.P / QV.V / QV.D. Two reasons that was the wrong way round:
+    1. `QV` (with QA, QB, QG, QW) is a DATA-MINED transaction -- the devdoc says so on its own line:
+       "Data-Mined Transactions: NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned
+       from Data mining". A mined transaction is one TIES runs off our single request and returns
+       tags for. It is not a query we send, so naming an OUTGOING combo after it invited exactly the
+       wrong reading.
+    2. It DID invite it. A note claiming in-state TN plate searches "reach NCIC not TIES/DMV" was
+       carried in FOUR places and filed as needing Rob's ruling. It was impossible: THE KEYREF NEVER
+       REACHES THE WIRE (a request carries <MessageType>VehicleRegistrationQuery</MessageType> plus
+       the FIELDS, nothing else), so QV.P and RQ01 emitted BYTE-IDENTICAL bytes. Closed 2026-08-24;
+       `tools\audit_data_mined.ps1` now states both facts at build time (build_phase1 step 5b).
+  The kept combos now carry the metadata names for the paths they implement -- RQ01 (devdoc #1 in-state
+  plate), RQ03 (devdoc #3 VIN), RQ05 (devdoc #4 dealer) -- and the mined QV twins are recorded as
+  dropped alongside the RV/RV01/RV03 twins they always sat with. ZERO wire impact either way.
 
   DriverLicenseQuery:
     DQ02  (in-state Name, set[Name,BirthDate,SexCode])          == QWA (no-state Name)    -> DROPPED (kept QWA)
 
 Net effect: no loss of officer-reachable query capability -- every distinct form signature
-still fires. "Leave blank for TN" (no State) routes the plate/VIN/Name paths to the NCIC
-national keyRefs (QV.*/QWA), which cover the in-state case; entering a State routes to the
-Nlets OOS keyRefs (RQ.*/DQ.*). This mirrors NM_NMLETS_OFML / MD_METERS RQ-vs-QV routing.
+still fires. "Leave blank for TN" (no State) selects the in-state combos (RQ01 plate, RQ03 VIN,
+QWA name); entering a State selects the ones that additionally REQUIRE and TRANSMIT State
+(RQ.P / RQ.V / DQ.*). This mirrors NM_NMLETS_OFML / MD_METERS.
+
+*** THE SENTENCE ABOVE USED TO SAY the blank-State paths "route to the NCIC national keyRefs",
+and that phrasing was itself the misconception, corrected 2026-08-24. *** A keyRef does not route
+anything: THE KEYREF NEVER REACHES THE WIRE. A request carries
+<MessageType>VehicleRegistrationQuery</MessageType> plus the FIELDS, and that is the entire
+identification. What the officer's State choice actually does is select WHICH FIELD SET is sent --
+State-absent sends the plate alone (devdoc #1, in-state), State-present sends
+plate+type+year+State (devdoc #2, out-of-state). The destination is TIES's business, decided from
+the fields and from InquiryTypeIndicator (default 3 = registration AND hotfiles), with the NCIC
+side returned by DATA MINING. Any statement of the form "keyRef X goes to system Y" in this file
+or any other is wrong by construction; see tools\audit_data_mined.ps1.
 
 --------------------------------------------------------------------------------
 2. Attention auto-handler feeder (DriverHistoryQuery)
@@ -55,4 +84,19 @@ DriverLicenseQuery | DQ.N | RaceCode | devdoc-optional-unreachable | See the Exp
 DriverLicenseQuery | DQ.N | RelatedHitSearchIndicator | devdoc-optional-unreachable | See the ExpandedNameSearchCode entry for this same combination: firing variant DQ{Name} permits only InquiryTypeIndicator as an optional; RelatedHitSearchIndicator is defined on DQ01/DQ06/QWA and other transactions, not on DQ{Name}. | metadata-vs-devdoc | 2026-08-01
 DriverHistoryQuery | KQ.N | Attention | demoted-to-any | THIS PROVIDER'S OWN AP #27 AUTO-HANDLER FEEDER PATTERN, working as designed. Metadata KQ{Name} and KQ{OperatorLicenseNumber} put Attention in <Set> (mandatory), and the build carries it in any[] WITH defaults[] Attention=X plus a hidden InpH feeder, so the CommsysGetLastNameFirstNameInitialRuleHandler output ALWAYS serializes -- the field is never absent from the wire. It is deliberately NOT in set[]: Attention is handler-populated and never officer-typed, so requiring it in set[] would make the combination UNREACHABLE FROM THE FORM (the officer cannot type a field that is hidden). This is the documented portfolio pattern for a mandatory handler-populated Attention. Verified against the raw XML Requirements and the built defaults[] 2026-08-01. | metadata-vs-devdoc | 2026-08-01
 DriverHistoryQuery | KQ.O | Attention | demoted-to-any | THIS PROVIDER'S OWN AP #27 AUTO-HANDLER FEEDER PATTERN, working as designed. Metadata KQ{Name} and KQ{OperatorLicenseNumber} put Attention in <Set> (mandatory), and the build carries it in any[] WITH defaults[] Attention=X plus a hidden InpH feeder, so the CommsysGetLastNameFirstNameInitialRuleHandler output ALWAYS serializes -- the field is never absent from the wire. It is deliberately NOT in set[]: Attention is handler-populated and never officer-typed, so requiring it in set[] would make the combination UNREACHABLE FROM THE FORM (the officer cannot type a field that is hidden). This is the documented portfolio pattern for a mandatory handler-populated Attention. Verified against the raw XML Requirements and the built defaults[] 2026-08-01. | metadata-vs-devdoc | 2026-08-01
-VehicleRegistrationQuery | RQ05 | RegistrationState | routing-only-not-transmitted | CORRECT AS BUILT -- the wiring-closure remedy would OVER-PERMIT. audit_wiring_closure class J reports "EXISTS RegistrationState gates this combo but is in NEITHER its set[] NOR any[] -- the officer value routes and is then NOT transmitted". True as stated, and adding State to any[] would be a NEW defect: read from the raw XML <Requirements> per <Combination>, the sanctioned exception, metadata RQ05 is Set[DealerLicensePlateNumber] Any[InquiryTypeIndicator] -- it defines NO State field at all, in Set or Any. RQ05 and QV.D are the OUT-OF-STATE and IN-STATE dealer-plate fork: identical set[] (DealerLicensePlateNumber) separated ONLY by the State condition (RQ05 gates EXISTS, QV.D gates NOT_EXISTS), which is the legitimate in/out routing pattern this portfolio uses everywhere. So the officer State value SHOULD route and SHOULD NOT be transmitted on RQ05, because the RQ05 transaction cannot carry it. Same shape already registered on OH_LEADS BoatQuery BQ.H (image flags not defined on the Nlets BQ transaction, so a hull+State+Image fill correctly does not carry them). Class J is a wiring OBSERVATION, not a verdict -- the tool own text says only classes A and C are officer-facing -- and it does not read this registry, so the finding will keep printing; that is expected, not a regression. DO NOT "fix" it by widening RQ05 any[]. | metadata-vs-devdoc | 2026-08-19
+# RETIRED 2026-08-24 at v2.4 -- THE FINDING THIS ROW ADJUDICATED NO LONGER EXISTS. The row was
+#   correct while RQ05 was gated `RegistrationState EXISTS`: the officer value routed and was then
+#   not transmitted, because no dealer metadata variant defines State. v2.4 REMOVED that gate
+#   entirely and collapsed the two dealer combos into one, so there is no longer a State condition
+#   to observe and audit_wiring_closure class J no longer fires on RQ05.
+#   WHY THE GATE WENT: RQ05 (State EXISTS) and QV.D (State NOT_EXISTS) had IDENTICAL set[] and
+#   IDENTICAL any[], and State was in neither -- so both emitted BYTE-IDENTICAL requests and the
+#   condition only chose which keyRef got RECORDED. The v2.3 comment defending the split said the
+#   officer State choice "selects the destination rather than riding the request"; it does not,
+#   because THE KEYREF NEVER REACHES THE WIRE. Devdoc combination 4 is "(In)
+#   DealerLicensePlateNumber, [InquiryTypeIndicator]" with no (Out) counterpart, so an
+#   out-of-state dealer path was never a devdoc path. Left in place it would also have produced a
+#   guaranteed audit_log_inflation attack-A clone group on every sweep.
+#   The rule the row states is STILL TRUE and still binding: State must NOT be added to RQ05's
+#   any[] -- no dealer variant defines it, so that would OVER-PERMIT.
+# VehicleRegistrationQuery | RQ05 | RegistrationState | routing-only-not-transmitted | CORRECT AS BUILT -- the wiring-closure remedy would OVER-PERMIT. audit_wiring_closure class J reports "EXISTS RegistrationState gates this combo but is in NEITHER its set[] NOR any[] -- the officer value routes and is then NOT transmitted". True as stated, and adding State to any[] would be a NEW defect: read from the raw XML <Requirements> per <Combination>, the sanctioned exception, metadata RQ05 is Set[DealerLicensePlateNumber] Any[InquiryTypeIndicator] -- it defines NO State field at all, in Set or Any. RQ05 and QV.D are the OUT-OF-STATE and IN-STATE dealer-plate fork: identical set[] (DealerLicensePlateNumber) separated ONLY by the State condition (RQ05 gates EXISTS, QV.D gates NOT_EXISTS), which is the legitimate in/out routing pattern this portfolio uses everywhere. So the officer State value SHOULD route and SHOULD NOT be transmitted on RQ05, because the RQ05 transaction cannot carry it. Same shape already registered on OH_LEADS BoatQuery BQ.H (image flags not defined on the Nlets BQ transaction, so a hull+State+Image fill correctly does not carry them). Class J is a wiring OBSERVATION, not a verdict -- the tool own text says only classes A and C are officer-facing -- and it does not read this registry, so the finding will keep printing; that is expected, not a regression. DO NOT "fix" it by widening RQ05 any[]. | metadata-vs-devdoc | 2026-08-19

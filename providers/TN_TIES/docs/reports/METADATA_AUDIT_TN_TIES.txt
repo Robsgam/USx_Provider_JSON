@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: TN_TIES
-  Source: TN_TIES_v2.3.json
-  Generated: 2026-08-20 20:31
+  Source: TN_TIES_v2.4.json
+  Generated: 2026-08-24 13:52
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-20 20:31
+ Generated: 2026-08-24 13:52
 ============================================================
 
 ============================================================
  METADATA AUDIT: TN_TIES
 ============================================================
   XML: TN_TIES.xml
-  JSON: TN_TIES_v2.3.json
+  JSON: TN_TIES_v2.4.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -26,6 +26,8 @@ METADATA AUDIT
   [PASS] VehicleRegistrationQuery: in XML and JSON
 
 --- CHECK 2: KeyReference Validation ---
+  [PASS] RQ03: exists in XML VehicleRegistrationQuery
+  [PASS] RQ01: exists in XML VehicleRegistrationQuery
   [PASS] RQ05: exists in XML VehicleRegistrationQuery
   [PASS] RQ06: exists in XML VehicleRegistrationQuery
   [PASS] RQ07: exists in XML VehicleRegistrationQuery
@@ -146,6 +148,10 @@ METADATA AUDIT
   [PASS]   keyRef QG: any field 'GunCaliber' present
   [PASS]   keyRef QG: any field 'GunMake' present
   VehicleRegistrationQuery:
+  [PASS]   keyRef RQ01: set field 'LicensePlateNumber' present
+  [PASS]   keyRef RQ01: any field 'InquiryTypeIndicator' present
+  [PASS]   keyRef RQ03: set field 'VehicleIdentificationNumber' present
+  [PASS]   keyRef RQ03: any field 'InquiryTypeIndicator' present
   [PASS]   keyRef RQ06: set field 'HandicapPlacardNumber' present
   [PASS]   keyRef RQ05: set field 'DealerLicensePlateNumber' present
   [PASS]   keyRef RQ05: any field 'InquiryTypeIndicator' present
@@ -160,15 +166,6 @@ METADATA AUDIT
   [PASS]   keyRef RQ: any field 'InquiryTypeIndicator' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: any field 'VehicleMakeCode' covered by RQ.P,RQ.V
   [PASS]   keyRef RQ: any field 'VehicleYear' covered by RQ.P,RQ.V
-  [PASS]   keyRef QV: set field 'VehicleIdentificationNumber' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: any field 'InquiryTypeIndicator' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: any field 'VehicleMakeCode' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: any field 'VehicleYear' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: any field 'InquiryTypeIndicator' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: any field 'LicensePlateTypeCode' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: set field 'DealerLicensePlateNumber' covered by QV.V,QV.P,QV.D
-  [PASS]   keyRef QV: any field 'InquiryTypeIndicator' covered by QV.V,QV.P,QV.D
 
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
   [PASS]   No fields over-promoted from metadata any[] to set[]
@@ -232,6 +229,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 169 PASS / 0 FAIL / 0 WARN
+Total: 166 PASS / 0 FAIL / 0 WARN
 ============================================================
 
