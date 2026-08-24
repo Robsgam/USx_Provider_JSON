@@ -1,6 +1,6 @@
 ﻿{
     "provider":  "AZ_AZDPS",
-    "version":  "3.6",
+    "version":  "3.11",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -12,36 +12,22 @@
                    },
                    {
                        "entity":  "Vehicle",
+                       "fieldId":  "RegistrationState",
+                       "label":  "State (leave blank for AZ)",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Vehicle",
                        "fieldId":  "VehicleMakeCode",
                        "label":  "Make",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
                    {
-                       "entity":  "Vehicle",
-                       "fieldId":  "RegistrationState",
-                       "label":  "State",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "SexCode",
-                       "label":  "Sex",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
                        "entity":  "Person",
                        "fieldId":  "RegistrationState",
-                       "label":  "State",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "raceCode",
-                       "label":  "Race",
+                       "label":  "State (leave blank for AZ)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
@@ -54,10 +40,38 @@
                    },
                    {
                        "entity":  "Person",
+                       "fieldId":  "SexCode",
+                       "label":  "Sex",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "raceCode",
+                       "label":  "Race",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "RegistrationStateDH",
+                       "label":  "State",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
                        "fieldId":  "SexCodeDH",
                        "label":  "Sex",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "fieldId":  "relatedHitSearchIndicator",
+                       "label":  "Stolen Check",
+                       "codeTypeCategory":  "YES_NO_UNKNOWN",
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Firearm",
@@ -71,13 +85,6 @@
                        "fieldId":  "GunCaliber",
                        "label":  "Caliber",
                        "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
-                       "codeTypeSource":  "NCIC"
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "relatedHitSearchIndicator",
-                       "label":  "Stolen Check",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
                        "codeTypeSource":  "NCIC"
                    },
                    {
@@ -97,7 +104,7 @@
                    {
                        "entity":  "Boat",
                        "fieldId":  "RegistrationState",
-                       "label":  "State",
+                       "label":  "State (leave blank for AZ)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },

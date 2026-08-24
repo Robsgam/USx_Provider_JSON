@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "AZ_AZDPS",
-    "version":  "3.6",
+    "version":  "3.11",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -14,36 +14,22 @@ var scope = {
                    },
                    {
                        "entity":  "Vehicle",
+                       "fieldId":  "RegistrationState",
+                       "label":  "State (leave blank for AZ)",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Vehicle",
                        "fieldId":  "VehicleMakeCode",
                        "label":  "Make",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
                    {
-                       "entity":  "Vehicle",
-                       "fieldId":  "RegistrationState",
-                       "label":  "State",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "SexCode",
-                       "label":  "Sex",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
                        "entity":  "Person",
                        "fieldId":  "RegistrationState",
-                       "label":  "State",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "raceCode",
-                       "label":  "Race",
+                       "label":  "State (leave blank for AZ)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
@@ -56,10 +42,38 @@ var scope = {
                    },
                    {
                        "entity":  "Person",
+                       "fieldId":  "SexCode",
+                       "label":  "Sex",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "raceCode",
+                       "label":  "Race",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "RegistrationStateDH",
+                       "label":  "State",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
                        "fieldId":  "SexCodeDH",
                        "label":  "Sex",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Firearm",
+                       "fieldId":  "relatedHitSearchIndicator",
+                       "label":  "Stolen Check",
+                       "codeTypeCategory":  "YES_NO_UNKNOWN",
+                       "codeTypeSource":  "NCIC"
                    },
                    {
                        "entity":  "Firearm",
@@ -73,13 +87,6 @@ var scope = {
                        "fieldId":  "GunCaliber",
                        "label":  "Caliber",
                        "codeTypeCategory":  "NCIC_FIREARM_CALIBER",
-                       "codeTypeSource":  "NCIC"
-                   },
-                   {
-                       "entity":  "Firearm",
-                       "fieldId":  "relatedHitSearchIndicator",
-                       "label":  "Stolen Check",
-                       "codeTypeCategory":  "YES_NO_UNKNOWN",
                        "codeTypeSource":  "NCIC"
                    },
                    {
@@ -99,7 +106,7 @@ var scope = {
                    {
                        "entity":  "Boat",
                        "fieldId":  "RegistrationState",
-                       "label":  "State",
+                       "label":  "State (leave blank for AZ)",
                        "codeTypeCategory":  "",
                        "codeTypeSource":  ""
                    },
@@ -112,4 +119,4 @@ var scope = {
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: AZ_AZDPS v3.6 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: AZ_AZDPS v3.11 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
