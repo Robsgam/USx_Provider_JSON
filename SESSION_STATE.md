@@ -42,9 +42,9 @@ move the number. Queue authority is `report_import_owed.ps1`, never this file. S
 OR_LEDS 27, LA_LEMS 31, MD_METERS 44. Decide CONTRA_COSTA's JAWS ruling before its 92-test sweep.
 
 **MEASURED 2026-08-24, do not re-derive from prose:** picklist 20 examined / **10 owe the one-time
-capture / 0 owe a re-scope** / 10 current (AZ's 16-dropdown capture completed) - `audit_name_components`
-216 / 0 C1 / 0 C2 / 0 C3 - `audit_layout_flow` 10 findings on 7 providers (six tenant-verified, so
-each costs a re-sweep; NM's L9 is an ACCEPTED OPERATOR OVERRIDE) - clone groups 38 -> **33** untriaged.
+capture / 0 owe a re-scope** / 10 current - `audit_name_components` 216 / 0 C1 / 0 C2 / 0 C3 -
+`audit_layout_flow` 10 findings on 7 providers (six tenant-verified, each costs a re-sweep; NM's L9
+is an ACCEPTED OVERRIDE) - clone groups **17 on 4** (FL/HI/NJ/IL), 9 log-less SKIPPED = NOT clean.
 
 ## OPEN DECISIONS THAT ARE ROB'S, NOT MINE
 
