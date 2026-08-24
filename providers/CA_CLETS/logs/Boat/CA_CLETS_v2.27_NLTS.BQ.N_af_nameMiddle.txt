@@ -1,0 +1,78 @@
+﻿================================================================
+TEST LOG: CA_CLETS Boat BoatQuery
+Combo: NLTS.BQ.N_af_nameMiddle (NLTS.BQ.N_af_nameMiddle (auto))
+Date: 2026-08-24 18:58:04
+Result: PASS
+JSON Version: 2.27
+Entity Fingerprint: 2ab4548882f03581480018a255c7b2c24f88ca2e45442f860e06ef7483b9c607
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","nameMiddle":"A","purposeCode":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TZT9BG4K7EMRZDFRH8N7SS">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M0TZT9BG4K7EMRZDFRH8N7SS</Id>
+            <State>GA</State>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN A</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TZT9BG4K7EMRZDFRH8N7SS
+  State                          GA
+  BirthDate                      19900115
+  Name                           DOE, JOHN A
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M0TZT9BG4K7EMRZDFRH8N7SS). kind=any-field; anyField=nameMiddle; expectedKeyRef=NLTS.BQ.N; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

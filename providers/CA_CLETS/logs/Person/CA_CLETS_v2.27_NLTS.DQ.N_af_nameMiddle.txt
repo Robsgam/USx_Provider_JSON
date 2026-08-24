@@ -1,0 +1,88 @@
+﻿================================================================
+TEST LOG: CA_CLETS Person DriverLicenseQuery
+Combo: NLTS.DQ.N_af_nameMiddle (NLTS.DQ.N_af_nameMiddle (auto))
+Date: 2026-08-24 18:58:46
+Result: PASS
+JSON Version: 2.27
+Entity Fingerprint: 652f4b44d183e01dd6537826cdf6b283cc2f2b4a57513286a0a7707115094e57
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"NameFirst":"JOHN","NameLast":"DOE","RegistrationState":"Georgia","nameMiddle":"A","purposeCode":"C","purposeCodeDH":"C","purposeCodeNletsDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TXVA2SNQDGRY132JWXEMXG">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M0TXVA2SNQDGRY132JWXEMXG</Id>
+            <State>GA</State>
+            <Name>DOE, JOHN A</Name>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "registrationStateAttrId":  "69586240690"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TXVA2SNQDGRY132JWXEMXG
+  State                          GA
+  Name                           DOE, JOHN A
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M0TXVA2SNQDGRY132JWXEMXG). kind=any-field; anyField=nameMiddle; expectedKeyRef=NLTS.DQ.N; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

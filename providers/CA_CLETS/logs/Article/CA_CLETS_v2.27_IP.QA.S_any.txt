@@ -1,0 +1,80 @@
+﻿================================================================
+TEST LOG: CA_CLETS Article ArticleSingleQuery
+Combo: IP.QA.S_any (IP.QA.S_any (auto))
+Date: 2026-08-24 18:58:08
+Result: PASS
+JSON Version: 2.27
+Entity Fingerprint: 19661d9df932fbd1cac2523ac365293b90e48bc5e7401e12e68a32b22b479a47
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ArticleSerialNumber":"ART99999","ArticleTypeCode":"BBICYCL","articleBrand":"SONY","articleCategory":"E","purposeCode":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TZS1D6FNA8DZTP7BTH1ZNQ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <DeviceId>MK43RS</DeviceId>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01M0TZS1D6FNA8DZTP7BTH1ZNQ</Id>
+            <ArticleBrand>SONY</ArticleBrand>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <ArticleCategory>E</ArticleCategory>
+            <ArticleSerialNumber>ART99999</ArticleSerialNumber>
+            <CaRequestPurposeCode>C</CaRequestPurposeCode>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  DeviceId                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TZS1D6FNA8DZTP7BTH1ZNQ
+  ArticleBrand                   SONY
+  ArticleTypeCode                BBICYCL
+  ArticleCategory                E
+  ArticleSerialNumber            ART99999
+  CaRequestPurposeCode           C
+
+NOTES
+-----
+Automated capture (txId 01M0TZS1D6FNA8DZTP7BTH1ZNQ). kind=any; anyField=; expectedKeyRef=IP.QA.S; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
