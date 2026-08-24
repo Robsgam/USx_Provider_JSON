@@ -2,9 +2,53 @@
 
 Auto-generated from `CA_CLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.26** | Generated: 2026-08-17
+Current: **v2.27** | Generated: 2026-08-24
 
 ---
+
+## v2.27 -- 2026-08-24 -- In-state plate searches stop asserting the current registration year
+
+**CHANGED:** LicensePlateYear removed from IA.QV's any[] and from its defaults[]. IA.QV is now
+  set[purposeCode, LicensePlateNumber] any[LicensePlateTypeCode, VehicleMakeCode, vehicleYear].  
+  NLTS.RQ.P (out-of-state) is untouched and still carries LicensePlateYear in set[] with its  
+  default -- that is the only devdoc combination that asks for the field.  
+**REASON:** the control is prefilled with the current year because NLTS.RQ.P needs it, so it was
+  ALWAYS present in form state and transmitted on EVERY in-state plate search -- an unconditional  
+  assertion that the plate's registration year is 2026, which can only narrow a match. The officer  
+  never chose it.  
+AUTHORITY, measured rather than argued: ZERO CA_CLETS devdoc (In) or (In/Out) combinations mention  
+  LicensePlateYear. It appears on exactly two entries, both "(Out) #7" = NLTS.RQ.P's shape.  
+FOUND BY A PORTFOLIO SWEEP, not by this provider's gates. After TN_TIES v2.6 fixed the same shape,  
+  Rob asked to sweep for it: 20 providers / 378 combinations / 96 prefilled controls -> 14 Tier-1  
+  candidates -> 13 adjudicated away on their own devdocs. This was the residue on a  
+  TENANT-VERIFIED provider. audit_requirement_fidelity read 0 OVER-PERMITTED throughout, because a  
+  registry row covered it -- a gate can ask "may we send this?" but nothing asked "did we mean to?"  
+THE EXISTING REGISTRY ROW WAS RIGHT ABOUT THREE FIELDS AND WRONG ABOUT THIS ONE. Its 2026-07-31  
+  justification covered LicensePlateTypeCode (devdoc #2, in-state MANDATORY), VehicleMakeCode and  
+  vehicleYear (the VIN combinations) -- all genuinely listed -- and LicensePlateYear rode along by  
+  association. VehicleYear (model year) and LicensePlateYear (plate registration year) are  
+  different fields, which is what hid it. Row retired with the full reasoning; the other three  
+  stand. audit_registry_currency flagged it STALE immediately after the rebuild, which is the gate  
+  working as designed.  
+LicensePlateTypeCode DELIBERATELY KEPT: devdoc #2 "(In) LicensePlateNumber, LicensePlateTypeCode"  
+  makes it MANDATORY in-state. TN_TIES v2.6 removed the plate TYPE from its in-state search for the  
+  mirror-image reason (TN's devdoc #1 lists none). Same-looking fields, opposite answers, and the  
+  devdoc is the only thing that tells them apart.  
+GATES: validator 79P/0F/0W - reachability 27/27 all reachable - prefill shadow 66 pairs / 0 FAIL -  
+  fidelity 27 branches / 0 UNDER / 0 OVER (HELD) - wiring closure 0 breaks (LicensePlateYear is  
+  still alive on NLTS.RQ.P, so removing it from IA.QV did not orphan the control) - devdoc  
+  combinations 34 compared / 0 FAIL.  
+COST: archives all 111 v2.26 logs. CA_CLETS drops ALL-PASS -> NEVER-TESTED and owes a re-import  
+  plus a re-sweep. Rob authorised it explicitly ("fix ca clets too") after being shown the cost.  
+  This is a WIRE change: in-state plate searches send one field fewer. The comparison the re-sweep  
+  must make is that IA.QV wires no longer carry LicensePlateYear while NLTS.RQ.P wires still do.  
+PROCESS NOTE -- I OVERWROTE THE TENANT-VERIFIED v2.26 JSON IN PLACE BEFORE CATCHING IT. My version  
+  bump used sed against `$Version = ` but this script declares it as a PARAM DEFAULT  
+  (`[string]$Version = "2.26"`), so the pattern missed, the build re-emitted v2.26, and for a few  
+  minutes the file on disk did not match the 111 logs naming it -- audit_log_inflation attack B,  
+  fingerprint drift. Caught by checking `ls` for the emitted filename instead of trusting the  
+  build's success line. Restored v2.26 from git, verified 0 diff, then bumped the param properly.  
+  ALWAYS verify the emitted filename after a version bump; a literal-match bump can silently no-op.  
 
 ## v2.26 -- 2026-08-17 -- "CA Purpose Code" on every card + SPLIT the DH double-mapped purpose code
 
@@ -396,7 +440,7 @@ STILL OWED ON THIS PROVIDER: nothing from audit_name_components (now 20 componen
 
 ## v2.4 -- 2026-06-09 -- Single-JSON merge
 
-**CHANGED:** Merged BASE/MC into single build: build_ca_clets.ps1 → CA_CLETS.json (no suffix).
+**CHANGED:** Merged BASE/MC into single build: build_ca_clets.ps1 â†’ CA_CLETS.json (no suffix).
          Deleted old BASE build script. Reports now in docs/ (not docs/mc/).  
          Phase snapshots to phases/ (not phases/mc/).  
 **REASON:**  BASE/MC split doubled maintenance; single-JSON is the standard.
@@ -425,7 +469,7 @@ TEST CONDUCTOR: 32/32 PASS (20 combos)
          QIDM targetField='CaRequestPurposeCode' unchanged (XML element name).  
 **REASON:**  CAD dispatch sends PurposeCode (PascalCase). Platform matches case-insensitively
          to JSON fieldId. 'caRequestPurposeCode' did not match -> zero combos fired from CAD.  
-         'purposeCode' matches CAD's 'PurposeCode'. QIDM sourceField→targetField handles  
+         'purposeCode' matches CAD's 'PurposeCode'. QIDM sourceFieldâ†’targetField handles  
          the mapping to the correct XML element name CaRequestPurposeCode.  
 VALIDATOR: BASE 66P/0F/0W/0LIM | MC 70P/0F/0W/0LIM  
 IMPORT TEST: 3/3 CAD PASS (IA.QV plate, NLTS.RQ.P OOS plate, IA.QVK VIN)  
@@ -470,7 +514,7 @@ VALIDATOR: BASE 64P/0F/0W/5LIM | MC 68P/0F/0W/7LIM | Verify CLEAN
 **CHANGED:** CommsysParseDateRuleHandler target format: MMddyyyy -> yyyyMMdd (all BirthDate attrs)
 **REASON:**  CA_ESUN (production CA provider) uses yyyyMMdd. Our build had MMddyyyy (copied from
          NJ pattern without verifying CA-specific format). BirthDate would have been sent as  
-         e.g., "01151990" (Jan 15) instead of "19900115" — wrong date interpretation by CA backend.  
+         e.g., "01151990" (Jan 15) instead of "19900115" â€” wrong date interpretation by CA backend.  
 ALSO:    Added PROVIDER_CONFIG.txt with verified date format, supported query list, CA patterns.  
          Build script header cleaned (removed stale "9 transactions" count).  
 

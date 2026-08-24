@@ -151,7 +151,7 @@
 #      & .\scripts\build_ca_clets.ps1 -Version 2.6
 
 param(
-    [string]$Version = "2.26"
+    [string]$Version = "2.27"
 )
 
 $ErrorActionPreference = "Stop"
@@ -290,15 +290,39 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'IA.QVK'
             state                 = 'In/Out'
         }
-        # --- IA.QV plate catchall (no conditions, fires for any plate type not matched above) ---
+        # --- IA.QV plate catchall (in-state / blank-State plate path) ---
+        #
+        # *** v2.27: LicensePlateYear REMOVED from any[] and from defaults[]. ***
+        # It was PREFILLED with the current year (the control has initialValue $currentYear, which it
+        # needs because NLTS.RQ.P carries LicensePlateYear in set[] for the out-of-state path), so it
+        # was ALWAYS present in form state and therefore transmitted on EVERY in-state plate search.
+        # Not an optional the officer chose -- an unconditional assertion that the plate's registration
+        # year is the current one, which can only narrow a match.
+        #
+        # THE DEVDOC IS THE DECIDING TEST AND IT SAYS NO, measured 2026-08-24: **ZERO** CA_CLETS devdoc
+        # (In) or (In/Out) combinations mention LicensePlateYear. It appears on exactly two entries,
+        # both "(Out) #7" -- which is NLTS.RQ.P's shape (plate + type + year + State), already built.
+        #
+        # WHY THE EXISTING REGISTRY ROW DID NOT CATCH THIS: the 2026-07-31 `promoted-to-any` rows cover
+        # FOUR fields under ONE justification, and that justification genuinely supports three of them:
+        #   LicensePlateTypeCode -> devdoc #2 "(In) LicensePlateNumber, LicensePlateTypeCode"  YES
+        #   VehicleMakeCode      -> devdoc "(Out) State, VIN, [VehicleMakeCode, VehicleYear]"   YES
+        #   vehicleYear          -> same VIN combo. NOTE: that is VehicleYear, the MODEL year     YES
+        #   LicensePlateYear     -> not listed on any (In)/(In/Out) combination                   NO
+        # LicensePlateYear rode along by association, and VehicleYear-vs-LicensePlateYear being two
+        # different fields is what made it easy to miss. Same lumping error as the TN_TIES RQ01 note.
+        #
+        # LicensePlateTypeCode STAYS: devdoc #2 makes it MANDATORY on the in-state plate search, so
+        # prefilling it is required rather than merely allowed. That asymmetry is the whole point --
+        # TN_TIES had no plate type on its in-state combination at all, which is why TN's fix removed
+        # the type and this one removes the year. Do not generalise between providers; read the devdoc.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set      = @('purposeCode','LicensePlateNumber')
-                any      = @('LicensePlateTypeCode','LicensePlateYear','VehicleMakeCode','vehicleYear')
+                any      = @('LicensePlateTypeCode','VehicleMakeCode','vehicleYear')
                 defaults = @(
                     [PSCustomObject]@{ field = 'purposeCode';          value = 'C' }
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode';  value = 'PC' }
-                    [PSCustomObject]@{ field = 'LicensePlateYear';      value = $currentYear }
                 )
                 # v2.19 in/out gate: in-state plate catchall fires only when State is BLANK (OOS plate
                 # routes to NLTS.RQ.P). RegistrationState dropped from any[] (gate-XOR-companion).
