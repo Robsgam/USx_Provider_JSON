@@ -113,6 +113,22 @@ try {
 }
 
 Emit ""
+Emit "--- DATA-MINED TRANSACTIONS (DM2 = mined tags we cannot receive; audit_data_mined.ps1) ---"
+# Added 2026-08-24. build_phase1 step 5b covers a provider AT BUILD TIME; this is the portfolio view,
+# so a DM2 on a provider nobody is rebuilding is still visible. Only the summary is echoed -- the DM1
+# per-combination annotations belong next to the build's own MISSING list, not in a dashboard.
+try {
+    # NOT -Quiet: that switch suppresses Write-Host, so a piped capture gets NOTHING and this block
+    # printed an empty section on its first run. Documented trap, and I walked into it anyway.
+    $dm = & "$tool\audit_data_mined.ps1" -All *>&1 | Out-String
+    $picked = @(($dm.TrimEnd() -split "`n") | Where-Object { $_ -match 'EXAMINED:|DM2 \(|\[PASS\]|\[NO-VERDICT\]|DM2 WARN' })
+    if ($picked.Count) { $picked | ForEach-Object { Emit $_.TrimEnd() } }
+    else { Emit '  [WARN] audit_data_mined produced no summary line -- treat as UNCHECKED, not clean' }
+} catch {
+    Emit "  [WARN] audit_data_mined.ps1 failed: $($_.Exception.Message)"
+}
+
+Emit ""
 Emit "--- TENANT PICKLIST SCOPE (owed captures / owed re-scopes; audit_picklist_scope.ps1) ---"
 # ADDED 2026-08-21. enforce runs this tool ONE PROVIDER AT A TIME, so a standing owed capture is
 # invisible unless someone happens to enforce that provider -- and AZ_AZDPS had owed 4 dropdown

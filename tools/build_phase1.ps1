@@ -258,7 +258,34 @@ foreach ($pn in $targets) {
         Out-Line ("  [5] query trace                {0} built, {1} prefill-dead, {2} shadow, {3} missing" -f $m6.Groups[1].Value,$pd,$sh,$ms) $(if ($pd) { 'Red' } elseif ($sh+$ms) { 'Yellow' } else { 'Green' })
         if ($pd) { $short += "PREFILL-DEAD x$pd -- our own default hides a real metadata combination (highest severity: officer capability)" }
         if ($sh) { $short += "SHADOW x$sh -- identical set[]; only one can ever fire" }
-        if ($ms) { $short += "MISSING x$ms -- adjudicate against the devdoc Basic list" }
+        if ($ms) { $short += "MISSING x$ms -- adjudicate against the devdoc Basic list, AND against step 5b's mined list FIRST" }
+    }
+
+    # ── 5b. DATA-MINED TRANSACTIONS -- read the devdoc sentence BEFORE adjudicating a MISSING ──
+    # Added 2026-08-24 on Rob's instruction ("that data mining logic should be built into the build
+    # process ... make sure we dont have this issue debated again"). TN_TIES carried a note in FOUR
+    # places calling an unbuilt `RQ01` a routing risk -- "in-state plate searches reach NCIC not
+    # TIES/DMV". Impossible on two counts, both mechanical: the keyRef NEVER reaches the wire (a
+    # request carries <MessageType><QueryName></MessageType> plus the FIELDS, nothing else), and `QV`
+    # is a DATA-MINED transaction the state runs off our single request. The devdoc SAYS SO on its own
+    # line, and `audit_supported_queries` used that line only as a parse BOUNDARY -- so nothing in the
+    # repo had ever read it. This step is positioned immediately after query-trace on purpose: step 5's
+    # MISSING list is exactly where the wrong conclusion gets drawn, so the mined list must be on
+    # screen at the same moment.
+    $o6b = Run-Tool 'audit_data_mined.ps1' @('-Provider', $pn)
+    $m6b = [regex]::Match($o6b, 'EXAMINED:\s*\d+ provider\(s\)\s*/\s*(\d+) declare mined transactions\s*/\s*(\d+) mined-named')
+    $m6c = [regex]::Match($o6b, 'DM2 \(no QRDM mapping, ACTIONABLE\):\s*(\d+)\s+DM3 \(present but unexercised\):\s*(\d+)')
+    if ($m6b.Success -and $m6c.Success) {
+        $dm2c = [int]$m6c.Groups[1].Value; $dm3c = [int]$m6c.Groups[2].Value
+        $decl = [int]$m6b.Groups[1].Value; $ann = [int]$m6b.Groups[2].Value
+        Out-Line ("  [5b] data-mined transactions   {0} declared, {1} combo(s) mined-named, DM2 {2}, DM3 {3}" -f $decl,$ann,$dm2c,$dm3c) $(if ($dm2c) { 'Yellow' } else { 'Green' })
+        if ($dm2c) { $short += "DM2 x$dm2c -- mined transactions declared but the QRDM cannot receive their tags (tools\audit_data_mined.ps1 -Provider $pn)" }
+        if ($ann -gt 0 -and $ms -gt 0) {
+            Out-Line "       NOTE: $ann built combo(s) are named after MINED transactions. Check step 5's MISSING against" 'DarkGray'
+            Out-Line "       that list BEFORE adjudicating -- a mined sibling reported unbuilt is a NON-ISSUE, not work." 'DarkGray'
+        }
+    } else {
+        Out-Line '  [5b] data-mined transactions   [NO-VERDICT] could not parse the summary -- treat as unchecked' 'Yellow'
     }
 
     # ── 6. gate efficacy: can the gates fail at all? ──────────────────────────────────

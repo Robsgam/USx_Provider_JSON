@@ -683,7 +683,50 @@ TOOLS
     values against this file once it exists.
     Usage: .\tools\import_picklists.ps1 -Path <file|dir>
 
+  tools/audit_data_mined.ps1
+    DATA-MINED TRANSACTIONS -- what the state runs FOR us, and why that is not an unbuilt gap.
+    ADVISORY, always exits 0. Wired into build_phase1 as step 5b, printed immediately AFTER the
+    query-trace step because that step's MISSING list is exactly where the wrong conclusion is drawn.
+    TWO MECHANICAL FACTS it exists to stop re-debating:
+      1. The keyRef NEVER reaches the wire. A request carries
+         <MessageType><QueryName></MessageType> plus the FIELDS -- nothing else identifies the
+         transaction (verified against a real capture: the keyRef appears ZERO times). Rob,
+         2026-08-24: "we only send the VehicleRegistrationQuery and not the transaction name." So
+         "we built keyRef X instead of Y" is NEVER a functional defect on its own; only the query
+         name and the field set can be wrong. Two combinations with the same set[] emit identical
+         bytes -- a naming question, often a routing IMPOSSIBILITY, never a routing risk.
+      2. A DATA-MINED transaction is run BY THE STATE off our single request; its tags come back in
+         the response, so we never send it separately. Therefore a metadata combination whose keyRef
+         is mined is NOT a gap, and building no separate stolen/wanted query for a mined file is
+         CORRECT (NJ's QV skip and TN's absent VehicleStolenQuery are both this).
+         InquiryTypeIndicator (1 reg-only / 2 hotfiles-only / 3 both, DEFAULT) is why one query
+         covers registration AND hot files.
+    WHY NO GATE CAUGHT IT: audit_supported_queries used the devdoc's "Data-Mined Transactions:" line
+    purely as a parse BOUNDARY to stop reading the Basic list (lines 88 and 134) and threw the
+    content away. The devdoc names the mined transactions and NOTHING in the repo had ever read that
+    sentence. Cost: TN_TIES carried a note in FOUR places calling an unbuilt RQ01 a routing risk --
+    "in-state TN plate searches reach NCIC not TIES/DMV" -- filed as an open question for Rob. It was
+    impossible by (1), already adjudicated in TN's own ACCEPTED_DIVERGENCES ("RQ01 ... == QV.P ->
+    DROPPED"), and answered outright by (2).
+    CLASSES: DM1 built combos named after a mined transaction (NOTE -- closes a debate, not work);
+    DM2 mined declared but the QRDM carries NO hit/related mapping (the ONLY actionable class -- the
+    state returns tags we cannot surface); DM3 mapping present but never exercised (config-present is
+    not proof a mined hit RENDERS -- same class as HI's unverified NCIC hit block).
+    PARSE TRAP: the content sits on the FOLLOWING line(s), not after the colon, and HI_HCJDC_OFML
+    puts a BLANK LINE between label and content. v1 stopped at that blank and reported HI as
+    declaring NOTHING -- a false negative on the very question the tool answers, caught only by
+    hand-checking a provider it called empty. Blanks BEFORE content are skipped; a blank AFTER
+    content ends the block. Variant providers fall back to the base devdoc.
+    LAW 2 proven both directions: DM2 fires when the hit/related mapping is stripped from a replica
+    (mutation must loop -- one key can contain both "hit" and "related", so a single pass leaves
+    matches and the gate is RIGHT to stay green), and passes on the clean file.
+    Baseline 2026-08-24: 20 examined / 16 declare mined transactions / 33 mined-named combinations /
+    DM2 0 / DM3 7 (CA_CLETS_OCATS, CA_SLO, CA_VENTURA, LA_LEMS, OR_LEDS, TN_TIES, TX_TLETS_CCH --
+    all never-tested, so "does a mined hit render?" belongs in each one's first sweep).
+    Usage: .\tools\audit_data_mined.ps1 -Provider <name> | -All | -Providers <list>
+
   tools/audit_picklist_scope.ps1
+
     ADVISORY picklist-scope reminder (never blocks; emits [NOTE], always exits 0). Reminds when
     a provider still owes its one-time tenant picklist capture (no TENANT_PICKLISTS.json) or when
     a build introduced a new non-null code category the capture doesn't cover. Only real

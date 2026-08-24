@@ -122,6 +122,59 @@ This decided **five** separate outcomes in one day. Always scope by
   `{BoatHullIdNumber}` and `{RegistrationNumber}`; an unnarrowed lookup found a field on the sibling
   and recommended a change that would have OVER-PERMITTED.
 
+## Step 2b — THE KEYREF NEVER REACHES THE WIRE, AND SOME TRANSACTIONS ARE DATA-MINED
+
+**Run `tools\audit_data_mined.ps1 -Provider <NAME>` before adjudicating ANY "unbuilt combination"
+finding.** It is wired into `build_phase1` as step **5b**, deliberately printed immediately after
+step 5 (query trace) — because step 5's MISSING list is exactly where the wrong conclusion gets
+drawn, so the mined list has to be on screen at that moment.
+
+Two mechanical facts. Between them they dissolve a whole class of finding, and BOTH were invisible
+to every gate until 2026-08-24.
+
+**(a) A keyRef choice cannot change where a query goes.** The request carries
+`<MessageType><QueryName></MessageType>` plus the FIELDS — nothing else identifies the transaction.
+Verified against a real capture: the keyRef appears **zero** times. Rob, 2026-08-24: *"we only send
+the VehicleRegistrationQuery and not the transaction name."*
+
+> So **"we built keyRef X instead of Y" is never a functional defect on its own.** Only the QUERY
+> NAME and the FIELD SET can be wrong. If two metadata combinations have the same `set[]`, picking
+> either one emits identical bytes — that is a naming question, and often a routing IMPOSSIBILITY
+> (no fill can separate them), never a routing risk.
+
+**(b) A DATA-MINED transaction is run BY THE STATE off our single request.** Its tags come back in
+the response; we never send it separately. The devdoc declares them on its own line:
+
+```
+Data-Mined Transactions: NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle)
+                         Tags returned from Data mining
+```
+
+Consequences, all three load-bearing:
+- A metadata combination whose keyRef is a mined transaction is **not a gap to fill**.
+- Building **no separate stolen/wanted query** for a mined file is **correct**, not an omission
+  (NJ's QV skip and TN's absent VehicleStolenQuery are both this).
+- `InquiryTypeIndicator` (`1` reg-only / `2` hotfiles-only / **`3` both, default**) is why ONE query
+  covers registration *and* hot files.
+- **What IS real:** the QRDM must be able to receive those tags. That is class **DM2**, the only
+  actionable output of the tool — and config presence is still not proof that a mined hit *renders*
+  (class DM3, currently 7 providers).
+
+**WHY THIS IS A SKILL RULE AND NOT JUST A TOOL.** `audit_supported_queries` used the string
+`Data-Mined Transactions` purely as a **parse boundary** to stop reading the Basic list — it read
+past the content and threw it away. So the devdoc named the mined transactions and **nothing in the
+repo had ever read that sentence.** The cost: TN_TIES carried a note in FOUR places (SESSION_STATE,
+FINDINGS_REGISTER twice, its own BUILD_NOTES) saying an unbuilt `RQ01` might mean *"in-state TN plate
+searches reach NCIC not TIES/DMV"* — filed as an open functional risk needing Rob's ruling. It was
+impossible by (a), already adjudicated in TN's own registry (`RQ01 ... == QV.P -> DROPPED`), and
+answered outright by (b). Measured 2026-08-24: **16 of 20 devdocs declare mined transactions and 33
+built combinations are named after one** — so this is portfolio-wide, not a TN quirk.
+
+**Parse trap, if you ever touch the parser:** the content is usually on the FOLLOWING line(s), not
+after the colon, and HI_HCJDC_OFML puts a **blank line** between them. My first parser stopped at
+that blank and reported HI as declaring nothing — a false negative on the exact question the tool
+exists to answer, caught only by hand-checking a provider it called empty.
+
 ## Step 3 — sourceField vs targetField
 
 A combination's `set[]`/`any[]` hold **sourceFields** (form fieldIds). Metadata `<Requirements>`
