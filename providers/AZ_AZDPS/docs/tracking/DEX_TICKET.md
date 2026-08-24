@@ -1,24 +1,25 @@
-# AZ_AZDPS — DEX Ticket
+# AZ_AZDPS â€” DEX Ticket
 
-**Active ticket:** [DEX-974 — \[AZ - AZDPS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-974)
-Project: DEX (CJIS/USx/DEx Implementation) · Status (verified 2026-08-10): In Progress · Unassigned
+**Active ticket:** [DEX-974 â€” \[AZ - AZDPS\] USx Provider Build](https://mark43.atlassian.net/browse/DEX-974)
+Project: DEX (CJIS/USx/DEx Implementation) Â· Status (verified 2026-08-10): In Progress Â· Unassigned
 
 <!-- STAGE-5 MARKERS. Machine-read by tools\audit_lifecycle.ps1. One line per release, written ONLY
      when the post has been approved and actually made. The Jira comment id is the point: it is the
      one fact this repo cannot derive from itself, which is why the gate stopped accepting a version
      mention. Never write one in advance and never let a sync tool generate one. -->
 POSTED: v3.11 comment 800100 2026-08-17
+POSTED: v3.12 comment 804252 2026-08-24
 
 **FIRST AUTOMATION COMMENTS EVER ON DEX-974, both posted 2026-08-17** after Rob's approval. Until
-that day this ticket carried NO release statement for ANY version -- the entire v1.0 → v3.11 history
+that day this ticket carried NO release statement for ANY version -- the entire v1.0 â†’ v3.11 history
 was unposted while the provider sat tenant-verified.
-- **800100** — the v3.11 RELEASE LINE (ALL-PASS 58/58). This is current state.
-- **800101** — the VERSION HISTORY ANCHOR (v1.0 → v3.11, wire-affecting changes marked). Not a
+- **800100** â€” the v3.11 RELEASE LINE (ALL-PASS 58/58). This is current state.
+- **800101** â€” the VERSION HISTORY ANCHOR (v1.0 â†’ v3.11, wire-affecting changes marked). Not a
   release statement; it points at 800100 for current state.
 - Posted release-first so the anchor could carry 800100's real id with **no edit to either comment**.
 
-⚠️ **776896 IS NOT OURS.** DEX-974's only other comment is Leo Hisoire's FB-6040 roadmap note
-(2026-07-10). Never edit, stub or count it. Authorship is judged by the 🤖 attribution line, NEVER by
+âš ï¸ **776896 IS NOT OURS.** DEX-974's only other comment is Leo Hisoire's FB-6040 roadmap note
+(2026-07-10). Never edit, stub or count it. Authorship is judged by the ðŸ¤– attribution line, NEVER by
 displayName -- the automation posts under Rob's account, so its own comments also read
 "Rob Sgambellone".
 
@@ -40,13 +41,13 @@ Format is FIXED for every provider and every update -- see knowledge-base/JIRA_C
 (**FOUR** numbered sections since Rob's 2026-08-13 ruling that six was "way too many details"; an
 empty section reads "None" rather than being dropped; plus the separate HISTORY-ANCHOR shape for the
 one initial dump). Stubbing an obsolete comment is now for CLEANUP PASSES ONLY, never part of the
-normal release flow. Only automation-authored (🤖) comments may be edited: never Rob's own manual
+normal release flow. Only automation-authored (ðŸ¤–) comments may be edited: never Rob's own manual
 notes, never a third party's.
 
-> **THIS FILE IS NOT THE TICKET — read the ticket.** Verify with `getJiraIssue DEX-974`
+> **THIS FILE IS NOT THE TICKET â€” read the ticket.** Verify with `getJiraIssue DEX-974`
 > (cloudId `5ba7ec1f-1b3f-4b21-a2f2-5d04d124de2c`). The equivalent file on HI_HCJDC_OFML lied once
 > by stopping three comments short, and the one on FL produced a confidently wrong "nine versions
-> owed" the same way. `audit_lifecycle` (enforce 2r) READS THIS FILE, NOT THE TICKET — it can PASS
+> owed" the same way. `audit_lifecycle` (enforce 2r) READS THIS FILE, NOT THE TICKET â€” it can PASS
 > on a lie and FAIL on the truth.
 >
 > **TENANT INFO STAYS OFF THIS TICKET (Rob, 2026-08-03):** no attachment note, no catalog post, no
@@ -56,40 +57,45 @@ notes, never a third party's.
 `audit_lifecycle` reported `[NOTE] no DEX_TICKET.md; no ticket pointer exists for this provider` and
 the lifecycle tail was ungated for this provider. It was created when
 `audit_provider_uniformity` compared AZ against the seven tenant-complete providers and found
-`DEX_TICKET.md` present on 7 of 9 — AZ and OH_LEADS were the two without one. The DEX number was
+`DEX_TICKET.md` present on 7 of 9 â€” AZ and OH_LEADS were the two without one. The DEX number was
 taken from `knowledge-base/JIRA_REFERENCE.txt` line 21 and `IMPORT_LEDGER.md`, which agree, and then
-**confirmed against Jira itself** rather than trusted — the summary really is
+**confirmed against Jira itself** rather than trusted â€” the summary really is
 "\[AZ - AZDPS\] USx Provider Build". (Inventing a DEX number is a mistake already made once on IL
 in this project; hence the verification.)
 
-**Posted so far** (indexed from the ticket 2026-08-10 — 1 comment, accounted for):
-- 776896 (2026-07-10, Leo Hisoire) — a scheduling/roadmap note referencing FB-6040 and a Friday
-  meeting. **Not a changelog.** No 🤖 auto-update comment has ever been posted here.
+**Posted so far** (indexed from the ticket 2026-08-10 â€” 1 comment, accounted for):
+- 776896 (2026-07-10, Leo Hisoire) â€” a scheduling/roadmap note referencing FB-6040 and a Friday
+  meeting. **Not a changelog.** No ðŸ¤– auto-update comment has ever been posted here.
 
-**Current: v3.11 — TENANT-VERIFIED 2026-08-12, ALL-PASS 50/50** (Veh 9 / Per 21 / Gun 6 / Art 3 / Boat 11), four log gates 50/50, inflation 0/0/0/0. **Out-of-state driver history now works and is wire-proven** (`<State>NJ</State>` on 7 of 7 DH logs; at v3.9 the hidden AZ-pinned control made it unreachable). v3.11 restored the DH State default that v3.10 wrongly dropped -- a set[] field with no value gates the browser Send button. Prior: v3.10 cosmetic/layout pass, superseded same day.
-v3.10 took audit_layout_flow from 12 findings to 0. **The wire is provably unchanged** — all three
-bundles'' QIDMs are byte-identical to v3.9 — so this is layout and labels only. Changes: SSN and Race
-grouped onto their own row (both are RMS-only, in NO CommSys combination, and SSN had been sitting
-beside OLN reading as a state identifier); MI → Middle Name on both name fields (maxLen=20, so
-MI misrepresented capacity); name order First-before-Last with all four parts on one row; NCIC
-Image moved off a full-width row into the identifier row; hidden badge rows moved to the bottom on
-Firearm and Article, where they had been splitting the serial from make/model/caliber; row widths
-tiled to 12. PHASE 1 clean, fuzz 8/8 caught 0 survived, AZ-scoped enforce 0 FAIL / 0 WARN.
-**NOT changed, awaiting a ruling:** RegistrationStateDH is hidden and prefilled AZ, which makes
-out-of-state driver history unreachable. That is functional, not cosmetic.
+**Current: v3.12 -- TENANT-VERIFIED 2026-08-24, ALL-PASS 53/53** (Veh 9 / Per 28 / Gun 6 / Art 2 /
+Boat 8), four log gates 53/53 each, inflation 0/0/0/0 (AZ's four v3.11 clone groups cleared by the
+plan dedupe, not triaged by hand), 15 CommSys combos 100% covered. Name-component fieldIds converged
+to PascalCase: the DL card used `nameMiddle`/`nameSuffix` while the DH card already used
+`NameMiddleDH`/`NameSuffixDH` and NameFirst/NameLast were Pascal on both, so AZ was the only provider
+of 20 carrying two spellings for one concept. **THE WIRE IS PROVEN IDENTICAL TO v3.11 TEST-FOR-TEST,
+not merely asserted:** every v3.12 capture paired against its archived v3.11 counterpart (test name
+normalised for the rename, transaction ids and version string stripped) gives 53 byte-identical /
+0 different / 0 new, with 5 v3.11-only tests that are exactly the vacuous ones the dedupe drops
+(58 - 5 = 53). The composite matches per test AND in distribution -- `DOE, JOHN` x9, `DOE, JOHN A` x4,
+`DOE, JOHN JR` x4, `DOE, JOHN A JR` x2 -- and a distribution match alone was NOT treated as
+sufficient, since identical counts are also consistent with two tests swapping values. Release line
+**comment 804252**; 800100 retained as the v3.11 history. Prior: **v3.11 TENANT-VERIFIED 2026-08-12,
+ALL-PASS 50/50** -- out-of-state driver history wire-proven (`<State>NJ</State>` on 7 of 7 DH logs);
+v3.11 restored the DH State default v3.10 wrongly dropped (a set[] field with no value gates the
+browser Send button). v3.10 was a cosmetic/layout pass, superseded same day.
 
-**Prior: v3.9 — TENANT-VERIFIED 2026-08-11, ALL-PASS 55/55** (Veh 11 / Per 24 / Gun 6 / Art 3 /
+**Prior: v3.9 â€” TENANT-VERIFIED 2026-08-11, ALL-PASS 55/55** (Veh 11 / Per 24 / Gun 6 / Art 3 /
 Boat 11), four log gates 55/55, inflation 0/0/0/0. First full sweep this provider ever had.
 Recent history (full detail in `AZ_AZDPS_BUILD_NOTES.txt`):
-- **v3.9** — DEX-1284 label conformance: `NCIC Image` canonicalised (one label; every other measured
+- **v3.9** â€” DEX-1284 label conformance: `NCIC Image` canonicalised (one label; every other measured
   convention already conformed).
-- **v3.8** — two real wire fixes: DEX-1283 Attention `'X'` removed (feeder `initialValue` + both
+- **v3.8** â€” two real wire fixes: DEX-1283 Attention `'X'` removed (feeder `initialValue` + both
   KQH/KQ combo `defaults[]`), and **four over-permitted fields** removed from the Vehicle combos
   (`VehicleMakeCode`/`vehicleYear` off the plate combo, `LicensePlateTypeCode`/`LicensePlateYear`
-  plus their `defaults[]` off the VIN combo) — the two metadata `ACVR` variants share one keyRef and
+  plus their `defaults[]` off the VIN combo) â€” the two metadata `ACVR` variants share one keyRef and
   define disjoint optionals.
-- **v3.7** — BadgeNumber actually wired (it never had been) + four prefill shadows removed.
+- **v3.7** â€” BadgeNumber actually wired (it never had been) + four prefill shadows removed.
 
-**Owed to this ticket:** the full changelog dump (v1.0 → v3.9) has NEVER been posted, plus a release
+**Owed to this ticket:** the full changelog dump (v1.0 â†’ v3.9) has NEVER been posted, plus a release
 line once the 55-test sweep passes. **Jira is DRAFT-AND-WAIT: draft it and wait for Rob's explicit
 approval before posting, every provider, every time.**
