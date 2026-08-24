@@ -23,8 +23,9 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | NM_NMLETS_OFML | v2.6 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.26 | ALL-PASS (65 logs) |
 | OH_LEADS | v2.11 | ALL-PASS (65 logs) |
+| TN_TIES | v2.5 | ALL-PASS (69 logs) |
 | TX_TLETS | v4.21 | ALL-PASS (96 logs) |
-| _10 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, MD_METERS, OR_LEDS, TN_TIES, TX_TLETS_CCH |
+| _9 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, MD_METERS, OR_LEDS, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an
