@@ -103,8 +103,21 @@
 # METHODOLOGY (v3.0 rebuild, 2026-07-22):
 #   - USx CAD-integration field names authored in PascalCase DIRECTLY (layout fieldIds, QIDM
 #     sourceField, combo set[]/any[]) to match Cringer's reference. Mark43/RMS-internal keys
-#     (dexStateUserId, vehicleYear, nameMiddle/nameSuffix, relatedHitSearchIndicator, attention,
+#     (dexStateUserId, vehicleYear, relatedHitSearchIndicator, attention,
 #     purposeCode, WMPI descriptors, SocialSecurityNumber) stay camelCase / as-authored.
+#     NAME COMPONENTS MOVED OUT OF THAT LIST AT v3.12 (2026-08-24). This comment used to name
+#     nameMiddle/nameSuffix as camelCase-by-decision, and AZ was the ONLY provider of 20 carrying
+#     two spellings for one concept: DL pool nameMiddle/nameSuffix (camel) beside DH pool
+#     NameMiddleDH/NameSuffixDH (Pascal), with NameFirst/NameLast Pascal on both. Two reasons the
+#     old classification was wrong: (1) these are NOT Mark43/RMS-internal keys -- they are
+#     sourceFields of the CommSys `Name` attribute, i.e. they feed the wire composite, which is the
+#     opposite of internal; (2) AZ's own DH pool had already ignored the rule, so the script
+#     contradicted itself. Now PascalCase on both pools. Cosmetic by design: these fieldIds are not
+#     among the 22 CAD-integration tokens (CAD never auto-populates a middle name or a suffix), and
+#     the wire carries the composite <Name> from FormatStringRuleHandler regardless of the control
+#     name -- so the request is byte-identical. The 10-vs-9 PascalCase/camelCase split across the
+#     OTHER 19 providers is deliberately NOT converged (19 rebuilds + 10 archived passing test
+#     packages for zero functional gain); only AZ's internal disagreement was worth fixing.
 #     RMS form-fed fields recased via Build-RmsBundle -PascalCaseUsxFields. NEVER a whole-tree
 #     recase post-transform (the removed Convert-UsxCasing collapsed Craft.js nodes arrays).
 #   - QIDM attribute `name` and `targetField` are the metadata wire contract and are UNCHANGED
@@ -160,7 +173,7 @@
 #   no routing meaning; bare label accepted (NY/TX precedent, CHECK 15 Rule 3)
 
 $ErrorActionPreference = "Stop"
-$Version = '3.11'
+$Version = '3.12'
 $currentYear = [string](Get-Date).Year
 $DIR    = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT    = "$DIR\AZ_AZDPS_v${Version}.json"
@@ -335,7 +348,7 @@ $dlQuery = [PSCustomObject]@{
         [PSCustomObject]@{
             name        = 'Name'
             rule        = [PSCustomObject]@{ function = 'FormatStringRuleHandler'; arguments = @(', ',' ',' ') }
-            size        = 30; sourceField = @('NameLast','NameFirst','nameMiddle','nameSuffix'); targetField = 'Name'
+            size        = 30; sourceField = @('NameLast','NameFirst','NameMiddle','NameSuffix'); targetField = 'Name'
         }
         [PSCustomObject]@{ name = 'OperatorLicenseNumber'; size = 20; sourceField = @('OperatorLicenseNumber'); targetField = 'OperatorLicenseNumber' }
         # Requestor: metadata Alphanumeric maxLength 5, mandatory on both DQP variants. AUTOMATED --
@@ -357,7 +370,7 @@ $dlQuery = [PSCustomObject]@{
                 # metadata Any also lists OperatorLicenseNumber, deliberately NOT carried: OLN is the
                 # NOT_EXISTS gate here, and gate-xor-companion (CHECK 14) forbids both roles.
                 set = @('dexStateUserId','BirthDate','NameLast','NameFirst','SexCode')
-                any = @('nameMiddle','nameSuffix','RegistrationState')
+                any = @('NameMiddle','NameSuffix','RegistrationState')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('dexStateUserId');        operator = 'EXISTS' }
@@ -375,7 +388,7 @@ $dlQuery = [PSCustomObject]@{
                 # absent from any[] and gets no default -- adding it would OVER-PERMIT a field this
                 # variant does not define.
                 set = @('dexStateUserId','ImageIndicator','NameLast','NameFirst','Requestor')
-                any = @('BirthDate','SexCode','nameMiddle','nameSuffix')
+                any = @('BirthDate','SexCode','NameMiddle','NameSuffix')
                 # CAD IGNORES FORM initialValues (audit_cad CHECK 5), so a field carrying a form
                 # default and participating in this combo needs an explicit combo default or a
                 # CAD-injected query goes out without it -- and ImageIndicator is in set[] here, so
@@ -411,7 +424,7 @@ $dlQuery = [PSCustomObject]@{
                 # Set[Name] Any[BirthDate, SexCode, State] -- NAME ALONE IS SUFFICIENT. This is the
                 # search v3.4 could not perform: the prefixed sibling's DQ{Name} demanded Name+Sex+DOB.
                 set = @('NameLast','NameFirst')
-                any = @('BirthDate','SexCode','dexStateUserId','nameMiddle','nameSuffix','RegistrationState')
+                any = @('BirthDate','SexCode','dexStateUserId','NameMiddle','NameSuffix','RegistrationState')
                 defaults = @( [PSCustomObject]@{ field = 'State'; value = 'AZ' } )
                 conditions = @(
                     [PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }
@@ -847,10 +860,10 @@ $perLayout = MakeLayouts @(
             @{ id = 'ROW_PER_DL_2'; cols = @('4','4','2','2'); fields = @(
                 @{ id = 'NameFirst_Input';  node = Inp 'NameFirst' 'First Name' '20' 'ROW_PER_DL_2' }
                 @{ id = 'NameLast_Input';   node = Inp 'NameLast'  'Last Name'  '30' 'ROW_PER_DL_2' }
-                # LABEL-OVERRIDE: nameMiddle -- bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial
-                @{ id = 'NameMiddle_Input'; node = Inp 'nameMiddle' 'Middle Name' '20' 'ROW_PER_DL_2' }
-                # LABEL-OVERRIDE: nameSuffix -- bare "Suffix" per DEX-1284 lean pass (any[] optional)
-                @{ id = 'NameSuffix_Input'; node = Inp 'nameSuffix' 'Suffix'       '4' 'ROW_PER_DL_2' }
+                # LABEL-OVERRIDE: NameMiddle -- bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial
+                @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '20' 'ROW_PER_DL_2' }
+                # LABEL-OVERRIDE: NameSuffix -- bare "Suffix" per DEX-1284 lean pass (any[] optional)
+                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix'       '4' 'ROW_PER_DL_2' }
             )}
             # v3.10: DOB + Sex are CommSys qualifiers (both in ACWL's set[]) and stay with the
             # name group they qualify.

@@ -1,7 +1,40 @@
 AZ_AZDPS -- Build Notes
 ========================
-Last updated: 2026-08-12
-Current version: v3.11 (DH State default restored; TENANT-VERIFIED ALL-PASS 50/50)
+Last updated: 2026-08-24
+Current version: v3.12 (name-component fieldIds PascalCase; re-sweep owed)
+
+v3.12  2026-08-24  Name-component fieldIds converged to PascalCase -- AZ was the only provider
+                   carrying two spellings for one concept
+  CHANGED: DL-pool `nameMiddle` -> `NameMiddle` and `nameSuffix` -> `NameSuffix` (6 references:
+    the Name attribute sourceField, three combo any[] pools -- DQN/ACWL/DQPN -- and the two form
+    controls), plus both LABEL-OVERRIDE tags, which key on the fieldId and would otherwise have
+    stopped matching and re-opened a verify_build CHECK 15 WARN.
+  REASON: Rob asked what the open "name-component casing" item was and said he thought it was
+    settled. He was right about what he settled -- the 22 CAD-integration tokens are PascalCase on
+    all 20 providers, complete. Middle name and suffix are NOT among those 22 (CAD never
+    auto-populates them), so that rule never reached them, and they were added provider-by-provider
+    08-17 -> 08-21 following whatever each script already did.
+  MEASURED, because the register row was WRONG: it claimed "SEVEN providers internally MIXED".
+    At the form-fieldId level across all 20 it is PascalCase 10 / camelCase 9 / internally mixed
+    ONE -- this provider. AZ had DL `nameMiddle`+`nameSuffix` (camel) beside DH `NameMiddleDH`+
+    `NameSuffixDH` (Pascal), with NameFirst/NameLast Pascal on BOTH pools. So the DH pool had
+    already adopted the convention and the DL pool had not.
+  DIRECTION IS AZ'S OWN, NOT A PREFERENCE: converged UP to PascalCase to match this provider's
+    NameFirst/NameLast siblings and its own DH pool. The build script comment that classified these
+    as "Mark43/RMS-internal keys [that] stay camelCase" was itself the stale part and is corrected
+    in place -- they are sourceFields of the CommSys `Name` attribute, i.e. they feed the wire
+    composite, which is the opposite of internal.
+  THE WIRE IS UNCHANGED AND THAT IS THE POINT: a fieldId is internal to the form. The composite
+    order stays NameLast, NameFirst, NameMiddle, NameSuffix (Last-first per the ConnectCIC rule) and
+    FormatStringRuleHandler emits the same <Name> it did at v3.11 -- proven at v3.11 as
+    `DOE, JOHN A JR`, degrading cleanly with no double space.
+  NOT CONVERGED PORTFOLIO-WIDE, deliberately: the 10-vs-9 split across the other 19 providers is
+    cosmetic with zero functional impact, and levelling it would cost 19 rebuilds and archive 10
+    PASSING test packages to buy nothing. Only AZ's internal disagreement justified a bump.
+  COST: archives all 58 v3.11 logs; AZ drops ALL-PASS -> NEVER-TESTED and owes a re-import plus a
+    re-sweep. Folded in with the [FLAG:plan-dedupe-vacuous-tests] rebuild AZ already owed, so this
+    is ONE sweep rather than two. The v3.11 picklist capture (16 dropdowns, 5 entities, completed
+    2026-08-24) carries forward -- it is tenant data, not build output.
 
 v3.11  2026-08-12  DH State default RESTORED (v3.10 regression) -- TENANT-VERIFIED ALL-PASS 50/50
   WHY THIS VERSION EXISTS: I broke DH at v3.10 and Rob hit it on the first DH test --

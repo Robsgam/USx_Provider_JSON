@@ -1,6 +1,6 @@
-AZ_AZDPS v3.11 -- TEST MATRIX
+AZ_AZDPS v3.12 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-12
+Generated: 2026-08-24
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -16,7 +16,7 @@ Vehicle (1 card, 8 fields):
 Person (2 cards, 23 fields):
   CARD_PER_DL (DRIVER LICENSE SEARCH BY OLN "OR" NAME -- ADD REQUESTOR + NCIC IMAGE FOR A LICENCE PHOTO):
     ROW 1: OperatorLicenseNumber [Inp 20], RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC]
-    ROW 2: NameFirst [Inp 20], NameLast [Inp 30], nameMiddle [Inp 20], nameSuffix [Inp 4]
+    ROW 2: NameFirst [Inp 20], NameLast [Inp 30], NameMiddle [Inp 20], NameSuffix [Inp 4]
     ROW 3: BirthDate [FormDate], SexCode [Sel SEX]
     ROW 4: SocialSecurityNumber [Inp 9], raceCode [Sel RACE]
     ROW 5: Requestor [Inp X, 5]
@@ -74,15 +74,15 @@ ENTITY 1: PERSON (18 tests -- 2 cards, 7 combos)
               Expected: DriverLicenseQuery fires (DQP)
  4  Person      DQ+N               NameLast=DOE, NameFirst=JOHN     [    ]
               Expected: DriverLicenseQuery fires (DQN)
- 5  Person      DQ+N               + nameMiddle, nameSuffix, RegistrationState [    ]
+ 5  Person      DQ+N               + NameMiddle, NameSuffix, RegistrationState [    ]
               Expected: any[] fields present in XML output.
  6  Person      DQ+PN              dexStateUserId=BADGE, ImageIndicator=... [    ]
               Expected: DriverLicenseQuery fires (DQPN)
- 7  Person      DQ+PN              + nameMiddle, nameSuffix        [    ]
+ 7  Person      DQ+PN              + NameMiddle, NameSuffix        [    ]
               Expected: any[] fields present in XML output.
  8  Person      ACWL+ACWL          dexStateUserId=BADGE, BirthDate=01/15... [    ]
               Expected: DriverLicenseQuery fires (ACWL)
- 9  Person      ACWL+ACWL          + nameMiddle, nameSuffix, RegistrationState [    ]
+ 9  Person      ACWL+ACWL          + NameMiddle, NameSuffix, RegistrationState [    ]
               Expected: any[] fields present in XML output.
 
   WARN -- FIELD CONSTRAINTS for DriverHistoryQuery (read METADATA_REFERENCE.txt before running tests):
@@ -177,4 +177,4 @@ COMBO COVERAGE (15/15):
   ArticleSingleQuery: 1/1 -- T36(ACQA)
   BoatQuery: 4/4 -- T24(BQ+Reg), T26(BQ+H), T28(ACQB+ACQB), T30(ACQBH+ACQBH)
 
-IMPORT FILE: AZ_AZDPS_v3.11.json
+IMPORT FILE: AZ_AZDPS_v3.12.json

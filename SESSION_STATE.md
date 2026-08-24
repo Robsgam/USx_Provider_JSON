@@ -5,7 +5,7 @@
 > every number from `portfolio_status.ps1` / `enforce.ps1`, never from memory.
 
 <!-- BEGIN GENERATED: tools\sync_session_state.ps1 -- do not hand-edit below this line -->
-**Last updated:** 2026-08-21 (generated) | **Branch:** `main`
+**Last updated:** 2026-08-24 (generated) | **Branch:** `main`
 
 ## Tenant-test state -- GENERATED, do not hand-edit
 
@@ -14,7 +14,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 
 | Provider | Ver | State |
 |---|---|---|
-| AZ_AZDPS | v3.11 | ALL-PASS (58 logs) |
+| AZ_AZDPS | v3.12 | NEVER-TESTED -- 53 test(s) owed |
 | CA_CLETS | v2.26 | ALL-PASS (111 logs) |
 | FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |

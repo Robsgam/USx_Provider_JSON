@@ -2,14 +2,92 @@
 
 Auto-generated from `AZ_AZDPS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.11** | Generated: 2026-08-12
+Current: **v3.12** | Generated: 2026-08-24
 
 ---
 
-## v3.11 -- 2026-08-12 -- Pipeline rebuild
+## v3.12 -- 2026-08-24 -- Name-component fieldIds converged to PascalCase -- AZ was the only provider
 
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
+                 carrying two spellings for one concept  
+**CHANGED:** DL-pool `nameMiddle` -> `NameMiddle` and `nameSuffix` -> `NameSuffix` (6 references:
+  the Name attribute sourceField, three combo any[] pools -- DQN/ACWL/DQPN -- and the two form  
+  controls), plus both LABEL-OVERRIDE tags, which key on the fieldId and would otherwise have  
+  stopped matching and re-opened a verify_build CHECK 15 WARN.  
+**REASON:** Rob asked what the open "name-component casing" item was and said he thought it was
+  settled. He was right about what he settled -- the 22 CAD-integration tokens are PascalCase on  
+  all 20 providers, complete. Middle name and suffix are NOT among those 22 (CAD never  
+  auto-populates them), so that rule never reached them, and they were added provider-by-provider  
+  08-17 -> 08-21 following whatever each script already did.  
+MEASURED, because the register row was WRONG: it claimed "SEVEN providers internally MIXED".  
+  At the form-fieldId level across all 20 it is PascalCase 10 / camelCase 9 / internally mixed  
+  ONE -- this provider. AZ had DL `nameMiddle`+`nameSuffix` (camel) beside DH `NameMiddleDH`+  
+  `NameSuffixDH` (Pascal), with NameFirst/NameLast Pascal on BOTH pools. So the DH pool had  
+  already adopted the convention and the DL pool had not.  
+DIRECTION IS AZ'S OWN, NOT A PREFERENCE: converged UP to PascalCase to match this provider's  
+  NameFirst/NameLast siblings and its own DH pool. The build script comment that classified these  
+  as "Mark43/RMS-internal keys [that] stay camelCase" was itself the stale part and is corrected  
+  in place -- they are sourceFields of the CommSys `Name` attribute, i.e. they feed the wire  
+  composite, which is the opposite of internal.  
+THE WIRE IS UNCHANGED AND THAT IS THE POINT: a fieldId is internal to the form. The composite  
+  order stays NameLast, NameFirst, NameMiddle, NameSuffix (Last-first per the ConnectCIC rule) and  
+  FormatStringRuleHandler emits the same <Name> it did at v3.11 -- proven at v3.11 as  
+  `DOE, JOHN A JR`, degrading cleanly with no double space.  
+NOT CONVERGED PORTFOLIO-WIDE, deliberately: the 10-vs-9 split across the other 19 providers is  
+  cosmetic with zero functional impact, and levelling it would cost 19 rebuilds and archive 10  
+  PASSING test packages to buy nothing. Only AZ's internal disagreement justified a bump.  
+COST: archives all 58 v3.11 logs; AZ drops ALL-PASS -> NEVER-TESTED and owes a re-import plus a  
+  re-sweep. Folded in with the [FLAG:plan-dedupe-vacuous-tests] rebuild AZ already owed, so this  
+  is ONE sweep rather than two. The v3.11 picklist capture (16 dropdowns, 5 entities, completed  
+  2026-08-24) carries forward -- it is tenant data, not build output.  
+
+## v3.11 -- 2026-08-12 -- DH State default RESTORED (v3.10 regression) -- TENANT-VERIFIED ALL-PASS 50/50
+
+WHY THIS VERSION EXISTS: I broke DH at v3.10 and Rob hit it on the first DH test --  
+  "looks like t26 is stuck  there was not send button".  
+  v3.10 made RegistrationStateDH visible (correct) AND dropped its initialValue (wrong) in the same  
+  edit. A field in set[] makes the BROWSER gate the Send button until it holds a value, so an empty  
+  mandatory State left DriverHistory unsubmittable. THE MECHANISM WAS ALREADY WRITTEN DOWN IN THIS  
+  REPO from NY v4.20, where the identical thing happened to requestorDH -- I should have caught it  
+  before he did. The test plan could not mask it either: KQH fills only Name/DOB/Sex, because under  
+  v3.9 the field was hidden+prefilled and therefore never a driven control.  
+FIX: initialValue='AZ' restored, field STAYS VISIBLE, label back to bare 'State'.  
+  VISIBLE + DEFAULTED satisfies both goals at once and is the NJ/TX pattern: Send is never gated,  
+  in-state is one click, and out-of-state is reachable because the officer can CHANGE it. The  
+  original defect was that the field was HIDDEN and unchangeable -- never that it had a default.  
+WHERE I DREW THE WRONG LESSON AT v3.10: I copied FL_FCIC's blank + 'State (required)'. FL's  
+  DriverHistory is OUT-OF-STATE ONLY, so its officer must always pick a state and blank is right  
+  there. AZ's DH combos are both (In/Out) and in-state is the COMMON case, so a blank mandatory  
+  State just blocks the ordinary query. Same field, opposite correct answer, decided by the  
+  provider's own scope -- not by copying the sibling.  
+TENANT-VERIFIED 2026-08-12: ALL-PASS 50/50 (Vehicle 9 / Person 21 / Firearm 6 / Article 3 /  
+  Boat 11). Four log gates 50/50 (content, metadata, attribution, plan completeness 5/5),  
+  inflation 0/0/0/0 with attack B comparing all 50 fingerprints.  
+WIRE EVIDENCE for every v3.10/v3.11 claim -- proven, not asserted:  
+  <State>NJ</State> on 7 of 7 DH logs -- OUT-OF-STATE DRIVER HISTORY NOW WORKS END TO END. At v3.9  
+    this was UNREACHABLE (hidden control pinned to AZ), so this is the un-hiding fix proven on the  
+    wire, not merely argued from the devdoc.  
+  <Attention>SGAMBELLONE R</Attention> x7 -- the handler still resolves the officer now that State  
+    is officer-supplied rather than a hidden prefill. No regression from the change.  
+  RelatedHitSearchIndicator Y x10 AND N x10 -- the new 'Y' default is live AND overridable; the  
+    toggle tests fill the non-default value, which is what proves both directions.  
+  <UserName>MK43RS</UserName> on 50 of 50 -- badge populating, so all five badge combos fire.  
+  ZERO logs carry a bare >X< element.  
+A PROCESS TRAP FOUND HERE, worth a gate later: the plan dropped 55 -> 50 tests between v3.10 and  
+  v3.11 and I had to explain it. Cause: reset_test_package only regenerates the TEST_PLAN on a  
+  VERSION CHANGE, and v3.10 was rebuilt many times WITH FORM CHANGES. So the 55-test v3.10 plan  
+  described an earlier v3.10 form -- a stale plan driving a current form, the same family of defect  
+  as a version-mismatched log. The v3.11 plan was generated 10s after its JSON and covers all 15  
+  built combos. Rule: after any form change, bump the version or regenerate the plan by hand.  
+  (I also floated a WRONG theory on the way -- that dropping the State default costs the  
+  out-of-state toggle tests. It does not: FL has no default and carries 27 State-filling tests.)  
+STILL OPEN, Rob's note 2026-08-12: "the middle and last are on the forms yet the handler doesn't  
+  process them so we need to eliminate those fields and repostion the other fields". NOT ACTED ON,  
+  because there is still no evidence either way: NO test in this sweep filled a middle name or  
+  suffix (0 fills across 50 logs), and every <Name> on the wire reads 'DOE, JOHN'. The handler  
+  CONFIG looks capable -- 4 sourceFields with 3 separators, the shape for LAST, FIRST MIDDLE  
+  SUFFIX. Deleting two officer-visible fields on a config reading would be guessing. ONE test  
+  filling middle+suffix settles it: 'DOE, JOHN A JR' means the handler works and they stay;  
+  'DOE, JOHN' means they are dead controls and go.  
 
 ## v3.10 -- 2026-08-12 -- Cosmetic/layout pass -- 12 layout findings -> 0, AND a hidden State field fixed
 

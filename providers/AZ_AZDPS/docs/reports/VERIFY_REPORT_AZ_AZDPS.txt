@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: AZ_AZDPS
-  Source: AZ_AZDPS_v3.11.json
-  Generated: 2026-08-12 14:35
+  Source: AZ_AZDPS_v3.12.json
+  Generated: 2026-08-24 10:58
 ================================================================
 POST-BUILD VERIFICATION
 =======================
 
 
 ========================================
- POST-BUILD VERIFICATION: AZ_AZDPS_v3.11
+ POST-BUILD VERIFICATION: AZ_AZDPS_v3.12
 ========================================
 
 --- CHECK 1: Banned Patterns ---
@@ -22,7 +22,7 @@ POST-BUILD VERIFICATION
 
 --- CHECK 4: Cross-Bundle fieldId Consistency ---
   [INFO] Shared fieldIds (CommSys+RMS): 8
-  [INFO] CommSys-only: 28 [dexStateUserId, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, nameMiddle, nameSuffix, Requestor, attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, RegistrationStateDH, GunCaliber, GunMake, GunModel, serialNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
+  [INFO] CommSys-only: 28 [dexStateUserId, LicensePlateTypeCode, LicensePlateYear, VehicleMakeCode, vehicleYear, ImageIndicator, NameMiddle, NameSuffix, Requestor, attention, BirthDateDH, NameLastDH, NameFirstDH, NameMiddleDH, NameSuffixDH, OperatorLicenseNumberDH, purposeCodeDH, SexCodeDH, RegistrationStateDH, GunCaliber, GunMake, GunModel, serialNumber, relatedHitSearchIndicator, ArticleSerialNumber, ArticleTypeCode, BoatHullIdNumber, RegistrationNumber]
   [INFO] RMS-only (expected for RMS-specific fields): 2
   [PASS] Cross-bundle fieldId consistency checked
 
@@ -71,8 +71,8 @@ POST-BUILD VERIFICATION
   [INFO] Field 'LicensePlateTypeCode' (any[]-only) label='Plate Type' -- manual label override accepted (merely-defaulted convenience field (initialValue PC), no)
   [INFO] Field 'VehicleMakeCode' (any[]-only) label='Make' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
   [INFO] Field 'vehicleYear' (any[]-only) label='Year' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional VIN qualifier))
-  [INFO] Field 'nameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial)
-  [INFO] Field 'nameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per DEX-1284 lean pass (any[] optional))
+  [INFO] Field 'NameMiddle' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial)
+  [INFO] Field 'NameSuffix' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'NameMiddleDH' (any[]-only) label='Middle Name' -- manual label override accepted (bare "Middle Name" per DEX-1284 lean pass (any[] optional); v3.10 renamed from "MI" because maxLen=20 is a full middle name, not an initial)
   [INFO] Field 'NameSuffixDH' (any[]-only) label='Suffix' -- manual label override accepted (bare "Suffix" per DEX-1284 lean pass (any[] optional))
   [INFO] Field 'GunCaliber' (any[]-only) label='Caliber' -- manual label override accepted (bare per DEX-1284 lean pass (any[] optional))
