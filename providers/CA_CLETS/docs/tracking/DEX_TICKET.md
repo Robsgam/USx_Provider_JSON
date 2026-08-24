@@ -16,6 +16,7 @@ Project: DEX (CJIS/USx/DEx Implementation) · Status: In Progress
      and ready". Verified against Jira, not this file. -->
 POSTED: v2.25 comment 791400 2026-08-17
 POSTED: v2.26 comment 799898 2026-08-17
+POSTED: v2.27 comment 804798 2026-08-24
 
 POSTING RULE (**REVERSED 2026-08-17 by Rob**): **ONE NEW COMMENT PER RELEASE. Do NOT edit the previous
 release line -- leave it in place.** Rob: *"post as a new comment and leave the other comments there. we
@@ -60,13 +61,22 @@ never Rob's own manual notes, never a third party's.
 - 2026-08-04 — comment 791400: **v2.23 changelog + RELEASE LINE** — 90/90 ALL-PASS, four log gates
   green, enforce 43P/0F/0W, inflation 0/0/0/0, with all four wire fixes proven on the wire.
 
-**Current: v2.25 — tenant-verified, ALL-PASS 109/109** (Vehicle 25 / Person 49 / Firearm 13 /
-Article 10 / Boat 12), four log gates green, enforce 42 PASS / 0 provider-scoped FAIL-or-WARN.
-Release line 791400 EDITED IN PLACE to v2.25 on 2026-08-17; the pre-edit v2.24 body is captured in
-`DEX_TICKET_ARCHIVE.md`. That edit also dropped the old sections 5-6 (Known limits / Documented
-skips) per the 2026-08-13 four-section ruling -- each was verified as recorded in the repo first
-(14 ACCEPTED_DIVERGENCES rows name IV.4*, the purposeCode-prefill rationale and the CAD/Attention
-inspection-only note are both in BUILD_NOTES), so nothing existed only on the ticket.
+**Current: v2.27 - tenant-verified, ALL-PASS 99/99** (Vehicle 22 / Person 43 / Firearm 13 /
+Article 10 / Boat 11), four log gates 99/99, inflation 0/0/0/0, 27 combos all reachable,
+validator 79P/0F/0W, enforce 46 PASS / 0 provider-scoped FAIL-or-WARN.
+Release line posted as NEW comment **804798** on 2026-08-24, naming 799898 (v2.26) as superseded
+and RETAINED as history -- per Rob's 2026-08-17 reversal of the edit-in-place rule.
+v2.27 removed `LicensePlateYear` from `IA.QV`'s any[] and defaults[]: in-state plate searches were
+transmitting an unconditional assertion that the plate's registration year is the current one.
+Wire-proven surgical -- across all 99 logs `<LicensePlateYear>` appears on exactly the four
+`NLTS.RQ.P` requests (where metadata mandates it) and on none of the 8 `IA.QV` requests, while the
+`IA.QV` fill-map still carries the prefill. The form did not change; the combination did.
+
+> NOTE 2026-08-24: this "Current" block had read **v2.25** ever since 791400, i.e. it was never
+> updated when v2.26 was posted as comment 799898 on 2026-08-17. The POSTED: markers above were
+> correct throughout, which is why `audit_lifecycle` stage 5 stayed green -- that gate reads the
+> structured marker, not this prose. Prose under a gated marker can still rot; the marker is the
+> authority, this block is the summary.
 
 > ⚠️ **THE v2.22 RELEASE LINE ON THIS TICKET WAS GREEN AND WRONG.** Comment 787391 reports v2.22
 > ALL-PASS; it passed 90/90 on three of the four log gates while shipping a request the metadata
