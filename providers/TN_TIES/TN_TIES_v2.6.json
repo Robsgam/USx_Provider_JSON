@@ -6837,19 +6837,8 @@
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
-                                                                                                             "InquiryTypeIndicator",
-                                                                                                             "LicensePlateTypeCode"
+                                                                                                             "InquiryTypeIndicator"
                                                                                                          ],
-                                                                                                 "defaults":  [
-                                                                                                                  {
-                                                                                                                      "field":  "LicensePlateTypeCode",
-                                                                                                                      "value":  "PC"
-                                                                                                                  },
-                                                                                                                  {
-                                                                                                                      "field":  "InquiryTypeIndicator",
-                                                                                                                      "value":  "3"
-                                                                                                                  }
-                                                                                                              ],
                                                                                                  "conditions":  [
                                                                                                                     {
                                                                                                                         "field":  [
@@ -6857,7 +6846,13 @@
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
                                                                                                                     }
-                                                                                                                ]
+                                                                                                                ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "InquiryTypeIndicator",
+                                                                                                                      "value":  "3"
+                                                                                                                  }
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ01",
@@ -7704,7 +7699,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TN_TIES v2.5 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 22 combos, DH-suffix, existence-only routing gates + identifier-priority guardrails",
+                        "description":  "Provider configuration for TN_TIES v2.6 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 22 combos, DH-suffix, existence-only routing gates + identifier-priority guardrails",
                         "name":  "TN_TIES",
                         "type":  "BUNDLE",
                         "provider":  "TN_TIES"

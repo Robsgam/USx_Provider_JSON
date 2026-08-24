@@ -2,9 +2,43 @@
 
 Auto-generated from `TN_TIES_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.5** | Generated: 2026-08-24
+Current: **v2.6** | Generated: 2026-08-24
 
 ---
+
+## v2.6 -- 2026-08-24 -- RQ01 stops asserting a plate type on every in-state plate search
+
+**CHANGED:** LicensePlateTypeCode removed from RQ01's any[], and its now-inert default with it.
+  Built RQ01 is now set[LicensePlateNumber] any[InquiryTypeIndicator].  
+**REASON** -- AND THIS REVERSES WHAT I WROTE HOURS EARLIER, on Rob asking "can we fix the rq01 issue":
+  The v2.5 verification found built RQ01 one optional wider than metadata RQ01 and I recorded a  
+  DO-NOT-TIGHTEN instruction, on the grounds that the wire showed the provider accepting the  
+  field. The flaw: I reasoned about an optional the OFFICER CHOOSES to send. It is not one.  
+  LicensePlateTypeCode is PREFILLED PC (RQ.P needs it in set[] for the out-of-state path), so it  
+  sat in form state on every query and was transmitted on EVERY in-state plate search. The v2.5  
+  logs say so: 3 of 5 RQ01 wires carry PC, the other 2 carry AM only because a toggle changed it.  
+  So we were asserting "passenger automobile" on every in-state registration lookup -- including  
+  for a motorcycle, trailer or commercial plate. If TIES filters on plate type, that is a MISS we  
+  manufactured. ACCEPTING a field is not WANTING it.  
+AUTHORITY, and the permission's origin is the tell I missed first time:  
+  devdoc #1 (In)     LicensePlateNumber, [InquiryTypeIndicator]         -- no plate type  
+  metadata RQ01      Set[LicensePlateNumber] Any[InquiryTypeIndicator]  -- no plate type  
+  metadata QV{plate} Any[InquiryTypeIndicator, LicensePlateTypeCode]    -- plate type  
+  Only QV permits it, and QV is a DATA-MINED NCIC transaction (devdoc line 9). We built the union  
+  of three routing-indistinguishable variants and took the widest any[] without asking whether  
+  the widest was correct. It was not.  
+NOT A CAPABILITY LOSS: plate type is still mandatory and transmitted on RQ.P (out-of-state), the  
+  only combination the devdoc gives it to. And built RQ01 now equals metadata RQ01 exactly, so the  
+  v2.4 rename is precise rather than one-optional-wide -- the naming imprecision closes as a  
+  side-effect of fixing the wire.  
+GATES: validator 73P/0F/0W - reachability 19/19 all reachable - prefill shadow 40 pairs / 0 FAIL -  
+  fidelity 28 branches / 0 UNDER / 0 OVER (HELD) - wiring closure 0 breaks (the control is still  
+  alive on RQ.P, so removing it from RQ01 did not orphan it) - devdoc combinations 14 compared /  
+  0 FAIL - layout flow 0 findings.  
+COST: archives the 69 v2.5 logs. TN drops ALL-PASS -> NEVER-TESTED and owes a re-import plus a  
+  re-sweep. This is a WIRE change -- in-state plate searches now send one field fewer -- so the  
+  sweep verifies something genuinely different, and the comparison to make is that RQ01 wires no  
+  longer carry LicensePlateTypeCode while RQ.P wires still do.  
 
 ## v2.5 -- 2026-08-24 -- COSMETIC PASS (Rob's directive) -- and it exposed three vehicle searches that
 

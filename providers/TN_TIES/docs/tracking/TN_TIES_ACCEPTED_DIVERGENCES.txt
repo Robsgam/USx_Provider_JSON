@@ -62,12 +62,38 @@ dups"), the redundant twin in each pair is dropped:
   LicensePlateNumber + LicensePlateTypeCode + InquiryTypeIndicator and gate 6d passes 69/69, because
   QV{plate} permits exactly that set. audit_requirement_fidelity reports 0 OVER-PERMITTED for the
   same reason -- it pairs the built combo to the variant that permits it.
-  *** DO NOT "TIGHTEN" RQ01's any[] TO MATCH METADATA RQ01. *** The three plate-only variants
-  (RQ01 / RV01 / QV) are routing-INDISTINGUISHABLE -- identical set[] -- so only one can be built and
-  it must permit the UNION of what the officer may legally send on a plate-only search. Narrowing it
-  to metadata RQ01's Any[] would silently delete LicensePlateTypeCode, an optional the captured wire
-  shows the provider accepting (RQ01_af_LicensePlateTypeCode transmits AM). That is the same mistake
-  as the CA_eSUN v2.4 tightening that dropped a legal optional off L1.N.
+  *** THAT INSTRUCTION WAS WRONG AND v2.6 REVERSES IT -- the reasoning is kept because the mistake is
+  the instructive part. *** It read: "DO NOT TIGHTEN RQ01's any[] TO MATCH METADATA RQ01 ... narrowing
+  it would silently delete LicensePlateTypeCode, an optional the captured wire shows the provider
+  accepting." Rob asked "can we fix the rq01 issue" and re-reading it exposed the flaw:
+
+  I REASONED ABOUT AN OPTIONAL THE OFFICER CHOOSES TO SEND. IT WAS NOT ONE. LicensePlateTypeCode is
+  PREFILLED 'PC' -- it must be, because RQ.P carries it in set[] for the out-of-state path -- so it was
+  present in form state on EVERY query and therefore transmitted on EVERY in-state plate search. The
+  v2.5 logs show it plainly: 3 of 5 RQ01 wires carry PC and the other 2 carry AM only because a toggle
+  test changed it. "The provider accepts it" is true and irrelevant; ACCEPTING is not WANTING.
+
+  What we were actually doing: asserting "this plate is a passenger automobile" on every in-state
+  registration query, including for a motorcycle, trailer or commercial plate. If TIES filters a
+  registration lookup on plate type at all, that is a MISS produced by our own default.
+
+  WHERE THE PERMISSION CAME FROM, which is the tell I missed the first time:
+      devdoc #1 (In)     LicensePlateNumber, [InquiryTypeIndicator]         <- no plate type
+      metadata RQ01      Set[LicensePlateNumber] Any[InquiryTypeIndicator]  <- no plate type
+      metadata QV{plate} Any[InquiryTypeIndicator, LicensePlateTypeCode]    <- plate type
+  ONLY QV permits it, and QV is a DATA-MINED NCIC transaction (devdoc line 9). An NCIC-shaped optional
+  was riding a DMV-shaped search because we built the union of three indistinguishable variants and
+  took the widest any[] without asking whether the widest was right.
+
+  v2.6 removes LicensePlateTypeCode from RQ01's any[] and its now-inert default with it. Built RQ01 is
+  now Set[LicensePlateNumber] Any[InquiryTypeIndicator] == metadata RQ01 EXACTLY, so the v2.4 rename
+  is precise instead of one-optional-wide. NOT a capability loss: plate type is still mandatory and
+  transmitted on the out-of-state path (RQ.P), the only combination the devdoc gives it to.
+
+  THE CA_eSUN COMPARISON I DREW WAS BACKWARDS. There I removed a field the FIRING variant's own
+  <Any> defined -- a real optional, really dropped. Here the firing variant (metadata RQ01) never
+  defined it. Same shape of action, opposite correctness, and the discriminator is the one this repo
+  keeps relearning: DOES THE FIRING COMBINATION'S OWN METADATA VARIANT DEFINE THE FIELD?
 
   DriverLicenseQuery:
     DQ02  (in-state Name, set[Name,BirthDate,SexCode])          == QWA (no-state Name)    -> DROPPED (kept QWA)

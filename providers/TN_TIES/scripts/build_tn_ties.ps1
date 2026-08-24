@@ -35,7 +35,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.5'
+$Version     = '2.6'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\TN_TIES_v${Version}.json"
@@ -130,13 +130,37 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'RQ03'
             state                 = 'In/Out'
         }
-        # RQ01 -- in-state plate (blank State = TN), devdoc #1 "(In) LicensePlateNumber".
-        # RENAMED from QV.P at v2.4 -- same reason as RQ03 above. THIS is the combo whose name caused
-        # a note in FOUR places claiming in-state TN plate searches "reach NCIC not TIES/DMV".
+        # RQ01 -- in-state plate (blank State = TN), devdoc #1 "(In) LicensePlateNumber,
+        # [InquiryTypeIndicator]". RENAMED from QV.P at v2.4.
+        #
+        # *** v2.6: LicensePlateTypeCode REMOVED from any[] (and its now-inert default with it). ***
+        # v2.5 permitted it, and the v2.5 sweep showed the consequence: EVERY in-state plate search
+        # transmitted <LicensePlateTypeCode>PC</LicensePlateTypeCode>. Not sometimes -- always, because
+        # the control is PREFILLED 'PC' (it has to be: RQ.P carries it in set[] for the out-of-state
+        # path). So this was not "an optional the officer may send", it was an unconditional assertion
+        # that the plate is a passenger automobile, attached to every in-state query.
+        #
+        # WHY IT DOES NOT BELONG HERE:
+        #   devdoc #1 (In)      LicensePlateNumber, [InquiryTypeIndicator]        <- no plate type
+        #   metadata RQ01       Set[LicensePlateNumber] Any[InquiryTypeIndicator] <- no plate type
+        #   metadata QV{plate}  Any[InquiryTypeIndicator, LicensePlateTypeCode]   <- plate type
+        # The permission came from QV{plate}, and QV is a DATA-MINED NCIC transaction (devdoc line 9).
+        # An NCIC-shaped optional was riding a DMV-shaped search. If TIES filters registration lookups
+        # on plate type at all, an in-state search for a motorcycle, trailer or commercial plate was
+        # asking it about a passenger car.
+        #
+        # I ARGUED THE OPPOSITE ON 2026-08-24 AND WAS WRONG. The DO-NOT-TIGHTEN note in
+        # TN_TIES_ACCEPTED_DIVERGENCES said removing this would "silently delete an optional the wire
+        # shows the provider accepting". Accepting is not the same as wanting, and I had reasoned about
+        # a field the officer CHOOSES to send when the prefill means it is sent unconditionally. Rob
+        # asked "can we fix the rq01 issue" and that reframing is what surfaced it.
+        # Bonus: with the optional gone, built RQ01 == metadata RQ01 EXACTLY, so the v2.4 rename is
+        # now precise instead of one-optional-wide.
+        # NOT a capability loss: plate type is still required and transmitted on the out-of-state path
+        # (RQ.P set[]), which is the only combination the devdoc gives it to.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('LicensePlateNumber'); any = @('InquiryTypeIndicator','LicensePlateTypeCode')
-                defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' })
+                set = @('LicensePlateNumber'); any = @('InquiryTypeIndicator')
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
