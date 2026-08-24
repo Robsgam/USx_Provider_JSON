@@ -1,26 +1,54 @@
-# TN_TIES -- TEST VALUE OVERRIDES
-# Format: '<Entity>.<fieldId>=value' (entity-scoped, preferred). '#' comments ignored.
-# Read by emit_test_plan.ps1 via _combo_value_resolver.ps1 (Get-ComboValueOverrides).
+# TN_TIES -- per-provider test value overrides
+# Format: fieldId=value  |  <Entity>.<fieldId>=value  |  <fieldId>.toggle=<value>   ('#' = comment)
+# Read by emit_test_plan / generate_test_matrix via tools/_combo_value_resolver.ps1.
+
+# =============================================================================================
+# 1. THREE SPECIALTY-PLATE COMBOS WERE UNDRIVABLE, AND HAD BEEN SINCE THEY WERE BUILT.
+# =============================================================================================
+# emit_test_plan says it plainly and has been saying it all along:
+#     Vehicle RQ05 set[]: 'DealerLicensePlateNumber'    has no test value (unmapped in Get-TestValue)
+#     Vehicle RQ06 set[]: 'HandicapPlacardNumber'       has no test value
+#     Vehicle RQ07 set[]: 'TemporaryLicensePlateNumber' has no test value
+# A set[] field with no test value means the plan cannot satisfy the combo, so its test carries a
+# BLANK fill, the driver types 'undefined', and the tenant leaves Send DISABLED. Three of TN's seven
+# vehicle searches -- dealer, handicap and temporary plate -- could never have been proven.
 #
-# CREATED 2026-08-19 to clear [FLAG:plan-fillability-unfireable-tests].
-# test_phase2 step [2] reported EIGHT findings that were really THREE missing values -- each unvalued
-# field produced one BLANK FILL (fieldId and value both empty, so the driver fills 'undefined') AND one
-# UNSATISFIED (the mandatory field never filled, so the tenant keeps Send DISABLED and NOTHING is sent):
-#   T13 Vehicle/RQ05  mandatory 'DealerLicensePlateNumber'
-#   T14 Vehicle/QV.D  mandatory 'DealerLicensePlateNumber'
-#   T15 Vehicle/RQ06  mandatory 'HandicapPlacardNumber'
-#   T16 Vehicle/RQ07  mandatory 'TemporaryLicensePlateNumber'
-# These are TN's THREE SPECIALTY-PLATE PATHS -- dealer, handicap placard and temporary tag -- which is
-# most of what distinguishes this provider's 8 Vehicle combos from the portfolio's usual 3-4. Without
-# these values, four of the eight Vehicle paths could never be driven, and the browser console would
-# most likely have blamed latency: exactly how the OH_LEADS Vehicle sweep was lost on 2026-08-18.
-# NOT A BUILD DEFECT -- every one of these combos is metadata-faithful (RQ05 Set[DealerLicensePlateNumber],
-# RQ06 Set[HandicapPlacardNumber], RQ07 Set[TemporaryLicensePlateNumber]) and every control exists.
-# emit_test_plan simply had no value for the fields ("unmapped in Get-TestValue").
+# NOT caused by the v2.5 cosmetic pass, and I checked rather than assumed: regenerating the plan from
+# the v2.4 JSON produces the identical three warnings, and removing this override file entirely still
+# leaves RQ05's fill empty. The committed v2.4 plan happens to show DealerLicensePlateNumber=DLR123,
+# so it predates a resolver change -- which is exactly why a stale plan is not evidence.
+# Surfaced only because test_phase2's fillability gate (rewritten 2026-08-18 after the OH_LEADS
+# `OwnerLastName` case) now reads the FILLS instead of grepping two marker strings.
+# Fix is TEST DATA, not a build change -- same remedy as OH_LEADS.
+DealerLicensePlateNumber=DLR123
+HandicapPlacardNumber=HP12345
+TemporaryLicensePlateNumber=TMP1234
+
+# =============================================================================================
+# 2. InquiryTypeIndicator TOGGLE -- MUST DIFFER FROM THE FORM DEFAULT OR THE TEST IS HOLLOW.
+# =============================================================================================
+# v2.5 gave this control initialValue '3' (the devdoc default: "3-Registration and hotfiles check").
+# That instantly created 13 hollow toggle tests, and the generator diagnosed it in its own words:
+#     'InquiryTypeIndicator' toggle value '3' == form default '3' -- hollow toggle test
+# The mechanism: at v2.4 the field had no test value, so every `_af_` test was DROPPED as unfillable
+# (plan 54). Once the form carried a default, Get-AnyFillValue used THAT as the fill -- so the
+# submitted state matched the base combo test exactly. The alternate-picking logic works for a
+# SELECT (RQ01's plate type correctly moved PC -> AM off the tenant picklist) but a FormInput gives
+# it nothing to choose from, so it falls back to the default.
 #
-# NOT AUTHORITY-DERIVED. TN's metadata types these Alphanumeric and the devdoc gives no value lists or
-# formats, so these are plausible placeholders chosen only to make the paths drivable. If TIES rejects
-# any of them on the first live run, change THE VALUE HERE -- not the build.
-Vehicle.DealerLicensePlateNumber=DLR123
-Vehicle.HandicapPlacardNumber=HP12345
-Vehicle.TemporaryLicensePlateNumber=TMP1234
+# `.toggle` is the purpose-built escape hatch and is preferred over a bare override: it targets the
+# toggle test only, and cannot accidentally change the value used where a field is a set[] member.
+# '1' = "Registration Check Only" per the devdoc's own value list, so the toggle now proves a
+# NON-DEFAULT InquiryTypeIndicator reaches the wire -- the only thing that test was ever for.
+# Do NOT set this to 3, and do NOT delete the tests: deleting them hides that the field is
+# officer-settable at all.
+# Devdoc values: 1-Registration Check Only | 2-Hot files Check Only | 3-Registration and hotfiles (default)
+InquiryTypeIndicator.toggle=1
+
+# =============================================================================================
+# 3. ExpandedNameSearchCode -- a shipped control that could never be exercised.
+# =============================================================================================
+# Single-character NCIC expanded-name-search flag with no code table, so the resolver had no source
+# for a value and its toggle tests were silently dropped. It rides in the any[] of QWA, DQ01 and
+# DQ06. 'Y' is the meaningful setting -- the entire point of the field is to turn expansion ON.
+ExpandedNameSearchCode=Y

@@ -1,0 +1,998 @@
+﻿{
+    "provider":  "TN_TIES",
+    "version":  "2.5",
+    "derivedFrom":  "devdoc + metadata (NOT the built JSON)",
+    "note":  "expectedKeyRef=NO-FIRE means the devdoc allows this fill but no built combo matches -- the driver should submit it and the sweep should record that nothing was sent. UNREACHABLE means a devdoc field has no form control at all.",
+    "testCount":  35,
+    "tests":  [
+                  {
+                      "n":  1,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "specSource":  "devdoc ArticleSingleQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "articleTypeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  2,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QB.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  3,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "BB.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  4,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #1",
+                      "optionalsAdded":  [
+                                             "InquiryTypeIndicator"
+                                         ],
+                      "expectedKeyRef":  "QB.H",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BoatHullIdNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "InquiryTypeIndicator",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  5,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QB.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  6,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "BB.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  7,
+                      "entity":  "Boat",
+                      "query":  "BoatQuery",
+                      "specSource":  "devdoc BoatQuery #2",
+                      "optionalsAdded":  [
+                                             "InquiryTypeIndicator"
+                                         ],
+                      "expectedKeyRef":  "QB.R",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "RegistrationNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "InquiryTypeIndicator",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  8,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "KQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "attention",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddleDH",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffixDH",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  9,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "KQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "attention",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "BirthDateDH",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLastDH",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirstDH",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddleDH",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffixDH",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "SexCodeDH",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  10,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ05",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "attention",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  11,
+                      "entity":  "Person",
+                      "query":  "DriverHistoryQuery",
+                      "specSource":  "devdoc DriverHistoryQuery #2",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "KQ.O",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "attention",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "OperatorLicenseNumberDH",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "purposeCodeDH",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  12,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QWA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  13,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "ExpandedNameSearchCode"
+                                         ],
+                      "expectedKeyRef":  "QWA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ExpandedNameSearchCode",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  14,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "ImageIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "ImageIndicator",
+                                        "value":  "N"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  15,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "RaceCode"
+                                         ],
+                      "expectedKeyRef":  "QWA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "raceCode",
+                                        "value":  "W"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  16,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "DQ.N",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  17,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "InquiryTypeIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "InquiryTypeIndicator",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  18,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #1",
+                      "optionalsAdded":  [
+                                             "RelatedHitSearchIndicator"
+                                         ],
+                      "expectedKeyRef":  "QWA",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "BirthDate",
+                                        "value":  "1990-01-15"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
+                                    },
+                                    {
+                                        "fieldId":  "SexCode",
+                                        "value":  "M"
+                                    },
+                                    {
+                                        "fieldId":  "relatedHitSearchIndicator",
+                                        "value":  "Y"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  19,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ01",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  20,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #3",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ01",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "OperatorLicenseNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  21,
+                      "entity":  "Person",
+                      "query":  "DriverLicenseQuery",
+                      "specSource":  "devdoc DriverLicenseQuery #4",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "DQ06",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "SocialSecurityNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  22,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  23,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "GunCaliber"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "gunCaliber",
+                                        "value":  "TEST"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  24,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "specSource":  "devdoc GunQuery #1",
+                      "optionalsAdded":  [
+                                             "GunMake"
+                                         ],
+                      "expectedKeyRef":  "QG",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "firearmMake",
+                                        "value":  "TES"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  25,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RQ01",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  26,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #1",
+                      "optionalsAdded":  [
+                                             "InquiryTypeIndicator"
+                                         ],
+                      "expectedKeyRef":  "RQ01",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "InquiryTypeIndicator",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  27,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RQ.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  28,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #2",
+                      "optionalsAdded":  [
+                                             "InquiryTypeIndicator"
+                                         ],
+                      "expectedKeyRef":  "RQ.P",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "LicensePlateNumber",
+                                        "value":  "TEST123"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateTypeCode",
+                                        "value":  "PC"
+                                    },
+                                    {
+                                        "fieldId":  "LicensePlateYear",
+                                        "value":  "2026"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    },
+                                    {
+                                        "fieldId":  "InquiryTypeIndicator",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  29,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #3",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RQ03",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  30,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #3",
+                      "optionalsAdded":  [
+                                             "InquiryTypeIndicator"
+                                         ],
+                      "expectedKeyRef":  "RQ03",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "InquiryTypeIndicator",
+                                        "value":  "T"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  31,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #3",
+                      "optionalsAdded":  [
+                                             "State"
+                                         ],
+                      "expectedKeyRef":  "RQ.V",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "RegistrationState",
+                                        "value":  "TX"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  32,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #3",
+                      "optionalsAdded":  [
+                                             "VehicleMakeCode"
+                                         ],
+                      "expectedKeyRef":  "RQ03",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "VehicleMakeCode",
+                                        "value":  "TEST123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  33,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #3",
+                      "optionalsAdded":  [
+                                             "VehicleYear"
+                                         ],
+                      "expectedKeyRef":  "RQ03",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "VehicleIdentificationNumber",
+                                        "value":  "1HGCM82633A123456"
+                                    },
+                                    {
+                                        "fieldId":  "vehicleYear",
+                                        "value":  "2026"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  34,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #4",
+                      "optionalsAdded":  [
+
+                                         ],
+                      "expectedKeyRef":  "RQ05",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "DealerLicensePlateNumber",
+                                        "value":  "DLR123"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  35,
+                      "entity":  "Vehicle",
+                      "query":  "VehicleRegistrationQuery",
+                      "specSource":  "devdoc VehicleRegistrationQuery #4",
+                      "optionalsAdded":  [
+                                             "InquiryTypeIndicator"
+                                         ],
+                      "expectedKeyRef":  "RQ05",
+                      "unwiredFields":  [
+
+                                        ],
+                      "fills":  [
+                                    {
+                                        "fieldId":  "DealerLicensePlateNumber",
+                                        "value":  "DLR123"
+                                    },
+                                    {
+                                        "fieldId":  "InquiryTypeIndicator",
+                                        "value":  "T"
+                                    }
+                                ]
+                  }
+              ]
+}

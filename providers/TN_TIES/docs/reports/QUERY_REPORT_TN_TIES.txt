@@ -1,14 +1,15 @@
 ﻿================================================================
   Build Report: TN_TIES
-  Source: TN_TIES_v2.4.json
-  Generated: 2026-08-24 13:52
+  Source: TN_TIES_v2.5.json
+  Generated: 2026-08-24 15:50
 ================================================================
 QUERY SIMULATION
 ================
 
+  Seeded form defaults (3): Boat.InquiryTypeIndicator=3, Person.InquiryTypeIndicator=3, Vehicle.InquiryTypeIndicator=3
 
 ================================================================
-  CommSys Query Simulator -- TN_TIES_v2.4.json
+  CommSys Query Simulator -- TN_TIES_v2.5.json
 ================================================================
 
 --- QIDM: TN_TIES_VehicleRegistrationQuery [Vehicle] ---
@@ -16,11 +17,12 @@ QUERY SIMULATION
 
     [FIRES first-match] RQ.P
       set: [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode, RegistrationState]
-      any: [InquiryTypeIndicator] -> matched: []
+      any: [InquiryTypeIndicator] -> matched: [InquiryTypeIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>RQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <InquiryTypeIndicator>3</InquiryTypeIndicator>
         <LicensePlateNumber>ABC1234</LicensePlateNumber>
         <LicensePlateTypeCode>PC</LicensePlateTypeCode>
         <LicensePlateYear>2024</LicensePlateYear>
@@ -32,12 +34,13 @@ QUERY SIMULATION
 
     [FIRES shadowed -- first match above wins] RQ05
       set: [DealerLicensePlateNumber]
-      any: [InquiryTypeIndicator] -> matched: []
+      any: [InquiryTypeIndicator] -> matched: [InquiryTypeIndicator]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>RQ</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <DealerLicensePlateNumber>D123456</DealerLicensePlateNumber>
+        <InquiryTypeIndicator>3</InquiryTypeIndicator>
       </Transaction>
 
     [FIRES shadowed -- first match above wins] RQ06
@@ -59,7 +62,7 @@ QUERY SIMULATION
       </Transaction>
 
     >> PLATFORM FIRES: RQ.P (first matching combo)
-    >> UNION POOL (platform serializes): DealerLicensePlateNumber=D123456, HandicapPlacardNumber=H1234567, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, TemporaryLicensePlateNumber=T123456
+    >> UNION POOL (platform serializes): DealerLicensePlateNumber=D123456, HandicapPlacardNumber=H1234567, InquiryTypeIndicator=3, LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ, TemporaryLicensePlateNumber=T123456
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
@@ -151,12 +154,13 @@ QUERY SIMULATION
 
     [FIRES first-match] BB.H
       set: [BoatHullIdNumber]
-      any: [InquiryTypeIndicator, RegistrationState] -> matched: [RegistrationState]
+      any: [InquiryTypeIndicator, RegistrationState] -> matched: [InquiryTypeIndicator, RegistrationState]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
         <MessageKey>BB.H</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
         <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+        <InquiryTypeIndicator>3</InquiryTypeIndicator>
         <State>FL</State>
       </Transaction>
     [SKIP] QB.H -- conditions failed: RegistrationState NOT_EXISTS [value='FL']
@@ -164,7 +168,7 @@ QUERY SIMULATION
     [SKIP] QB.R -- conditions failed: RegistrationState NOT_EXISTS [value='FL']; BoatHullIdNumber NOT_EXISTS [value='FL1234AB56H7']
 
     >> PLATFORM FIRES: BB.H (first matching combo)
-    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, State=FL
+    >> UNION POOL (platform serializes): BoatHullIdNumber=FL1234AB56H7, InquiryTypeIndicator=3, State=FL
        (LIMITATION #1: pool = union of set[]+any[] of ALL matching combos;
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 

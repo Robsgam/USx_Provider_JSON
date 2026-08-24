@@ -1,12 +1,12 @@
 ﻿================================================================
   Build Report: TN_TIES
-  Source: TN_TIES_v2.4.json
-  Generated: 2026-08-24 13:52
+  Source: TN_TIES_v2.5.json
+  Generated: 2026-08-24 15:50
 ================================================================
 LAYOUT SUMMARY
 ==============
 
-=== TN_TIES_v2.4.json ===
+=== TN_TIES_v2.5.json ===
 QIFs: 5
   Vehicle | entity=Vehicle | qidm= | cards=1 fields=8
   Person | entity=Person | qidm= | cards=2 fields=15
@@ -34,17 +34,17 @@ LAYOUT DETAIL
         LicensePlateNumber (Text | maxLen=10)
         LicensePlateTypeCode (Dropdown | codeTypeCategory=NCIC_LICENSE_PLATE_TYPE | codeTypeSource=NCIC | default=PC)
         LicensePlateYear (Text | maxLen=4 | default=2026)
-      ROW ROW_VEH_2 [6 3 3]
-        VehicleIdentificationNumber (Text | maxLen=20)
-        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
-        vehicleYear (Text | maxLen=4)
-      ROW ROW_VEH_3 [4 4 4]
+      ROW ROW_VEH_2 [4 4 4]
         DealerLicensePlateNumber (Text | maxLen=10)
         HandicapPlacardNumber (Text | maxLen=10)
         TemporaryLicensePlateNumber (Text | maxLen=10)
+      ROW ROW_VEH_3 [6 3 3]
+        VehicleIdentificationNumber (Text | maxLen=20)
+        VehicleMakeCode (Dropdown | attributeTypeId=VEHICLE_MAKE | codeTypeProvider=NCIC)
+        vehicleYear (Text | maxLen=4)
       ROW ROW_VEH_4 [6 6]
         RegistrationState (Dropdown | attributeTypeId=STATE)
-        InquiryTypeIndicator (Text | maxLen=1)
+        InquiryTypeIndicator (Text | maxLen=1 | default=3)
 
 === Person ===
   name=ENTITY_Person | entity=Person | qidm=
@@ -54,20 +54,19 @@ LAYOUT DETAIL
         OperatorLicenseNumber (Text | maxLen=20)
         SocialSecurityNumber (Text | maxLen=20)
       ROW ROW_PER_DL_2 [3 3 3 3]
+        RegistrationState (Dropdown | attributeTypeId=STATE)
+        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
+        InquiryTypeIndicator (Text | maxLen=1 | default=3)
+      ROW ROW_PER_DL_3 [3 3 3 3]
         NameFirst (Text | maxLen=30)
         NameLast (Text | maxLen=30)
         NameMiddle (Text | maxLen=30)
         NameSuffix (Text | maxLen=5)
-      ROW ROW_PER_DL_3 [4 4 4]
+      ROW ROW_PER_DL_4 [3 3 3 3]
         BirthDate (FormDate)
         SexCode (Dropdown | attributeTypeId=SEX | codeTypeProvider=NIBRS)
         raceCode (Dropdown | attributeTypeId=RACE | codeTypeProvider=NIBRS)
-      ROW ROW_PER_DL_4 [3 3 3 3]
-        RegistrationState (Dropdown | attributeTypeId=STATE)
-        ImageIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        relatedHitSearchIndicator (Dropdown | codeTypeCategory=YES_NO_UNKNOWN | codeTypeSource=NCIC | default=Y)
-        InquiryTypeIndicator (Text | maxLen=1)
-      ROW ROW_PER_DL_5 [6]
         ExpandedNameSearchCode (Text | maxLen=1)
     CARD "CARD_PER_DH"
       ROW ROW_PER_DH_1 [6 6]
@@ -109,7 +108,7 @@ LAYOUT DETAIL
         BoatHullIdNumber (Text | maxLen=20)
         RegistrationNumber (Text | maxLen=8)
         RegistrationState (Dropdown | attributeTypeId=STATE)
-        InquiryTypeIndicator (Text | maxLen=1)
+        InquiryTypeIndicator (Text | maxLen=1 | default=3)
 
 === RMS QIDMs ===
   RMS Person Search query

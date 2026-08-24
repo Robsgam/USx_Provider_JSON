@@ -2,9 +2,41 @@
 
 Auto-generated from `TN_TIES_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.4** | Generated: 2026-08-24
+Current: **v2.5** | Generated: 2026-08-24
 
 ---
+
+## v2.5 -- 2026-08-24 -- COSMETIC PASS (Rob's directive) -- and it exposed three vehicle searches that
+
+                could never have been driven  
+**CHANGED**, all as directed:
+  VEHICLE -- specialty plates (Dealer/Handicap/Temp) moved UP to row 2; VIN group down to row 3.  
+    Plate Number STAYS on row 1 with Plate Type + Plate Year because RQ.P requires all three;  
+    splitting them would scatter one combo's own mandatory fields across rows.  
+  PERSON DL -- shared-context row promoted to position 2 (State / NCIC Image / Stolen Check /  
+    Inquiry Type), names to 3, DOB group to 4. Expanded Name Search JOINS the DOB row instead of  
+    sitting alone on a [6] row, so the card is 4 rows not 5; widths 4/4/4 -> 3/3/3/3, still 12.  
+    Its "(optional)" dropped.  
+  INQUIRY TYPE -- bare label everywhere (helper "(1/2/3, optional)" removed on Vehicle, Person  
+    DL and Boat) + initialValue 3.  
+  DH PURPOSE CODE -- combo defaults[] PurposeCode=C on KQ.N/KQ.O, and NO form initialValue.  
+ROB RULED ON THE ONE THING THAT COULD HAVE BROKEN ROUTING, and it was measured first:  
+  purposeCodeDH is in the set[] of KQ.N and KQ.O, while DQ05 is set[OperatorLicenseNumberDH]  
+    ALONE. A form prefill makes a field always-present, so it would have collapsed KQ.O onto  
+    DQ05 and killed the in-state DH-by-OLN path -- BUILD_RULES 24, the mechanism that killed  
+    AZ DQPN/DQP. Presented as a three-way choice; Rob chose CAD-default-only. Routing untouched,  
+    DQ05 alive, and reachability confirms it: 19 combinations, ALL reachable.  
+  InquiryTypeIndicator by contrast is in the any[] of all 13 carrying combos and in NO set[], so  
+    prefilling it cannot shadow anything. That asymmetry is why one got a form default and the  
+    other did not.  
+  A build-script ASSERTION now enforces the distinction instead of a comment asking for care:  
+    Add-ComboDefault throws if asked to default a set[] field without an explicit -AllowInSet.  
+CAD DEFAULT TWINS done as a LOOP, not 15 hand-edits (BUILD_RULES 12 -- CAD ignores form  
+  initialValue): 5 Vehicle + 4 DL + 4 Boat for InquiryTypeIndicator, 2 DH for PurposeCode = 15,  
+  asserted. A hand-kept list of 13 keyRefs is precisely what falls behind its own array.  
+  NOTE the namespace trap inside it: set[]/any[] hold FORM fieldIds, defaults[].field holds the  
+  QIDM ATTRIBUTE name. Identical for InquiryTypeIndicator, DIFFERENT for the DH field  
+  (purposeCodeDH vs PurposeCode) -- matching the wrong one silently touches zero combos.  
 
 ## v2.4 -- 2026-08-24 -- keyRefs renamed off the DATA-MINED transactions, and the redundant dealer pair
 
@@ -64,10 +96,18 @@ MEASURED v2.3 -> v2.4: Vehicle combos 8 -> 7 - total combos 22 -> 21 - plan 55 -
   fidelity 28 branches / 0 UNDER / 0 OVER (HELD, so nothing was suppressed) - wiring closure  
   1 break -> 0 (the registered class J on RQ05 is gone because its State gate is gone) -  
   audit_data_mined DM1 7 -> 4, DM2 0, DM3 1 - zero QV.* combos or plan tests remain.  
-NOT TESTED YET: never tenant-tested. Owes an import and a first-ever sweep. STATED OBJECTIVE for  
-  that sweep: DOES A MINED NCIC HIT RENDER? The QRDM carries the shared hit/RelatedSearchHitIndicator  
-  mapping, so mined-tag consumption is CONFIG-PRESENT and has never been exercised (audit_data_mined  
-  class DM3). Same class as HI's unverified NCIC hit block.  
+NOT TESTED YET: never tenant-tested. Owes an import and a first-ever sweep.  
+STATED OBJECTIVE OF THAT SWEEP -- CORRECTED 2026-08-24 BY ROB, and my first version was wrong:  
+  "we want logs that show the xml message and verify that uit matches the metadata specs."  
+  So: a saved log per plan test carrying the COMMSYS XML of the outgoing request, and gate 6d  
+  (audit_log_metadata) green on every one of them -- every <Request> field metadata-defined for  
+  that query, and the present field-set satisfying a real metadata combination's set[]. That is  
+  the thing this package exists to prove, for all 21 combinations.  
+  WHAT I WRONGLY WROTE HERE FIRST: "does a mined NCIC hit render?" That is a RESPONSE-side  
+  question. It needs a real hit record in the tenant, which we do not control, and no amount of  
+  REQUEST capture can settle it -- so it was not an objective a sweep could ever deliver.  
+  audit_data_mined class DM3 records that the QRDM's hit/RelatedSearchHitIndicator mapping is  
+  unexercised; that is a COVERAGE STATEMENT about the response mapping, not sweep work.  
 
 ## v2.3 -- 2026-08-20 -- LAYOUT COLLAPSE 14->6 CARDS + NAME COMPONENTS; RQ05 COMMENT CORRECTED
 

@@ -35,7 +35,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tn_ties.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.4'
+$Version     = '2.5'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\TN_TIES_v${Version}.json"
@@ -521,6 +521,60 @@ $boatQuery = [PSCustomObject]@{
     targetEntity    = 'Boat'
 }
 
+# =====================================================================
+# CAD DEFAULT TWINS (v2.5) -- BUILD_RULES 12: CAD IGNORES the form initialValue, so a form-only
+# prefill leaves every CAD-originated query still sending nothing. Each prefill therefore needs a
+# matching combo defaults[] entry on EVERY combination that carries the field.
+#
+# Done as a loop rather than 15 hand-edits for two reasons: it cannot miss a combination, and it
+# stays correct if one is added later -- a hand-maintained list of 13 keyRefs is exactly the kind of
+# thing that silently falls behind the array it describes.
+#
+# ONLY fields that are in any[] and in NO set[] may be defaulted this way. That is not a style
+# preference, it is BUILD_RULES 24: a prefill on a set[] field is always-present, which collapses
+# that combo onto a plainer sibling and can kill it. Measured before writing this:
+# InquiryTypeIndicator sits in the any[] of all 13 carrying combos and in no set[], so it is safe.
+# purposeCodeDH is the counter-example -- it IS in KQ.N/KQ.O set[], and prefilling it would have
+# collapsed KQ.O onto DQ05 (set[OperatorLicenseNumberDH] alone) and killed the in-state DH-by-OLN
+# path. Rob's ruling 2026-08-24: give it the CAD default WITHOUT a form initialValue, so routing is
+# untouched and DQ05 survives. The assertion below enforces that distinction instead of trusting it.
+#
+# MATCH-FIELD vs DEFAULT-FIELD ARE DIFFERENT NAMESPACES and conflating them makes this loop a no-op.
+# set[]/any[] hold FORM fieldIds (sourceFields); defaults[].field holds the QIDM ATTRIBUTE name. They
+# happen to be identical for InquiryTypeIndicator, which is exactly why the bug would have hidden --
+# it only shows on the DH-suffixed field, where set[] says `purposeCodeDH` and the attribute is
+# `PurposeCode`. Matching on the attribute name there would find nothing, touch zero combinations,
+# and the count assertion below is what would have caught it.
+function Add-ComboDefault($qidm, [string]$field, [string]$value, [string]$matchField, [switch]$AllowInSet) {
+    if (-not $matchField) { $matchField = $field }
+    $touched = 0
+    foreach ($c in @($qidm.combinations)) {
+        $inAny = (@($c.requirements.any) -contains $matchField)
+        $inSet = (@($c.requirements.set) -contains $matchField)
+        if ($inSet -and -not $AllowInSet) {
+            throw "Add-ComboDefault: '$field' is in set[] of $($c.keyReference) -- defaulting it would make it always-present (BUILD_RULES 24). Pass -AllowInSet only when the CAD default carries NO matching form initialValue."
+        }
+        if (-not $inAny -and -not $inSet) { continue }
+        $existing = @($c.requirements.defaults | Where-Object { $_ -and $_.field })
+        if ($existing.field -contains $field) { continue }
+        $c.requirements | Add-Member -NotePropertyName defaults -NotePropertyValue @() -Force:$false -ErrorAction SilentlyContinue
+        $c.requirements.defaults = @($existing) + @([PSCustomObject]@{ field = $field; value = $value })
+        $touched++
+    }
+    Write-Host "  [cad-default] $field=$value -> $touched combination(s) on $($qidm.query)"
+    return $touched
+}
+
+$cadDefaultTotal = 0
+foreach ($q in @($vehRegQuery, $dlQuery, $boatQuery)) {
+    $cadDefaultTotal += Add-ComboDefault $q 'InquiryTypeIndicator' '3'
+}
+# purposeCodeDH: CAD default ONLY -- no form initialValue. -AllowInSet is the explicit acknowledgement
+# that this field is in set[] and that the safety rule is being waived DELIBERATELY, which is only
+# sound because there is no form prefill to make it always-present.
+$cadDefaultTotal += Add-ComboDefault $dhQuery 'PurposeCode' 'C' -matchField 'purposeCodeDH' -AllowInSet
+if ($cadDefaultTotal -lt 15) { throw "CAD default twins: expected at least 15 combination(s) touched, got $cadDefaultTotal -- a combination lost its field or the loop stopped matching." }
+
 $tnBundle = [PSCustomObject]@{
     configurations = @($auth, $results, $qmf, $vehRegQuery, $dlQuery, $dhQuery, $gunQuery, $artQuery, $boatQuery)
     description    = "Provider configuration for TN_TIES v${Version} -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), 22 combos, DH-suffix, existence-only routing gates + identifier-priority guardrails"
@@ -557,19 +611,39 @@ $vehLayout = MakeLayouts @(
                 @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
                 @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
             )}
-            @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
-                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }
-                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_2' }
-                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_2' }
+            # ROWS 2 AND 3 SWAPPED at v2.5 (Rob's cosmetic directive): the three SPECIALTY PLATE
+            # identifiers now sit immediately under the plate row, so all four plate-family searches
+            # read together, and the VIN group drops below them. Plate Number stays on row 1 with
+            # Plate Type + Plate Year because RQ.P (the out-of-state plate combo) REQUIRES all three
+            # -- splitting them would separate a combo's own mandatory fields across rows.
+            @{ id = 'ROW_VEH_2'; cols = @('4','4','4'); fields = @(
+                @{ id = 'DealerLicensePlateNumber_Input';    node = Inp 'DealerLicensePlateNumber'    'Dealer Plate'     '10' 'ROW_VEH_2' }
+                @{ id = 'HandicapPlacardNumber_Input';       node = Inp 'HandicapPlacardNumber'       'Handicap Placard' '10' 'ROW_VEH_2' }
+                @{ id = 'TemporaryLicensePlateNumber_Input'; node = Inp 'TemporaryLicensePlateNumber' 'Temp Plate'       '10' 'ROW_VEH_2' }
             )}
-            @{ id = 'ROW_VEH_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'DealerLicensePlateNumber_Input';    node = Inp 'DealerLicensePlateNumber'    'Dealer Plate'     '10' 'ROW_VEH_3' }
-                @{ id = 'HandicapPlacardNumber_Input';       node = Inp 'HandicapPlacardNumber'       'Handicap Placard' '10' 'ROW_VEH_3' }
-                @{ id = 'TemporaryLicensePlateNumber_Input'; node = Inp 'TemporaryLicensePlateNumber' 'Temp Plate'       '10' 'ROW_VEH_3' }
+            @{ id = 'ROW_VEH_3'; cols = @('6','3','3'); fields = @(
+                @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_3' }
+                @{ id = 'VehicleMakeCode_Input'; node = Sel 'VehicleMakeCode' 'Vehicle Make (optional)' @{ attributeTypeId = 'VEHICLE_MAKE'; codeTypeProvider = 'NCIC' } 'ROW_VEH_3' }
+                @{ id = 'VehicleYear_Input';     node = Inp 'vehicleYear' 'Vehicle Year (optional)' '4' 'ROW_VEH_3' }
             )}
+            # Inquiry Type: bare label + initialValue '3' at v2.5. SAFE to prefill and that was
+            # MEASURED, not assumed -- InquiryTypeIndicator is in the any[] of all 13 carrying combos
+            # and in NO set[], so it cannot shadow anything (BUILD_RULES 24 only bites on set[]
+            # fields). '3' is the devdoc default ("3-Registration and hotfiles check (default)"), so
+            # the form now states what the provider already does. Helper text "(1/2/3, optional)"
+            # removed on every card: a prefilled control takes a BARE label, and the values it listed
+            # are no longer something the officer has to supply. Paired with a combo defaults[] twin
+            # on each carrying combo -- CAD ignores form initialValue (BUILD_RULES 12).
+            # LABEL-OVERRIDE: InquiryTypeIndicator -- bare "Inquiry Type" by Rob's directive 2026-08-24
+            #   ("remove the helper text for inquiry type on all cards", "make the default 3"). CHECK 15
+            #   asks for an "(optional)" qualifier on an any[]-only field; that rule and the PREFILLED
+            #   BARE-LABEL rule point opposite ways here, and the prefill rule wins: the field now
+            #   carries initialValue '3', so "(optional)" would describe a control the officer never has
+            #   to touch, and "(1/2/3)" would list values the form already supplies. Applies to all
+            #   three cards that carry this control (Vehicle, Person DL, Boat).
             @{ id = 'ROW_VEH_4'; cols = @('6','6'); fields = @(
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for TN)' @{ attributeTypeId = 'STATE' } 'ROW_VEH_4' }
-                @{ id = 'InquiryTypeIndicator_Input'; node = Inp 'InquiryTypeIndicator' 'Inquiry Type (1/2/3, optional)' '1' 'ROW_VEH_4' }
+                @{ id = 'InquiryTypeIndicator_Input'; node = Inp 'InquiryTypeIndicator' 'Inquiry Type' '1' 'ROW_VEH_4' @{ initialValue = '3' } }
             )}
         )
     }
@@ -604,25 +678,39 @@ $perLayout = MakeLayouts @(
                 @{ id = 'OperatorLicenseNumber_Input'; node = Inp 'OperatorLicenseNumber' 'OLN' '20' 'ROW_PER_DL_1' }
                 @{ id = 'SocialSecurityNumber_Input';  node = Inp 'SocialSecurityNumber'  'SSN' '20' 'ROW_PER_DL_1' }
             )}
+            # ROW ORDER CHANGED at v2.5 (Rob's cosmetic directive): the shared-context row moves up to
+            # position 2, names to 3, DOB group to 4. Context first means the officer sets State /
+            # image / stolen / inquiry once, then picks a search path below it -- and it matches the
+            # uniform target's intent of grouping shared context with the primary identifier rather
+            # than burying it under the path-specific rows.
             @{ id = 'ROW_PER_DL_2'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL_2' }
-                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL_2' }
-                @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_PER_DL_2' }
-                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix'      '5'  'ROW_PER_DL_2' }
+                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for TN)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_2' }
+                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_2' }
+                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_2' }
+                @{ id = 'InquiryTypeIndicator_Input';      node = Inp 'InquiryTypeIndicator' 'Inquiry Type' '1' 'ROW_PER_DL_2' @{ initialValue = '3' } }
             )}
-            @{ id = 'ROW_PER_DL_3'; cols = @('4','4','4'); fields = @(
-                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_3' }
-                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
-                @{ id = 'RaceCode_Input';  node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_3' }
+            @{ id = 'ROW_PER_DL_3'; cols = @('3','3','3','3'); fields = @(
+                @{ id = 'NameFirst_Input';  node = Inp 'NameFirst'  'First Name'  '30' 'ROW_PER_DL_3' }
+                @{ id = 'NameLast_Input';   node = Inp 'NameLast'   'Last Name'   '30' 'ROW_PER_DL_3' }
+                @{ id = 'NameMiddle_Input'; node = Inp 'NameMiddle' 'Middle Name' '30' 'ROW_PER_DL_3' }
+                @{ id = 'NameSuffix_Input'; node = Inp 'NameSuffix' 'Suffix'      '5'  'ROW_PER_DL_3' }
             )}
+            # Expanded Name Search JOINS the DOB row at v2.5 instead of sitting alone on a [6] row
+            # below, so the DL card is four rows instead of five. Widths tighten 4/4/4 -> 3/3/3/3 to
+            # make room; the row still sums to 12 (L6) and the child count still matches (validate).
+            # Its "(optional)" is dropped per the directive.
             @{ id = 'ROW_PER_DL_4'; cols = @('3','3','3','3'); fields = @(
-                @{ id = 'RegistrationState_Input';         node = Sel 'RegistrationState' 'State (leave blank for TN)' @{ attributeTypeId = 'STATE' } 'ROW_PER_DL_4' }
-                @{ id = 'ImageIndicator_Input';            node = Sel 'ImageIndicator' 'NCIC Image' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_4' }
-                @{ id = 'RelatedHitSearchIndicator_Input'; node = Sel 'relatedHitSearchIndicator' 'Stolen Check' @{ codeTypeCategory = 'YES_NO_UNKNOWN'; codeTypeSource = 'NCIC'; initialValue = 'Y' } 'ROW_PER_DL_4' }
-                @{ id = 'InquiryTypeIndicator_Input';      node = Inp 'InquiryTypeIndicator' 'Inquiry Type (1/2/3, optional)' '1' 'ROW_PER_DL_4' }
-            )}
-            @{ id = 'ROW_PER_DL_5'; cols = @('6'); fields = @(
-                @{ id = 'ExpandedNameSearchCode_Input'; node = Inp 'ExpandedNameSearchCode' 'Expanded Name Search (optional)' '1' 'ROW_PER_DL_5' }
+                @{ id = 'BirthDate_Input'; node = Dt  'BirthDate' 'Date of Birth' 'ROW_PER_DL_4' }
+                @{ id = 'SexCode_Input';   node = Sel 'SexCode' 'Sex' @{ attributeTypeId = 'SEX'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
+                @{ id = 'RaceCode_Input';  node = Sel 'raceCode' 'Race (optional)' @{ attributeTypeId = 'RACE'; codeTypeProvider = 'NIBRS' } 'ROW_PER_DL_4' }
+                # LABEL-OVERRIDE: ExpandedNameSearchCode -- bare "Expanded Name Search" by Rob's
+                #   directive 2026-08-24 ("remover the options on that"), moved onto the DOB row in the
+                #   same pass. It is genuinely an any[]-only optional, so CHECK 15's request for an
+                #   "(optional)" qualifier is CORRECT SIGNAL and is being overruled deliberately, not
+                #   silenced by accident: the card title already enumerates the search paths, and the
+                #   lean-label convention keeps qualifiers out of the label. Recorded here so the WARN
+                #   downgrades to INFO instead of being re-litigated at the next pass.
+                @{ id = 'ExpandedNameSearchCode_Input'; node = Inp 'ExpandedNameSearchCode' 'Expanded Name Search' '1' 'ROW_PER_DL_4' }
             )}
         )
     }
@@ -720,7 +808,7 @@ $boaLayout = MakeLayouts @(
                 @{ id = 'BoatHullIdNumber_Input';     node = Inp 'BoatHullIdNumber' 'Hull ID Number' '20' 'ROW_BOA_1' }
                 @{ id = 'RegistrationNumber_Input';   node = Inp 'RegistrationNumber' 'Registration Number' '8' 'ROW_BOA_1' }
                 @{ id = 'RegistrationState_Input';    node = Sel 'RegistrationState' 'State (leave blank for TN)' @{ attributeTypeId = 'STATE' } 'ROW_BOA_1' }
-                @{ id = 'InquiryTypeIndicator_Input'; node = Inp 'InquiryTypeIndicator' 'Inquiry Type (1/2/3, optional)' '1' 'ROW_BOA_1' }
+                @{ id = 'InquiryTypeIndicator_Input'; node = Inp 'InquiryTypeIndicator' 'Inquiry Type' '1' 'ROW_BOA_1' @{ initialValue = '3' } }
             )}
         )
     }

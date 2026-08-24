@@ -2,6 +2,71 @@ TN_TIES -- Build Notes
 =======================
 Provider: TN_TIES
 State: Tennessee
+v2.5  2026-08-24  COSMETIC PASS (Rob's directive) -- and it exposed three vehicle searches that
+                  could never have been driven
+  CHANGED, all as directed:
+    VEHICLE -- specialty plates (Dealer/Handicap/Temp) moved UP to row 2; VIN group down to row 3.
+      Plate Number STAYS on row 1 with Plate Type + Plate Year because RQ.P requires all three;
+      splitting them would scatter one combo's own mandatory fields across rows.
+    PERSON DL -- shared-context row promoted to position 2 (State / NCIC Image / Stolen Check /
+      Inquiry Type), names to 3, DOB group to 4. Expanded Name Search JOINS the DOB row instead of
+      sitting alone on a [6] row, so the card is 4 rows not 5; widths 4/4/4 -> 3/3/3/3, still 12.
+      Its "(optional)" dropped.
+    INQUIRY TYPE -- bare label everywhere (helper "(1/2/3, optional)" removed on Vehicle, Person
+      DL and Boat) + initialValue 3.
+    DH PURPOSE CODE -- combo defaults[] PurposeCode=C on KQ.N/KQ.O, and NO form initialValue.
+  ROB RULED ON THE ONE THING THAT COULD HAVE BROKEN ROUTING, and it was measured first:
+    purposeCodeDH is in the set[] of KQ.N and KQ.O, while DQ05 is set[OperatorLicenseNumberDH]
+      ALONE. A form prefill makes a field always-present, so it would have collapsed KQ.O onto
+      DQ05 and killed the in-state DH-by-OLN path -- BUILD_RULES 24, the mechanism that killed
+      AZ DQPN/DQP. Presented as a three-way choice; Rob chose CAD-default-only. Routing untouched,
+      DQ05 alive, and reachability confirms it: 19 combinations, ALL reachable.
+    InquiryTypeIndicator by contrast is in the any[] of all 13 carrying combos and in NO set[], so
+      prefilling it cannot shadow anything. That asymmetry is why one got a form default and the
+      other did not.
+    A build-script ASSERTION now enforces the distinction instead of a comment asking for care:
+      Add-ComboDefault throws if asked to default a set[] field without an explicit -AllowInSet.
+  CAD DEFAULT TWINS done as a LOOP, not 15 hand-edits (BUILD_RULES 12 -- CAD ignores form
+    initialValue): 5 Vehicle + 4 DL + 4 Boat for InquiryTypeIndicator, 2 DH for PurposeCode = 15,
+    asserted. A hand-kept list of 13 keyRefs is precisely what falls behind its own array.
+    NOTE the namespace trap inside it: set[]/any[] hold FORM fieldIds, defaults[].field holds the
+    QIDM ATTRIBUTE name. Identical for InquiryTypeIndicator, DIFFERENT for the DH field
+    (purposeCodeDH vs PurposeCode) -- matching the wrong one silently touches zero combos.
+
+  *** WHAT THE PASS UNCOVERED, worth more than the layout change itself ***
+  THREE VEHICLE SEARCHES WERE UNDRIVABLE AND HAD BEEN SINCE THEY WERE BUILT. emit_test_plan has
+    been printing it all along: DealerLicensePlateNumber, HandicapPlacardNumber and
+    TemporaryLicensePlateNumber each "has no test value (unmapped in Get-TestValue)". A set[] field
+    with no value means the plan cannot satisfy the combo -- the test carries a BLANK fill, the
+    driver types undefined, and the tenant keeps Send DISABLED. Dealer, handicap and temporary
+    plate -- three of seven vehicle searches -- could never have been proven.
+    NOT caused by this pass, and verified rather than assumed: regenerating from the v2.4 JSON
+    gives the identical three warnings, and deleting the override file entirely still leaves RQ05
+    with an empty fill. The committed v2.4 plan shows DealerLicensePlateNumber=DLR123, so it
+    predates a resolver change -- a stale plan is not evidence.
+    Fixed as TEST DATA in docs/reference/TEST_VALUE_OVERRIDES.txt (new), the OH_LEADS remedy.
+  AND THE FORM DEFAULT CREATED 13 HOLLOW TOGGLE TESTS BEFORE IT FIXED ANYTHING. With
+    InquiryTypeIndicator prefilled 3, Get-AnyFillValue used 3 as the toggle fill -- identical to
+    the base combo state, so 13 tests proved nothing. The generator diagnosed it in its own words
+    ("hollow toggle test") AND named the remedy syntax, <field>.toggle=<value>, which beats the
+    bare override I first wrote because it cannot leak into set[] fills. Set to 1 (Registration
+    Check Only) so the toggle proves a NON-DEFAULT value reaches the wire. Alternate-picking works
+    for a SELECT -- RQ01 plate type correctly moved PC -> AM off the tenant picklist -- but a
+    FormInput gives it nothing to choose from.
+  ExpandedNameSearchCode was in the same state: a shipped control in three any[] pools whose tests
+    were silently dropped for want of a value. Now mapped Y and exercised.
+
+  GATES: validator 73P/0F/0W | reachability 19/19 ALL reachable (DQ05 alive) | prefill shadow
+    40 pairs / 0 FAIL | fidelity 28 branches / 0 UNDER / 0 OVER (HELD) | wiring closure 0 breaks |
+    layout flow 0 findings (12 rows, was 13) | picklist scope silent (the v2.4 capture still covers
+    every category; no new dropdown added) | audit_data_mined DM1 4 / DM2 0 / DM3 1.
+  PLAN: 54 -> 69 tests, and every one of the +15 is real coverage rather than inflation -- 13
+    InquiryTypeIndicator toggles formerly dropped as unfillable, ExpandedNameSearch toggles, and
+    three specialty combos that now actually fill. Toggle coverage 36 any-field tests, 17 inverted
+    from default, 0 HOLLOW. test_phase2 PRE-FLIGHT CLEAR at 69 tests / 228 fills.
+  NOT TESTED YET: never tenant-tested. Owes an import of v2.5 and a first-ever sweep. Objective
+    unchanged and as Rob stated it: logs carrying the COMMSYS XML, with gate 6d green on every one.
+
 v2.4  2026-08-24  keyRefs renamed off the DATA-MINED transactions, and the redundant dealer pair
                   collapsed -- both were the SAME misconception
   CHANGED:

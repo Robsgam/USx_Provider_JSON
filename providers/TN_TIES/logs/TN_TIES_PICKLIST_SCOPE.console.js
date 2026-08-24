@@ -2,7 +2,7 @@
 // Then render each entity form and run its line (one at a time; each downloads one file):
 var scope = {
     "provider":  "TN_TIES",
-    "version":  "2.4",
+    "version":  "2.5",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -28,20 +28,6 @@ var scope = {
                    },
                    {
                        "entity":  "Person",
-                       "fieldId":  "SexCode",
-                       "label":  "Sex",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
-                       "entity":  "Person",
-                       "fieldId":  "raceCode",
-                       "label":  "Race (optional)",
-                       "codeTypeCategory":  "",
-                       "codeTypeSource":  ""
-                   },
-                   {
-                       "entity":  "Person",
                        "fieldId":  "RegistrationState",
                        "label":  "State (leave blank for TN)",
                        "codeTypeCategory":  "",
@@ -60,6 +46,20 @@ var scope = {
                        "label":  "Stolen Check",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
                        "codeTypeSource":  "NCIC"
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "SexCode",
+                       "label":  "Sex",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "raceCode",
+                       "label":  "Race (optional)",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
                    },
                    {
                        "entity":  "Person",
@@ -98,4 +98,4 @@ var scope = {
                    }
                ]
 };
-console.log('%c[USx-SCOPE] scope loaded: TN_TIES v2.4 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
+console.log('%c[USx-SCOPE] scope loaded: TN_TIES v2.5 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");
