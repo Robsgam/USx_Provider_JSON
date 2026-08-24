@@ -2,7 +2,7 @@
 
 Auto-generated from `TN_TIES_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-20
+Current: **v2.3** | Generated: 2026-08-24
 
 ---
 
@@ -39,12 +39,38 @@ KNOWN AND REGISTERED -- audit_wiring_closure class J, 1 break, EXPECTED:
   State selects the destination on this path and is not transmitted. Registered 2026-08-19  
   (rule 'routing-only-not-transmitted'); class J does not consult the registry, so the line  
   keeps printing -- that is expected, not a regression, and it does not block enforce.  
-**NOTE** FOR THE NEXT READER, unresolved and NOT acted on here: metadata RQ01{LicensePlateNumber}
-  = Set[LicensePlateNumber] corresponds to devdoc combination "1. (In) LicensePlateNumber,  
-  [InquiryTypeIndicator]" and is NOT BUILT -- the build serves the blank-State plate case  
-  with QV.P instead. Whether an in-state TN plate search should reach the TIES/DMV  
-  transaction rather than the NCIC one is a routing question for Rob, not a layout fix, and  
-  re-architecting it was out of scope for this pass.  
+RESOLVED 2026-08-24 -- THIS NOTE WAS WRONG AND IT SENT A READER (Rob) LOOKING FOR A DEFECT THAT  
+  CANNOT EXIST. It read: "metadata RQ01{LicensePlateNumber} ... is NOT BUILT -- the build serves the  
+  blank-State plate case with QV.P instead. Whether an in-state TN plate search should reach the  
+  TIES/DMV transaction rather than the NCIC one is a routing question for Rob."  
+  THE KEYREF NEVER REACHES THE WIRE. A captured request carries  
+  <MessageType>VehicleRegistrationQuery</MessageType> plus the fields, and ZERO occurrences of the  
+  keyRef -- verified against a real AZ_AZDPS capture. Rob, 2026-08-24: "we only send the  
+  VehicleRegistrationQuery and not the transaction name." So QV.P and RQ01 emit BYTE-IDENTICAL  
+  requests; nothing in the request can express "route to NCIC instead of DMV", and the question the  
+  note asked has no mechanism behind it.  
+  THREE INDEPENDENT CONFIRMATIONS: (1) RQ01{plate}, RV01{plate} and QV{plate} all have  
+  set[]=[LicensePlateNumber], so they are routing-INDISTINGUISHABLE -- no fill separates them;  
+  (2) TN_TIES_ACCEPTED_DIVERGENCES.txt ALREADY recorded exactly this, "RQ01 ... == QV.P -> DROPPED  
+  (kept QV.P)", so the note re-opened a decision this build had already made and written down;  
+  (3) audit_devdoc_combinations PASSes with 14 devdoc combinations compared / 0 FAIL, and  
+  audit_query_trace reports 0 vehicle MISSING (its 2 MISSING are KQ on Driver History).  
+  AND QV IS A DATA-MINED TRANSACTION, which is the part the note missed entirely. Devdoc line 9:  
+  "Data-Mined Transactions: NCIC (QA, QB, QG, QV, QW) and DMV (Person and Vehicle) Tags returned  
+  from Data mining". QV is not an alternative destination we pick -- TIES runs it and returns its  
+  tags mined into the response. InquiryTypeIndicator (O, default 3 = "Registration and hotfiles  
+  check") is why ONE VehicleRegistrationQuery covers both, and why building no separate  
+  stolen-vehicle query is correct here. It is wired in any[] on 6 of 8 vehicle combos; the two  
+  without it (RQ06 handicap, RQ07 temporary) are correct -- the devdoc marks both "No hot files  
+  check conducted" and the metadata gives them no <Any>.  
+  WHAT IS ACTUALLY LEFT, and it is cosmetic: the keyRefs QV.P / QV.V / QV.D are named after a  
+  DATA-MINED NCIC transaction, which is what made a correct build read as a defect. Rename them to  
+  the metadata in-state names at the next build -- zero wire impact, and free while TN is  
+  never-tested.  
+  STILL GENUINELY UNVERIFIED (different question, do not conflate): TN's QRDM carries the shared  
+  `hit` / `RelatedSearchHitIndicator` mapping, so mined-tag consumption is CONFIG-PRESENT but has  
+  never been exercised -- TN has no logs. Same class as HI's unverified NCIC hit block. Make "does  
+  a mined NCIC hit render?" a stated objective of TN's first sweep.  
 GATES: validator 74P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | name components 0  
   blocking / 8 examined | layout flow 0 findings | wiring closure 1 break (the registered  
   class J above) | reachability 20/20 | prefill shadow 0 (47 pairs) | fidelity 28 branches  
