@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: TN_TIES Vehicle VehicleRegistrationQuery
+Combo: RQ05 (RQ05 (auto))
+Date: 2026-08-24 16:11:08
+Result: PASS
+JSON Version: 2.5
+Entity Fingerprint: a6e2fa48f24880dfefdf3c890f41f7eb744bb86e38a31f272426253f3350ed92
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"DealerLicensePlateNumber":"DLR123","InquiryTypeIndicator":"3","LicensePlateTypeCode":"PC","LicensePlateYear":"2026"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TNTV2CAKKKA72789CET32W">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M0TNTV2CAKKKA72789CET32W</Id>
+            <InquiryTypeIndicator>3</InquiryTypeIndicator>
+            <DealerLicensePlateNumber>DLR123</DealerLicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TNTV2CAKKKA72789CET32W
+  InquiryTypeIndicator           3
+  DealerLicensePlateNumber       DLR123
+
+NOTES
+-----
+Automated capture (txId 01M0TNTV2CAKKKA72789CET32W). kind=combo; anyField=; expectedKeyRef=RQ05; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

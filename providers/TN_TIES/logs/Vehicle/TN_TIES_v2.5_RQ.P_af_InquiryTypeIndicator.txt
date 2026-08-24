@@ -1,0 +1,93 @@
+﻿================================================================
+TEST LOG: TN_TIES Vehicle VehicleRegistrationQuery
+Combo: RQ.P_af_InquiryTypeIndicator (RQ.P_af_InquiryTypeIndicator (auto))
+Date: 2026-08-24 16:11:16
+Result: PASS
+JSON Version: 2.5
+Entity Fingerprint: a6e2fa48f24880dfefdf3c890f41f7eb744bb86e38a31f272426253f3350ed92
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"InquiryTypeIndicator":"1","LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TNS37T0XNQMB4HGR8AF34R">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M0TNS37T0XNQMB4HGR8AF34R</Id>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <State>GA</State>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <InquiryTypeIndicator>1</InquiryTypeIndicator>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69586346330
+                                                                      ],
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TNS37T0XNQMB4HGR8AF34R
+  LicensePlateYear               2026
+  State                          GA
+  LicensePlateTypeCode           PC
+  InquiryTypeIndicator           1
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01M0TNS37T0XNQMB4HGR8AF34R). kind=any-field; anyField=InquiryTypeIndicator; expectedKeyRef=RQ.P; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

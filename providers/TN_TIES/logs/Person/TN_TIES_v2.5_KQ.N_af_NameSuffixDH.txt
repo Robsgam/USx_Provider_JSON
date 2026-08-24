@@ -1,0 +1,78 @@
+﻿================================================================
+TEST LOG: TN_TIES Person DriverHistoryQuery
+Combo: KQ.N_af_NameSuffixDH (KQ.N_af_NameSuffixDH (auto))
+Date: 2026-08-24 16:10:49
+Result: PASS
+JSON Version: 2.5
+Entity Fingerprint: e029192eebae3cf151cc0d693a9ca4532a2b448ffa36ba6b95d9f6d03c94436c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","InquiryTypeIndicator":"3","NameFirstDH":"JOHN","NameLastDH":"DOE","NameSuffixDH":"JR","SexCodeDH":"Male","attention":"X","purposeCodeDH":"C","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TP757YFT6EM40JRDWTV3CJ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M0TP757YFT6EM40JRDWTV3CJ</Id>
+            <Attention>SGAMBELLONE R</Attention>
+            <SexCode>M</SexCode>
+            <PurposeCode>C</PurposeCode>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN JR</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TP757YFT6EM40JRDWTV3CJ
+  Attention                      SGAMBELLONE R
+  SexCode                        M
+  PurposeCode                    C
+  BirthDate                      19900115
+  Name                           DOE, JOHN JR
+
+NOTES
+-----
+Automated capture (txId 01M0TP757YFT6EM40JRDWTV3CJ). kind=any-field; anyField=NameSuffixDH; expectedKeyRef=KQ.N; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
