@@ -50,6 +50,25 @@ dups"), the redundant twin in each pair is dropped:
   plate), RQ03 (devdoc #3 VIN), RQ05 (devdoc #4 dealer) -- and the mined QV twins are recorded as
   dropped alongside the RV/RV01/RV03 twins they always sat with. ZERO wire impact either way.
 
+  *** PRECISION NOTE ON THE RENAME, added 2026-08-24 after verifying the v2.5 logs. *** The v2.4
+  entry above says the kept combos "carry the metadata names for the paths they implement". That is
+  exact for RQ03 and RQ05, and LOOSE for RQ01, so state it properly here rather than leave a
+  half-truth in the record:
+      metadata RQ01      Set[LicensePlateNumber] Any[InquiryTypeIndicator]
+      metadata QV{plate} Set[LicensePlateNumber] Any[InquiryTypeIndicator, LicensePlateTypeCode]
+      built    RQ01      set[LicensePlateNumber] any[InquiryTypeIndicator, LicensePlateTypeCode]
+  So the combo NAMED RQ01 implements QV{plate}'s field shape -- one optional wider than metadata's
+  own RQ01. This is CORRECT AS BUILT and the wire proves it: v2.5's RQ01 logs transmit
+  LicensePlateNumber + LicensePlateTypeCode + InquiryTypeIndicator and gate 6d passes 69/69, because
+  QV{plate} permits exactly that set. audit_requirement_fidelity reports 0 OVER-PERMITTED for the
+  same reason -- it pairs the built combo to the variant that permits it.
+  *** DO NOT "TIGHTEN" RQ01's any[] TO MATCH METADATA RQ01. *** The three plate-only variants
+  (RQ01 / RV01 / QV) are routing-INDISTINGUISHABLE -- identical set[] -- so only one can be built and
+  it must permit the UNION of what the officer may legally send on a plate-only search. Narrowing it
+  to metadata RQ01's Any[] would silently delete LicensePlateTypeCode, an optional the captured wire
+  shows the provider accepting (RQ01_af_LicensePlateTypeCode transmits AM). That is the same mistake
+  as the CA_eSUN v2.4 tightening that dropped a legal optional off L1.N.
+
   DriverLicenseQuery:
     DQ02  (in-state Name, set[Name,BirthDate,SexCode])          == QWA (no-state Name)    -> DROPPED (kept QWA)
 
