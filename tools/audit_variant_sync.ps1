@@ -77,6 +77,90 @@ foreach ($pd in $provDirs) {
     } else {
         Emit ("  [PASS] $name -- base-6 in lockstep with $base v$baseVer")
     }
+
+    # ---- CHECK 2: ADJUDICATION-REGISTRY DRIFT (added 2026-08-24) ----------------------------
+    # WHY THIS EXISTS. CHECK 1 above compares the `# BASE-SYNC` VERSION MARKER and nothing else,
+    # so it answers "was the base-6 re-synced?" and never "did the base's REASONING come with it?".
+    # On 2026-08-24 TX_TLETS_CCH read [PASS] here -- marker current at v4.21 -- while carrying a
+    # stale SUBSET of TX_TLETS's ACCEPTED_DIVERGENCES: EIGHT base rows absent, FOUR of them
+    # producing live audit_requirement_fidelity OVER-PERMITTED findings that the base had closed
+    # on 2026-07-30. Same metadata XML (byte-identical), same devdoc, same combinations, opposite
+    # verdicts -- and the marker being CURRENT is exactly what made it invisible. Lockstep on the
+    # build script, drift in the registry.
+    #
+    # SCOPED BY BUILT QUERY: only base rows whose QUERY the variant actually builds are in scope.
+    # A base row for a query the variant does not build is not drift.
+    #
+    # NOT-INHERITING CAN BE THE RIGHT ANSWER, so a recorded decision reports [NOTE], not [FAIL].
+    # Copying a base row is NOT always safe: an EXISTENCE-class rule (shadow / unbuilt / dead-combo)
+    # makes audit_requirement_fidelity skip that keyRef's ENTIRE comparison, so inheriting one can
+    # DROP branches from the denominator while the finding count still reads 0 -- indistinguishable
+    # from a clean run. Three TX_TLETS rows are deliberately not inherited for exactly that reason
+    # (two name BUILT keyRefs; RSDWW was measured at 36 -> 35 branches). Record the decision in a
+    # COMMENT in the variant's own registry naming the keyRef and the field, and this reports it as
+    # a considered choice instead of re-raising it every run.
+    $baseReg = Join-Path $baseDir  ("docs\tracking\" + $base + "_ACCEPTED_DIVERGENCES.txt")
+    $varReg  = Join-Path $pd.FullName ("docs\tracking\" + $name + "_ACCEPTED_DIVERGENCES.txt")
+    if (-not ((Test-Path $baseReg) -and (Test-Path $varReg))) {
+        Emit ("         [NOTE] CHECK 2 DID NOT RUN -- accepted-divergence registry missing for $name or $base.")
+        Emit ("                A check that cannot tell 'no drift' from 'nothing compared' is not a check.")
+    } else {
+        $parseReg = {
+            param($f)
+            $h = @{}
+            foreach ($ln in (Get-Content $f)) {
+                if ($ln -match '^\s*($|#)') { continue }
+                $p = $ln -split '\|'
+                if ($p.Count -lt 4) { continue }
+                $h[(($p[0].Trim()) + '|' + ($p[1].Trim()) + '|' + ($p[2].Trim()) + '|' + ($p[3].Trim()))] = $true
+            }
+            return $h
+        }
+        $bk = & $parseReg $baseReg
+        $vk = & $parseReg $varReg
+        $varComments = (((Get-Content $varReg) | Where-Object { $_ -match '^\s*#' }) -join "`n")
+
+        # queries the VARIANT actually builds -- a base row for an unbuilt query is not drift
+        $varQueries = @{}
+        $varJson = Get-ProviderRootJson -ProvDir $pd.FullName -Provider $name
+        if ($varJson -and (Test-Path $varJson)) {
+            $vj = Get-Content $varJson -Raw | ConvertFrom-Json
+            foreach ($b in @($vj.bundles)) {
+                foreach ($c in @($b.configurations)) {
+                    if (("$($c.type)" -eq 'QUERYINPUTDATAMAPPING') -and $c.query) { $varQueries["$($c.query)"] = $true }
+                }
+            }
+        }
+
+        $inScope = 0; $inherited = 0; $recorded = 0; $missing = @()
+        foreach ($k in $bk.Keys) {
+            $p = $k -split '\|'
+            if ($varQueries.Count -gt 0 -and -not $varQueries.ContainsKey($p[0])) { continue }
+            $inScope++
+            if ($vk.ContainsKey($k)) { $inherited++; continue }
+            $kr = [regex]::Escape($p[1]); $fld = [regex]::Escape($p[2])
+            if (($varComments -match $kr) -and ($varComments -match $fld)) { $recorded++ }
+            else { $missing += $k }
+        }
+
+        if ($inScope -eq 0) {
+            Emit ("         [NOTE] CHECK 2 compared ZERO base rows for $name -- no base row targets a query")
+            Emit ("                this variant builds. Verify that is true before reading it as clean.")
+        } else {
+            Emit ("         CHECK 2 registry: $inScope base row(s) in scope / $inherited inherited / $recorded recorded-not-inherited / $($missing.Count) DRIFTED")
+            foreach ($m in ($missing | Sort-Object)) {
+                $p = $m -split '\|'
+                Emit ("         [FAIL] $name -- base adjudication NOT inherited: $($p[0]) | $($p[1]) | $($p[2]) | $($p[3])")
+                $fail++
+            }
+            if ($missing.Count -gt 0) {
+                Emit ("                Copy the row VERBATIM (reason + original date) if it applies, or record a")
+                Emit ("                comment in the variant registry naming the keyRef and field saying why not.")
+                Emit ("                MEASURE branches-compared before and after: an existence-class rule can lower")
+                Emit ("                the denominator while the finding count still reads 0.")
+            }
+        }
+    }
 }
 
 Emit ("-" * 74)

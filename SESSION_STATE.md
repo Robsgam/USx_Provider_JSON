@@ -80,7 +80,7 @@ each costs a re-sweep; NM's L9 is an ACCEPTED OPERATOR OVERRIDE) - clone groups 
 - **NCIC hit blocks are CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI *and* TN (TN's mined-tag
   consumption has never been exercised -- make "does a mined hit render?" a stated TN sweep objective).
 - **Officer guides are content-poor, not stale.** Rewrite requested; shape not agreed.
-- 1 live flag: `nameparts-untested-unfrozen` (TX_TLETS_CCH). Suppression registry 252 rows / 0 over-broad / 0 STALE.
+- **9 live flags, all one id: `[FLAG:plan-dedupe-vacuous-tests]`** (CA_SLO, CA_VENTURA, FL, HI, IL, LA, MD, NJ, TX_TLETS_CCH) -- so portfolio `enforce` reads **BLOCKED: 678 PASS / 9 FAIL**, and every FAIL is that one flag. Each clears at its OWN next rebuild; this is not new work. This line previously claimed "1 live flag: `nameparts-untested-unfrozen`" -- wrong in BOTH directions (that flag is fully PROPAGATED, and the live one was missing). Derive from `audit_reverse_propagation.ps1`, never from memory. Suppression registry 255 rows / 0 over-broad / 0 STALE.
 
 ## ON HOLD / DO NOT RE-RAISE
 

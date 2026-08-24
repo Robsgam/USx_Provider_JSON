@@ -1435,6 +1435,33 @@ TOOLS
     like CA_CLETS_OCATS, which is an independent provider). For each declared variant it compares
     the marker version to the base's CURRENT version and flags drift. Composed into doctor.ps1.
     When you build a variant (CCH etc.), add the marker; when the base bumps, re-sync + update it.
+
+    CHECK 2 -- ADJUDICATION-REGISTRY DRIFT (added 2026-08-24). CHECK 1 above compares the
+    BASE-SYNC VERSION MARKER and nothing else, so it answers "was the base-6 re-synced?" and
+    never "did the base's REASONING come with it?". TX_TLETS_CCH read [PASS] here -- marker
+    current at v4.21 -- while carrying a stale SUBSET of TX_TLETS's ACCEPTED_DIVERGENCES: EIGHT
+    base rows absent, FOUR of them producing live audit_requirement_fidelity OVER-PERMITTED
+    findings that the base had already closed on 2026-07-30, against the SAME byte-identical
+    metadata XML and the SAME devdoc. The marker being CURRENT is exactly what made it invisible:
+    lockstep on the build script, drift in the registry.
+      SCOPED BY BUILT QUERY -- a base row targeting a query the variant does not build is not
+    drift. Prints its denominator; a zero-compared run says so rather than passing silently.
+      NOT-INHERITING IS OFTEN CORRECT, so a decision recorded as a COMMENT in the variant's own
+    registry naming the keyRef and the field reports [NOTE], not [FAIL]. Copying a base row is
+    NOT always safe: an EXISTENCE-class rule (shadow / unbuilt / dead-combo) makes
+    audit_requirement_fidelity skip that keyRef's ENTIRE comparison, so inheriting one can DROP
+    branches from the denominator while the finding count still reads 0 -- indistinguishable from
+    a clean run. Three TX_TLETS rows are deliberately NOT inherited: two name keyRefs that ARE
+    built in the variant, and RSDWW -- which I expected to be free because it appears ZERO times
+    in the emitted JSON, and which MEASURED at 36 -> 35 branches. "The keyRef is not built" is
+    NOT sufficient licence for an existence-class row. Measure the denominator; do not reason
+    about it.
+      LAW 2 proven four ways: PASS on clean input, FAIL on a removed row (naming it),
+    [NOTE] DID NOT RUN when a registry file is absent, PASS again on restore.
+      Baseline 2026-08-24: 1 variant / 23 base rows in scope / 20 inherited / 3 recorded / 0 DRIFTED.
+      Fixing the TX_TLETS_CCH drift took portfolio fidelity from 8 OVER-PERMITTED to 4 with
+    branches held at 420 -- branches held while a defect class halved is the signature of a real
+    adjudication rather than a suppression.
     Usage: .\audit_variant_sync.ps1 [-Path providers] [-OutFile <path>]
 
   tools/lint_build_scripts.ps1
