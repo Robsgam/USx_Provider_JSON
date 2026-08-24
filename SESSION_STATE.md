@@ -14,7 +14,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 
 | Provider | Ver | State |
 |---|---|---|
-| AZ_AZDPS | v3.12 | NEVER-TESTED -- 53 test(s) owed |
+| AZ_AZDPS | v3.12 | ALL-PASS (53 logs) |
 | CA_CLETS | v2.26 | ALL-PASS (111 logs) |
 | FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
