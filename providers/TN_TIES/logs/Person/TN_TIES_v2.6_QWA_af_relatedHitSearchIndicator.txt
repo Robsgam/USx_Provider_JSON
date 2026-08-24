@@ -1,0 +1,93 @@
+﻿================================================================
+TEST LOG: TN_TIES Person DriverLicenseQuery
+Combo: QWA_af_relatedHitSearchIndicator (QWA_af_relatedHitSearchIndicator (auto))
+Date: 2026-08-24 17:32:44
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: e029192eebae3cf151cc0d693a9ca4532a2b448ffa36ba6b95d9f6d03c94436c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDate":"1990-01-15","ImageIndicator":"Y","InquiryTypeIndicator":"3","NameFirst":"JOHN","NameLast":"DOE","SexCode":"Male","attention":"X","relatedHitSearchIndicator":"N"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TT89D7BK2SJ14TT5N80H8G">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverLicenseQuery</MessageType>
+            <Id>01M0TT89D7BK2SJ14TT5N80H8G</Id>
+            <RelatedHitSearchIndicator>N</RelatedHitSearchIndicator>
+            <ImageIndicator>Y</ImageIndicator>
+            <SexCode>M</SexCode>
+            <InquiryTypeIndicator>3</InquiryTypeIndicator>
+            <BirthDate>19900115</BirthDate>
+            <Name>DOE, JOHN</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "lastName":  "DOE",
+                         "firstName":  "JOHN",
+                         "sexAttrId":  "69586340911",
+                         "dateOfBirth":  "1990-01-15"
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TT89D7BK2SJ14TT5N80H8G
+  RelatedHitSearchIndicator      N
+  ImageIndicator                 Y
+  SexCode                        M
+  InquiryTypeIndicator           3
+  BirthDate                      19900115
+  Name                           DOE, JOHN
+
+NOTES
+-----
+Automated capture (txId 01M0TT89D7BK2SJ14TT5N80H8G). kind=any-field; anyField=relatedHitSearchIndicator; expectedKeyRef=QWA; firedMessageType=DriverLicenseQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

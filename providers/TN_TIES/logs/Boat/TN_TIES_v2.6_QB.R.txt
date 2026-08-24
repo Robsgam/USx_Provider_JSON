@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: TN_TIES Boat BoatQuery
+Combo: QB.R (QB.R (auto))
+Date: 2026-08-24 17:32:16
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: a1f358fa02f51997c12a6eac37af5bda0f0386d4dd3a617eb5c9acc85b2c1421
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"InquiryTypeIndicator":"3","RegistrationNumber":"FL1234AB"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TTYBDRXJ9GMV3X35P8JDVS">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M0TTYBDRXJ9GMV3X35P8JDVS</Id>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+            <InquiryTypeIndicator>3</InquiryTypeIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TTYBDRXJ9GMV3X35P8JDVS
+  RegistrationNumber             FL1234AB
+  InquiryTypeIndicator           3
+
+NOTES
+-----
+Automated capture (txId 01M0TTYBDRXJ9GMV3X35P8JDVS). kind=combo; anyField=; expectedKeyRef=QB.R; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

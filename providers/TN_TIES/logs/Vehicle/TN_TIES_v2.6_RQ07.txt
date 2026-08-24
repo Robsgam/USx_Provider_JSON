@@ -1,0 +1,70 @@
+﻿================================================================
+TEST LOG: TN_TIES Vehicle VehicleRegistrationQuery
+Combo: RQ07 (RQ07 (auto))
+Date: 2026-08-24 17:32:53
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: 4fe1e7604c0cd5407efdd7b584936769b47f974b891055b87480628893ba09ce
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"InquiryTypeIndicator":"3","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","TemporaryLicensePlateNumber":"TMP1234"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TSRX0PA9DH7PJRGZ3ZDDWJ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M0TSRX0PA9DH7PJRGZ3ZDDWJ</Id>
+            <TemporaryLicensePlateNumber>TMP1234</TemporaryLicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TSRX0PA9DH7PJRGZ3ZDDWJ
+  TemporaryLicensePlateNumber    TMP1234
+
+NOTES
+-----
+Automated capture (txId 01M0TSRX0PA9DH7PJRGZ3ZDDWJ). kind=combo; anyField=; expectedKeyRef=RQ07; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

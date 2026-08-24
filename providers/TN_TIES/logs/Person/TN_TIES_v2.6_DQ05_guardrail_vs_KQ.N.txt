@@ -1,0 +1,70 @@
+﻿================================================================
+TEST LOG: TN_TIES Person DriverHistoryQuery
+Combo: DQ05_guardrail_vs_KQ.N (DQ05_guardrail_vs_KQ.N (auto))
+Date: 2026-08-24 17:32:25
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: e029192eebae3cf151cc0d693a9ca4532a2b448ffa36ba6b95d9f6d03c94436c
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","InquiryTypeIndicator":"3","NameFirstDH":"JOHN","NameLastDH":"DOE","OperatorLicenseNumberDH":"D999888777","SexCodeDH":"Male","attention":"X","purposeCodeDH":"C","relatedHitSearchIndicator":"Y"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M0TTCBF71XJCJ07ZHCZJM5BT">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M0TTCBF71XJCJ07ZHCZJM5BT</Id>
+            <OperatorLicenseNumber>D999888777</OperatorLicenseNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M0TTCBF71XJCJ07ZHCZJM5BT
+  OperatorLicenseNumber          D999888777
+
+NOTES
+-----
+Automated capture (txId 01M0TTCBF71XJCJ07ZHCZJM5BT). kind=guardrail; anyField=; expectedKeyRef=DQ05; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
