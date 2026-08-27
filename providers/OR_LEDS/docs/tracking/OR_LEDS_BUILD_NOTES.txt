@@ -1,6 +1,36 @@
 OR_LEDS -- Build Notes
 =======================
 
+v2.6  2026-08-27  VEHICLE IS THE FIRST CARD -- OR was the only provider of 20 that opened on Person
+  CHANGED: ENTITIES bundle default order Person > Vehicle > ... becomes
+    Vehicle > Person > Firearm > Article > Boat. Layout ordering ONLY.
+  REASON (Rob 2026-08-27, on the rendered form): "i see person is first  fix that so veh is first
+    card". MEASURED ACROSS ALL 20 EMITTED JSONs rather than assumed: the other NINETEEN providers
+    already read Vehicle > Person > Firearm > Article > Boat. OR_LEDS was the sole outlier, so this
+    is OR rejoining the portfolio convention, not a change to it.
+    It was also inconsistent WITHIN this provider -- its own CAD_DISPATCH and FIRST_RESPONDER
+    variants were ALREADY Vehicle-first, so only the default disagreed with its own other layouts.
+  THE WIRE IS PROVABLY UNCHANGED, not merely believed to be: every QUERYINPUTDATAMAPPING in BOTH the
+    OR_LEDS and RMS bundles is byte-identical to v2.5 (serialised at depth 40 and compared). This is
+    layout and display order only -- no combination, condition, default or attribute moved.
+  FLAGGED FOR A LATER PASS, NOT EDITED HERE: the CLAUDE.md "Entity Display Order" block still
+    documents the default as Person-first. That line is now stale against 20 of 20 emitted JSONs.
+    A repo-root doc edit is portfolio scope, so it is recorded rather than taken unilaterally.
+  ALSO IN THIS VERSION, carried from the same day's pre-flight work (test data, no config impact):
+    nameMiddle test value "A" -> "MICHAEL". The control is labelled "Middle Name" at maxLength 30 and
+    OR's `Name` composite is capped at 30 (confirmed from BOTH the QIDM attribute size and the raw
+    <Field name="Name" maxLength="30">), so a single initial could never exercise that cap. Fixed
+    BEFORE OR's first sweep rather than after it -- the same gap Rob caught by eye on NM_NMLETS_OFML
+    the same day, where it cost a re-run.
+  STILL OWED BEFORE THE SWEEP: (1) the one-time tenant picklist capture, (2) then set the
+    LicensePlateTypeCode toggle from the captured options -- emit_test_plan reports that toggle value
+    'PC' equals the form default 'PC', a hollow test that proves nothing. Not guessed: plate-type
+    contents are TENANT data and with no TENANT_PICKLISTS.json the picklist gate could not catch a
+    wrong value, so the driver would simply fail to find the option mid-sweep.
+  GATES: validator 55P/0F/0W - enforce 0 FAIL / 0 WARN - pre-flight 27 plan tests / 0 that cannot
+    fire / every mandatory field filled.
+  COST: NONE. OR_LEDS has never been tenant-tested (0 logs at any version); no Foundation, no LIVE.
+
 DOCUMENTED SKIP (recorded 2026-08-11) -- ImageQuery: UNBUILDABLE, not deferred.
   audit_supported_queries CHECK 0 reports "devdoc-Basic but NOT BUILT: ImageQuery -- each must be a
   documented skip", and it had never been written down. Now it is, with the reason:
@@ -10,6 +40,10 @@ DOCUMENTED SKIP (recorded 2026-08-11) -- ImageQuery: UNBUILDABLE, not deferred.
   Same class as AZ_AZDPS's GunQuery #1/#2 (devdoc lists a path metadata does not define).
   This is CLOSED, not owed. Contrast LA_LEMS, where ImageQuery IS defined (1 combination,
   DP{OperatorLicenseNumber}) and therefore genuinely is owed at that provider's own turn.
+v2.6  2026-08-27  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 
 v2.5  2026-08-20  LAYOUT COLLAPSE 11->5 CARDS; L9 RMS-ONLY ROW SPLIT
   CHANGED:

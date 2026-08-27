@@ -46,7 +46,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.5'
+$Version     = '2.6'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\OR_LEDS_v${Version}.json"
@@ -489,9 +489,18 @@ $boatForm = [PSCustomObject]@{
     targetEntity = 'Boat'
 }
 
+# v2.6: VEHICLE FIRST (Rob 2026-08-27, "fix that so veh is first card").
+# OR_LEDS was the ONLY provider of 20 with Person first -- measured across every emitted JSON, not
+# assumed; the other 19 all read Vehicle > Person > Firearm > Article > Boat. So this is OR rejoining
+# the portfolio convention, NOT a change to it.
+# It was also inconsistent WITHIN this provider: its own CAD_DISPATCH and FIRST_RESPONDER variants
+# were already Vehicle-first, so only the default disagreed.
+# NOTE FOR A LATER PASS: the CLAUDE.md "Entity Display Order" block still documents the default as
+# Person-first. That line is stale against 20 of 20 emitted JSONs and should be corrected there --
+# flagged rather than edited here, because a repo-root doc change is portfolio scope.
 $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personForm,
         $firearmsForm, $articleForm, $boatForm) `
-    -DefaultOrder @('Person','Vehicle','Firearm','Article','Boat')
+    -DefaultOrder @('Vehicle','Person','Firearm','Article','Boat')
 
 # =====================================================================
 # BUNDLE 3: RMS (from KB specs -- camelCase, registrationState, autoSelect)
