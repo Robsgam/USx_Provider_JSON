@@ -25,7 +25,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | OH_LEADS | v2.11 | ALL-PASS (65 logs) |
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |
-| TX_TLETS | v4.21 | ALL-PASS (96 logs) |
+| TX_TLETS | v4.22 | NEVER-TESTED -- 98 test(s) owed |
 | _8 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, MD_METERS, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.

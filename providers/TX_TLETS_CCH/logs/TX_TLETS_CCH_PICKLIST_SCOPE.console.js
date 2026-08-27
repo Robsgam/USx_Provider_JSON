@@ -1,6 +1,8 @@
-﻿{
-    "provider":  "TX_TLETS",
-    "version":  "4.22",
+﻿// PASTE THIS ENTIRE FILE into the tenant DevTools console (F12 -> Console), press Enter.
+// Then render each entity form and run its line (one at a time; each downloads one file):
+var scope = {
+    "provider":  "TX_TLETS_CCH",
+    "version":  "1.18",
     "note":  "Paste as scope; render each entity form; __usxScopePicklists(scope, \u0027\u003cEntity\u003e\u0027). One download per entity.",
     "fields":  [
                    {
@@ -63,6 +65,41 @@
                        "entity":  "Person",
                        "fieldId":  "ImageIndicatorDH",
                        "label":  "NCIC Image",
+                       "codeTypeCategory":  "YES_NO_UNKNOWN",
+                       "codeTypeSource":  "NCIC"
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "sexCodeCCH",
+                       "label":  "Sex (CCH)",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "raceCodeCCH",
+                       "label":  "Race (CCH)",
+                       "codeTypeCategory":  "NIBRS_RACE",
+                       "codeTypeSource":  "NIBRS"
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "stateCCH",
+                       "label":  "State (CCH)",
+                       "codeTypeCategory":  "",
+                       "codeTypeSource":  ""
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "imageIndicatorCCH",
+                       "label":  "Image (CCH)",
+                       "codeTypeCategory":  "YES_NO_UNKNOWN",
+                       "codeTypeSource":  "NCIC"
+                   },
+                   {
+                       "entity":  "Person",
+                       "fieldId":  "relatedHitSearchIndicatorCCH",
+                       "label":  "Related Hit Search (CCH)",
                        "codeTypeCategory":  "YES_NO_UNKNOWN",
                        "codeTypeSource":  "NCIC"
                    },
@@ -137,4 +174,5 @@
                        "codeTypeSource":  "NCIC"
                    }
                ]
-}
+};
+console.log('%c[USx-SCOPE] scope loaded: TX_TLETS_CCH v1.18 --', 'color:#0aa;font-weight:bold', scope.fields.length, "select field(s). Now render an entity form and run:\n  __usxScopePicklists(scope, 'Article')\n  __usxScopePicklists(scope, 'Boat')\n  __usxScopePicklists(scope, 'Firearm')\n  __usxScopePicklists(scope, 'Person')\n  __usxScopePicklists(scope, 'Vehicle')");

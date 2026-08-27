@@ -1,11 +1,13 @@
 TX_TLETS -- SUPPORTED QUERY VALIDATION REPORT (SQVR)
 ======================================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-18
-JSON version: v4.21
-Live test: v4.14 full re-test 2026-07-30 (93/93 ALL-PASS). Prior: v4.5 2026-07-17 (first live pass since v4.0; single-day batch import,
-           all 21 combos across all 5 entities, EmailAddress automation confirmed live)
-Validator: 81 PASS / 0 FAIL / 0 WARN / 0 LIM (v4.14)
+Last updated: 2026-08-27
+JSON version: v4.22
+Live test: NONE AT v4.22 -- package restarted from T1. The 96 v4.21 logs are archived to
+           logs/<Entity>/_archive_pre_v4.22/ and every marker below is [PENDING]. v4.22 is a WIRE
+           CHANGE (QV plate restored, State promoted to set[]), so no prior pass carries forward.
+           Last full pass was v4.21 (96/96 ALL-PASS); before that v4.14 (93/93).
+Validator: 80 PASS / 0 FAIL / 0 WARN / 0 LIM (v4.22)
 Verify: CLEAN (0 FAIL, 0 WARN -- 3 fields carry accepted LABEL-OVERRIDE tags, see build script)
 
 NOTE: v3.8 imported 2026-06-17. DH redesigned: 4 combos (KQNameImg/KQName/KQOLNImg/KQOLN).
@@ -32,73 +34,83 @@ v3.4 CHANGES (from v3.3):
           VehicleIdentificationNumber, VehicleMakeCode, VehicleYear,
           RegistrationState, FinancialResponsibilityType, RegionId, StickerNumber
 
-  REG Plate -- TX Registration (Plate+Year+FRT) [CONFIRMED]
+  REG Plate -- TX Registration (Plate+Year+FRT) [PENDING]
     keyReference: REGLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  RQ Plate -- Nlets Vehicle Registration, devdoc (OutofState) plate path (Plate+Year+PlateType) [CONFIRMED]
+  RQ Plate -- Nlets Vehicle Registration, devdoc (OutofState) plate path (Plate+Year+PlateType) [PENDING]
     keyReference: RQLicensePlateNumber
     set: LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode
     any: RegistrationState
     state: In/Out
-    NOT CONFIRMED, NOT CONFIRMABLE (2026-07-29): unreachable. REGLicensePlateNumber is ordered
-      first and its only extra set[] field is FinancialResponsibilityType, which the form
-      pre-fills 'E' -- so REG always matches first and this combo never fires at any fill.
-      Its former [PENDING] marker was false: the v4.12 logs named for it actually exercised
-      REG (the RQLicensePlateNumber log's wire carried BOTH FinancialResponsibilityType (REG's
-      set field) AND LicensePlateTypeCode, i.e. the LIMITATION #1 union pool). Those 8 stale
-      logs were deleted 2026-07-29. Detected by audit_combo_reachability.ps1 /
-      audit_log_combo_attribution.ps1; registered dead-combo-REMOVE-SCHEDULED. Removal decided
-      per Rob's v4.9 subset-shadow ruling -- executes at TX's next version bump.
-      Officer impact: NONE (REG returns registration + financial responsibility, a superset).
+    THE "NOT CONFIRMABLE / unreachable" BLOCK THAT STOOD HERE IS WITHDRAWN -- it described the
+      v4.13 build and was FALSE from v4.14 onward, i.e. for eight versions. It asserted this combo
+      could never fire because the form pre-filled FinancialResponsibilityType='E' so REG always
+      won first-match, and scheduled it for REMOVAL. v4.14 removed all four routing-affecting
+      Vehicle prefills (FRT, LicensePlateTypeCode, LicensePlateYear, RegistrationState), which is
+      exactly what made this combo reachable again -- it was never dead, the prefill was hiding it.
+      It is the devdoc (OutofState) plate path and it STAYS BUILT. audit_combo_reachability and
+      audit_query_trace both report it live at v4.22 (21 built / 0 PREFILL-DEAD / 0 SHADOW).
 
-  VIN+FRT -- VIN + Financial Responsibility [CONFIRMED]
+  VIN+FRT -- VIN + Financial Responsibility [PENDING]
     keyReference: VINVehicleIdentificationNumber
     set: VehicleIdentificationNumber, FinancialResponsibilityType
     any: RegistrationState
     state: In/Out
 
-  DPSI Sticker -- TX DPS Insurance (Sticker Number) [CONFIRMED]
+  DPSI Sticker -- TX DPS Insurance (Sticker Number) [PENDING]
     keyReference: DPSIStickerNumber
     set: StickerNumber
     any: RegistrationState
     state: In/Out
-    CONFIRMED: T18 2026-06-17. StickerNumber=TEST123. XML: StickerNumber + State=TX (default). No plate or VIN fields.
+    (A "CONFIRMED: T18 2026-06-17" line stood here through v4.22's package reset. Removed: it
+     predates ten version bumps and its logs are archived. Re-confirm on the v4.22 sweep.)
 
-  QV Plate + QV VIN -- NOT BUILT (metadata shadows, platform auto-fired) [REMOVED v4.9, re-removed v4.17]
-    keyReferences: QVLicensePlateNumber, QVVehicleIdentificationNumber
-    Rob's binding v4.9 ruling (commit da78b66e). QV is NOT a devdoc (InState) or (OutofState)
-    combination -- it is a metadata shadow whose set[] is a strict SUBSET of a real combo
-    (QV{Plate} subset of REG/RQ, QV{VIN} subset of VIN+FRT). The extra fields on those combos are
-    FRT/Type/Year qualifiers of the SAME plate/VIN query, not a state discriminator, and the
-    PLATFORM AUTO-FIRES the metadata QV transaction off the larger query (same class as QW; NJ
-    precedent -- state auto-runs QV, response data-mined via QRDM). An explicit combo therefore
-    adds no officer capability while stealing fills from the real combos.
-    Re-added IN ERROR at v4.14 (bundled into the legitimate RQ{Plate}/RQ{VIN} prefill-dead
-    restoration, commit 970de807) and removed again at v4.17. audit_query_trace reports QV
-    [MISSING] -- that is EXPECTED and advisory; do NOT "fix" it. See ACCEPTED_DIVERGENCES,
+  QV Plate -- TX in-state plate, devdoc #5 (InState) Plate + State [PENDING]
+    keyReference: QVLicensePlateNumber
+    set: LicensePlateNumber, RegistrationState
+    any: RegionId
+    state: In
+    ORDERED LAST of the 6, deliberately. RQ (Plate+Year+Type) and REG (Plate+Year+FRT) win
+      first-match whenever their own set[] is satisfied; this combo catches the fall-through.
+    STATE IS IN set[], NOT any[]. Metadata marks State optional; the devdoc marks it REQUIRED on
+      this combination, and Rob ruled for the devdoc 2026-08-27 ("make state a set and the qv of
+      plate number only will shadow properly"). The promotion is the SAFETY MECHANISM, not a
+      detail: set[Plate,State] cannot match a bare plate, so this QV is GATED and cannot steal
+      fills from RQ/REG the way the ungated v4.9 QV did. Registered promoted-to-set.
+    TEST IT THIS WAY: plate + State and NOTHING ELSE. Filling Year or Type routes to RQ instead,
+      and filling FRT routes to REG -- a test that fills them proves nothing about this combo.
+      Expected wire: LicensePlateNumber + State only.
+    HISTORY, so this is not re-litigated a fourth time: built -> removed v4.9 as an ungated
+      subset-shadow (correct THEN: the form prefilled Type/Year/FRT so a bare plate auto-satisfied
+      RQ/REG) -> restored v4.14 when those prefills were removed -> removed again v4.17 by
+      re-applying the v4.9 ruling after its premise was gone -> RESTORED v4.22, gated, as Option B
+      of the ACCEPTED_DIVERGENCES devdoc-#5 entry, which had held that option open since
+      2026-07-30. From v4.17 to v4.21 a plate+State fill matched NO combination at all.
+
+  QV VIN -- NOT BUILT (genuine subset of RQ{VIN}) [REMOVED v4.9, stays removed]
+    keyReference: QVVehicleIdentificationNumber
+    RQ{VIN} is already set[VehicleIdentificationNumber], so the VIN input path EXISTS and a VIN
+    search works. QV{VIN} would add no officer capability and is the genuine ungated shadow the
+    v4.9 ruling described. audit_query_trace reports VehicleInsuranceRegistrationQuery COMPLETE
+    (0 MISSING) at v4.22 because RQ{VIN} covers this set[]. See ACCEPTED_DIVERGENCES,
     rule metadata-shadow-autofired.
 
-  RQ VIN -- Nlets Vehicle Registration, devdoc (OutofState) VIN path (VIN+Make+Year) [CONFIRMED]
+  RQ VIN -- Nlets Vehicle Registration, devdoc (OutofState) VIN path (VIN+Make+Year) [PENDING]
     keyReference: RQVehicleIdentificationNumber
     set: VehicleIdentificationNumber
     any: RegistrationState, VehicleMakeCode, VehicleYear
     state: In/Out
-    NOT CONFIRMED, NOT CONFIRMABLE (2026-07-29): unreachable. VINVehicleIdentificationNumber is
-      ordered first and its only extra set[] field is FinancialResponsibilityType, which the form
-      pre-fills 'E' -- so the VIN combo always matches first and this one never fires at any fill.
-      The prior "CONFIRMED: T15 2026-06-17" was false: that fill included FRT=E, so it exercised
-      VINVehicleIdentificationNumber. Stale logs deleted 2026-07-29. Same class + same disposition
-      as RQ Plate above (dead-combo-REMOVE-SCHEDULED, removal at TX's next bump per Rob's v4.9
-      subset-shadow ruling). Officer impact: NONE.
-
-  (QV Plate + QV VIN removed v4.9, DEX-1284: both were ungated subset-shadows of the metadata
-   QV auto-fired from the larger REG/RQ/VIN queries -- the extra fields on the parent queries are
-   FRT/Type/Year qualifiers, not a state discriminator, so an explicit QV combo was redundant.
-   RegionId (the QV combination's one optional field) was kept and moved into the RQ plate/VIN
-   any[] pool. See TX_TLETS_ACCEPTED_DIVERGENCES / build notes v4.9.)
+    conditions: LicensePlateNumber NOT_EXISTS, FinancialResponsibilityType NOT_EXISTS
+    THE "NOT CONFIRMABLE / unreachable" BLOCK THAT STOOD HERE IS WITHDRAWN, same as RQ Plate --
+      it described the v4.13 build and was FALSE from v4.14 onward. It claimed this combo could
+      never fire because the form pre-filled FinancialResponsibilityType='E' so VIN+FRT always won
+      first-match, and scheduled it for REMOVAL. v4.14 removed that prefill, and this combo now
+      carries an explicit FRT NOT_EXISTS condition that separates it from VIN+FRT outright. It is
+      the devdoc (OutofState) VIN path and it STAYS BUILT. Live at v4.22 per audit_query_trace
+      (VehicleInsuranceRegistrationQuery COMPLETE) and audit_combo_reachability (0 dead combos).
 
   RMS co-fire (confirmed)
     RMS Vehicle combo fires alongside CommSys (licensePlateNumber, VIN).
@@ -119,21 +131,21 @@ v3.4 CHANGES (from v3.3):
   No conditions (v3.4 poisoned-array fix). image/email/reason carried in any[] on
   every combo; defaults supply CAD values.
 
-  DQ Name -- Nlets DL (Name+DOB+Sex) [CONFIRMED]
+  DQ Name -- Nlets DL (Name+DOB+Sex) [PENDING]
     keyReference: DQName  (MessageKey DQ)
     set: SexCode, BirthDate, NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  CPL Name -- Criminal History (Name) [CONFIRMED]
+  CPL Name -- Criminal History (Name) [PENDING]
     keyReference: CPLName  (MessageKey CPLName)
     set: NameLast, NameFirst
     any: EmailAddress, ImageIndicator, NameMiddle, NameSuffix, ReasonCode, RegistrationState
     defaults: ImageIndicator=Y, ReasonCode=C, State=TX
     state: In/Out
 
-  DQ OLN -- Nlets DL (OLN) [CONFIRMED]
+  DQ OLN -- Nlets DL (OLN) [PENDING]
     keyReference: DQOLN  (MessageKey DQ)
     set: OperatorLicenseNumber
     any: EmailAddress, ImageIndicator, ReasonCode, RegistrationState
@@ -164,7 +176,7 @@ v3.4 CHANGES (from v3.3):
   LIMITATION (CAD): DH does not fire from CAD dispatch (no CAD source for emailAddress).
   CAD DH requires the email-injection handler (future platform feature).
 
-  KQ Name -- Driver History (Name+DOB+Sex) [CONFIRMED]
+  KQ Name -- Driver History (Name+DOB+Sex) [PENDING]
     keyReference: KQName  (MessageKey KQ)
     set: SexCodeDH, BirthDateDH, NameLastDH, NameFirstDH, EmailAddress
     any: AttentionDH, ImageIndicator, NameMiddleDH, NameSuffixDH,
@@ -172,7 +184,7 @@ v3.4 CHANGES (from v3.3):
     defaults: ImageIndicator=Y, PurposeCode=C, ReasonCode=C, State=TX
     state: In/Out
 
-  KQ OLN -- Driver History (OLN) [CONFIRMED]
+  KQ OLN -- Driver History (OLN) [PENDING]
     keyReference: KQOLN  (MessageKey KQ)
     set: OperatorLicenseNumberDH, EmailAddress
     any: AttentionDH, ImageIndicator, PurposeCodeDH, ReasonCode, RegistrationState
@@ -193,13 +205,13 @@ v3.4 CHANGES (from v3.3):
   Fields: GunSerialNumber, GunMake(23), GunCaliber, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QG Serial -- NCIC Gun (Serial Number) [CONFIRMED]
+  QG Serial -- NCIC Gun (Serial Number) [PENDING]
     keyReference: QGGunSerialNumber
     set: GunSerialNumber
     any: GunCaliber, GunMake, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QG NCIC -- NCIC Gun (NCIC Number) [CONFIRMED]
+  QG NCIC -- NCIC Gun (NCIC Number) [PENDING]
     keyReference: QGNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -215,14 +227,14 @@ v3.4 CHANGES (from v3.3):
   Fields: ArticleSerialNumber, ArticleTypeCode, NCICNumber,
           ImageIndicator, RelatedHitSearchIndicator
 
-  QA Serial+Type -- NCIC Article (Serial + Type) [CONFIRMED]
+  QA Serial+Type -- NCIC Article (Serial + Type) [PENDING]
     keyReference: QAArticleSerialNumber
     set: ArticleSerialNumber, ArticleTypeCode
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
-    CONFIRMED: T26 2026-06-17. Serial=ART99999 + Type=BBICYCL. XML: ArticleSerialNumber + ArticleTypeCode. No NCICNumber.
+    (WITHDRAWN -- a "CONFIRMED: T26 2026-06-17. Serial=ART99999 + Type=BBICYCL. XML: ArticleSerialNumber + ArticleTypeCode. No NCICNumber." line stood here; it predates ten version bumps and its logs are archived. Re-confirm on the v4.22 sweep.)
 
-  QA NCIC -- NCIC Article (NCIC Number) [CONFIRMED]
+  QA NCIC -- NCIC Article (NCIC Number) [PENDING]
     keyReference: QANCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -238,33 +250,33 @@ v3.4 CHANGES (from v3.3):
   Fields: RegistrationNumber, BoatHullIdNumber, NCICNumber,
           RegistrationState, ImageIndicator, RelatedHitSearchIndicator
 
-  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [CONFIRMED]
+  BQ Reg -- Nlets Boat Registration (Reg+State, OOS) [PENDING]
     keyReference: BQRegistrationNumber
     set: RegistrationNumber, RegistrationState
-    CONFIRMED: T21 2026-06-17. RegNum=FL1234AB + State=Texas. XML: RegistrationNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y.
+    (WITHDRAWN -- a "CONFIRMED: T21 2026-06-17. RegNum=FL1234AB + State=Texas. XML: RegistrationNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y." line stood here; it predates ten version bumps and its logs are archived. Re-confirm on the v4.22 sweep.)
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
 
-  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [CONFIRMED]
+  BQ Hull -- Nlets Boat Registration (Hull+State, OOS) [PENDING]
     keyReference: BQBoatHullIdNumber
     set: BoatHullIdNumber, RegistrationState
     any: ImageIndicator, RelatedHitSearchIndicator
     state: Out
-    CONFIRMED: T19 2026-06-17. HullId=FL1234AB56H7 + State=Texas. XML: BoatHullIdNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y.
+    (WITHDRAWN -- a "CONFIRMED: T19 2026-06-17. HullId=FL1234AB56H7 + State=Texas. XML: BoatHullIdNumber + State=TX + ImageIndicator=N + RelatedHitSearchIndicator=Y." line stood here; it predates ten version bumps and its logs are archived. Re-confirm on the v4.22 sweep.)
 
-  QB Reg -- NCIC Stolen Boat (Reg, any state) [CONFIRMED]
+  QB Reg -- NCIC Stolen Boat (Reg, any state) [PENDING]
     keyReference: QBRegistrationNumber
     set: RegistrationNumber
     any: BoatHullIdNumber, ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB Hull -- NCIC Stolen Boat (Hull, any state) [CONFIRMED]
+  QB Hull -- NCIC Stolen Boat (Hull, any state) [PENDING]
     keyReference: QBBoatHullIdNumber
     set: BoatHullIdNumber
     any: ImageIndicator, RelatedHitSearchIndicator
     state: In/Out
 
-  QB NCIC -- NCIC Stolen Boat (NCIC Number) [CONFIRMED]
+  QB NCIC -- NCIC Stolen Boat (NCIC Number) [PENDING]
     keyReference: QBNCICNumber
     set: NCICNumber
     any: ImageIndicator, RelatedHitSearchIndicator
@@ -285,28 +297,28 @@ SUMMARY
 
   CommSys QIDMs: 6 (VehicleInsuranceReg, DriverLicense, DriverHistory,
                      GunQuery, ArticleSingle, BoatQuery)
-  Total CommSys combos: 19 (5 Vehicle + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat)
-      (was stated as 21 / "7 Vehicle" -- stale since v4.9 removed QV Plate + QV VIN; the
-       per-combo blocks were cleaned at v4.10 but this summary was missed. Fixed 2026-07-29.)
+  Total CommSys combos: 20 (6 Vehicle + 3 DL + 2 DH + 2 Gun + 2 Article + 5 Boat)
+      (v4.22 added QVLicensePlateNumber, so Vehicle went 5 -> 6 and the total 19 -> 20.)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
-  CONFIRMED (v4.12 full re-test):
-    Vehicle (3/3): REGLicensePlateNumber, VINVehicleIdentificationNumber,
-      DPSIStickerNumber.
-      RQLicensePlateNumber + RQVehicleIdentificationNumber are DEAD (unreachable behind REG/VIN
-      via the pre-filled FinancialResponsibilityType) -- not confirmable, removal scheduled at the
-      next bump. QVLicensePlateNumber + QVVehicleIdentificationNumber were REMOVED at v4.9 and must
-      not be listed here at all.
-    Person DL (3/3): DQName, CPLName, DQOLN (QWName removed v4.2 -- platform-auto-sent shadow query)
-    Person DH (2/2): KQName, KQOLN -- EmailAddress automation (RND-57165) confirmed live: KQName.txt
-      shows <EmailAddress>ROB.SGAMBELLONE@MARK43.COM</EmailAddress> in the captured XML, resolved
-      from the emailAddress="X" gate-feeder via GetUserProfileSingleValueRuleHandler.
-    Firearm (2/2): QGGunSerialNumber, QGNCICNumber
-    Article (2/2): QAArticleSerialNumber, QANCICNumber
-    Boat (5/5): BQRegistrationNumber, BQBoatHullIdNumber, QBRegistrationNumber, QBBoatHullIdNumber, QBNCICNumber
-    Coverage: 21/21 combos (100%), 93 test logs, 93/93 content-verified (6c) + 93/93 metadata-verified (6d) + 93/93 combo-attribution verified (2i). ALL-PASS 5/5 entities.
-NOTE: QVVehicleIdentificationNumber is REACHABLE as of v4.14 -- split from RQ VIN by a RegionId
-      EXISTS/NOT_EXISTS condition (+ FRT NOT_EXISTS). The pre-v4.14 "permanently shadowed"
-      claim was wrong: our own form prefills, not the platform, made it unreachable.
+
+  CONFIRMED: NONE. ALL 5 ENTITIES ARE [PENDING] AT v4.22.
+    v4.22 is a WIRE CHANGE (QV plate restored, State promoted to set[]), so the whole test package
+    restarted from T1: the 96 v4.21 logs were archived to logs/<Entity>/_archive_pre_v4.22/ and
+    every SQVR marker reset to [PENDING]. Nothing is confirmed until it is imported and re-swept.
+    Coverage target: 20/20 CommSys combos.
+    THE STALE BLOCK REMOVED HERE said "CONFIRMED (v4.12 full re-test) ... Coverage: 21/21 combos
+    (100%) ... ALL-PASS 5/5 entities" and listed "Vehicle (3/3)" with RQ{Plate}/RQ{VIN} called
+    DEAD and QV called removed-and-must-not-be-listed. Every one of those claims was false by
+    v4.14 and the block survived ten version bumps and two package resets, because the reset tool
+    rewrites [PENDING] MARKERS and cannot rewrite PROSE. If you are reading this file to decide
+    what to test, trust the per-combo blocks and the markers -- and treat any narrative paragraph
+    that names a version older than the header as suspect until re-verified.
+NOTE (WITHDRAWN): this said "QVVehicleIdentificationNumber is REACHABLE as of v4.14 -- split from
+      RQ VIN by a RegionId EXISTS/NOT_EXISTS condition". Stale since v4.17: QV{VIN} is NOT BUILT,
+      and the RegionId condition that split the pair was deliberately dropped with it (leaving it
+      would have made RQ{VIN} unreachable the moment an officer typed a Region ID). RQ{VIN} now
+      carries FRT NOT_EXISTS only, and regionId rides its any[]. v4.22 restored QV{Plate} but
+      deliberately NOT QV{VIN} -- see the QV VIN block above.
     NOTE (legacy, v3.6): VehicleMakeCode form sent FORD, XML serialized PASS_FORD. Platform NCIC
           VEHICLE_MAKE code type adds PASS_ prefix internally. devdoc maxLen=4; PASS_FORD is 9 chars.
           Not fixable config-side (FormSelect attributeTypeId=VEHICLE_MAKE is the correct pattern --

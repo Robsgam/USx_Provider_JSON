@@ -2,9 +2,39 @@
 
 Auto-generated from `TX_TLETS_CCH_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v1.17** | Generated: 2026-08-18
+Current: **v1.18** | Generated: 2026-08-27
 
 ---
+
+## v1.18 -- 2026-08-27 -- LOCKSTEP with TX_TLETS v4.22 -- QV plate RESTORED, State promoted to set[]
+
+                 (WIRE CHANGE)  
+**CHANGED:** Added QVLicensePlateNumber to TX_TLETS_CCH_VehicleInsuranceRegistrationQuery --
+  set[LicensePlateNumber, RegistrationState], any[regionId], state='In', ordered LAST of the 6.  
+  VehReg 5 -> 6 combos. BASE-SYNC marker v4.21 -> v4.22.  
+**REASON:** Mandatory variant rebuild. CCH carried the IDENTICAL defect as the base and lost QV plate
+  in the SAME v4.17 / v1.13 lockstep commit, so from then until now a plate+State fill matched NO  
+  combination here either: RQ{Plate} wants Year+Type, REG{Plate} wants Year+FRT, and nothing had a  
+  plate-only set[]. The devdoc's "(InState) LicensePlateNumber, State [RegionId]" path did not  
+  exist in this variant at all.  
+  State is PROMOTED any[] -> set[] per Rob 2026-08-27 ("make state a set and the qv of plate  
+  number only will shadow properly") and per the devdoc, which marks State REQUIRED where the  
+  metadata marks it optional. The promotion is what makes the restore safe: set[Plate,State]  
+  cannot match a bare plate, so this QV is GATED and cannot ungate-shadow RQ/REG the way the v4.9  
+  version did; ordered LAST so the more specific combos still win first-match.  
+  Vehicle RegistrationState (ROW_VEH_1) carries NO initialValue -- VERIFIED before promoting it.  
+  Do not add one: a prefill there silently degrades this combo to plate-only and the old shadow  
+  returns.  
+  QV{VIN} DELIBERATELY STAYS OUT -- RQ{VIN} is already set[VIN], so the VIN input path exists.  
+  ALSO CORRECTED: the QIDM description string had been claiming "all 7 metadata combos ...  
+  (RQ/REG/QV plate + VIN/QV/RQ VIN + DPSI) ... lockstep w/ TX_TLETS v4.14" while only FIVE combos  
+  were actually built -- stale since v1.13, and the same class of documentation drift that let the  
+  base defect hide for four versions. Rewritten to match what is built.  
+  FULL RATIONALE, including how the regression was introduced and why no gate caught it:  
+  TX_TLETS BUILD_NOTES v4.22.  
+  NOTE: TX_TLETS_CCH tenant testing remains PARKED (Rob 2026-08-21, proof-of-concept for the  
+  base<->variant parallel build; no tenant need yet), so this is a build-and-document change --  
+  no sweep is owed for the variant.  
 
 ## v1.17 -- 2026-08-18 -- LOCKSTEP with TX_TLETS v4.21 -- layout convergence, NO wire change
 

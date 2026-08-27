@@ -1,21 +1,21 @@
 ﻿================================================================
   Build Report: TX_TLETS_CCH
-  Source: TX_TLETS_CCH_v1.17.json
-  Generated: 2026-08-18 10:08
+  Source: TX_TLETS_CCH_v1.18.json
+  Generated: 2026-08-27 18:08
 ================================================================
 METADATA AUDIT
 ==============
 
 ============================================================
  CONNECTCIC METADATA AUDIT
- Generated: 2026-08-18 10:08
+ Generated: 2026-08-27 18:08
 ============================================================
 
 ============================================================
  METADATA AUDIT: TX_TLETS_CCH
 ============================================================
   XML: TX_TLETS_CCH.xml
-  JSON: TX_TLETS_CCH_v1.17.json
+  JSON: TX_TLETS_CCH_v1.18.json
 
 --- CHECK 1: Query Coverage ---
   [PASS] ArticleSingleQuery: in XML and JSON
@@ -353,6 +353,9 @@ METADATA AUDIT
   [PASS]   keyRef RQ: set field 'LicensePlateYear' covered by RQLicensePlateNumber
   [PASS]   keyRef RQ: set field 'LicensePlateTypeCode' covered by RQLicensePlateNumber
   [PASS]   keyRef RQ: any field 'State' covered by RQLicensePlateNumber
+  [PASS]   keyRef QV: set field 'LicensePlateNumber' covered by QVLicensePlateNumber
+  [PASS]   keyRef QV: any field 'RegionId' covered by QVLicensePlateNumber
+  [PASS]   keyRef QV: any field 'State' covered by QVLicensePlateNumber
   [PASS]   keyRef RQ: set field 'VehicleIdentificationNumber' covered by RQVehicleIdentificationNumber
   [PASS]   keyRef RQ: any field 'State' covered by RQVehicleIdentificationNumber
   [PASS]   keyRef RQ: any field 'VehicleMakeCode' covered by RQVehicleIdentificationNumber
@@ -368,6 +371,7 @@ METADATA AUDIT
   [PASS]   keyRef VIN: any field 'State' covered by VINVehicleIdentificationNumber
 
 --- CHECK 4d: Field promoted to set[] vs metadata any[] ---
+  [NOTE]   keyRef QVLicensePlateNumber: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef BQRegistrationNumber: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef BQBoatHullIdNumber: 'RegistrationState' in set[] but metadata any[] -- ACCEPTED per registry
   [NOTE]   keyRef QH.NAME.SSN: 'socialSecurityNumberCCH' in set[] but metadata any[] -- ACCEPTED per registry
@@ -531,6 +535,6 @@ METADATA AUDIT
  METADATA AUDIT SUMMARY
 ============================================================
 Providers checked: 1
-Total: 431 PASS / 0 FAIL / 0 WARN
+Total: 434 PASS / 0 FAIL / 0 WARN
 ============================================================
 

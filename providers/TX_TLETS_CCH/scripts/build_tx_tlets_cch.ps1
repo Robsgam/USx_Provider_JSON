@@ -1,5 +1,5 @@
 # build_tx_tlets_cch.ps1  -- TX_TLETS_CCH (version comes from $Version below -- said v1.10 while emitting v1.14, corrected 2026-08-02)
-# BASE-SYNC: TX_TLETS v4.21   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
+# BASE-SYNC: TX_TLETS v4.22   <- base-6 QIDMs are kept in lockstep with this TX_TLETS version.
 # v1.17 (LOCKSTEP w/ TX_TLETS v4.21 -- COSMETIC, NO wire change): mandatory variant rebuild. Same three
 #   audit_layout_flow fixes as the base: 'nameMiddle'/'nameMiddleDH' relabelled 'MI' -> 'Middle Name'
 #   (L7 -- 'MI' means middle INITIAL on maxLen=30 controls), and the hidden Attention row moved from
@@ -103,7 +103,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets_cch.ps1
 
 param(
-    [string]$Version = "1.17"
+    [string]$Version = "1.18"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -169,8 +169,20 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber','financialResponsibilityType'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'VINVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('financialResponsibilityType','RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('regionId') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In' }
+        # -- QVLicensePlateNumber RESTORED v1.18, BASE-SYNC with TX_TLETS v4.22 ---------------
+        # CCH carried the IDENTICAL defect: it lost QV plate in the same v4.17/v1.13 lockstep
+        # commit, so from then until now a plate+State fill matched NO combination here either
+        # (RQ wants Year+Type, REG wants Year+FRT, nothing had a plate-only set[]).
+        # State is PROMOTED any[] -> set[] per Rob 2026-08-27 and the devdoc, which marks State
+        # REQUIRED where the metadata marks it optional. That promotion is what makes the restore
+        # safe: set[Plate,State] cannot match a bare plate, so this QV is GATED and cannot
+        # ungate-shadow RQ/REG the way the v4.9 version did. Ordered LAST so RQ/REG win first-match.
+        # Vehicle RegistrationState (ROW_VEH_1) carries NO initialValue -- verified. Do not add one:
+        # a prefill there silently degrades this to plate-only and the old shadow returns.
+        # QV{VIN} stays OUT -- RQ{VIN} is already set[VIN]. Full rationale: TX_TLETS BUILD_NOTES v4.22.
     )
-    description = 'VehicleInsuranceRegistrationQuery -- all 7 metadata combos, form-reachable (RQ/REG/QV plate + VIN/QV/RQ VIN + DPSI). v1.10 restored RQ+QV plate/VIN and removed the routing-affecting prefills that had made them unreachable; lockstep w/ TX_TLETS v4.14.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+    description = 'VehicleInsuranceRegistrationQuery -- 6 combos, all form-reachable (RQ plate, REG, VIN+FRT, RQ VIN, DPSI, QV plate). QV plate RESTORED v1.18 with State promoted any[]->set[], BASE-SYNC with TX_TLETS v4.22: the devdoc marks State REQUIRED where metadata marks it optional, and set[Plate,State] cannot match a bare plate, so this QV is gated and cannot ungate-shadow RQ/REG the way the v4.9 version did. It closes a real hole -- CCH lost QV plate in the same v4.17/v1.13 lockstep commit, and from then until now plate+State matched NO combo. QV VIN stays out: RQ{VIN} is already set[VIN]. No defaults[], no prefilled routing field (BUILD_RULES 24).'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_CCH_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS_CCH'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
 # --- DriverLicenseQuery (3 combos) ---

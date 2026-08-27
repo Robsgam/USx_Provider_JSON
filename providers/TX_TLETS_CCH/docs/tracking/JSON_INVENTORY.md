@@ -21,6 +21,12 @@
 
 
 
+
+## v1.18 (2026-08-27)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| TX_TLETS_CCH_v1.18.json | v1.18 | Current | 113P/0F/0W/0LIM. |
 ## v1.17 (2026-08-18)
 
 | File | Version | Status | Notes |

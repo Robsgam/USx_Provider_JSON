@@ -7720,9 +7720,23 @@
                                                                             "primaryFieldReference":  "StickerNumber",
                                                                             "keyReference":  "DPSIStickerNumber",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "LicensePlateNumber",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "regionId"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "QVLicensePlateNumber",
+                                                                            "state":  "In"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleInsuranceRegistrationQuery -- 5 combos (RQ plate, REG, VIN+FRT, RQ VIN, DPSI). All 5 form-reachable, no defaults[], no prefilled routing field (BUILD_RULES 24). QV plate/VIN NOT built: ungated subset shadows the platform auto-fires, not devdoc in/out combinations (Rob v4.9 ruling; re-added in error at v4.14, removed again v4.17). RQ plate/VIN ARE built -- they are the devdoc (OutofState) paths, wrongly deleted at v4.13 when our own prefills made them look dead.",
+                                                   "description":  "VehicleInsuranceRegistrationQuery -- 6 combos (RQ plate, REG, VIN+FRT, RQ VIN, DPSI, QV plate). All 6 form-reachable, no defaults[], no prefilled routing field (BUILD_RULES 24). QV plate RESTORED v4.22 with State promoted any[]-\u003eset[] per Rob and the devdoc, which marks State REQUIRED where metadata marks it optional: set[Plate,State] cannot match a bare plate, so it is gated and cannot ungate-shadow RQ/REG the way the v4.9 version did, and it is ordered LAST so RQ/REG still win first-match. It closes a real hole -- from v4.17 to v4.21 plate+State matched NO combo, because v4.14 removed the prefills that had made QV redundant and v4.17 re-applied the v4.9 ruling after its premise was gone. QV VIN stays out: RQ{VIN} is already set[VIN]. RQ plate/VIN ARE built -- they are the devdoc (OutofState) paths, wrongly deleted at v4.13 when our own prefills made them look dead.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "TX_TLETS_VehicleInsuranceRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -8630,7 +8644,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS v4.21",
+                        "description":  "Provider configuration for TX_TLETS v4.22",
                         "name":  "TX_TLETS",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS"

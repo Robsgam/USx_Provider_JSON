@@ -2,9 +2,86 @@
 
 Auto-generated from `TX_TLETS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v4.21** | Generated: 2026-08-18
+Current: **v4.22** | Generated: 2026-08-27
 
 ---
+
+## v4.22 -- 2026-08-27 -- QV plate RESTORED with State promoted any[]->set[] -- the devdoc (InState)
+
+                 plate path had been UNREACHABLE since v4.17 (WIRE CHANGE)  
+**CHANGED:** Added QVLicensePlateNumber to TX_TLETS_VehicleInsuranceRegistrationQuery --
+  set[LicensePlateNumber, RegistrationState], any[regionId], state='In', ordered LAST of the 6.  
+  VehReg 5 -> 6 combos; 19 -> 20 CommSys combos portfolio-side for this provider.  
+**REASON:** Rob reported from the tenant 2026-08-27: entering a plate and a State did not light up
+  the Vehicle Registration box. CONFIRMED -- and the form was behaving exactly as configured.  
+  The configuration was a REGISTERED, ROB-ACCEPTED gap (see the adjudication note below), not a  
+  defect that had gone unnoticed. What changes at v4.22 is the RULING, not the diagnosis.  
+  THE BEHAVIOR: from v4.17 through v4.21 a plate+State fill matched NO combination at all.  
+    RQ{Plate} requires Year+Type, REG{Plate} requires Year+FRT, and nothing had a plate-only  
+    set[]. Proven with tools\test_commsys.ps1: against v4.21 all five combos report [SKIP]  
+    (only the RMS elastic query fired, which is why the officer saw *something* happen);  
+    against v4.16 the identical fill FIRES QV with <LicensePlateNumber> + <State>. That pair of  
+    runs dates the break exactly to v4.17.  
+  HOW IT HAPPENED -- a ruling outlived its premise:  
+    v4.9  ruled QV{Plate} a redundant subset-shadow of RQ/REG. TRUE AT THE TIME: the form  
+          prefilled LicensePlateTypeCode=PC, LicensePlateYear and FRT=E, so a bare plate  
+          auto-satisfied RQ or REG and an explicit QV really did add nothing.  
+    v4.14 removed all four routing-affecting Vehicle prefills (BUILD_RULES 24) and stated the  
+          new intent in its own notes: "plate -> QV", "a bare plate now returns plain  
+          registration (QV)". THIS DELETED THE PREMISE OF THE v4.9 RULING.  
+    v4.17 re-applied the v4.9 ruling anyway ("remove the QV metadata shadows, restoring Rob's  
+          v4.9 ruling") to a config where its premise no longer held. The hole opened here.  
+  THIS WAS NOT AN UNDISCOVERED GAP -- IT WAS ADJUDICATED AND ACCEPTED, AND IS NOW REVISITED.  
+    TX_TLETS_ACCEPTED_DIVERGENCES.txt has carried, since 2026-07-30, the entry  
+    "VehicleInsuranceRegistrationQuery | (devdoc #5) | LicensePlateNumber |  
+    devdoc-optional-unreachable", which states the symptom exactly -- "Plate+State and  
+    Plate+State+RegionId therefore match nothing and send nothing" -- names the same root cause  
+    ("Two individually-correct removals -- the prefills and the shadow -- together left this  
+    gap"), and records ROB'S RULING: OPTION A, ACCEPT.  
+    That same entry pre-specified today's fix: "Option B (rebuild QV{Plate} as a terminal  
+    LAST-ordered fallback, which cannot steal fills the way the v4.9 QV did) remains available  
+    if Rob revisits." v4.22 IS Option B. Rob revisited it 2026-08-27 after hitting the dead form  
+    in the tenant. So this version is a RULING CHANGE on a registered, accepted trade-off --  
+    not the discovery of an invisible defect. Do not re-tell it as the latter.  
+  WHAT DID GO WRONG, AND IS WORTH FIXING SEPARATELY:  
+    (1) THE CHANGELOG WAS HOLLOW. v4.17's entry reads only "Rebuilt via pipeline.ps1 / Scheduled  
+        rebuild" while that build DELETED two combinations. Only the git commit subject mentioned  
+        QV. A version that changes combinations MUST say so in this file, because this file  
+        generates the changelog and is the first thing the next reader trusts. The gap was  
+        recoverable only because the ACCEPTED_DIVERGENCES entry existed; the changelog alone  
+        would have left it invisible.  
+    (2) THE ACCEPTANCE WAS NOT VISIBLE TO THE OFFICER OR THE FORM. An accepted "sends nothing"  
+        path looks identical to a broken one from the tenant. The 2026-07-30 entry itself notes  
+        that label/card-hint work to TELL the officer was considered and DEFERRED ("leave the  
+        labels alone for now"). That deferral is why this surfaced as a bug report rather than a  
+        known limitation -- worth revisiting for any other accepted send-nothing path.  
+    (3) TESTS STRUCTURALLY CANNOT COVER THIS CLASS. TX was ALL-PASS with 96 logs at v4.21. The  
+        test plan is generated FROM the built combos, so removing a combination removes its own  
+        test. There is never a red test for a path that no longer exists -- which is precisely  
+        why removals must be adjudicated at removal time, as this one correctly was.  
+  WHY State IS set[] AND NOT any[] -- Rob's ruling 2026-08-27: "make state a set and the qv of  
+    plate number only will shadow properly." The metadata marks State OPTIONAL; the devdoc marks  
+    it REQUIRED ("(InState) LicensePlateNumber, State [RegionId]"). Rob ruled for the devdoc.  
+    The promotion is also exactly what makes the restore safe: set[Plate,State] cannot match a  
+    bare plate, so this QV is GATED and cannot ungate-shadow RQ/REG the way the v4.9 version did.  
+    Ordered LAST so the more specific combos still win first-match.  
+  VERIFIED, all three via test_commsys against v4.22:  
+    plate+State                -> QV FIRES, wire = LicensePlateNumber + State.  
+    plate+State+Year+Type      -> RQ wins first-match; QV reported "FIRES shadowed"; UNION POOL  
+                                  = plate/type/year/State, IDENTICAL to RQ's own set[]+any[], so  
+                                  NO over-send under LIMITATION #1.  
+    plate only, no State       -> QV [SKIP] missing set: RegistrationState. Nothing fires. This  
+                                  is intended under the devdoc-required reading of State.  
+  DEPENDENCY, DO NOT BREAK: Vehicle RegistrationState (ROW_VEH_1) carries NO initialValue --  
+    verified before promoting it. If a prefill is ever added there, set[Plate,State] is always  
+    satisfied, QV silently degrades to plate-only, and the v4.9 shadow returns. Do not prefill  
+    Vehicle State.  
+  QV{VIN} DELIBERATELY STAYS OUT: RQ{VIN} is already set[VIN], so the VIN input path exists.  
+    QV{VIN} would be the genuine ungated shadow the v4.9 ruling described. audit_query_trace  
+    reports 1 MISSING, not 2, for this reason.  
+  ALL 5 ENTITIES RESET at v4.22 (96 prior logs archived). CCH rebuild owed in lockstep  
+    (BASE-SYNC) -- TX_TLETS_CCH v1.17 carries the IDENTICAL defect, removed in the same v4.17  
+    lockstep commit. IMPORT + full re-sweep owed.  
 
 ## v4.21 -- 2026-08-18 -- Layout convergence -- 3 audit_layout_flow findings fixed, 1 recorded (NO WIRE CHANGE)
 

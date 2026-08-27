@@ -209,7 +209,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_tx_tlets.ps1
 
 param(
-    [string]$Version = "4.21"
+    [string]$Version = "4.22"
 )
 
 $ErrorActionPreference = 'Stop'
@@ -301,14 +301,31 @@ $vehRegQuery = [PSCustomObject]@{
         # the union pool).
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('VehicleIdentificationNumber'); any = @('regionId','RegistrationState','VehicleMakeCode','vehicleYear'); conditions = @([PSCustomObject]@{ field = @('LicensePlateNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('financialResponsibilityType'); operator = 'NOT_EXISTS' }) }; primaryFieldReference = 'VehicleIdentificationNumber'; keyReference = 'RQVehicleIdentificationNumber'; state = 'In/Out' }
         [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('stickerNumber'); any = @('financialResponsibilityType','RegistrationState') }; primaryFieldReference = 'StickerNumber'; keyReference = 'DPSIStickerNumber'; state = 'In/Out' }
-        # QVLicensePlateNumber + QVVehicleIdentificationNumber REMOVED v4.9 (DEX-1284 shadow review,
-        # Rob-confirmed). Both were ungated SUBSET-SHADOWS: QV{Plate} subset of REG/RQ, QV{VIN} subset
-        # of VIN+FRT -- the extra fields are FRT/Type/Year qualifiers of the SAME plate/VIN query
-        # (NOT a state discriminator), so the platform auto-fires the metadata QV transaction from the
-        # larger query; an explicit combo was redundant (QWName class). regionId (an OPTIONAL member of
-        # the QV combination) is KEPT and moved to the RQ plate + RQ VIN any[] -- a devdoc-optional
-        # combination field is never dropped; it serializes into the union pool the auto-fired regional
-        # QV reads. in-state/OOS are separately kept + gated -- QV was not that.
+        [PSCustomObject]@{ requirements = [PSCustomObject]@{ set = @('LicensePlateNumber','RegistrationState'); any = @('regionId') }; primaryFieldReference = 'LicensePlateNumber'; keyReference = 'QVLicensePlateNumber'; state = 'In' }
+        # -- QVLicensePlateNumber RESTORED v4.22, with State PROMOTED any[] -> set[] ----------
+        # Rob's direction 2026-08-27: "make state a set and the qv of plate number only will
+        # shadow properly."
+        # WHY IT HAD TO COME BACK: v4.9 ruled QV{Plate} a redundant subset-shadow of RQ/REG, and
+        # that was TRUE THEN -- the form prefilled LicensePlateTypeCode=PC / LicensePlateYear /
+        # FRT=E, so a bare plate auto-satisfied RQ or REG and QV added nothing. v4.14 REMOVED all
+        # four routing prefills (BUILD_RULES 24). That deleted the premise. v4.17 re-applied the
+        # v4.9 ruling anyway, and from v4.17 through v4.21 plate+State matched NOTHING: RQ still
+        # wants Year+Type, REG still wants Year+FRT, and no combo had a plate-only set[]. The
+        # devdoc's "(InState) LicensePlateNumber, State [RegionId]" path did not exist at all.
+        # Reported from the tenant by Rob 2026-08-27; reproduced with test_commsys against v4.21
+        # (all 5 combos [SKIP]) and against v4.16 (QV fires on plate+State), which dates the break.
+        # WHY State IS set[] AND NOT any[]: metadata marks State optional, the devdoc marks it
+        # REQUIRED. Rob ruled for the devdoc. That promotion is also what makes the restore SAFE:
+        # set[Plate,State] cannot match a bare plate, so QV cannot ungate-shadow RQ/REG the way the
+        # v4.9 version did. Ordered LAST so RQ (Plate+Year+Type) and REG (Plate+Year+FRT) still win
+        # first-match when their own set[] is satisfied; QV only catches the fall-through.
+        # Vehicle RegistrationState carries NO initialValue (ROW_VEH_1) -- VERIFIED before promoting
+        # it. If a prefill is ever added there, this combo silently degrades to plate-only and the
+        # v4.9 shadow returns. Do not prefill Vehicle State.
+        # NO over-send under LIMITATION #1: QV's fields are a subset of RQ's set[]+any[], so when
+        # both match the union pool is unchanged.
+        # QVVehicleIdentificationNumber stays OUT -- RQ{VIN} is already set[VIN], so the VIN input
+        # path exists; QV{VIN} would be the genuine ungated shadow the v4.9 ruling described.
         # ── RQLicensePlateNumber + RQVehicleIdentificationNumber REMOVED v4.13 ──────────────
         # Rob's v4.9 subset-shadow ruling applied to the two combos it missed. Both were DEAD --
         # unreachable at ANY fill under first-match ordering, because the combo ordered before each
@@ -328,7 +345,7 @@ $vehRegQuery = [PSCustomObject]@{
         # regionId / VehicleMakeCode preserved on the surviving combos above -- never drop a
         # devdoc-optional combination field.
     )
-    description = 'VehicleInsuranceRegistrationQuery -- 5 combos (RQ plate, REG, VIN+FRT, RQ VIN, DPSI). All 5 form-reachable, no defaults[], no prefilled routing field (BUILD_RULES 24). QV plate/VIN NOT built: ungated subset shadows the platform auto-fires, not devdoc in/out combinations (Rob v4.9 ruling; re-added in error at v4.14, removed again v4.17). RQ plate/VIN ARE built -- they are the devdoc (OutofState) paths, wrongly deleted at v4.13 when our own prefills made them look dead.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
+    description = 'VehicleInsuranceRegistrationQuery -- 6 combos (RQ plate, REG, VIN+FRT, RQ VIN, DPSI, QV plate). All 6 form-reachable, no defaults[], no prefilled routing field (BUILD_RULES 24). QV plate RESTORED v4.22 with State promoted any[]->set[] per Rob and the devdoc, which marks State REQUIRED where metadata marks it optional: set[Plate,State] cannot match a bare plate, so it is gated and cannot ungate-shadow RQ/REG the way the v4.9 version did, and it is ordered LAST so RQ/REG still win first-match. It closes a real hole -- from v4.17 to v4.21 plate+State matched NO combo, because v4.14 removed the prefills that had made QV redundant and v4.17 re-applied the v4.9 ruling after its premise was gone. QV VIN stays out: RQ{VIN} is already set[VIN]. RQ plate/VIN ARE built -- they are the devdoc (OutofState) paths, wrongly deleted at v4.13 when our own prefills made them look dead.'; handlerFunction = 'CommsysTransactionRequestHandler'; name = 'TX_TLETS_VehicleInsuranceRegistrationQuery'; type = 'QUERYINPUTDATAMAPPING'; autoSelect = $true; provider = 'TX_TLETS'; providerType = 'Commsys'; query = 'VehicleInsuranceRegistrationQuery'; queryLabel = 'Vehicle Registration'; targetEntity = 'Vehicle'
 }
 
 # --- DriverLicenseQuery (3 combos) ---

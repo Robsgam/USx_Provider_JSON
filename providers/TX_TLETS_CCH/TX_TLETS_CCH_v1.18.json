@@ -10573,9 +10573,23 @@
                                                                             "primaryFieldReference":  "StickerNumber",
                                                                             "keyReference":  "DPSIStickerNumber",
                                                                             "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "LicensePlateNumber",
+                                                                                                             "RegistrationState"
+                                                                                                         ],
+                                                                                                 "any":  [
+                                                                                                             "regionId"
+                                                                                                         ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "QVLicensePlateNumber",
+                                                                            "state":  "In"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleInsuranceRegistrationQuery -- all 7 metadata combos, form-reachable (RQ/REG/QV plate + VIN/QV/RQ VIN + DPSI). v1.10 restored RQ+QV plate/VIN and removed the routing-affecting prefills that had made them unreachable; lockstep w/ TX_TLETS v4.14.",
+                                                   "description":  "VehicleInsuranceRegistrationQuery -- 6 combos, all form-reachable (RQ plate, REG, VIN+FRT, RQ VIN, DPSI, QV plate). QV plate RESTORED v1.18 with State promoted any[]-\u003eset[], BASE-SYNC with TX_TLETS v4.22: the devdoc marks State REQUIRED where metadata marks it optional, and set[Plate,State] cannot match a bare plate, so this QV is gated and cannot ungate-shadow RQ/REG the way the v4.9 version did. It closes a real hole -- CCH lost QV plate in the same v4.17/v1.13 lockstep commit, and from then until now plate+State matched NO combo. QV VIN stays out: RQ{VIN} is already set[VIN]. No defaults[], no prefilled routing field (BUILD_RULES 24).",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "TX_TLETS_CCH_VehicleInsuranceRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -12666,7 +12680,7 @@
                                                    "targetEntity":  "Person"
                                                }
                                            ],
-                        "description":  "Provider configuration for TX_TLETS_CCH v1.17",
+                        "description":  "Provider configuration for TX_TLETS_CCH v1.18",
                         "name":  "TX_TLETS_CCH",
                         "type":  "BUNDLE",
                         "provider":  "TX_TLETS_CCH"
