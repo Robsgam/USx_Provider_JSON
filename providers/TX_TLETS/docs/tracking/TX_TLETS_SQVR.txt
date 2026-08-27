@@ -3,10 +3,12 @@
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Last updated: 2026-08-27
 JSON version: v4.22
-Live test: NONE AT v4.22 -- package restarted from T1. The 96 v4.21 logs are archived to
-           logs/<Entity>/_archive_pre_v4.22/ and every marker below is [PENDING]. v4.22 is a WIRE
-           CHANGE (QV plate restored, State promoted to set[]), so no prior pass carries forward.
-           Last full pass was v4.21 (96/96 ALL-PASS); before that v4.14 (93/93).
+Live test: v4.22 FULL SWEEP 2026-08-27 -- ALL-PASS 5/5 entities, 98/98, 0 FAIL.
+           Vehicle 21 / Person 38 / Firearm 10 / Article 8 / Boat 21. All 5 entities blocked out.
+           Four log gates: content 98/98, metadata 98/98, attribution 98/98, plan complete.
+           Inflation probe 0/0/0/0. Combo coverage 20/20 = 100%.
+           Prior: v4.21 (96/96), v4.14 (93/93). Those logs are archived under
+           logs/<Entity>/_archive_pre_v4.22/ and do NOT carry forward -- v4.22 is a WIRE CHANGE.
 Validator: 80 PASS / 0 FAIL / 0 WARN / 0 LIM (v4.22)
 Verify: CLEAN (0 FAIL, 0 WARN -- 3 fields carry accepted LABEL-OVERRIDE tags, see build script)
 
@@ -301,16 +303,28 @@ SUMMARY
       (v4.22 added QVLicensePlateNumber, so Vehicle went 5 -> 6 and the total 19 -> 20.)
   Total RMS combos: ~6 (2 Vehicle + 4 Person)
 
-  CONFIRMED: NONE. ALL 5 ENTITIES ARE [PENDING] AT v4.22.
-    v4.22 is a WIRE CHANGE (QV plate restored, State promoted to set[]), so the whole test package
-    restarted from T1: the 96 v4.21 logs were archived to logs/<Entity>/_archive_pre_v4.22/ and
-    every SQVR marker reset to [PENDING]. Nothing is confirmed until it is imported and re-swept.
-    Coverage target: 20/20 CommSys combos.
+  CONFIRMED (v4.22 full sweep, 2026-08-27) -- ALL-PASS 5/5 entities, 98/98, 0 FAIL:
+    Vehicle (6/6): RQLicensePlateNumber, REGLicensePlateNumber, VINVehicleIdentificationNumber,
+      RQVehicleIdentificationNumber, DPSIStickerNumber, QVLicensePlateNumber.
+      QV IS THE ONE THAT MATTERED: plate + State fired it and the wire carried
+      <LicensePlateNumber>TEST123</LicensePlateNumber> + <State>GA</State> and NOTHING ELSE --
+      no Year, no PlateType, no FRT. That field set is unforgeable evidence of combo identity,
+      because RQ would have dragged Year+Type onto the wire and REG would have dragged Year+FRT.
+      It is the exact request that matched NOTHING from v4.17 through v4.21.
+    Person DL (3/3): DQName, CPLName, DQOLN.  Person DH (2/2): KQName, KQOLN.
+    Firearm (2/2): QGGunSerialNumber, QGNCICNumber.
+    Article (2/2): QAArticleSerialNumber, QANCICNumber.
+    Boat (5/5): BQRegistrationNumber, BQBoatHullIdNumber, QBRegistrationNumber,
+      QBBoatHullIdNumber, QBNCICNumber.
+    Coverage 20/20 combos (100%), 98 logs. Four log gates: 98/98 content-verified,
+    98/98 metadata-verified, 98/98 combo-attribution verified, plan complete 5/5.
+    Inflation probe 0 clone / 0 fingerprint / 0 orphan-field / 0 degenerate-guardrail.
+    All 5 entities blocked out at fingerprint-stamped v4.22.
     THE STALE BLOCK REMOVED HERE said "CONFIRMED (v4.12 full re-test) ... Coverage: 21/21 combos
     (100%) ... ALL-PASS 5/5 entities" and listed "Vehicle (3/3)" with RQ{Plate}/RQ{VIN} called
     DEAD and QV called removed-and-must-not-be-listed. Every one of those claims was false by
     v4.14 and the block survived ten version bumps and two package resets, because the reset tool
-    rewrites [PENDING] MARKERS and cannot rewrite PROSE. If you are reading this file to decide
+    rewrites STATUS MARKERS and cannot rewrite PROSE. If you are reading this file to decide
     what to test, trust the per-combo blocks and the markers -- and treat any narrative paragraph
     that names a version older than the header as suspect until re-verified.
 NOTE (WITHDRAWN): this said "QVVehicleIdentificationNumber is REACHABLE as of v4.14 -- split from
