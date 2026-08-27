@@ -1,7 +1,7 @@
-﻿================================================================
+================================================================
   Build Report: TX_TLETS
-  Source: TX_TLETS_v4.21.json
-  Generated: 2026-08-18 10:07
+  Source: TX_TLETS_v4.22.json
+  Generated: 2026-08-27 18:43
 ================================================================
 QUERY SIMULATION
 ================
@@ -9,11 +9,11 @@ QUERY SIMULATION
   Seeded form defaults (3): Person.ImageIndicatorDH=Y, Person.reasonCode=C, Person.reasonCodeDH=C
 
 ================================================================
-  CommSys Query Simulator -- TX_TLETS_v4.21.json
+  CommSys Query Simulator -- TX_TLETS_v4.22.json
 ================================================================
 
 --- QIDM: TX_TLETS_VehicleInsuranceRegistrationQuery [Vehicle] ---
-    Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 5
+    Query: VehicleInsuranceRegistrationQuery  |  Attrs: 10  |  Combos: 6
 
     [FIRES first-match] RQLicensePlateNumber
       set: [LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode]
@@ -53,6 +53,17 @@ QUERY SIMULATION
         <FinancialResponsibilityType>E</FinancialResponsibilityType>
         <State>NJ</State>
         <StickerNumber>12345678</StickerNumber>
+      </Transaction>
+
+    [FIRES shadowed -- first match above wins] QVLicensePlateNumber
+      set: [LicensePlateNumber, RegistrationState]
+      any: [regionId] -> matched: []
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>QV</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <State>NJ</State>
       </Transaction>
 
     >> PLATFORM FIRES: RQLicensePlateNumber (first matching combo)
