@@ -136,9 +136,8 @@
                                                                                                                      "props":  {
                                                                                                                                    "fieldId":  "LicensePlateTypeCode",
                                                                                                                                    "label":  "Plate Type",
-                                                                                                                                   "initialValue":  "PC",
-                                                                                                                                   "codeTypeSource":  "NCIC",
-                                                                                                                                   "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
+                                                                                                                                   "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                                   "codeTypeSource":  "NCIC"
                                                                                                                                },
                                                                                                                      "isCanvas":  false,
                                                                                                                      "hidden":  false,
@@ -158,8 +157,7 @@
                                                                                                                  "props":  {
                                                                                                                                "fieldId":  "LicensePlateYear",
                                                                                                                                "label":  "Plate Year",
-                                                                                                                               "maxLength":  "4",
-                                                                                                                               "initialValue":  "2026"
+                                                                                                                               "maxLength":  "4"
                                                                                                                            },
                                                                                                                  "isCanvas":  false,
                                                                                                                  "hidden":  false,
@@ -639,9 +637,8 @@
                                                                                                                           "props":  {
                                                                                                                                         "fieldId":  "LicensePlateTypeCode",
                                                                                                                                         "label":  "Plate Type",
-                                                                                                                                        "initialValue":  "PC",
-                                                                                                                                        "codeTypeSource":  "NCIC",
-                                                                                                                                        "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
+                                                                                                                                        "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                                        "codeTypeSource":  "NCIC"
                                                                                                                                     },
                                                                                                                           "isCanvas":  false,
                                                                                                                           "hidden":  false,
@@ -661,8 +658,7 @@
                                                                                                                       "props":  {
                                                                                                                                     "fieldId":  "LicensePlateYear",
                                                                                                                                     "label":  "Plate Year",
-                                                                                                                                    "maxLength":  "4",
-                                                                                                                                    "initialValue":  "2026"
+                                                                                                                                    "maxLength":  "4"
                                                                                                                                 },
                                                                                                                       "isCanvas":  false,
                                                                                                                       "hidden":  false,
@@ -1223,9 +1219,8 @@
                                                                                                                              "props":  {
                                                                                                                                            "fieldId":  "LicensePlateTypeCode",
                                                                                                                                            "label":  "Plate Type",
-                                                                                                                                           "initialValue":  "PC",
-                                                                                                                                           "codeTypeSource":  "NCIC",
-                                                                                                                                           "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE"
+                                                                                                                                           "codeTypeCategory":  "NCIC_LICENSE_PLATE_TYPE",
+                                                                                                                                           "codeTypeSource":  "NCIC"
                                                                                                                                        },
                                                                                                                              "isCanvas":  false,
                                                                                                                              "hidden":  false,
@@ -1245,8 +1240,7 @@
                                                                                                                          "props":  {
                                                                                                                                        "fieldId":  "LicensePlateYear",
                                                                                                                                        "label":  "Plate Year",
-                                                                                                                                       "maxLength":  "4",
-                                                                                                                                       "initialValue":  "2026"
+                                                                                                                                       "maxLength":  "4"
                                                                                                                                    },
                                                                                                                          "isCanvas":  false,
                                                                                                                          "hidden":  false,
@@ -8066,12 +8060,6 @@
                                                                                                  "conditions":  [
                                                                                                                     {
                                                                                                                         "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    },
-                                                                                                                    {
-                                                                                                                        "field":  [
                                                                                                                                       "OperatorLicenseNumberDH"
                                                                                                                                   ],
                                                                                                                         "operator":  "NOT_EXISTS"
@@ -8524,10 +8512,10 @@
                                                                                                              "caRequestPurposeCode",
                                                                                                              "LicensePlateNumber",
                                                                                                              "LicensePlateTypeCode",
-                                                                                                             "LicensePlateYear",
-                                                                                                             "RegistrationState"
+                                                                                                             "LicensePlateYear"
                                                                                                          ],
                                                                                                  "any":  [
+                                                                                                             "RegistrationState",
                                                                                                              "VehicleMakeCode",
                                                                                                              "vehicleYear"
                                                                                                          ],
@@ -8544,15 +8532,7 @@
                                                                                                                       "field":  "caRequestPurposeCode",
                                                                                                                       "value":  "C"
                                                                                                                   }
-                                                                                                              ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ]
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ.P",
@@ -8710,6 +8690,27 @@
                                                                             "requirements":  {
                                                                                                  "set":  [
                                                                                                              "caRequestPurposeCode",
+                                                                                                             "LicensePlateNumber",
+                                                                                                             "LicensePlateTypeCode"
+                                                                                                         ],
+                                                                                                 "any":  [
+
+                                                                                                         ],
+                                                                                                 "defaults":  [
+                                                                                                                  {
+                                                                                                                      "field":  "caRequestPurposeCode",
+                                                                                                                      "value":  "C"
+                                                                                                                  }
+                                                                                                              ]
+                                                                                             },
+                                                                            "primaryFieldReference":  "LicensePlateNumber",
+                                                                            "keyReference":  "4",
+                                                                            "state":  "In/Out"
+                                                                        },
+                                                                        {
+                                                                            "requirements":  {
+                                                                                                 "set":  [
+                                                                                                             "caRequestPurposeCode",
                                                                                                              "LicensePlateNumber"
                                                                                                          ],
                                                                                                  "any":  [
@@ -8748,7 +8749,7 @@
                                                    "targetEntity":  "Vehicle"
                                                }
                                            ],
-                        "description":  "Provider configuration for CA_eSUN v2.5 -- 6 QIDMs, cross-entity (VP, QGH), DH-suffix, OOS EXISTS/NOT_EXISTS gates + identifier-priority guardrails",
+                        "description":  "Provider configuration for CA_eSUN v2.6 -- 6 QIDMs, cross-entity (VP, QGH), DH-suffix, OOS EXISTS/NOT_EXISTS gates + identifier-priority guardrails",
                         "name":  "CA_eSUN",
                         "type":  "BUNDLE",
                         "provider":  "CA_eSUN"

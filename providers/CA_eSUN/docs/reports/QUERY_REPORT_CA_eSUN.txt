@@ -1,14 +1,14 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.5.json
-  Generated: 2026-08-20 20:24
+  Source: CA_eSUN_v2.6.json
+  Generated: 2026-08-27 14:04
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- CA_eSUN_v2.5.json
+  CommSys Query Simulator -- CA_eSUN_v2.6.json
 ================================================================
 
 --- QIDM: CA_eSUN_ArticleSingleQuery [Article] ---
@@ -126,11 +126,11 @@ QUERY SIMULATION
         if this exceeds the first-match combo's fields, the platform OVER-SENDS)
 
 --- QIDM: CA_eSUN_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 12  |  Combos: 6
+    Query: VehicleRegistrationQuery  |  Attrs: 12  |  Combos: 7
 
     [FIRES first-match] RQ.P
-      set: [caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, RegistrationState]
-      any: [VehicleMakeCode, vehicleYear] -> matched: [VehicleMakeCode, vehicleYear]
+      set: [caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+      any: [RegistrationState, VehicleMakeCode, vehicleYear] -> matched: [RegistrationState, VehicleMakeCode, vehicleYear]
       -- CommSys XML --
       <?xml version="1.0" encoding="UTF-8"?>
       <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
@@ -147,6 +147,17 @@ QUERY SIMULATION
     [SKIP] RQ.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
     [SKIP] VP.N -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; VehicleIdentificationNumber NOT_EXISTS [value='1HGCM82633A123456']
     [SKIP] QV.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; RegistrationState NOT_EXISTS [value='NJ']
+
+    [FIRES shadowed -- first match above wins] 4
+      set: [caRequestPurposeCode, LicensePlateNumber, LicensePlateTypeCode]
+      -- CommSys XML --
+      <?xml version="1.0" encoding="UTF-8"?>
+      <Transaction>   <!-- ILLUSTRATIVE: real wire root is <LawEnforcementTransaction> -->
+        <MessageKey>4</MessageKey>   <!-- SIMULATOR ONLY: the real wire has no transaction MessageKey -->
+        <CaRequestPurposeCode>C</CaRequestPurposeCode>
+        <LicensePlateNumber>ABC1234</LicensePlateNumber>
+        <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+      </Transaction>
     [SKIP] QV.P -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
 
     >> PLATFORM FIRES: RQ.P (first matching combo)

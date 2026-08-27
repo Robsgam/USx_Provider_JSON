@@ -1,7 +1,7 @@
 ﻿================================================================
   Build Report: CA_eSUN
-  Source: CA_eSUN_v2.5.json
-  Generated: 2026-08-20 20:24
+  Source: CA_eSUN_v2.6.json
+  Generated: 2026-08-27 14:04
 ================================================================
 VALIDATOR RESULTS
 ================
@@ -23,7 +23,8 @@ VALIDATOR RESULTS
 
 === PHASE 2: Entity QIFs ===
   [PASS] Entity order defined: Vehicle, Person, Firearm, Article, Boat
-  [PASS] QIF 'ENTITY_Vehicle' PlateType initialValue='PC'
+  [PASS] QIF 'ENTITY_Vehicle' PlateType no initialValue (combo defaults expected)
+  [PASS] QIF 'ENTITY_Vehicle' 'LicensePlateYear' no initialValue (OOS-only plate field; PlateType also blank)
   [PASS] QIF 'ENTITY_Vehicle' -> Vehicle : 18 fieldIds
   [PASS] QIF 'ENTITY_Person' -> Person : 20 fieldIds
   [PASS] QIF 'ENTITY_Firearm' -> Firearm : 15 fieldIds
@@ -44,7 +45,7 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_eSUN_DriverHistoryQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] QIDM 'CA_eSUN_GunQuery' -> Firearm : 9 attrs, 3 combos
   [PASS] QIDM 'CA_eSUN_GunQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
-  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' -> Vehicle : 12 attrs, 6 combos
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' -> Vehicle : 12 attrs, 7 combos
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'State' STATE field with codeTypeProvider='NCIC' (AP #1)
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' attr 'BirthDate' FormDate with CommsysParseDateRuleHandler
   [PASS] RMS Person QIDM 'RMS Person Search query' has registrationState attr
@@ -94,10 +95,11 @@ VALIDATOR RESULTS
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'RQ.V': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'VP.N': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QV.V': all set[]/any[] fields resolvable
+  [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo '4': all set[]/any[] fields resolvable
   [PASS] QIDM 'CA_eSUN_VehicleRegistrationQuery' combo 'QV.P': all set[]/any[] fields resolvable
 
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
-  RESULTS: 73 PASS / 0 FAIL / 0 WARN
+  RESULTS: 75 PASS / 0 FAIL / 0 WARN
 â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?â?
 
   Ready for import.

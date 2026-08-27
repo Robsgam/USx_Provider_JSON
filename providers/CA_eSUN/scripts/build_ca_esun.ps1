@@ -14,7 +14,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_esun.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.5'
+$Version  = '2.6'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_eSUN_v${Version}.json"
@@ -237,8 +237,19 @@ $dhQuery = [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('caRequestPurposeCode','NameLastDH','NameFirstDH','SexCodeDH','BirthDateDH'); any = @('attention','RegistrationState','NameMiddleDH','NameSuffixDH')
                 defaults = @([PSCustomObject]@{ field = 'Attention'; value = 'X' })
+                # v2.6: `RegistrationState EXISTS` REMOVED. Metadata KQ{Name} =
+                #   Set[CaRequestPurposeCode, Name, SexCode, BirthDate] Any[Attention, PurposeCode, State]
+                # -- State is an OPTIONAL there, not a fork. Gating on it made KQ.N reachable only out
+                # of state, so devdoc DriverHistoryQuery #3 "(mand) BirthDate, Name, SexCode
+                # [opt Attention, PurposeCode, State]" filled without a State fell through to L1.N.DH
+                # (set[purposeCode, Name]) and the officer's BIRTHDATE AND SEX CODE were silently
+                # discarded. Same anti-pattern as TN_TIES KQ.N, NM RQ.P v2.7, OCATS DQ.N v2.8,
+                # MD ZLRG.P v2.3. KQ.N is a strict superset of L1.N.DH and ordered first, so
+                # specificity routes the pair: Name+DOB+Sex -> KQ.N, name-only -> L1.N.DH.
+                # L1.N.DH KEEPS its NOT_EXISTS gate -- metadata L1{Name} has an EMPTY <Any>, so it
+                # defines no State, and without the gate a Name+State fill would match it and drop
+                # the State silently, which is this same defect one combination over.
                 conditions = @(
-                    [PSCustomObject]@{ field = @('RegistrationState');        operator = 'EXISTS' }
                     [PSCustomObject]@{ field = @('OperatorLicenseNumberDH'); operator = 'NOT_EXISTS' }
                 )
             }
@@ -406,12 +417,21 @@ $vehRegQuery = [PSCustomObject]@{
     combinations = @(
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
-                set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear','RegistrationState'); any = @('VehicleMakeCode','vehicleYear')
+                # v2.6: RegistrationState DEMOTED set[] -> any[] and its EXISTS gate REMOVED.
+                # Metadata RQ{LicensePlateNumber} = Set[CaRequestPurposeCode, LicensePlateNumber,
+                # LicensePlateTypeCode, LicensePlateYear] Any[State] -- State is OPTIONAL, so
+                # promoting it into set[] and gating on it made devdoc #8 "(mand) LicensePlateNumber,
+                # LicensePlateTypeCode, LicensePlateYear [opt State]" unreachable in-state; the fill
+                # fell through to QV.P (set[purposeCode, plate]) and the plate type and year were
+                # silently discarded. The REAL discriminator is type+year, which is exactly what
+                # separates RQ{plate} from 4{plate} from QV{plate} -- hence the form prefills are
+                # removed (see the Vehicle card) so all three stay reachable by specificity.
+                # defaults[] KEPT for CAD, which ignores form initialValue and does not route on it.
+                set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('RegistrationState','VehicleMakeCode','vehicleYear')
                 defaults = @(
                     [PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }
                     [PSCustomObject]@{ field = 'LicensePlateYear';     value = $currentYear }
                 )
-                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ.P'
@@ -465,12 +485,36 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'QV.V'
             state                 = 'In/Out'
         }
+        # 4 -- plate + plate type. BUILT NEW at v2.6, and it is the missing variant devdoc #2 names.
+        # metadata 4{LicensePlateNumber} = Set[CaRequestPurposeCode, LicensePlateNumber,
+        # LicensePlateTypeCode] with an EMPTY <Any>. devdoc "#2 (mand) LicensePlateNumber,
+        # LicensePlateTypeCode" had NO built counterpart, so that fill fell through to QV.P and the
+        # plate type was silently discarded. Per Rob's 2026-08-18 directive, build every metadata
+        # variant of an in-scope query rather than registering it as a skip.
+        # Ordered BETWEEN RQ.P (4 set[] fields) and QV.P (2): most-specific-first, so
+        # plate+type+year -> RQ.P, plate+type -> 4, plate -> QV.P. This ordering only works because
+        # the type/year prefills are gone; with them, RQ.P would match every plate fill and BOTH
+        # this combo and QV.P would be dead on arrival (BUILD_RULES 24).
+        [PSCustomObject]@{
+            requirements          = [PSCustomObject]@{
+                set = @('caRequestPurposeCode','LicensePlateNumber','LicensePlateTypeCode'); any = @()
+                # No defaults[]: this variant's <Any> is empty, so a CAD default would be inert
+                # (wiring class E), the same reasoning already recorded on QV.P below.
+            }
+            primaryFieldReference = 'LicensePlateNumber'
+            keyReference          = '4'
+            state                 = 'In/Out'
+        }
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('caRequestPurposeCode','LicensePlateNumber'); any = @('VehicleMakeCode','vehicleYear')
                 # NO defaults[] here: metadata QV{LicensePlateNumber} has an EMPTY <Any>, so
                 # LicensePlateTypeCode/LicensePlateYear are not defined on this branch. The CAD
                 # defaults were removed with them in v2.4 -- they were inert (wiring class E).
+                # v2.6: the `RegistrationState NOT_EXISTS` gate is KEPT. Metadata QV{plate} does not
+                # define State, so without it a plate+State fill would match here and drop the State
+                # silently. RQ.P and 4 are strict supersets ordered ahead, so this stays reachable as
+                # the plate-only search (devdoc #1) rather than stealing their fills.
                 conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
@@ -575,8 +619,8 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'} 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','3','3'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '30' 'ROW_VEH_2' }

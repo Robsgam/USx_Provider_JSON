@@ -1,8 +1,56 @@
 CA_eSUN -- Build Notes
 ======================
 Provider: CA_eSUN
+v2.6  2026-08-27  FOUR SILENTLY-DISCARDED-FIELD DEFECTS CLOSED: driver history stops dropping DOB
+                  and Sex, and the plate search stops dropping plate type and year
+  CHANGED:
+    KQ.N (DriverHistoryQuery) -- `RegistrationState EXISTS` condition REMOVED.
+    RQ.P (VehicleRegistrationQuery) -- RegistrationState DEMOTED set[] -> any[], EXISTS gate REMOVED.
+    4    (VehicleRegistrationQuery) -- NEW COMBINATION, set[caRequestPurposeCode, LicensePlateNumber,
+         LicensePlateTypeCode], ordered between RQ.P and QV.P.
+    FORM -- LicensePlateTypeCode / LicensePlateYear prefills REMOVED (combo defaults[] kept for CAD).
+    L1.N.DH and QV.P keep their NOT_EXISTS gates -- see below, both deliberate.
+  REASON -- the same anti-pattern twice, plus one missing variant:
+    metadata KQ{Name} = Set[CaRequestPurposeCode, Name, SexCode, BirthDate]
+                        Any[Attention, PurposeCode, State]        -- State OPTIONAL, not a fork.
+    metadata RQ{plate} = Set[CaRequestPurposeCode, plate, LicensePlateTypeCode, LicensePlateYear]
+                        Any[State]                                -- State OPTIONAL, not a fork.
+    Gating both on State made them reachable only out of state, so devdoc DriverHistoryQuery #3
+    (BirthDate, Name, SexCode) and VehicleRegistrationQuery #8 (plate, type, year) fell through to
+    L1.N.DH and QV.P respectively -- and those looser combos do not carry the extra fields, so the
+    officer's DOB+Sex and plate type+year were SILENTLY DISCARDED. Never gate on a field the metadata
+    merely permits: TN_TIES KQ.N, NM RQ.P v2.7, CA_CLETS_OCATS DQ.N v2.8, MD_METERS ZLRG.P v2.3.
+    devdoc #2 "(mand) LicensePlateNumber, LicensePlateTypeCode" had NO built counterpart at all --
+    metadata 4{plate} existed and was never built, so that fill also fell to QV.P and lost its type.
+    Built per Rob's 2026-08-18 directive: build every metadata variant of an in-scope query.
+  THE PREFILL HAD TO GO OR THE FIX WOULD HAVE KILLED TWO COMBOS: type+year are exactly what separates
+    RQ{plate} from 4{plate} from QV{plate}. Prefilled, they are always present, so RQ.P would have
+    won every plate fill and BOTH 4 and QV.P would have been dead on arrival (BUILD_RULES 24).
+    Un-prefilled, specificity routes all three: plate+type+year -> RQ.P, plate+type -> 4, plate ->
+    QV.P. This is the OOS-only plate-card exception already recorded for HI v3.0, and it is outside
+    Rob's keep-the-convention ruling by that ruling's own terms (routing depends on these fields).
+    Verified: reachability 21/21 ALL reachable, prefill shadow 0 FAIL / 41 pairs.
+  TWO NOT_EXISTS GATES KEPT ON PURPOSE, both for the same reason: metadata L1{Name} and QV{plate}
+    have EMPTY <Any> elements and define no State, so removing their gates would let a Name+State or
+    plate+State fill match them and drop the State silently -- this very defect, one combination over.
+  ONE FINDING REGISTERED RATHER THAN BUILT: devdoc #6 "(mand) plate [opt State]" now fires nothing.
+    No metadata plate variant accepts plate+State (QV and 4 have empty <Any>; only RQ permits State
+    and it requires type+year), so it is devdoc-legal and metadata-impossible. An honest no-fire beats
+    a silently narrowed query. Recorded as VehicleRegistrationQuery | QV.P | State.
+  REGISTRY ROW RETIRED: `DriverLicenseQuery | L1.N | BirthDate | demoted-to-any`. It was correct and
+    it was masking a TOOL defect -- audit_requirement_fidelity did not descend into a <Choice> nested
+    inside <Any>, fixed the same day. Measured inert before retiring (27 branches / 0 / 0 with and
+    without it). Kept as commented history.
+  GATES: validator 73P -> 75P / 0F / 0W - audit_devdoc_optionals 4 FAIL -> 0 - fidelity 27 branches /
+    0 UNDER / 0 OVER UNCHANGED - reachability 21/21 - prefill shadow 0 FAIL - enforce 0 FAIL / 0 WARN.
+  COST: NONE. CA_eSUN has never been tenant-tested (0 logs at any version); no Foundation, no LIVE.
+
 State: California
 Network: CLETS via eSUN (Electronic Sunnyvale Network)
+v2.6  2026-08-27  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v2.5  2026-08-20  CORRECTS v2.4 -- I DROPPED A LEGAL OPTIONAL ON THE STRENGTH OF A BROKEN PROBE
   CHANGED:
     L1.N any[] -- BirthDate RESTORED. v2.4 removed it as an over-permit. It is not one.
