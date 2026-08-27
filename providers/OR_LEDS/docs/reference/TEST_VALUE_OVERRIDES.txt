@@ -27,3 +27,20 @@
 # nameSuffix is left at "JR": the control is maxLength=5, so "JR" already exercises it sensibly and a
 # longer value would test nothing the field can hold.
 nameMiddle=MICHAEL
+
+# ── Plate-type TOGGLE: must differ from the form default, or the test proves nothing ────────────
+# emit_test_plan reported: "Vehicle any[]: 'LicensePlateTypeCode' toggle value 'PC' == form default
+# 'PC' -- hollow toggle test". The _af_ test existed to prove the officer can CHANGE the plate type
+# and that the change reaches the wire; toggling PC to PC proves only that the default is the
+# default. Standing rule: a toggle fill must differ from the form default.
+#
+# VALUE TAKEN FROM THE TENANT, NOT GUESSED. Plate-type contents are TENANT data -- the same
+# category/source pair holds different codes per tenant -- so this was left unset until the one-time
+# picklist scope ran (2026-08-27, 64 options captured for NCIC_LICENSE_PLATE_TYPE/NCIC). Guessing a
+# code the tenant does not offer would have failed at the dropdown mid-sweep, which is a worse
+# failure than the hollow test it replaced, and with no TENANT_PICKLISTS.json the picklist gate
+# could not have caught it.
+# TK chosen over the other 63: it is unambiguously distinct from PC (regular passenger automobile)
+# and is the plate type most likely to change a real-world match, so a wire difference here is
+# meaningful rather than cosmetic.
+LicensePlateTypeCode.toggle=TK
