@@ -1,0 +1,76 @@
+﻿================================================================
+TEST LOG: NM_NMLETS_OFML Person DriverHistoryQuery
+Combo: KQ.N_af_NameSuffixDH (KQ.N_af_NameSuffixDH (auto))
+Date: 2026-08-27 14:59:24
+Result: PASS
+JSON Version: 2.7
+Entity Fingerprint: 9dc59492feaa8248e4df8295301892a478a64e64dba1d445c52049a286fad0e1
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BirthDateDH":"1990-01-15","ImageIndicator":"Y","NameFirstDH":"JOHN","NameLastDH":"DOE","NameSuffixDH":"JR","SexCodeDH":"Male","purposeCode":"C","purposeCodeDH":"C"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M128PNSRNWAJTXV8QMD29311">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>DriverHistoryQuery</MessageType>
+            <Id>01M128PNSRNWAJTXV8QMD29311</Id>
+            <SexCode>M</SexCode>
+            <PurposeCode>C</PurposeCode>
+            <BirthDate>01151990</BirthDate>
+            <Name>DOE, JOHN JR</Name>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M128PNSRNWAJTXV8QMD29311
+  SexCode                        M
+  PurposeCode                    C
+  BirthDate                      01151990
+  Name                           DOE, JOHN JR
+
+NOTES
+-----
+Automated capture (txId 01M128PNSRNWAJTXV8QMD29311). kind=any-field; anyField=NameSuffixDH; expectedKeyRef=KQ.N; firedMessageType=DriverHistoryQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

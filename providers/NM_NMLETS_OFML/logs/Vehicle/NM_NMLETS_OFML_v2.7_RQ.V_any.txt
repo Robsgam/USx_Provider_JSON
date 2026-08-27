@@ -1,0 +1,91 @@
+﻿================================================================
+TEST LOG: NM_NMLETS_OFML Vehicle VehicleRegistrationQuery
+Combo: RQ.V_any (RQ.V_any (auto))
+Date: 2026-08-27 14:59:30
+Result: PASS
+JSON Version: 2.7
+Entity Fingerprint: 3215c5d0d2311eb325e7efe49185d370467647e1a0a2ad893bfb7556b4c198e4
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateTypeCode":"PC","LicensePlateYear":"2026","RegistrationState":"Georgia","VehicleIdentificationNumber":"1HGCM82633A123456","VehicleMakeCode":"FORD","vehicleYear":"2023"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M128DQ2SPQC5X1S2GRHREZ5F">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M128DQ2SPQC5X1S2GRHREZ5F</Id>
+            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <State>GA</State>
+            <VehicleYear>2023</VehicleYear>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "registrationStateAttrIds":  [
+                                                                          69586424801
+                                                                      ],
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M128DQ2SPQC5X1S2GRHREZ5F
+  VehicleMakeCode                CNST_FORD
+  VehicleIdentificationNumber    1HGCM82633A123456
+  State                          GA
+  VehicleYear                    2023
+
+NOTES
+-----
+Automated capture (txId 01M128DQ2SPQC5X1S2GRHREZ5F). kind=any; anyField=; expectedKeyRef=RQ.V; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
