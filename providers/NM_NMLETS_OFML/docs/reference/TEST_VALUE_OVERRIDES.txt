@@ -1,0 +1,27 @@
+# NM_NMLETS_OFML -- TEST VALUE OVERRIDES
+# Read by emit_test_plan.ps1 (and the other test tooling) to replace the generic default test value
+# for a named control. Format, entity-scoped so a fieldId shared across entities cannot collide:
+#     <Entity>.<fieldId>=<value>
+# This is TEST DATA ONLY. It changes what the driver types, never what the JSON permits, so it needs
+# no version bump, no re-import and no rebuild.
+
+# ── Middle name: a real name, not a single initial (2026-08-27, Rob) ────────────────────────────
+# WHY: the default test value for the middle-name controls was "A", a single letter, while the
+# controls are labelled "Middle Name" with maxLength=30 -- and NM's metadata agrees, defining the
+# composite's `Middle` COMPONENT with no length limit of its own. So the form correctly offers a full
+# middle name and every sweep had only ever proven that a ONE-CHARACTER one reaches the wire.
+# Rob spotted it on the rendered form: "is it a middle initial or middle name  you are only entering
+# an intital and the fields says name?"
+#
+# WHY IT IS WORTH TESTING AT REAL WIDTH RATHER THAN LEAVING AT "A": the wire format is
+# `LAST, FIRST MIDDLE SUFFIX` (FormatStringRuleHandler) and the composite `Name` attribute is capped
+# at size=30 on DriverLicenseQuery/DriverHistoryQuery. A single initial can NEVER exercise that cap,
+# so a truncation defect at realistic width would be invisible to a green sweep.
+#   before:  DOE, JOHN A JR          = 14 chars   (13 of the 30 unused)
+#   after:   DOE, JOHN MICHAEL JR    = 20 chars   (still inside 30 -- proves width WITHOUT forcing a
+#                                                  truncation failure, which would be a different
+#                                                  test and should be a deliberate one)
+# MICHAEL chosen for that reason: long enough to prove a multi-character middle name composes and
+# transmits, short enough that a PASS still means "correct", not "truncated but tolerated".
+NameMiddle=MICHAEL
+NameMiddleDH=MICHAEL
