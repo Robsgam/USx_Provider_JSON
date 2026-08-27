@@ -47,7 +47,7 @@ Status table instead (this table's Notes column is intentionally terse).
 | 11 | CA_eSUN | v2.5 |  | 73P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 12 | CA_SAN_LUIS_OBISPO | v2.5 |  | 67P/0F/0W/0LIM | 0 | out of scope |
 | 13 | IL_LEADS_OFML | v2.8 |  | 61P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
-| 14 | MD_METERS | v2.2 |  | 70P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
+| 14 | MD_METERS | v2.3 |  | 71P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 15 | OH_LEADS | v2.11 |  | 78P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 16 | NM_NMLETS_OFML | v2.7 |  | 65P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |
 | 17 | OR_LEDS | v2.5 |  | 55P/0F/0W/0LIM | 0 | galvanized single-JSON 2026-07-23 (NOT USx-tenant-tested) |

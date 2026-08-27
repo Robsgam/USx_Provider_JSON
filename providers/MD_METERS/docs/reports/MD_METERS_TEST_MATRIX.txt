@@ -1,6 +1,6 @@
-MD_METERS v2.2 -- TEST MATRIX
+MD_METERS v2.3 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-20
+Generated: 2026-08-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -9,7 +9,7 @@ FORM FIELDS
 ----------------------------------------
 Vehicle (1 card, 7 fields):
   CARD_VEH (VEHICLE SEARCH BY PLATE, OR VIN):
-    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC, PC], LicensePlateYear [Inp 2026, 4]
+    ROW 1: LicensePlateNumber [Inp 10], LicensePlateTypeCode [Sel NCIC_LICENSE_PLATE_TYPE/NCIC], LicensePlateYear [Inp 4]
     ROW 2: VehicleIdentificationNumber [Inp 20], VehicleMakeCode [Sel VEHICLE_MAKE]
     ROW 3: RegistrationState [Sel STATE], ImageIndicator [Sel YES_NO_UNKNOWN/NCIC, Y]
 
@@ -99,17 +99,17 @@ ENTITY 2: VEHICLE (10 tests -- 1 card, 4 combos)
 ------------------------------------------------------------------------
 #   Entity      Action / Combo                                      Result
 --  ----------  --------------------------------------------------  ------
-19  Vehicle     ZVEH+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
-              Expected: VehicleRegistrationQuery fires (ZVEH.V)
-20  Vehicle     ZVEH+.V            + VehicleMakeCode, ImageIndicator [    ]
+19  Vehicle     ZLRG+.P            LicensePlateNumber=TEST123, LicensePl... [    ]
+              Expected: VehicleRegistrationQuery fires (ZLRG.P)
+20  Vehicle     ZLRG+.P            + RegistrationState, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
 21  Vehicle     ZVEH+.P            LicensePlateNumber=TEST123       [    ]
               Expected: VehicleRegistrationQuery fires (ZVEH.P)
 22  Vehicle     ZVEH+.P            + ImageIndicator                [    ]
               Expected: any[] fields present in XML output.
-23  Vehicle     ZLRG+.P            LicensePlateNumber=TEST123, LicensePl... [    ]
-              Expected: VehicleRegistrationQuery fires (ZLRG.P)
-24  Vehicle     ZLRG+.P            + RegistrationState, ImageIndicator [    ]
+23  Vehicle     ZVEH+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
+              Expected: VehicleRegistrationQuery fires (ZVEH.V)
+24  Vehicle     ZVEH+.V            + VehicleMakeCode, ImageIndicator [    ]
               Expected: any[] fields present in XML output.
 25  Vehicle     ZLRG+.V            VehicleIdentificationNumber=1HGCM8263... [    ]
               Expected: VehicleRegistrationQuery fires (ZLRG.V)
@@ -153,11 +153,11 @@ ENTITY 5: ARTICLE (1 tests -- 1 card, 1 combo)
 TOTAL: 35 tests
 
 COMBO COVERAGE (14/14):
-  VehicleRegistrationQuery: 4/4 -- T19(ZVEH+.V), T21(ZVEH+.P), T23(ZLRG+.P), T25(ZLRG+.V)
+  VehicleRegistrationQuery: 4/4 -- T19(ZLRG+.P), T21(ZVEH+.P), T23(ZVEH+.V), T25(ZLRG+.V)
   DriverLicenseQuery: 4/4 -- T1(ZLDR.N+ZLDR.N), T3(ZLDR.O+ZLDR.O), T5(ZWAR.O+ZWAR.O), T7(ZWAR.N+ZWAR.N)
   DriverHistoryQuery: 2/2 -- T9(ZDRV+.O), T11(ZDRV+.N)
   GunQuery: 1/1 -- T34(ZGUN)
   ArticleSingleQuery: 1/1 -- T35(ZART)
   BoatQuery: 2/2 -- T29(ZBOA.H+ZBOA.H), T31(ZBOA.R+ZBOA.R)
 
-IMPORT FILE: MD_METERS_v2.2.json
+IMPORT FILE: MD_METERS_v2.3.json

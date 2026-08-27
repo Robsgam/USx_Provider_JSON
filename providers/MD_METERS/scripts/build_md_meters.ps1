@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_md_meters.ps1
 
 $ErrorActionPreference = "Stop"
-$Version     = '2.2'
+$Version     = '2.3'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\MD_METERS_v${Version}.json"
@@ -71,12 +71,22 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleMakeCode';             size = 24; sourceField = @('VehicleMakeCode');             targetField = 'VehicleMakeCode' }
     )
     combinations = @(
-        # ZLRG.P -- OOS plate (Plate+Type+Year set, State in any[])
+        # ZLRG.P -- the plate+type+year search, IN AND OUT OF STATE (v2.3).
+        # `RegistrationState EXISTS` REMOVED. Metadata ZLRG{LicensePlateNumber} =
+        #   Set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear] Any[State, ImageIndicator]
+        # -- State is an OPTIONAL, not a fork, so gating on it made this combination reachable only
+        # out of state. Devdoc #4 "(mand) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear
+        # [opt State]" filled without a State therefore fell through to ZVEH.P (set[plate],
+        # any[ImageIndicator]) and the plate type and year were SILENTLY DISCARDED.
+        # THE REAL DISCRIMINATOR IS TYPE+YEAR THEMSELVES, which is exactly what separates the two
+        # metadata variants -- ZLRG needs them, ZVEH{plate} does not. Ordered first (superset), so
+        # specificity routes the pair with no State gate at all.
+        # defaults[] KEPT: CAD ignores the form initialValue, so the CAD-originated plate query still
+        # supplies PC / current year. defaults[] does not participate in routing.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('RegistrationState','ImageIndicator')
                 defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }, [PSCustomObject]@{ field = 'ImageIndicator'; value = 'Y' })
-                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'ZLRG.P'
@@ -399,8 +409,12 @@ $mdBundle = [PSCustomObject]@{
 
 # ------------------------------------------------------------------
 # Vehicle -- 1 card (v2.2, collapsed from 3: OPTIONS/PLATE/VIN)
-# LABEL-OVERRIDE: LicensePlateTypeCode -- prefilled 'PC', bare label per BUILD_RULES 11
-# LABEL-OVERRIDE: LicensePlateYear -- prefilled current year, bare label per BUILD_RULES 11
+# LABEL-OVERRIDE: LicensePlateTypeCode -- bare label per BUILD_RULES 11. NO LONGER PREFILLED as of
+# v2.3 (see ZLRG.P): type+year are the routing discriminator against ZVEH.P, so a prefill would
+# make them always-present and kill the plate-only search (BUILD_RULES 24). This is the OOS-only
+# plate-card exception already recorded for HI v3.0: when the OOS combo requires Plate Type + Plate
+# Year and the in-state one does not, BOTH are left blank and validate.ps1 G-1 accepts blank/blank.
+# LABEL-OVERRIDE: LicensePlateYear -- bare label, same reason.
 # ------------------------------------------------------------------
 $vehLayout = MakeLayouts @(
     @{
@@ -409,8 +423,8 @@ $vehLayout = MakeLayouts @(
         rows  = @(
             @{ id = 'ROW_VEH_1'; cols = @('6','3','3'); fields = @(
                 @{ id = 'LicensePlateNumber_Input';   node = Inp 'LicensePlateNumber' 'Plate Number' '10' 'ROW_VEH_1' }
-                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'; initialValue = 'PC' } 'ROW_VEH_1' }
-                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' @{ initialValue = $currentYear } }
+                @{ id = 'LicensePlateTypeCode_Input'; node = Sel 'LicensePlateTypeCode' 'Plate Type' @{ codeTypeCategory = 'NCIC_LICENSE_PLATE_TYPE'; codeTypeSource = 'NCIC'} 'ROW_VEH_1' }
+                @{ id = 'LicensePlateYear_Input';     node = Inp 'LicensePlateYear' 'Plate Year' '4' 'ROW_VEH_1' }
             )}
             @{ id = 'ROW_VEH_2'; cols = @('6','6'); fields = @(
                 @{ id = 'VehicleIdentificationNumber_Input'; node = Inp 'VehicleIdentificationNumber' 'Vehicle Identification Number' '20' 'ROW_VEH_2' }

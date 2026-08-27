@@ -2,9 +2,57 @@
 
 Auto-generated from `MD_METERS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.2** | Generated: 2026-08-20
+Current: **v2.3** | Generated: 2026-08-27
 
 ---
+
+## v2.3 -- 2026-08-27 -- BOTH DOCUMENTED PLATE SEARCHES NOW WORK -- the in-state one stops discarding the
+
+                plate type and year, and the plate-only one stops being unreachable  
+**CHANGED** (VehicleRegistrationQuery + the Vehicle form; no other entity touched):
+  ZLRG.P -- `RegistrationState EXISTS` condition REMOVED. set[]/any[]/defaults[] unchanged.  
+  FORM -- LicensePlateTypeCode initialValue 'PC' and LicensePlateYear initialValue <year> BOTH  
+    REMOVED. The combo defaults[] on ZLRG.P are KEPT, so CAD-originated queries still supply them  
+    (CAD ignores form initialValue; defaults[] does not participate in routing).  
+  ZVEH.P -- unchanged, including its `RegistrationState NOT_EXISTS` gate. See below.  
+**REASON** -- TWO defects, one cause:
+  metadata ZLRG{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode,  
+    LicensePlateYear] Any[State, ImageIndicator]  -- State is an OPTIONAL, not a fork.  
+  metadata ZVEH{LicensePlateNumber} = Set[LicensePlateNumber] Any[ImageIndicator].  
+  devdoc #4 "(mand) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear [opt State]"  
+  devdoc #3 "(mand) LicensePlateNumber"                      -- BOTH are documented searches.  
+  (1) Gating ZLRG.P on State made devdoc #4 unreachable in-state, so a plate+type+year fill fell  
+      through to ZVEH.P and the type and year were SILENTLY DISCARDED -- while prefilled and  
+      visible to the officer. Same anti-pattern as TN_TIES KQ.N, NM_NMLETS_OFML RQ.P v2.7 and  
+      CA_CLETS_OCATS DQ.N v2.8.  
+  (2) The prefill destroyed the REAL discriminator. Type+year are precisely what separates the two  
+      metadata variants, so prefilling them makes them always-present and would have killed the  
+      plate-only search the moment the State gate came off (BUILD_RULES 24). Removing the State  
+      gate WITHOUT un-prefilling would have traded defect (1) for a dead ZVEH.P.  
+WHY UN-PREFILLING IS NOT A DEVIATION FROM THE PLATE-DEFAULTS STANDARD: it is the OOS-ONLY PLATE  
+  CARD EXCEPTION already recorded for HI v3.0 -- when the out-of-state plate combo requires Plate  
+  Type + Plate Year and the in-state one does not, BOTH are left blank, and validate.ps1 G-1 was  
+  refined to PASS a blank PlateYear when its sibling PlateType is also blank. Confirmed: validator  
+  71 PASS / 0 FAIL / 0 WARN. It is also outside Rob's 2026-08-27 keep-the-convention ruling by that  
+  ruling's own terms -- it applies where "no routing depends on its presence", and here routing  
+  depends on exactly these two fields.  
+ZVEH.P KEEPS ITS `RegistrationState NOT_EXISTS` GATE deliberately: metadata ZVEH{plate} does not  
+  define State at all, so without the gate a plate+State fill (with no type/year) would match  
+  ZVEH.P and drop the State silently -- reintroducing this same defect class one combination over.  
+  With the gate that fill honestly fires nothing, which is the correct outcome for a fill no  
+  metadata variant accepts. ZLRG.P is a strict superset and is ordered first, so specificity now  
+  routes the pair with no State gate on the winning side.  
+GATES: validator 71P/0F/0W - audit_devdoc_optionals 1 FAIL -> 0 - fidelity 15 branches / 0 UNDER /  
+  0 OVER UNCHANGED - reachability 12/12 ALL REACHABLE (ZVEH.P verified still live, which is the  
+  whole point of un-prefilling) - prefill shadow 0 FAIL / 14 pairs - enforce 0 FAIL / 0 WARN.  
+  [FLAG:plan-dedupe-vacuous-tests] RETIRED by this rebuild; plan regenerated to 46 tests.  
+COST: NONE. MD_METERS has never been tenant-tested (0 logs at any version), so no package is  
+  archived and it is on no Foundation or LIVE tenant.  
+
+## v2.3 -- 2026-08-27 -- Pipeline rebuild
+
+**CHANGED:** Rebuilt via pipeline.ps1
+**REASON:** Scheduled rebuild
 
 ## v2.2 -- 2026-08-20 -- LAYOUT COLLAPSE 13->6 CARDS + NAME COMPONENTS
 
