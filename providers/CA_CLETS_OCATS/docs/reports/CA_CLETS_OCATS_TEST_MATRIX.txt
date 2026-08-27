@@ -1,6 +1,6 @@
-CA_CLETS_OCATS v2.7 -- TEST MATRIX
+CA_CLETS_OCATS v2.8 -- TEST MATRIX
 ==================================================
-Generated: 2026-08-20
+Generated: 2026-08-27
 Tier: Full -- full standard: combos + any[] + guardrails + deselect (render/negative are manual one-time checks, not in this matrix)
 Layout: multi-card per entity
 Validator: unknown
@@ -117,9 +117,9 @@ ENTITY 3: PERSON (12 tests -- 1 card, 5 combos)
 --  ----------  --------------------------------------------------  ------
 25  Person      DQ+.O+State        caRequestPurposeCode=C, OperatorLicen... [    ]
               Expected: DriverLicenseQuery fires (DQ.O)
-26  Person      DQ+.N+State        caRequestPurposeCode=C, NameLast=DOE,... [    ]
+26  Person      DQ+.N              caRequestPurposeCode=C, NameLast=DOE,... [    ]
               Expected: DriverLicenseQuery fires (DQ.N)
-27  Person      DQ+.N+State        + NameMiddle, NameSuffix        [    ]
+27  Person      DQ+.N              + NameMiddle, NameSuffix        [    ]
               Expected: any[] fields present in XML output.
 28  Person      L1.O+L1.O          caRequestPurposeCode=C, OperatorLicen... [    ]
               Expected: DriverLicenseQuery fires (L1.O)
@@ -134,11 +134,11 @@ ENTITY 3: PERSON (12 tests -- 1 card, 5 combos)
 33  Person      Guardrail: DQ.O>OCNAMQ  OperatorLicenseNumber=D999888777, caR... [    ]
               Expected: DriverLicenseQuery fires (DQ.O). caRequestPurposeCode+userId+SexCode+DOB+LastName+FirstName absent from XML.
 34  Person      Guardrail: DQ.O>DQ.N  OperatorLicenseNumber=D999888777, caR... [    ]
-              Expected: DriverLicenseQuery fires (DQ.O). caRequestPurposeCode+LastName+FirstName+DOB+SexCode+RegistrationState absent from XML.
+              Expected: DriverLicenseQuery fires (DQ.O). caRequestPurposeCode+LastName+FirstName+DOB+SexCode absent from XML.
 35  Person      Guardrail: DQ.O>L1.N  OperatorLicenseNumber=D999888777, caR... [    ]
               Expected: DriverLicenseQuery fires (DQ.O). caRequestPurposeCode+LastName+FirstName absent from XML.
-36  Person      Guardrail: DQ.N>L1.N  RegistrationState=GA, caRequestPurpos... [    ]
-              Expected: DriverLicenseQuery fires (DQ.N). caRequestPurposeCode+LastName+FirstName absent from XML.
+36  Person      Guardrail: DQ.O>L1.N  RegistrationState=GA, caRequestPurpos... [    ]
+              Expected: DriverLicenseQuery fires (DQ.O). caRequestPurposeCode+LastName+FirstName absent from XML.
 
 ENTITY 4: FIREARM (2 tests -- 1 card, 1 combo)
 ------------------------------------------------------------------------
@@ -172,4 +172,4 @@ COMBO COVERAGE (21/21):
   ArticleSingleQuery: 2/2 -- T39(.O), T41(.S)
   BoatQuery: 5/5 -- T17(BQ+.H), T18(BQ+.R), T19(QB+.O), T20(4V.B+4V.B), T21(4B+4B)
 
-IMPORT FILE: CA_CLETS_OCATS_v2.7.json
+IMPORT FILE: CA_CLETS_OCATS_v2.8.json

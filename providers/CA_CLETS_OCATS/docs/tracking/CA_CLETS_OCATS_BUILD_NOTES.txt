@@ -1,6 +1,38 @@
 CA_CLETS_OCATS -- Build Notes
 ==============================
 
+v2.8  2026-08-27  THE IN-STATE NAME SEARCH STOPS DISCARDING SEX CODE
+  CHANGED (DriverLicenseQuery, DQ.N only -- every other QIDM byte-identical):
+    RegistrationState DEMOTED from set[] to any[], and its `RegistrationState EXISTS` condition
+    REMOVED. DQ.N is now set[caRequestPurposeCode, NameLast, NameFirst, BirthDate, SexCode]
+    any[RegistrationState, NameMiddle, NameSuffix], gated only by OperatorLicenseNumber NOT_EXISTS.
+  REASON: metadata DQ{Name} = Set[CaRequestPurposeCode, Name, BirthDate, SexCode] Any[State] --
+    State is OPTIONAL there. Promoting it into set[] and gating on it made DQ.N reachable ONLY out
+    of state, so devdoc #4 "(mand) BirthDate, Name, SexCode  [opt State]" filled WITHOUT a State
+    fell through to L1.N (set[purposeCode, Name] any[BirthDate, NameMiddle, NameSuffix]) and the
+    officer's SEX CODE was silently discarded -- L1.N carries BirthDate in any[] but not SexCode.
+    Never gate on a field the metadata merely permits: same anti-pattern as TN_TIES KQ.N and
+    NM_NMLETS_OFML RQ.P (v2.7, same day).
+  SCOPE HELD, and both exclusions are deliberate:
+    L1.N KEEPS its `RegistrationState NOT_EXISTS` gate. Metadata L1{Name} does not define State at
+      all, so without that gate a Name+State fill would match L1.N and drop the State silently --
+      the same class of defect this entry fixes. DQ.N is a strict superset of L1.N and ordered
+      first, so Name+DOB+Sex reaches DQ.N and a name-only search still reaches L1.N.
+    DQ.O KEEPS RegistrationState in set[]. It is the ONLY discriminator against L1.O -- both would
+      otherwise be set[purposeCode, OperatorLicenseNumber], an exact collision no ordering can
+      separate. The gate never flagged the OLN pair; only DQ.N.
+  GATES: validator 66P/0F/0W - audit_devdoc_optionals 1 FAIL -> 0 (the MANDATORY-NOT-TRANSMITTED
+    finding that prompted this) - fidelity 25 branches / 0 UNDER / 0 OVER, UNCHANGED, so the demotion
+    bought no coverage and cost none - reachability 20/20 all reachable, L1.N still live -
+    enforce 0 FAIL / 0 WARN.
+  COST: NONE beyond the rebuild. CA_CLETS_OCATS has NEVER been tenant-tested (0 logs at any version),
+    so no package is archived, no re-import is owed that was not already owed, and it is on no
+    Foundation or LIVE tenant.
+
+v2.8  2026-08-27  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v2.7  2026-08-20  LAYOUT COLLAPSE 16->5 CARDS + NAME COMPONENTS
   CHANGED:
     LAYOUT -- 16 cards -> 5, the uniform shape (usx-cosmetic Step 3b). Vehicle 4->1,

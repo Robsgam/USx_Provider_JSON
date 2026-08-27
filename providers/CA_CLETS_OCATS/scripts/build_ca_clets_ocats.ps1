@@ -12,7 +12,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_clets_ocats_mc.ps1
 
 $ErrorActionPreference = "Stop"
-$Version  = '2.7'
+$Version     = '2.8'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\CA_CLETS_OCATS_v${Version}.json"
@@ -226,7 +226,22 @@ $dlQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst','BirthDate','SexCode','RegistrationState'); any = @('NameMiddle','NameSuffix'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }, [PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' }) }
+            # v2.8: RegistrationState DEMOTED set[] -> any[] and its EXISTS gate REMOVED.
+            # Metadata DQ{Name} = Set[CaRequestPurposeCode, Name, BirthDate, SexCode] Any[State] --
+            # State is OPTIONAL there. Promoting it into set[] made this combination reachable ONLY
+            # out of state, so devdoc #4 "(mand) BirthDate, Name, SexCode [opt State]" filled without
+            # a State fell through to L1.N (set=[purposeCode, Name], any=[BirthDate, ...]) and the
+            # officer's SexCode was SILENTLY DISCARDED -- L1.N carries BirthDate in any[] but not
+            # SexCode. Same anti-pattern as TN_TIES KQ.N and NM_NMLETS_OFML RQ.P: never gate on a
+            # field the metadata merely permits.
+            # L1.N KEEPS its `RegistrationState NOT_EXISTS` gate deliberately: metadata L1{Name}
+            # does not define State at all, so without that gate a Name+State fill would match L1.N
+            # and drop the State silently. DQ.N is a strict superset of L1.N and is ordered first, so
+            # Name+DOB+Sex now reaches DQ.N while a name-only search still reaches L1.N.
+            # SCOPE: DQ.N only. DQ.O keeps RegistrationState in set[] because it is the ONLY
+            # discriminator against L1.O -- both are set[purposeCode, OperatorLicenseNumber] and
+            # demoting it would collapse them into an exact collision that ordering cannot separate.
+            requirements          = [PSCustomObject]@{ set = @('caRequestPurposeCode','NameLast','NameFirst','BirthDate','SexCode'); any = @('RegistrationState','NameMiddle','NameSuffix'); conditions = @([PSCustomObject]@{ field = @('OperatorLicenseNumber'); operator = 'NOT_EXISTS' }) }
             primaryFieldReference = 'Name'
             keyReference          = 'DQ.N'
             state                 = 'In/Out'
