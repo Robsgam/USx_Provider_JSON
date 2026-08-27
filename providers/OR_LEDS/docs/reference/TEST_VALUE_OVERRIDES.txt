@@ -1,0 +1,29 @@
+# OR_LEDS -- TEST VALUE OVERRIDES
+# Read by emit_test_plan.ps1 to replace the generic default test value for a named control.
+# Format is a PLAIN fieldId key -- tools/_combo_value_resolver.ps1 splits on the first "=" and uses
+# the RAW key. There is NO entity scoping here, so an "Entity.fieldId" form would silently match
+# nothing while the tool still reports the override as loaded. (CLAUDE.md calls entity-scoped keys
+# "preferred"; this resolver does not implement them.)
+#     <fieldId>=<value>
+# TEST DATA ONLY -- changes what the driver types, never what the JSON permits. No version bump, no
+# re-import, no rebuild.
+
+# ── Middle name: a real name, not a single initial (2026-08-27) ─────────────────────────────────
+# WHY: the default test value for nameMiddle was "A", a single letter, while the control is labelled
+# "Middle Name" with maxLength=30. Every sweep would therefore have proven only that a ONE-CHARACTER
+# middle name reaches the wire.
+# Same gap Rob caught on NM_NMLETS_OFML by eye on 2026-08-27 ("is it a middle initial or middle name
+# you are only entering an intital and the fields says name?"). Fixed here BEFORE OR's first sweep
+# rather than after it, so the finding costs no re-run.
+#
+# WHY IT MATTERS AT WIDTH: the wire format is `LAST, FIRST MIDDLE SUFFIX` (FormatStringRuleHandler)
+# and OR's `Name` is capped at 30 -- confirmed from BOTH sides, the QIDM attribute (size=30) and the
+# raw metadata (<Field name="Name" maxLength="30">). A single initial can never exercise that cap, so
+# a truncation defect at realistic width would be invisible to a green sweep.
+#   before:  DOE, JOHN A JR         = 14 chars  (16 of the 30 unused)
+#   after:   DOE, JOHN MICHAEL JR   = 20 chars  (inside 30 -- proves width WITHOUT forcing a
+#                                                truncation failure, which is a separate and
+#                                                deliberate test)
+# nameSuffix is left at "JR": the control is maxLength=5, so "JR" already exercises it sensibly and a
+# longer value would test nothing the field can hold.
+nameMiddle=MICHAEL
