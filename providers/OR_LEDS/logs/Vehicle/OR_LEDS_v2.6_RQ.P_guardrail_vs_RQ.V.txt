@@ -1,0 +1,87 @@
+﻿================================================================
+TEST LOG: OR_LEDS Vehicle VehicleRegistrationQuery
+Combo: RQ.P_guardrail_vs_RQ.V (RQ.P_guardrail_vs_RQ.V (auto))
+Date: 2026-08-27 16:42:38
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: 6d5e63d15152a94abf3dba0fd0be2c2fbddba62c5dcf7f9b9c1684de36e147db
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateNumber":"TEST123","LicensePlateTypeCode":"PC","LicensePlateYear":"2026","VehicleIdentificationNumber":"1HGCM82633A123456"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M12F66NS93SEYK0P0KK8NQ8S">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M12F66NS93SEYK0P0KK8NQ8S</Id>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <LicensePlateTypeCode>PC</LicensePlateTypeCode>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "tag":  "TEST123",
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M12F66NS93SEYK0P0KK8NQ8S
+  LicensePlateYear               2026
+  LicensePlateTypeCode           PC
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01M12F66NS93SEYK0P0KK8NQ8S). kind=guardrail; anyField=; expectedKeyRef=RQ.P; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

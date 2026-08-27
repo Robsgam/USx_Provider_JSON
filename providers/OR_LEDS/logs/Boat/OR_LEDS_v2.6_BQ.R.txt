@@ -1,0 +1,70 @@
+﻿================================================================
+TEST LOG: OR_LEDS Boat BoatQuery
+Combo: BQ.R (BQ.R (auto))
+Date: 2026-08-27 16:42:32
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: 15100ce18d8d17c2932a62cd6e70198d4be1fbb26d4f67e9c45311816c552737
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"RegistrationNumber":"FL1234AB"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M12F9M7BF4ZCFEYBYM2AS23P">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M12F9M7BF4ZCFEYBYM2AS23P</Id>
+            <RegistrationNumber>FL1234AB</RegistrationNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M12F9M7BF4ZCFEYBYM2AS23P
+  RegistrationNumber             FL1234AB
+
+NOTES
+-----
+Automated capture (txId 01M12F9M7BF4ZCFEYBYM2AS23P). kind=combo; anyField=; expectedKeyRef=BQ.R; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

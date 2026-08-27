@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: OR_LEDS Article ArticleSingleQuery
+Combo: QA (QA (auto))
+Date: 2026-08-27 16:42:33
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: 5782219dad6fe44f1d2af842d19815d885f7068d5ebb2fe8d006b9bcde57b444
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"articleTypeCode":"BBICYCL","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M12F939GC7Q0HYRMSJPKWJ0C">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>ArticleSingleQuery</MessageType>
+            <Id>01M12F939GC7Q0HYRMSJPKWJ0C</Id>
+            <ArticleTypeCode>BBICYCL</ArticleTypeCode>
+            <ArticleSerialNumber>GUN12345</ArticleSerialNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M12F939GC7Q0HYRMSJPKWJ0C
+  ArticleTypeCode                BBICYCL
+  ArticleSerialNumber            GUN12345
+
+NOTES
+-----
+Automated capture (txId 01M12F939GC7Q0HYRMSJPKWJ0C). kind=combo; anyField=; expectedKeyRef=QA; firedMessageType=ArticleSingleQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

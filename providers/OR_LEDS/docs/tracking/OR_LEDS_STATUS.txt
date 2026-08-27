@@ -1,4 +1,4 @@
-OR_LEDS -- STATUS
+﻿OR_LEDS -- STATUS
 =================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
 Current: v2.6 | 55P/0F/0W/0LIM | Updated 2026-08-27
@@ -30,3 +30,35 @@ NOTES
 =====
   Galvanized to single-JSON PascalCase (see docs/tracking/CHANGELOG_OR_LEDS.md for full history).
   NOT yet USx-tenant-tested at v2.0.
+
+LIVE TEST RESULTS -- MC (post_test.ps1)
+--------------------------------------------------
+  #     Date        Entity      Combo                Result    Notes
+  ---   ----------  ----------  -------------------  --------  -----
+  ---   2026-08-27 Boat       Boat:BQ.H_guardrail_vs_BQ.R PASS     BQ.H_guardrail_vs_BQ.R (auto)
+  ---   2026-08-27 Boat       Boat:BQ.R_any        PASS     BQ.R_any (auto)
+  ---   2026-08-27 Boat       Boat:BQ.R            PASS     BQ.R (auto)
+  ---   2026-08-27 Boat       Boat:BQ.H_any        PASS     BQ.H_any (auto)
+  ---   2026-08-27 Boat       Boat:BQ.H            PASS     BQ.H (auto)
+  ---   2026-08-27 Article    Article:QA           PASS     QA (auto)
+  ---   2026-08-27 Firearm    Gun:QG_any           PASS     QG_any (auto)
+  ---   2026-08-27 Firearm    Gun:QG_af_gunMake    PASS     QG_af_gunMake (auto)
+  ---   2026-08-27 Firearm    Gun:QG_af_gunCaliber PASS     QG_af_gunCaliber (auto)
+  ---   2026-08-27 Firearm    Gun:QG               PASS     QG (auto)
+  ---   2026-08-27 Person     DL:DQ.O_guardrail_vs_DQ.N PASS     DQ.O_guardrail_vs_DQ.N (auto)
+  ---   2026-08-27 Person     DL:DQ.O_any          PASS     DQ.O_any (auto)
+  ---   2026-08-27 Person     DL:DQ.O_af_ImageIndicator PASS     DQ.O_af_ImageIndicator (auto)
+  ---   2026-08-27 Person     DL:DQ.O              PASS     DQ.O (auto)
+  ---   2026-08-27 Person     DL:DQ.N_any          PASS     DQ.N_any (auto)
+  ---   2026-08-27 Person     DL:DQ.N_af_nameSuffix PASS     DQ.N_af_nameSuffix (auto)
+  ---   2026-08-27 Person     DL:DQ.N_af_nameMiddle PASS     DQ.N_af_nameMiddle (auto)
+  ---   2026-08-27 Person     DL:DQ.N_af_ImageIndicator PASS     DQ.N_af_ImageIndicator (auto)
+  ---   2026-08-27 Person     DL:DQ.N              PASS     DQ.N (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.P_guardrail_vs_RQ.V PASS     RQ.P_guardrail_vs_RQ.V (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.P_any      PASS     RQ.P_any (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.P_af_LicensePlateYear PASS     RQ.P_af_LicensePlateYear (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.P_af_LicensePlateTypeCode PASS     RQ.P_af_LicensePlateTypeCode (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.P          PASS     RQ.P (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.V_any      PASS     RQ.V_any (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.V          PASS     RQ.V (auto)
+  ---   2026-08-27 Vehicle    VehReg:RQ.PO_any     PASS     RQ.PO_any (auto)

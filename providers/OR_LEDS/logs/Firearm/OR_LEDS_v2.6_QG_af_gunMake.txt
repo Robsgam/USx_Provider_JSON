@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: OR_LEDS Firearm GunQuery
+Combo: QG_af_gunMake (QG_af_gunMake (auto))
+Date: 2026-08-27 16:42:34
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: a22eac7c3642e4486fe35285da48aed3a0bbc459ae230d29967078bef5d8f12e
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"gunMake":"IMI","serialNumber":"GUN12345"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M12F8R8S3EKF1ATYT7HY3099">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>GunQuery</MessageType>
+            <Id>01M12F8R8S3EKF1ATYT7HY3099</Id>
+            <GunSerialNumber>GUN12345</GunSerialNumber>
+            <GunMake>IMI</GunMake>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M12F8R8S3EKF1ATYT7HY3099
+  GunSerialNumber                GUN12345
+  GunMake                        IMI
+
+NOTES
+-----
+Automated capture (txId 01M12F8R8S3EKF1ATYT7HY3099). kind=any-field; anyField=gunMake; expectedKeyRef=QG; firedMessageType=GunQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

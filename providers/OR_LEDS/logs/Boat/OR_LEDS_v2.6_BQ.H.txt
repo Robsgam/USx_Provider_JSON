@@ -1,0 +1,70 @@
+﻿================================================================
+TEST LOG: OR_LEDS Boat BoatQuery
+Combo: BQ.H (BQ.H (auto))
+Date: 2026-08-27 16:42:33
+Result: PASS
+JSON Version: 2.6
+Entity Fingerprint: 15100ce18d8d17c2932a62cd6e70198d4be1fbb26d4f67e9c45311816c552737
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"BoatHullIdNumber":"FL1234AB56H7"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M12F9DQ25R91H51N8KBMTWDS">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>BoatQuery</MessageType>
+            <Id>01M12F9DQ25R91H51N8KBMTWDS</Id>
+            <BoatHullIdNumber>FL1234AB56H7</BoatHullIdNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M12F9DQ25R91H51N8KBMTWDS
+  BoatHullIdNumber               FL1234AB56H7
+
+NOTES
+-----
+Automated capture (txId 01M12F9DQ25R91H51N8KBMTWDS). kind=combo; anyField=; expectedKeyRef=BQ.H; firedMessageType=BoatQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
