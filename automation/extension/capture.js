@@ -847,7 +847,9 @@
     return out;
   };
 
-  if (location.hash.includes('dex-log')) {
+  // Accepts BOTH route names -- Mark43 renamed /admin/dex-log to /admin/usx-log (seen on
+  // usx-nm-nmlets 2026-08-27, expected to become universal). See the note in ui.js tick().
+  if (location.hash.includes('dex-log') || location.hash.includes('usx-log')) {
     console.log('%c[USx-CAP]', 'color:#0a0;font-weight:bold', 'capture ready. ZERO-CLICK: __usxBulkFetch({maxPages:2, since:"2026-06-29"}). Or __usxCaptureWatch() + click Views. __usxCaptureWatchStop()/Reset to manage. Run __usxDexTableRecon() to inspect an RMS-destination row, then __usxRmsPopupRecon() to see what its "View request" popup actually shows. Run __usxRmsNetworkRecon() to check if RMS is fetchable via network alone (no DOM dependency).');
   }
 })();

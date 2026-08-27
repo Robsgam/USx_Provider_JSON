@@ -318,7 +318,12 @@
   }
 
   function tick() {
-    const isDex = location.hash.includes('dex-log');
+    // MATCH BOTH ROUTE NAMES. Mark43 renamed the admin log page from `dex-log` to `usx-log`
+    // (observed on usx-nm-nmlets 2026-08-27). Matching only 'dex-log' made `want` null, and the
+    // !want branch below removes the panel AND the launcher dot -- so the extension logged
+    // "control panel injected" and then silently erased itself, leaving nothing to click and no
+    // error. Accepting both keeps renamed and un-renamed tenants working from one build.
+    const isDex = location.hash.includes('dex-log') || location.hash.includes('usx-log');
     const isSearch = location.hash.includes('universal-search');
     const want = isDex ? 'dex' : (isSearch ? 'search' : null);
     let p = document.getElementById('usx-panel');

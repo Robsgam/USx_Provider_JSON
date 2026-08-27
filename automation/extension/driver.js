@@ -323,8 +323,20 @@
     }
     console.log('%c[USx-RUNALL]', 'color:#06c;font-weight:bold', 'all entities done:', summary);
     if (opts.autoFetch !== false) {
-      console.log('%c[USx-RUNALL]', 'color:#06c', 'navigating to dex-log for the batch fetch...');
-      location.hash = '#/admin/dex-log';
+      // ROUTE RENAME: Mark43 moved the admin log page from /admin/dex-log to /admin/usx-log
+      // (seen on usx-nm-nmlets 2026-08-27; Rob: "that will likely be universal"). Navigate to the
+      // NEW name, but fall back to the old one if the hash does not take -- a tenant still on the
+      // old route would otherwise land on a blank page and the batch fetch would time out after 15s
+      // with no explanation. Detection in ui.js/capture.js accepts BOTH, so the panel appears either
+      // way; only this auto-navigation had to choose.
+      const logRoute = '#/admin/usx-log';
+      console.log('%c[USx-RUNALL]', 'color:#06c', 'navigating to ' + logRoute + ' for the batch fetch...');
+      location.hash = logRoute;
+      await L.sleep(1200);
+      if (!location.hash.includes('usx-log')) {
+        console.warn('[USx-RUNALL] usx-log route did not take -- falling back to the legacy dex-log route.');
+        location.hash = '#/admin/dex-log';
+      }
       const t0 = Date.now();
       while (Date.now() - t0 < 15000 && !(window.__usxBulkFetch && window.__usxSearchReq)) { await L.sleep(400); }
       if (window.__usxBulkFetch) {
