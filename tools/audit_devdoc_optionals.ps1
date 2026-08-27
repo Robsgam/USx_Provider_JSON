@@ -223,17 +223,21 @@ function Test-AcceptedExistence([string]$q, [string[]]$fields) {
     return $false
 }
 
-$fails = 0; $notes = 0; $combos = 0; $skipped = 0
+$fails = 0; $notes = 0; $combos = 0; $skipped = 0; $script:mandChecked = 0
 foreach ($it in ($items | Sort-Object Query, Num)) {
     if (-not $qidms.ContainsKey($it.Query)) { continue }
     $qidm = $qidms[$it.Query]
     $ent  = "$($qidm.targetEntity)"
 
     # resolve mandatory; if any is unwired this item is already reported by 2p -- skip cleanly
-    $mandRefs = @(); $unwired = @()
+    # NOTE: "wired nowhere" belongs to 2p. "wired SOMEWHERE but not on the combination that fires
+    # for this devdoc item" belonged to NOBODY until 2026-08-27 -- see the MANDATORY NOT TRANSMITTED
+    # check further down. $mandResolved keeps the per-token refs that check needs; $mandRefs stays
+    # a flat list so the fill-building code below is untouched.
+    $mandRefs = @(); $unwired = @(); $mandResolved = @()
     foreach ($t in $it.Mand) {
         $r = Resolve-Refs $qidm $t
-        if (-not $r.Count) { $unwired += $t } else { $mandRefs += $r }
+        if (-not $r.Count) { $unwired += $t } else { $mandRefs += $r; $mandResolved += [pscustomobject]@{ Tok = $t; Refs = $r } }
     }
     if ($unwired.Count) {
         Emit "  [SKIP] $($it.Query) #$($it.Num) -- mandatory $($unwired -join ', ') wired nowhere (audit_devdoc_combinations / PHASE 2p owns this)" 'DarkGray'
@@ -290,6 +294,56 @@ foreach ($it in ($items | Sort-Object Query, Num)) {
         }
         $poolC = @($pool | ForEach-Object { Canon $_ } | Select-Object -Unique)
 
+        # ---- MANDATORY NOT TRANSMITTED (added 2026-08-27) --------------------------------------
+        # THE HOLE THIS CLOSES, and why it sat open: the pool above is exactly what reaches the wire,
+        # and until now ONLY the filled OPTIONALS were checked against it. The devdoc-MANDATORY
+        # fields were used to build the fill and fire the combo, then never verified to be carried
+        # by the combo that fired. Two neighbouring gates each assume the other has it:
+        #   * audit_devdoc_combinations (2p) asks whether a mandatory field is wired SOMEWHERE in the
+        #     query -- satisfied by ANY sibling combo -- and the [SKIP] above defers to it by name.
+        #   * this gate tracked optionals only.
+        # So "wired on a sibling, missing from the one that fires" was invisible to both.
+        # PROVEN, not theorised (LAW 2, OR_LEDS 2026-08-27): OR devdoc VehicleRegistrationQuery #4 is
+        # "(Out) VehicleIdentificationNumber, State [VehicleMakeCode, VehicleYear]" -- State is
+        # MANDATORY -- and it rides in RQ.V's any[]. Removing it there leaves it wired on RQ.PO/RQ.P,
+        # so an out-of-state VIN query silently stops sending the destination state. Mutation test:
+        # SURVIVED all 7 gates that reached a verdict, byte-identical output on both arms.
+        # WHY THIS IS NOT audit_requirement_fidelity's job: that gate compares against the METADATA
+        # alternative, and OR's metadata has State in <Any> on RQ{VIN} -- optional, so a request
+        # without it is perfectly VALID. Nothing is metadata-wrong here. What breaks is LAW 1: the
+        # officer can no longer perform a devdoc-listed search. Different authority, different gate.
+        # *** ONLY WHEN THE FILL HAS NOT RE-ROUTED. This guard is the whole check. ***
+        # Without it the first sweep produced 31 findings on 11 providers -- and the ones I read were
+        # all the SAME false positive: an IDENTIFIER-PRIORITY GUARDRAIL doing its job. devdoc
+        # BoatQuery "#3 mand=[RegistrationNumber] opt=[BoatHullIdNumber,...]" fills reg + hull, the
+        # Hull>Reg guardrail correctly routes to the HULL combo, and that combo legitimately does not
+        # carry RegistrationNumber -- an adjudication several providers already carry as an accepted
+        # divergence (e.g. OR_LEDS "BoatQuery | BQ.H | RegistrationNumber"). Once the fill re-routes,
+        # the officer is performing a DIFFERENT devdoc search, so this item's mandatory field is not
+        # owed on the wire. The existing "[NOTE] re-routes X -> Y (discriminator)" line below is the
+        # correct verdict for that case and already covers it.
+        # Net effect of the guard, measured across all 20: 31 findings -> the re-route class removed.
+        $reRouted = ($baseKey -and $fired -ne $baseKey)
+        $mandDropped = @()
+        if (-not $reRouted) {
+            foreach ($mr in $mandResolved) {
+                $anyIn = $false
+                foreach ($r in $mr.Refs) { if ($poolC -contains (Canon $r)) { $anyIn = $true; break } }
+                if (-not $anyIn) { $mandDropped += $mr.Tok }
+            }
+            $script:mandChecked += $mandResolved.Count
+        }
+        if ($mandDropped.Count) {
+            if (Test-Accepted $it.Query $mandDropped) {
+                Emit "  [NOTE] $label -> fires $fired; MANDATORY $($mandDropped -join ', ') not transmitted (accepted)" 'Yellow'; $notes++
+            } else {
+                Emit "  [FAIL] $label -> fires $fired but devdoc-MANDATORY $($mandDropped -join ', ') are in NO matching combo's set[]/any[] -- the officer cannot perform this search" 'Red'
+                Emit "         wired elsewhere in this query, just not on the combo that fires here -- audit_devdoc_combinations (2p) is satisfied by that and cannot see this" 'DarkGray'
+                $fails++
+            }
+            continue
+        }
+
         $dropped = @()
         for ($i = 0; $i -lt $k; $i++) {
             if ($mask -band [Math]::Pow(2,$i)) {
@@ -319,6 +373,7 @@ foreach ($it in ($items | Sort-Object Query, Num)) {
 Emit "" $null
 Emit "----------------------------------------------------------------" 'Cyan'
 Emit "  fills evaluated: $combos   (devdoc items: $($items.Count), skipped-unwired: $skipped)" $null
+Emit "  mandatory-field transmission checks: $script:mandChecked   (0 here means this run proved NOTHING about that class)" $(if ($script:mandChecked -eq 0) { "Yellow" } else { $null })
 Emit "  RESULT: $fails FAIL / $notes NOTE" $(if ($fails) { 'Red' } else { 'Green' })
 Emit "----------------------------------------------------------------" 'Cyan'
 Emit "" $null

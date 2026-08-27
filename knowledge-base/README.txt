@@ -1174,6 +1174,31 @@ TOOLS
       2. DROPPED OPTIONAL -- the officer types a devdoc-legal optional, it is in no matching
          combo's set[]/any[] (so the LIMITATION #1 union pool does not carry it either), and it
          is silently not transmitted. The query succeeds, just narrower than asked. Nothing errors.
+      3. MANDATORY NOT TRANSMITTED (added 2026-08-27) -- the same union-pool test applied to the
+         devdoc-MANDATORY fields, which this gate built the fill from and then never checked.
+         "Wired SOMEWHERE in the query" was owned by audit_devdoc_combinations (2p) and this gate
+         deferred to it by name in a [SKIP]; "wired on the combination that actually FIRES for
+         this devdoc item" was owned by NOBODY. Found by a random fuzz mutation on OR_LEDS and
+         confirmed by injection: removing RegistrationState from RQ.V's any[] -- devdoc VehReg #4
+         is "(Out) VehicleIdentificationNumber, State [...]", so State is MANDATORY -- SURVIVED
+         all 7 gates that reached a verdict, with BYTE-IDENTICAL output on both arms. It is not
+         audit_requirement_fidelity's job either: OR metadata has State in <Any> on RQ{VIN}, so a
+         request without it is VALID. Nothing is metadata-wrong; what breaks is LAW 1, the officer
+         can no longer reach a devdoc-listed search.
+         *** ONLY EVALUATED WHEN THE FILL HAS NOT RE-ROUTED, and that guard IS the check. ***
+         Without it the first 20-provider sweep produced 31 findings on 11 providers and the ones
+         inspected were all the SAME false positive: an IDENTIFIER-PRIORITY GUARDRAIL working
+         correctly. devdoc BoatQuery "mand=[RegistrationNumber] opt=[BoatHullIdNumber]" fills reg +
+         hull, Hull>Reg routes to the hull combo, and that combo legitimately does not carry
+         RegistrationNumber -- an adjudication several providers already hold as an accepted
+         divergence. Once a fill re-routes, the officer is performing a DIFFERENT devdoc search and
+         this item's mandatory field is not owed; the existing "[NOTE] re-routes X -> Y" verdict
+         already covers that case. With the guard: 13 findings on 8 providers.
+         MEASURED BEFORE/AFTER ACROSS ALL 20 (the fixture discipline): FAIL 0 -> 13, and the NOTE
+         count is BYTE-IDENTICAL on every one of the 20 providers, so the change adds only the new
+         class and alters nothing existing. Prints its own denominator ("mandatory-field
+         transmission checks: N"); N=0 means the run proved nothing about this class.
+         Catalogued as or-drop-devdoc-mandatory-from-firing-combo in audit_gate_efficacy.
     Origin (2026-07-30, Rob: "account for every combination with every combination of optionals --
     that was a long standing directive"): TX_TLETS v4.17 sat at 36 PASS / 0 FAIL while 20 of 252
     devdoc-legal fills were defective. 17 dropped an optional (BirthDate on CPL, FRT on DPSI --
