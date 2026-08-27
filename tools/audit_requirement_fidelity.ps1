@@ -196,7 +196,21 @@ function Get-MetaAlternatives([string]$xmlPath) {
         foreach ($cb in $t.SelectNodes('.//*[local-name()="Combination"]')) {
             $k = "$tn|$($cb.GetAttribute('keyReference'))"
             if (-not $anyPool.ContainsKey($k)) { $anyPool[$k] = @() }
-            foreach ($f in $cb.SelectNodes('.//*[local-name()="Any"]/*[local-name()="Field"]')) {
+            # DESCENDANT (`//`), NOT CHILD (`/`) -- fixed 2026-08-27. The comment above has always
+            # said "every <Any> at ANY DEPTH", and the XPath said `Any/Field`, which is DIRECT
+            # CHILDREN ONLY. So an optional nested one level deeper was invisible:
+            #     <Set><Any><Choice><Field Age/><Field BirthDate/></Choice></Any></Set>
+            # is grammar shape 1 -- BOTH fields OPTIONAL (usx-metadata Step 1) -- and the pool saw
+            # NEITHER, so building either in any[] read as OVER-PERMITTED. Proven on CA_eSUN L1{Name}
+            # and registered there as `demoted-to-any`; the registry row was papering over a TOOL
+            # defect, not a build divergence. A <Set> nested inside <Any> is collected too, which is
+            # correct: the whole group is optional, so each of its fields is permitted.
+            # DIRECTIONALLY SAFE, and that is why it is a union rather than per-branch: a WIDER
+            # optional pool can only SUPPRESS an over-permit finding, never invent one. So this
+            # change can move OVER-PERMITTED down and must leave UNDER-REQUIRED and
+            # branches-compared untouched -- which is exactly what to verify, per-provider, before
+            # believing it (measured: 420 branches / 4 UNDER / 4 OVER before).
+            foreach ($f in $cb.SelectNodes('.//*[local-name()="Any"]//*[local-name()="Field"]')) {
                 $r = "$($f.GetAttribute('reference'))"; if ($r) { $anyPool[$k] += $r }
             }
         }
