@@ -6133,15 +6133,7 @@
                                                                                                                       "field":  "LicensePlateYear",
                                                                                                                       "value":  "2026"
                                                                                                                   }
-                                                                                                              ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "EXISTS"
-                                                                                                                    }
-                                                                                                                ]
+                                                                                                              ]
                                                                                              },
                                                                             "primaryFieldReference":  "LicensePlateNumber",
                                                                             "keyReference":  "RQ.P",
@@ -6203,30 +6195,9 @@
                                                                             "primaryFieldReference":  "VehicleIdentificationNumber",
                                                                             "keyReference":  "QV.V",
                                                                             "state":  "In/Out"
-                                                                        },
-                                                                        {
-                                                                            "requirements":  {
-                                                                                                 "set":  [
-                                                                                                             "LicensePlateNumber"
-                                                                                                         ],
-                                                                                                 "any":  [
-
-                                                                                                         ],
-                                                                                                 "conditions":  [
-                                                                                                                    {
-                                                                                                                        "field":  [
-                                                                                                                                      "RegistrationState"
-                                                                                                                                  ],
-                                                                                                                        "operator":  "NOT_EXISTS"
-                                                                                                                    }
-                                                                                                                ]
-                                                                                             },
-                                                                            "primaryFieldReference":  "LicensePlateNumber",
-                                                                            "keyReference":  "QV.P",
-                                                                            "state":  "In/Out"
                                                                         }
                                                                     ],
-                                                   "description":  "VehicleRegistrationQuery -- RQ.P/RQ.V (Nlets), QV.V/QV.P (NCIC). State-existence routing + Plate\u003eVIN guardrail.",
+                                                   "description":  "VehicleRegistrationQuery -- RQ.P (the one plate search, in and out of state), RQ.V/QV.V (VIN, Nlets vs NCIC by State). Plate\u003eVIN guardrail.",
                                                    "handlerFunction":  "CommsysTransactionRequestHandler",
                                                    "name":  "NM_NMLETS_OFML_VehicleRegistrationQuery",
                                                    "type":  "QUERYINPUTDATAMAPPING",
@@ -6802,7 +6773,7 @@
                                                    "targetEntity":  "Boat"
                                                }
                                            ],
-                        "description":  "Provider configuration for NM_NMLETS_OFML v2.6 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, existence-only routing gates + identifier-priority guardrails",
+                        "description":  "Provider configuration for NM_NMLETS_OFML v2.7 -- 6 QIDMs (VehReg + DL + DH + Gun + Article + Boat), DH-suffix, existence-only routing gates + identifier-priority guardrails",
                         "name":  "NM_NMLETS_OFML",
                         "type":  "BUNDLE",
                         "provider":  "NM_NMLETS_OFML"

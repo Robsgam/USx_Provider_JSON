@@ -307,7 +307,7 @@ foreach ($d in $dirs) {
             # and the NOTE fired naming both rows. Same reasoning as the 'restored' exclusion below.
             # Measured across all 20 providers before and after; see BUILD_NOTES / commit for the delta.
             if ($rule -match '(?i)shadow|unbuilt|not-built|dropped-combo' -and $rule -notmatch '(?i)restored|dead-combo') {   # 'not-built' does NOT contain 'unbuilt' (hyphenated), so FL's QW|*|not-built and QV|*|not-built rows were silently INERT. 'RESTORED' excluded because a restored combo IS built -- including it cost TX 2 branches of coverage.
-                $unbuiltRows += [pscustomobject]@{ Query = $q; KeyRef = $k; Rule = $rule; Text = $ln }
+                $unbuiltRows += [pscustomobject]@{ Query = $q; KeyRef = $k; Field = $fd; Rule = $rule; Text = $ln }
             }
             if ($rule -match '(?i)promoted-to-any')     { $promoted["$q|$k|$(Canon $fd)"] = $rule }
             # UNDER-REQUIRED had NO registry path at all -- a DELIBERATE demotion of a
@@ -323,7 +323,29 @@ foreach ($d in $dirs) {
         if (-not $kr) { return $false }
         foreach ($r in $script:unbuiltRows) {
             if ($r.Query -ne $q -and $r.Query -ne '*') { continue }
-            if ($r.KeyRef -eq $kr) { return $true }
+            # EXACT MATCH MUST IDENTIFY THE BRANCH TOO -- fixed 2026-08-27, and it is the same rule
+            # the PREFIX BRIDGE below already enforces; the exact-match path just never got it.
+            # A KEYREF IS NOT A VARIANT (usx-metadata Step 2): one keyRef routinely carries several
+            # primaryFieldReference alternatives, so `row.KeyRef -eq $kr` suppressed EVERY branch
+            # sharing that name. Measured on NM_NMLETS_OFML: a row retiring the single unbuilt
+            # QV{LicensePlateNumber} also silenced QV{VehicleIdentificationNumber}, which IS built
+            # and reachable -- branches 14 -> 12, coverage lost with the finding count still 0, and
+            # the OVER-SUPPRESSION NOTE did NOT fire because it tests for an exactly-named BUILT
+            # combo ('QV.V' != 'QV'). Identical shape to the FL_FCIC FRQ case documented below.
+            # So: a row with a Field must name a field of THIS alternative's set[] to suppress it.
+            # A row with no Field keeps the old unconditional behaviour, so nothing already recorded
+            # changes meaning -- verified across all 20 providers before commit.
+            if ($r.KeyRef -eq $kr) {
+                # '*' IS A WILDCARD FIELD, NOT A FIELD NAME -- it means "this whole keyRef is
+                # unbuilt" and must keep the old unconditional behaviour. Treating it as a literal
+                # name un-suppressed FL_FCIC's `QW|*|not-built` and `QV|*|not-built` rows and put
+                # 1 UNDER-REQUIRED on a REGRESSION-FIXTURE provider that must read 0/0. Caught by
+                # the fixture, which is exactly what it is for.
+                if (-not $r.Field -or $r.Field -eq '*') { return $true }
+                $fc = Canon $r.Field
+                foreach ($sf in @($altSet)) { if ((Canon $sf) -eq $fc) { return $true } }
+                continue
+            }
             # PREFIX BRIDGE, NARROWED. The registry names a BUILT combo (FRQTitleLienInformation)
             # while a METADATA keyRef is bare (FRQ), so a prefix hit is needed to connect them. But a
             # bare prefix hit says "the whole FRQ FAMILY is unbuilt" when the row actually retires ONE

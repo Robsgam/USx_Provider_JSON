@@ -24,6 +24,12 @@ All JSON versions produced for this provider.
 
 
 
+
+## v2.7 (2026-08-27)
+
+| File | Version | Status | Notes |
+|------|---------|--------|-------|
+| NM_NMLETS_OFML_v2.7.json | v2.7 | Current | 65P/0F/0W/0LIM. |
 ## v2.6 (2026-08-21)
 
 | File | Version | Status | Notes |

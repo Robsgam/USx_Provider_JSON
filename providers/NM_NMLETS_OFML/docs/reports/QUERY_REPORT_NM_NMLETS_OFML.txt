@@ -1,18 +1,18 @@
 ﻿================================================================
   Build Report: NM_NMLETS_OFML
-  Source: NM_NMLETS_OFML_v2.6.json
-  Generated: 2026-08-21 12:18
+  Source: NM_NMLETS_OFML_v2.7.json
+  Generated: 2026-08-27 13:22
 ================================================================
 QUERY SIMULATION
 ================
 
 
 ================================================================
-  CommSys Query Simulator -- NM_NMLETS_OFML_v2.6.json
+  CommSys Query Simulator -- NM_NMLETS_OFML_v2.7.json
 ================================================================
 
 --- QIDM: NM_NMLETS_OFML_VehicleRegistrationQuery [Vehicle] ---
-    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 4
+    Query: VehicleRegistrationQuery  |  Attrs: 7  |  Combos: 3
 
     [FIRES first-match] RQ.P
       set: [LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
@@ -28,7 +28,6 @@ QUERY SIMULATION
       </Transaction>
     [SKIP] RQ.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']
     [SKIP] QV.V -- conditions failed: LicensePlateNumber NOT_EXISTS [value='ABC1234']; RegistrationState NOT_EXISTS [value='NJ']
-    [SKIP] QV.P -- conditions failed: RegistrationState NOT_EXISTS [value='NJ']
 
     >> PLATFORM FIRES: RQ.P (first matching combo)
     >> UNION POOL (platform serializes): LicensePlateNumber=ABC1234, LicensePlateTypeCode=PC, LicensePlateYear=2024, State=NJ

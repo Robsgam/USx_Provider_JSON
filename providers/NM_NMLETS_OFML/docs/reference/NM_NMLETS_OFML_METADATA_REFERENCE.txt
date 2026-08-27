@@ -1,7 +1,7 @@
 ﻿NM_NMLETS_OFML METADATA REFERENCE
 ==================================
-Generated: 2026-08-20
-Source: NM_NMLETS_OFML.xml (metadata) + NM_NMLETS_OFML_v2.4.json
+Generated: 2026-08-27
+Source: NM_NMLETS_OFML.xml (metadata) + NM_NMLETS_OFML_v2.7.json
 Metadata: 118 total transactions, 6 queries built in JSON
 
 ================================================================================
@@ -151,11 +151,10 @@ METADATA COMBINATIONS (4 total):
   QV            VehicleIdentificationNumber  VehicleIdentificationNumber, VehicleMakeCode           FormORI, RelatedHitSearchIn...
   RQ            VehicleIdentificationNumber  VehicleIdentificationNumber, VehicleMakeCode, Vehi...  FormORI, State, State2, Sta...
 
-BUILD COVERAGE (4 of 4 built):
+BUILD COVERAGE (3 of 4 built):
   BUILT   RQ.P           set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
   BUILT   RQ.V           set[VehicleIdentificationNumber, VehicleMakeCode, vehicleYear]
   BUILT   QV.V           set[VehicleIdentificationNumber, VehicleMakeCode]
-  BUILT   QV.P           set[LicensePlateNumber]
 
 ================================================================================
 BUILD SUMMARY
@@ -168,9 +167,9 @@ BUILD SUMMARY
   DriverHistoryQuery                         2      2     0  100% (COMPLETE)
   DriverLicenseQuery                         1      2     0  200%
   GunQuery                                   1      1     0  100% (COMPLETE)
-  VehicleRegistrationQuery                   4      4     0  100% (COMPLETE)
+  VehicleRegistrationQuery                   4      3     1  75%
   ----------------------------------  --------  -----  ----  --------
-  TOTAL                                   13     14     0  108%
+  TOTAL                                   13     13     1  100%
 
 ================================================================================
 UNBUILT METADATA COMBOS (1 combos in metadata, not in JSON)

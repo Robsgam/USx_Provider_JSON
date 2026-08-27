@@ -2,9 +2,103 @@
 
 Auto-generated from `NM_NMLETS_OFML_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.6** | Generated: 2026-08-21
+Current: **v2.7** | Generated: 2026-08-27
 
 ---
+
+## v2.7 -- 2026-08-27 -- IN-STATE PLATE SEARCHES STOP DISCARDING THE PLATE TYPE AND YEAR THE OFFICER
+
+                CAN SEE IN THE FORM  
+**CHANGED** (Vehicle only -- Person, Firearm, Article and Boat are byte-identical):
+  RQ.P -- the `conditions = [RegistrationState] EXISTS` gate REMOVED. This combination now  
+    serves the plate search in BOTH directions. set[] and any[] are unchanged  
+    (set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear], any[RegistrationState]),  
+    so an out-of-state search transmits State exactly as it did at v2.6.  
+  QV.P -- REMOVED (was set[LicensePlateNumber], any[], gated RegistrationState NOT_EXISTS).  
+**REASON** -- THE DEFECT, stated as what the officer experienced:
+  LicensePlateTypeCode and LicensePlateYear are PREFILLED on the form (PC / current year). On an  
+  in-state plate search (State left blank, which the label explicitly invites -- "State (leave  
+  blank for NM)") the State gate made RQ.P unreachable, so QV.P fired instead. QV.P is  
+  set[LicensePlateNumber] with an EMPTY any[], so BOTH prefilled fields were SILENTLY DISCARDED.  
+  They sat populated in front of the officer and never reached the wire. Nothing errored.  
+WHY THE GATE WAS WRONG -- both authorities, neither ambiguous:  
+  DEVDOC has exactly ONE plate combination and it is NOT split by state:  
+    "#1 (In/Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,  
+     [State, State2, State3, State4, State5]"   -- type and year MANDATORY, State OPTIONAL.  
+  METADATA RQ{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode,  
+    LicensePlateYear] Any[FormORI, State, State2..State5]. State is in <Any>: an OPTIONAL, not a  
+    FORK. Gating on a field the metadata merely permits is the documented anti-pattern --  
+    TN_TIES KQ.N was gated `RegistrationState EXISTS` while its metadata had Any[State], which  
+    made an in-state driver-history name search impossible.  
+WHY QV.P COULD NOT SIMPLY BE REORDERED INSTEAD (structural, not a preference):  
+  metadata QV{LicensePlateNumber} = Set[LicensePlateNumber] is a STRICT SUBSET of RQ{plate}, and  
+  type/year are prefilled so they are ALWAYS present. Under first-match: RQ.P first leaves QV  
+  unreachable; QV first steals every plate fill and kills RQ.P, which is this same defect with  
+  the roles reversed and would drop type+year out of state too. The only way to keep both is to  
+  un-prefill type/year so they can be ABSENT -- offered as option 2 of 3 and DECLINED (Rob  
+  2026-08-27) because it cuts against the standing plate-defaults convention. Registered as  
+  `VehicleRegistrationQuery | QV | LicensePlateNumber | dropped-combo`.  
+NOT A DATA-MINED PROBLEM, and the first diagnosis said it was:  
+  I reported that the in-state path had been built from a DATA-MINED transaction, citing  
+  audit_data_mined's DM1 note. That was WRONG and Rob caught it ("i thought we established data  
+  mined transactions from devdoc"). Verified against the raw XML: there is NO separate QV  
+  transaction -- QV and RQ are both <Combination> nodes of the SINGLE VehicleRegistrationQuery  
+  <Transaction>. DM1 matches the devdoc's mined list BY NAME and says in its own output that it  
+  "exists to CLOSE the debate", not to report a gap. The keyRef never reaches the wire either  
+  way. The real defect was combination SELECTION, not transaction choice. TN_TIES hit the same  
+  naming confusion and renamed its QV.* keyRefs for it.  
+SCOPE HELD DELIBERATELY: the VIN pair (RQ.V / QV.V) keeps its State fork. Devdoc #2 makes only  
+  VehicleIdentificationNumber mandatory, so the in-state VIN path drops nothing devdoc-mandatory  
+  and the gate never flagged it. Changing it would be scope creep on a released provider.  
+GATES: validator 66P/0F/0W - reachability 11/11 all reachable (no dead combo created) - fidelity  
+  13 branches / 0 UNDER / 0 OVER - devdoc combinations 0 FAIL - audit_devdoc_optionals  
+  MANDATORY-NOT-TRANSMITTED finding CLEARED (this was the finding that started it) - wiring  
+  closure 0 breaks - enforce 0 FAIL / 0 WARN.  
+COST: archives the 36-log v2.6 package to logs/<Entity>/_archive_pre_v2.7/ (verified on disk, not  
+  taken from reset_test_package's summary line, which is known to under-report). NM drops  
+  ALL-PASS -> NEVER-TESTED and owes a re-import plus a full 5-entity re-sweep from T1. NM is on  
+  its USx provider tenant ONLY -- no Foundation and no LIVE row, checked against ledger sections  
+  B and C -- so no coordinated re-import is involved.  
+
+## v2.6 -- 2026-08-21 -- DH PURPOSE CODE: moved up one line, and given the default it never had
+
+**CHANGED** (both by operator directive, Rob 2026-08-21 on the rendered form):
+  LAYOUT -- Purpose Code moved UP one line to the END of the DH qualifier row, eliminating  
+    the lone third row it had been sitting on by itself. The card is now two rows:  
+      ROW_PER_DH_1 [3 3 3 3]    First  Middle  Last  Suffix  
+      ROW_PER_DH_2 [3 3 2 2 2]  OLN  DOB  Sex  Race  Purpose Code  
+    Race stays immediately after Sex per the 2026-08-20 directive; Purpose Code goes AFTER  
+    Race, so that ordering is preserved rather than disturbed. This also matches the DL card,  
+    where Purpose Code is likewise the last field of the last qualifier row.  
+  purposeCodeDH -- initialValue 'C' ADDED, plus the combo defaults[] twin on BOTH DH combos  
+    (KQ.N and KQ.O).  
+WHY IT HAD NO DEFAULT: no reason. Asked to explain it and could not -- it was an oversight  
+  from v2.4/v2.5, not a decision, and nothing in the build recorded a justification.  
+  THE ASYMMETRY IT LEFT: the DL side has purposeCode in set[] on BOTH combos, prefilled 'C',  
+  with a defaults[] twin. The DH side had purposeCodeDH in any[] on both combos with NO prefill  
+  and NO default. So a DL query transmitted PurposeCode=C while a DH query transmitted no  
+  purpose code at all unless the officer typed one.  
+WHY THE PREFILL IS SAFE HERE, checked before adding it rather than after:  
+  BUILD_RULES 24 only bites when the prefilled field sits in a set[] -- an always-present value  
+  then makes that combo always match and collapses it onto a plainer sibling. purposeCodeDH is  
+  in NO set[] at all (any[] on KQ.N and KQ.O), so there is nothing for it to shadow.  
+  audit_prefill_shadow confirms: 0 findings across 14 ordered pairs, and reachability holds at  
+  12/12. Metadata agrees it is optional -- KQ{Name} and KQ{OperatorLicenseNumber} both carry  
+  PurposeCode inside <Any>.  
+  (Contrast the DL side, where the prefill IS on a set[] field and is safe for the different,  
+  CA_CLETS reason: purposeCode is in EVERY DL combo's set[], so it cannot favour one over another.)  
+WHY THE COMBO defaults[] TWIN IS NOT OPTIONAL: CAD ignores form initialValue (BUILD_RULES 12).  
+  Without the twin a CAD-dispatched DH query would still have gone out with no PurposeCode --  
+  the exact gap being closed. Added to both DH combos.  
+GATES: validator 66P/0F/0W | verify_build 17 PASS / 0 WARN / 0 FAIL | wiring closure 0 breaks  
+  in all ten classes | name components 0 blocking / 8 examined | reachability 12/12 | prefill  
+  shadow 0 (14 pairs) | fidelity 14 branches 0 UNDER / 0 OVER | test_phase2 PRE-FLIGHT CLEAR,  
+  36 tests / 130 fills.  
+LAYOUT FLOW still reports 1 finding and it is the RECORDED OPERATOR OVERRIDE, unchanged by this  
+  edit: L9 raceCode on the DL card's ROW_PER_DL_3, beside BirthDate/SexCode/purposeCode. Rob  
+  directed race onto line 3 after sex; it stays. Nothing on the DH card is flagged.  
+NOT TESTED: never tenant-tested at any version. v2.5 was never imported or driven, so this bump  
+  archived 0 logs. Owes an import, a first-ever sweep, and the one-time picklist capture.  
 
 ## v2.6 -- 2026-08-21 -- Pipeline rebuild
 

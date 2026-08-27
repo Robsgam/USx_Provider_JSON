@@ -15,9 +15,14 @@
 #     DriverHistoryQuery genuinely has none -- that half of the old note was right.
 #   ImageIndicator present on DriverLicenseQuery ONLY (Person=Y). NOT on Vehicle/Boat/DH
 #     (not in their metadata).
-#   State: no initialValue (LIMITATION #30). Vehicle RQ(Nlets)/QV(NCIC) AND Boat BQ(Nlets)/
-#     QB(NCIC) both routed by RegistrationState EXISTS/NOT_EXISTS (Nlets registration needs a
-#     destination state; NCIC is national/stateless). Label "State (leave blank for NM)".
+#   State: no initialValue (LIMITATION #30). Boat BQ(Nlets)/QB(NCIC) and the Vehicle VIN pair
+#     RQ.V(Nlets)/QV.V(NCIC) are routed by RegistrationState EXISTS/NOT_EXISTS (Nlets registration
+#     needs a destination state; NCIC is national/stateless). Label "State (leave blank for NM)".
+#     *** THE PLATE SEARCH IS NO LONGER STATE-ROUTED (v2.7). *** This line used to say Vehicle
+#     RQ/QV were BOTH state-routed, and that gate is exactly what made the devdoc's only plate
+#     combination unreachable in-state, silently dropping the prefilled LicensePlateTypeCode and
+#     LicensePlateYear. One plate combination now serves both directions -- see RQ.P below. The
+#     state fork remains correct for VIN and Boat, where the devdoc/metadata genuinely fork.
 #   Date format: MMddyyyy (size=8, Date fields via CommsysParseDateRuleHandler).
 #   Name: composite Last,First,Middle,Suffix via FormatStringRuleHandler (AP #15: arguments = 3
 #     separators for 4 sourceFields). Middle+Suffix added v2.3 -- audit_name_components had 4 C1
@@ -31,7 +36,7 @@
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_nm_nmlets_ofml.ps1
 $ErrorActionPreference = "Stop"
-$Version     = '2.6'
+$Version     = '2.7'
 $currentYear = [string](Get-Date).Year
 $DIR      = (Resolve-Path "$PSScriptRoot\..").Path
 $OUT      = "$DIR\NM_NMLETS_OFML_v${Version}.json"
@@ -47,7 +52,7 @@ if ($env:REPRO_OUTPATH) { $OUT = $env:REPRO_OUTPATH }
 
 # keyRef INVENTORY (LIMITATION #21 -- unique keyRefs per QIDM; NM_NMLETS_OFML 6 basic queries,
 # DH-suffix, existence-only routing gates + identifier-priority guardrails):
-#   VehicleRegistrationQuery : RQ.P (Nlets plate+type+year), RQ.V (Nlets VIN+make+year), QV.V (NCIC VIN+make), QV.P (NCIC plate)
+#   VehicleRegistrationQuery : RQ.P (the ONE plate search, in+out of state -- plate+type+year), RQ.V (Nlets VIN+make+year), QV.V (NCIC VIN+make). QV.P removed v2.7 -- see the comment at its old position.
 #   DriverLicenseQuery       : DL.NAME (Name+DOB+Sex), DL.OLN (OLN)
 #   DriverHistoryQuery       : KQ.N (Name+DOB+Sex), KQ.O (OLN) -- DH-suffix fieldIds
 #   GunQuery                 : QG (serial + optional caliber/make/model)
@@ -65,9 +70,14 @@ $results = Build-ProviderQrdm -ProviderName 'NM_NMLETS_OFML'
 $qmf = Build-Qmf -ProviderName 'NM_NMLETS_OFML'
 
 # =====================================================================
-# VehicleRegistrationQuery -- RQ (Nlets), QV (NCIC). Plate>VIN guardrail (VIN combos:
-# LicensePlateNumber NOT_EXISTS). RQ vs QV routed by RegistrationState EXISTS/NOT_EXISTS
-# (Nlets registration needs a destination state; NCIC is national).
+# VehicleRegistrationQuery -- ONE plate combination (RQ.P, in and out of state) + a VIN pair
+# routed by RegistrationState EXISTS/NOT_EXISTS (RQ.V Nlets / QV.V NCIC). Plate>VIN guardrail on
+# both VIN combos (LicensePlateNumber NOT_EXISTS).
+# v2.7: the plate half of that state fork was REMOVED and QV.P deleted -- the devdoc lists exactly
+# one plate combination, "(In/Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+# [State...]", and metadata RQ{plate} has State in <Any>, so State is an optional and never was a
+# fork on this path. The VIN fork is untouched: devdoc #2 makes only VIN mandatory, so the in-state
+# VIN path drops nothing mandatory.
 # =====================================================================
 $vehRegQuery = [PSCustomObject]@{
     attributes = @(
@@ -80,12 +90,37 @@ $vehRegQuery = [PSCustomObject]@{
         [PSCustomObject]@{ name = 'VehicleYear';                 size = 4;  sourceField = @('vehicleYear');                 targetField = 'VehicleYear' }
     )
     combinations = @(
-        # RQ.P -- Nlets plate (plate+type+year), fires when State present
+        # RQ.P -- the ONE plate search, IN AND OUT OF STATE (v2.7).
+        #
+        # THE STATE GATE WAS REMOVED HERE, and this is the whole v2.7 change.
+        # It used to read `conditions = RegistrationState EXISTS`, which made this combination
+        # reachable ONLY out of state; an in-state plate search fell through to QV.P (set=[plate],
+        # any=[]) and SILENTLY DISCARDED LicensePlateTypeCode and LicensePlateYear -- both of which
+        # are PREFILLED on the form (PC / current year), so they sat populated in front of the
+        # officer and never reached the wire.
+        #
+        # WHY THE GATE WAS WRONG, from both authorities:
+        #   * DEVDOC has exactly ONE plate combination and it is NOT split by state --
+        #     "#1 (In/Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear,
+        #      [State, State2, State3, State4, State5]" -- type and year MANDATORY, State OPTIONAL.
+        #   * METADATA RQ{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode,
+        #     LicensePlateYear] Any[FormORI, State, State2..State5]. State sits in <Any>: it is an
+        #     OPTIONAL, not a FORK. Gating on a field the metadata merely permits is the documented
+        #     anti-pattern (usx-build: TN_TIES KQ.N was gated `RegistrationState EXISTS` while its
+        #     metadata had Any[State], which made an in-state DH name search IMPOSSIBLE).
+        # State still rides in any[], so an out-of-state search transmits it exactly as before.
+        #
+        # NOT A DATA-MINED-TRANSACTION PROBLEM -- recorded because that is what it looked like and
+        # the wrong diagnosis was written down first. QV is NOT a separate transaction: QV and RQ are
+        # both <Combination> nodes under the SINGLE VehicleRegistrationQuery <Transaction>, verified
+        # against the raw XML. audit_data_mined's DM1 note matches the devdoc's mined list BY NAME and
+        # says in its own output that it "exists to CLOSE the debate", not to report a gap. The keyRef
+        # never reaches the wire either way. TN_TIES hit this exact confusion and renamed its QV.*
+        # keyRefs for it; the names here are left alone deliberately so this comment is the record.
         [PSCustomObject]@{
             requirements          = [PSCustomObject]@{
                 set = @('LicensePlateNumber','LicensePlateTypeCode','LicensePlateYear'); any = @('RegistrationState')
                 defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear })
-                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'EXISTS' })
             }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'RQ.P'
@@ -117,18 +152,32 @@ $vehRegQuery = [PSCustomObject]@{
             keyReference          = 'QV.V'
             state                 = 'In/Out'
         }
-        # QV.P -- NCIC plate (plate only), fires when State absent
-        [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{
-                set = @('LicensePlateNumber'); any = @()
-                conditions = @([PSCustomObject]@{ field = @('RegistrationState'); operator = 'NOT_EXISTS' })
-            }
-            primaryFieldReference = 'LicensePlateNumber'
-            keyReference          = 'QV.P'
-            state                 = 'In/Out'
-        }
+        # QV.P -- REMOVED at v2.7. It was set=[LicensePlateNumber] any=[] gated
+        # `RegistrationState NOT_EXISTS`, i.e. the in-state plate path, and it is what was dropping
+        # the two prefilled devdoc-MANDATORY fields (see RQ.P above).
+        #
+        # IT IS NOT REPLACEABLE BY ORDERING, AND THAT IS A STRUCTURAL FACT, NOT A PREFERENCE
+        # (usx-build 3d: a variant that genuinely cannot be built must be justified STRUCTURALLY).
+        # metadata QV{LicensePlateNumber} = Set[LicensePlateNumber] is a STRICT SUBSET of
+        # RQ{LicensePlateNumber} = Set[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear].
+        # LicensePlateTypeCode and LicensePlateYear are form-PREFILLED (PC / current year), so they
+        # are ALWAYS PRESENT on a real submission -- which makes RQ.P match whenever a plate is
+        # entered. Under first-match there are only two arrangements and both are degenerate:
+        #   RQ.P first  -> QV.P can never win. Unreachable; a combo that cannot fire is worse than an
+        #                  absent one because it still counts toward coverage and can carry a log.
+        #   QV.P first  -> QV.P steals EVERY plate fill and RQ.P dies -- which is the v2.6 defect
+        #                  with the roles swapped, and would drop type+year on OUT-of-state too.
+        # The only way to keep both is to un-prefill type/year so they can be ABSENT, which was
+        # offered and declined (Rob 2026-08-27, option 1 of 3) because it cuts against the standing
+        # plate-defaults convention. So the devdoc's ONE plate combination is served by ONE built
+        # combination, which is exactly what the devdoc describes.
+        # Recorded in NM_NMLETS_OFML_ACCEPTED_DIVERGENCES.txt so audit_query_trace's MISSING line for
+        # QV{LicensePlateNumber} reads as adjudicated rather than as a gap.
+        # NOTE the deliberate asymmetry: QV.V (VIN) is UNTOUCHED. Devdoc #2 makes only VIN mandatory,
+        # so the in-state VIN path drops nothing devdoc-mandatory and the gate never flagged it.
+        # Changing it would be scope creep on a released provider.
     )
-    description        = 'VehicleRegistrationQuery -- RQ.P/RQ.V (Nlets), QV.V/QV.P (NCIC). State-existence routing + Plate>VIN guardrail.'
+    description        = 'VehicleRegistrationQuery -- RQ.P (the one plate search, in and out of state), RQ.V/QV.V (VIN, Nlets vs NCIC by State). Plate>VIN guardrail.'
     handlerFunction    = 'CommsysTransactionRequestHandler'
     name               = 'NM_NMLETS_OFML_VehicleRegistrationQuery'
     type               = 'QUERYINPUTDATAMAPPING'
