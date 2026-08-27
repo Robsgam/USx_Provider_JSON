@@ -1,7 +1,40 @@
 CA_SAN_LUIS_OBISPO -- Build Notes
 ==================================
 Provider: CA_SAN_LUIS_OBISPO
+v2.6  2026-08-27  IN-STATE PLATE SEARCHES STOP ASSERTING THE CURRENT REGISTRATION YEAR
+  CHANGED: LicensePlateYear removed from QV.P's any[] AND from its defaults[]. QV.P is now
+    set[LicensePlateNumber] any[LicensePlateTypeCode] with a single default LicensePlateTypeCode=PC.
+    RQ.P (out-of-state) is UNTOUCHED -- it still carries LicensePlateYear in set[] with its default,
+    and it is the ONLY devdoc combination that asks for the field.
+  REASON: the control is prefilled with the current year because RQ.P needs it in set[], so it was
+    ALWAYS in form state and transmitted on EVERY in-state plate search -- an unconditional assertion
+    that the plate's registration year is the current one, which can only narrow a match. The officer
+    never chose it. MEASURED, NOT ARGUED: this devdoc lists LicensePlateYear on exactly ONE
+    combination, "#3 (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State" --
+    RQ.P's shape. The in-state entry "#1 (In) LicensePlateNumber, LicensePlateTypeCode" does not
+    mention it at all.
+  LicensePlateTypeCode DELIBERATELY KEPT: devdoc #1 makes it MANDATORY in-state, so prefilling it is
+    required rather than tolerated. TN_TIES v2.6 removed its plate TYPE for the mirror-image reason
+    (its devdoc #1 lists none) and CA_CLETS v2.27 kept type and removed only year, exactly as here.
+    Same-looking fields, opposite answers, and only the provider's own devdoc distinguishes them.
+  PROVENANCE: this is the LAST SURVIVING ITEM from the unconditional-assertion sweep (commit
+    82759737, 2026-08-27), which measured 20 providers / 378 combinations / 96 prefilled controls ->
+    280 candidates -> 14 TIER-1 across 6 providers, adjudicated 13 away against each provider's own
+    devdoc, and named CA_SAN_LUIS_OBISPO as the one real residue -- "unregistered anywhere ... keep
+    plate TYPE, drop plate YEAR only ... do it at its own next rebuild". This is that rebuild.
+  GATES: validator 67P/0F/0W - audit_devdoc_optionals 0 FAIL / 3 NOTE - fidelity 22 branches /
+    0 UNDER / 0 OVER UNCHANGED - reachability 15/15 all reachable - wiring closure 0 breaks across
+    ten classes (verified specifically: removing the field from one any[] did NOT orphan the control,
+    because RQ.P still requires it) - enforce 0 FAIL / 0 WARN.
+    [FLAG:plan-dedupe-vacuous-tests] RETIRED by this rebuild; plan regenerated to 59 tests.
+  COST: NONE. CA_SAN_LUIS_OBISPO has never been tenant-tested (0 logs at any version), so no package
+    is archived; no Foundation and no LIVE tenant.
+
 State: California
+v2.6  2026-08-27  Pipeline rebuild
+  CHANGED: Rebuilt via pipeline.ps1
+  REASON: Scheduled rebuild
+
 v2.5  2026-08-20  LAYOUT COLLAPSE 13->6 CARDS + NAME COMPONENTS
   CHANGED:
     LAYOUT -- 13 cards -> 6, the uniform shape (usx-cosmetic Step 3b). Vehicle 3->1,

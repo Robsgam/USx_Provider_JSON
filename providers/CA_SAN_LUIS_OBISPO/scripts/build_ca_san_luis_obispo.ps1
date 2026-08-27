@@ -22,7 +22,7 @@
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_ca_san_luis_obispo_mc.ps1
 
 param(
-    [string]$Version = '2.5'
+    [string]$Version = '2.6'
 )
 
 $ErrorActionPreference = "Stop"
@@ -90,8 +90,24 @@ $vehRegQuery = [PSCustomObject]@{
             state                 = 'In/Out'
         }
         # In-state Plate (1 set -- plate before VIN)
+        # v2.6: LicensePlateYear REMOVED from any[] AND from defaults[]. The control is prefilled with
+        # the current year because RQ.P (out-of-state) requires it in set[], so it was ALWAYS in form
+        # state and rode out on EVERY in-state plate search -- an unconditional assertion that the
+        # plate's registration year is the current one, which can only narrow a match. The officer
+        # never chose it.
+        # MEASURED, NOT ARGUED: this provider's devdoc lists LicensePlateYear on exactly ONE
+        # combination, "#3 (Out) LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear, State"
+        # -- which is RQ.P's shape. The in-state entry "#1 (In) LicensePlateNumber,
+        # LicensePlateTypeCode" does not mention it at all.
+        # LicensePlateTypeCode is DELIBERATELY KEPT: devdoc #1 makes it MANDATORY in-state, so
+        # prefilling it is required rather than merely tolerated. Same-looking fields, opposite
+        # answers, and only this provider's own devdoc distinguishes them -- which is why the
+        # portfolio sweep (commit 82759737) adjudicated 13 of 14 candidates away instead of
+        # "fixing" them, and why TN_TIES v2.6 removed its plate TYPE while CA_CLETS v2.27 kept
+        # its own and removed only the YEAR. This provider is the last surviving item from that
+        # sweep, which named it explicitly and left it for its own next rebuild.
         [PSCustomObject]@{
-            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode','LicensePlateYear'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }, [PSCustomObject]@{ field = 'LicensePlateYear'; value = $currentYear }) }
+            requirements          = [PSCustomObject]@{ set = @('LicensePlateNumber'); any = @('LicensePlateTypeCode'); defaults = @([PSCustomObject]@{ field = 'LicensePlateTypeCode'; value = 'PC' }) }
             primaryFieldReference = 'LicensePlateNumber'
             keyReference          = 'QV.P'
             state                 = 'In/Out'
