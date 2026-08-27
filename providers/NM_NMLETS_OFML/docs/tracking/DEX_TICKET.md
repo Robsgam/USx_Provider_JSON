@@ -12,8 +12,18 @@ Project: DEX (CJIS/USx/DEx Implementation) · Tenant: usx-nm-nmlets.mark43.com
 
 
 POSTED: v2.6 comment 803470 2026-08-21
-**Current: v2.6 — tenant-verified 2026-08-21, ALL-PASS 36/36** (Vehicle 6 / Person 19 / Firearm 5 /
-Article 1 / Boat 5). First-ever sweep of this provider at any version.
+POSTED: v2.7 comment 807336 2026-08-27
+**Current: v2.7 — tenant-verified 2026-08-27, ALL-PASS 36/36** (Vehicle 6 / Person 19 / Firearm 5 /
+Article 1 / Boat 5). Release line **comment 807336**; 803470 RETAINED as the v2.6 history, not
+stubbed — one new comment per release (JIRA_COMMENT_TEMPLATE, rule reversed 2026-08-17: "post as a
+new comment and leave the other comments there").
+**JSON attached to DEX-989 and the provider catalog updated 2026-08-27 (Rob)** — ticket AND catalog
+both on v2.7. Recorded here and in IMPORT_LEDGER section C rather than in the comment itself: the
+template forbids tenant/attachment/catalog detail in the ticket body ("No host, no attachment note,
+no catalog post"), because those belong to the ledger, which is their system of record.
+v2.7 change: in-state plate searches stopped discarding LicensePlateTypeCode and LicensePlateYear,
+and a multi-character middle name reached the state for the first time on this provider.
+Prior: v2.6 — first-ever sweep of this provider at any version.
 
 ## History
 
