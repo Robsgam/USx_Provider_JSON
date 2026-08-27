@@ -1,0 +1,72 @@
+﻿================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: DPSIStickerNumber_af_financialResponsibilityType (DPSIStickerNumber_af_financialResponsibilityType (auto))
+Date: 2026-08-27 18:31:30
+Result: PASS
+JSON Version: 4.22
+Entity Fingerprint: d919665d1972efb3ecdf518d87161f8ecc516f44d603f3f56feccbce43c6f208
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"financialResponsibilityType":"Y","stickerNumber":"STK1234567"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M12MRFBX7K1BN1W3X5E72T87">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
+            <Id>01M12MRFBX7K1BN1W3X5E72T87</Id>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
+            <StickerNumber>STK1234567</StickerNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Not captured
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01M12MRFBX7K1BN1W3X5E72T87
+  FinancialResponsibilityType    Y
+  StickerNumber                  STK1234567
+
+NOTES
+-----
+Automated capture (txId 01M12MRFBX7K1BN1W3X5E72T87). kind=any-field; anyField=financialResponsibilityType; expectedKeyRef=DPSIStickerNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS

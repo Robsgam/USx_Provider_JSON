@@ -1,0 +1,88 @@
+﻿================================================================
+TEST LOG: TX_TLETS Vehicle VehicleInsuranceRegistrationQuery
+Combo: REGLicensePlateNumber_af_regionId (REGLicensePlateNumber_af_regionId (auto))
+Date: 2026-08-27 18:31:37
+Result: PASS
+JSON Version: 4.22
+Entity Fingerprint: d919665d1972efb3ecdf518d87161f8ecc516f44d603f3f56feccbce43c6f208
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"LicensePlateNumber":"TEST123","LicensePlateYear":"2026","financialResponsibilityType":"Y","regionId":"0001"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>XX1234567</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M12MPX97VNTXA0PXQ50KYWGZ">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>XX1234567</Id>
+          <Authentication>
+            <UserName>MKRS$#</UserName>
+            <ORI>XX1234567</ORI>
+            <Mnemonic>XX1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleInsuranceRegistrationQuery</MessageType>
+            <Id>01M12MPX97VNTXA0PXQ50KYWGZ</Id>
+            <FinancialResponsibilityType>Y</FinancialResponsibilityType>
+            <LicensePlateYear>2026</LicensePlateYear>
+            <RegionId>0001</RegionId>
+            <LicensePlateNumber>TEST123</LicensePlateNumber>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "tag":  "TEST123"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             XX1234567
+  UserName                       MKRS$#
+  ORI                            XX1234567
+  Mnemonic                       XX1234567
+  Id                             01M12MPX97VNTXA0PXQ50KYWGZ
+  FinancialResponsibilityType    Y
+  LicensePlateYear               2026
+  RegionId                       0001
+  LicensePlateNumber             TEST123
+
+NOTES
+-----
+Automated capture (txId 01M12MPX97VNTXA0PXQ50KYWGZ). kind=any-field; anyField=regionId; expectedKeyRef=REGLicensePlateNumber; firedMessageType=VehicleInsuranceRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
