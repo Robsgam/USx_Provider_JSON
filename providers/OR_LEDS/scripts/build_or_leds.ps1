@@ -11,15 +11,37 @@
 #   LIMITATION #30: No State initialValue (In vs Out routing).
 #   State: NCIC pattern (codeTypeProvider='NCIC').
 #   Sex: NIBRS pattern (codeTypeProvider='NIBRS').
-#   PlateType: PC, PlateYear: 2026.
-#   RelatedHitSearchIndicator: Y-only flag (FormInput maxLength=1).
+#   PlateType: PC, PlateYear: current year (dynamic, $currentYear).
+#     KEPT DELIBERATELY (Rob's ruling 2026-08-27): "if a field is optional and no routing depends
+#     on its presence then we want to continue with the same conventions for now." Precondition
+#     VERIFIED here, not assumed -- LicensePlateTypeCode and LicensePlateYear are in NO combination's
+#     set[] and are referenced by NO condition on either plate combo, so nothing routes on them.
+#     Note the standing tension so it is not rediscovered: OR devdoc #1 "(In) LicensePlateNumber,
+#     [LicensePlateTypeCode, LicensePlateYear]" BRACKETS both in-state, so every in-state plate
+#     search transmits a plate type and year the officer never chose. That is the same shape
+#     TN_TIES v2.6 and CA_CLETS v2.27 removed -- but on those two the prefill fed a set[]-mandatory
+#     field, and here it feeds nothing. Whether asserting them narrows a match at the state is
+#     UNPROVEN in both directions (OR has never been tenant-tested, so no captured wire or response
+#     exists to argue from). Settle it during OR's first sweep: run one in-state plate search with
+#     the year cleared against one with it asserted, and let the responses decide.
+#   NO RelatedHitSearchIndicator control is built. The devdoc lists it as a bracketed optional on
+#     Article/Boat/Gun, but OR's OWN metadata defines it on EXACTLY TWO combinations, both under
+#     transactions this build does not carry (WMPIProtectiveOrderQuery QPO{Name},
+#     WMPIWantedPersonQuery QW{Name}). Metadata is FIELD authority, so wiring it would OVER-PERMIT.
+#     Registered on QA / BQ.H / BQ.R / QG in OR_LEDS_ACCEPTED_DIVERGENCES.txt (2026-08-02).
+#     [This header previously claimed the control was built as a Y-only FormInput(maxLength=1); it
+#      appears ZERO times in the emitted JSON and has since v2.4. Corrected 2026-08-27.]
 #
-# METADATA SUMMARY (OR_LEDS -- 5 basic queries, 8 combos):
+# METADATA SUMMARY (OR_LEDS -- 5 basic queries, 8 metadata combinations -> 9 built combos):
 #   ArticleSingleQuery       v4  -- 1 combo: QA (Serial+ArticleType)
 #   BoatQuery                v3  -- 2 combos: BQ (Reg), BQ (Hull) -- same keyRef, invented BQ.R/BQ.H
 #   DriverLicenseQuery       v3  -- 2 combos: DQ (Name+DOB+Sex), DQ (OLN) -- same keyRef, invented DQ.N/DQ.O
 #   GunQuery                 v3  -- 1 combo: QG (Serial)
-#   VehicleRegistrationQuery v3  -- 2 combos: RQ (Plate), RQ (VIN) -- same keyRef, invented RQ.P/RQ.V
+#   VehicleRegistrationQuery v3  -- 2 metadata combos: RQ (Plate), RQ (VIN) -- same keyRef.
+#     Built as THREE: the plate variant is split in-state vs out-of-state on RegistrationState
+#     (RQ.PO gated EXISTS, RQ.P gated NOT_EXISTS -- mutually exclusive, so both stay reachable),
+#     plus RQ.V for the VIN. LIMITATION #30: State carries no initialValue, or it would decide
+#     the split for the officer.
 #
 # Run: powershell.exe -ExecutionPolicy Bypass -File scripts\build_or_leds.ps1
 
@@ -472,7 +494,7 @@ $entitiesBundle = Build-EntitiesBundle -Configurations @($vehicleForm, $personFo
     -DefaultOrder @('Person','Vehicle','Firearm','Article','Boat')
 
 # =====================================================================
-# BUNDLE 3: RMS (from KB specs â€” camelCase, registrationState, autoSelect)
+# BUNDLE 3: RMS (from KB specs -- camelCase, registrationState, autoSelect)
 # =====================================================================
 $rmsBundle = Build-RmsBundle -PascalCaseUsxFields
 # =====================================================================
