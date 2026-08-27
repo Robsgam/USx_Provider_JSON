@@ -126,6 +126,25 @@ foreach ($c in $entityCombos) {
         $anyLog = $matched | Where-Object {
             ($_.Name -match '(?i)any') -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid
         } | Select-Object -First 1
+        # SINGLE-OPTIONAL COMBOS (added 2026-08-27): accept the sole _af_<field> log as the
+        # any[] evidence. This is NOT a loosening -- it is the only satisfiable reading.
+        # emit_test_plan's DUPLICATE filter (2026-08-21) drops a test whose fill-set is
+        # byte-identical to an earlier one, and when a combo has exactly ONE optional field
+        # its '_any' test IS byte-identical to its '_af_<field>' test. So the plan stops
+        # emitting '_any' for these, and demanding it here made the two tools mutually
+        # unsatisfiable: the sweep can never produce the file the gate requires.
+        # Requiring it would also re-introduce the exact duplicate audit_log_inflation
+        # attack A flags as a clone. Found on TX_TLETS v4.22 QVLicensePlateNumber
+        # (any[]=[regionId]) -- the first full sweep generated AFTER the dedupe filter.
+        # 72 further combos across 19 providers share this shape and would each have hit
+        # it at their own next rebuild. Multi-optional combos are deliberately untouched:
+        # they still require a real '_any' log exercising all their optionals together.
+        if (-not $anyLog -and @($c.Any).Count -eq 1) {
+            $soleOptional = [regex]::Escape([string]@($c.Any)[0])
+            $anyLog = $matched | Where-Object {
+                ($_.Name -match "(?i)_af_$soleOptional") -and (Test-LogProvenance $_.FullName $buildVer $entityFp).Valid
+            } | Select-Object -First 1
+        }
         if (-not $anyLog) {
             $evidenceGaps += "$($c.KeyReference) ($(Get-ComboShortLabel $c)): full pass requires an any[] test log (optional fields untested)"
         }
