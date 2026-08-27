@@ -214,6 +214,31 @@ done
 
 _Last reconciled: 2026-08-07._
 
+### OR_LEDS -- built, NOT YET IMPORTED (recorded 2026-08-27)
+
+- **OR_LEDS v2.5** -- built + gated, **never tenant-tested, not imported to any tenant.** 0 logs at
+  any version. `enforce -Provider OR_LEDS` exits 0 at **45 PASS / 0 FAIL / 0 WARN**; PHASE 1 clean
+  (devdoc combinations accounted for, optional subsets route and transmit, 9 combos reachable,
+  fidelity 8 branches 0 UNDER / 0 OVER, query trace 0 missing, 7/7 catalogued mutations killed).
+- **v2.5 needs no rebuild and must not be bumped to force one.** Verified 2026-08-27 with
+  `audit_reproducible`: DETERMINISTIC + CURRENT, and **raw byte-identical** between a fresh build and
+  the committed file. `LicensePlateYear` is computed as the current year, which is still 2026, so a
+  rebuild re-emits the same bytes. A bump would rename the file, regenerate 16 report artifacts and
+  move this very row while describing no change.
+- **Owed before the sweep, in order:** the one-time tenant picklist capture
+  (`logs\OR_LEDS_PICKLIST_SCOPE.console.js` in the tenant, then the watcher ingests it) -> import
+  v2.5 -> first 5-entity sweep from T1. OR_LEDS is build/spec/reachability-complete and blocked
+  ONLY at stage 4, like the other 7 in the import queue.
+- **Stated sweep objective, carried here so it is not lost with the session:** OR's devdoc #1
+  brackets `[LicensePlateTypeCode, LicensePlateYear]` as in-state OPTIONAL, yet both controls are
+  prefilled (`PC` / current year) and both ride in `any[]`, so every in-state plate search asserts
+  them. Rob ruled 2026-08-27 to KEEP them ("if a field is optional and no routing depends on its
+  presence then we want to continue with the same conventions for now" -- precondition verified:
+  neither field is in any `set[]` nor any condition). Whether asserting them narrows a match at the
+  state is UNPROVEN in both directions. Settle it with one A/B during the first sweep: an in-state
+  plate search with the year cleared vs one with it asserted. A result either way also decides
+  CA_SAN_LUIS_OBISPO's identical unregistered residue (commit 82759737).
+
 ### TX_TLETS_CCH -- built, NOT YET IMPORTED (recorded 2026-07-30, TX_TLETS half corrected 2026-08-03)
 
 - **TX_TLETS v4.18 -- SUPERSEDED, this row was WRONG.** It read "**not imported to any tenant** /
