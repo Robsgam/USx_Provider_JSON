@@ -19,6 +19,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | FL_FCIC | v7.24 | ALL-PASS (118 logs) |
 | HI_HCJDC_OFML | v4.20 | ALL-PASS (50 logs) |
 | IL_LEADS_OFML | v2.8 | ALL-PASS (44 logs) |
+| MD_METERS | v2.3 | ALL-PASS (46 logs) |
 | NJ_NJCJIS | v4.17 | ALL-PASS (41 logs) |
 | NM_NMLETS_OFML | v2.7 | ALL-PASS (36 logs) |
 | NY_NYSPIN_EJUSTICE | v4.26 | ALL-PASS (65 logs) |
@@ -26,7 +27,7 @@ CLAUDE.md table use, so these three can never disagree. Re-run `tools\sync_sessi
 | OR_LEDS | v2.6 | ALL-PASS (27 logs) |
 | TN_TIES | v2.6 | ALL-PASS (67 logs) |
 | TX_TLETS | v4.22 | ALL-PASS (98 logs) |
-| _8 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, MD_METERS, TX_TLETS_CCH |
+| _7 others_ | -- | never tenant-tested: CA_CLETS_OCATS, CA_CONTRA_COSTA, CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH |
 
 **Gate invariant:** `tools\enforce.ps1 -Provider <NAME>` must exit 0 -- `0 FAIL / 0 WARN`.
 No PASS count is recorded here on purpose: it moves every time a gate is added, so an
@@ -37,20 +38,22 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**DRIVE THE MD_METERS SWEEP.** v2.3 is IMPORTED to its USx provider tenant (2026-08-28) and its
-one-time picklist capture is COMPLETE -- 13 selects / 5 entities, `audit_picklist_scope` now silent
-on MD while it still speaks on LA_LEMS, so that silence is a verdict and not a vacuum. PHASE 1 green
-(8/8 fuzz), enforce 45P/0F/0W, pre-flight CLEAR, 46 tests / 0 hollow toggles. Queue authority for
-the other 6 is `report_import_owed.ps1`; all 7 never-tested providers are GATE-CLEAN.
+**MD_METERS v2.3 IS SWEPT AND WAITING ON ONE JIRA DECISION.** ALL-PASS 46/46 (Veh 11 / Per 27 / Gun 1
+/ Art 1 / Boat 6), four log gates 46/46, `enforce -Provider MD_METERS` 44P/0F/0W, ledger records the
+install, SQVR populated, picklists captured. Blocked ONLY at stage 5: a v2.3 release line is DRAFTED
+in `providers/MD_METERS/docs/tracking/DEX_TICKET.md` and deliberately NOT posted -- DEX-987 (found by
+JQL, recorded nowhere in the repo before today) has zero comments and Jira lifts ONE provider at a
+time. **Rob's approval is the next physical action.**
 
+**THEN: import + sweep the next of 6** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
+CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4.
 **ORDER IS IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28: *"you have to import before we can
-do picklists"*). This block used to say capture FIRST, which is impossible -- the console script
-scrapes the RENDERED form, so the JSON must already be in the tenant. The real rule is that the
-capture precedes CHOOSING TEST VALUES: that is what let OR pick a valid plate-type value and is why
-CA_VENTURA still cannot fix its hollow toggle.
+do picklists"*) -- the console script scrapes the RENDERED form, so the JSON must be in the tenant
+first. The capture precedes CHOOSING TEST VALUES, which is why CA_VENTURA still cannot fix its
+hollow toggle.
 
-**MISSION 12 of 20** (`report_mission_status.ps1`). All 7 remaining blocked at the SAME stage --
-tenant test. Nothing further can be BUILT to move it. History: git log, not here.
+**MISSION 12 of 20** (`report_mission_status.ps1`): 6 blocked at test, 1 (MD) at jira. History: git
+log, not here.
 
 ## ROB'S CALLS, NOT MINE
 
@@ -63,8 +66,15 @@ tenant test. Nothing further can be BUILT to move it. History: git log, not here
 
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default, so that test
   proves nothing. Needs TEST_VALUE_OVERRIDES -- but choose the value AFTER its picklist capture.
-- **7 providers owe the one-time picklist capture**, 0 owe a re-scope, 13 current -- measured
-  2026-08-28 via `audit_picklist_scope -All`. This line read "10" and was stale.
+- **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked), 0 owe a re-scope --
+  `audit_picklist_scope -All`. Was "10", then 7; MD closed its capture 2026-08-28.
+- **6 providers carry an EMPTY 13-line SQVR scaffold** ("populate after build") and
+  `audit_sqvr_integrity` PASSES all of them -- a file naming nothing and asserting no total gives the
+  gate nothing to compare, so only the version string is really checked. CA_eSUN,
+  CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY + **NM_NMLETS_OFML, OR_LEDS, TN_TIES which are ALL-PASS and
+  counted LIFECYCLE-COMPLETE**. MD and IL are the two fixed so far (2026-08-28 / 08-18) -- MD's CHECK
+  2 went from comparing NOTHING to comparing its 14-combo total. Making an empty QUERY PATHS section
+  a `[FAIL]` is a `tools/` change that lands 6 red at once: **Rob's direction, not taken.**
 - **3 providers carry stale ancillary artifacts** (picklist report + label review predate the JSON):
   CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH. Portfolio `enforce` WARNs on each. Clear at each
   provider's own turn via `build_report -Path <json> -IncludeExtended`; no wire impact.

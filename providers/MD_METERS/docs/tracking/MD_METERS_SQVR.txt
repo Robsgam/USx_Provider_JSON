@@ -1,13 +1,125 @@
 MD_METERS SUPPORTED QUERY VALIDATION REPORT
 ===============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-27
+Last updated: 2026-08-28
 JSON version: v2.3
+Validator: 71 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Total combos: 14 CommSys (6 QIDMs)
+  Counted from the emitted JSON via audit_test_coverage.ps1 ("Total CommSys combos: 14"), NOT from
+  audit_combo_reachability's "N checked" (which reports what it COMPARED and runs lower -- MD shows
+  15 metadata combinations at 2n and 14 ordered pairs at 2v; neither is the combo count). If a
+  rebuild changes the combo count this line MUST move with it, or audit_sqvr_integrity CHECK 2 will
+  compare a stale assertion against the JSON.
 
-QUERIES (pending metadata review)
-==================================
-  (populate from devdoc "Basic Queries Supported" after metadata review)
+POPULATED 2026-08-28, and the reason is the point. Both sections below were unfilled template text
+  ("populate after build") while this provider was mid-sweep -- and every automated gate read GREEN:
+  enforce -Provider MD_METERS exits 0 at 44 PASS / 0 FAIL / 0 WARN, and PHASE 2j printed
+  "[PASS] MD_METERS -- SQVR consistent with the JSON". That PASS was VACUOUS: audit_sqvr_integrity
+  checks that SQVR-named keyRefs exist in the JSON and that stated totals match, so a file naming
+  NOTHING and asserting NO total gives it nothing to compare, and the only check that really ran was
+  the version string. A gate cannot fail on an empty file.
+  It surfaced from the other end instead: post_test emitted "WARN SQVR: Could not find a marker for
+  combo '<X>'" on all 46 captures, because there were no markers to flip. audit_test_coverage.ps1
+  CHECK 4 also said so plainly ("SQVR Match: NO ... fewer SQVR [CONFIRMED] than tested combos") --
+  but nothing in enforce reads that tool, so its finding had nowhere to land.
+  Same remedy and same reasoning as IL_LEADS_OFML 2026-08-18. Everything below is DERIVED, not
+  recalled: combos + set[]/any[] from the emitted MD_METERS_v2.3.json via audit_test_coverage, log
+  counts by grouping logs/<Entity>/MD_METERS_v2.3_* on their combo label, and each RESULT line read
+  from the log itself.
 
-QUERY PATHS
-===========
-  (populate after build -- one PENDING or CONFIRMED per combo)
+  ⚠️ STILL OWED, deliberately not papered over: docs/reference/MD_METERS_SUPPORTED_QUERIES.txt is
+  STATUS: PROVISIONAL and says of itself "DERIVED FROM JSON COMBOS, NOT YET CONFIRMED". So the query
+  list below is confirmed against the JSON, NOT against the devdoc's "Basic Queries Supported"
+  section. audit_supported_queries CHECK 0 does still gate on the devdoc directly (it ignores the
+  extract's STATUS by design, after the AZ_AZDPS transaction-scope defect), so this is not wide open
+  -- but the label-level checks are soft until someone reads the devdoc and sets STATUS: CONFIRMED.
+
+QUERIES (6 QIDMs BUILT -- verified against the emitted JSON, NOT yet against the devdoc)
+========================================================================================
+    ArticleSingleQuery       -> Article  / QIDM label "Article"
+    BoatQuery                -> Boat     / QIDM label "Boat"
+    DriverHistoryQuery       -> Person   / QIDM label "Driver History"
+    DriverLicenseQuery       -> Person   / QIDM label "Driver License"
+    GunQuery                 -> Firearm  / QIDM label "Firearm"
+    VehicleRegistrationQuery -> Vehicle  / QIDM label "Vehicle Registration"
+
+  PERSON CARRIES TWO QIDMs AND THREE keyRef FAMILIES -- read this before calling anything a
+  mislabel. DriverLicenseQuery owns ZWAR.* AND ZLDR.*; DriverHistoryQuery owns ZDRV.*. In the
+  emitted JSON the "query"/"queryLabel" properties sit AFTER their combinations array, so a reader
+  scanning line order will mis-assign them; confirmed by line position (keyRefs 6164-6270 ->
+  DriverLicenseQuery at 6281; keyRefs 6380-6399 -> DriverHistoryQuery at 6410). Two keyRefs under
+  one QIDM is the documented merge pattern and they are distinguishable: ZWAR.* mandates
+  OperatorLicenseExpirationYear / raceCode, ZLDR.* does not.
+  ⚠️ "ZWAR" reads as a warrant search and PENDING_UPDATES.txt calls it that, but the string ZWAR
+  appears NOWHERE in source/MD_METERS_DEVDOC.txt and neither does the word "warrant". That
+  characterisation is UNSOURCED. A keyRef is not authority and never reaches the wire. Resolve from
+  the devdoc when SUPPORTED_QUERIES is confirmed; do not propagate the label meanwhile.
+
+  DH ISOLATION: DriverHistoryQuery uses DH-suffixed fieldIds (BirthDateDH, NameLastDH, NameFirstDH,
+  SexCodeDH, OperatorLicenseNumberDH, NameMiddleDH, NameSuffixDH) so the DL and DH field pools are
+  separate and queriesToDeselect works. Wire-proven this sweep on both pools.
+
+QUERY PATHS -- 14 of 14 CONFIRMED at v2.3 (46 logs, 46 PASS / 0 FAIL)
+=====================================================================
+Tenant-verified ALL-PASS 5/5 on 2026-08-28, FIRST EVER install and FIRST EVER sweep of this
+provider. Four log gates all 46/46: 6c content, 6d metadata, 2i attribution (the named combo is what
+fired), plan completeness. Combo coverage 100% (14/14 combos hold >= 1 log).
+
+Vehicle -- VehicleRegistrationQuery (4 combos, 11 logs)
+  [CONFIRMED] ZLRG.P  set=[LicensePlateNumber, LicensePlateTypeCode, LicensePlateYear]
+                      any=[RegistrationState, ImageIndicator]                        3 logs, PASS
+  [CONFIRMED] ZLRG.V  set=[VehicleIdentificationNumber]
+                      any=[RegistrationState, ImageIndicator]                        1 log,  PASS
+  [CONFIRMED] ZVEH.V  set=[VehicleIdentificationNumber]
+                      any=[VehicleMakeCode, ImageIndicator]                          4 logs, PASS
+  [CONFIRMED] ZVEH.P  set=[LicensePlateNumber] any=[ImageIndicator]                  3 logs, PASS
+    Identifier priority PROVEN: ZVEH.P_guardrail_vs_ZLRG.V fills plate AND VIN with DIFFERENT
+    values and ZVEH.P wins -- so the pair is a real contest, not a degenerate guardrail
+    (audit_log_inflation attack D).
+
+Person -- DriverLicenseQuery (4 combos, 19 logs)
+  [CONFIRMED] ZWAR.O  set=[NameLast, NameFirst, OperatorLicenseExpirationYear,
+                           OperatorLicenseNumber, raceCode, SexCode]
+                      any=[RegistrationState, ImageIndicator, NameMiddle, NameSuffix] 5 logs, PASS
+  [CONFIRMED] ZWAR.N  set=[BirthDate, NameLast, NameFirst, raceCode, SexCode]
+                      any=[ImageIndicator, NameMiddle, NameSuffix]                    5 logs, PASS
+  [CONFIRMED] ZLDR.N  set=[BirthDate, NameLast, NameFirst, SexCode]
+                      any=[RegistrationState, ImageIndicator, NameMiddle, NameSuffix] 5 logs, PASS
+  [CONFIRMED] ZLDR.O  set=[OperatorLicenseNumber] any=[RegistrationState,
+                           ImageIndicator]                                            4 logs, PASS
+    OLN > Name priority PROVEN: ZLDR.O_guardrail_vs_ZLDR.N.
+
+Person -- DriverHistoryQuery (2 combos, 8 logs)
+  [CONFIRMED] ZDRV.N  set=[BirthDateDH, NameLastDH, NameFirstDH, SexCodeDH]
+                      any=[ImageIndicator, NameMiddleDH, NameSuffixDH]                5 logs, PASS
+  [CONFIRMED] ZDRV.O  set=[OperatorLicenseNumberDH] any=[ImageIndicator]              3 logs, PASS
+    OLN > Name priority PROVEN on the DH pool too: ZDRV.O_guardrail_vs_ZDRV.N.
+
+Firearm -- GunQuery (1 combo, 1 log)
+  [CONFIRMED] ZGUN    set=[gunCaliber, firearmMake, serialNumber]                     1 log,  PASS
+    firearmMake=IMI is LIVE-PROVEN HERE, not inferred from another provider. The one-time picklist
+    capture WARNed "value 'IMI' not in the captured subset (300 of a larger list) -- inconclusive"
+    because the tenant list is alphabetical and the DOM capture cut at "BDB - Bader & Brothers".
+    The sweep settles it: the driver opened the dropdown, matched 5 options, selected
+    "IMI - Desert Eagle Israel Military Industries...", and the log carries <GunMake>IMI</GunMake>.
+    The test value was deliberately NOT changed to something inside the captured window -- that
+    would have greened a WARN by swapping a working code for an obscure one.
+
+Article -- ArticleSingleQuery (1 combo, 1 log)
+  [CONFIRMED] ZART    set=[serialNumber, articleTypeCode]                             1 log,  PASS
+
+Boat -- BoatQuery (2 combos, 6 logs)
+  [CONFIRMED] ZBOA.H  set=[BoatHullIdNumber] any=[RegistrationNumber, ImageIndicator] 4 logs, PASS
+  [CONFIRMED] ZBOA.R  set=[RegistrationNumber] any=[ImageIndicator]                   2 logs, PASS
+    Hull > Registration priority is structural here: ZBOA.H carries RegistrationNumber in any[], so
+    filling both fires ZBOA.H by set[] specificity.
+
+NOTES ON DEFAULTS PROVEN THIS SWEEP
+===================================
+  NCIC Image (ImageIndicator) defaults 'Y' on all 9 form controls and all 12 combo defaults[] --
+  closed at v2.1, and MD_METERS was the LAST portfolio carrier of the old 'N' Vehicle/Boat default
+  ([FLAG:ncic-image-default-y-everywhere], retired 2026-08-19). Every _af_ImageIndicator log fills
+  'N' precisely BECAUSE the default is 'Y': a toggle test that matches the form default proves only
+  that the default is the default.
+  VehicleMakeCode transmits the raw attribute code (CNST_FORD) -- LIMITATION #38, PARKED by Rob
+  2026-08-03 portfolio-wide. Not an MD defect and not to be rediscovered here.
