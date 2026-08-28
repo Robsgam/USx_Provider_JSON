@@ -37,73 +37,87 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IMPORT + SWEEP. The build queue is EMPTY.** 7 providers are NEVER-TESTED and every one is
-build/spec/reachability-complete -- nothing further can be BUILT to move the number. Queue authority
-is `report_import_owed.ps1`, never this file. Smallest first: LA_LEMS, MD_METERS, CA_SLO.
-**OR_LEDS is ONE APPROVAL from complete** -- 5 of 6 stages done, only the Jira post outstanding.
+**IMPORT + SWEEP. The build queue is EMPTY and all 7 never-tested providers are GATE-CLEAN.**
+Queue authority is `report_import_owed.ps1`, never this file. **MD_METERS v2.3 is teed up** --
+PHASE 1 green (8/8 fuzz caught), enforce 45P/0F/0W, pre-flight CLEAR, 46 tests / 0 hollow toggles.
+Run its ONE-TIME PICKLIST CAPTURE FIRST (`logs\MD_METERS_PICKLIST_SCOPE.console.js` in the tenant):
+OR_LEDS picked a valid plate-type value that way, and CA_VENTURA cannot fix its hollow toggle
+without one. Then: import -> capture picklists -> drive the plan -> watcher ingests.
 
-**MISSION: 11 of 20 = 55%** (`report_mission_status.ps1`; target 19/20). 7 blocked at test, 1 at jira.
-**MEASURED 2026-08-27:** reachability 20/20 all combos reachable - combo coverage 100% on all 12
-tenant-verified providers - fidelity 420 branches / 4 UNDER / 4 OVER, all CA_CONTRA_COSTA.
+**MISSION: 12 of 20 = 60%** (`report_mission_status.ps1`; target 19/20). ALL 7 remaining are
+blocked at the SAME stage -- tenant test. 0 blocked at jira, build, spec or reachability.
+**Nothing further can be BUILT to move the number.**
 
-## AWAITING ROB -- DRAFTED, NOT POSTED
+## DONE 2026-08-27/28 -- do not redo
 
-- **OR_LEDS v2.6 -> DEX-992.** Ticket located by JQL 2026-08-27 (it was recorded NOWHERE before);
-  Backlog, ZERO comments, so the release line is an **initial post**, not a supersede. Comment is
-  drafted; NOT posted. Jira is HELD (2026-07-31) and lifts ONE PROVIDER AT A TIME -- Rob approved
-  NM on 08-27 and that does NOT carry. STAGE 5 GAP on OR is CORRECT: absence of a post, not a
-  missing record of one.
+- **TX_TLETS v4.22 LIFECYCLE-COMPLETE.** In-state plate path `{LicensePlateNumber, State}` restored
+  (State promoted to `set[]` so it is GATED and cannot shadow the more specific plate paths).
+  From v4.17-v4.21 plate+State matched NO combo and sent nothing. Wire-proven: 98/98 ALL-PASS,
+  the QV wire carries LicensePlateNumber + State and NOTHING else. DEX-967 comment **807576**.
+  CCH v1.18 in lockstep. **It did NOT move the mission number** -- TX was already complete at
+  v4.21; a rebuild of a complete provider only holds the line.
+- **OR_LEDS v2.6 LIFECYCLE-COMPLETE** -- DEX-992 comment **807713**, the FIRST comment that ticket
+  has ever carried. No history anchor, deliberately (v2.5 and earlier were never installed).
+  **This one DID move the number, 11 -> 12.**
+- **LA_LEMS + CA_VENTURA_COUNTY**: dedupe flag retired, plans regenerated (32->31, 97->95, exactly
+  as predicted). No version bump, no logs orphaned.
+- **block_entity**: single-optional combos accept their `_af_<field>` log as any[] evidence. The
+  gate and the plan generator were MUTUALLY UNSATISFIABLE; 72 more combos across 19 providers
+  would each have hit it at their own next rebuild.
+- **audit_name_components class C4 POOL-INCONSISTENT (BLOCKING)** + `audit_name_components` ADDED
+  TO THE FUZZ PANEL. Two gaps: the gate could not see a name component dropped from ONE
+  combination's any[], and the fuzzer could not have told us either way. Clean 20 providers /
+  216 components / C4 compared 68 / 0 violations; mutant FAILs naming the combo.
 
 ## OPEN DECISIONS THAT ARE ROB'S, NOT MINE
 
-- **CA_CONTRA_COSTA JAWS / SuperQuery ruling** -- pending; v2.4 deliberately did not pre-empt it. Its
-  4 UNDER / 3 OVER are the portfolio's ONLY remaining fidelity findings, listed verbatim in its
-  BUILD_NOTES and untouched: CA_CLETS and Ventura require OPPOSITE things there. Blocks a 92-test sweep.
-- **LA_LEMS BoatQuery: build `QB{reg}` instead of `BQ{reg}`?** Devdoc makes `Attention` MANDATORY and
-  State optional; metadata splits them across two ROUTING-INDISTINGUISHABLE variants, so only one can
-  be built. Swapping would transmit the mandatory field and lose only an optional one -- strictly
-  better conformance. Recorded in LA's registry, NOT taken: LA is under the CommSys hold.
-- **eSUN 228KB tenant export in pushed history** at `8273a87f` -- removing it needs a rewrite + force-push.
+- **CA_CONTRA_COSTA JAWS / SuperQuery ruling** -- pending. Its 4 UNDER / 3 OVER are the portfolio's
+  ONLY remaining fidelity findings, listed verbatim in its BUILD_NOTES. Blocks a 92-test sweep.
+  It is gate-clean and importable; hold the SWEEP, not the import.
+- **LA_LEMS BoatQuery: build `QB{reg}` instead of `BQ{reg}`?** Recorded in LA's registry, NOT taken.
+- **eSUN 228KB tenant export in pushed history** at `8273a87f` -- removing it needs a force-push.
 
 ## OPEN FINDINGS -- confirmed, unfixed
 
+- **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to `PC`, the value the form already
+  defaults to, so that test proves nothing. Needs a TEST_VALUE_OVERRIDES entry -- but pick the value
+  AFTER its picklist capture, or you will choose one the tenant does not offer.
+- **4 providers still carry `[FLAG:plan-dedupe-vacuous-tests]`** -- FL_FCIC, HI_HCJDC_OFML,
+  IL_LEADS_OFML, NJ_NJCJIS. All ALL-PASS, so the flags are CORRECTLY deferred: regenerating a plan
+  orphans that provider's logs and drops it out of ALL-PASS. Each clears at its OWN next rebuild.
+  **NOT work owed.**
 - **PAUSED PENDING COMMSYS -- LIMITATION #41:** a populated HOME state routes a local plate to NLETS.
-  Our config is provably clean; evidence in `PLATFORM_CONSTRAINTS.txt` #41. Read before any State work.
-- **NCIC hit blocks are CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI *and* TN. Make "does a mined
-  hit render?" a stated sweep objective. NOT a request-side question -- a sweep cannot settle it.
+- **NCIC hit blocks are CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI *and* TN.
 - **Officer guides are content-poor, not stale.** Rewrite requested; shape not agreed.
-- **7 live flags, all one id: `[FLAG:plan-dedupe-vacuous-tests]`** (CA_SLO and MD retired theirs at
-  their 08-27 rebuilds). Each clears at its OWN next rebuild; not new work. Derive from
-  `audit_reverse_propagation.ps1`, never from memory.
-- **`audit_devdoc_optionals` MANDATORY-NOT-TRANSMITTED (new 08-27): 1 finding left, CA_CONTRA_COSTA.**
-  12 of 13 closed. It is blocked behind the JAWS ruling above.
-- **CLAUDE.md is STALE in 3 spots**: "Entity Display Order" default still says Person-first (20 of 20
-  are Vehicle-first); TEST_VALUE_OVERRIDES entity-scoped keys are called "preferred" but
-  `_combo_value_resolver.ps1` does NOT implement them (a `Entity.fieldId` line matches NOTHING while
-  the tool still reports it loaded); the `audit_layout_flow` 139 baseline.
+- **10 providers owe the one-time tenant picklist capture** (`audit_picklist_scope -All`).
 
 ## ON HOLD / DO NOT RE-RAISE
 
-- **`State2`-`State5` MULTI-STATE NLETS BROADCAST -- PARKED UNTIL ROB BRINGS IT UP.** Ruled OUT OF
-  SCOPE 2026-08-02. The pre-sweep flow reads the spec plan's UNREACHABLE findings without cross-checking
-  the registry, so it WILL keep looking new. NM's 24 UNREACHABLE spec tests are this; expected output.
-- **COMMSYS ASKS ARE ON HOLD.** LA's devdoc PurposeCode/State inversion is recorded, NOT owed.
-- **TN `RQ01`** and **name-component casing (Pascal 11 / camel 9)** -- both CLOSED 08-24, mis-recorded
-  as open risks once already. Do not re-open. A keyRef NEVER reaches the wire.
-- **TX_TLETS_CCH testing PARKED.** **DH IS NOT SUPPORTED FROM CAD.** **LIMITATION #40: the wire is a
-  UNION across every MATCHING combination** (LIVE-PROVEN 38/38).
-- **Plate type/year prefills: KEEP where optional AND nothing routes on them** (Rob 08-27). Where
-  routing DOES depend on them the OOS-only exception applies -- un-prefill BOTH (HI v3.0 shape).
+- **`State2`-`State5` MULTI-STATE NLETS BROADCAST -- PARKED.** Ruled OUT OF SCOPE 2026-08-02.
+  NM's 24 UNREACHABLE spec tests are this; expected output.
+- **COMMSYS ASKS ARE ON HOLD.** **TX_TLETS_CCH testing PARKED.** **DH IS NOT SUPPORTED FROM CAD.**
+- **TN `RQ01`** and **name-component casing** -- CLOSED 08-24. A keyRef NEVER reaches the wire.
+- **Jira is HELD** and lifts ONE PROVIDER AT A TIME. TX and OR were each approved separately on
+  their own day; neither approval carries. DRAFT AND WAIT, every provider, every time.
+- **The TX and OR comments each carry a closing line naming the catalog/Foundation tenant** -- a
+  DELIBERATE OVERRIDE of the template's "NO TENANT DETAIL ANYWHERE" rule, directed by Rob both
+  times and recorded as such. Do NOT "correct" those posted comments, and do NOT repeat it unasked.
 
-## RULES I BROKE TODAY -- READ BEFORE EDITING ANYTHING
+## RULES I BROKE THIS SESSION -- READ BEFORE EDITING ANYTHING
 
-- **NEVER nest one shell's quoting inside another's.** A PowerShell here-string inside a bash heredoc
-  let bash eat every literal "n" in a build script (`function` -> `fu<NL>ctio<NL>`). Restored with
-  `git checkout` and verified by `audit_reproducible`, NOT by eye. Use the Edit tool for multi-line.
-- **An edit anchored INSIDE a block leaves its opening orphaned.** Cost a build failure whose reported
-  line was 20 lines PAST the damage -- the parser reports where it gave up, not where you broke it.
-- **A stale artifact in a scratchpad looks exactly like a fresh one.** I read a 14-day-old enforce
-  report and nearly reported `625 PASS / 22 FAIL` as current. Check the timestamp.
-- **Verify a tool's success line against the artifact.** "2 overrides loaded" was true while the
-  overrides matched nothing (wrong key namespace). Read the emitted plan, not the console.
-- **`audit_combo_reachability`'s "N checked" is NOT a combo count.** Use `audit_test_coverage`.
+- **KNOW WHETHER A TOOL WRITES BEFORE RUNNING IT AS A "CHECK".** I ran `block_entity` across five
+  providers to "verify" a change; it STAMPS, COMMITS AND PUSHES. Six commits flipped NY/NJ/TN from
+  open to blocked. Reverted. `audit_*` reads; `block_entity` / `post_test` / `reset_test_package`
+  WRITE. The verification was never needed -- the change was strictly widening and provable by
+  reading it.
+- **MUTATE A REPLICA, NEVER THE REAL PROVIDER FILE.** `git checkout --` restores CONTENT but stamps
+  MTIME TO NOW, so MD's JSON became newer than its own artifacts and enforce went 0 FAIL -> 3 FAIL,
+  none of it MD's fault. The fuzz harness already builds a replica (with `source/` copied in so the
+  metadata XML resolves) -- use that shape.
+- **A PROBE THAT MATCHES ITS OWN COMMAND LINE LIES.** Twice: a watcher scan that matched the scan,
+  and a combo enumeration that swept in `AUTH` and entity names. Both produced confident wrong
+  numbers until checked.
+- **CHECK ACCEPTED_DIVERGENCES BEFORE DIAGNOSING A REPORTED GAP AS NEW.** TX's plate+State symptom,
+  its root cause AND its fix were recorded on 2026-07-30. I re-derived all of it.
+- **SQVR PROSE NEVER EXPIRES ON ITS OWN.** `reset_test_package` rewrites STATUS MARKERS, not
+  narrative. I removed a stale v4.12 block and immediately wrote a fresh stale one.
