@@ -44,9 +44,15 @@ v2.3  2026-08-27  BOTH DOCUMENTED PLATE SEARCHES NOW WORK -- the in-state one st
     archived and it is on no Foundation or LIVE tenant.
 
 State: Maryland
-v2.3  2026-08-27  Pipeline rebuild
-  CHANGED: Rebuilt via pipeline.ps1
-  REASON: Scheduled rebuild
+  DUPLICATE v2.3 STUB REMOVED 2026-08-28. This slot held a second v2.3 entry reading
+  "Pipeline rebuild / CHANGED: Rebuilt via pipeline.ps1 / REASON: Scheduled rebuild" -- the generic
+  stamp pipeline.ps1 writes -- while the REAL v2.3 entry sits at the top of this file describing the
+  plate-search fix. Both rendered: CHANGELOG_MD_METERS.md carried TWO "## v2.3" sections, the real
+  one and then the stub, so a reader (or a Jira release line written from the changelog) could land
+  on "Scheduled rebuild" for a version that changed the wire. audit_buildnotes_fidelity did NOT catch
+  it because it matches the FIRST entry for the version and that one is genuine -- the gate asks "is
+  this version described?", never "is it described TWICE, once falsely?". Fixed at the source and the
+  changelog regenerated, per no-post-build-patches.
 
 v2.2  2026-08-20  LAYOUT COLLAPSE 13->6 CARDS + NAME COMPONENTS
   CHANGED:

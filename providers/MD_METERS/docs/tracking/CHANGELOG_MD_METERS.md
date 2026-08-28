@@ -2,7 +2,7 @@
 
 Auto-generated from `MD_METERS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.3** | Generated: 2026-08-27
+Current: **v2.3** | Generated: 2026-08-28
 
 ---
 
@@ -48,11 +48,6 @@ GATES: validator 71P/0F/0W - audit_devdoc_optionals 1 FAIL -> 0 - fidelity 15 br
   [FLAG:plan-dedupe-vacuous-tests] RETIRED by this rebuild; plan regenerated to 46 tests.  
 COST: NONE. MD_METERS has never been tenant-tested (0 logs at any version), so no package is  
   archived and it is on no Foundation or LIVE tenant.  
-
-## v2.3 -- 2026-08-27 -- Pipeline rebuild
-
-**CHANGED:** Rebuilt via pipeline.ps1
-**REASON:** Scheduled rebuild
 
 ## v2.2 -- 2026-08-20 -- LAYOUT COLLAPSE 13->6 CARDS + NAME COMPONENTS
 
