@@ -1,0 +1,86 @@
+﻿================================================================
+TEST LOG: MD_METERS Vehicle VehicleRegistrationQuery
+Combo: ZVEH.V_any (ZVEH.V_any (auto))
+Date: 2026-08-28 13:42:43
+Result: PASS
+JSON Version: 2.3
+Entity Fingerprint: 537147c77d7169bd3599c800657cafa9e9c899a70dcc3abd3edb397a6db8cceb
+Tier: Full
+================================================================
+
+QUERY STRING
+------------
+{"ImageIndicator":"N","VehicleIdentificationNumber":"1HGCM82633A123456","VehicleMakeCode":"FORD"}
+
+COMMSYS XML
+-----------
+<?xml version="1.0" encoding="UTF-8"?>
+<api:ConnectCicApi xmlns:api="http://schema.commsys.com/xml/ConnectCic/Api">
+  <api:Route>
+    <api:Source>MK43RS</api:Source>
+    <api:Destinations>
+      <api:Destination>ConnectCic</api:Destination>
+    </api:Destinations>
+  </api:Route>
+  <api:Transactions>
+    <api:Transaction id="01M14PVPSMA39TYNQKKNR443NV">
+      <LawEnforcementTransaction version="1.0">
+        <Session>
+          <Id>MK43RS</Id>
+          <Authentication>
+            <UserName>MK43RS</UserName>
+            <ORI>MK1234567</ORI>
+            <Mnemonic>MK1234567</Mnemonic>
+          </Authentication>
+        </Session>
+        <Transaction>
+          <Request>
+            <MessageType>VehicleRegistrationQuery</MessageType>
+            <Id>01M14PVPSMA39TYNQKKNR443NV</Id>
+            <VehicleMakeCode>CNST_FORD</VehicleMakeCode>
+            <VehicleIdentificationNumber>1HGCM82633A123456</VehicleIdentificationNumber>
+            <ImageIndicator>N</ImageIndicator>
+          </Request>
+        </Transaction>
+      </LawEnforcementTransaction>
+    </api:Transaction>
+  </api:Transactions>
+</api:ConnectCicApi>
+
+COMMSYS XML RESPONSE
+--------------------
+Not captured
+
+RMS QUERY
+---------
+Request:
+{
+    "elasticQuery":  {
+                         "vehicle":  {
+                                         "vinNumber":  "1HGCM82633A123456"
+                                     }
+                     },
+    "from":  0,
+    "size":  50
+}
+
+Response:
+No results were created
+
+FIELD ANALYSIS
+--------------
+AUTO-EXTRACTED FROM COMMSYS XML:
+  Id                             MK43RS
+  UserName                       MK43RS
+  ORI                            MK1234567
+  Mnemonic                       MK1234567
+  Id                             01M14PVPSMA39TYNQKKNR443NV
+  VehicleMakeCode                CNST_FORD
+  VehicleIdentificationNumber    1HGCM82633A123456
+  ImageIndicator                 N
+
+NOTES
+-----
+Automated capture (txId 01M14PVPSMA39TYNQKKNR443NV). kind=any; anyField=; expectedKeyRef=ZVEH.V; firedMessageType=VehicleRegistrationQuery. routing=VERIFIED (expected combo set[] on wire)
+
+RESULT: PASS
