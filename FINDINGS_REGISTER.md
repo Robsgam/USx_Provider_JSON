@@ -208,7 +208,34 @@ that can fail.** Same shape as the `audit_name_components` gap.
 list `<Field name>` in the metadata and check whether the name appears **anywhere** in the emitted
 JSON. Zero occurrences = defined by the authority, unreachable by any officer.
 
-**Result: 8 providers, 59 unreachable fields. Triaged:**
+⚠️ **THE 59 BELOW IS AN INFLATED DENOMINATOR AND ROB CAUGHT IT: *"are you sure about that? you aren't
+counting non basic supported queries section of metadata."* CORRECTED 2026-08-28 — THE IN-SCOPE
+ANSWER IS ZERO.**
+
+The probe scoped to built TRANSACTIONS and then counted every field any of their combinations
+reference. A built transaction still contains combinations we deliberately do not build — the Nlets
+multi-state paths, the mined NCIC twins, the duplicate-input siblings. Re-measured per COMBINATION,
+with the referencing keyRef checked for whether we build it:
+
+| Scope | Count | Verdict |
+|---|---|---|
+| field sits on a keyRef we **do not build at all** | **22** — FL 13 (`RQ`/`QW`/`DQ`/`BQ`; FL builds `FRQ*`), LA 4 (`RQS`), OH 3 (`BMVIMS`), TX 1 (`QW`), MD 1 (`ZDRV` under DL) | **OUT OF BASIC SCOPE — "never a gap in either direction"** (usx-metadata Step 5) |
+| field sits on a **built** combination | **37** — NM 21, HI 8, IL 4, LA 4 | every one is `State2`–`State5` (out of scope 2026-08-02) plus NM's `FormORI` ×12 and `RelatedHitSearchIndicator` ×6, both registered |
+| **genuinely unrecorded AND in scope** | **0** | |
+
+**Two flaws in my own table, both worth keeping.** (1) FL's 13 are ALL on unbuilt keyRefs, so FL was
+exonerated twice over — the QW park (5b) and this. (2) **The BUILT column matched keyRef BY NAME
+without scoping to the transaction**, so MD's `DriverLicenseQuery/ZDRV{OperatorLicenseNumber}` read
+`BUILT=True` because `ZDRV.N`/`ZDRV.O` exist **under DriverHistoryQuery**. A KEYREF IS NOT A VARIANT,
+for the second time in one sweep. MD's field is therefore out of scope by the same rule that clears
+FL. Its registry row is still correct and worth having — it states exactly this reasoning — but
+calling it *"the one genuinely unrecorded item"* was wrong.
+
+**So the honest result of this sweep is: the portfolio was leaving NOTHING on the table from this
+class.** What survives is 5c (the registry blind zone), 5e (MD's DL State question, which came from
+reading the devdoc rather than from this probe), and the doc-authority residue in 5d.
+
+**Original (inflated) triage table, kept so the correction is auditable — 8 providers, 59 fields:**
 
 | Provider | Unreachable | Recorded? | Verdict |
 |---|---|---|---|

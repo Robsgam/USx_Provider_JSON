@@ -65,10 +65,13 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
-- **2026-08-28 SWEEP -> section 5. ONE item was genuinely on the table and it is CLOSED** (MD's
-  `YearsPastViolationsWanted`, row added). FL's was RETRACTED. So the portfolio was in BETTER shape
-  than my sweep first claimed -- 59 unreachable metadata fields across 8 providers, ALL recorded.
-  What survives is structural: **193 of 263 registry rows (73%) are unverifiable** by
+- **2026-08-28 SWEEP -> section 5. THE IN-SCOPE ANSWER IS ZERO -- nothing was on the table from the
+  unreachable-optional class.** My "59 unreachable fields / 8 providers" counted fields on
+  combinations we never build; Rob: *"you aren't counting non basic supported queries section of
+  metadata."* Re-scoped per COMBINATION: 22 sit on keyRefs we do not build (out of scope), 37 on
+  built combos and every one is `State2`-`State5` (out of scope) or NM's registered
+  `FormORI`/`RelatedHitSearchIndicator`. MD's row was still worth adding but was NOT "the one
+  unrecorded item". What survives is structural: **193 of 263 registry rows (73%) are unverifiable** by
   `audit_registry_currency` (7 providers have zero checkable rows) -- and the first row opened by hand
   in that zone was FALSE. **9 of 20 `SUPPORTED_QUERIES` extracts are PROVISIONAL + derived-from-JSON.
   6 carry an empty SQVR scaffold that its gate passes.** NM / OR / TN are in all three lists AND are
@@ -97,21 +100,20 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
-- **REPLACE this file, never append.** I appended a sweep summary and took it to 126 lines, failing
-  its own gate -- the third time on this same rule. Detail goes in `FINDINGS_REGISTER.md`; this file
-  POINTS.
-- **Read `ACCEPTED_DIVERGENCES` before calling a reported gap new.** I re-derived MD's `ZWAR.N`/State
-  and `ZDRV.N`/SexCode adjudications; both were recorded 2026-08-01.
-- **Know whether a tool WRITES before running it as a "check".** `block_entity` stamps, commits and
-  pushes. `audit_*`/`report_*` read.
-- **Mutate a REPLICA, never the real file.** `git checkout --` restores content but stamps mtime.
-- **Validate a probe against a known answer first.** FIVE probes failed today on relative paths,
-  wrong resolver params (`-ProvDir` not `-Provider`), a document-spanning regex, a wrong wire element
-  name (`<State>`, not `<RegistrationState>`), and grepping a registry for a literal FIELD name when
-  the covering row scopes it with a **wildcard** (`QW | *`). Each looked like a portfolio finding; the
-  last one I published against a LIFECYCLE-COMPLETE provider before Rob caught it.
-- **A registry row can scope its field with `*`. Grep the SCOPE (query + keyRef), never the field
-  token alone** -- otherwise every wildcard row reads as an absent adjudication.
-- **Check `Data-Mined Transactions:` in the devdoc before calling an unbuilt transaction a gap.** QW
-  and QV are mined on FL (and Rob parked them 2026-07-30: *"no qw and qv should stay parked"*), so an
-  optional that exists only on a mined transaction is not owed.
+- **VALIDATE EVERY PROBE AGAINST A KNOWN ANSWER BEFORE BELIEVING IT. Seven failed today and each one
+  first looked like a portfolio finding:** relative paths after the shell cwd moved; resolver param
+  (`-ProvDir` not `-Provider`); a document-spanning regex (92 built combos vs a truth of 14); the wire
+  element is `<State>` not `<RegistrationState>`; grepping a registry for a literal FIELD name when
+  the covering row scopes it `QW | *` (**grep the SCOPE, never the token**); scoping a metadata sweep
+  by TRANSACTION not COMBINATION (inflated a finding count from 0 to 59 -- a built transaction still
+  holds combinations we never build); and **a KEYREF IS NOT A VARIANT, broken twice in one sweep** --
+  matching `ZDRV` by name called MD's unbuilt `DriverLicenseQuery/ZDRV{OLN}` built, because
+  `ZDRV.N`/`.O` live under DriverHistoryQuery. Scope keyRef to its transaction, always.
+- **Read `ACCEPTED_DIVERGENCES` and the devdoc's `Data-Mined Transactions:` line BEFORE calling a gap
+  new.** I re-derived MD's `ZWAR.N`/State and `ZDRV.N`/SexCode rows (both recorded 2026-08-01) and
+  published a false finding against FL, which Rob remembered and my probe did not.
+- **REPLACE this file, never append.** I took it to 126 lines twice in one session, failing its own
+  gate both times. Detail goes in `FINDINGS_REGISTER.md`; this file POINTS.
+- **Know whether a tool WRITES before running it as a "check"** -- `block_entity` stamps, commits and
+  pushes; `audit_*`/`report_*` read. **Mutate a REPLICA, never the real file** -- `git checkout --`
+  restores content but stamps mtime.
