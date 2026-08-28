@@ -55,8 +55,9 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
 
 ## ROB'S CALLS, NOT MINE
 
-- **MD_METERS DL State** -- section 5e. **FL_FCIC `ExpandedNameSearchCode`** -- section 5b, v7.25
-  archives 118 logs. Both from the 2026-08-28 sweep.
+- **MD_METERS DL State** -- section 5e, three options, all v2.4 (archives 46 logs).
+  **FL_FCIC owes NOTHING** -- I reported `ExpandedNameSearchCode` as an unrecorded gap and RETRACTED it;
+  Rob: *"for fl i thought we parked that."* See 5b.
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- the portfolio's only remaining fidelity findings (4 UNDER /
   3 OVER, verbatim in its BUILD_NOTES). Hold the SWEEP, not the import.
 - **LA_LEMS BoatQuery `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
@@ -64,12 +65,14 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
-- **2026-08-28 SWEEP -> section 5.** Two items were genuinely on the table (FL `ExpandedNameSearchCode`,
-  MD DL State); everything else triaged RECORDED. Structural: **193 of 263 registry rows (73%) are
-  unverifiable** by `audit_registry_currency` (7 providers have zero checkable rows) -- and the first
-  row opened by hand in that zone was FALSE. **9 of 20 `SUPPORTED_QUERIES` extracts are PROVISIONAL +
-  derived-from-JSON. 6 carry an empty SQVR scaffold that its gate passes.** NM / OR / TN are in all
-  three lists AND are LIFECYCLE-COMPLETE.
+- **2026-08-28 SWEEP -> section 5. ONE item was genuinely on the table and it is CLOSED** (MD's
+  `YearsPastViolationsWanted`, row added). FL's was RETRACTED. So the portfolio was in BETTER shape
+  than my sweep first claimed -- 59 unreachable metadata fields across 8 providers, ALL recorded.
+  What survives is structural: **193 of 263 registry rows (73%) are unverifiable** by
+  `audit_registry_currency` (7 providers have zero checkable rows) -- and the first row opened by hand
+  in that zone was FALSE. **9 of 20 `SUPPORTED_QUERIES` extracts are PROVISIONAL + derived-from-JSON.
+  6 carry an empty SQVR scaffold that its gate passes.** NM / OR / TN are in all three lists AND are
+  LIFECYCLE-COMPLETE. Still OPEN and Rob's: MD DL State (5e).
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default. Needs
   TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
 - **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked).
@@ -102,6 +105,13 @@ form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot f
 - **Know whether a tool WRITES before running it as a "check".** `block_entity` stamps, commits and
   pushes. `audit_*`/`report_*` read.
 - **Mutate a REPLICA, never the real file.** `git checkout --` restores content but stamps mtime.
-- **Validate a probe against a known answer first.** Four probes failed today on relative paths,
-  wrong resolver params (`-ProvDir` not `-Provider`), a document-spanning regex, and a wrong wire
-  element name (`<State>`, not `<RegistrationState>`). Each looked like a portfolio finding.
+- **Validate a probe against a known answer first.** FIVE probes failed today on relative paths,
+  wrong resolver params (`-ProvDir` not `-Provider`), a document-spanning regex, a wrong wire element
+  name (`<State>`, not `<RegistrationState>`), and grepping a registry for a literal FIELD name when
+  the covering row scopes it with a **wildcard** (`QW | *`). Each looked like a portfolio finding; the
+  last one I published against a LIFECYCLE-COMPLETE provider before Rob caught it.
+- **A registry row can scope its field with `*`. Grep the SCOPE (query + keyRef), never the field
+  token alone** -- otherwise every wildcard row reads as an absent adjudication.
+- **Check `Data-Mined Transactions:` in the devdoc before calling an unbuilt transaction a gap.** QW
+  and QV are mined on FL (and Rob parked them 2026-07-30: *"no qw and qv should stay parked"*), so an
+  optional that exists only on a mined transaction is not owed.

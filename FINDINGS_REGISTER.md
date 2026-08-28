@@ -128,7 +128,6 @@ baseline. Neither version was ever imported, so the second bump cost nothing.
 | **HI_HCJDC_OFML** | v4.20 | **50** | `ROW_VEH_1` — `LicensePlateNumber` (maxLen 10) alone on a 12-col row | L5 | no — cosmetic | OPEN (cosmetic) |
 | **OH_LEADS** | v2.10 | **56** | Middle/Suffix controls exist and are composed but are **in no combination pool** | C3 ×6 | **YES** — see the C3 note above; the officer's middle name is dropped today | OPEN |
 | **AZ_AZDPS** | v3.11 | 58 | — | — | — | **CLEAN on all three gates.** The reference for name-component wiring |
-| **FL_FCIC** | v7.24 | **118** | `DriverLicenseQuery/ExpandedNameSearchCode` — metadata-defined and devdoc-listed, `Expanded` appears **0 times** in the JSON, **0** registry rows, **0** build-script mentions | 5a stranded-optional | **PROBABLY YES — needs Rob.** Rides the `QW` DL variants, and NEITHER mandates `State2`, so the State2 out-of-scope ruling does not cover it. TN_TIES builds the field, so it is real and buildable | **OPEN 2026-08-28** — see section 5b. Fix = v7.25, archives 118 logs |
 | **MD_METERS** | v2.3 | **46** | DL `(Out)` combination brackets `[State]` optional; `raceCode` alone decides direction, so a filled State is silently discarded when Race is also filled | 5e silent-discard | **YES** — same class as the v2.3 plate discard | **OPEN 2026-08-28** — three options in section 5e, all v2.4. Rob's call |
 
 ⚠️ **A layout/label fix leaves the wire IDENTICAL and that is provable, not assumed.** Method used on
@@ -218,9 +217,38 @@ JSON. Zero occurrences = defined by the authority, unreachable by any officer.
 | NM_NMLETS_OFML | `FormORI` ×5, `RelatedHitSearchIndicator` ×4 | registry 2 + 2 | **RECORDED.** |
 | TX_TLETS | `DriverLicenseQuery/ExpandedBirthDateSearchCode` | registry 1 | **RECORDED.** |
 | **MD_METERS** | `DriverLicenseQuery/YearsPastViolationsWanted` | registry **0**, build-script comment only | **CLOSED 2026-08-28** — row added. Unbuildable either way: its variant's `set[]` is byte-identical to built `ZLDR{OLN}` (dead combo), and widening `ZLDR.O.any[]` would OVER-PERMIT. |
-| **FL_FCIC** | `DriverLicenseQuery/ExpandedNameSearchCode` | registry **0**, build script **0** | ⚠️ **OPEN — the one genuinely unrecorded item.** See row in section A. |
+| FL_FCIC | `DriverLicenseQuery/ExpandedNameSearchCode` | registry row `QW | *` (wildcard) + devdoc declares QW MINED + Rob parked QW/QV 2026-07-30 | **RECORDED — my "unrecorded" verdict RETRACTED, see 5b.** |
 
-### 5b. FL_FCIC `ExpandedNameSearchCode` — the item that was on the table
+### 5b. FL_FCIC `ExpandedNameSearchCode` — ❌ **RETRACTED 2026-08-28. NOT A FINDING. FULLY RECORDED.**
+
+**Rob: *"for fl i thought we parked that."* He was right and I published a false finding against a
+LIFECYCLE-COMPLETE provider.** The item is adjudicated three times over:
+
+- **FL's registry line 16:** `DriverLicenseQuery | QW | * | not-built | NCIC Wanted Person Query --
+  CommSys auto-sends QW as a side effect of the DL query firing (platform-confirmed);
+  WantedPersonQuery removed v4.2`. The field scope is the **wildcard `*`**, covering every field on
+  that keyRef.
+- **FL's devdoc declares it MINED:** `Data-Mined Transactions: NCIC (QA, QB, QG, QV, QW)`. A mined
+  transaction is run BY THE STATE off our single request (usx-metadata Step 2b), so building no QW
+  combination is CORRECT, not an omission — and an optional that exists only on QW is not owed.
+- **Rob parked it explicitly, 2026-07-30:** *"no qw and qv should stay parked"* — recorded verbatim in
+  TX_TLETS' and TX_TLETS_CCH's registries.
+- FL builds **zero** QW combos (verified), and already records the identical pattern two rows later:
+  `RelatedHitSearchIndicator ... NOT WIRED ON VEHICLE BY DESIGN -- metadata scopes it to QV, which
+  this build does not carry.`
+
+**WHY MY PROBE MISSED IT, and this is the transferable lesson: A REGISTRY ROW CAN SCOPE ITS FIELD WITH
+A WILDCARD.** I grepped each registry for the literal field name and counted 0. The row that covers it
+says `QW | *`. **Grep the SCOPE (query + keyRef), never only the field token** — otherwise every
+wildcard row reads as an absent adjudication. Same failure shape as the four probe errors logged in
+SESSION_STATE: I checked for the specific string instead of the thing that would actually be written.
+
+**Net effect on 5a: the sweep found ZERO unrecorded items outside MD_METERS.** The portfolio was in
+better shape than my table claimed. What survives is the STRUCTURAL point in 5c — and the FL case
+strengthens it rather than weakening it: the registry DID hold the answer, in a form no automated
+check (and not my probe) could match against the metadata field it covers.
+
+#### Original (wrong) text, kept so the retraction is auditable
 
 Devdoc lists it as an optional field **and names it in DL combinations #3 and #4**. Metadata defines
 it on `DriverLicenseQuery` and references it in the `QW` variants:
