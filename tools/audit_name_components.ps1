@@ -144,7 +144,7 @@ Emit '  METADATA COMPONENT -> FORM CONTROL COVERAGE (composite name fields)'
 Emit '  Can the officer actually enter every component the metadata defines?'
 Emit '============================================================================'
 
-$totC1 = 0; $totC2 = 0; $totC3 = 0
+$totC1 = 0; $totC2 = 0; $totC3 = 0; $totC4 = 0; $totC4Compared = 0
 $compared = 0; $provCompared = 0; $noXml = @(); $provWith = @()
 
 foreach ($p in $provDirs) {
@@ -299,6 +299,67 @@ foreach ($p in $provDirs) {
                 }
             }
         }
+
+        # ---- C4 POOL-INCONSISTENT (added 2026-08-28) -- BLOCKING, and NOT a back-door C3 ----
+        # C3 asks "is this component in ANY combination's pool?" and is deliberately NOTE-only,
+        # because whether any[] membership is REQUIRED for the handler to emit the component is
+        # unsettled (see the header: it needs one wire log to decide). C4 asks a DIFFERENT and
+        # self-evidencing question: "do this query's OWN name-bearing combinations agree with each
+        # other?" If sibling combinations of the same composite carry NameSuffix and one does not,
+        # the provider's own build states the intent -- whichever way C3 resolves, the odd one out
+        # is wrong. That is why C4 can block today and C3 still cannot.
+        #
+        # WHY IT EXISTS: MD_METERS PHASE 1 random fuzz, seed 969519, survived
+        # "drop-any @ DriverLicenseQuery[1] NameSuffix". Reproduced by hand: deleting NameSuffix
+        # from ZWAR.N's any[] left audit_name_components reporting "complete / C1 0 C2 0 C3 0 PASS"
+        # AND audit_wiring_closure reporting "closed / all ten classes 0 PASS", while an officer
+        # filling a suffix on that search would have it silently discarded. Two green gates over an
+        # officer-facing data loss is exactly the class LAW 2 exists to stop.
+        # C3 could not catch it because the component was still in three sibling combinations, so
+        # it was never "in NO pool". audit_wiring_closure class A could not catch it because that
+        # needs BOTH no attribute sourcing it AND no combination referencing it.
+        #
+        # SCOPE IS DERIVED FROM THE BUILD, never from the metadata: only combinations that already
+        # carry the composite's SURNAME component are in scope, so an identifier-only combination
+        # (MD's ZLDR.O, OLN-only) is correctly exempt rather than told to grow name fields. Pools
+        # separate naturally because each pool has its own composite attribute with its own
+        # DH-suffixed sourceField -- the same resolution rule the C1/C2/C3 loop above relies on.
+        # Needs 2+ in-scope combinations; a lone name combination has nothing to disagree with.
+        # MEASURED BEFORE COMMIT: 68 name-bearing combinations across all 20 providers, 0
+        # violations -- it reddens no correct provider -- and it fires on the mutant naming both
+        # the combination and the missing component.
+        foreach ($attr in @($q.attributes)) {
+            $sf = @(@($attr.sourceField) | Where-Object { "$_" })
+            if ($sf.Count -lt 2) { continue }                      # not a composite
+            if ("$($attr.name)" -notmatch 'Name') { continue }      # composite, but not a name
+            $core = @($sf | Where-Object { (Canon $_) -match 'last' }) | Select-Object -First 1
+            if (-not $core) { continue }                            # no surname component to anchor on
+            $coreCanon = Canon $core
+
+            $inScope = @($q.combinations | Where-Object {
+                $pl = @(@($_.requirements.set) + @($_.requirements.any) | Where-Object { "$_" } | ForEach-Object { Canon $_ })
+                $coreCanon -in $pl
+            })
+            if ($inScope.Count -lt 2) { continue }
+
+            $union = @()
+            foreach ($c in $inScope) {
+                $pl = @(@($c.requirements.set) + @($c.requirements.any) | Where-Object { "$_" } | ForEach-Object { Canon $_ })
+                $union += @($sf | Where-Object { (Canon $_) -in $pl })
+            }
+            $union = @($union | Sort-Object -Unique)
+
+            foreach ($c in $inScope) {
+                $pl = @(@($c.requirements.set) + @($c.requirements.any) | Where-Object { "$_" } | ForEach-Object { Canon $_ })
+                $have = @($sf | Where-Object { (Canon $_) -in $pl })
+                $miss = @($union | Where-Object { $_ -notin $have })
+                $totC4Compared++
+                if ($miss.Count) {
+                    [void]$found.Add(("    C4 POOL-INCONSISTENT {0,-27} {1}: missing [{2}] that sibling combination(s) of attr '{3}' carry -- officer input silently discarded on THIS path only" -f $q.name, $c.keyReference, ($miss -join ', '), $attr.name))
+                    $totC4++
+                }
+            }
+        }
     }
 
     if ($found.Count -eq 0) {
@@ -312,25 +373,33 @@ foreach ($p in $provDirs) {
 
 Emit '----------------------------------------------------------------------------'
 Emit ("  {0} provider(s) compared / {1} component(s) examined" -f $provCompared, $compared)
-Emit ("  C1 no-control {0} / C2 not-composed {1} / C3 not-in-pool {2} (NOTE only)" -f $totC1, $totC2, $totC3)
+Emit ("  C1 no-control {0} / C2 not-composed {1} / C3 not-in-pool {2} (NOTE only) / C4 pool-inconsistent {3} (BLOCKING)" -f $totC1, $totC2, $totC3, $totC4)
+Emit ("  C4 compared {0} name-bearing combination(s) -- a 0 here means C4 reached NO verdict, not that it passed" -f $totC4Compared)
 if ($noXml.Count) { Emit ("  NOT COMPARED (no metadata XML): {0}" -f ($noXml -join ', ')) }
 
 $exit = 0
 if ($compared -eq 0) {
     Emit '  [FAIL] ZERO components compared -- this is a vacuous run, not a pass (ENGINEERING_STANDARD 4.3)'
     $exit = 1
-} elseif (($totC1 + $totC2) -gt 0) {
-    Emit ("  [FAIL] {0} component(s) the metadata defines that the officer cannot deliver" -f ($totC1 + $totC2))
+} elseif (($totC1 + $totC2 + $totC4) -gt 0) {
+    if (($totC1 + $totC2) -gt 0) {
+        Emit ("  [FAIL] {0} component(s) the metadata defines that the officer cannot deliver" -f ($totC1 + $totC2))
+    }
+    if ($totC4 -gt 0) {
+        Emit ("  [FAIL] {0} C4 pool-inconsistent -- a combination omits a name component its OWN siblings carry," -f $totC4)
+        Emit '         so officer input is silently discarded on that path only. Add the component to that'
+        Emit '         combination any[], or state in BUILD_NOTES why that search must not accept it.'
+    }
     Emit ("         providers with findings: {0}" -f ($provWith -join ', '))
     $exit = 1
 } else {
-    Emit ("  [PASS] every metadata-defined name component is controlled and composed ({0} examined)" -f $compared)
+    Emit ("  [PASS] every metadata-defined name component is controlled, composed and pool-consistent ({0} examined, {1} name-bearing combination(s) compared)" -f $compared, $totC4Compared)
 }
 if ($totC3 -gt 0) {
     Emit ("  [NOTE] {0} C3 not-in-pool -- NOT counted as a failure; impact is UNPROVEN." -f $totC3)
     Emit '         Settle it with ONE HI_HCJDC_OFML Driver License query filling middle + suffix.'
 }
-Emit ("  RESULT: {0} blocking finding(s) / {1} component(s) examined" -f ($totC1 + $totC2), $compared)
+Emit ("  RESULT: {0} blocking finding(s) / {1} component(s) examined / {2} name-bearing combination(s) compared" -f ($totC1 + $totC2 + $totC4), $compared, $totC4Compared)
 Emit '----------------------------------------------------------------------------'
 
 if ($OutFile) {

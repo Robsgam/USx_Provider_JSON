@@ -112,6 +112,18 @@ $PANEL = @(
     # mutation-tested has an efficacy nobody has measured.
     'audit_wiring_closure.ps1'
     'audit_supported_queries.ps1'
+    # Added 2026-08-28, same reasoning as the 2026-08-02 pair above and found the same way: a
+    # BLOCKING enforce gate (PHASE 2x) that was absent from this panel, so its efficacy had never
+    # been measured and every survivor count printed here was against a panel narrower than the
+    # stack it characterises. MD_METERS PHASE 1 seed 969519 reported
+    # "drop-any @ DriverLicenseQuery[1] NameSuffix [SURVIVED] no gate reacted (every panel gate
+    # looked)" -- true of the PANEL, but the sentence reads as "no gate exists", which is the
+    # dangerous half. It IS aimable: the replica is built with source/ copied in, so the metadata
+    # XML resolves and the run is non-vacuous (verified: pristine replica PASS exit 0 with 3
+    # name-bearing combinations compared, mutated replica FAIL exit 1 naming ZWAR.N/NameSuffix).
+    # That distinction is why audit_query_trace stays out and this goes in -- query_trace takes
+    # only -Provider and reads the REAL directory, so it can never see a replica at all.
+    'audit_name_components.ps1'
 )
 
 function Run-Panel {
