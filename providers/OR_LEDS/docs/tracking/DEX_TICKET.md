@@ -9,16 +9,32 @@ Project: DEX (CJIS/USx/DEx Implementation) · Tenant: usx-or-leds.mark43.com
      version appears somewhere in this file" as evidence (every DEX_TICKET.md names its own current
      version, so that check could not fail). Format, exactly:
          POSTED: v<X.Y> comment <id> <YYYY-MM-DD>                                                -->
+POSTED: v2.6 comment 807713 2026-08-28
 
 
 **Current: v2.6 — tenant-verified 2026-08-27, ALL-PASS 27/27** (Vehicle 8 / Person 9 / Firearm 4 /
 Article 1 / Boat 5). FIRST EVER tenant install and FIRST EVER sweep for this provider.
 
-**NOTHING POSTED YET — there is no `POSTED:` line above on purpose.** The v2.6 release comment is
-drafted and awaiting Rob's approval. Jira updates are HELD (2026-07-31) and the hold lifts one
-provider at a time: Rob approved the NM_NMLETS_OFML post on 2026-08-27, and that approval does NOT
-carry to this provider. `audit_lifecycle` STAGE 5 will report a GAP until the marker is written, and
-that GAP is CORRECT — it is the absence of a post, not a missing record of one.
+**POSTED 2026-08-28 — comment 807713, the FIRST comment DEX-992 has ever carried.** Rob approved the
+post explicitly ("post it and note that the jira ticket and catalog have been updated"); the Jira
+hold (2026-07-31) lifts one provider at a time and his TX_TLETS approval the previous day did not
+carry here. Section 1 says "initial post" rather than naming a superseded id, because there was no
+prior release line to supersede — the correct shape for a ticket with no history.
+
+The comment carries a closing line stating the ticket attachment and the catalog have been updated
+to v2.6, at Rob's explicit direction. That is a DELIBERATE OVERRIDE of the template rule barring
+catalog/tenant detail from tickets (JIRA_COMMENT_TEMPLATE.txt, "NO TENANT DETAIL ANYWHERE", Rob
+2026-08-03) — the same override he directed on TX_TLETS the day before. Do not treat it as licence
+to add such lines unprompted, and do not "correct" the posted comment.
+
+NO HISTORY ANCHOR WAS POSTED, deliberately. The template defines a second one-per-ticket shape for
+an initial version-history dump, and DEX-992 has neither shape. It was skipped because OR_LEDS has
+no history worth anchoring: v2.5 and earlier were never installed on any tenant and never swept, so
+a history anchor would list build-only versions and say nothing a reader needs. Raised with Rob
+before posting; he approved the release line alone. If OR ever accumulates shipped versions, add the
+anchor then and point it at the then-current release line.
+
+STAGE 5 is now SATISFIED and OR_LEDS is LIFECYCLE-COMPLETE on all six stages.
 
 ## How this ticket was found
 
