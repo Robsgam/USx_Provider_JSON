@@ -2,11 +2,11 @@
 
 Auto-generated from `CA_VENTURA_COUNTY_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v2.5** | Generated: 2026-08-20
+Current: **v2.5** | Generated: 2026-08-28
 
 ---
 
-## v2.5 -- 2026-08-20 -- LAYOUT COLLAPSE 20->6 CARDS + NAME COMPONENTS + 10 PRE-EXISTING FIDELITY FINDINGS CLEARED
+## v2.5 -- 2026-08-28 -- LAYOUT COLLAPSE 20->6 CARDS + NAME COMPONENTS + 10 PRE-EXISTING FIDELITY FINDINGS CLEARED
 
 **CHANGED:**
   LAYOUT -- 20 cards -> 6, the widest collapse in the portfolio. Vehicle 4->1, Person 5->2  

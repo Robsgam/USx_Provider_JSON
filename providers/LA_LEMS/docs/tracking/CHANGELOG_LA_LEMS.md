@@ -2,11 +2,11 @@
 
 Auto-generated from `LA_LEMS_BUILD_NOTES.txt` by `tools/generate_changelog.ps1`. Do not edit by hand.
 
-Current: **v3.2** | Generated: 2026-08-20
+Current: **v3.2** | Generated: 2026-08-28
 
 ---
 
-## v3.2 -- 2026-08-20 -- Layout collapsed 12 cards -> 6, and the officer could not enter a middle name or suffix
+## v3.2 -- 2026-08-28 -- Layout collapsed 12 cards -> 6, and the officer could not enter a middle name or suffix
 
 **CHANGED:**
   - Vehicle 3 -> 1 ("VEHICLE SEARCH BY PLATE, OR BY VIN"). State is 2nd on the top line and earns  

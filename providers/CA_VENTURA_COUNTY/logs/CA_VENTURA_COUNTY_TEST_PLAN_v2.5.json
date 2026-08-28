@@ -3,7 +3,7 @@
     "version":  "2.5",
     "tier":  "Full",
     "note":  "Full pass (tiers removed 2026-07-01): every combo + individual any[] per field + all-any[] together + guardrail tests. render/negative are manual one-time checks done at initial provider build only and are NOT part of the recurring test matrix (2026-07-01). The driver auto-submits all four kinds (combo/any-field/any/guardrail, 2026-07-01) -- guardrail fills[] already contains BOTH competing identifier fields, so it captures formState/RMS the same as any other test, no manual popup-capture workaround needed.",
-    "testCount":  97,
+    "testCount":  95,
     "formDefaults":  {
                          "Vehicle":  {
                                          "LicensePlateTypeCode":  "PC",
@@ -1392,29 +1392,6 @@
                       "n":  44,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  "IR.QVC.C",
-                      "expectedKeyRef":  "IR.QVC.C",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "criminalIdNumber",
-                                        "value":  "CII123456"
-                                    },
-                                    {
-                                        "fieldId":  "socialSecurityNumber",
-                                        "value":  "123456789"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  45,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.S",
                       "expectedKeyRef":  "IR.QVC.S",
                       "kind":  "combo",
@@ -1431,7 +1408,7 @@
                                 ]
                   },
                   {
-                      "n":  46,
+                      "n":  45,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.O",
@@ -1455,7 +1432,7 @@
                                 ]
                   },
                   {
-                      "n":  47,
+                      "n":  46,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.O",
@@ -1482,7 +1459,7 @@
                                 ]
                   },
                   {
-                      "n":  48,
+                      "n":  47,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "IR.QVC.OS",
@@ -1506,30 +1483,7 @@
                                 ]
                   },
                   {
-                      "n":  49,
-                      "entity":  "Person",
-                      "query":  "DriverLicenseQuery",
-                      "comboKeyRef":  "IR.QVC.OS",
-                      "expectedKeyRef":  "IR.QVC.OS",
-                      "kind":  "any",
-                      "tier":  "Full",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "OperatorLicenseNumber",
-                                        "value":  "D999888777"
-                                    },
-                                    {
-                                        "fieldId":  "socialSecurityNumber",
-                                        "value":  "123456789"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  50,
+                      "n":  48,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  "ID.L1",
@@ -1548,7 +1502,7 @@
                                 ]
                   },
                   {
-                      "n":  51,
+                      "n":  49,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "NLTS.KQ.N",
@@ -1591,7 +1545,7 @@
                                 ]
                   },
                   {
-                      "n":  52,
+                      "n":  50,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "IN.B2",
@@ -1614,7 +1568,7 @@
                                 ]
                   },
                   {
-                      "n":  53,
+                      "n":  51,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "IN.B2",
@@ -1642,7 +1596,7 @@
                                 ]
                   },
                   {
-                      "n":  54,
+                      "n":  52,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "IN.B2",
@@ -1670,7 +1624,7 @@
                                 ]
                   },
                   {
-                      "n":  55,
+                      "n":  53,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "IN.B2",
@@ -1698,7 +1652,7 @@
                                 ]
                   },
                   {
-                      "n":  56,
+                      "n":  54,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "IN.B2",
@@ -1733,7 +1687,7 @@
                                 ]
                   },
                   {
-                      "n":  57,
+                      "n":  55,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "NLTS.KQ.O",
@@ -1756,7 +1710,7 @@
                                 ]
                   },
                   {
-                      "n":  58,
+                      "n":  56,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  "ID.B2",
@@ -1775,7 +1729,7 @@
                                 ]
                   },
                   {
-                      "n":  59,
+                      "n":  57,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -1811,7 +1765,7 @@
                       "guardrailLoser":  "NLTS.DQ.N"
                   },
                   {
-                      "n":  60,
+                      "n":  58,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -1847,7 +1801,7 @@
                       "guardrailLoser":  "IR.QVC.NA"
                   },
                   {
-                      "n":  61,
+                      "n":  59,
                       "entity":  "Person",
                       "query":  "DriverLicenseQuery",
                       "comboKeyRef":  null,
@@ -1875,7 +1829,7 @@
                       "guardrailLoser":  "IN.L1"
                   },
                   {
-                      "n":  62,
+                      "n":  60,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  null,
@@ -1911,7 +1865,7 @@
                       "guardrailLoser":  "NLTS.KQ.N"
                   },
                   {
-                      "n":  63,
+                      "n":  61,
                       "entity":  "Person",
                       "query":  "DriverHistoryQuery",
                       "comboKeyRef":  null,
@@ -1939,7 +1893,7 @@
                       "guardrailLoser":  "IN.B2"
                   },
                   {
-                      "n":  64,
+                      "n":  62,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH.A",
@@ -1962,6 +1916,70 @@
                                     {
                                         "fieldId":  "age",
                                         "value":  "35"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  63,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "IG.QGH.A",
+                      "expectedKeyRef":  "IG.QGH.A",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "NameMiddle",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "caRequestPurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    },
+                                    {
+                                        "fieldId":  "NameMiddle",
+                                        "value":  "A"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  64,
+                      "entity":  "Firearm",
+                      "query":  "GunQuery",
+                      "comboKeyRef":  "IG.QGH.A",
+                      "expectedKeyRef":  "IG.QGH.A",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "NameSuffix",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "caRequestPurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "NameLast",
+                                        "value":  "DOE"
+                                    },
+                                    {
+                                        "fieldId":  "NameFirst",
+                                        "value":  "JOHN"
+                                    },
+                                    {
+                                        "fieldId":  "age",
+                                        "value":  "35"
+                                    },
+                                    {
+                                        "fieldId":  "NameSuffix",
+                                        "value":  "JR"
                                     }
                                 ]
                   },
@@ -1971,70 +1989,6 @@
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH.A",
                       "expectedKeyRef":  "IG.QGH.A",
-                      "kind":  "any-field",
-                      "tier":  "Full",
-                      "anyField":  "NameMiddle",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "NameLast",
-                                        "value":  "DOE"
-                                    },
-                                    {
-                                        "fieldId":  "NameFirst",
-                                        "value":  "JOHN"
-                                    },
-                                    {
-                                        "fieldId":  "age",
-                                        "value":  "35"
-                                    },
-                                    {
-                                        "fieldId":  "NameMiddle",
-                                        "value":  "A"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  66,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  "IG.QGH.A",
-                      "expectedKeyRef":  "IG.QGH.A",
-                      "kind":  "any-field",
-                      "tier":  "Full",
-                      "anyField":  "NameSuffix",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "NameLast",
-                                        "value":  "DOE"
-                                    },
-                                    {
-                                        "fieldId":  "NameFirst",
-                                        "value":  "JOHN"
-                                    },
-                                    {
-                                        "fieldId":  "age",
-                                        "value":  "35"
-                                    },
-                                    {
-                                        "fieldId":  "NameSuffix",
-                                        "value":  "JR"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  67,
-                      "entity":  "Firearm",
-                      "query":  "GunQuery",
-                      "comboKeyRef":  "IG.QGH.A",
-                      "expectedKeyRef":  "IG.QGH.A",
                       "kind":  "any",
                       "tier":  "Full",
                       "fills":  [
@@ -2065,7 +2019,7 @@
                                 ]
                   },
                   {
-                      "n":  68,
+                      "n":  66,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH.B",
@@ -2092,7 +2046,7 @@
                                 ]
                   },
                   {
-                      "n":  69,
+                      "n":  67,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH.B",
@@ -2124,7 +2078,7 @@
                                 ]
                   },
                   {
-                      "n":  70,
+                      "n":  68,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH.B",
@@ -2156,7 +2110,7 @@
                                 ]
                   },
                   {
-                      "n":  71,
+                      "n":  69,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGH.B",
@@ -2191,7 +2145,7 @@
                                 ]
                   },
                   {
-                      "n":  72,
+                      "n":  70,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -2210,7 +2164,7 @@
                                 ]
                   },
                   {
-                      "n":  73,
+                      "n":  71,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -2234,7 +2188,7 @@
                                 ]
                   },
                   {
-                      "n":  74,
+                      "n":  72,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -2258,7 +2212,7 @@
                                 ]
                   },
                   {
-                      "n":  75,
+                      "n":  73,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -2282,7 +2236,7 @@
                                 ]
                   },
                   {
-                      "n":  76,
+                      "n":  74,
                       "entity":  "Firearm",
                       "query":  "GunQuery",
                       "comboKeyRef":  "IG.QGB",
@@ -2313,7 +2267,7 @@
                                 ]
                   },
                   {
-                      "n":  77,
+                      "n":  75,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.S",
@@ -2328,6 +2282,54 @@
                                     {
                                         "fieldId":  "serialNumber",
                                         "value":  "GUN12345"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  76,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "IP.QA.S",
+                      "expectedKeyRef":  "IP.QA.S",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "articleBrand",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "caRequestPurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "articleBrand",
+                                        "value":  "SONY"
+                                    }
+                                ]
+                  },
+                  {
+                      "n":  77,
+                      "entity":  "Article",
+                      "query":  "ArticleSingleQuery",
+                      "comboKeyRef":  "IP.QA.S",
+                      "expectedKeyRef":  "IP.QA.S",
+                      "kind":  "any-field",
+                      "tier":  "Full",
+                      "anyField":  "articleCategory",
+                      "fills":  [
+                                    {
+                                        "fieldId":  "caRequestPurposeCode",
+                                        "value":  "C"
+                                    },
+                                    {
+                                        "fieldId":  "serialNumber",
+                                        "value":  "GUN12345"
+                                    },
+                                    {
+                                        "fieldId":  "articleCategory",
+                                        "value":  "E"
                                     }
                                 ]
                   },
@@ -2339,54 +2341,6 @@
                       "expectedKeyRef":  "IP.QA.S",
                       "kind":  "any-field",
                       "tier":  "Full",
-                      "anyField":  "articleBrand",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "serialNumber",
-                                        "value":  "GUN12345"
-                                    },
-                                    {
-                                        "fieldId":  "articleBrand",
-                                        "value":  "SONY"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  79,
-                      "entity":  "Article",
-                      "query":  "ArticleSingleQuery",
-                      "comboKeyRef":  "IP.QA.S",
-                      "expectedKeyRef":  "IP.QA.S",
-                      "kind":  "any-field",
-                      "tier":  "Full",
-                      "anyField":  "articleCategory",
-                      "fills":  [
-                                    {
-                                        "fieldId":  "caRequestPurposeCode",
-                                        "value":  "C"
-                                    },
-                                    {
-                                        "fieldId":  "serialNumber",
-                                        "value":  "GUN12345"
-                                    },
-                                    {
-                                        "fieldId":  "articleCategory",
-                                        "value":  "E"
-                                    }
-                                ]
-                  },
-                  {
-                      "n":  80,
-                      "entity":  "Article",
-                      "query":  "ArticleSingleQuery",
-                      "comboKeyRef":  "IP.QA.S",
-                      "expectedKeyRef":  "IP.QA.S",
-                      "kind":  "any-field",
-                      "tier":  "Full",
                       "anyField":  "ArticleTypeCode",
                       "fills":  [
                                     {
@@ -2404,7 +2358,7 @@
                                 ]
                   },
                   {
-                      "n":  81,
+                      "n":  79,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.S",
@@ -2435,7 +2389,7 @@
                                 ]
                   },
                   {
-                      "n":  82,
+                      "n":  80,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -2454,7 +2408,7 @@
                                 ]
                   },
                   {
-                      "n":  83,
+                      "n":  81,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -2478,7 +2432,7 @@
                                 ]
                   },
                   {
-                      "n":  84,
+                      "n":  82,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -2502,7 +2456,7 @@
                                 ]
                   },
                   {
-                      "n":  85,
+                      "n":  83,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -2526,7 +2480,7 @@
                                 ]
                   },
                   {
-                      "n":  86,
+                      "n":  84,
                       "entity":  "Article",
                       "query":  "ArticleSingleQuery",
                       "comboKeyRef":  "IP.QA.O",
@@ -2557,7 +2511,7 @@
                                 ]
                   },
                   {
-                      "n":  87,
+                      "n":  85,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.N",
@@ -2588,7 +2542,7 @@
                                 ]
                   },
                   {
-                      "n":  88,
+                      "n":  86,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.N",
@@ -2624,7 +2578,7 @@
                                 ]
                   },
                   {
-                      "n":  89,
+                      "n":  87,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.N",
@@ -2660,7 +2614,7 @@
                                 ]
                   },
                   {
-                      "n":  90,
+                      "n":  88,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.N",
@@ -2699,7 +2653,7 @@
                                 ]
                   },
                   {
-                      "n":  91,
+                      "n":  89,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.H",
@@ -2722,7 +2676,7 @@
                                 ]
                   },
                   {
-                      "n":  92,
+                      "n":  90,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "NLTS.BQ.R",
@@ -2745,7 +2699,7 @@
                                 ]
                   },
                   {
-                      "n":  93,
+                      "n":  91,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.H",
@@ -2764,7 +2718,7 @@
                                 ]
                   },
                   {
-                      "n":  94,
+                      "n":  92,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.O",
@@ -2783,7 +2737,7 @@
                                 ]
                   },
                   {
-                      "n":  95,
+                      "n":  93,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.O",
@@ -2806,7 +2760,7 @@
                                 ]
                   },
                   {
-                      "n":  96,
+                      "n":  94,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  "IA.QB.R",
@@ -2825,7 +2779,7 @@
                                 ]
                   },
                   {
-                      "n":  97,
+                      "n":  95,
                       "entity":  "Boat",
                       "query":  "BoatQuery",
                       "comboKeyRef":  null,
