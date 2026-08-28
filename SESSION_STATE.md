@@ -38,72 +38,70 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**MD_METERS v2.3 IS SWEPT AND WAITING ON ONE JIRA DECISION.** ALL-PASS 46/46 (Veh 11 / Per 27 / Gun 1
-/ Art 1 / Boat 6), four log gates 46/46, `enforce -Provider MD_METERS` 44P/0F/0W, ledger records the
-install, SQVR populated, picklists captured. Blocked ONLY at stage 5: a v2.3 release line is DRAFTED
-in `providers/MD_METERS/docs/tracking/DEX_TICKET.md` and deliberately NOT posted -- DEX-987 (found by
-JQL, recorded nowhere in the repo before today) has zero comments and Jira lifts ONE provider at a
-time. **Rob's approval is the next physical action.**
+**MD_METERS v2.3 is SWEPT and waiting on TWO decisions from Rob, both recorded, neither taken.**
+ALL-PASS 46/46, four log gates 46/46, `enforce -Provider MD_METERS` 43P/0F/0W, ledger records the
+install, SQVR populated, picklists captured.
+1. **Jira** -- a v2.3 release line is DRAFTED in `providers/MD_METERS/docs/tracking/DEX_TICKET.md`
+   and NOT posted. DEX-987 (found by JQL; was recorded nowhere in the repo) has zero comments.
+2. **DriverLicenseQuery State** -- three options in `FINDINGS_REGISTER.md` **section 5e**. Any of them
+   is v2.4 and archives the 46-log package.
 
 **THEN: import + sweep the next of 6** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
 CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4.
-**ORDER IS IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28: *"you have to import before we can
-do picklists"*) -- the console script scrapes the RENDERED form, so the JSON must be in the tenant
-first. The capture precedes CHOOSING TEST VALUES, which is why CA_VENTURA still cannot fix its
-hollow toggle.
+**IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- the console script scrapes the RENDERED
+form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot fix its hollow toggle.
 
-**MISSION 12 of 20** (`report_mission_status.ps1`): 6 blocked at test, 1 (MD) at jira. History: git
-log, not here.
+**MISSION 12 of 20**: 6 blocked at test, 1 (MD) at jira.
 
 ## ROB'S CALLS, NOT MINE
 
-- **CA_CONTRA_COSTA JAWS/SuperQuery** -- pending; the portfolio's only remaining fidelity findings
-  (4 UNDER / 3 OVER, verbatim in its BUILD_NOTES). Hold the SWEEP, not the import.
+- **MD_METERS DL State** -- section 5e. **FL_FCIC `ExpandedNameSearchCode`** -- section 5b, v7.25
+  archives 118 logs. Both from the 2026-08-28 sweep.
+- **CA_CONTRA_COSTA JAWS/SuperQuery** -- the portfolio's only remaining fidelity findings (4 UNDER /
+  3 OVER, verbatim in its BUILD_NOTES). Hold the SWEEP, not the import.
 - **LA_LEMS BoatQuery `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
 - **eSUN 228KB tenant export** in pushed history at `8273a87f` -- removal needs a force-push.
 
-## OPEN FINDINGS
+## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here
 
-- **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default, so that test
-  proves nothing. Needs TEST_VALUE_OVERRIDES -- but choose the value AFTER its picklist capture.
-- **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked), 0 owe a re-scope --
-  `audit_picklist_scope -All`. Was "10", then 7; MD closed its capture 2026-08-28.
-- **6 providers carry an EMPTY 13-line SQVR scaffold** ("populate after build") and
-  `audit_sqvr_integrity` PASSES all of them -- a file naming nothing and asserting no total gives the
-  gate nothing to compare, so only the version string is really checked. CA_eSUN,
-  CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY + **NM_NMLETS_OFML, OR_LEDS, TN_TIES which are ALL-PASS and
-  counted LIFECYCLE-COMPLETE**. MD and IL are the two fixed so far (2026-08-28 / 08-18) -- MD's CHECK
-  2 went from comparing NOTHING to comparing its 14-combo total. Making an empty QUERY PATHS section
-  a `[FAIL]` is a `tools/` change that lands 6 red at once: **Rob's direction, not taken.**
-- **3 providers carry stale ancillary artifacts** (picklist report + label review predate the JSON):
-  CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH. Portfolio `enforce` WARNs on each. Clear at each
-  provider's own turn via `build_report -Path <json> -IncludeExtended`; no wire impact.
+- **2026-08-28 SWEEP -> section 5.** Two items were genuinely on the table (FL `ExpandedNameSearchCode`,
+  MD DL State); everything else triaged RECORDED. Structural: **193 of 263 registry rows (73%) are
+  unverifiable** by `audit_registry_currency` (7 providers have zero checkable rows) -- and the first
+  row opened by hand in that zone was FALSE. **9 of 20 `SUPPORTED_QUERIES` extracts are PROVISIONAL +
+  derived-from-JSON. 6 carry an empty SQVR scaffold that its gate passes.** NM / OR / TN are in all
+  three lists AND are LIFECYCLE-COMPLETE.
+- **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default. Needs
+  TEST_VALUE_OVERRIDES -- choose the value AFTER its picklist capture.
+- **6 providers owe the one-time picklist capture** + TX_TLETS_CCH (parked).
+- **3 providers carry stale ancillary artifacts** (CA_VENTURA, LA_LEMS, TX_TLETS_CCH); clear via
+  `build_report -IncludeExtended` at each one's own turn. No wire impact.
 - **LIMITATION #41** (populated HOME state routes a local plate to NLETS) -- paused pending CommSys.
-- **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
-- **Officer guides content-poor**; rewrite requested, shape not agreed.
+  It constrains option 1 of section 5e.
+- **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN. **Officer guides
+  content-poor**; rewrite requested, shape not agreed.
 
 ## DO NOT RE-RAISE
 
-- `State2`-`State5` multi-state broadcast: OUT OF SCOPE 2026-08-02 (NM's 24 UNREACHABLE spec tests
-  are this). CommSys asks HELD. TX_TLETS_CCH testing PARKED. DH NOT SUPPORTED FROM CAD.
-  TN `RQ01` + name-component casing CLOSED 08-24. A keyRef NEVER reaches the wire.
+- `State2`-`State5` multi-state broadcast: OUT OF SCOPE 2026-08-02 (44 of the sweep's 59 unreachable
+  fields are this). OH's `ReasonCode`/`Requestor` = the BMVIMS case. CommSys asks HELD. TX_TLETS_CCH
+  testing PARKED. DH NOT SUPPORTED FROM CAD. TN `RQ01` + name-component casing CLOSED 08-24.
+- **A keyRef NEVER reaches the wire, and neither does `primaryFieldReference`** (Rob 2026-08-28:
+  *"we are building the combos, not attesting to the keyref commsys will use"*). Before calling an
+  identity-label difference a defect, ask whether the label ships.
 - **4 providers carry `[FLAG:plan-dedupe-vacuous-tests]`** (FL, HI, IL, NJ). CORRECTLY deferred --
   regenerating their plans orphans their logs and drops them out of ALL-PASS. **Not work owed.**
 - **Jira is HELD and lifts ONE PROVIDER AT A TIME.** No approval carries to the next provider.
-  The TX/OR release comments each carry a catalog/Foundation line -- a deliberate override of the
-  template's "NO TENANT DETAIL" rule, directed by Rob each time. Do not "correct" them, do not repeat
-  unasked.
 
 ## RULES I BROKE -- READ BEFORE EDITING
 
+- **REPLACE this file, never append.** I appended a sweep summary and took it to 126 lines, failing
+  its own gate -- the third time on this same rule. Detail goes in `FINDINGS_REGISTER.md`; this file
+  POINTS.
+- **Read `ACCEPTED_DIVERGENCES` before calling a reported gap new.** I re-derived MD's `ZWAR.N`/State
+  and `ZDRV.N`/SexCode adjudications; both were recorded 2026-08-01.
 - **Know whether a tool WRITES before running it as a "check".** `block_entity` stamps, commits and
-  pushes; running it across 5 providers to "verify" a change flipped NY/NJ/TN state. Reverted.
-  `audit_*`/`report_*` read; `block_entity`/`post_test`/`reset_test_package`/`flag_pending_fix` write.
-- **Mutate a REPLICA, never the real file.** `git checkout --` restores content but stamps mtime, so
-  MD's JSON outran its own artifacts and enforce went 0 FAIL -> 3 FAIL on a provider I never changed.
-- **A probe that matches its own command line lies** -- twice today.
-- **Check ACCEPTED_DIVERGENCES before calling a reported gap new** -- TX's plate+State symptom, cause
-  and fix were all recorded 2026-07-30; I re-derived them.
-- **SQVR prose never expires on its own** -- resets rewrite MARKERS, not narrative.
-- **Run `audit_session_state` BEFORE committing this file.** I wrote a "what we did today" section,
-  which is precisely the accumulation the 120-line gate exists to stop, and committed it failing.
+  pushes. `audit_*`/`report_*` read.
+- **Mutate a REPLICA, never the real file.** `git checkout --` restores content but stamps mtime.
+- **Validate a probe against a known answer first.** Four probes failed today on relative paths,
+  wrong resolver params (`-ProvDir` not `-Provider`), a document-spanning regex, and a wrong wire
+  element name (`<State>`, not `<RegistrationState>`). Each looked like a portfolio finding.

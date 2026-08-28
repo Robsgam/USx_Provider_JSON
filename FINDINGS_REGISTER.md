@@ -128,6 +128,8 @@ baseline. Neither version was ever imported, so the second bump cost nothing.
 | **HI_HCJDC_OFML** | v4.20 | **50** | `ROW_VEH_1` — `LicensePlateNumber` (maxLen 10) alone on a 12-col row | L5 | no — cosmetic | OPEN (cosmetic) |
 | **OH_LEADS** | v2.10 | **56** | Middle/Suffix controls exist and are composed but are **in no combination pool** | C3 ×6 | **YES** — see the C3 note above; the officer's middle name is dropped today | OPEN |
 | **AZ_AZDPS** | v3.11 | 58 | — | — | — | **CLEAN on all three gates.** The reference for name-component wiring |
+| **FL_FCIC** | v7.24 | **118** | `DriverLicenseQuery/ExpandedNameSearchCode` — metadata-defined and devdoc-listed, `Expanded` appears **0 times** in the JSON, **0** registry rows, **0** build-script mentions | 5a stranded-optional | **PROBABLY YES — needs Rob.** Rides the `QW` DL variants, and NEITHER mandates `State2`, so the State2 out-of-scope ruling does not cover it. TN_TIES builds the field, so it is real and buildable | **OPEN 2026-08-28** — see section 5b. Fix = v7.25, archives 118 logs |
+| **MD_METERS** | v2.3 | **46** | DL `(Out)` combination brackets `[State]` optional; `raceCode` alone decides direction, so a filled State is silently discarded when Race is also filled | 5e silent-discard | **YES** — same class as the v2.3 plate discard | **OPEN 2026-08-28** — three options in section 5e, all v2.4. Rob's call |
 
 ⚠️ **A layout/label fix leaves the wire IDENTICAL and that is provable, not assumed.** Method used on
 OH v2.10: the PROVIDER bundle (all QIDMs + AUTH/QMF/QRDM) hashes identically with the version string
@@ -180,6 +182,150 @@ Kept here only as the record of what the pass was FOR — do not re-derive work 
 | 38 clone groups | `audit_log_inflation` class A. Class B/C/D all 0 | Clears at each provider's own rebuild |
 | `audit_name_components` now at 0 | 216 components, 0 C1/C2/C3 across all 20 | **Ready to make BLOCKING** |
 | `audit_layout_flow` residue = 10 | 7 providers; 6 tenant-verified (re-sweep each) + NM's recorded override | Make BLOCKING once those are recorded overrides |
+
+---
+
+## 5. UNREACHABLE METADATA OPTIONALS + REGISTRY BLIND ZONE — swept 2026-08-28
+
+Rob: *"i want to be sure we are not leaving issues on the table."* Prompted by MD_METERS: I reported
+"14 of 14 combos covered, all reachable" and he said *"i doubt you have all the combinations
+accounted for."* He was right, and the reason is structural — **every number I had was closed under
+what we BUILT.** `audit_test_coverage` enumerates the JSON; `<P>_SUPPORTED_QUERIES.txt` on 9 of 20
+providers says of itself *"DERIVED FROM JSON COMBOS"*. A list derived from the build cannot reveal
+an omission in the build.
+
+### 5a. THE DEFECT CLASS: an optional stranded on a collapsed/unbuilt duplicate-input variant
+
+`audit_query_trace` matches metadata→built by **CONTAINMENT on the mandatory side** (documented in
+its own source, and correct: the build legitimately reshapes combos). It asks *"does some built combo
+require everything this variant requires and nothing it doesn't mention?"* — it **never asks whether
+the matching combo can carry that variant's OPTIONALS.** So a metadata variant with an exclusive
+optional reports as `COMPLETE / 0 MISSING` while the optional is unreachable. No other gate sees it
+either: `audit_devdoc_optionals` only knows devdoc-listed optionals, and `audit_wiring_closure`
+needs a control to exist before it can call one dead. **No control → nothing to orphan → no test
+that can fail.** Same shape as the `audit_name_components` gap.
+
+**PROBE (validated against MD's known answer before being believed):** for each built transaction,
+list `<Field name>` in the metadata and check whether the name appears **anywhere** in the emitted
+JSON. Zero occurrences = defined by the authority, unreachable by any officer.
+
+**Result: 8 providers, 59 unreachable fields. Triaged:**
+
+| Provider | Unreachable | Recorded? | Verdict |
+|---|---|---|---|
+| FL / HI / IL / LA / NM | 44 × `State2`–`State5` | registry mentions FL 9, HI 4, IL 2, LA 6, NM 9 | **RECORDED** — multi-state Nlets broadcast, OUT OF SCOPE 2026-08-02. Not owed. |
+| OH_LEADS | `DriverLicenseQuery/ReasonCode`, `/Requestor`, `DriverHistoryQuery/ReasonCode` | registry 8 + 7 mentions | **RECORDED** — the documented DL-vs-BMVIMS case (usx-metadata Step 1 §6). Not owed. |
+| NM_NMLETS_OFML | `FormORI` ×5, `RelatedHitSearchIndicator` ×4 | registry 2 + 2 | **RECORDED.** |
+| TX_TLETS | `DriverLicenseQuery/ExpandedBirthDateSearchCode` | registry 1 | **RECORDED.** |
+| **MD_METERS** | `DriverLicenseQuery/YearsPastViolationsWanted` | registry **0**, build-script comment only | **CLOSED 2026-08-28** — row added. Unbuildable either way: its variant's `set[]` is byte-identical to built `ZLDR{OLN}` (dead combo), and widening `ZLDR.O.any[]` would OVER-PERMIT. |
+| **FL_FCIC** | `DriverLicenseQuery/ExpandedNameSearchCode` | registry **0**, build script **0** | ⚠️ **OPEN — the one genuinely unrecorded item.** See row in section A. |
+
+### 5b. FL_FCIC `ExpandedNameSearchCode` — the item that was on the table
+
+Devdoc lists it as an optional field **and names it in DL combinations #3 and #4**. Metadata defines
+it on `DriverLicenseQuery` and references it in the `QW` variants:
+`QW{Name}` = `Set[BirthDate, Name] Any[OperatorLicenseNumber, ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator]`
+`QW{OperatorLicenseNumber}` = `Set[Name, OperatorLicenseNumber] Any[ExpandedNameSearchCode, ImageIndicator, RelatedHitSearchIndicator]`
+**Neither mandates `State2`, so the State2 out-of-scope ruling does NOT cover it.** The string
+`Expanded` appears **0 times** in `FL_FCIC_v7.24.json` and 0 times in its registry. FL is
+tenant-verified ALL-PASS 118/118 and LIFECYCLE-COMPLETE. **TN_TIES builds the field** (its ledger row
+records *"ExpandedNameSearchCode transmitting at all for the first time"*), so it is real and
+buildable. REAL? **probably yes, needs Rob** — cost is a v7.25 bump archiving 118 logs.
+
+### 5c. REGISTRY CURRENCY BLIND ZONE — 193 of 263 rows (73%) unverifiable
+
+`audit_registry_currency` checks **direction-class rows only** (`to-any` / `to-set`). Everything
+else — existence-class, `unbuilt`, `missing-*`, `dead-combo` — is *not-checkable*, and the tool says
+so honestly (`[FAIL] parsed rows but checked ZERO of them -- this run is not evidence`). Measured:
+
+**263 rows / 70 checkable / 0 stale / 193 not-checkable.** Seven providers have **zero** verifiable
+rows: **LA_LEMS 22, OH_LEADS 15, OR_LEDS 9, AZ_AZDPS 6, IL_LEADS_OFML 5, MD_METERS 3, CA_SAN_LUIS_OBISPO 2.**
+
+**This is not theoretical: the first row I opened by hand inside that zone was FALSE.** MD's
+`GunQuery | ZGUN | GunMake | missing-primary-combo` (2026-06-23) asserted metadata had a separate
+gun-by-make search path with no JSON combo and told the next rebuild to *"build ZGUN.M"*. Metadata
+holds exactly ONE GunQuery combination; the row had mistaken `primaryFieldReference="GunMake"` for a
+looser requirement set. It survived **three rebuilds** (v2.1, v2.2, v2.3), each reading "build this
+at the next rebuild", and acting on it would have invented a combination with a `set[]` identical to
+`ZGUN` — a guaranteed dead combo. Retired 2026-08-28.
+
+⚠️ **AND ROB CORRECTED MY FOLLOW-UP, WHICH IS THE MORE USEFUL LESSON.** Retiring it un-silenced
+`audit_metadata` CHECK 5 (`GunMake: no combo uses it as primaryFieldReference`) and I wrote that up
+as a *"REAL DEFECT"* needing a v2.4 bump and a re-sweep. Rob: *"we are building the combos, not
+attesting to the keyref commsys will use."* **`primaryFieldReference` is our internal label, the same
+class as `keyReference` — which is PROVEN to reach the wire zero times.** The field SET is what ships,
+and it matches metadata exactly. So: nominal, no bump, no re-sweep. It matters only for OUR narrowing
+when one keyRef carries several PF variants (CA_CLETS `IR.QVC` = Name/OLN/CII/SSN); GunQuery has one
+combination, so nothing can be mis-selected. **Generalise: before calling an identity-label
+difference a defect, ask whether the label reaches the wire.**
+
+### 5d. Other measurements from the same sweep — context, not defects
+
+- **61 metadata→built combination collapses across 13 providers** (metadata combos minus built
+  combos, per built transaction): CA_CLETS +13, CA_CONTRA_COSTA +13, CA_VENTURA_COUNTY +13,
+  TN_TIES +7, FL_FCIC +5, OH_LEADS +5, CA_eSUN +4, CA_CLETS_OCATS +4, LA_LEMS +4,
+  CA_SAN_LUIS_OBISPO +3, HI_HCJDC_OFML +3, NJ_NJCJIS +2, MD_METERS +1, TX_TLETS +1. Negative on
+  NY −3 / TX_CCH −2 / OR −1 = `<Choice>` splits, expected. **NOT a defect count** — most collapses
+  are identical-`set[]` variants, out-of-scope combinations or registered divergences. It is the
+  denominator for 5a: 61 places the stranded-optional class can hide, and 5a's probe found 59 fields
+  across 8 of them, of which 2 were unrecorded.
+- **9 of 20 `SUPPORTED_QUERIES.txt` extracts are `STATUS: PROVISIONAL` and derived-from-JSON**
+  (circular query authority): CA_CLETS_OCATS, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, CA_eSUN,
+  LA_LEMS, MD_METERS, NM_NMLETS_OFML, OR_LEDS, TN_TIES. `audit_supported_queries` CHECK 0 still gates
+  on the devdoc directly (it ignores the extract's STATUS by design, after the AZ transaction-scope
+  defect), so this is not wide open — but the label-level checks are soft.
+- **6 providers carry an empty 13-line SQVR scaffold** and `audit_sqvr_integrity` passes all six —
+  a file naming nothing and asserting no total gives the gate nothing to compare. CA_eSUN,
+  CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY + **NM_NMLETS_OFML, OR_LEDS, TN_TIES which are ALL-PASS and
+  counted LIFECYCLE-COMPLETE.** MD (08-28) and IL (08-18) are the two fixed.
+- **The same three providers — NM, OR, TN — appear in all three lists above** (PROVISIONAL extract,
+  empty SQVR, LIFECYCLE-COMPLETE). They were the three most recent first-ever sweeps; the build and
+  the wire were closed, the documentation authority was not.
+
+### 5e. MD_METERS DriverLicenseQuery — the State question, saved for a ruling
+
+Rob, 2026-08-28: *"i think 1 item in dl make setting the state default needed"*, then *"can state be
+defaulted on person only since the veh is where the problem lies?"* Both authorities reviewed; all
+four devdoc DL combinations map 1:1 onto built combos and every mandatory field agrees.
+
+**The item: devdoc DL #3 is marked `(Out)` and brackets `[State]` as optional.** Both authorities say
+optional (metadata `ZLDR{Name}` has State in `<Any>`), but an out-of-state driver search with no
+state is semantically empty — the `(Out)` marker and the bracket contradict each other.
+
+**The officer-facing consequence, which no registry row covers:** `raceCode` alone decides direction
+(`EXISTS` → ZWAR/In, `NOT_EXISTS` → ZLDR/Out). An officer doing an out-of-state search fills
+Name + Sex + DOB + State **and** Race — and `ZWAR.N` wins, whose metadata `<Any>` is `ImageIndicator`
+alone, so **the State they typed is silently discarded and the query goes to Maryland.** Same class as
+the ZLRG.P/ZVEH.P plate discard that v2.3 fixed.
+
+**Person-only default IS safe — verified, not assumed.** Person and Vehicle each carry their OWN
+`RegistrationState` control in their own `QUERYINPUTFORM` (Vehicle's at JSON lines 261/550/920 inside
+the form closing at 997; Person's at 1362/1986/2691 inside the form closing at 2996). A Vehicle query
+is assembled from the Vehicle pool, so Vehicle's `NOT_EXISTS` gates cannot see a Person prefill. On
+the Person side State is in **no `set[]` and no condition**, so it is `any[]`-only — the one case the
+decision tree permits — and BUILD_RULES 24 cannot bite.
+
+**A GLOBAL default would kill two combos** and must never be used: `ZVEH.P` (`RegistrationState
+NOT_EXISTS`, devdoc VehReg #3 in-state plate-only) and `ZVEH.V` (same gate, devdoc #1 VIN+[Make])
+both go permanently false.
+
+**BUT THE DEFAULT DOES NOT FIX THE DISCARD.** It cannot reach `ZWAR.N`, whose metadata `<Any>` does
+not define State at all; adding it there would OVER-PERMIT. A default only changes ZWAR.O / ZLDR.N /
+ZLDR.O, which already carry State.
+
+**Three options, Rob's call, none taken:**
+1. **DL-scoped State default** — guarantees `(Out)` is never stateless; but defaulting to `MD` makes
+   every out-of-state name search assert Maryland until overridden, and every `ZLDR.O` (In/Out) carry
+   MD — which walks straight into **LIMITATION #41** (*"populated HOME state routes a local plate to
+   NLETS"*, PAUSED 2026-08-15 pending CommSys, *"do NOT act until the two tests are run"*).
+2. **Promote State to `set[]` on `ZLDR.N`** — expresses `(Out)` properly; tightens beyond metadata's
+   `<Any>`, so it needs a `promoted-to-set` row.
+3. **Make State the discriminator instead of `raceCode`** — gate `ZWAR.N` on `RegistrationState
+   NOT_EXISTS` and `ZLDR.N` on `EXISTS`. This is the ONLY option that stops the silent discard, needs
+   no default, and does not touch Vehicle.
+
+Any of the three is a wire change: **v2.4, archiving the 46-log ALL-PASS package from 2026-08-28.**
+If one is taken, align `ZGUN`'s `primaryFieldReference` in the same pass (5c) so it costs no extra sweep.
 
 ---
 
