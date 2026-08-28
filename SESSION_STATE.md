@@ -37,11 +37,17 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ## NEXT PHYSICAL ACTION
 
-**IMPORT + SWEEP. Build queue EMPTY; all 7 never-tested providers are GATE-CLEAN.** Queue authority
-is `report_import_owed.ps1`. **MD_METERS v2.3 is teed up** -- PHASE 1 green (8/8 fuzz), enforce
-45P/0F/0W, pre-flight CLEAR, 46 tests / 0 hollow toggles. **Run its one-time picklist capture FIRST**
-(`logs\MD_METERS_PICKLIST_SCOPE.console.js`): that ordering is what let OR pick a valid plate-type
-value, and is why CA_VENTURA still cannot fix its hollow toggle.
+**DRIVE THE MD_METERS SWEEP.** v2.3 is IMPORTED to its USx provider tenant (2026-08-28) and its
+one-time picklist capture is COMPLETE -- 13 selects / 5 entities, `audit_picklist_scope` now silent
+on MD while it still speaks on LA_LEMS, so that silence is a verdict and not a vacuum. PHASE 1 green
+(8/8 fuzz), enforce 45P/0F/0W, pre-flight CLEAR, 46 tests / 0 hollow toggles. Queue authority for
+the other 6 is `report_import_owed.ps1`; all 7 never-tested providers are GATE-CLEAN.
+
+**ORDER IS IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28: *"you have to import before we can
+do picklists"*). This block used to say capture FIRST, which is impossible -- the console script
+scrapes the RENDERED form, so the JSON must already be in the tenant. The real rule is that the
+capture precedes CHOOSING TEST VALUES: that is what let OR pick a valid plate-type value and is why
+CA_VENTURA still cannot fix its hollow toggle.
 
 **MISSION 12 of 20** (`report_mission_status.ps1`). All 7 remaining blocked at the SAME stage --
 tenant test. Nothing further can be BUILT to move it. History: git log, not here.
@@ -57,7 +63,11 @@ tenant test. Nothing further can be BUILT to move it. History: git log, not here
 
 - **CA_VENTURA hollow toggle**: `LicensePlateTypeCode` toggles to its own form default, so that test
   proves nothing. Needs TEST_VALUE_OVERRIDES -- but choose the value AFTER its picklist capture.
-- **10 providers owe the one-time picklist capture** (`audit_picklist_scope -All`).
+- **7 providers owe the one-time picklist capture**, 0 owe a re-scope, 13 current -- measured
+  2026-08-28 via `audit_picklist_scope -All`. This line read "10" and was stale.
+- **3 providers carry stale ancillary artifacts** (picklist report + label review predate the JSON):
+  CA_VENTURA_COUNTY, LA_LEMS, TX_TLETS_CCH. Portfolio `enforce` WARNs on each. Clear at each
+  provider's own turn via `build_report -Path <json> -IncludeExtended`; no wire impact.
 - **LIMITATION #41** (populated HOME state routes a local plate to NLETS) -- paused pending CommSys.
 - **NCIC hit blocks CONFIG-PRESENT, NOT RENDERING-VERIFIED** on HI and TN.
 - **Officer guides content-poor**; rewrite requested, shape not agreed.
