@@ -1,13 +1,177 @@
 TN_TIES SUPPORTED QUERY VALIDATION REPORT
 =============================================
 LABELS PROVISIONAL -- refine wording during manual form use; not a graded test case.
-Last updated: 2026-08-24
+Last updated: 2026-08-31
 JSON version: v2.6
+Validator: 73 PASS / 0 FAIL / 0 WARN / 0 LIMITATION
+Total combos: 21 CommSys (6 QIDMs)
+  Counted from the emitted JSON via audit_test_coverage.ps1 ("Total CommSys combos: 21"), NOT from
+  audit_query_trace's "26 metadata combinations" nor audit_prefill_shadow's "40 ordered pairs" --
+  those report what was COMPARED and are different numbers by design. If a rebuild changes the combo
+  count this line MUST move with it, or audit_sqvr_integrity CHECK 2 compares a stale assertion.
 
-QUERIES (pending metadata review)
-==================================
-  (populate from devdoc "Basic Queries Supported" after metadata review)
+POPULATED 2026-08-31, and the reason is the point. Both sections below were unfilled template text
+  ("populate after build") on a provider TENANT-VERIFIED ALL-PASS 67/67 and LIFECYCLE-COMPLETE on all
+  six stages -- while every automated gate read GREEN: `enforce -Provider TN_TIES` exits 0 at
+  45 PASS / 0 FAIL / 0 WARN and PHASE 2j printed "[PASS] TN_TIES -- SQVR consistent with the JSON".
+  That PASS was VACUOUS: audit_sqvr_integrity checks that SQVR-named keyRefs exist in the JSON and
+  that stated totals match, so a file naming NOTHING and asserting NO total leaves only the version
+  string genuinely checked. A gate cannot fail on an empty file. audit_test_coverage CHECK 4 said so
+  plainly -- "SQVR Match: NO" -- but nothing in enforce reads that tool, so the finding had nowhere to
+  land. TN was the LAST of the three lifecycle-complete providers carrying the empty scaffold
+  (IL 08-18, MD 08-28, NM and OR 08-31, TN now).
+  Everything below is DERIVED: combos + set[]/any[] from the emitted TN_TIES_v2.6.json via
+  audit_test_coverage, routing conditions read from scripts/build_tn_ties.ps1 (the authoring source of
+  truth), query scope from docs/reference/TN_TIES_SUPPORTED_QUERIES.txt (now STATUS: CONFIRMED,
+  verified pair-by-pair against the devdoc 2026-08-31), and log counts by grouping
+  logs/<Entity>/TN_TIES_v2.6_* on their combo label with each RESULT read from the log.
 
-QUERY PATHS
-===========
-  (populate after build -- one PENDING or CONFIRMED per combo)
+QUERIES (devdoc "Basic Queries Supported" lines 10-249 -- CONFIRMED, all 6 BUILT)
+================================================================================
+    ArticleSingleQuery       -> Article  / QIDM label "Article"
+    BoatQuery                -> Boat     / QIDM label "Boat"
+    DriverHistoryQuery       -> Person   / QIDM label "Driver History"
+    DriverLicenseQuery       -> Person   / QIDM label "Driver License"
+    GunQuery                 -> Firearm  / QIDM label "Firearm"
+    VehicleRegistrationQuery -> Vehicle  / QIDM label "Vehicle Registration"
+  All six built, none skipped; audit_supported_queries CHECK 0 confirms all 6 built transactions are
+  devdoc-authorized against 6 Basic names, and reports 0 INFO (no devdoc-Basic query is unbuilt --
+  unlike OR_LEDS, whose ImageQuery is a documented unbuildable skip).
+  DEVDOC COMBINATION TOTAL = 16 (Article 1 + Boat 2 + DH 2 + DL 4 + Gun 1 + VehReg 6). The JSON
+  carries 21 combos: the surplus is the IN/OUT SPLIT plus the mined NCIC Boat pair (see below).
+
+  DATA-MINED: the devdoc declares mined transactions and `InquiryTypeIndicator` is what makes ONE
+  query cover registration AND hot files (1 = reg only, 2 = hotfiles only, 3 = both, default). This is
+  why there is no separate stolen/wanted query and why building none is CORRECT.
+  ⚠️ `RQ01` WAS ONCE FILED AS A ROUTING RISK AND THAT IS CLOSED (2026-08-24). A note in four places
+  claimed an unbuilt `RQ01` meant "in-state TN plate searches reach NCIC not TIES/DMV". It is
+  impossible: the keyRef NEVER reaches the wire (a request carries MessageType + the FIELDS and
+  nothing else), it was already adjudicated in this provider's own registry, and RQ01 IS built. Do
+  not re-raise.
+
+QUERY PATHS -- 21 of 21 CONFIRMED at v2.6 (67 logs, 67 PASS / 0 FAIL)
+=====================================================================
+Tenant-verified ALL-PASS 5/5 on 2026-08-24 -- FIRST EVER tenant install and FIRST EVER sweep of this
+provider. Four log gates all 67/67: 6c content, 6d metadata, 2i attribution (the named combo is what
+fired), plan completeness. Combo coverage 100% (21/21 hold >= 1 log). Inflation 0/0/0/0. No combo is
+prefill-dead and none is shadowed (40 ordered pairs compared).
+
+THE ARCHITECTURE, because 21 combos over 16 devdoc combinations only makes sense once you see it:
+every entity is split IN-STATE vs OUT-OF-STATE by mutually exclusive `RegistrationState`
+EXISTS / NOT_EXISTS conditions. OOS keyRefs are the Nlets ones (RQ.P, RQ.V, DQ.N, DQ.O, KQ.O, BB.*);
+in-state keyRefs reach TIES/DMV/NCIC (RQ01, RQ03, RQ05-07, QWA, DQ01, DQ06, DQ05, QB.*).
+⚠️ CONSEQUENCE THAT MATTERS: `RegistrationState` must NEVER be given a form `initialValue`. A prefill
+makes State always-present, every NOT_EXISTS gate permanently false, and EVERY in-state search dead in
+one stroke -- LIMITATION #30 / BUILD_RULES 24. The card title carries the routing hint instead.
+
+Vehicle -- VehicleRegistrationQuery (7 combos, 19 logs)
+  [CONFIRMED] RQ.P  set=[LicensePlateNumber, LicensePlateYear, LicensePlateTypeCode,
+                         RegistrationState] any=[InquiryTypeIndicator]
+                    cond: RegistrationState EXISTS                                 2 logs, PASS
+  [CONFIRMED] RQ.V  set=[RegistrationState, VehicleIdentificationNumber]
+                    any=[InquiryTypeIndicator, VehicleMakeCode, vehicleYear]
+                    cond: LicensePlateNumber NOT_EXISTS + RegistrationState EXISTS  5 logs, PASS
+  [CONFIRMED] RQ03  set=[VehicleIdentificationNumber]
+                    any=[InquiryTypeIndicator, VehicleMakeCode, vehicleYear]
+                    cond: LicensePlateNumber NOT_EXISTS + RegistrationState NOT_EXISTS
+                                                                                    5 logs, PASS
+  [CONFIRMED] RQ01  set=[LicensePlateNumber] any=[InquiryTypeIndicator]
+                    cond: RegistrationState NOT_EXISTS                              3 logs, PASS
+  [CONFIRMED] RQ05  set=[DealerLicensePlateNumber] any=[InquiryTypeIndicator]       2 logs, PASS
+  [CONFIRMED] RQ06  set=[HandicapPlacardNumber]                                     1 log,  PASS
+  [CONFIRMED] RQ07  set=[TemporaryLicensePlateNumber]                               1 log,  PASS
+    Plate > VIN priority PROVEN by RQ.V/RQ03's `LicensePlateNumber NOT_EXISTS` gates.
+    THE v2.6 RELEASE CHANGE LIVES HERE: an in-state plate search no longer transmits
+    LicensePlateTypeCode. The control is prefilled PC because RQ.P (out-of-state) requires it in
+    set[], so every in-state query had been asserting "passenger automobile" -- including for a
+    motorcycle, trailer or commercial plate. Neither devdoc #1 "(In) LicensePlateNumber,
+    [InquiryTypeIndicator]" nor metadata RQ01 defines that field; the permission had come from
+    QV{plate}, a DATA-MINED NCIC variant, because the build had taken the widest any[] of three
+    routing-indistinguishable variants without asking whether the widest was right. PROVEN BOTH
+    DIRECTIONS (in-state wires carry no plate type, RQ.P wires still do) and PROVEN SURGICAL against
+    the archived v2.5 captures: 64 wires byte-identical / 3 changed / 0 new / 2 removed, where the 3
+    changed are every wire of the single combination touched.
+    RQ05 / RQ06 / RQ07 -- DEALER PLATE, HANDICAP PLACARD, TEMPORARY PLATE -- WERE FIRST PROVEN IN
+    THIS SWEEP. All three had NO test value for their mandatory field, so their plan tests carried
+    BLANK fills: the driver would have typed `undefined` and the tenant would have kept Send
+    DISABLED. They had never been driven and could not have been. Fixed as TEST DATA
+    (docs/reference/TEST_VALUE_OVERRIDES.txt), not a config change -- the OH_LEADS remedy.
+    Devdoc marks #5 and #6 "*(No hot files check conducted)", which is why RQ06/RQ07 carry no
+    InquiryTypeIndicator.
+
+Person -- DriverLicenseQuery (5 combos, 29 logs)
+  [CONFIRMED] DQ.N  set=[NameLast, NameFirst, BirthDate, SexCode, RegistrationState]
+                    any=[InquiryTypeIndicator, NameMiddle, NameSuffix]
+                    cond: OperatorLicenseNumber NOT_EXISTS + RegistrationState EXISTS
+                                                                                    5 logs, PASS
+  [CONFIRMED] DQ.O  set=[OperatorLicenseNumber, RegistrationState]
+                    cond: RegistrationState EXISTS                                  1 log,  PASS
+  [CONFIRMED] QWA   set=[NameLast, NameFirst, BirthDate, SexCode]
+                    any=[ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator,
+                         raceCode, relatedHitSearchIndicator, NameMiddle, NameSuffix]
+                    cond: OperatorLicenseNumber NOT_EXISTS + RegistrationState NOT_EXISTS
+                                                                                    9 logs, PASS
+  [CONFIRMED] DQ01  set=[OperatorLicenseNumber]
+                    any=[ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator,
+                         relatedHitSearchIndicator]
+                    cond: RegistrationState NOT_EXISTS                              8 logs, PASS
+  [CONFIRMED] DQ06  set=[SocialSecurityNumber]
+                    any=[ExpandedNameSearchCode, ImageIndicator, InquiryTypeIndicator,
+                         relatedHitSearchIndicator]
+                    cond: OperatorLicenseNumber NOT_EXISTS + RegistrationState NOT_EXISTS
+                                                                                    6 logs, PASS
+    OLN > Name priority PROVEN by DQ.N/QWA/DQ06's `OperatorLicenseNumber NOT_EXISTS` gates.
+    DQ06 (SSN search) is devdoc DL #4 "(In) SocialSecurityNumber" -- an in-state-only path, which is
+    why it carries the NOT_EXISTS State gate. ExpandedNameSearchCode transmits on this provider for
+    the first time at v2.5/v2.6; it is unwired on FL_FCIC, where it rides only the mined QW variants.
+    Devdoc DL #3 is annotated "*No hotfiles check conducted".
+
+Person -- DriverHistoryQuery (3 combos, 7 logs)
+  [CONFIRMED] KQ.N  set=[NameLastDH, NameFirstDH, BirthDateDH, SexCodeDH, purposeCodeDH]
+                    any=[attention, RegistrationState, NameMiddleDH, NameSuffixDH]
+                    defaults: Attention='X'
+                    cond: OperatorLicenseNumberDH NOT_EXISTS                        4 logs, PASS
+  [CONFIRMED] KQ.O  set=[OperatorLicenseNumberDH, purposeCodeDH] any=[attention, RegistrationState]
+                    cond: RegistrationState EXISTS                                  1 log,  PASS
+  [CONFIRMED] DQ05  set=[OperatorLicenseNumberDH]
+                    cond: RegistrationState NOT_EXISTS                              2 logs, PASS
+    DH ISOLATION: DH-suffixed fieldIds keep the DL and DH pools separate so queriesToDeselect works.
+    Devdoc DH #1/#2 both list Attention and PurposeCode as MANDATORY. purposeCodeDH sits in set[] on
+    KQ.N/KQ.O; `attention` rides any[] with a combo default of 'X' feeding the
+    CommsysGetLastNameFirstNameInitialRuleHandler -- the auto-populate pattern, not officer input.
+    PurposeCode=C transmits on the KQ combos but on NO DQ05 wire, and that distinction is REAL: a
+    form prefill would have collapsed KQ.O onto DQ05 and killed the in-state DH-by-OLN path. Rob
+    ruled CAD-default-only when the three options were put to him.
+
+Firearm -- GunQuery (1 combo, 4 logs)
+  [CONFIRMED] QG    set=[serialNumber] any=[gunCaliber, firearmMake]                4 logs, PASS
+    Matches devdoc Gun #1 "(In/Out) GunSerialNumber, [GunCaliber, GunMake]".
+
+Article -- ArticleSingleQuery (1 combo, 1 log)
+  [CONFIRMED] QA    set=[serialNumber, articleTypeCode]                             1 log,  PASS
+
+Boat -- BoatQuery (4 combos, 7 logs)
+  [CONFIRMED] BB.H  set=[BoatHullIdNumber] any=[InquiryTypeIndicator, RegistrationState]
+                    cond: RegistrationState EXISTS                                  1 log,  PASS
+  [CONFIRMED] QB.H  set=[BoatHullIdNumber] any=[InquiryTypeIndicator]
+                    cond: RegistrationState NOT_EXISTS                              3 logs, PASS
+  [CONFIRMED] BB.R  set=[RegistrationNumber] any=[InquiryTypeIndicator, RegistrationState]
+                    cond: RegistrationState EXISTS + BoatHullIdNumber NOT_EXISTS     1 log,  PASS
+  [CONFIRMED] QB.R  set=[RegistrationNumber] any=[InquiryTypeIndicator]
+                    cond: RegistrationState NOT_EXISTS + BoatHullIdNumber NOT_EXISTS 2 logs, PASS
+    Hull > Registration priority PROVEN on BOTH directions by the `BoatHullIdNumber NOT_EXISTS`
+    gates on BB.R and QB.R. BB.* are the Nlets paths; QB.* the mined NCIC in-state paths.
+
+KNOWN LIMITS -- recorded, not defects
+=====================================
+  8 registered divergences (audit_requirement_fidelity reports 0 UNDER / 0 OVER with 8 registered).
+  audit_query_trace reports 2 MISSING metadata combinations (KQ variants requiring Attention +
+  PurposeCode as un-split mandatory) -- adjudicated in this provider's registry; the built KQ.N/KQ.O
+  carry purposeCodeDH in set[] and Attention via the handler default.
+  NCIC hit blocks are CONFIG-PRESENT, NOT RENDERING-VERIFIED on this provider (as on HI): the QRDM
+  carries the mapping but no committed log proves a hit renders in the RMS UI, because that needs a
+  real hit record in a tenant we do not control.
+  Its picklist WARNs (firearmMake `IMI`, VehicleMakeCode `CNST_FORD` not in the captured 300-option
+  subset) are ANSWERED by the sweep itself -- the driver opened both dropdowns and selected by name.
+  VehicleMakeCode transmits the raw attribute code -- LIMITATION #38, PARKED portfolio-wide
+  2026-08-03. Not a TN defect.
