@@ -138,7 +138,14 @@ difference list below is the candidate set.
 
 Regenerate any of the above with a JSON diff; nothing here is hand-maintained state.
 
-### B.2 VERIFYING A FOUNDATION / LIVE INSTALL FROM A TENANT EXPORT (method, proven 2026-08-13)
+### B.4 VERIFYING A FOUNDATION / LIVE INSTALL FROM A TENANT EXPORT (method, proven 2026-08-13)
+
+> **RENUMBERED B.2 -> B.4 on 2026-08-31: there were TWO sections numbered B.2** -- this one and
+> "PRODUCTION TENANTS RUNNING NON-REPO, CLAUDE-BUILT JSONs" below. This one moved because nothing
+> references it by number, whereas `LA_LEMS_BUILD_NOTES.txt` line 58 points at "(IMPORT_LEDGER B.2)"
+> meaning the PRODUCTION section, and lines 293/303 here do too. Moving the referenced one would have
+> broken a live pointer. Subsection order is now B.1, B.4, B.2, B.3 by position -- headings are
+> navigational, not ordinal.
 
 The class table says the capture tool **cannot** reach Foundation or LIVE tenants, so their versions
 are "manual, from an import report" — i.e. somebody's word. That is not the only option, and the
@@ -354,11 +361,51 @@ no logs in this repo, so a rebuild costs no re-sweep — but they are not greenf
 officers are running defective builds of both today, so getting our version right is urgent in a way
 a never-deployed provider is not.
 
+**⚠️ CORRECTED 2026-08-31 -- THERE WERE THREE PROVIDERS, NOT TWO, AND HI IS THE ONE WE ALREADY WON.**
+Rob: *"what was said was that there were 3 jsons deployed to live tenants that we did not build but
+were built by engineering. hi was one which was replaced with our. the others are ca esun which is
+currently at San Diego Sheriff and not using ours and the others are la lems at Lafayette Parish and
+New Orleans police."* This table listed only CA_eSUN and LA_LEMS, so **HI_HCJDC_OFML -- the single
+case where the takeover has actually completed -- was invisible here.** That omission understated the
+count AND hid the only proof that the replace-it-with-ours model works end to end. HI now has a row.
+
 | Tenant | Provider | Status | Reference copy held? |
 |---|---|---|---|
-| **San Diego Sheriff's Office** | CA_eSUN | **LIVE PRODUCTION**, non-repo build | **YES** — `providers/CA_eSUN/source/San Diego Sheriff CA_eSUN 8.17.2026.json` |
+| **HDLE (Hawaii)** | HI_HCJDC_OFML | ✅ **REPLACED WITH OURS.** Engineering's non-repo build is GONE; **our v4.15** runs on HDLE **LIVE** and HDLE **Foundation**, both imported 2026-08-13 | n/a -- superseded. The install was **VERIFIED, not just reported**: the tenant export was compared to the repo build per §B.4 |
+| **San Diego Sheriff's Office** | CA_eSUN | **LIVE PRODUCTION**, non-repo build — **ours (v2.6) is on NO tenant** | **YES** — `providers/CA_eSUN/source/San Diego Sheriff CA_eSUN 8.17.2026.json` |
 | **Lafayette Parish** | LA_LEMS | LIVE, hand-built by engineering | YES — `providers/LA_LEMS/source/Lafayette Parish LA_LEMS 8.13.2026.json`, analysed in §B.1 |
-| **New Orleans PD** | LA_LEMS | **LIVE PRODUCTION**, non-repo build | **NO — NOT YET SUPPLIED.** Ask before answering any NOPD issue report |
+| **New Orleans PD** | LA_LEMS | **LIVE PRODUCTION**, non-repo build — **ours (v3.2) is on NO tenant** | **NO — NOT YET SUPPLIED.** Ask before answering any NOPD issue report |
+
+**HI / HDLE -- VERSION AND DEPLOYMENT NOTES, since this is the completed takeover and the model for
+the other two.** Every figure below is read from this ledger's own rows and from
+`audit_lifecycle` / `report_import_owed`, not recalled:
+
+| Where | Version | Date | State |
+|---|---|---|---|
+| HDLE **LIVE** (production) | **v4.15** | 2026-08-13 | ⚠️ **HELD BY DECISION** — not drift |
+| HDLE **Foundation** (staging) | **v4.15** | 2026-08-13 | ⚠️ **HELD BY DECISION** — not drift |
+| USx provider tenant | **v4.20** | 2026-08-17 | ALL-PASS 50/50, four log gates 50/50 |
+| Repo / DEX-1257 / provider catalog | **v4.20** | 2026-08-17 | release line comment **799997** |
+
+- **WHY LIVE IS BEHIND ON PURPOSE.** Rob: HDLE Foundation and live *"will not be [updated] until we
+  test it again."* Held pending verification of the **NCIC hit-block mapping added at v4.16/v4.18
+  against a real hit**. The published artifact is deliberately AHEAD of the tenant. `report_import_owed`
+  reports both rows as *"DELIBERATELY HELD, do not import without saying so"* — that is the correct
+  output, **not** an import owed.
+- **THE COST OF THE HOLD, stated plainly because it reaches officers:** while held, **HDLE production
+  discards NCIC hit content** — banner, caution/medical, extradition, warrant detail. That is
+  pre-existing portfolio-wide behaviour rather than a new defect, and it is why the **one-hit
+  verification query is the highest-value outstanding test in the repo**.
+- **DEX-1257 publish history:** v4.14 (2026-08-04, re-published after the 46/46 re-sweep, no bump) ->
+  v4.15 (2026-08-10, comment 795241) -> **v4.20 (2026-08-17, comment 799997)**. 795241 is retained as
+  v4.15 history per the 2026-08-17 one-new-comment-per-release reversal.
+- **HDLE WAS ALMOST INVISIBLE, TWICE, AND BOTH MISSES ARE INSTRUCTIVE.** (1) The header of this file
+  once read *"No production environments exist yet"* — false, and the most consequential line on the
+  page, since a defect in a live provider reaches officers rather than testers. (2) The **LIVE** row
+  did not exist until 2026-08-14: when Rob said *"hawaii foundation and live"* it was read as ONE
+  tenant, and only his follow-up (*"hdle has 4.15 live as well"*) produced a second row. The capture
+  tool cannot reach Foundation or LIVE tenants, so **nothing about them is self-verifying** — if a
+  LIVE tenant is not written here it is invisible to every gate and every status table.
 
 **The San Diego file was nearly discarded.** It sat untracked as `department-export-71459778290 (1).json`
 and I twice advised leaving it alone as scrap; it was even reported as the sole blocker keeping
