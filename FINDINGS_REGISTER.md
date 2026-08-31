@@ -513,3 +513,61 @@ zero providers (→ `[NO-VERDICT]`, which is the only reason it did not print a 
 namespace**, so unprefixed XPath returned nothing and briefly looked like "OH defines no DL variants".
 A sixth was in my own classification: a `grep -v` on `+RegistrationState` silently dropped two Shape-C
 rows because the string also occurs inside `set[...]`. **Count on the added field, not the whole line.**
+
+### 6e. SHAPE-B ADJUDICATED PER PROVIDER — 2026-08-31. **18 of 18 SPEC-CORRECT. ZERO WIRE DEFECTS.**
+
+Rob: *"adjudicate Shape B per provider (17 metadata checks, most cheap)."* Done for all 18 (the
+count in 6b said 17 + MD; it is 18 items), mechanically, against each provider's **own** raw metadata.
+Probe kept at `tools/_probes/adjudicate_state_gate.ps1`. It reuses `_metadata_parse.ps1` for the hard
+part (Choice / nested-`<Set>` resolution into alternative required-sets) and adds only the per-variant
+`<Any>` read, which that module does not expose.
+
+**THE TEST, and it is the one from `usx-build` Step 3 — does the FIRING transaction's own metadata
+define an out-of-state variant our fill should have reached?**
+- **T1** a variant REQUIRES `State` in `<Set>` **and our fill satisfies it** → REAL, missing combination.
+- **T2** **our own variant** — same keyRef **and** same `primaryFieldReference` — permits `State` in
+  `<Any>` → REAL, the gate refuses a fill the variant allows (TN_TIES `KQ.N` inverted).
+- **T3b** an OOS-capable variant exists but our fill lacks its **other mandatory** fields →
+  SPEC-CORRECT; nothing fires because the officer has not supplied the OOS path.
+- **T3a** no variant requires or permits `State` at all → SPEC-CORRECT, no OOS path exists.
+
+**VERDICT: all 18 land on T3b.** Every one names the variant and the missing fields, e.g.
+`MD_METERS ZVEH.P → ZLRG{LicensePlateNumber} needs also: LicensePlateTypeCode, LicensePlateYear` ·
+`TN_TIES DQ05 → KQ{OperatorLicenseNumber} needs also: Attention, PurposeCode` ·
+`OH_LEADS DN → DQ{Name} needs also: SexCode, BirthDate` ·
+`CA_eSUN QV.P → RQ{LicensePlateNumber} needs also: LicensePlateTypeCode, LicensePlateYear`.
+
+**SO SHAPE B IS NOT A DEFECT CLASS. Combined with 6c, the sweep's honest yield is ZERO wire defects
+across all 30 combos** — the residue is a single **FORM/UX** class: an officer who types a State on an
+in-state-only path gets silence, because the out-of-state transaction mandates qualifiers they have not
+filled. The cure is the form saying so (card-title / required-field affordance), which belongs to
+`usx-cosmetic` at each provider's own turn. It is **not** a wire change and **not** a version bump.
+
+**VALIDATED THREE WAYS, because a probe that can only ever say SPEC-CORRECT proves nothing (LAW 2):**
+1. **Independent hand agreement** — my by-hand read of MD's Vehicle metadata (done before this probe
+   existed) said `ZLRG{plate}` needs type+year. The probe says exactly that, unprompted.
+2. **Cross-tool agreement** — `audit_query_trace` on OH_LEADS reports DL 6/7 built with the only
+   MISSING being the recorded `BMVIMS{SocialSecurityNumber}`, i.e. `DQ{Name}` IS built. The probe
+   independently concludes the OOS name path exists and needs Sex+DOB. Consistent.
+3. **NEGATIVE CONTROL — T2 fires on a known real defect.** Aimed at `MD_METERS` **v2.2** (recovered
+   from commit `22dc100c` into the provider dir, then deleted), whose `ZLRG.P` was gated
+   `RegistrationState EXISTS` while `ZLRG{LicensePlateNumber}` permits `State` in `<Any>`: verdict
+   `REAL-T2 gate refuses a State its own variant permits`. That is precisely the defect v2.3 fixed,
+   so the REAL verdicts are reachable and the 18 SPEC-CORRECTs are load-bearing.
+
+**MY FIRST RUN OF THIS ADJUDICATOR WAS WRONG TWICE AND REPORTED A FALSE DEFECT.** It returned
+`17 SPEC-CORRECT + 1 REAL-T2 on NM_NMLETS_OFML QV.V` — and a uniform 17-of-18 across 11 providers is
+the shape that means *your probe is broken*, so I looked rather than reporting it:
+- **T2 matched on keyRef ALONE**, pairing NM's **VIN** combo `QV.V` against metadata
+  `QV{LicensePlateNumber}`, the **plate** variant. **A keyRef is not a variant** — the single
+  most-repeated bug in this toolchain, committed here by me while the rule sat in two skills I had
+  already read. Narrowing by `primaryFieldReference` removed the finding entirely.
+- **The SPEC-CORRECT evidence line asserted "no variant of X requires State"** unconditionally, which
+  is FALSE wherever an OOS variant exists but simply is not satisfied (TN's `KQ.O` requires State *and*
+  a PurposeCode). A verdict can be right while its stated reason is wrong, and the wrong reason is what
+  outlives the author — hence T3b, which names the variant and the shortfall instead.
+- Also, and worth stating because it touched a provider directory: recovering v2.2 I ran
+  `git show <commit>:<path>` against the commit that **deleted** the file, and `2>/dev/null` turned the
+  failure into an **empty `MD_METERS_v2.2.json` in the provider root** — a one-JSON-in-root violation
+  that would have failed `enforce`. Caught and removed in the same action. Use the commit where the file
+  **existed**, and never let `2>/dev/null` swallow a `git show` that writes a file.
