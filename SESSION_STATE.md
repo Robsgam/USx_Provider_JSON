@@ -36,28 +36,30 @@ absolute number is guaranteed to go stale and teach the next session to distrust
 
 ---
 
-**IMPORT + SWEEP ONE OF 6 -- the ONLY thing that moves 12/20, and it needs Rob at the tenant.**
-⛔ **JIRA IS HELD.** MD_METERS v2.4 is imported and TENANT-VERIFIED ALL-PASS 5/5 (47 logs, 47/47 on
-all four log gates), so it is blocked ONLY at stage 5 by that hold -- and its drafted release line in
-`docs/tracking/DEX_TICKET.md` STILL DESCRIBES v2.3 and must be rewritten for v2.4 before any post.
+**IMPORT + SWEEP ONE OF 6 -- the ONLY thing that moves 13/20, and it needs Rob at the tenant.**
+**MD_METERS IS DONE: LIFECYCLE-COMPLETE at v2.4** -- all six stages, `POSTED: v2.4 comment 808820` on
+DEX-987 (its first ever comment); ledger records the import, JSON attachment and catalog update.
+⛔ **JIRA REMAINS HELD** -- MD's approval was for MD ONLY and does not carry.
 
 **The queue** (`report_import_owed.ps1`) -- CA_CLETS_OCATS, CA_CONTRA_COSTA,
 CA_eSUN, CA_SAN_LUIS_OBISPO, CA_VENTURA_COUNTY, LA_LEMS. All gate-clean, all blocked at stage 4.
 **IMPORT FIRST, THEN PICKLIST CAPTURE** (Rob 2026-08-28) -- the console script scrapes the RENDERED
 form. The capture precedes CHOOSING TEST VALUES; that is why CA_VENTURA cannot fix its hollow toggle.
 
-**MISSION 12 of 20**: 6 blocked at test, 1 (MD) at jira.
+**MISSION 13 of 20 = 65%** (`report_mission_status`; 13 of 19 eligible -- TX_TLETS_CCH is PARKED). All
+6 remaining are blocked at the SAME stage, test, with build/spec/reachability met on every one -- so
+the whole gap is one activity, not six problems.
 
 ## ROB'S CALLS, NOT MINE
 
-- **MD_METERS DL State: TAKEN, shipped in v2.4, WIRE-PROVEN 2026-08-31.** `ZLDR.N_any` carries
-  `<State>GA</State>` where v2.3 discarded it. I DEVIATED from the option's literal wording (it said
-  `ZLDR.N + RegistrationState EXISTS`) -- simulation proved that kills the plain in-state name search,
-  and the raw metadata later confirmed it (`ZLDR{Name}` has State in `<Any>`, an optional not a fork).
-  **FL_FCIC owes NOTHING.**
+- **MD_METERS DL State: TAKEN, shipped v2.4, WIRE-PROVEN, POSTED.** `ZLDR.N_any` carries
+  `<State>GA</State>` where v2.3 discarded it. I DEVIATED from the option's literal wording
+  (`ZLDR.N + RegistrationState EXISTS`) -- it kills the plain in-state name search, and the raw
+  metadata confirmed why (`ZLDR{Name}` has State in `<Any>`: an optional, not a fork).
 - **CA_CONTRA_COSTA JAWS/SuperQuery** -- the portfolio's only remaining fidelity findings (4 UNDER /
   3 OVER, verbatim in its BUILD_NOTES). Hold the SWEEP, not the import.
 - **LA_LEMS BoatQuery `QB{reg}` vs `BQ{reg}`** -- in LA's registry, not taken.
+- **eSUN 228KB tenant export** in pushed history at `8273a87f` -- removal needs a force-push.
 - **eSUN 228KB tenant export** in pushed history at `8273a87f` -- removal needs a force-push.
 
 ## OPEN FINDINGS -- detail lives in `FINDINGS_REGISTER.md`, do NOT restate it here

@@ -34,8 +34,16 @@ PROVIDER -> TICKET
                         |            | reported as "IL has no ticket". Absence of a record is not
                         |            | evidence of absence -- ask, or query Jira.
   OH_LEADS              | DEX-990    | found by querying Jira, not from the repo -- nothing recorded it
+  MD_METERS             | DEX-987    | added 2026-08-31. The next four rows were all found by JQL on
+  NM_NMLETS_OFML        | DEX-989    | 2026-08-27/28 and recorded ONLY in each provider's own
+  OR_LEDS               | DEX-992    | DEX_TICKET.md -- so this central mapping still read "not
+  TN_TIES               | DEX-994    | recorded" for tickets the repo demonstrably knew. All four
+                        |            | opened 2026-03-23; verified here against each DEX_TICKET.md
+                        |            | header line, not from memory. Lesson: a per-provider record
+                        |            | does not propagate to the index by itself.
 
-  The other 12 providers have no ticket recorded here. That means NOT RECORDED, not "none
+  The other 7 providers have no ticket recorded here (was "12" until the four rows above were
+  added 2026-08-31 -- 13 of 20 are now mapped). That means NOT RECORDED, not "none
   exists". Query Jira (summary pattern "[<ST> - <SYSTEM>] USx Provider Build") before concluding
   either way, and NEVER invent a plausible DEX number -- that mistake was made once on IL.
 
